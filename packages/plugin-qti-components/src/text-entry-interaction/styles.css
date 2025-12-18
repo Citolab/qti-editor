@@ -1,0 +1,34 @@
+/**
+ * Text Entry Interaction Styles
+ * Scoped CSS module for QTI text entry (inline) interaction component
+ */
+
+/* Inline text entry interaction */
+qti-text-entry-interaction {
+  display: inline-block;
+  border-bottom: 2px solid #60a5fa;
+  background-color: #eff6ff;
+  padding: 0.125rem 0.5rem;
+  margin: 0 0.25rem;
+  min-width: 100px;
+  position: relative;
+}
+
+qti-text-entry-interaction:hover {
+  background-color: #dbeafe;
+  border-bottom-color: #3b82f6;
+}
+
+qti-text-entry-interaction.ProseMirror-selectednode {
+  background-color: #dbeafe;
+  border-bottom-color: #2563eb;
+  outline: 1px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Show placeholder for empty text entries */
+qti-text-entry-interaction:empty::after {
+  content: "___";
+  color: #9ca3af;
+  font-style: italic;
+}

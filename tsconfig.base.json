@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "@citolab/qti-editor-core": ["packages/core/src/index.ts"],
+      "@citolab/qti-editor-core/*": ["packages/core/src/*"],
+      "@citolab/qti-editor-plugin-slash-menu": [
+        "packages/plugin-slash-menu/src/index.ts"
+      ],
+      "@citolab/qti-editor-plugin-slash-menu/*": [
+        "packages/plugin-slash-menu/src/*"
+      ],
+      "@citolab/qti-editor-plugin-qti-import": [
+        "packages/plugin-qti-import/src/index.ts"
+      ],
+      "@citolab/qti-editor-plugin-qti-import/*": [
+        "packages/plugin-qti-import/src/*"
+      ],
+      "@qti-editor/plugin-toolbar": [
+        "packages/plugin-toolbar/src/index.ts"
+      ],
+      "@qti-editor/plugin-toolbar/*": [
+        "packages/plugin-toolbar/src/*"
+      ],
+      "@qti-editor/plugin-side-panel": [
+        "packages/plugin-side-panel/index.ts"
+      ]
+    }
+  }
+}

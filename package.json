@@ -1,0 +1,23 @@
+{
+  "name": "@qti-editor/root",
+  "version": "0.1.0",
+  "description": "QTI Editor built with ProseKit and modular plugins",
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "pnpm --filter @qti-editor/integration dev",
+    "build": "pnpm build:packages && pnpm --filter @qti-editor/integration build",
+    "preview": "pnpm --filter @qti-editor/integration preview",
+    "build:packages": "pnpm -r --filter \"./packages/**\" run build"
+  },
+  "dependencies": {
+    "lit": "^3.0.0",
+    "prosekit": "^0.17.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@qti-editor/plugin-toolbar",
+  "version": "0.1.0",
+  "description": "Shared toolbar for ProseKit-based QTI editor with extensible items",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && vite build"
+  },
+  "peerDependencies": {
+    "prosekit": "^0.17.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}
