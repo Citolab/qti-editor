@@ -5,12 +5,10 @@
  * Uses custom events to communicate with the qti-slash-menu plugin.
  */
 
-import { LitElement, html, css } from "lit";
-import { customElement, state } from "lit/decorators.js";
-import {
-  type SlashMenuItem,
-  clearSlashState,
-} from "../index";
+import { LitElement, html, css } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
+
+import { type SlashMenuItem, clearSlashState } from '../index';
 
 interface SlashMenuState {
   isOpen: boolean;
@@ -20,7 +18,7 @@ interface SlashMenuState {
   position?: { top: number; left: number; bottom: number; right: number };
 }
 
-@customElement("qti-slash-menu")
+@customElement('qti-slash-menu')
 export class QtiSlashMenu extends LitElement {
   static override styles = css`
     :host {
@@ -149,13 +147,13 @@ export class QtiSlashMenu extends LitElement {
   `;
 
   @state()
-  private declare menuState: SlashMenuState;
+  declare private menuState: SlashMenuState;
 
   constructor() {
     super();
     this.menuState = {
       isOpen: false,
-      query: "",
+      query: '',
       items: [],
       selectedIndex: 0,
     };
@@ -165,46 +163,31 @@ export class QtiSlashMenu extends LitElement {
     super.connectedCallback();
 
     // Listen for plugin events
-    document.addEventListener("prosekit:slash-menu:open", this.handleMenuOpen);
-    document.addEventListener(
-      "prosekit:slash-menu:close",
-      this.handleMenuClose
-    );
-    document.addEventListener(
-      "prosekit:slash-menu:update",
-      this.handleMenuUpdate
-    );
+    document.addEventListener('prosekit:slash-menu:open', this.handleMenuOpen);
+    document.addEventListener('prosekit:slash-menu:close', this.handleMenuClose);
+    document.addEventListener('prosekit:slash-menu:update', this.handleMenuUpdate);
 
     // Listen for keyboard navigation
-    document.addEventListener("keydown", this.handleKeyDown);
+    document.addEventListener('keydown', this.handleKeyDown);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    document.removeEventListener(
-      "prosekit:slash-menu:open",
-      this.handleMenuOpen
-    );
-    document.removeEventListener(
-      "prosekit:slash-menu:close",
-      this.handleMenuClose
-    );
-    document.removeEventListener(
-      "prosekit:slash-menu:update",
-      this.handleMenuUpdate
-    );
-    document.removeEventListener("keydown", this.handleKeyDown);
+    document.removeEventListener('prosekit:slash-menu:open', this.handleMenuOpen);
+    document.removeEventListener('prosekit:slash-menu:close', this.handleMenuClose);
+    document.removeEventListener('prosekit:slash-menu:update', this.handleMenuUpdate);
+    document.removeEventListener('keydown', this.handleKeyDown);
   }
 
   private handleMenuOpen = (event: Event) => {
-    console.log("📥 QtiSlashMenu received open event", event);
+    console.log('📥 QtiSlashMenu received open event', event);
     const { query, items, position } = (event as CustomEvent).detail as {
       query: string;
       items: SlashMenuItem[];
       position: { top: number; left: number; bottom: number; right: number };
     };
-    console.log("📋 Menu items:", items.length, "Position:", position);
+    console.log('📋 Menu items:', items.length, 'Position:', position);
     this.menuState = {
       isOpen: true,
       query,
@@ -212,13 +195,13 @@ export class QtiSlashMenu extends LitElement {
       selectedIndex: 0,
       position,
     };
-    console.log("✅ Menu state updated, isOpen:", this.menuState.isOpen);
+    console.log('✅ Menu state updated, isOpen:', this.menuState.isOpen);
   };
 
   private handleMenuClose = () => {
     this.menuState = {
       isOpen: false,
-      query: "",
+      query: '',
       items: [],
       selectedIndex: 0,
     };
@@ -243,26 +226,25 @@ export class QtiSlashMenu extends LitElement {
     const { items, selectedIndex } = this.menuState;
 
     switch (event.key) {
-      case "ArrowDown":
+      case 'ArrowDown':
         event.preventDefault();
         this.menuState = {
           ...this.menuState,
           selectedIndex: (selectedIndex + 1) % items.length,
         };
         break;
-      case "ArrowUp":
+      case 'ArrowUp':
         event.preventDefault();
         this.menuState = {
           ...this.menuState,
-          selectedIndex:
-            selectedIndex > 0 ? selectedIndex - 1 : items.length - 1,
+          selectedIndex: selectedIndex > 0 ? selectedIndex - 1 : items.length - 1,
         };
         break;
-      case "Enter":
+      case 'Enter':
         event.preventDefault();
         this.selectItem(items[selectedIndex]);
         break;
-      case "Escape":
+      case 'Escape':
         event.preventDefault();
         clearSlashState();
         break;
@@ -272,7 +254,7 @@ export class QtiSlashMenu extends LitElement {
   private selectItem(item: SlashMenuItem) {
     // Dispatch custom event with the selected item command
     // The editor component will handle the actual command execution
-    const event = new CustomEvent("prosekit:slash-menu:select", {
+    const event = new CustomEvent('prosekit:slash-menu:select', {
       detail: { item },
     });
     document.dispatchEvent(event);
@@ -286,27 +268,24 @@ export class QtiSlashMenu extends LitElement {
 
     return html`
       <div
-        class="slash-menu-item ${isSelected ? "selected" : ""}"
+        class="slash-menu-item ${isSelected ? 'selected' : ''}"
         @click=${() => this.selectItem(item)}
-        @mouseenter=${() =>
-          (this.menuState = { ...this.menuState, selectedIndex: index })}
+        @mouseenter=${() => (this.menuState = { ...this.menuState, selectedIndex: index })}
       >
         <div class="item-content">
-          <span class="item-icon">${item.icon || "📄"}</span>
+          <span class="item-icon">${item.icon || '📄'}</span>
           <div class="item-text">
             <span class="item-label">${item.label}</span>
             ${item.description
-              ? html`<span class="item-description">${item.description}</span>`
-              : ""}
+    ? html`<span class="item-description">${item.description}</span>`
+    : ''}
           </div>
         </div>
-        ${item.keywords.some((k) => ["#", "##", "-", "1."].includes(k))
-          ? html`<kbd class="item-kbd"
-              >${item.keywords.find((k) =>
-                ["#", "##", "-", "1."].includes(k)
-              )}</kbd
+        ${item.keywords.some((k) => ['#', '##', '-', '1.'].includes(k))
+    ? html`<kbd class="item-kbd"
+              >${item.keywords.find((k) => ['#', '##', '-', '1.'].includes(k))}</kbd
             >`
-          : ""}
+    : ''}
       </div>
     `;
   }
@@ -320,7 +299,7 @@ export class QtiSlashMenu extends LitElement {
     const position = this.menuState.position;
     const style = position
       ? `top: ${position.bottom + 4}px; left: ${position.left}px;`
-      : "top: 50%; left: 50%; transform: translate(-50%, -50%);";
+      : 'top: 50%; left: 50%; transform: translate(-50%, -50%);';
 
     return html`
       <div class="slash-menu-overlay" style=${style}>
@@ -330,9 +309,7 @@ export class QtiSlashMenu extends LitElement {
             <span class="slash-menu-query">${this.menuState.query}</span>
           </div>
           <div class="slash-menu-items">
-            ${this.menuState.items.map((item, index) =>
-              this.renderMenuItem(item, index)
-            )}
+            ${this.menuState.items.map((item, index) => this.renderMenuItem(item, index))}
           </div>
         </div>
       </div>
@@ -342,6 +319,6 @@ export class QtiSlashMenu extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "qti-slash-menu": QtiSlashMenu;
+    'qti-slash-menu': QtiSlashMenu;
   }
 }

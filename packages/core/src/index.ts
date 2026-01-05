@@ -1,1 +1,1 @@
-export * from "./components/QtiProsekitEditor";
+export * from './components/QtiProsekitEditor';

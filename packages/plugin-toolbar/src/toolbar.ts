@@ -1,4 +1,4 @@
-import type { Editor } from "prosekit/core";
+import type { Editor } from 'prosekit/core';
 
 export type ToolbarCommand = () => void;
 
@@ -20,15 +20,15 @@ export interface ToolbarOptions {
   */
 export function createToolbar(options: ToolbarOptions) {
   const { editor, container } = options;
-  container.classList.add("qti-toolbar");
-  container.innerHTML = "";
+  container.classList.add('qti-toolbar');
+  container.innerHTML = '';
 
   const addButton = (label: string, title: string | undefined, onClick: ToolbarCommand) => {
-    const button = document.createElement("button");
-    button.type = "button";
+    const button = document.createElement('button');
+    button.type = 'button';
     button.textContent = label;
     if (title) button.title = title;
-    button.addEventListener("click", () => {
+    button.addEventListener('click', () => {
       onClick();
       editor.view.focus();
     });
@@ -39,18 +39,18 @@ export function createToolbar(options: ToolbarOptions) {
 
   // Default items
   const defaults: ToolbarItem[] = [
-    { label: "B", title: "Bold", onClick: () => cmds?.toggleBold?.() },
-    { label: "I", title: "Italic", onClick: () => cmds?.toggleItalic?.() },
-    { label: "U", title: "Underline", onClick: () => cmds?.toggleUnderline?.() },
-    { label: "S", title: "Strikethrough", onClick: () => cmds?.toggleStrike?.() },
-    { label: "Code", title: "Inline code", onClick: () => cmds?.toggleCode?.() },
-    { label: "H1", title: "Heading 1", onClick: () => cmds?.setHeading?.({ level: 1 }) },
-    { label: "H2", title: "Heading 2", onClick: () => cmds?.setHeading?.({ level: 2 }) },
-    { label: "• List", title: "Bullet list", onClick: () => cmds?.wrapInList?.({ kind: "bullet" }) },
-    { label: "1. List", title: "Numbered list", onClick: () => cmds?.wrapInList?.({ kind: "ordered" }) },
+    { label: 'B', title: 'Bold', onClick: () => cmds?.toggleBold?.() },
+    { label: 'I', title: 'Italic', onClick: () => cmds?.toggleItalic?.() },
+    { label: 'U', title: 'Underline', onClick: () => cmds?.toggleUnderline?.() },
+    { label: 'S', title: 'Strikethrough', onClick: () => cmds?.toggleStrike?.() },
+    { label: 'Code', title: 'Inline code', onClick: () => cmds?.toggleCode?.() },
+    { label: 'H1', title: 'Heading 1', onClick: () => cmds?.setHeading?.({ level: 1 }) },
+    { label: 'H2', title: 'Heading 2', onClick: () => cmds?.setHeading?.({ level: 2 }) },
+    { label: '• List', title: 'Bullet list', onClick: () => cmds?.wrapInList?.({ kind: 'bullet' }) },
+    { label: '1. List', title: 'Numbered list', onClick: () => cmds?.wrapInList?.({ kind: 'ordered' }) },
   ];
 
   [...defaults, ...(options.items ?? [])].forEach((item) =>
-    addButton(item.label, item.title, item.onClick)
+    addButton(item.label, item.title, item.onClick),
   );
 }

@@ -8,14 +8,14 @@
  */
 
 // Import styles
-import "./styles.css";
+import './styles.css';
 
-import { defineCommands, defineKeymap, defineNodeSpec, union } from "prosekit/core";
-import type { Extension } from "prosekit/core";
-import type { Command } from "prosekit/pm/state";
+import { defineCommands, defineKeymap, defineNodeSpec, union } from 'prosekit/core';
+import type { Extension } from 'prosekit/core';
+import type { Command } from 'prosekit/pm/state';
 
 // Import QTI schema definitions
-import type { QtiTextEntryInteractionSchema } from "../shared/qti-schema";
+import type { QtiTextEntryInteractionSchema } from '../shared/qti-schema';
 
 export type { QtiTextEntryInteractionSchema };
 
@@ -26,13 +26,13 @@ export type { QtiTextEntryInteractionSchema };
  * @see QtiTextEntryInteractionSchema for full attribute definitions
  */
 export const qtiTextEntryInteractionSpec = defineNodeSpec({
-  name: "qti_text_entry_interaction",
-  group: "inline",
+  name: 'qti_text_entry_interaction',
+  group: 'inline',
   inline: true,
   atom: true,
   attrs: {
     // Required attributes
-    responseIdentifier: { default: "RESPONSE" },
+    responseIdentifier: { default: 'RESPONSE' },
     // Optional attributes (QTI 3.0 spec)
     baseType: { default: null },
     format: { default: null },
@@ -47,40 +47,40 @@ export const qtiTextEntryInteractionSpec = defineNodeSpec({
   },
   toDOM: (node) => {
     const attrs: Record<string, string> = {
-      class: node.attrs.class || "qti-text-entry-interaction",
-      "response-identifier": node.attrs.responseIdentifier,
+      class: node.attrs.class || 'qti-text-entry-interaction',
+      'response-identifier': node.attrs.responseIdentifier,
     };
 
     // Optional attributes
-    if (node.attrs.baseType) attrs["base-type"] = node.attrs.baseType;
+    if (node.attrs.baseType) attrs['base-type'] = node.attrs.baseType;
     if (node.attrs.format) attrs.format = node.attrs.format;
-    if (node.attrs.expectedLength !== null) attrs["expected-length"] = String(node.attrs.expectedLength);
-    if (node.attrs.patternMask) attrs["pattern-mask"] = node.attrs.patternMask;
-    if (node.attrs.placeholderText) attrs["placeholder-text"] = node.attrs.placeholderText;
-    if (node.attrs.required) attrs.required = "true";
+    if (node.attrs.expectedLength !== null) attrs['expected-length'] = String(node.attrs.expectedLength);
+    if (node.attrs.patternMask) attrs['pattern-mask'] = node.attrs.patternMask;
+    if (node.attrs.placeholderText) attrs['placeholder-text'] = node.attrs.placeholderText;
+    if (node.attrs.required) attrs.required = 'true';
     if (node.attrs.lang) attrs.lang = node.attrs.lang;
     if (node.attrs.dir) attrs.dir = node.attrs.dir;
 
-    return ["qti-text-entry-interaction", attrs];
+    return ['qti-text-entry-interaction', attrs];
   },
   parseDOM: [
     {
-      tag: "qti-text-entry-interaction",
+      tag: 'qti-text-entry-interaction',
       getAttrs: (dom) => {
         const el = dom as HTMLElement;
         return {
-          responseIdentifier: el.getAttribute("response-identifier") || "RESPONSE",
-          baseType: el.getAttribute("base-type") as "string" | "integer" | "float" | null,
-          format: el.getAttribute("format") as "plain" | "preFormatted" | null,
-          expectedLength: el.getAttribute("expected-length")
-            ? parseInt(el.getAttribute("expected-length")!, 10)
+          responseIdentifier: el.getAttribute('response-identifier') || 'RESPONSE',
+          baseType: el.getAttribute('base-type') as 'string' | 'integer' | 'float' | null,
+          format: el.getAttribute('format') as 'plain' | 'preFormatted' | null,
+          expectedLength: el.getAttribute('expected-length')
+            ? parseInt(el.getAttribute('expected-length')!, 10)
             : null,
-          patternMask: el.getAttribute("pattern-mask"),
-          placeholderText: el.getAttribute("placeholder-text"),
-          required: el.getAttribute("required") === "true",
-          class: el.getAttribute("class"),
-          lang: el.getAttribute("lang"),
-          dir: el.getAttribute("dir") as "ltr" | "rtl" | null,
+          patternMask: el.getAttribute('pattern-mask'),
+          placeholderText: el.getAttribute('placeholder-text'),
+          required: el.getAttribute('required') === 'true',
+          class: el.getAttribute('class'),
+          lang: el.getAttribute('lang'),
+          dir: el.getAttribute('dir') as 'ltr' | 'rtl' | null,
         };
       },
     },
@@ -95,7 +95,7 @@ export const insertTextEntryInteraction: Command = (state, dispatch) => {
   const textEntry = type.create({
     responseIdentifier: `TEXT_${Date.now()}`,
     expectedLength: 10,
-    placeholderText: "Enter your answer...",
+    placeholderText: 'Enter your answer...',
   });
 
   if (dispatch) dispatch(state.tr.replaceSelectionWith(textEntry).scrollIntoView());
@@ -109,7 +109,7 @@ export const textEntryInteractionCommands = defineCommands({
 
 // Keymaps for text entry interaction
 export const textEntryInteractionKeymap = defineKeymap({
-  "Mod-Shift-t": insertTextEntryInteraction,
+  'Mod-Shift-t': insertTextEntryInteraction,
 });
 
 // Complete extension for text entry interaction

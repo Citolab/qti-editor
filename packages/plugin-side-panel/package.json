@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "description": "Side panel plugin for QTI Editor",
   "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./style.css": "./style.css"
+  },
   "scripts": {
     "build": "tsc && vite build"
   },

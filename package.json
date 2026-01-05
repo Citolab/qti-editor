@@ -9,7 +9,9 @@
     "dev": "pnpm --filter @qti-editor/integration dev",
     "build": "pnpm build:packages && pnpm --filter @qti-editor/integration build",
     "preview": "pnpm --filter @qti-editor/integration preview",
-    "build:packages": "pnpm -r --filter \"./packages/**\" run build"
+    "build:packages": "pnpm -r --filter \"./packages/**\" run build",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint ."
   },
   "dependencies": {
     "lit": "^3.0.0",
@@ -18,6 +20,11 @@
     "vite": "^5.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0"
+    "@eslint/js": "^9.39.2",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-import": "^2.32.0"
   }
 }

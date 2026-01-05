@@ -17,7 +17,7 @@ export interface QtiBaseAttributes {
   identifier?: string;
   class?: string;
   lang?: string;
-  dir?: "ltr" | "rtl";
+  dir?: 'ltr' | 'rtl';
   [key: `data-${string}`]: string | undefined;
 }
 
@@ -37,8 +37,8 @@ export interface QtiResponseIdentifier {
  * Content: Block-level flow content
  */
 export interface QtiPromptSchema extends QtiBaseAttributes {
-  type: "qti_prompt";
-  content: "block+";
+  type: 'qti_prompt';
+  content: 'block+';
 }
 
 /**
@@ -49,12 +49,12 @@ export interface QtiPromptSchema extends QtiBaseAttributes {
  * Content: Block-level flow content
  */
 export interface QtiSimpleChoiceSchema extends QtiBaseAttributes {
-  type: "qti_simple_choice";
+  type: 'qti_simple_choice';
   identifier: string;
   fixed?: boolean;
   templateIdentifier?: string;
-  showHide?: "show" | "hide";
-  content: "block+";
+  showHide?: 'show' | 'hide';
+  content: 'block+';
 }
 
 /**
@@ -67,13 +67,13 @@ export interface QtiSimpleChoiceSchema extends QtiBaseAttributes {
 export interface QtiChoiceInteractionSchema
   extends QtiBaseAttributes,
     QtiResponseIdentifier {
-  type: "qti_choice_interaction";
+  type: 'qti_choice_interaction';
   maxChoices: number;
   minChoices?: number;
   shuffle?: boolean;
-  orientation?: "vertical" | "horizontal";
+  orientation?: 'vertical' | 'horizontal';
   required?: boolean;
-  content: "qti_prompt? qti_simple_choice+";
+  content: 'qti_prompt? qti_simple_choice+';
 }
 
 /**
@@ -86,13 +86,13 @@ export interface QtiChoiceInteractionSchema
 export interface QtiOrderInteractionSchema
   extends QtiBaseAttributes,
     QtiResponseIdentifier {
-  type: "qti_order_interaction";
+  type: 'qti_order_interaction';
   shuffle?: boolean;
   minChoices?: number;
   maxChoices?: number;
-  orientation?: "vertical" | "horizontal";
+  orientation?: 'vertical' | 'horizontal';
   required?: boolean;
-  content: "qti_prompt? qti_simple_choice+";
+  content: 'qti_prompt? qti_simple_choice+';
 }
 
 /**
@@ -105,9 +105,9 @@ export interface QtiOrderInteractionSchema
 export interface QtiTextEntryInteractionSchema
   extends QtiBaseAttributes,
     QtiResponseIdentifier {
-  type: "qti_text_entry_interaction";
-  baseType?: "string" | "integer" | "float";
-  format?: "plain" | "preFormatted";
+  type: 'qti_text_entry_interaction';
+  baseType?: 'string' | 'integer' | 'float';
+  format?: 'plain' | 'preFormatted';
   expectedLength?: number;
   patternMask?: string;
   placeholderText?: string;
@@ -125,16 +125,16 @@ export interface QtiTextEntryInteractionSchema
 export interface QtiExtendedTextInteractionSchema
   extends QtiBaseAttributes,
     QtiResponseIdentifier {
-  type: "qti_extended_text_interaction";
-  baseType?: "string";
-  format?: "plain" | "preFormatted" | "xhtml";
+  type: 'qti_extended_text_interaction';
+  baseType?: 'string';
+  format?: 'plain' | 'preFormatted' | 'xhtml';
   expectedLines?: number;
   expectedLength?: number;
   maxStrings?: number;
   minStrings?: number;
   placeholderText?: string;
   required?: boolean;
-  content: "qti_prompt?";
+  content: 'qti_prompt?';
 }
 
 /**
@@ -146,12 +146,12 @@ export interface QtiExtendedTextInteractionSchema
 export interface QtiMatchInteractionSchema
   extends QtiBaseAttributes,
     QtiResponseIdentifier {
-  type: "qti_match_interaction";
+  type: 'qti_match_interaction';
   shuffle?: boolean;
   maxAssociations?: number;
   minAssociations?: number;
   required?: boolean;
-  content: "qti_prompt? qti_simple_match_set qti_simple_match_set";
+  content: 'qti_prompt? qti_simple_match_set qti_simple_match_set';
 }
 
 /**
@@ -163,10 +163,10 @@ export interface QtiMatchInteractionSchema
 export interface QtiInlineChoiceInteractionSchema
   extends QtiBaseAttributes,
     QtiResponseIdentifier {
-  type: "qti_inline_choice_interaction";
+  type: 'qti_inline_choice_interaction';
   shuffle?: boolean;
   required?: boolean;
-  content: "qti_inline_choice+";
+  content: 'qti_inline_choice+';
 }
 
 /**
@@ -193,19 +193,19 @@ export type QtiNodeSchema =
  * Maps element types to their allowed child elements
  */
 export const QTI_CONTENT_RULES: Record<string, string[]> = {
-  qti_prompt: ["paragraph", "heading", "list", "blockquote", "pre", "hr"],
+  qti_prompt: ['paragraph', 'heading', 'list', 'blockquote', 'pre', 'hr'],
   qti_simple_choice: [
-    "paragraph",
-    "heading",
-    "list",
-    "blockquote",
-    "pre",
-    "hr",
+    'paragraph',
+    'heading',
+    'list',
+    'blockquote',
+    'pre',
+    'hr',
   ],
-  qti_choice_interaction: ["qti_prompt", "qti_simple_choice"],
-  qti_order_interaction: ["qti_prompt", "qti_simple_choice"],
+  qti_choice_interaction: ['qti_prompt', 'qti_simple_choice'],
+  qti_order_interaction: ['qti_prompt', 'qti_simple_choice'],
   qti_text_entry_interaction: [],
-  qti_extended_text_interaction: ["qti_prompt"],
+  qti_extended_text_interaction: ['qti_prompt'],
 } as const;
 
 /**
@@ -215,72 +215,72 @@ export const QTI_CONTENT_RULES: Record<string, string[]> = {
 export const QTI_ATTRIBUTE_RULES = {
   qti_prompt: {
     required: [],
-    optional: ["identifier", "class", "lang", "dir"],
+    optional: ['identifier', 'class', 'lang', 'dir'],
   },
   qti_simple_choice: {
-    required: ["identifier"],
+    required: ['identifier'],
     optional: [
-      "fixed",
-      "templateIdentifier",
-      "showHide",
-      "class",
-      "lang",
-      "dir",
+      'fixed',
+      'templateIdentifier',
+      'showHide',
+      'class',
+      'lang',
+      'dir',
     ],
   },
   qti_choice_interaction: {
-    required: ["responseIdentifier", "maxChoices"],
+    required: ['responseIdentifier', 'maxChoices'],
     optional: [
-      "minChoices",
-      "shuffle",
-      "orientation",
-      "required",
-      "class",
-      "lang",
-      "dir",
+      'minChoices',
+      'shuffle',
+      'orientation',
+      'required',
+      'class',
+      'lang',
+      'dir',
     ],
   },
   qti_order_interaction: {
-    required: ["responseIdentifier"],
+    required: ['responseIdentifier'],
     optional: [
-      "shuffle",
-      "minChoices",
-      "maxChoices",
-      "orientation",
-      "required",
-      "class",
-      "lang",
-      "dir",
+      'shuffle',
+      'minChoices',
+      'maxChoices',
+      'orientation',
+      'required',
+      'class',
+      'lang',
+      'dir',
     ],
   },
   qti_text_entry_interaction: {
-    required: ["responseIdentifier"],
+    required: ['responseIdentifier'],
     optional: [
-      "baseType",
-      "format",
-      "expectedLength",
-      "patternMask",
-      "placeholderText",
-      "required",
-      "class",
-      "lang",
-      "dir",
+      'baseType',
+      'format',
+      'expectedLength',
+      'patternMask',
+      'placeholderText',
+      'required',
+      'class',
+      'lang',
+      'dir',
     ],
   },
   qti_extended_text_interaction: {
-    required: ["responseIdentifier"],
+    required: ['responseIdentifier'],
     optional: [
-      "baseType",
-      "format",
-      "expectedLines",
-      "expectedLength",
-      "maxStrings",
-      "minStrings",
-      "placeholderText",
-      "required",
-      "class",
-      "lang",
-      "dir",
+      'baseType',
+      'format',
+      'expectedLines',
+      'expectedLength',
+      'maxStrings',
+      'minStrings',
+      'placeholderText',
+      'required',
+      'class',
+      'lang',
+      'dir',
     ],
   },
 } as const;
@@ -303,7 +303,7 @@ export type QtiValidator = (
  */
 export function validateQtiAttributes(
   nodeType: string,
-  attributes: Record<string, any>
+  attributes: Record<string, any>,
 ): { valid: boolean; errors: string[] } {
   const rules =
     QTI_ATTRIBUTE_RULES[nodeType as keyof typeof QTI_ATTRIBUTE_RULES];
@@ -327,7 +327,7 @@ export function validateQtiAttributes(
   // Check for unknown attributes
   const allAllowed: string[] = [...rules.required, ...rules.optional];
   for (const attr of Object.keys(attributes)) {
-    if (!allAllowed.includes(attr) && !attr.startsWith("data-")) {
+    if (!allAllowed.includes(attr) && !attr.startsWith('data-')) {
       errors.push(`Unknown attribute: ${attr}`);
     }
   }

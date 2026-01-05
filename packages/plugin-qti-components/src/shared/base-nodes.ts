@@ -9,15 +9,15 @@
  */
 
 // Import shared styles
-import "./styles.css";
+import './styles.css';
 
-import { defineCommands, defineKeymap, defineNodeSpec, union } from "prosekit/core";
-import type { Extension } from "prosekit/core";
-import type { Command } from "prosekit/pm/state";
-import { TextSelection } from "prosekit/pm/state";
+import { defineCommands, defineKeymap, defineNodeSpec, union } from 'prosekit/core';
+import type { Extension } from 'prosekit/core';
+import type { Command } from 'prosekit/pm/state';
+import { TextSelection } from 'prosekit/pm/state';
 
 // Import QTI schema definitions
-import type { QtiPromptSchema, QtiSimpleChoiceSchema } from "./qti-schema";
+import type { QtiPromptSchema, QtiSimpleChoiceSchema } from './qti-schema';
 
 // Export schema types
 export type { QtiPromptSchema, QtiSimpleChoiceSchema };
@@ -27,9 +27,9 @@ export type { QtiPromptSchema, QtiSimpleChoiceSchema };
  * Used to display questions or instructions in QTI interactions
  */
 export const qtiPromptSpec = defineNodeSpec({
-  name: "qti_prompt",
-  content: "block+",
-  group: "qti",
+  name: 'qti_prompt',
+  content: 'block+',
+  group: 'qti',
   defining: true,
   attrs: {
     // Optional QTI 3.0 base attributes
@@ -40,7 +40,7 @@ export const qtiPromptSpec = defineNodeSpec({
   },
   toDOM: (node) => {
     const attrs: Record<string, string> = {
-      class: node.attrs.class || "qti-prompt",
+      class: node.attrs.class || 'qti-prompt',
     };
 
     // Optional attributes
@@ -48,18 +48,18 @@ export const qtiPromptSpec = defineNodeSpec({
     if (node.attrs.lang) attrs.lang = node.attrs.lang;
     if (node.attrs.dir) attrs.dir = node.attrs.dir;
 
-    return ["qti-prompt", attrs, 0];
+    return ['qti-prompt', attrs, 0];
   },
   parseDOM: [
     {
-      tag: "qti-prompt",
+      tag: 'qti-prompt',
       getAttrs: (dom) => {
         const el = dom as HTMLElement;
         return {
-          identifier: el.getAttribute("identifier"),
-          class: el.getAttribute("class"),
-          lang: el.getAttribute("lang"),
-          dir: el.getAttribute("dir") as "ltr" | "rtl" | null,
+          identifier: el.getAttribute('identifier'),
+          class: el.getAttribute('class'),
+          lang: el.getAttribute('lang'),
+          dir: el.getAttribute('dir') as 'ltr' | 'rtl' | null,
         };
       },
     },
@@ -71,9 +71,9 @@ export const qtiPromptSpec = defineNodeSpec({
  * Represents a single answer option in QTI interactions
  */
 export const qtiSimpleChoiceSpec = defineNodeSpec({
-  name: "qti_simple_choice",
-  content: "block+",
-  group: "qti",
+  name: 'qti_simple_choice',
+  content: 'block+',
+  group: 'qti',
   defining: true,
   attrs: {
     // Required attributes
@@ -89,34 +89,34 @@ export const qtiSimpleChoiceSpec = defineNodeSpec({
   },
   toDOM: (node) => {
     const attrs: Record<string, string> = {
-      class: node.attrs.class || "qti-simple-choice",
+      class: node.attrs.class || 'qti-simple-choice',
     };
 
     // Required attributes
     if (node.attrs.identifier) attrs.identifier = node.attrs.identifier;
 
     // Optional attributes
-    if (node.attrs.fixed) attrs.fixed = "true";
-    if (node.attrs.templateIdentifier) attrs["template-identifier"] = node.attrs.templateIdentifier;
-    if (node.attrs.showHide) attrs["show-hide"] = node.attrs.showHide;
+    if (node.attrs.fixed) attrs.fixed = 'true';
+    if (node.attrs.templateIdentifier) attrs['template-identifier'] = node.attrs.templateIdentifier;
+    if (node.attrs.showHide) attrs['show-hide'] = node.attrs.showHide;
     if (node.attrs.lang) attrs.lang = node.attrs.lang;
     if (node.attrs.dir) attrs.dir = node.attrs.dir;
 
-    return ["qti-simple-choice", attrs, 0];
+    return ['qti-simple-choice', attrs, 0];
   },
   parseDOM: [
     {
-      tag: "qti-simple-choice",
+      tag: 'qti-simple-choice',
       getAttrs: (dom) => {
         const el = dom as HTMLElement;
         return {
-          identifier: el.getAttribute("identifier"),
-          fixed: el.getAttribute("fixed") === "true",
-          templateIdentifier: el.getAttribute("template-identifier"),
-          showHide: el.getAttribute("show-hide") as "show" | "hide" | null,
-          class: el.getAttribute("class"),
-          lang: el.getAttribute("lang"),
-          dir: el.getAttribute("dir") as "ltr" | "rtl" | null,
+          identifier: el.getAttribute('identifier'),
+          fixed: el.getAttribute('fixed') === 'true',
+          templateIdentifier: el.getAttribute('template-identifier'),
+          showHide: el.getAttribute('show-hide') as 'show' | 'hide' | null,
+          class: el.getAttribute('class'),
+          lang: el.getAttribute('lang'),
+          dir: el.getAttribute('dir') as 'ltr' | 'rtl' | null,
         };
       },
     },
@@ -131,8 +131,8 @@ export const insertQtiPrompt: Command = (state, dispatch) => {
     null,
     state.schema.nodes.paragraph.create(
       null,
-      state.schema.text("Enter your question here")
-    )
+      state.schema.text('Enter your question here'),
+    ),
   );
   if (!promptNode) return false;
   if (dispatch) dispatch(state.tr.replaceSelectionWith(promptNode).scrollIntoView());
@@ -145,7 +145,7 @@ export const insertQtiPrompt: Command = (state, dispatch) => {
 export const insertQtiSimpleChoice: Command = (state, dispatch) => {
   const choiceNode = state.schema.nodes.qti_simple_choice?.create(
     { identifier: `choice_${Date.now()}` },
-    state.schema.nodes.paragraph.create(null, state.schema.text("Choice option"))
+    state.schema.nodes.paragraph.create(null, state.schema.text('Choice option')),
   );
   if (!choiceNode) return false;
   if (dispatch) dispatch(state.tr.replaceSelectionWith(choiceNode).scrollIntoView());
@@ -161,14 +161,14 @@ export const splitSimpleChoice: Command = (state, dispatch) => {
   // Check if we're inside a qti_simple_choice
   let choiceDepth = -1;
   for (let d = $from.depth; d > 0; d--) {
-    if ($from.node(d).type.name === "qti_simple_choice") {
+    if ($from.node(d).type.name === 'qti_simple_choice') {
       choiceDepth = d;
       break;
     }
   }
 
   if (choiceDepth === -1) {
-    console.log("splitSimpleChoice: Not inside a qti_simple_choice");
+    console.log('splitSimpleChoice: Not inside a qti_simple_choice');
     return false;
   }
 
@@ -181,7 +181,7 @@ export const splitSimpleChoice: Command = (state, dispatch) => {
   const choiceSize = choiceNode.content.size;
   const isAtEnd = posInChoice >= choiceSize - 1;
 
-  console.log("splitSimpleChoice:", {
+  console.log('splitSimpleChoice:', {
     posInChoice,
     choiceSize,
     isAtEnd,
@@ -191,16 +191,16 @@ export const splitSimpleChoice: Command = (state, dispatch) => {
 
   if (!isAtEnd) {
     // Not at end - allow default behavior
-    console.log("splitSimpleChoice: Not at end, allowing default behavior");
+    console.log('splitSimpleChoice: Not at end, allowing default behavior');
     return false;
   }
 
-  console.log("splitSimpleChoice: At end, creating new choice");
+  console.log('splitSimpleChoice: At end, creating new choice');
 
   // At end - create a new simple choice after this one
   const newChoice = state.schema.nodes.qti_simple_choice.create(
     { identifier: `choice_${Date.now()}` },
-    state.schema.nodes.paragraph.create()
+    state.schema.nodes.paragraph.create(),
   );
 
   if (dispatch) {
@@ -228,8 +228,8 @@ export const qtiBaseCommands = defineCommands({
  * Keymaps for base QTI nodes
  */
 export const qtiBaseKeymap = defineKeymap({
-  "Mod-Shift-p": insertQtiPrompt,
-  "Mod-Shift-c": insertQtiSimpleChoice,
+  'Mod-Shift-p': insertQtiPrompt,
+  'Mod-Shift-c': insertQtiSimpleChoice,
   Enter: splitSimpleChoice,
 });
 

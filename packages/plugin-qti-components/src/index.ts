@@ -6,24 +6,24 @@
  * or use the `allQtiComponentsExtension()` to register all at once.
  */
 
-import type { Extension } from "prosekit/core";
-import { choiceInteractionExtension } from "./choice-interaction";
-import { orderInteractionExtension } from "./order-interaction";
+import type { Extension } from 'prosekit/core';
+import { union } from 'prosekit/core';
+import { choiceInteractionExtension } from './choice-interaction';
+import { orderInteractionExtension } from './order-interaction';
 // Import individual extensions
-import { qtiBaseNodesExtension } from "./shared/base-nodes";
-import { textEntryInteractionExtension } from "./text-entry-interaction";
-import { union } from "prosekit/core";
+import { qtiBaseNodesExtension } from './shared/base-nodes';
+import { textEntryInteractionExtension } from './text-entry-interaction';
 
 // Export QTI 3.0 schemas and validation utilities
-export * from "./shared/qti-schema";
+export * from './shared/qti-schema';
 
 // Export shared base nodes (qti_prompt, qti_simple_choice)
-export * from "./shared/base-nodes";
+export * from './shared/base-nodes';
 
 // Export individual component modules
-export * from "./choice-interaction";
-export * from "./order-interaction";
-export * from "./text-entry-interaction";
+export * from './choice-interaction';
+export * from './order-interaction';
+export * from './text-entry-interaction';
 
 /**
  * Convenience extension that includes all QTI components.

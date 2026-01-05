@@ -6,11 +6,11 @@
  * - Backspace: Lift out of empty simple choice
  */
 
-import { NodeSelection, TextSelection } from "prosekit/pm/state";
+import type { Extension } from 'prosekit/core';
+import { defineKeymap } from 'prosekit/core';
+import { NodeSelection, TextSelection } from 'prosekit/pm/state';
 
-import type { Command } from "prosekit/pm/state";
-import type { Extension } from "prosekit/core";
-import { defineKeymap } from "prosekit/core";
+import type { Command } from 'prosekit/pm/state';
 
 /**
  * Command to split a QTI simple choice on Enter
@@ -30,8 +30,8 @@ export const splitQtiSimpleChoice: Command = (state, dispatch) => {
 
   // Verify we're in the right structure
   if (
-    simpleChoice.type.name !== "qti_simple_choice" ||
-    choiceInteraction.type.name !== "qti_choice_interaction"
+    simpleChoice.type.name !== 'qti_simple_choice' ||
+    choiceInteraction.type.name !== 'qti_choice_interaction'
   ) {
     return false;
   }
@@ -47,7 +47,7 @@ export const splitQtiSimpleChoice: Command = (state, dispatch) => {
     const newParagraph = schema.nodes.paragraph.create();
     tr.insert(choiceInteractionEnd, newParagraph);
     tr.setSelection(
-      TextSelection.near(tr.doc.resolve(choiceInteractionEnd + 1))
+      TextSelection.near(tr.doc.resolve(choiceInteractionEnd + 1)),
     );
     dispatch(tr);
     return true;
@@ -64,7 +64,7 @@ export const splitQtiSimpleChoice: Command = (state, dispatch) => {
   const newChoicePos = $from.start() + contentBefore.size;
   const newChoice = schema.nodes.qti_simple_choice.create(
     { identifier: `choice_${Date.now()}` },
-    contentAfter
+    contentAfter,
   );
   tr.insert(newChoicePos, newChoice);
 
@@ -89,8 +89,8 @@ export const liftEmptyQtiSimpleChoice: Command = (state, dispatch) => {
 
   // Verify we're in the right structure
   if (
-    simpleChoice.type.name !== "qti_simple_choice" ||
-    choiceInteraction.type.name !== "qti_choice_interaction"
+    simpleChoice.type.name !== 'qti_simple_choice' ||
+    choiceInteraction.type.name !== 'qti_choice_interaction'
   ) {
     return false;
   }
@@ -113,14 +113,14 @@ export const liftEmptyQtiSimpleChoice: Command = (state, dispatch) => {
   tr.delete(simpleChoiceStart - 1, simpleChoiceEnd);
   tr.insert(
     choiceInteractionEnd - (simpleChoiceEnd - simpleChoiceStart + 1),
-    newParagraph
+    newParagraph,
   );
   tr.setSelection(
     TextSelection.near(
       tr.doc.resolve(
-        choiceInteractionEnd - (simpleChoiceEnd - simpleChoiceStart)
-      )
-    )
+        choiceInteractionEnd - (simpleChoiceEnd - simpleChoiceStart),
+      ),
+    ),
   );
 
   dispatch(tr);
