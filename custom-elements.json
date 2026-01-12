@@ -1,0 +1,826 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "custom-elements/QtiChoiceInteraction.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "QtiChoiceInteraction",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#debug",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#responseIdentifier",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "#shuffle",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#maxChoices",
+              "privacy": "private",
+              "type": {
+                "text": "number"
+              },
+              "default": "1"
+            },
+            {
+              "kind": "field",
+              "name": "#minChoices",
+              "privacy": "private",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "#disabled",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#readonly",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "#required",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#value",
+              "privacy": "private",
+              "type": {
+                "text": "string[]"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "#internals",
+              "privacy": "private",
+              "type": {
+                "text": "ElementInternals"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "contexts",
+              "type": {
+                "text": "object"
+              },
+              "default": "{ 'qti-interaction-context': (context: InteractionContext) => { this.handleContextUpdate(context); } }"
+            },
+            {
+              "kind": "field",
+              "name": "responseIdentifier"
+            },
+            {
+              "kind": "field",
+              "name": "shuffle"
+            },
+            {
+              "kind": "field",
+              "name": "maxChoices"
+            },
+            {
+              "kind": "field",
+              "name": "minChoices"
+            },
+            {
+              "kind": "field",
+              "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readonly"
+            },
+            {
+              "kind": "field",
+              "name": "required"
+            },
+            {
+              "kind": "field",
+              "name": "value"
+            },
+            {
+              "kind": "method",
+              "name": "enable"
+            },
+            {
+              "kind": "method",
+              "name": "disable"
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            },
+            {
+              "kind": "method",
+              "name": "handleContextUpdate",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "context",
+                  "type": {
+                    "text": "InteractionContext"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setDebugMode",
+              "parameters": [
+                {
+                  "name": "enabled",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setupEventListeners",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "removeEventListeners",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "handleChoiceSelected",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "CustomEvent"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "clearOtherChoices",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "selectedIdentifier",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "syncChoicesWithValue",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "updateChoicesType",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "updateChoicesState",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "shuffleChoices",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "updateFormState",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "validateResponse",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getValidationMessage",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "showMaxChoicesMessage",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "dispatchChangeEvent",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "getResponse",
+              "return": {
+                "type": {
+                  "text": "string | string[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setResponse",
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string | string[]"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "clearResponse"
+            },
+            {
+              "kind": "method",
+              "name": "attachStyles",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "max-choices-exceeded",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              }
+            },
+            {
+              "name": "qti-response-changed",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "response-identifier"
+            },
+            {
+              "name": "shuffle"
+            },
+            {
+              "name": "max-choices"
+            },
+            {
+              "name": "min-choices"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "readonly"
+            },
+            {
+              "name": "required"
+            },
+            {
+              "name": "enabled"
+            }
+          ],
+          "mixins": [
+            {
+              "name": "ConsumerMixin",
+              "package": "@open-wc/context-protocol"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "qti-choice-interaction",
+          "customElement": true,
+          "summary": "QTI qti-choice-interaction element based on 1EdTech QTI specification"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "QtiChoiceInteraction",
+          "declaration": {
+            "name": "QtiChoiceInteraction",
+            "module": "custom-elements/QtiChoiceInteraction.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "qti-choice-interaction",
+          "declaration": {
+            "name": "QtiChoiceInteraction",
+            "module": "custom-elements/QtiChoiceInteraction.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "custom-elements/QtiPrompt.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "QtiPrompt",
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "qti-prompt",
+          "customElement": true,
+          "summary": "QTI qti-prompt element based on 1EdTech QTI specification"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "QtiPrompt",
+          "declaration": {
+            "name": "QtiPrompt",
+            "module": "custom-elements/QtiPrompt.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "qti-prompt",
+          "declaration": {
+            "name": "QtiPrompt",
+            "module": "custom-elements/QtiPrompt.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "custom-elements/QtiSimpleChoice.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "QtiSimpleChoice",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#identifier",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "#selected",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#fixed",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#disabled",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#readonly",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "#interactionType",
+              "privacy": "private",
+              "type": {
+                "text": "'radio' | 'checkbox'"
+              },
+              "default": "'radio'"
+            },
+            {
+              "kind": "field",
+              "name": "contexts",
+              "type": {
+                "text": "object"
+              },
+              "default": "{ 'qti-interaction-context': (context: InteractionContext) => { this.handleContextUpdate(context); } }"
+            },
+            {
+              "kind": "field",
+              "name": "identifier"
+            },
+            {
+              "kind": "field",
+              "name": "selected"
+            },
+            {
+              "kind": "field",
+              "name": "fixed"
+            },
+            {
+              "kind": "field",
+              "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readonly"
+            },
+            {
+              "kind": "method",
+              "name": "enable"
+            },
+            {
+              "kind": "method",
+              "name": "disable"
+            },
+            {
+              "kind": "method",
+              "name": "handleContextUpdate",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "context",
+                  "type": {
+                    "text": "InteractionContext"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setInteractionType",
+              "parameters": [
+                {
+                  "name": "type",
+                  "type": {
+                    "text": "'radio' | 'checkbox'"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setupEventListeners",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "removeEventListeners",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "handleClick",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "handleKeydown",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "KeyboardEvent"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "toggleSelection",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "deselectChoice",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "updateState",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "createAnchoredRadioButton",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "updateRadioButton",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "removeAnchoredRadioButton",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "updateInputPosition",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "getChoiceInteractionId",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "selectChoice",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "dispatchSelectionEvent",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "attachStyles",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "choice-selected",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "identifier"
+            },
+            {
+              "name": "selected"
+            },
+            {
+              "name": "fixed"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "readonly"
+            }
+          ],
+          "mixins": [
+            {
+              "name": "ConsumerMixin",
+              "package": "@open-wc/context-protocol"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "qti-simple-choice",
+          "customElement": true,
+          "summary": "QTI qti-simple-choice element based on 1EdTech QTI specification"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "QtiSimpleChoice",
+          "declaration": {
+            "name": "QtiSimpleChoice",
+            "module": "custom-elements/QtiSimpleChoice.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "qti-simple-choice",
+          "declaration": {
+            "name": "QtiSimpleChoice",
+            "module": "custom-elements/QtiSimpleChoice.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "custom-elements/QtiTextEntryInteraction.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "QtiTextEntryInteraction",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#input",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLInputElement | undefined"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "updateLabel",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "className",
+              "type": {
+                "text": "string"
+              },
+              "default": "'input'"
+            },
+            {
+              "kind": "field",
+              "name": "textContent",
+              "default": "` :host { display: inline-flex; align-items: center; gap: 6px; font-family: system-ui, -apple-system, sans-serif; } .wrapper { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; } .label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; } .input { border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 8px; font-size: 14px; outline: none; } .input:focus { border-color: #3b82f6; box-shadow: 0 0 0 1px #3b82f6; } `"
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "string"
+              },
+              "default": "'text'"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "type": {
+                "text": "string"
+              },
+              "default": "'Enter text...'"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "response-identifier"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "qti-text-entry-interaction",
+          "customElement": true,
+          "summary": "QTI qti-text-entry-interaction element based on 1EdTech QTI specification"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "QtiTextEntryInteraction",
+          "declaration": {
+            "name": "QtiTextEntryInteraction",
+            "module": "custom-elements/QtiTextEntryInteraction.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "qti-text-entry-interaction",
+          "declaration": {
+            "name": "QtiTextEntryInteraction",
+            "module": "custom-elements/QtiTextEntryInteraction.ts"
+          }
+        }
+      ]
+    }
+  ]
+}
