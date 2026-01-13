@@ -1,0 +1,24 @@
+/**
+ * QTI Simple Choice Styles
+ * Scoped CSS module for simple choice elements used in choice/order interactions
+ */
+
+
+qti-simple-choice {
+  margin: 0;
+  padding: 0;
+  margin
+}
+
+qti-simple-choice::before {
+  position: absolute;
+  transform: translate(-130%, 30%);
+}
+
+qti-choice-interaction[max-choices="1"] qti-simple-choice::before {
+  content: "○";
+}
+
+qti-choice-interaction[max-choices="0"] qti-simple-choice::before {
+  content: "□";
+}

@@ -6,17 +6,17 @@
  * - Backspace: Lift out of empty simple choice
  */
 
-import type { Extension } from 'prosekit/core';
 import { defineKeymap } from 'prosekit/core';
 import { NodeSelection, TextSelection } from 'prosekit/pm/state';
-
 import type { Command } from 'prosekit/pm/state';
+
+import { insertChoiceInteraction } from './commands';
 
 /**
  * Command to split a QTI simple choice on Enter
  * Similar to splitListItem but for QTI choices
  */
-export const splitQtiSimpleChoice: Command = (state, dispatch) => {
+const splitQtiSimpleChoice: Command = (state, dispatch) => {
   const { $from } = state.selection;
 
   // Don't handle if we have a node selection
@@ -78,7 +78,7 @@ export const splitQtiSimpleChoice: Command = (state, dispatch) => {
 /**
  * Command to lift out of empty QTI simple choice on Backspace
  */
-export const liftEmptyQtiSimpleChoice: Command = (state, dispatch) => {
+const liftEmptyQtiSimpleChoice: Command = (state, dispatch) => {
   const { $from } = state.selection;
 
   // Need to be inside a simple choice
@@ -131,15 +131,7 @@ export const liftEmptyQtiSimpleChoice: Command = (state, dispatch) => {
  * Keymaps for choice interaction
  */
 export const choiceInteractionKeymap = defineKeymap({
-  // Enter key splits simple choice or exits if empty
+  'Mod-Shift-q': insertChoiceInteraction,
   Enter: splitQtiSimpleChoice,
-  // Backspace lifts out of empty simple choice
   Backspace: liftEmptyQtiSimpleChoice,
 });
-
-/**
- * Export as extension for easy registration
- */
-export function choiceInteractionKeymapExtension(): Extension {
-  return choiceInteractionKeymap;
-}

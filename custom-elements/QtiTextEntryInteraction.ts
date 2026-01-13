@@ -1,4 +1,13 @@
 // Minimal text entry interaction with shadow DOM to test NodeView interop
+/**
+ * Inline text entry interaction.
+ * @pmNode inline
+ * @pmGroup inline
+ * @pmAtom true
+ * @pmSelectable true
+ * @pmMarks _
+ * @pmToolbar true
+ */
 export class QtiTextEntryInteraction extends HTMLElement {
   #input?: HTMLInputElement;
 

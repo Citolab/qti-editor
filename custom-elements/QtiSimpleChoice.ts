@@ -9,6 +9,15 @@ interface InteractionContext {
 
 // QTI Simple Choice Element
 // Based on 1EdTech QTI specification: https://www.imsglobal.org/spec/qti/v3p0
+/**
+ * Simple choice option for interactions.
+ * @pmNode block
+ * @pmGroup qti
+ * @pmContent paragraph+
+ * @pmDefining true
+ * @pmToolbar false
+ * @pmMarks _
+ */
 export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
   #identifier = '';
   #selected = false;

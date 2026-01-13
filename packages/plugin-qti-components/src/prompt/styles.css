@@ -1,0 +1,11 @@
+/**
+ * QTI Prompt Styles
+ * Scoped CSS module for prompt elements used in interactions
+ */
+
+qti-prompt {
+  display: block;
+  margin: 0.5rem 0;
+  font-weight: 600;
+  text-decoration: underline;
+}

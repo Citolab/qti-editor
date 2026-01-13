@@ -22,6 +22,7 @@ import { allQtiComponentsExtension } from '@qti-editor/plugin-qti-components';
 import { qtiSidePanelExtension } from '@qti-editor/plugin-side-panel';
 import { qtiSlashMenuExtension } from '@qti-editor/plugin-slash-menu';
 import { createToolbar } from '@qti-editor/plugin-toolbar';
+import { toolbarNodeNames } from '@qti-editor/plugin-qti-components/shared/generated-prosemirror-schema';
 
 
 // Or import individual components:
@@ -167,10 +168,23 @@ function addQtiDropdown(container: HTMLElement, editor: Editor) {
 
   const cmds = editor.commands as Record<string, (...args: any[]) => any>;
 
-  addItem('Prompt', () => cmds?.insertPrompt?.());
-  addItem('Choice interaction', () => cmds?.insertChoiceInteraction?.());
-  addItem('Order interaction', () => cmds?.insertOrderInteraction?.());
-  addItem('Text entry', () => cmds?.insertTextEntryInteraction?.());
+  const allowedNodes = new Set(toolbarNodeNames);
+  const items = [
+    {
+      node: 'qti_choice_interaction',
+      label: 'Choice interaction',
+      command: () => cmds?.insertChoiceInteraction?.(),
+    },
+    {
+      node: 'qti_text_entry_interaction',
+      label: 'Text entry',
+      command: () => cmds?.insertTextEntryInteraction?.(),
+    },
+  ];
+
+  items
+    .filter((item) => allowedNodes.has(item.node))
+    .forEach((item) => addItem(item.label, item.command));
 
   toggle.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -187,11 +201,13 @@ function addQtiDropdown(container: HTMLElement, editor: Editor) {
 }
 
 function setupSidePanel(body: HTMLElement, panel: HTMLElement, editor: Editor) {
-  let currentDetail: {
-    type: string;
-    attrs: Record<string, any>;
-    pos: number;
-  } | null = null;
+  let currentDetail:
+    | {
+        type: string;
+        attrs: Record<string, any>;
+        pos: number;
+      }[]
+    | null = null;
 
   const title = document.createElement('div');
   title.className = 'side-panel-title';
@@ -208,7 +224,7 @@ function setupSidePanel(body: HTMLElement, panel: HTMLElement, editor: Editor) {
 
   const renderForm = () => {
     form.innerHTML = '';
-    if (!currentDetail) {
+    if (!currentDetail || currentDetail.length === 0) {
       // Remove panel from DOM when not active
       if (panel.parentElement) {
         panel.remove();
@@ -229,52 +245,67 @@ function setupSidePanel(body: HTMLElement, panel: HTMLElement, editor: Editor) {
       panel.classList.add('open');
     }
 
-    title.textContent = currentDetail.type.replace(/^qti_/, '').replace(/_/g, ' ').toUpperCase();
+    title.textContent = 'QTI Attributes';
     emptyState.style.display = 'none';
 
-    Object.entries(currentDetail.attrs).forEach(([key, value]) => {
-      const row = document.createElement('label');
-      row.className = 'side-panel-row';
+    currentDetail.forEach((detail, detailIndex) => {
+      const section = document.createElement('div');
+      section.className = 'side-panel-section';
 
-      const label = document.createElement('span');
-      label.textContent = key;
-      row.appendChild(label);
+      const sectionTitle = document.createElement('div');
+      sectionTitle.className = 'side-panel-section-title';
+      sectionTitle.textContent = detail.type.replace(/^qti_/, '').replace(/_/g, ' ').toUpperCase();
+      section.appendChild(sectionTitle);
 
-      const input = document.createElement('input');
-      const type =
-        typeof value === 'boolean' ? 'checkbox' : typeof value === 'number' ? 'number' : 'text';
-      input.type = type;
-      if (type === 'checkbox') {
-        input.checked = Boolean(value);
-      } else {
-        input.value = value ?? '';
-      }
+      Object.entries(detail.attrs).forEach(([key, value]) => {
+        const row = document.createElement('label');
+        row.className = 'side-panel-row';
 
-      input.addEventListener('change', () => {
-        if (!currentDetail) return;
-        const attrs = { ...currentDetail.attrs };
+        const label = document.createElement('span');
+        label.textContent = key;
+        row.appendChild(label);
+
+        const input = document.createElement('input');
+        const type =
+          typeof value === 'boolean' ? 'checkbox' : typeof value === 'number' ? 'number' : 'text';
+        input.type = type;
         if (type === 'checkbox') {
-          attrs[key] = (input as HTMLInputElement).checked;
-        } else if (type === 'number') {
-          const num = Number((input as HTMLInputElement).value);
-          attrs[key] = Number.isFinite(num) ? num : null;
+          input.checked = Boolean(value);
         } else {
-          attrs[key] = (input as HTMLInputElement).value;
+          input.value = value ?? '';
         }
 
-        const tr = editor.view.state.tr.setNodeMarkup(currentDetail.pos, undefined, attrs);
-        editor.view.dispatch(tr);
-        currentDetail = { ...currentDetail, attrs };
+        input.addEventListener('change', () => {
+          if (!currentDetail) return;
+          const nextDetail = { ...currentDetail[detailIndex] };
+          const attrs = { ...nextDetail.attrs };
+          if (type === 'checkbox') {
+            attrs[key] = (input as HTMLInputElement).checked;
+          } else if (type === 'number') {
+            const num = Number((input as HTMLInputElement).value);
+            attrs[key] = Number.isFinite(num) ? num : null;
+          } else {
+            attrs[key] = (input as HTMLInputElement).value;
+          }
+
+          const tr = editor.view.state.tr.setNodeMarkup(nextDetail.pos, undefined, attrs);
+          editor.view.dispatch(tr);
+          currentDetail = currentDetail.map((item, idx) =>
+            idx === detailIndex ? { ...item, attrs } : item,
+          );
+        });
+
+        row.appendChild(input);
+        section.appendChild(row);
       });
 
-      row.appendChild(input);
-      form.appendChild(row);
+      form.appendChild(section);
     });
   };
 
   document.addEventListener('qti:side-panel:update', (event) => {
-    const detail = (event as CustomEvent<any>).detail as typeof currentDetail;
-    currentDetail = detail;
+    const detail = (event as CustomEvent<any>).detail as { nodes: NonNullable<typeof currentDetail> };
+    currentDetail = detail.nodes;
     renderForm();
   });
 }

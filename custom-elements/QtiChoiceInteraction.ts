@@ -10,6 +10,15 @@ interface InteractionContext {
 // QTI Choice Interaction Element
 // Based on 1EdTech QTI specification: https://www.imsglobal.org/spec/qti/v3p0
 // Implements custom form element according to HTML specification
+/**
+ * Choice interaction container.
+ * @pmNode block
+ * @pmGroup block
+ * @pmContent qti_prompt? qti_simple_choice+
+ * @pmDefining true
+ * @pmIsolating true
+ * @pmToolbar true
+ */
 export class QtiChoiceInteraction extends ConsumerMixin(HTMLElement) {
   #debug = false; // Set to true for debug logging
   #responseIdentifier = '';

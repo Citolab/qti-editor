@@ -4,14 +4,17 @@
  */
 
 import { definePlugin, type Extension } from 'prosekit/core';
-import type { EditorState, Transaction } from 'prosekit/pm/state';
+import type { EditorState } from 'prosekit/pm/state';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
-import { Decoration, DecorationSet } from 'prosekit/pm/view';
 
-export interface SidePanelEventDetail {
+export interface SidePanelNodeDetail {
   type: string;
   attrs: Record<string, any>;
   pos: number;
+}
+
+export interface SidePanelEventDetail {
+  nodes: SidePanelNodeDetail[];
 }
 
 export interface QtiSidePanelOptions {
@@ -23,56 +26,19 @@ export interface QtiSidePanelOptions {
 
 const sidePanelPluginKey = new PluginKey('qti-side-panel');
 
-/**
- * Find all QTI nodes in the document and create decorations with clickable icons
- */
-function createQtiNodeDecorations(state: EditorState, eventName: string): DecorationSet {
-  const decorations: Decoration[] = [];
+function collectSelectionQtiNodes(state: EditorState): SidePanelNodeDetail[] {
+  const nodes: SidePanelNodeDetail[] = [];
+  const { $from } = state.selection;
 
-  state.doc.descendants((node, pos) => {
-    // Check if this is a QTI node
-    if (node.type.name.startsWith('qti_')) {
-      // Create node decoration that adds attributes to make positioning work
-      const nodeDecoration = Decoration.node(pos, pos + node.nodeSize, {
-        class: 'qti-node-with-inspector',
-        'data-qti-type': node.type.name,
-      });
-      decorations.push(nodeDecoration);
+  for (let depth = $from.depth; depth > 0; depth--) {
+    const node = $from.node(depth);
+    if (!node.type.name.startsWith('qti_')) continue;
+    if (!node.attrs || Object.keys(node.attrs).length === 0) continue;
+    const pos = $from.before(depth);
+    nodes.push({ type: node.type.name, attrs: node.attrs, pos });
+  }
 
-      // Create a widget decoration with a clickable icon positioned after the node
-      const icon = document.createElement('span');
-      icon.className = 'qti-node-inspector-icon';
-      icon.textContent = '⚙️';
-      icon.title = `Edit ${node.type.name.replace(/^qti_/, '').replace(/_/g, ' ')}`;
-      icon.contentEditable = 'false';
-      icon.setAttribute('data-qti-type', node.type.name);
-
-      // Handle click to emit event
-      icon.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const detail: SidePanelEventDetail = {
-          type: node.type.name,
-          attrs: node.attrs,
-          pos,
-        };
-
-        document.dispatchEvent(new CustomEvent(eventName, { detail }));
-      });
-
-      // Create widget positioned at the end of the node
-      const widgetDecoration = Decoration.widget(pos + node.nodeSize, icon, {
-        side: -1,
-        ignoreSelection: true,
-      });
-      decorations.push(widgetDecoration);
-    }
-
-    return true; // Continue traversing
-  });
-
-  return DecorationSet.create(state.doc, decorations);
+  return nodes;
 }
 
 export function qtiSidePanelExtension(options: QtiSidePanelOptions = {}): Extension {
@@ -82,30 +48,28 @@ export function qtiSidePanelExtension(options: QtiSidePanelOptions = {}): Extens
     () =>
       new Plugin({
         key: sidePanelPluginKey,
+        view(view) {
+          const dispatchUpdate = (state: EditorState) => {
+            const detail: SidePanelEventDetail = {
+              nodes: collectSelectionQtiNodes(state),
+            };
+            document.dispatchEvent(new CustomEvent(eventName, { detail }));
+          };
 
-        state: {
-          init(_, state) {
-            return createQtiNodeDecorations(state, eventName);
-          },
-          apply(
-            tr: Transaction,
-            oldState: DecorationSet,
-            _oldEditorState: EditorState,
-            newEditorState: EditorState,
-          ) {
-            // If document changed, recreate decorations
-            if (tr.docChanged) {
-              return createQtiNodeDecorations(newEditorState, eventName);
-            }
-            // Otherwise, just map the decorations to new positions
-            return oldState.map(tr.mapping, tr.doc);
-          },
-        },
+          dispatchUpdate(view.state);
 
-        props: {
-          decorations(state) {
-            return this.getState(state);
-          },
+          return {
+            update(updatedView, prevState) {
+              if (
+                prevState &&
+                prevState.selection.eq(updatedView.state.selection) &&
+                prevState.doc.eq(updatedView.state.doc)
+              ) {
+                return;
+              }
+              dispatchUpdate(updatedView.state);
+            },
+          };
         },
       }),
   );

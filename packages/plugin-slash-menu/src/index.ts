@@ -31,39 +31,12 @@ export const qtiSlashItems: SlashMenuItem[] = [
     category: 'qti',
   },
   {
-    id: 'order_interaction',
-    label: 'Order Interaction',
-    description: 'Put items in the correct sequence',
-    icon: '🔢',
-    command: 'insertOrderInteraction',
-    keywords: ['order', 'sequence', 'sort', 'arrange', 'rank'],
-    category: 'qti',
-  },
-  {
     id: 'text_entry_interaction',
     label: 'Text Entry',
     description: 'Fill-in-the-blank text input',
     icon: '📝',
     command: 'insertTextEntryInteraction',
     keywords: ['text', 'input', 'blank', 'fill', 'type'],
-    category: 'qti',
-  },
-  {
-    id: 'qti_prompt',
-    label: 'Question Prompt',
-    description: 'Add a question or instruction',
-    icon: '❓',
-    command: 'insertPrompt',
-    keywords: ['prompt', 'question', 'instruction', 'ask'],
-    category: 'qti',
-  },
-  {
-    id: 'qti_simple_choice',
-    label: 'Answer Choice',
-    description: 'Add a single answer option',
-    icon: '⚪',
-    command: 'insertSimpleChoice',
-    keywords: ['choice', 'option', 'answer', 'select'],
     category: 'qti',
   },
 ];
@@ -310,17 +283,8 @@ function setupSlashMenuListener() {
         // Use the insertChoiceInteraction command from the plugin
         return executeInsertCommand(state, dispatch, 'qti_choice_interaction');
       },
-      insertOrderInteraction: () => {
-        return executeInsertCommand(state, dispatch, 'qti_order_interaction');
-      },
       insertTextEntryInteraction: () => {
         return executeInsertCommand(state, dispatch, 'qti_text_entry_interaction');
-      },
-      insertPrompt: () => {
-        return executeInsertCommand(state, dispatch, 'qti_prompt');
-      },
-      insertSimpleChoice: () => {
-        return executeInsertCommand(state, dispatch, 'qti_simple_choice');
       },
     };
 

@@ -6,13 +6,18 @@
   "private": true,
   "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "dev": "pnpm --filter @qti-editor/integration dev",
+    "dev": "concurrently -k \"pnpm --filter @qti-editor/integration dev\" \"pnpm cem:watch\" \"pnpm schema:watch\"",
     "build": "pnpm build:packages && pnpm --filter @qti-editor/integration build",
     "preview": "pnpm --filter @qti-editor/integration preview",
     "build:packages": "pnpm -r --filter \"./packages/**\" run build",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "cem": "cem analyze --config custom-elements-manifest.config.js"
+    "cem": "cem analyze --config custom-elements-manifest.config.js",
+    "cem:watch": "cem analyze --config custom-elements-manifest.config.js --watch",
+    "schema": "tsx scripts/generate-prosemirror-schema.ts",
+    "schema:watch": "tsx scripts/generate-prosemirror-schema.ts --watch",
+    "schema:validate": "tsx scripts/validate-generated-schema.ts",
+    "build:editor-schema": "pnpm cem && pnpm schema && pnpm schema:validate"
   },
   "dependencies": {
     "lit": "^3.0.0",
@@ -26,8 +31,12 @@
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
+    "@wc-toolkit/jsdoc-tags": "^1.0.0",
+    "@wc-toolkit/type-parser": "^1.2.0",
+    "concurrently": "^9.2.0",
     "eslint": "^9.39.2",
-    "eslint-plugin-import": "^2.32.0"
+    "eslint-plugin-import": "^2.32.0",
+    "tsx": "^4.19.2"
   },
   "customElements": "custom-elements.json"
 }

@@ -43,7 +43,6 @@ export function createToolbar(options: ToolbarOptions) {
     { label: 'I', title: 'Italic', onClick: () => cmds?.toggleItalic?.() },
     { label: 'U', title: 'Underline', onClick: () => cmds?.toggleUnderline?.() },
     { label: 'S', title: 'Strikethrough', onClick: () => cmds?.toggleStrike?.() },
-    { label: 'Code', title: 'Inline code', onClick: () => cmds?.toggleCode?.() },
     { label: 'H1', title: 'Heading 1', onClick: () => cmds?.setHeading?.({ level: 1 }) },
     { label: 'H2', title: 'Heading 2', onClick: () => cmds?.setHeading?.({ level: 2 }) },
     { label: '• List', title: 'Bullet list', onClick: () => cmds?.wrapInList?.({ kind: 'bullet' }) },

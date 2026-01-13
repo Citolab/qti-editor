@@ -1,5 +1,13 @@
 // QTI Prompt Element
 // Based on 1EdTech QTI specification: https://www.imsglobal.org/spec/qti/v3p0
+/**
+ * Prompt content for QTI interactions.
+ * @pmNode block
+ * @pmGroup qti
+ * @pmContent block+
+ * @pmDefining true
+ * @pmToolbar false
+ */
 export class QtiPrompt extends HTMLElement {
   constructor() {
     super();

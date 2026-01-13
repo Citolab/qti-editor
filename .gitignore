@@ -1,5 +1,6 @@
 node_modules
 dist
+**/build/custom-elements.json
 
 .vscode
 .DS_Store
