@@ -50,69 +50,74 @@ export const nodes: Record<string, NodeSpec> = {
   text: { group: 'inline' },
   "qti_choice_interaction": {
     attrs: {
-  "responseIdentifier": {},
-  "shuffle": {},
+  "disabled": {},
+  "enabled": {},
   "maxChoices": {},
   "minChoices": {},
-  "disabled": {},
   "readonly": {},
   "required": {},
-  "enabled": {}
+  "responseIdentifier": {},
+  "shuffle": {}
 },
     parseDOM: [{ tag: "qti-choice-interaction", getAttrs: (dom) => parseDomAttrs(dom, {
-    "responseIdentifier": "response-identifier",
-    "shuffle": "shuffle",
+    "disabled": "disabled",
+    "enabled": "enabled",
     "maxChoices": "max-choices",
     "minChoices": "min-choices",
-    "disabled": "disabled",
     "readonly": "readonly",
     "required": "required",
-    "enabled": "enabled"
+    "responseIdentifier": "response-identifier",
+    "shuffle": "shuffle"
   }) }],
     toDOM: createToDOM("qti-choice-interaction", true, false, {
-    "responseIdentifier": "response-identifier",
-    "shuffle": "shuffle",
+    "disabled": "disabled",
+    "enabled": "enabled",
     "maxChoices": "max-choices",
     "minChoices": "min-choices",
-    "disabled": "disabled",
     "readonly": "readonly",
     "required": "required",
-    "enabled": "enabled"
+    "responseIdentifier": "response-identifier",
+    "shuffle": "shuffle"
   }),
     group: "block",
-    content: "inline*",
+    content: "qti_prompt? qti_simple_choice+",
+    defining: true,
+    isolating: true,
   },
   "qti_prompt": {
     attrs: {},
     parseDOM: [{ tag: "qti-prompt", getAttrs: (dom) => parseDomAttrs(dom, {}) }],
     toDOM: createToDOM("qti-prompt", true, false, {}),
-    group: "block",
-    content: "inline*",
+    group: "qti",
+    content: "block+",
+    defining: true,
   },
   "qti_simple_choice": {
     attrs: {
-  "identifier": {},
-  "selected": {},
-  "fixed": {},
   "disabled": {},
-  "readonly": {}
+  "fixed": {},
+  "identifier": {},
+  "readonly": {},
+  "selected": {}
 },
     parseDOM: [{ tag: "qti-simple-choice", getAttrs: (dom) => parseDomAttrs(dom, {
-    "identifier": "identifier",
-    "selected": "selected",
-    "fixed": "fixed",
     "disabled": "disabled",
-    "readonly": "readonly"
+    "fixed": "fixed",
+    "identifier": "identifier",
+    "readonly": "readonly",
+    "selected": "selected"
   }) }],
     toDOM: createToDOM("qti-simple-choice", true, false, {
-    "identifier": "identifier",
-    "selected": "selected",
-    "fixed": "fixed",
     "disabled": "disabled",
-    "readonly": "readonly"
+    "fixed": "fixed",
+    "identifier": "identifier",
+    "readonly": "readonly",
+    "selected": "selected"
   }),
-    group: "block",
-    content: "inline*",
+    group: "qti",
+    content: "paragraph+",
+    marks: "_",
+    defining: true,
   },
   "qti_text_entry_interaction": {
     attrs: {
@@ -121,11 +126,14 @@ export const nodes: Record<string, NodeSpec> = {
     parseDOM: [{ tag: "qti-text-entry-interaction", getAttrs: (dom) => parseDomAttrs(dom, {
     "responseIdentifier": "response-identifier"
   }) }],
-    toDOM: createToDOM("qti-text-entry-interaction", true, false, {
+    toDOM: createToDOM("qti-text-entry-interaction", false, true, {
     "responseIdentifier": "response-identifier"
   }),
-    group: "block",
-    content: "inline*",
+    inline: true,
+    group: "inline",
+    marks: "_",
+    atom: true,
+    selectable: true,
   },
 };
 

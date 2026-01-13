@@ -1,22 +1,23 @@
-import { jsDocTagsPlugin } from '@wc-toolkit/jsdoc-tags';
-import { getTsProgram, typeParserPlugin } from '@wc-toolkit/type-parser';
+import { jsDocTagsPlugin } from "@wc-toolkit/jsdoc-tags";
+import { getTsProgram, typeParserPlugin } from "@wc-toolkit/type-parser";
+import { cemSorterPlugin } from "@wc-toolkit/cem-sorter";
 
 const proseMirrorTags = {
-  pmNode: { mappedName: 'proseMirrorNode' },
-  pmGroup: { mappedName: 'proseMirrorGroup' },
-  pmContent: { mappedName: 'proseMirrorContent' },
-  pmMarks: { mappedName: 'proseMirrorMarks' },
-  pmAtom: { mappedName: 'proseMirrorAtom' },
-  pmSelectable: { mappedName: 'proseMirrorSelectable' },
-  pmDefining: { mappedName: 'proseMirrorDefining' },
-  pmIsolating: { mappedName: 'proseMirrorIsolating' },
-  pmToolbar: { mappedName: 'proseMirrorToolbar' }
+  pmNode: { mappedName: "proseMirrorNode" },
+  pmGroup: { mappedName: "proseMirrorGroup" },
+  pmContent: { mappedName: "proseMirrorContent" },
+  pmMarks: { mappedName: "proseMirrorMarks" },
+  pmAtom: { mappedName: "proseMirrorAtom" },
+  pmSelectable: { mappedName: "proseMirrorSelectable" },
+  pmDefining: { mappedName: "proseMirrorDefining" },
+  pmIsolating: { mappedName: "proseMirrorIsolating" },
+  pmToolbar: { mappedName: "proseMirrorToolbar" },
 };
 
 export default {
-  globs: ['custom-elements/**/*.ts'],
-  exclude: ['custom-elements/**/*.d.ts', '**/dist/**', '**/build/**'],
-  outdir: '.',
+  globs: ["custom-elements/**/*.ts"],
+  exclude: ["custom-elements/**/*.d.ts", "**/dist/**", "**/build/**"],
+  outdir: ".",
   packagejson: false,
 
   // overrideModuleCreation: ({ ts, globs }) => {
@@ -29,18 +30,21 @@ export default {
     //   outdir: '.'
     // }),
     jsDocTagsPlugin({ tags: proseMirrorTags }),
+    cemSorterPlugin({
+      deprecatedLast: true,
+    }),
     // Add JSDoc descriptions and custom element tags
     {
-      name: 'qti-elements-plugin',
+      name: "qti-elements-plugin",
       analyzePhase({ ts, node, moduleDoc }) {
         // Look for customElements.define calls to identify custom elements
         if (
           ts.isCallExpression(node) &&
           ts.isPropertyAccessExpression(node.expression) &&
           ts.isIdentifier(node.expression.expression) &&
-          node.expression.expression.escapedText === 'customElements' &&
+          node.expression.expression.escapedText === "customElements" &&
           ts.isIdentifier(node.expression.name) &&
-          node.expression.name.escapedText === 'define'
+          node.expression.name.escapedText === "define"
         ) {
           const tagName = node.arguments[0];
           const className = node.arguments[1];
@@ -51,18 +55,18 @@ export default {
               (decl) => decl.name === className.escapedText
             );
 
-            if (classDeclaration && classDeclaration.kind === 'class') {
+            if (classDeclaration && classDeclaration.kind === "class") {
               classDeclaration.tagName = tagName.text;
               classDeclaration.customElement = true;
 
               // Add QTI-specific metadata
-              if (tagName.text.startsWith('qti-')) {
+              if (tagName.text.startsWith("qti-")) {
                 classDeclaration.summary = `QTI ${tagName.text} element based on 1EdTech QTI specification`;
               }
             }
           }
         }
-      }
-    }
-  ]
+      },
+    },
+  ],
 };
