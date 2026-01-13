@@ -20,15 +20,17 @@ export default {
   outdir: ".",
   packagejson: false,
 
-  // overrideModuleCreation: ({ ts, globs }) => {
-  //   const program = getTsProgram(ts, globs, 'tsconfig.json');
-  //   return program.getSourceFiles().filter(sf => globs.find(glob => sf.fileName.includes(glob)));
-  // },
+  overrideModuleCreation({ts, globs}) {
+    const program = getTsProgram(ts, globs, "tsconfig.json");
+    return program
+      .getSourceFiles()
+      .filter((sf) => globs.find((glob) => sf.fileName.includes(glob)));
+  },
 
   plugins: [
-    // typeParserPlugin({
-    //   outdir: '.'
-    // }),
+    typeParserPlugin({
+      outdir: '.'
+    }),
     jsDocTagsPlugin({ tags: proseMirrorTags }),
     cemSorterPlugin({
       deprecatedLast: true,

@@ -20,13 +20,13 @@ const summary = customNodeNames.map((nodeName) => {
     group: spec.group ?? 'block',
     inline: Boolean(spec.inline),
     atom: Boolean(spec.atom),
-    content: spec.content ?? ''
+    content: spec.content ?? '',
   };
 });
 
 console.log(`Schema OK. Custom nodes: ${customNodeNames.length}`);
 for (const item of summary) {
   console.log(
-    `- ${item.node} (group=${item.group}, inline=${item.inline}, atom=${item.atom}, content=${item.content})`
+    `- ${item.node} (group=${item.group}, inline=${item.inline}, atom=${item.atom}, content=${item.content})`,
   );
 }

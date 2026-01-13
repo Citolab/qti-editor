@@ -17,7 +17,8 @@
     "schema": "tsx scripts/generate-prosemirror-schema.ts",
     "schema:watch": "tsx scripts/generate-prosemirror-schema.ts --watch",
     "schema:validate": "tsx scripts/validate-generated-schema.ts",
-    "build:editor-schema": "pnpm cem && pnpm schema && pnpm schema:validate"
+    "build:editor-schema": "pnpm cem && pnpm schema && pnpm schema:validate",
+    "chrome:debug": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-remote-debug"
   },
   "dependencies": {
     "lit": "^3.0.0",

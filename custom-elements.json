@@ -132,7 +132,7 @@
               "type": {
                 "text": "object"
               },
-              "default": "{ 'qti-interaction-context': (context: InteractionContext) => { this.handleContextUpdate(context); } }"
+              "default": "{ 'qti-interaction-context': (context: InteractionContext) => { this.handleContextUpdate(context); }, }"
             },
             {
               "kind": "method",
@@ -569,7 +569,7 @@
               "type": {
                 "text": "object"
               },
-              "default": "{ 'qti-interaction-context': (context: InteractionContext) => { this.handleContextUpdate(context); } }"
+              "default": "{ 'qti-interaction-context': (context: InteractionContext) => { this.handleContextUpdate(context); }, }"
             },
             {
               "kind": "method",

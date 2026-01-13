@@ -19,10 +19,10 @@ import type { Editor } from 'prosekit/core';
 // Import core editor and components
 import { QtiProsekitEditor } from '@qti-editor/core';
 import { allQtiComponentsExtension } from '@qti-editor/plugin-qti-components';
+import { toolbarNodeNames } from '@qti-editor/plugin-qti-components/shared/generated-prosemirror-schema';
 import { qtiSidePanelExtension } from '@qti-editor/plugin-side-panel';
 import { qtiSlashMenuExtension } from '@qti-editor/plugin-slash-menu';
 import { createToolbar } from '@qti-editor/plugin-toolbar';
-import { toolbarNodeNames } from '@qti-editor/plugin-qti-components/shared/generated-prosemirror-schema';
 
 
 // Or import individual components:

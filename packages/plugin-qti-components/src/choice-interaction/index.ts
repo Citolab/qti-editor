@@ -15,10 +15,10 @@ import type { Extension } from 'prosekit/core';
 
 import type { QtiChoiceInteractionSchema } from '../shared/qti-schema';
 
-import { qtiChoiceInteractionSpec } from './schema';
-import { choiceInteractionKeymap } from './keymap';
-import { choiceInteractionGuardsExtension } from './guards';
 import { insertChoiceInteraction, choiceInteractionCommands } from './commands';
+import { choiceInteractionGuardsExtension } from './guards';
+import { choiceInteractionKeymap } from './keymap';
+import { qtiChoiceInteractionSpec } from './schema';
 
 export { qtiChoiceInteractionSpec } from './schema';
 export { insertChoiceInteraction, choiceInteractionCommands } from './commands';

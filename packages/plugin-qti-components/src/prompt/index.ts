@@ -2,9 +2,9 @@ import './styles.css';
 
 import { union, type Extension } from 'prosekit/core';
 
-import { qtiPromptSpec } from './schema';
 import { qtiPromptCommands } from './commands';
 import { qtiPromptKeymap } from './keymap';
+import { qtiPromptSpec } from './schema';
 
 export { qtiPromptSpec } from './schema';
 export { insertQtiPrompt, qtiPromptCommands } from './commands';

@@ -30,7 +30,7 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
   contexts = {
     'qti-interaction-context': (context: InteractionContext) => {
       this.handleContextUpdate(context);
-    }
+    },
   };
 
   constructor() {
@@ -104,7 +104,6 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
     }
     this.updateState();
   }
-
 
 
   // Enable/disable interaction
@@ -229,7 +228,7 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
     this.setAttribute('aria-disabled', this.#disabled.toString());
     this.setAttribute('aria-readonly', this.#readonly.toString());
     this.tabIndex = this.#disabled ? -1 : 0;
-    
+
     // Update radio button state
     this.updateRadioButton();
   }
@@ -241,12 +240,12 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
   private updateRadioButton() {
     // Remove existing radio button
     this.removeAnchoredRadioButton();
-    
+
     // Determine if this should be radio or checkbox based on parent interaction
     const choiceInteraction = this.closest('qti-choice-interaction');
     const maxChoices = choiceInteraction ? parseInt(choiceInteraction.getAttribute('max-choices') || '1') : 1;
     this.#interactionType = maxChoices > 1 ? 'checkbox' : 'radio';
-    
+
     // Create input element outside ProseMirror's DOM
     const inputElement = document.createElement('input');
     inputElement.type = this.#interactionType;
@@ -255,15 +254,15 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
     inputElement.checked = this.selected;
     inputElement.disabled = this.#disabled; // Only disabled state affects input, not readonly
     inputElement.className = 'qti-choice-input';
-    
+
     // Check if CSS anchor positioning is supported
     const supportsAnchorPositioning = CSS.supports('anchor-name', '--test');
-    
+
     if (supportsAnchorPositioning) {
       // Use CSS anchor positioning
       const anchorName = `--choice-${this.identifier || Math.random().toString(36).substr(2, 9)}`;
       this.style.anchorName = anchorName;
-      
+
       inputElement.style.position = 'absolute';
       inputElement.style.positionAnchor = anchorName;
       inputElement.style.left = 'anchor(left)';
@@ -271,7 +270,7 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
       inputElement.style.transform = 'translate(-24px, -50%)';
       inputElement.style.zIndex = '10';
       inputElement.style.pointerEvents = this.#disabled ? 'none' : 'auto';
-      
+
       // Visual feedback for interaction state
       if (this.#disabled) {
         inputElement.style.opacity = '0.5';
@@ -280,13 +279,13 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
         inputElement.style.opacity = '1';
         inputElement.style.cursor = 'pointer';
       }
-      
+
       // Add readonly visual indicator without disabling input
       if (this.#readonly) {
         inputElement.style.border = '2px solid #fbbf24';
         inputElement.style.backgroundColor = '#fef3c7';
       }
-      
+
       // Add to document body
       document.body.appendChild(inputElement);
     } else {
@@ -294,7 +293,7 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
       inputElement.style.position = 'absolute';
       inputElement.style.zIndex = '10';
       inputElement.style.pointerEvents = this.#disabled ? 'none' : 'auto';
-      
+
       // Visual feedback for interaction state
       if (this.#disabled) {
         inputElement.style.opacity = '0.5';
@@ -303,26 +302,26 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
         inputElement.style.opacity = '1';
         inputElement.style.cursor = 'pointer';
       }
-      
+
       // Add readonly visual indicator without disabling input
       if (this.#readonly) {
         inputElement.style.border = '2px solid #fbbf24';
         inputElement.style.backgroundColor = '#fef3c7';
       }
-      
+
       // Add to document body
       document.body.appendChild(inputElement);
-      
+
       // Update position manually
       this.updateInputPosition();
       window.addEventListener('scroll', this.updateInputPosition.bind(this));
       window.addEventListener('resize', this.updateInputPosition.bind(this));
     }
-    
+
     // Store reference for cleanup
     (this as any)._inputElement = inputElement;
     (this as any)._usesAnchorPositioning = supportsAnchorPositioning;
-    
+
     // Add event listener for state changes
     inputElement.addEventListener('change', (e) => {
       if (!this.#disabled) {
@@ -348,12 +347,12 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
   private removeAnchoredRadioButton() {
     const inputElement = (this as any)._inputElement;
     const usesAnchorPositioning = (this as any)._usesAnchorPositioning;
-    
+
     if (inputElement && inputElement.parentNode) {
       inputElement.parentNode.removeChild(inputElement);
       (this as any)._inputElement = null;
     }
-    
+
     if (usesAnchorPositioning) {
       // Clear anchor name
       this.style.anchorName = '';
@@ -362,7 +361,7 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
       window.removeEventListener('scroll', this.updateInputPosition.bind(this));
       window.removeEventListener('resize', this.updateInputPosition.bind(this));
     }
-    
+
     (this as any)._usesAnchorPositioning = null;
   }
 
@@ -370,7 +369,7 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
     // Fallback positioning method for browsers without anchor support
     const inputElement = (this as any)._inputElement;
     if (!inputElement) return;
-    
+
     const rect = this.getBoundingClientRect();
     inputElement.style.left = (rect.left + window.scrollX - 20) + 'px';
     inputElement.style.top = (rect.top + window.scrollY + rect.height / 2) + 'px';
@@ -381,7 +380,7 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
     const choiceInteraction = this.closest('qti-choice-interaction');
     const responseId = choiceInteraction?.getAttribute('response-identifier');
     const maxChoices = choiceInteraction ? parseInt(choiceInteraction.getAttribute('max-choices') || '1') : 1;
-    
+
     // For radio buttons, use the response-identifier as group name
     // For checkboxes, each should have unique name or no name grouping
     if (maxChoices === 1) {
@@ -402,10 +401,10 @@ export class QtiSimpleChoice extends ConsumerMixin(HTMLElement) {
     this.dispatchEvent(new CustomEvent('choice-selected', {
       detail: {
         identifier: this.identifier,
-        selected: this.selected
+        selected: this.selected,
       },
       bubbles: true,
-      composed: true
+      composed: true,
     }));
   }
 

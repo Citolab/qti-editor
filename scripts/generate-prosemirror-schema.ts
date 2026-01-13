@@ -1,11 +1,11 @@
-import fs from 'node:fs/promises';
 import fsSync from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const ROOT = process.cwd();
 const OUTPUT_PATH = path.join(
   ROOT,
-  'packages/plugin-qti-components/src/shared/generated-prosemirror-schema.ts'
+  'packages/plugin-qti-components/src/shared/generated-prosemirror-schema.ts',
 );
 const MANIFEST_PATH = path.join(ROOT, 'custom-elements.json');
 
@@ -44,6 +44,14 @@ function toCamelCase(value: string): string {
   return value.replace(/-([a-z0-9])/g, (_, char) => char.toUpperCase());
 }
 
+// Helper function to create single-quoted string literals
+function singleQuote(value: string | number | boolean | null): string {
+  if (typeof value === 'string') {
+    return `'${value.replace(/'/g, "\\'")}'`;
+  }
+  return JSON.stringify(value);
+}
+
 function normalizeTagValue(value: any): string | undefined {
   if (!value) return undefined;
   if (typeof value === 'string') return value;
@@ -77,7 +85,9 @@ function parseDefaultValue(value: any): string | number | boolean | undefined {
   return text;
 }
 
-function collectAttrs(declaration: Record<string, any>): Record<string, AttrSpecInfo> {
+function collectAttrs(
+  declaration: Record<string, any>,
+): Record<string, AttrSpecInfo> {
   const attrs = new Map<string, AttrSpecInfo>();
 
   for (const attr of declaration.attributes || []) {
@@ -88,7 +98,9 @@ function collectAttrs(declaration: Record<string, any>): Record<string, AttrSpec
     const defaultValue = parseDefaultValue(attr?.default);
     attrs.set(
       attrName,
-      defaultValue !== undefined ? { ...existing, default: defaultValue } : existing
+      defaultValue !== undefined
+        ? { ...existing, default: defaultValue }
+        : existing,
     );
   }
 
@@ -105,7 +117,9 @@ function buildNodeSpec(declaration: Record<string, any>): NodeSpecInput | null {
   const contentOverride = normalizeTagValue(declaration.proseMirrorContent);
   const marksOverride = normalizeTagValue(declaration.proseMirrorMarks);
   const atomOverride = normalizeBoolean(declaration.proseMirrorAtom);
-  const selectableOverride = normalizeBoolean(declaration.proseMirrorSelectable);
+  const selectableOverride = normalizeBoolean(
+    declaration.proseMirrorSelectable,
+  );
   const definingOverride = normalizeBoolean(declaration.proseMirrorDefining);
   const isolatingOverride = normalizeBoolean(declaration.proseMirrorIsolating);
   const toolbarOverride = normalizeBoolean(declaration.proseMirrorToolbar);
@@ -130,7 +144,7 @@ function buildNodeSpec(declaration: Record<string, any>): NodeSpecInput | null {
     defining: definingOverride,
     isolating: isolatingOverride,
     hasContent: !atom && Boolean(content),
-    toolbar: toolbarOverride !== false
+    toolbar: toolbarOverride !== false,
   };
 }
 
@@ -139,9 +153,11 @@ function stringifyAttrDefaults(attrs: Record<string, AttrSpecInfo>): string {
   if (entries.length === 0) return '{}';
   const lines = entries.map(([name, spec]) => {
     if (spec?.default !== undefined) {
-      return `  ${JSON.stringify(name)}: { default: ${JSON.stringify(spec.default)} }`;
+      return `  ${singleQuote(name)}: { default: ${JSON.stringify(
+        spec.default,
+      )} }`;
     }
-    return `  ${JSON.stringify(name)}: { default: null }`;
+    return `  ${singleQuote(name)}: { default: null }`;
   });
   return `{
 ${lines.join(',\n')}
@@ -153,8 +169,11 @@ function stringifyAttrMap(attrs: Record<string, AttrSpecInfo>): string {
   if (entries.length === 0) return '{}';
   return `{
     ${entries
-      .map(([name, spec]) => `${JSON.stringify(name)}: ${JSON.stringify(spec.domAttr)}`)
-      .join(',\n    ')}
+    .map(
+      ([name, spec]) =>
+        `${singleQuote(name)}: ${singleQuote(spec.domAttr)}`,
+    )
+    .join(',\n    ')}
   }`;
 }
 
@@ -192,7 +211,7 @@ async function buildOnce() {
   }
 
   const sortedNodes = Array.from(uniqueNodes.values()).sort((a, b) =>
-    a.nodeName.localeCompare(b.nodeName)
+    a.nodeName.localeCompare(b.nodeName),
   );
 
   if (nodes.length === 0) {
@@ -200,8 +219,8 @@ async function buildOnce() {
   }
 
   const nodeLines: string[] = [];
-  nodeLines.push(`  doc: { content: 'block+' },`);
-  nodeLines.push(`  text: { group: 'inline' },`);
+  nodeLines.push('  doc: { content: \'block+\' },');
+  nodeLines.push('  text: { group: \'inline\' },');
 
   for (const node of sortedNodes) {
     const attrsObject = stringifyAttrDefaults(node.attrs);
@@ -209,36 +228,62 @@ async function buildOnce() {
     const extraFlags: string[] = [];
 
     if (node.inline) extraFlags.push('inline: true');
-    if (node.group) extraFlags.push(`group: ${JSON.stringify(node.group)}`);
-    if (node.content && !node.atom) extraFlags.push(`content: ${JSON.stringify(node.content)}`);
-    if (node.marks) extraFlags.push(`marks: ${JSON.stringify(node.marks)}`);
+    if (node.group) extraFlags.push(`group: ${singleQuote(node.group)}`);
+    if (node.content && !node.atom)
+      extraFlags.push(`content: ${singleQuote(node.content)}`);
+    if (node.marks) extraFlags.push(`marks: ${singleQuote(node.marks)}`);
     if (node.atom) extraFlags.push('atom: true');
-    if (node.selectable !== undefined) extraFlags.push(`selectable: ${node.selectable}`);
-    if (node.defining !== undefined) extraFlags.push(`defining: ${node.defining}`);
-    if (node.isolating !== undefined) extraFlags.push(`isolating: ${node.isolating}`);
+    if (node.selectable !== undefined)
+      extraFlags.push(`selectable: ${node.selectable}`);
+    if (node.defining !== undefined)
+      extraFlags.push(`defining: ${node.defining}`);
+    if (node.isolating !== undefined)
+      extraFlags.push(`isolating: ${node.isolating}`);
 
     const flags = extraFlags.length > 0 ? `${extraFlags.join(',\n    ')},` : '';
 
     nodeLines.push(
-      `  ${JSON.stringify(node.nodeName)}: {\n` +
+      `  ${singleQuote(node.nodeName)}: {\n` +
         `    attrs: ${attrsObject},\n` +
-        `    parseDOM: [{ tag: ${JSON.stringify(node.tagName)}, getAttrs: (dom) => parseDomAttrs(dom, ${attrsMap}) }],\n` +
-        `    toDOM: createToDOM(${JSON.stringify(node.tagName)}, ${node.hasContent}, ${node.atom}, ${attrsMap}),\n` +
+        `    parseDOM: [{ tag: ${singleQuote(
+          node.tagName,
+        )}, getAttrs: (dom) => parseDomAttrs(dom, ${attrsMap}) }],\n` +
+        `    toDOM: createToDOM(${singleQuote(node.tagName)}, ${
+          node.hasContent
+        }, ${node.atom}, ${attrsMap}),\n` +
         (flags ? `    ${flags}\n` : '') +
-        `  },`
+        '  },',
     );
   }
 
   const mappingLines = sortedNodes
     .slice()
     .sort((a, b) => a.tagName.localeCompare(b.tagName))
-    .map((node) => `  ${JSON.stringify(node.tagName)}: ${JSON.stringify(node.nodeName)}`);
+    .map(
+      (node) =>
+        `  '${node.tagName}': '${node.nodeName}'`,
+    );
 
   const toolbarLines = sortedNodes
     .filter((node) => node.toolbar)
-    .map((node) => `  ${JSON.stringify(node.nodeName)}`);
+    .map((node) => `  '${node.nodeName}'`);
 
-  const output = `import { Schema, type MarkSpec, type NodeSpec } from 'prosemirror-model';
+  const output = `/*
+ * ⚠️  WARNING: AUTO-GENERATED FILE - DO NOT EDIT MANUALLY!
+ *
+ * This file is automatically generated by the schema generator script.
+ * Any manual changes will be lost when the schema is regenerated.
+ *
+ * To modify this schema:
+ * 1. Update the custom elements in the custom-elements/ directory
+ * 2. Run 'npm run cem' to update the custom elements manifest
+ * 3. Run 'npm run schema' to regenerate this file
+ *
+ * Generated from: scripts/generate-prosemirror-schema.ts
+ * Generated at: ${new Date().toISOString()}
+ */
+
+import { Schema, type MarkSpec, type NodeSpec } from 'prosemirror-model';
 
 const coreNodes: Record<string, NodeSpec> = {
   paragraph: {
@@ -339,7 +384,9 @@ ${toolbarLines.join(',\n')}
   await fs.mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
   await fs.writeFile(OUTPUT_PATH, output);
 
-  console.log(`Generated ProseMirror schema: ${path.relative(ROOT, OUTPUT_PATH)}`);
+  console.log(
+    `Generated ProseMirror schema: ${path.relative(ROOT, OUTPUT_PATH)}`,
+  );
 }
 
 async function watch() {

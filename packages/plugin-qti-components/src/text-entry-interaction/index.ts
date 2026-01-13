@@ -16,9 +16,9 @@ import type { Extension } from 'prosekit/core';
 // Import QTI schema definitions
 import type { QtiTextEntryInteractionSchema } from '../shared/qti-schema';
 
-import { qtiTextEntryInteractionSpec } from './schema';
 import { insertTextEntryInteraction, textEntryInteractionCommands } from './commands';
 import { textEntryInteractionKeymap } from './keymap';
+import { qtiTextEntryInteractionSpec } from './schema';
 
 export { qtiTextEntryInteractionSpec } from './schema';
 export { insertTextEntryInteraction, textEntryInteractionCommands } from './commands';

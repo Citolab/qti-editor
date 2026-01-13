@@ -38,7 +38,7 @@ export class QtiChoiceInteraction extends ConsumerMixin(HTMLElement) {
   contexts = {
     'qti-interaction-context': (context: InteractionContext) => {
       this.handleContextUpdate(context);
-    }
+    },
   };
 
   constructor() {
@@ -50,7 +50,7 @@ export class QtiChoiceInteraction extends ConsumerMixin(HTMLElement) {
   static get observedAttributes() {
     return [
       'response-identifier', 'shuffle', 'max-choices', 'min-choices',
-      'disabled', 'readonly', 'required', 'enabled'
+      'disabled', 'readonly', 'required', 'enabled',
     ];
   }
 
@@ -141,8 +141,8 @@ export class QtiChoiceInteraction extends ConsumerMixin(HTMLElement) {
   }
 
   get value() {
-    return this.#value.length === 1 && this.#maxChoices === 1 
-      ? this.#value[0] 
+    return this.#value.length === 1 && this.#maxChoices === 1
+      ? this.#value[0]
       : this.#value;
   }
 
@@ -252,7 +252,7 @@ export class QtiChoiceInteraction extends ConsumerMixin(HTMLElement) {
     this.updateChoicesType();
     this.updateFormState();
     this.updateChoicesState();
-    
+
     if (this.#shuffle) {
       this.shuffleChoices();
     }
@@ -260,12 +260,12 @@ export class QtiChoiceInteraction extends ConsumerMixin(HTMLElement) {
 
   private handleContextUpdate(context: InteractionContext) {
     if (this.#debug) {
-      console.log('QtiChoiceInteraction: Context update received', { 
+      console.log('QtiChoiceInteraction: Context update received', {
         enabled: context.enabled,
-        interactionId: this.getAttribute('response-identifier') 
+        interactionId: this.getAttribute('response-identifier'),
       });
     }
-    
+
     // Sync local state with context
     if (context.enabled) {
       this.enable();
@@ -297,7 +297,7 @@ export class QtiChoiceInteraction extends ConsumerMixin(HTMLElement) {
     }
 
     const { identifier, selected } = event.detail;
-    
+
     if (this.#maxChoices === 1) {
       // Single selection (radio behavior)
       this.#value = selected ? [identifier] : [];
@@ -319,7 +319,7 @@ export class QtiChoiceInteraction extends ConsumerMixin(HTMLElement) {
         this.#value = this.#value.filter(id => id !== identifier);
       }
     }
-    
+
     this.updateFormState();
     this.dispatchChangeEvent();
   }
@@ -344,7 +344,7 @@ export class QtiChoiceInteraction extends ConsumerMixin(HTMLElement) {
   private async updateChoicesType() {
     // Wait for qti-simple-choice elements to be defined
     await customElements.whenDefined('qti-simple-choice');
-    
+
     const choices = this.querySelectorAll('qti-simple-choice');
     choices.forEach(choice => {
       if (typeof (choice as any).setInteractionType === 'function') {
@@ -365,17 +365,17 @@ export class QtiChoiceInteraction extends ConsumerMixin(HTMLElement) {
     const choices = Array.from(this.querySelectorAll('qti-simple-choice'));
     const nonFixed = choices.filter(choice => !choice.hasAttribute('fixed'));
     const fixed = choices.filter(choice => choice.hasAttribute('fixed'));
-    
+
     // Shuffle non-fixed choices
     for (let i = nonFixed.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [nonFixed[i], nonFixed[j]] = [nonFixed[j], nonFixed[i]];
     }
-    
+
     // Rebuild the order preserving fixed positions
     const shuffled = [...choices];
     let nonFixedIndex = 0;
-    
+
     shuffled.forEach((choice, index) => {
       if (!choice.hasAttribute('fixed') && nonFixedIndex < nonFixed.length) {
         if (shuffled[index] !== nonFixed[nonFixedIndex]) {
@@ -388,16 +388,16 @@ export class QtiChoiceInteraction extends ConsumerMixin(HTMLElement) {
 
   private updateFormState() {
     const isValid = this.validateResponse();
-    
+
     if (isValid) {
       this.#internals.setValidity({});
     } else {
       this.#internals.setValidity(
         { valueMissing: this.#required && this.#value.length === 0,
           rangeUnderflow: this.#value.length < this.#minChoices,
-          rangeOverflow: this.#value.length > this.#maxChoices
+          rangeOverflow: this.#value.length > this.#maxChoices,
         },
-        this.getValidationMessage()
+        this.getValidationMessage(),
       );
     }
 
@@ -444,24 +444,24 @@ export class QtiChoiceInteraction extends ConsumerMixin(HTMLElement) {
   }
 
   private showMaxChoicesMessage() {
-    const message = this.getAttribute('data-max-selections-message') || 
+    const message = this.getAttribute('data-max-selections-message') ||
       `You may select no more than ${this.#maxChoices} option${this.#maxChoices > 1 ? 's' : ''}.`;
-    
+
     // Dispatch custom event for UI to handle
     this.dispatchEvent(new CustomEvent('max-choices-exceeded', {
       detail: { message, maxChoices: this.#maxChoices },
-      bubbles: true
+      bubbles: true,
     }));
   }
 
   private dispatchChangeEvent() {
     this.dispatchEvent(new Event('change', { bubbles: true }));
     this.dispatchEvent(new CustomEvent('qti-response-changed', {
-      detail: { 
+      detail: {
         responseIdentifier: this.#responseIdentifier,
-        value: this.value 
+        value: this.value,
       },
-      bubbles: true
+      bubbles: true,
     }));
   }
 
