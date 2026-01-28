@@ -24,15 +24,15 @@ export const insertChoiceInteraction: Command = (state, dispatch) => {
 
   const choices = [
     choiceType.create(
-      { identifier: 'choice_A' },
+      { identifier: 'CHOICE_${Date.now()}' },
       schema.nodes.paragraph.create(null, schema.text('Option A')),
     ),
     choiceType.create(
-      { identifier: 'choice_B' },
+      { identifier: 'CHOICE_${Date.now()}' },
       schema.nodes.paragraph.create(null, schema.text('Option B')),
     ),
     choiceType.create(
-      { identifier: 'choice_C' },
+      { identifier: 'CHOICE_${Date.now()}' },
       schema.nodes.paragraph.create(null, schema.text('Option C')),
     ),
   ];

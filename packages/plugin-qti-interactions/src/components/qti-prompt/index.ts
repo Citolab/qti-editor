@@ -7,7 +7,10 @@
  */
 
 // Schema
-export { promptSchema } from './schema';
+export { promptSchema } from './schema.generated';
+
+// Generated metadata
+export { qtiPromptDefinition } from './element-definition.generated';
 
 // Component
 export { QtiPrompt } from './qti-prompt';

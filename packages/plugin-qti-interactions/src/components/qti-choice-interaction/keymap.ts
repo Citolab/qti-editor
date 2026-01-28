@@ -8,8 +8,7 @@
  */
 
 import { keymap } from 'prosemirror-keymap';
-import { NodeSelection, TextSelection, type Command } from 'prosemirror-state';
-import type { Plugin } from 'prosemirror-state';
+import { NodeSelection, TextSelection, type Command , Plugin } from 'prosemirror-state';
 import { insertChoiceInteraction } from './commands';
 
 /**
@@ -108,7 +107,7 @@ export const liftEmptyQtiSimpleChoice: Command = (state, dispatch) => {
 
   // Don't delete if it's the only choice
   const choiceCount = choiceInteraction.content.content.filter(
-    (n) => n.type.name === 'qti_simple_choice'
+    (n) => n.type.name === 'qti_simple_choice',
   ).length;
   if (choiceCount <= 1) return false;
 

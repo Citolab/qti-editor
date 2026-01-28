@@ -12,12 +12,6 @@
     "build:packages": "pnpm -r --filter \"./packages/**\" run build",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "cem": "cem analyze --config custom-elements-manifest.config.js",
-    "cem:watch": "cem analyze --config custom-elements-manifest.config.js --watch",
-    "schema": "tsx scripts/generate-qti-schema.ts",
-    "schema:watch": "tsx scripts/generate-qti-schema.ts --watch",
-    "schema:validate": "tsx scripts/validate-generated-schema.ts",
-    "build:editor-schema": "pnpm cem && pnpm schema && pnpm schema:validate",
     "chrome:debug": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-remote-debug"
   },
   "dependencies": {
@@ -27,18 +21,13 @@
     "vite": "^5.0.0"
   },
   "devDependencies": {
-    "@custom-elements-manifest/analyzer": "^0.11.0",
     "@eslint/js": "^9.39.2",
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
-    "@wc-toolkit/cem-sorter": "^1.0.1",
-    "@wc-toolkit/jsdoc-tags": "^1.0.0",
-    "@wc-toolkit/type-parser": "^1.2.0",
     "concurrently": "^9.2.0",
     "eslint": "^9.39.2",
     "eslint-plugin-import": "^2.32.0",
     "tsx": "^4.19.2"
-  },
-  "customElements": "custom-elements.json"
+  }
 }

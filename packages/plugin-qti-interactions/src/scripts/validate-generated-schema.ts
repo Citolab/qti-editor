@@ -1,4 +1,4 @@
-import { schema, tagNameToNodeName } from '../packages/plugin-qti-components/src/shared/generated-prosemirror-schema.ts';
+import { schema, tagNameToNodeName } from '../schema/prosemirror-schema.ts';
 
 const customNodeNames = Object.values(tagNameToNodeName);
 const missing: string[] = [];

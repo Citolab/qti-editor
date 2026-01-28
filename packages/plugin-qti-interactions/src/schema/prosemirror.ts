@@ -17,7 +17,7 @@
  */
 
 import { Schema, type NodeSpec, type MarkSpec } from 'prosemirror-model';
-import { nodes as qtiNodeSpecs, marks as qtiMarkSpecs } from './generated/prosemirror-schema.js';
+import { nodes as qtiNodeSpecs, marks as qtiMarkSpecs } from './prosemirror-schema';
 
 /**
  * Base nodes required for any ProseMirror document
@@ -117,4 +117,4 @@ export function createQtiSchema(options: CreateQtiSchemaOptions = {}): Schema {
 }
 
 // Re-export utilities from generated schema
-export { tagNameToNodeName, toolbarNodeNames } from './generated/prosemirror-schema.js';
+export { tagNameToNodeName, toolbarNodeNames } from './prosemirror-schema';

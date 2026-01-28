@@ -9,10 +9,13 @@
  */
 
 // Schema
-export { textEntryInteractionSchema } from './schema';
+export { textEntryInteractionSchema } from './schema.generated';
 
 // Commands
 export { insertTextEntryInteraction } from './commands';
+
+// Generated metadata
+export { qtiTextEntryInteractionDefinition } from './element-definition.generated';
 
 // Keymaps
 export { createTextEntryInteractionKeymap } from './keymap';

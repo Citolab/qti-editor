@@ -7,7 +7,10 @@
  */
 
 // Schema
-export { simpleChoiceSchema } from './schema';
+export { simpleChoiceSchema } from './schema.generated';
+
+// Generated metadata
+export { qtiSimpleChoiceDefinition } from './element-definition.generated';
 
 // Component
 export { QtiSimpleChoice } from './qti-simple-choice';

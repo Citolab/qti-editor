@@ -36,13 +36,13 @@ export {
 } from './prosemirror';
 
 // Raw generated specs (for advanced usage)
-export { nodes, marks } from './generated/prosemirror-schema';
+export { nodes, marks } from './prosemirror-schema';
 
 // =============================================================================
 // Element Definitions (for UI integration - menus, toolbars, etc.)
 // =============================================================================
 
-export type { QtiElementDefinition } from './generated/element-definitions';
+export type { QtiElementDefinition } from './element-definitions';
 export {
   qtiElements,
   insertableElements,
@@ -51,4 +51,4 @@ export {
   structureElements,
   toSlashMenuFormat,
   toToolbarFormat,
-} from './generated/element-definitions';
+} from './element-definitions';

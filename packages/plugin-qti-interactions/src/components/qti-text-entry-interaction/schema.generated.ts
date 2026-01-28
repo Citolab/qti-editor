@@ -3,20 +3,17 @@
  *
  * ProseMirror NodeSpec for qti-text-entry-interaction
  *
- * Generated from: scripts/generate-qti-schema.ts
- * Generated at: 2026-01-28T14:03:01.331Z
+ * Generated from: src/scripts/generate-qti-schema.ts
+ * Generated at: 2026-01-28T15:34:07.459Z
  */
 
 import type { NodeSpec } from 'prosemirror-model';
-import { parseDomAttrs, createToDOM } from '../../schema/generated/schema-helpers.js';
+import { parseDomAttrs, createToDOM } from '../../schema/schema-helpers';
 
 const attrMap = {
     'responseIdentifier': 'response-identifier'
   };
 
-/**
- * ProseMirror NodeSpec for qti-text-entry-interaction
- */
 export const textEntryInteractionSchema: NodeSpec = {
   attrs: {
   'responseIdentifier': { default: null }

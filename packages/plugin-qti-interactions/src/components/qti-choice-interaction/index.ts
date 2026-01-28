@@ -10,10 +10,13 @@
  */
 
 // Schema
-export { choiceInteractionSchema } from './schema';
+export { choiceInteractionSchema } from './schema.generated';
 
 // Commands
 export { insertChoiceInteraction } from './commands';
+
+// Generated metadata
+export { qtiChoiceInteractionDefinition } from './element-definition.generated';
 
 // Keymaps
 export {

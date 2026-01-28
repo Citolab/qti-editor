@@ -13,10 +13,8 @@
  * ```
  */
 
-import { union, definePlugin, defineKeymap } from 'prosekit/core';
 import { defineBasicExtension } from 'prosekit/basic';
-import { defineNodeSpec, defineMarkSpec } from 'prosekit/core';
-import { nodes, marks } from './schema/generated/prosemirror-schema.js';
+import { union, definePlugin, defineKeymap , defineNodeSpec, defineMarkSpec } from 'prosekit/core';
 import {
   insertChoiceInteraction,
   insertTextEntryInteraction,
@@ -24,6 +22,7 @@ import {
   liftEmptyQtiSimpleChoice,
   createChoiceInteractionGuards,
 } from './components/index.js';
+import { nodes, marks } from './schema/prosemirror-schema';
 
 /**
  * Define the complete QTI extension for ProseKit

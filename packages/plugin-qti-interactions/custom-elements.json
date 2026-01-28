@@ -4,15 +4,115 @@
   "modules": [
     {
       "kind": "javascript-module",
-      "path": "components/index.ts",
-      "declarations": [],
+      "path": "src/components/index.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createAllQtiPlugins",
+          "return": {
+            "type": {
+              "text": "Plugin[]"
+            }
+          },
+          "description": "Create all QTI ProseMirror plugins\n\nReturns an array of plugins:\n- Choice interaction keymap (Enter, Backspace, Mod-Shift-Q)\n- Text entry keymap (Mod-Shift-T)\n- Choice interaction guards"
+        },
+        {
+          "kind": "variable",
+          "name": "qtiNodeSchemas",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ qti_choice_interaction: choiceInteractionSchema, qti_simple_choice: simpleChoiceSchema, qti_prompt: promptSchema, qti_text_entry_interaction: textEntryInteractionSchema, }",
+          "description": "All QTI node schemas, ready to be merged into a ProseMirror schema"
+        }
+      ],
       "exports": [
+        {
+          "kind": "js",
+          "name": "choiceInteractionSchema",
+          "declaration": {
+            "name": "choiceInteractionSchema",
+            "module": "./qti-choice-interaction"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createAllQtiPlugins",
+          "declaration": {
+            "name": "createAllQtiPlugins",
+            "module": "src/components/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createChoiceInteractionGuards",
+          "declaration": {
+            "name": "createChoiceInteractionGuards",
+            "module": "./qti-choice-interaction"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createChoiceInteractionKeymap",
+          "declaration": {
+            "name": "createChoiceInteractionKeymap",
+            "module": "./qti-choice-interaction"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createTextEntryInteractionKeymap",
+          "declaration": {
+            "name": "createTextEntryInteractionKeymap",
+            "module": "./qti-text-entry-interaction"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "insertChoiceInteraction",
+          "declaration": {
+            "name": "insertChoiceInteraction",
+            "module": "./qti-choice-interaction"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "insertTextEntryInteraction",
+          "declaration": {
+            "name": "insertTextEntryInteraction",
+            "module": "./qti-text-entry-interaction"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "liftEmptyQtiSimpleChoice",
+          "declaration": {
+            "name": "liftEmptyQtiSimpleChoice",
+            "module": "./qti-choice-interaction"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "promptSchema",
+          "declaration": {
+            "name": "promptSchema",
+            "module": "./qti-prompt"
+          }
+        },
         {
           "kind": "js",
           "name": "QtiChoiceInteraction",
           "declaration": {
             "name": "QtiChoiceInteraction",
-            "module": "./QtiChoiceInteraction"
+            "module": "./qti-choice-interaction"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "qtiNodeSchemas",
+          "declaration": {
+            "name": "qtiNodeSchemas",
+            "module": "src/components/index.ts"
           }
         },
         {
@@ -20,7 +120,7 @@
           "name": "QtiPrompt",
           "declaration": {
             "name": "QtiPrompt",
-            "module": "./QtiPrompt"
+            "module": "./qti-prompt"
           }
         },
         {
@@ -28,7 +128,7 @@
           "name": "QtiSimpleChoice",
           "declaration": {
             "name": "QtiSimpleChoice",
-            "module": "./QtiSimpleChoice"
+            "module": "./qti-simple-choice"
           }
         },
         {
@@ -36,14 +136,224 @@
           "name": "QtiTextEntryInteraction",
           "declaration": {
             "name": "QtiTextEntryInteraction",
-            "module": "./QtiTextEntryInteraction"
+            "module": "./qti-text-entry-interaction"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "simpleChoiceSchema",
+          "declaration": {
+            "name": "simpleChoiceSchema",
+            "module": "./qti-simple-choice"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "splitQtiSimpleChoice",
+          "declaration": {
+            "name": "splitQtiSimpleChoice",
+            "module": "./qti-choice-interaction"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "textEntryInteractionSchema",
+          "declaration": {
+            "name": "textEntryInteractionSchema",
+            "module": "./qti-text-entry-interaction"
           }
         }
       ]
     },
     {
       "kind": "javascript-module",
-      "path": "components/QtiChoiceInteraction.ts",
+      "path": "src/components/qti-choice-interaction/commands.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "insertChoiceInteraction",
+          "parameters": [
+            {
+              "name": "state"
+            },
+            {
+              "name": "dispatch"
+            }
+          ],
+          "description": "Command to insert a choice interaction at the current selection"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "insertChoiceInteraction",
+          "declaration": {
+            "name": "insertChoiceInteraction",
+            "module": "src/components/qti-choice-interaction/commands.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-choice-interaction/guards.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createChoiceInteractionGuards",
+          "return": {
+            "type": {
+              "text": "Plugin"
+            }
+          },
+          "description": "Create a guard plugin that prevents text entry interactions inside simple choices\n\nThis is invalid in QTI because text entry is an inline interaction that\nshouldn't be nested inside choice options."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createChoiceInteractionGuards",
+          "declaration": {
+            "name": "createChoiceInteractionGuards",
+            "module": "src/components/qti-choice-interaction/guards.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-choice-interaction/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "choiceInteractionSchema",
+          "declaration": {
+            "name": "choiceInteractionSchema",
+            "module": "./schema"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createChoiceInteractionGuards",
+          "declaration": {
+            "name": "createChoiceInteractionGuards",
+            "module": "./guards"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createChoiceInteractionKeymap",
+          "declaration": {
+            "name": "createChoiceInteractionKeymap",
+            "module": "./keymap"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "insertChoiceInteraction",
+          "declaration": {
+            "name": "insertChoiceInteraction",
+            "module": "./commands"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "liftEmptyQtiSimpleChoice",
+          "declaration": {
+            "name": "liftEmptyQtiSimpleChoice",
+            "module": "./keymap"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "QtiChoiceInteraction",
+          "declaration": {
+            "name": "QtiChoiceInteraction",
+            "module": "./qti-choice-interaction"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "splitQtiSimpleChoice",
+          "declaration": {
+            "name": "splitQtiSimpleChoice",
+            "module": "./keymap"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-choice-interaction/keymap.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createChoiceInteractionKeymap",
+          "return": {
+            "type": {
+              "text": "Plugin"
+            }
+          },
+          "description": "Create the keymap plugin for choice interactions"
+        },
+        {
+          "kind": "function",
+          "name": "liftEmptyQtiSimpleChoice",
+          "parameters": [
+            {
+              "name": "state"
+            },
+            {
+              "name": "dispatch"
+            }
+          ],
+          "description": "Command to lift out of empty QTI simple choice on Backspace"
+        },
+        {
+          "kind": "function",
+          "name": "splitQtiSimpleChoice",
+          "parameters": [
+            {
+              "name": "state"
+            },
+            {
+              "name": "dispatch"
+            }
+          ],
+          "description": "Command to split a QTI simple choice on Enter\nCreates a new simple choice below the current one"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createChoiceInteractionKeymap",
+          "declaration": {
+            "name": "createChoiceInteractionKeymap",
+            "module": "src/components/qti-choice-interaction/keymap.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "liftEmptyQtiSimpleChoice",
+          "declaration": {
+            "name": "liftEmptyQtiSimpleChoice",
+            "module": "src/components/qti-choice-interaction/keymap.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "splitQtiSimpleChoice",
+          "declaration": {
+            "name": "splitQtiSimpleChoice",
+            "module": "src/components/qti-choice-interaction/keymap.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-choice-interaction/qti-choice-interaction.ts",
       "declarations": [
         {
           "kind": "class",
@@ -492,7 +802,7 @@
           "name": "qti-choice-interaction",
           "declaration": {
             "name": "QtiChoiceInteraction",
-            "module": "components/QtiChoiceInteraction.ts"
+            "module": "src/components/qti-choice-interaction/qti-choice-interaction.ts"
           }
         },
         {
@@ -500,14 +810,62 @@
           "name": "QtiChoiceInteraction",
           "declaration": {
             "name": "QtiChoiceInteraction",
-            "module": "components/QtiChoiceInteraction.ts"
+            "module": "src/components/qti-choice-interaction/qti-choice-interaction.ts"
           }
         }
       ]
     },
     {
       "kind": "javascript-module",
-      "path": "components/QtiPrompt.ts",
+      "path": "src/components/qti-choice-interaction/schema.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "choiceInteractionSchema",
+          "type": {
+            "text": "NodeSpec"
+          },
+          "default": "{ attrs: { 'disabled': { default: null }, 'enabled': { default: null }, 'maxChoices': { default: null }, 'minChoices': { default: null }, 'readonly': { default: null }, 'required': { default: null }, 'responseIdentifier': { default: null }, 'shuffle': { default: null } }, parseDOM: [{ tag: 'qti-choice-interaction', getAttrs: (dom) => parseDomAttrs(dom, attrMap) }], toDOM: createToDOM('qti-choice-interaction', true, false, attrMap), group: 'block', content: 'qti_prompt? qti_simple_choice+', defining: true, isolating: true, }",
+          "description": "ProseMirror NodeSpec for qti-choice-interaction"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "choiceInteractionSchema",
+          "declaration": {
+            "name": "choiceInteractionSchema",
+            "module": "src/components/qti-choice-interaction/schema.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-prompt/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "promptSchema",
+          "declaration": {
+            "name": "promptSchema",
+            "module": "./schema"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "QtiPrompt",
+          "declaration": {
+            "name": "QtiPrompt",
+            "module": "./qti-prompt"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-prompt/qti-prompt.ts",
       "declarations": [
         {
           "kind": "class",
@@ -567,7 +925,7 @@
           "name": "qti-prompt",
           "declaration": {
             "name": "QtiPrompt",
-            "module": "components/QtiPrompt.ts"
+            "module": "src/components/qti-prompt/qti-prompt.ts"
           }
         },
         {
@@ -575,14 +933,62 @@
           "name": "QtiPrompt",
           "declaration": {
             "name": "QtiPrompt",
-            "module": "components/QtiPrompt.ts"
+            "module": "src/components/qti-prompt/qti-prompt.ts"
           }
         }
       ]
     },
     {
       "kind": "javascript-module",
-      "path": "components/QtiSimpleChoice.ts",
+      "path": "src/components/qti-prompt/schema.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "promptSchema",
+          "type": {
+            "text": "NodeSpec"
+          },
+          "default": "{ attrs: {}, parseDOM: [{ tag: 'qti-prompt', getAttrs: (dom) => parseDomAttrs(dom, attrMap) }], toDOM: createToDOM('qti-prompt', true, false, attrMap), group: 'qti', content: 'block+', defining: true, }",
+          "description": "ProseMirror NodeSpec for qti-prompt"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "promptSchema",
+          "declaration": {
+            "name": "promptSchema",
+            "module": "src/components/qti-prompt/schema.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-simple-choice/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "QtiSimpleChoice",
+          "declaration": {
+            "name": "QtiSimpleChoice",
+            "module": "./qti-simple-choice"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "simpleChoiceSchema",
+          "declaration": {
+            "name": "simpleChoiceSchema",
+            "module": "./schema"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-simple-choice/qti-simple-choice.ts",
       "declarations": [
         {
           "kind": "class",
@@ -890,7 +1296,7 @@
           "name": "qti-simple-choice",
           "declaration": {
             "name": "QtiSimpleChoice",
-            "module": "components/QtiSimpleChoice.ts"
+            "module": "src/components/qti-simple-choice/qti-simple-choice.ts"
           }
         },
         {
@@ -898,14 +1304,133 @@
           "name": "QtiSimpleChoice",
           "declaration": {
             "name": "QtiSimpleChoice",
-            "module": "components/QtiSimpleChoice.ts"
+            "module": "src/components/qti-simple-choice/qti-simple-choice.ts"
           }
         }
       ]
     },
     {
       "kind": "javascript-module",
-      "path": "components/QtiTextEntryInteraction.ts",
+      "path": "src/components/qti-simple-choice/schema.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "simpleChoiceSchema",
+          "type": {
+            "text": "NodeSpec"
+          },
+          "default": "{ attrs: { 'disabled': { default: null }, 'fixed': { default: null }, 'identifier': { default: null }, 'readonly': { default: null }, 'selected': { default: null } }, parseDOM: [{ tag: 'qti-simple-choice', getAttrs: (dom) => parseDomAttrs(dom, attrMap) }], toDOM: createToDOM('qti-simple-choice', true, false, attrMap), group: 'qti', content: 'paragraph+', marks: '_', defining: true, }",
+          "description": "ProseMirror NodeSpec for qti-simple-choice"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "simpleChoiceSchema",
+          "declaration": {
+            "name": "simpleChoiceSchema",
+            "module": "src/components/qti-simple-choice/schema.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-text-entry-interaction/commands.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "insertTextEntryInteraction",
+          "parameters": [
+            {
+              "name": "state"
+            },
+            {
+              "name": "dispatch"
+            }
+          ],
+          "description": "Command to insert a text entry interaction at the current selection"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "insertTextEntryInteraction",
+          "declaration": {
+            "name": "insertTextEntryInteraction",
+            "module": "src/components/qti-text-entry-interaction/commands.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-text-entry-interaction/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createTextEntryInteractionKeymap",
+          "declaration": {
+            "name": "createTextEntryInteractionKeymap",
+            "module": "./keymap"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "insertTextEntryInteraction",
+          "declaration": {
+            "name": "insertTextEntryInteraction",
+            "module": "./commands"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "QtiTextEntryInteraction",
+          "declaration": {
+            "name": "QtiTextEntryInteraction",
+            "module": "./qti-text-entry-interaction"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "textEntryInteractionSchema",
+          "declaration": {
+            "name": "textEntryInteractionSchema",
+            "module": "./schema"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-text-entry-interaction/keymap.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createTextEntryInteractionKeymap",
+          "return": {
+            "type": {
+              "text": "Plugin"
+            }
+          },
+          "description": "Create the keymap plugin for text entry interactions"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createTextEntryInteractionKeymap",
+          "declaration": {
+            "name": "createTextEntryInteractionKeymap",
+            "module": "src/components/qti-text-entry-interaction/keymap.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-text-entry-interaction/qti-text-entry-interaction.ts",
       "declarations": [
         {
           "kind": "class",
@@ -1026,7 +1551,7 @@
           "name": "qti-text-entry-interaction",
           "declaration": {
             "name": "QtiTextEntryInteraction",
-            "module": "components/QtiTextEntryInteraction.ts"
+            "module": "src/components/qti-text-entry-interaction/qti-text-entry-interaction.ts"
           }
         },
         {
@@ -1034,7 +1559,32 @@
           "name": "QtiTextEntryInteraction",
           "declaration": {
             "name": "QtiTextEntryInteraction",
-            "module": "components/QtiTextEntryInteraction.ts"
+            "module": "src/components/qti-text-entry-interaction/qti-text-entry-interaction.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/qti-text-entry-interaction/schema.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "textEntryInteractionSchema",
+          "type": {
+            "text": "NodeSpec"
+          },
+          "default": "{ attrs: { 'responseIdentifier': { default: null } }, parseDOM: [{ tag: 'qti-text-entry-interaction', getAttrs: (dom) => parseDomAttrs(dom, attrMap) }], toDOM: createToDOM('qti-text-entry-interaction', false, true, attrMap), inline: true, group: 'inline', marks: '_', atom: true, selectable: true, }",
+          "description": "ProseMirror NodeSpec for qti-text-entry-interaction"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "textEntryInteractionSchema",
+          "declaration": {
+            "name": "textEntryInteractionSchema",
+            "module": "src/components/qti-text-entry-interaction/schema.ts"
           }
         }
       ]

@@ -27,9 +27,9 @@
     "build": "tsc",
     "cem": "cem analyze --config custom-elements-manifest.config.js",
     "cem:watch": "cem analyze --config custom-elements-manifest.config.js --watch",
-    "schema": "tsx scripts/generate-qti-schema.ts",
-    "schema:watch": "tsx scripts/generate-qti-schema.ts --watch",
-    "schema:validate": "tsx scripts/validate-generated-schema.ts",
+    "schema": "tsx src/scripts/generate-qti-schema.ts",
+    "schema:watch": "tsx src/scripts/generate-qti-schema.ts --watch",
+    "schema:validate": "tsx src/scripts/validate-generated-schema.ts",
     "build:schema": "pnpm cem && pnpm schema && pnpm schema:validate"
   },
   "dependencies": {
