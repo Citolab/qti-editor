@@ -4,7 +4,7 @@
   "modules": [
     {
       "kind": "javascript-module",
-      "path": "packages/custom-elements/src/index.ts",
+      "path": "components/index.ts",
       "declarations": [],
       "exports": [
         {
@@ -43,7 +43,7 @@
     },
     {
       "kind": "javascript-module",
-      "path": "packages/custom-elements/src/QtiChoiceInteraction.ts",
+      "path": "components/QtiChoiceInteraction.ts",
       "declarations": [
         {
           "kind": "class",
@@ -461,6 +461,26 @@
             "name": "true",
             "description": ""
           },
+          "proseMirrorLabel": {
+            "name": "Multiple",
+            "description": "Choice"
+          },
+          "proseMirrorIcon": {
+            "name": "☑️",
+            "description": ""
+          },
+          "proseMirrorKeywords": {
+            "name": "choice,quiz,mcq,select,multiple",
+            "description": ""
+          },
+          "proseMirrorCategory": {
+            "name": "interaction",
+            "description": ""
+          },
+          "proseMirrorInsertable": {
+            "name": "true",
+            "description": ""
+          },
           "tagName": "qti-choice-interaction",
           "customElement": true,
           "summary": "QTI qti-choice-interaction element based on 1EdTech QTI specification"
@@ -472,7 +492,7 @@
           "name": "qti-choice-interaction",
           "declaration": {
             "name": "QtiChoiceInteraction",
-            "module": "packages/custom-elements/src/QtiChoiceInteraction.ts"
+            "module": "components/QtiChoiceInteraction.ts"
           }
         },
         {
@@ -480,14 +500,14 @@
           "name": "QtiChoiceInteraction",
           "declaration": {
             "name": "QtiChoiceInteraction",
-            "module": "packages/custom-elements/src/QtiChoiceInteraction.ts"
+            "module": "components/QtiChoiceInteraction.ts"
           }
         }
       ]
     },
     {
       "kind": "javascript-module",
-      "path": "packages/custom-elements/src/QtiPrompt.ts",
+      "path": "components/QtiPrompt.ts",
       "declarations": [
         {
           "kind": "class",
@@ -516,6 +536,26 @@
             "name": "false",
             "description": ""
           },
+          "proseMirrorLabel": {
+            "name": "Prompt",
+            "description": ""
+          },
+          "proseMirrorIcon": {
+            "name": "💬",
+            "description": ""
+          },
+          "proseMirrorKeywords": {
+            "name": "prompt,question,instruction",
+            "description": ""
+          },
+          "proseMirrorCategory": {
+            "name": "content",
+            "description": ""
+          },
+          "proseMirrorInsertable": {
+            "name": "false",
+            "description": ""
+          },
           "tagName": "qti-prompt",
           "customElement": true,
           "summary": "QTI qti-prompt element based on 1EdTech QTI specification"
@@ -527,7 +567,7 @@
           "name": "qti-prompt",
           "declaration": {
             "name": "QtiPrompt",
-            "module": "packages/custom-elements/src/QtiPrompt.ts"
+            "module": "components/QtiPrompt.ts"
           }
         },
         {
@@ -535,14 +575,14 @@
           "name": "QtiPrompt",
           "declaration": {
             "name": "QtiPrompt",
-            "module": "packages/custom-elements/src/QtiPrompt.ts"
+            "module": "components/QtiPrompt.ts"
           }
         }
       ]
     },
     {
       "kind": "javascript-module",
-      "path": "packages/custom-elements/src/QtiSimpleChoice.ts",
+      "path": "components/QtiSimpleChoice.ts",
       "declarations": [
         {
           "kind": "class",
@@ -819,6 +859,26 @@
             "name": "_",
             "description": ""
           },
+          "proseMirrorLabel": {
+            "name": "Choice",
+            "description": "Option"
+          },
+          "proseMirrorIcon": {
+            "name": "○",
+            "description": ""
+          },
+          "proseMirrorKeywords": {
+            "name": "choice,option",
+            "description": ""
+          },
+          "proseMirrorCategory": {
+            "name": "content",
+            "description": ""
+          },
+          "proseMirrorInsertable": {
+            "name": "false",
+            "description": ""
+          },
           "tagName": "qti-simple-choice",
           "customElement": true,
           "summary": "QTI qti-simple-choice element based on 1EdTech QTI specification"
@@ -830,7 +890,7 @@
           "name": "qti-simple-choice",
           "declaration": {
             "name": "QtiSimpleChoice",
-            "module": "packages/custom-elements/src/QtiSimpleChoice.ts"
+            "module": "components/QtiSimpleChoice.ts"
           }
         },
         {
@@ -838,14 +898,14 @@
           "name": "QtiSimpleChoice",
           "declaration": {
             "name": "QtiSimpleChoice",
-            "module": "packages/custom-elements/src/QtiSimpleChoice.ts"
+            "module": "components/QtiSimpleChoice.ts"
           }
         }
       ]
     },
     {
       "kind": "javascript-module",
-      "path": "packages/custom-elements/src/QtiTextEntryInteraction.ts",
+      "path": "components/QtiTextEntryInteraction.ts",
       "declarations": [
         {
           "kind": "class",
@@ -935,6 +995,26 @@
             "name": "true",
             "description": ""
           },
+          "proseMirrorLabel": {
+            "name": "Text",
+            "description": "Entry"
+          },
+          "proseMirrorIcon": {
+            "name": "📝",
+            "description": ""
+          },
+          "proseMirrorKeywords": {
+            "name": "text,input,blank,fill,entry",
+            "description": ""
+          },
+          "proseMirrorCategory": {
+            "name": "interaction",
+            "description": ""
+          },
+          "proseMirrorInsertable": {
+            "name": "true",
+            "description": ""
+          },
           "tagName": "qti-text-entry-interaction",
           "customElement": true,
           "summary": "QTI qti-text-entry-interaction element based on 1EdTech QTI specification"
@@ -946,7 +1026,7 @@
           "name": "qti-text-entry-interaction",
           "declaration": {
             "name": "QtiTextEntryInteraction",
-            "module": "packages/custom-elements/src/QtiTextEntryInteraction.ts"
+            "module": "components/QtiTextEntryInteraction.ts"
           }
         },
         {
@@ -954,7 +1034,7 @@
           "name": "QtiTextEntryInteraction",
           "declaration": {
             "name": "QtiTextEntryInteraction",
-            "module": "packages/custom-elements/src/QtiTextEntryInteraction.ts"
+            "module": "components/QtiTextEntryInteraction.ts"
           }
         }
       ]

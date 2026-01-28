@@ -1,0 +1,50 @@
+{
+  "name": "@qti-editor/plugin-qti-interactions",
+  "version": "0.1.0",
+  "description": "ProseMirror plugin for QTI elements - framework-agnostic, works with vanilla ProseMirror, Tiptap, Remirror, ProseKit, etc.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./prosekit": "./src/prosekit.ts",
+    "./schema": "./src/schema/index.ts",
+    "./components": "./src/components/index.ts"
+  },
+  "peerDependencies": {
+    "prosemirror-model": "^1.19.0",
+    "prosemirror-state": "^1.4.0",
+    "prosemirror-view": "^1.31.0",
+    "prosekit": "^0.17.0"
+  },
+  "peerDependenciesMeta": {
+    "prosemirror-model": { "optional": false },
+    "prosemirror-state": { "optional": false },
+    "prosemirror-view": { "optional": true },
+    "prosekit": { "optional": true }
+  },
+  "scripts": {
+    "build": "tsc",
+    "cem": "cem analyze --config custom-elements-manifest.config.js",
+    "cem:watch": "cem analyze --config custom-elements-manifest.config.js --watch",
+    "schema": "tsx scripts/generate-qti-schema.ts",
+    "schema:watch": "tsx scripts/generate-qti-schema.ts --watch",
+    "schema:validate": "tsx scripts/validate-generated-schema.ts",
+    "build:schema": "pnpm cem && pnpm schema && pnpm schema:validate"
+  },
+  "dependencies": {
+    "prosemirror-keymap": "^1.2.0",
+    "prosemirror-model": "^1.19.0",
+    "prosemirror-state": "^1.4.0",
+    "lit": "^3.0.0",
+    "@open-wc/context-protocol": "^0.0.9"
+  },
+  "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
+    "@wc-toolkit/jsdoc-tags": "^1.0.0",
+    "@wc-toolkit/type-parser": "^1.0.0",
+    "@wc-toolkit/cem-sorter": "^1.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "name": "@qti-editor/integration",
+  "name": "@qti-editor/app",
   "version": "0.1.0",
-  "description": "QTI Editor integration - Plugin orchestrator for the modular QTI editor",
+  "description": "QTI Editor Demo Application - ProseKit editor with QTI support",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,20 +9,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@qti-editor/core": "workspace:*",
-    "@qti-editor/plugin-qti-components": "workspace:*",
-    "@qti-editor/plugin-slash-menu": "workspace:*",
-    "@qti-editor/plugin-qti-import": "workspace:*",
+    "@qti-editor/plugin-editor-events": "workspace:*",
+    "@qti-editor/plugin-qti-attributes": "workspace:*",
+    "@qti-editor/plugin-qti-code": "workspace:*",
+    "@qti-editor/plugin-qti-interactions": "workspace:*",
     "@qti-editor/plugin-toolbar": "workspace:*",
-    "@qti-editor/plugin-side-panel": "workspace:*"
-  },
-  "peerDependencies": {
     "lit": "^3.0.0",
     "prosekit": "^0.17.0",
-    "typescript": "^5.0.0",
-    "vite": "^5.0.0"
+    "prosemirror-menu": "^1.2.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0"
+    "@tailwindcss/vite": "^4.1.18",
+    "@types/node": "^20.0.0",
+    "autoprefixer": "^10.4.23",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
   }
 }

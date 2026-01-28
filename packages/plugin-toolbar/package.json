@@ -1,22 +1,33 @@
 {
   "name": "@qti-editor/plugin-toolbar",
   "version": "0.1.0",
-  "description": "Shared toolbar for ProseKit-based QTI editor with extensible items",
+  "description": "ProseMirror toolbar with QTI interaction insertion support",
   "type": "module",
   "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./toolbar.css": "./src/toolbar.css"
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsc && vite build"
+    "build": "tsc"
+  },
+  "dependencies": {
+    "prosemirror-menu": "^1.2.0",
+    "prosemirror-state": "^1.4.0",
+    "prosemirror-view": "^1.31.0",
+    "prosemirror-model": "^1.19.0",
+    "prosemirror-history": "^1.4.0",
+    "prosemirror-commands": "^1.5.0"
   },
   "peerDependencies": {
-    "prosekit": "^0.17.0",
-    "typescript": "^5.0.0",
-    "vite": "^5.0.0"
+    "@qti-editor/plugin-qti-interactions": "workspace:*",
+    "prosekit": "^0.17.0"
+  },
+  "peerDependenciesMeta": {
+    "@qti-editor/plugin-qti-interactions": { "optional": true },
+    "prosekit": { "optional": true }
   },
   "devDependencies": {
-    "@types/node": "^20.0.0"
+    "typescript": "^5.0.0"
   }
 }

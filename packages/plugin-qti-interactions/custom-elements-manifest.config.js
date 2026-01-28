@@ -21,8 +21,8 @@ const proseMirrorTags = {
 };
 
 export default {
-  globs: ["packages/custom-elements/**/*.ts"],
-  exclude: ["packages/custom-elements/**/*.d.ts", "**/dist/**", "**/build/**"],
+  globs: ["components/**/*.ts"],
+  exclude: ["components/**/*.d.ts", "**/dist/**", "**/build/**"],
   outdir: ".",
   packagejson: false,
 
