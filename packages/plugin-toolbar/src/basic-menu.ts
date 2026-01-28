@@ -4,6 +4,7 @@
  * Standard editing commands for the ProseMirror menu bar.
  */
 
+import { toggleMark } from 'prosemirror-commands';
 import {
   MenuItem,
   Dropdown,
@@ -17,7 +18,6 @@ import {
   blockTypeItem,
 } from 'prosemirror-menu';
 import type { Schema, MarkType, NodeType } from 'prosemirror-model';
-import { toggleMark } from 'prosemirror-commands';
 import type { EditorState, Command } from 'prosemirror-state';
 
 /**
@@ -103,7 +103,7 @@ export function buildBasicMenuItems(schema: Schema): BasicMenuItems {
       blockTypeItem(schema.nodes.paragraph, {
         title: 'Paragraph',
         label: 'Paragraph',
-      })
+      }),
     );
   }
 
@@ -114,7 +114,7 @@ export function buildBasicMenuItems(schema: Schema): BasicMenuItems {
           title: `Heading ${level}`,
           label: `H${level}`,
           attrs: { level },
-        })
+        }),
       );
     }
   }
@@ -124,13 +124,13 @@ export function buildBasicMenuItems(schema: Schema): BasicMenuItems {
       blockTypeItem(schema.nodes.code_block, {
         title: 'Code Block',
         label: 'Code',
-      })
+      }),
     );
   }
 
   if (blockItems.length > 0) {
     result.blocks.push(
-      new Dropdown(blockItems, { label: 'Type', title: 'Change block type' })
+      new Dropdown(blockItems, { label: 'Type', title: 'Change block type' }),
     );
   }
 
@@ -140,7 +140,7 @@ export function buildBasicMenuItems(schema: Schema): BasicMenuItems {
       wrapItem(schema.nodes.bullet_list, {
         title: 'Bullet List',
         icon: icons.bulletList,
-      })
+      }),
     );
   }
 
@@ -149,7 +149,7 @@ export function buildBasicMenuItems(schema: Schema): BasicMenuItems {
       wrapItem(schema.nodes.ordered_list, {
         title: 'Ordered List',
         icon: icons.orderedList,
-      })
+      }),
     );
   }
 
@@ -158,7 +158,7 @@ export function buildBasicMenuItems(schema: Schema): BasicMenuItems {
       wrapItem(schema.nodes.blockquote, {
         title: 'Blockquote',
         icon: icons.blockquote,
-      })
+      }),
     );
   }
 

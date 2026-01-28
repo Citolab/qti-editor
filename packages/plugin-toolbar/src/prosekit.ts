@@ -5,7 +5,12 @@
  */
 
 import { definePlugin } from 'prosekit/core';
-import { createMenuBarPlugin, type MenuBarOptions } from './menu-bar';
+import {
+  createDetachedMenuBarPlugin,
+  createMenuBarPlugin,
+  type DetachedMenuBarOptions,
+  type MenuBarOptions,
+} from './menu-bar';
 import { createQtiMenuItems } from './qti-menu-items';
 
 export interface ToolbarExtensionOptions extends Omit<MenuBarOptions, 'schema'> {
@@ -14,6 +19,16 @@ export interface ToolbarExtensionOptions extends Omit<MenuBarOptions, 'schema'> 
    * @default true
    */
   autoDetectQti?: boolean;
+
+  /**
+   * Mount the toolbar outside the editor (avoids the ProseMirror-menubar wrapper).
+   */
+  mount?: DetachedMenuBarOptions['mount'];
+
+  /**
+   * Optional class for the detached toolbar container.
+   */
+  className?: string;
 }
 
 /**
@@ -46,6 +61,16 @@ export function defineToolbarExtension(options: ToolbarExtensionOptions = {}) {
     let qtiItems = menuOptions.qtiItems;
     if (autoDetectQti && !qtiItems) {
       qtiItems = createQtiMenuItems(schema);
+    }
+
+    if (menuOptions.mount) {
+      return createDetachedMenuBarPlugin({
+        schema,
+        ...menuOptions,
+        qtiItems,
+        mount: menuOptions.mount,
+        className: menuOptions.className,
+      });
     }
 
     return createMenuBarPlugin({

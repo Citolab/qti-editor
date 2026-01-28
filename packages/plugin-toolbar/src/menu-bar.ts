@@ -4,9 +4,10 @@
  * Creates a ProseMirror menu bar with basic editing commands and optional QTI items.
  */
 
-import { menuBar, type MenuElement } from 'prosemirror-menu';
+import { menuBar, renderGrouped, type MenuElement } from 'prosemirror-menu';
 import type { Schema } from 'prosemirror-model';
-import type { Plugin } from 'prosemirror-state';
+import { Plugin } from 'prosemirror-state';
+import type { Plugin as PluginType } from 'prosemirror-state';
 import { buildBasicMenuItems } from './basic-menu.js';
 import type { QtiMenuItem } from './qti-menu-items.js';
 
@@ -25,13 +26,24 @@ export interface MenuBarOptions {
   floating?: boolean;
 }
 
+export interface DetachedMenuBarOptions extends MenuBarOptions {
+  /**
+   * Target element (or getter) to mount the menu into.
+   */
+  mount: HTMLElement | (() => HTMLElement | null);
+  /**
+   * Optional class name for the menu container.
+   */
+  className?: string;
+}
+
 /**
  * Create a menu bar plugin for ProseMirror
  *
  * @param options - Configuration options
  * @returns A ProseMirror plugin that renders a menu bar
  */
-export function createMenuBarPlugin(options: MenuBarOptions): Plugin {
+export function createMenuBarPlugin(options: MenuBarOptions): PluginType {
   const { schema, qtiItems = [], floating = true } = options;
 
   // Build the basic menu structure
@@ -55,5 +67,64 @@ export function createMenuBarPlugin(options: MenuBarOptions): Plugin {
   return menuBar({
     floating,
     content,
+  });
+}
+
+export function createDetachedMenuBarPlugin(options: DetachedMenuBarOptions): PluginType {
+  const { schema, qtiItems = [], mount, className } = options;
+
+  const basicItems = buildBasicMenuItems(schema);
+  const content: MenuElement[][] = [
+    basicItems.history,
+    basicItems.marks,
+    basicItems.blocks,
+  ];
+
+  if (qtiItems.length > 0) {
+    content.push(qtiItems);
+  }
+
+  return new Plugin({
+    view(editorView) {
+      const menu = editorView.dom.ownerDocument.createElement('div');
+      menu.className = className || 'ProseMirror-menubar';
+      const { dom, update } = renderGrouped(editorView, content);
+      menu.appendChild(dom);
+
+      let mounted = false;
+      const resolveMount = () => (typeof mount === 'function' ? mount() : mount);
+      const ensureMounted = () => {
+        if (mounted) return;
+        const target = resolveMount();
+        if (!target) return;
+        target.appendChild(menu);
+        mounted = true;
+      };
+
+      const scheduleMount = () => {
+        if (mounted) return;
+        ensureMounted();
+        if (mounted) return;
+        const win = editorView.dom.ownerDocument.defaultView;
+        if (win) {
+          win.requestAnimationFrame(scheduleMount);
+        }
+      };
+
+      scheduleMount();
+      update(editorView.state);
+
+      return {
+        update(view) {
+          update(view.state);
+          ensureMounted();
+        },
+        destroy() {
+          if (menu.parentNode) {
+            menu.parentNode.removeChild(menu);
+          }
+        },
+      };
+    },
   });
 }

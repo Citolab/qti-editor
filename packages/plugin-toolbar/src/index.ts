@@ -22,7 +22,12 @@
  */
 
 // Pure ProseMirror API
-export { createMenuBarPlugin, type MenuBarOptions } from './menu-bar';
+export {
+  createMenuBarPlugin,
+  createDetachedMenuBarPlugin,
+  type MenuBarOptions,
+  type DetachedMenuBarOptions,
+} from './menu-bar';
 export { createQtiMenuItems, createInsertNodeMenuItem, type QtiMenuItem } from './qti-menu-items';
 export { buildBasicMenuItems } from './basic-menu';
 
