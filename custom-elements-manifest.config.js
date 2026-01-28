@@ -21,16 +21,30 @@ const proseMirrorTags = {
 };
 
 export default {
-  globs: ["packages/custom-elements/**/*.ts"],
-  exclude: ["packages/custom-elements/**/*.d.ts", "**/dist/**", "**/build/**"],
+  globs: [
+    "packages/plugin-qti-interactions/src/components/**/*.ts",
+    "packages/plugin-qti-attributes/**/*.ts",
+    "packages/plugin-qti-code/**/*.ts",
+  ],
+  exclude: [
+    "packages/custom-elements/**/*.d.ts",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+  ],
   outdir: ".",
   packagejson: false,
 
   overrideModuleCreation({ts, globs}) {
     const program = getTsProgram(ts, globs, "tsconfig.json");
+    const globPrefixes = globs
+      .map((glob) => glob.split("*")[0])
+      .filter(Boolean);
     return program
       .getSourceFiles()
-      .filter((sf) => globs.find((glob) => sf.fileName.includes(glob)));
+      .filter((sf) =>
+        globPrefixes.some((prefix) => sf.fileName.includes(prefix)),
+      );
   },
 
   plugins: [
