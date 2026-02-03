@@ -12,17 +12,34 @@
  * const editor = createEditor({ extension: defineQtiExtension() });
  * ```
  */
+import '@qti-components/theme/dist/item.css';
+import '@qti-components/prosemirror/dist/components/qti-choice-interaction/qti-choice-interaction.js';
+import '@qti-components/prosemirror/dist/components/qti-prompt/qti-prompt.js';
+import '@qti-components/prosemirror/dist/components/qti-simple-choice/qti-simple-choice.js';
+import '@qti-components/prosemirror/dist/components/qti-text-entry-interaction/qti-text-entry-interaction.js';
 
-import { defineBasicExtension } from 'prosekit/basic';
-import { union, definePlugin, defineKeymap , defineNodeSpec, defineMarkSpec } from 'prosekit/core';
+
+
 import {
   insertChoiceInteraction,
+} from '@qti-components/prosemirror/src/components/qti-choice-interaction/qti-choice-interaction.commands.ts';
+import {
+  qtiChoiceInteractionNodeSpec,
+} from '@qti-components/prosemirror/src/components/qti-choice-interaction/qti-choice-interaction.schema.ts';
+import {
+  qtiPromptNodeSpec,
+} from '@qti-components/prosemirror/src/components/qti-prompt/qti-prompt.schema.ts';
+import {
+  qtiSimpleChoiceNodeSpec,
+} from '@qti-components/prosemirror/src/components/qti-simple-choice/qti-simple-choice.schema.ts';
+import {
   insertTextEntryInteraction,
-  splitQtiSimpleChoice,
-  liftEmptyQtiSimpleChoice,
-  createChoiceInteractionGuards,
-} from './components/index.js';
-import { nodes, marks } from './schema/prosemirror-schema';
+} from '@qti-components/prosemirror/src/components/qti-text-entry-interaction/qti-text-entry-interaction.commands.ts';
+import {
+  qtiTextEntryInteractionNodeSpec,
+} from '@qti-components/prosemirror/src/components/qti-text-entry-interaction/qti-text-entry-interaction.schema.ts';
+import { defineBasicExtension } from 'prosekit/basic';
+import { union, defineKeymap , defineNodeSpec } from 'prosekit/core';
 
 /**
  * Define the complete QTI extension for ProseKit
@@ -35,14 +52,12 @@ import { nodes, marks } from './schema/prosemirror-schema';
  */
 export function defineQtiExtension() {
   // Create node extensions for QTI nodes
-  const qtiNodeExtensions = Object.entries(nodes)
-    .filter(([name]) => name.startsWith('qti_'))
-    .map(([name, spec]) => defineNodeSpec({ name, ...spec }));
-
-  // Create mark extensions
-  const qtiMarkExtensions = Object.entries(marks).map(([name, spec]) =>
-    defineMarkSpec({ name, ...spec }),
-  );
+  const qtiNodeExtensions = [
+    defineNodeSpec({ name: 'qtiChoiceInteraction', ...qtiChoiceInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiPrompt', ...qtiPromptNodeSpec }),
+    defineNodeSpec({ name: 'qtiSimpleChoice', ...qtiSimpleChoiceNodeSpec }),
+    defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
+  ];
 
   return union(
     // Basic editing (paragraphs, headings, lists, etc.)
@@ -50,18 +65,16 @@ export function defineQtiExtension() {
 
     // QTI nodes and marks
     ...qtiNodeExtensions,
-    ...qtiMarkExtensions,
+    // ...qtiMarkExtensions,
 
     // QTI keymaps
     defineKeymap({
       'Mod-Shift-q': insertChoiceInteraction,
       'Mod-Shift-t': insertTextEntryInteraction,
-      Enter: splitQtiSimpleChoice,
-      Backspace: liftEmptyQtiSimpleChoice,
     }),
 
     // QTI guards
-    definePlugin(() => createChoiceInteractionGuards()),
+    // definePlugin(() => createChoiceInteractionGuards()),
   );
 }
 

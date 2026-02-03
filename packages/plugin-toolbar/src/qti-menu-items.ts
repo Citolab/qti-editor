@@ -71,31 +71,31 @@ export function createQtiMenuItems(schema: Schema): QtiMenuItem[] {
   const items: MenuItem[] = [];
 
   // Choice Interaction
-  if (schema.nodes.qti_choice_interaction) {
+  if (schema.nodes.qtiChoiceInteraction) {
     items.push(
-      createInsertNodeMenuItem(schema.nodes.qti_choice_interaction, {
+      createInsertNodeMenuItem(schema.nodes.qtiChoiceInteraction, {
         title: 'Insert a multiple choice question',
         label: 'Choice',
         attrs: { responseIdentifier: `RESPONSE_${Date.now()}` },
         content: (s) => [
-          s.nodes.qti_prompt.create({}, s.nodes.paragraph.create({}, s.text('Enter your question here...'))),
-          s.nodes.qti_simple_choice.create(
+          s.nodes.qtiPrompt.create({}, s.nodes.paragraph.create({}, s.text('Enter your question here...'))),
+          s.nodes.qtiSimpleChoice.create(
             { identifier: 'A' },
-            s.nodes.paragraph.create({}, s.text('Option A'))
+            s.text('Option A'),
           ),
-          s.nodes.qti_simple_choice.create(
+          s.nodes.qtiSimpleChoice.create(
             { identifier: 'B' },
-            s.nodes.paragraph.create({}, s.text('Option B'))
+            s.text('Option B'),
           ),
         ],
-      })
+      }),
     );
   }
 
   // Text Entry Interaction (inline)
-  if (schema.nodes.qti_text_entry_interaction) {
+  if (schema.nodes.qtiTextEntryInteraction) {
     items.push(
-      createInsertNodeMenuItem(schema.nodes.qti_text_entry_interaction, {
+      createInsertNodeMenuItem(schema.nodes.qtiTextEntryInteraction, {
         title: 'Insert an inline text entry field',
         label: 'Text Entry',
         attrs: { responseIdentifier: `RESPONSE_${Date.now()}` },

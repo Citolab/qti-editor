@@ -8,9 +8,14 @@
  * import { createMenuBarPlugin, createQtiMenuItems } from '@qti-editor/plugin-toolbar';
  * import { EditorState } from 'prosemirror-state';
  * import { EditorView } from 'prosemirror-view';
- * import { createQtiSchema } from '@qti-editor/plugin-qti-interactions';
+ * import {
+ *   qtiChoiceInteractionNodeSpec,
+ *   qtiPromptNodeSpec,
+ *   qtiSimpleChoiceNodeSpec,
+ *   qtiTextEntryInteractionNodeSpec,
+ * } from '@qti-editor/plugin-qti-interactions';
  *
- * const schema = createQtiSchema();
+ * // Ensure your schema includes the camelCase QTI node specs above.
  * const qtiMenu = createQtiMenuItems(schema);
  * const menuPlugin = createMenuBarPlugin({ qtiItems: qtiMenu });
  *
