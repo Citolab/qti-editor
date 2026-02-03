@@ -9,3 +9,5 @@ dist
 coverage
 .idea
 *.log
+.yalc/
+yalc.lock
