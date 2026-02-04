@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "yalc": "pnpm -r yalc:add"
   },
   "dependencies": {
     "@qti-editor/plugin-editor-events": "workspace:*",

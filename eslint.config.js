@@ -63,7 +63,7 @@ export default [
       // Formatting rules (replacing Prettier)
       'semi': ['error', 'always'],
       'quotes': ['error', 'single', { 'avoidEscape': true }],
-      'comma-dangle': ['error', 'always-multiline'],
+      // 'comma-dangle': ['error', 'always-multiline'],
       'indent': ['error', 2, { 'SwitchCase': 1 }],
       'object-curly-spacing': ['error', 'always'],
       'array-bracket-spacing': ['error', 'never'],

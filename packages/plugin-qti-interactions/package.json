@@ -30,14 +30,10 @@
     }
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "yalc:add": "yalc add @qti-components/base @qti-components/interactions @qti-components/prosemirror @qti-components/theme @qti-components/utilities"
   },
   "dependencies": {
-    "@qti-components/base": "file:.yalc/@qti-components/base",
-    "@qti-components/interactions": "file:.yalc/@qti-components/interactions",
-    "@qti-components/prosemirror": "file:.yalc/@qti-components/prosemirror",
-    "@qti-components/theme": "file:.yalc/@qti-components/theme",
-    "@qti-components/utilities": "file:.yalc/@qti-components/utilities",
     "prosemirror-keymap": "^1.2.0",
     "prosemirror-model": "^1.19.0",
     "prosemirror-state": "^1.4.0"
