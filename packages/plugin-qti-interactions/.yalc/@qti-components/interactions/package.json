@@ -32,13 +32,17 @@
   },
   "scripts": {
     "attw": "attw --profile esm-only --pack",
-    "build": "tsc --paths null --moduleResolution node",
+    "build": "tsc --paths null",
+    "build-storybook": "storybook build",
+    "cem": "cem analyze --config ./custom-elements-manifest.config.mjs",
     "clean": "rm -rf dist",
+    "storybook": "storybook dev -p 6008 --no-open",
     "yalc": "yalc publish",
     "yalc:push": "yalc push"
   },
   "sideEffects": true,
   "type": "module",
   "types": "dist/index.d.ts",
-  "yalcSig": "ae2be68c90670608be61a0c4db8b008c"
+  "customElements": "custom-elements.json",
+  "yalcSig": "84c65ceea57184a145c795b83b1675df"
 }
