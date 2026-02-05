@@ -39,6 +39,9 @@
       ],
       "@qti-editor/plugin-side-panel": [
         "packages/plugin-side-panel/index.ts"
+      ],
+      "@qti-editor/prosemirror-block-select-plugin": [
+        "packages/prosemirror-block-select-plugin/index.ts"
       ]
     }
   }

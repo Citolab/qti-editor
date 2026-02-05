@@ -15,6 +15,7 @@
     "@qti-editor/plugin-qti-code": "workspace:*",
     "@qti-editor/plugin-qti-interactions": "workspace:*",
     "@qti-editor/plugin-toolbar": "workspace:*",
+    "@qti-editor/prosemirror-block-select-plugin": "workspace:*",
     "lit": "^3.0.0",
     "prosekit": "^0.17.0",
     "prosemirror-menu": "^1.2.0"

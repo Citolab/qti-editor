@@ -22,6 +22,7 @@ import { defineQtiExtension } from '@qti-editor/plugin-qti-interactions/prosekit
 
 // Import toolbar plugin
 import { defineToolbarExtension } from '@qti-editor/plugin-toolbar';
+import { blockSelectExtension } from '@qti-editor/prosemirror-block-select-plugin';
 
 class QtiEditorApp extends LitElement {
   private editor: Editor;
@@ -50,6 +51,7 @@ class QtiEditorApp extends LitElement {
         floating: false,
         mount: () => this.toolbarRef.value,
       }),
+      blockSelectExtension
     );
 
     this.editor = createEditor({ extension });

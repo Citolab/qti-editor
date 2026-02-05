@@ -73,6 +73,9 @@ importers:
       '@qti-editor/plugin-toolbar':
         specifier: workspace:*
         version: link:../../packages/plugin-toolbar
+      '@qti-editor/prosemirror-block-select-plugin':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror-block-select-plugin
       lit:
         specifier: ^3.0.0
         version: 3.3.1
