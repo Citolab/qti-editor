@@ -4,7 +4,7 @@
   "description": "QTI Editor built with Tiptap and modular plugins",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@9.15.4",
+  "packageManager": "pnpm@10.28.2",
   "scripts": {
     "dev": "pnpm --filter @qti-editor/app dev",
     "build": "pnpm build:packages && pnpm --filter @qti-editor/app build",
@@ -28,6 +28,16 @@
     "concurrently": "^9.2.0",
     "eslint": "^9.39.2",
     "eslint-plugin-import": "^2.32.0",
-    "tsx": "^4.19.2"
+    "tsx": "^4.19.2",
+    "vite-tsconfig-paths": "^6.0.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "@qti-components/interactions": "link:.yalc/@qti-components/interactions",
+      "@qti-components/base": "link:.yalc/@qti-components/base",
+      "@qti-components/prosemirror": "link:.yalc/@qti-components/prosemirror",
+      "@qti-components/theme": "link:.yalc/@qti-components/theme",
+      "@qti-components/utilities": "link:.yalc/@qti-components/utilities"
+    }
   }
 }

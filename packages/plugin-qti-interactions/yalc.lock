@@ -1,0 +1,30 @@
+{
+  "version": "v1",
+  "packages": {
+    "@qti-components/prosemirror": {
+      "signature": "76bd498da891d4f906292a1fc21d451b",
+      "file": true,
+      "replaced": "workspace:*"
+    },
+    "@qti-components/base": {
+      "signature": "f10259bf3194202fb6b73a3e1c10dabc",
+      "file": true,
+      "replaced": "workspace:*"
+    },
+    "@qti-components/utilities": {
+      "signature": "ffffac2a8fb493a65f17115df1f3b618",
+      "file": true,
+      "replaced": "workspace:*"
+    },
+    "@qti-components/interactions": {
+      "signature": "ae2be68c90670608be61a0c4db8b008c",
+      "file": true,
+      "replaced": "workspace:*"
+    },
+    "@qti-components/theme": {
+      "signature": "58916d6ed03680807e01cdd4a0f84878",
+      "file": true,
+      "replaced": "workspace:*"
+    }
+  }
+}
