@@ -1,12 +1,15 @@
 import 'prosekit/lit/popover'
-import '../button/index'
+import './button'
 
 import { html, LitElement, nothing } from 'lit';
+import type { Editor } from 'prosekit/core';
 
 let imageUploadId = 0
 
-class LitImageUploadPopover extends LitElement {
-  static properties = {
+type Uploader = (opts: { file: File; onProgress: (p: { loaded: number; total: number }) => void }) => Promise<string>;
+
+export class LitImageUploadPopover extends LitElement {
+  static override properties = {
     editor: {
       attribute: false
     },
@@ -18,25 +21,36 @@ class LitImageUploadPopover extends LitElement {
     icon: { type: String },
   };
 
-  tooltip = ''
-  disabled = false
-  icon = ''
+  declare editor: Editor | null;
+  declare uploader: Uploader | null;
+  declare tooltip: string;
+  declare disabled: boolean;
+  declare icon: string;
 
   open = false;
   url = '';
-  file = null;
+  file: File | null = null;
   ariaId = `lit-image-upload-${imageUploadId++}`;
 
-  createRenderRoot() {
+  constructor() {
+    super();
+    this.editor = null;
+    this.uploader = null;
+    this.tooltip = '';
+    this.disabled = false;
+    this.icon = '';
+  }
+
+  override createRenderRoot() {
     return this
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback()
     this.classList.add('contents')
   }
 
-  handleOpenChange = (event) => {
+  handleOpenChange = (event: CustomEvent<boolean>) => {
     const isOpen = event.detail
 
     if (!isOpen) {
@@ -47,8 +61,8 @@ class LitImageUploadPopover extends LitElement {
     this.requestUpdate()
   };
 
-  handleFileChange = (event) => {
-    const target = event.target
+  handleFileChange = (event: Event) => {
+    const target = event.target as HTMLInputElement
     const selectedFile = target.files?.[0]
 
     if (selectedFile) {
@@ -61,8 +75,8 @@ class LitImageUploadPopover extends LitElement {
     this.requestUpdate()
   };
 
-  handleUrlChange = (event) => {
-    const target = event.target
+  handleUrlChange = (event: Event) => {
+    const target = event.target as HTMLInputElement
     const inputUrl = target.value
 
     if (inputUrl) {
@@ -84,7 +98,7 @@ class LitImageUploadPopover extends LitElement {
   }
 
   handleSubmit = () => {
-    const editor = this.editor
+    const editor = this.editor as any
     if (!editor) return
 
     if (this.url) {
@@ -98,7 +112,7 @@ class LitImageUploadPopover extends LitElement {
     this.requestUpdate()
   };
 
-  render() {
+  override render() {
     return html`
       <prosekit-popover-root
         .open=${this.open}

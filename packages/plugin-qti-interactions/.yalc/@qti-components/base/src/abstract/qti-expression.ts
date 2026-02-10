@@ -2,12 +2,12 @@ import { consume } from '@lit/context';
 import { css, html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 
-import type { ItemContext } from '../context/item.context';
 import { itemContext } from '../context/qti-assessment-item.context';
 import { qtiContext } from '../context/qti.context';
 
 import type { QtiContext, QtiContextType } from '../context/qti.context';
 import type { ResponseVariable, VariableDeclaration } from '../lib/variables';
+import type { ItemContext } from '../context/item.context';
 
 export interface QtiExpressionBase<T> {
   // get assessmentItem(): QtiAssessmentItem;
@@ -50,8 +50,8 @@ export abstract class QtiExpression<T> extends LitElement implements QtiExpressi
   protected qtiContext?: QtiContext;
 
   getVariables = (): (ResponseVariable | VariableDeclaration<QtiContextType>)[] =>
-  // FIXME: if this itself is multiple, this will never enter the qti-multiple switch
-  // See this example here: https://github.com/1EdTech/qti-examples/blob/master/qtiv3-examples/packaging/items/Example05-feedbackBlock-adaptive.xml
+    // FIXME: if this itself is multiple, this will never enter the qti-multiple switch
+    // See this example here: https://github.com/1EdTech/qti-examples/blob/master/qtiv3-examples/packaging/items/Example05-feedbackBlock-adaptive.xml
 
     Array.from(this.children)
       .map((e: Element) => {

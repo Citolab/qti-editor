@@ -1,6 +1,5 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
-import 'prosemirror-menu/style/menu.css';
 import './style.css';
 
 // ProseKit core
@@ -20,7 +19,6 @@ import {
 } from '@qti-editor/plugin-qti-code';
 import { defineQtiExtension } from '@qti-editor/plugin-qti-interactions/prosekit';
 
-// Import toolbar plugin
 import { defineToolbarExtension } from '@qti-editor/plugin-toolbar';
 import { blockSelectExtension } from '@qti-editor/prosemirror-block-select-plugin';
 import { getFirebaseConfig } from './firebase-config';
@@ -30,7 +28,6 @@ class QtiEditorApp extends LitElement {
   private editorRef: Ref<HTMLDivElement>;
   private panelRef: Ref<QtiAttributesPanel>;
   private codePanelRef: Ref<QtiCodePanel>;
-  private toolbarRef: Ref<HTMLDivElement>;
   private attributesEventTarget: EventTarget;
   private editorEventsTarget: EventTarget;
   private codeEventTarget: EventTarget;
@@ -59,10 +56,7 @@ class QtiEditorApp extends LitElement {
       }),
       qtiEditorEventsExtension({ eventTarget: this.editorEventsTarget }),
       qtiCodePanelExtension({ eventTarget: this.codeEventTarget }),
-      defineToolbarExtension({
-        floating: false,
-        mount: () => this.toolbarRef.value,
-      }),
+      defineToolbarExtension({ getEditor: () => this.editor }),
       blockSelectExtension
     );
 
@@ -70,7 +64,6 @@ class QtiEditorApp extends LitElement {
     this.editorRef = createRef<HTMLDivElement>();
     this.panelRef = createRef<QtiAttributesPanel>();
     this.codePanelRef = createRef<QtiCodePanel>();
-    this.toolbarRef = createRef<HTMLDivElement>();
 
     // example: use events from events plugin, probably not even necessary
     this.editorEventsTarget.addEventListener('qti:content:change', (event) => {
@@ -106,16 +99,13 @@ class QtiEditorApp extends LitElement {
   override render() {
     return html`
       <main class="app-main">
-        <div class="app-toolbar" ${ref(this.toolbarRef)}></div>
         <div class="app-body">
           <div class="editor-host">
-            <div class="box-border h-full w-full min-h-36 overflow-y-hidden overflow-x-hidden rounded-md border border-solid border-gray-200 shadow-sm flex flex-col bg-white text-black">
-              <div class="relative w-full flex-1 box-border overflow-y-auto">
-                <div
-                  ${ref(this.editorRef)}
-                  class="ProseMirror box-border h-full min-h-full p-8 outline-none"
-                ></div>
-              </div>
+            <div class="box-border h-full w-full min-h-36 overflow-x-hidden rounded-md border border-solid border-gray-200 shadow-sm bg-white text-black overflow-y-auto">
+              <div
+                ${ref(this.editorRef)}
+                class="ProseMirror box-border h-full min-h-full p-8 outline-none"
+              ></div>
             </div>
           </div>
           <aside class="w-90 max-w-90 shrink-0 p-4">

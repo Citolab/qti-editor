@@ -1,7 +1,7 @@
 import { createContext } from '@lit/context';
 
-import type { VariableDeclaration } from '../lib/variables';
 import type { ItemContext } from './item.context';
+import type { VariableDeclaration } from '../lib/variables';
 
 export interface TestContext {
   items: (ItemContext & { category?: string })[];

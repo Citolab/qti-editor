@@ -1,8 +1,8 @@
-import type { ElementPart, Part } from 'lit';
-import { AsyncDirective } from 'lit/async-directive.js';
-import { directive } from 'lit/directive.js';
 import { nothing } from 'lit/html.js';
+import { directive } from 'lit/directive.js';
+import { AsyncDirective } from 'lit/async-directive.js';
 
+import type { ElementPart, Part } from 'lit';
 
 /**
  * A directive that spreads arguments to HTML attributes with intelligent filtering.

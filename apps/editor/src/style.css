@@ -5,6 +5,7 @@
  */
 
 @import "tailwindcss";
+@source "../../../packages/plugin-toolbar/src/**/*.{ts,js}";
 
 /*---break---
  */
@@ -95,32 +96,13 @@ qti-prosekit-editor {
   display: flex;
   gap: 0;
   align-items: stretch;
-  min-height: calc(100vh - 60px);
+  min-height: 100vh;
 }
 
 .editor-host {
   flex: 1;
   min-width: 0;
   padding: 16px;
-}
-
-.app-toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: linear-gradient(90deg, #ffffff, #f8fafc);
-  color: #0f172a;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
-  padding: 10px 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.app-toolbar .qti-toolbar {
-  flex: 1;
 }
 
 .qti-dropdown {

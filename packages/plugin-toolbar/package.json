@@ -1,33 +1,20 @@
 {
   "name": "@qti-editor/plugin-toolbar",
   "version": "0.1.0",
-  "description": "ProseMirror toolbar with QTI interaction insertion support",
+  "description": "Lit toolbar web component for ProseKit editors",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts"
   },
-  "scripts": {
-    "build": "tsc"
-  },
   "dependencies": {
-    "prosemirror-menu": "^1.2.0",
-    "prosemirror-state": "^1.4.0",
-    "prosemirror-view": "^1.31.0",
+    "lit": "^3.0.0",
     "prosemirror-model": "^1.19.0",
-    "prosemirror-history": "^1.4.0",
-    "prosemirror-commands": "^1.5.0"
+    "prosemirror-state": "^1.4.0",
+    "prosemirror-view": "^1.31.0"
   },
   "peerDependencies": {
-    "@qti-editor/plugin-qti-interactions": "workspace:*",
     "prosekit": "^0.17.0"
-  },
-  "peerDependenciesMeta": {
-    "@qti-editor/plugin-qti-interactions": { "optional": true },
-    "prosekit": { "optional": true }
-  },
-  "devDependencies": {
-    "typescript": "^5.0.0"
   }
 }

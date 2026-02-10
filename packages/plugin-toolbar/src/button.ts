@@ -2,34 +2,42 @@ import 'prosekit/lit/tooltip'
 
 import { html, LitElement, nothing } from 'lit';
 
-class LitButton extends LitElement {
-  static properties = {
+export class LitButton extends LitElement {
+  static override properties = {
     pressed: { type: Boolean },
     disabled: { type: Boolean },
     tooltip: { type: String },
     icon: { type: String }
   };
 
-  pressed = false
-  disabled = false
-  tooltip = ''
-  icon = ''
+  declare pressed: boolean
+  declare disabled: boolean
+  declare tooltip: string
+  declare icon: string
 
-  createRenderRoot() {
+  constructor() {
+    super()
+    this.pressed = false
+    this.disabled = false
+    this.tooltip = ''
+    this.icon = ''
+  }
+
+  override createRenderRoot() {
     return this
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback()
     this.classList.add('contents')
   }
 
-  handleMouseDown = (event) => {
+  handleMouseDown = (event: MouseEvent) => {
     // Prevent the editor from being blurred when the button is clicked
     event.preventDefault()
   };
 
-  render() {
+  override render() {
     const tooltip = this.tooltip
 
     return html`

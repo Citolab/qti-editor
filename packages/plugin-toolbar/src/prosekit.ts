@@ -1,82 +1,36 @@
-/**
- * ProseKit Adapter for Toolbar
- *
- * Wraps the ProseMirror menu bar plugin for use with ProseKit.
- */
-
 import { definePlugin } from 'prosekit/core';
-import {
-  createDetachedMenuBarPlugin,
-  createMenuBarPlugin,
-  type DetachedMenuBarOptions,
-  type MenuBarOptions,
-} from './menu-bar';
-import { createQtiMenuItems } from './qti-menu-items';
+import type { Editor } from 'prosekit/core';
+import { Plugin } from 'prosemirror-state';
+import type { LitToolbar } from './toolbar';
 
-export interface ToolbarExtensionOptions extends Omit<MenuBarOptions, 'schema'> {
-  /**
-   * Whether to automatically detect and add QTI interaction menu items.
-   * @default true
-   */
-  autoDetectQti?: boolean;
+import './toolbar';
 
-  /**
-   * Mount the toolbar outside the editor (avoids the ProseMirror-menubar wrapper).
-   */
-  mount?: DetachedMenuBarOptions['mount'];
-
-  /**
-   * Optional class for the detached toolbar container.
-   */
-  className?: string;
+export interface ToolbarExtensionOptions {
+  getEditor: () => Editor;
+  uploader?: unknown;
 }
 
-/**
- * Define a toolbar extension for ProseKit
- *
- * Automatically detects QTI nodes in the schema and adds menu items for them.
- *
- * @param options - Configuration options (schema will be extracted from editor)
- * @returns A ProseKit extension
- *
- * @example
- * ```typescript
- * import { defineToolbarExtension } from '@qti-editor/plugin-toolbar';
- * import { createEditor, union } from 'prosekit/core';
- * import { defineQtiExtension } from '@qti-editor/plugin-qti-interactions';
- *
- * const editor = createEditor({
- *   extension: union(
- *     defineQtiExtension(),
- *     defineToolbarExtension()
- *   )
- * });
- * ```
- */
-export function defineToolbarExtension(options: ToolbarExtensionOptions = {}) {
-  const { autoDetectQti = true, ...menuOptions } = options;
+export function defineToolbarExtension(options: ToolbarExtensionOptions) {
+  return definePlugin(() => {
+    return new Plugin({
+      view(editorView) {
+        const toolbar = document.createElement('lit-editor-toolbar') as LitToolbar;
+        toolbar.editor = options.getEditor();
+        if (options.uploader) {
+          toolbar.uploader = options.uploader;
+        }
 
-  return definePlugin(({ schema }) => {
-    // Auto-detect QTI nodes and create menu items
-    let qtiItems = menuOptions.qtiItems;
-    if (autoDetectQti && !qtiItems) {
-      qtiItems = createQtiMenuItems(schema);
-    }
+        editorView.dom.parentElement?.insertBefore(toolbar, editorView.dom);
 
-    if (menuOptions.mount) {
-      return createDetachedMenuBarPlugin({
-        schema,
-        ...menuOptions,
-        qtiItems,
-        mount: menuOptions.mount,
-        className: menuOptions.className,
-      });
-    }
-
-    return createMenuBarPlugin({
-      schema,
-      ...menuOptions,
-      qtiItems,
+        return {
+          update() {
+            toolbar.requestUpdate();
+          },
+          destroy() {
+            toolbar.remove();
+          },
+        };
+      },
     });
   });
 }
