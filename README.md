@@ -12,6 +12,22 @@ Dev workflow (auto-regenerate CEM + schema while the editor runs):
 pnpm dev
 ```
 
+## Firebase Hosting
+
+This repo now includes Firebase Hosting configuration for the editor app.
+
+1. Set your Firebase project id in `.firebaserc` (replace `your-firebase-project-id`).
+2. Fill `apps/editor/.env` with your Firebase Web app config values.
+3. Build and deploy:
+```sh
+pnpm firebase:deploy
+```
+
+Local hosting emulation:
+```sh
+pnpm firebase:serve
+```
+
 ## Git Hooks (Optional)
 
 If you use `yalc add`, it can leave `file:`/`link:` dependencies in `package.json`.

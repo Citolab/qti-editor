@@ -2,6 +2,7 @@ import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
 import 'prosemirror-menu/style/menu.css';
 import './style.css';
+import { getFirebaseConfig } from './firebase-config';
 
 // ProseKit core
 import { LitElement, html, type PropertyValues } from 'lit';
@@ -123,6 +124,10 @@ customElements.define('qti-editor-app', QtiEditorApp);
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('QTI Editor Demo initializing...');
+  const firebaseConfig = getFirebaseConfig();
+  if (firebaseConfig) {
+    console.log('Firebase config loaded for project:', firebaseConfig.projectId);
+  }
 
   const app = document.querySelector<HTMLDivElement>('#app')!;
   if (!app) {

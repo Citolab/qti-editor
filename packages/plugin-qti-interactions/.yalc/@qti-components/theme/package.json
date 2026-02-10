@@ -1,7 +1,7 @@
 {
   "name": "@qti-components/theme",
   "description": "QTI theme utilities",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "",
   "files": [
     "dist"
@@ -19,5 +19,5 @@
     "yalc:push": "yalc push"
   },
   "type": "module",
-  "yalcSig": "58916d6ed03680807e01cdd4a0f84878"
+  "yalcSig": "deeecbdeaa8162dcd30a42d1ec9727fe"
 }

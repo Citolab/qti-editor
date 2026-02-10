@@ -1,6 +1,7 @@
 node_modules
 dist
 **/build/custom-elements.json
+**/.yalc
 
 .DS_Store
 .env
@@ -8,3 +9,5 @@ dist
 coverage
 .idea
 *.log
+.firebase
+.vscode

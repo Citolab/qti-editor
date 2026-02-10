@@ -7,22 +7,22 @@
       "replaced": "workspace:*"
     },
     "@qti-components/base": {
-      "signature": "f10259bf3194202fb6b73a3e1c10dabc",
+      "signature": "c7896678beacb958660926aa109616ae",
       "file": true,
       "replaced": "workspace:*"
     },
     "@qti-components/utilities": {
-      "signature": "ffffac2a8fb493a65f17115df1f3b618",
+      "signature": "c4300dfae81fc6ddb784779d763727a0",
       "file": true,
       "replaced": "workspace:*"
     },
     "@qti-components/interactions": {
-      "signature": "84c65ceea57184a145c795b83b1675df",
+      "signature": "8883825d1621071ebc0650be72c24370",
       "file": true,
       "replaced": "workspace:*"
     },
     "@qti-components/theme": {
-      "signature": "58916d6ed03680807e01cdd4a0f84878",
+      "signature": "deeecbdeaa8162dcd30a42d1ec9727fe",
       "file": true,
       "replaced": "workspace:*"
     }

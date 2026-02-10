@@ -4,7 +4,7 @@
   "description": "QTI validation plugin for QTI Editor",
   "type": "module",
   "scripts": {
-    "build": "tsc && vite build"
+    "build": "tsc"
   },
   "peerDependencies": {
     "lit": "^3.0.0",
