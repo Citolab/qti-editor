@@ -5,7 +5,7 @@
  */
 
 import { MenuItem, Dropdown } from 'prosemirror-menu';
-import type { Schema, NodeType } from 'prosemirror-model';
+import type { Node as ProseMirrorNode, NodeType, Schema } from 'prosemirror-model';
 import type { EditorState, Transaction } from 'prosemirror-state';
 
 export type QtiMenuItem = MenuItem | Dropdown;
@@ -19,7 +19,12 @@ export function createInsertNodeMenuItem(
     title: string;
     label: string;
     attrs?: Record<string, unknown>;
-    content?: (schema: Schema) => unknown;
+    content?: (
+      schema: Schema
+    ) =>
+      | ProseMirrorNode
+      | readonly ProseMirrorNode[]
+      | null;
   }
 ): MenuItem {
   return new MenuItem({

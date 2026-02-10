@@ -17,7 +17,7 @@ import {
   wrapItem,
   blockTypeItem,
 } from 'prosemirror-menu';
-import type { Schema, MarkType, NodeType } from 'prosemirror-model';
+import type { Schema, MarkType } from 'prosemirror-model';
 import type { EditorState, Command } from 'prosemirror-state';
 
 /**
