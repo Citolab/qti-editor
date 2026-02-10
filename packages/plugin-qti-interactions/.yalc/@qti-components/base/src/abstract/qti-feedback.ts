@@ -49,10 +49,10 @@ export abstract class QtiFeedback extends LitElement {
         false;
     }
 
-    this.#showFeedback(isFound);
+    this.showFeedback(isFound);
   }
 
-  #showFeedback(value: boolean) {
+  private showFeedback(value: boolean) {
     this.showStatus = (value && this.showHide === 'show') || (!value && this.showHide === 'hide') ? 'on' : 'off';
   }
 }
