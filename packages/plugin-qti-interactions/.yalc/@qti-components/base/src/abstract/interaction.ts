@@ -1,16 +1,16 @@
-import { property, state } from 'lit/decorators.js';
-import { LitElement } from 'lit';
 import { consume } from '@lit/context';
 
 import { watch } from '@qti-components/utilities';
+import { LitElement } from 'lit';
+import { property, state } from 'lit/decorators.js';
 
 import { configContext } from '../context/config.context';
-import { itemContext } from '../context/qti-assessment-item.context';
 
 import type { ConfigContext } from '../context/config.context';
-import type { ResponseVariable } from '../lib/variables';
-import type { IInteraction } from '../lib/interaction.interface';
 import type { ItemContext } from '../context/item.context';
+import { itemContext } from '../context/qti-assessment-item.context';
+import type { IInteraction } from '../lib/interaction.interface';
+import type { ResponseVariable } from '../lib/variables';
 
 export enum Correctness {
   Correct = 'correct',
@@ -76,36 +76,36 @@ export abstract class Interaction extends LitElement implements IInteraction {
    * Adds `correct-response` / `incorrect-response` states to choices.
    */
   @property({ type: Boolean, attribute: 'show-correct-response', reflect: true })
-  showCorrectResponse = false;
+    showCorrectResponse = false;
 
   @watch('showCorrectResponse', { waitUntilFirstUpdate: true })
   protected _handleShowCorrectResponseChange = (_: boolean, show: boolean) => {
-    this.toggleInternalCorrectResponse(show);
-  };
+      this.toggleInternalCorrectResponse(show);
+    };
 
   /**
    * Shows a cloned interaction with the correct answers filled in.
    * Creates a disabled copy positioned after this interaction.
    */
   @property({ type: Boolean, attribute: 'show-full-correct-response', reflect: true })
-  showFullCorrectResponse = false;
+    showFullCorrectResponse = false;
 
   @watch('showFullCorrectResponse', { waitUntilFirstUpdate: true })
   protected _handleShowFullCorrectResponseChange = (_: boolean, show: boolean) => {
-    this.toggleFullCorrectResponse(show);
-  };
+      this.toggleFullCorrectResponse(show);
+    };
 
   /**
    * Shows feedback on candidate's selections compared to correct response.
    * Adds `candidate-correct` / `candidate-incorrect` states to choices.
    */
   @property({ type: Boolean, attribute: 'show-candidate-correction', reflect: true })
-  showCandidateCorrection = false;
+    showCandidateCorrection = false;
 
   @watch('showCandidateCorrection', { waitUntilFirstUpdate: true })
   protected _handleShowCandidateCorrectionChange = (_: boolean, show: boolean) => {
-    this.toggleCandidateCorrection(show);
-  };
+      this.toggleCandidateCorrection(show);
+    };
 
   // ═══════════════════════════════════════════════════════════════════════════════
 

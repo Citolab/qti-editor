@@ -1,7 +1,6 @@
-import { property } from 'lit/decorators.js';
 
-import type { ReactiveElement } from 'lit';
-import type { PropertyDeclaration } from 'lit';
+import type { ReactiveElement , PropertyDeclaration } from 'lit';
+import { property } from 'lit/decorators.js';
 
 // Extended decorator options
 interface InternalStateOptions extends PropertyDeclaration {

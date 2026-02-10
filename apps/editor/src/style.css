@@ -9,6 +9,14 @@
 /*---break---
  */
 
+@plugin "@egoist/tailwindcss-icons";
+
+/*---break---
+ */
+
+/*---break---
+ */
+
 @custom-variant dark (&:is(.dark *));
 
 :root {

@@ -21,7 +21,18 @@ export interface SidePanelNodeDetail {
 
 export interface SidePanelEventDetail {
   nodes: SidePanelNodeDetail[];
+  activeNode: SidePanelNodeDetail | null;
+  open: boolean;
 }
+
+export interface QtiAttributesTriggerContext {
+  state: EditorState;
+  nodes: SidePanelNodeDetail[];
+}
+
+export type QtiAttributesTrigger = (
+  context: QtiAttributesTriggerContext,
+) => SidePanelNodeDetail | null;
 
 export interface QtiAttributesOptions {
   /**
@@ -46,6 +57,13 @@ export interface QtiAttributesOptions {
    * @default node.type.name starts with "qti_"
    */
   eligible?: (node: { type: { name: string }; attrs?: Record<string, any> }) => boolean;
+
+  /**
+   * Chooses which node should activate the attributes UI.
+   * Return null to keep the UI closed.
+   * @default open on first eligible ancestor when selection is collapsed
+   */
+  trigger?: QtiAttributesTrigger;
 
   /**
    * Optional callback invoked on updates.
@@ -75,11 +93,20 @@ function collectSelectionQtiNodes(
   return nodes;
 }
 
+function hasEditableAttrs(node: SidePanelNodeDetail | null): node is SidePanelNodeDetail {
+  if (!node) return false;
+  return Object.keys(node.attrs ?? {}).length > 0;
+}
+
 export function qtiAttributesExtension(options: QtiAttributesOptions = {}): Extension {
   const eventName = options.eventName ?? 'qti:attributes:update';
   const eventTarget = options.eventTarget ?? document;
   const includeEmptyAttrs = options.includeEmptyAttrs ?? true;
-  const eligible = options.eligible ?? ((node) => node.type.name.startsWith('qti_'));
+  const eligible = options.eligible ?? ((node) => node.type.name.toLowerCase().startsWith('qti'));
+  const trigger =
+    options.trigger ??
+    ((context: QtiAttributesTriggerContext) =>
+      context.state.selection.empty ? (context.nodes[0] ?? null) : null);
   const onUpdate = options.onUpdate;
 
   return definePlugin(
@@ -88,8 +115,13 @@ export function qtiAttributesExtension(options: QtiAttributesOptions = {}): Exte
         key: attributesPluginKey,
         view(view) {
           const dispatchUpdate = (state: EditorState) => {
+            const nodes = collectSelectionQtiNodes(state, { includeEmptyAttrs, eligible });
+            const triggeredNode = trigger({ state, nodes });
+            const activeNode = hasEditableAttrs(triggeredNode) ? triggeredNode : null;
             const detail: SidePanelEventDetail = {
-              nodes: collectSelectionQtiNodes(state, { includeEmptyAttrs, eligible }),
+              nodes,
+              activeNode,
+              open: Boolean(activeNode),
             };
             eventTarget.dispatchEvent(new CustomEvent(eventName, { detail }));
             onUpdate?.(detail, state);

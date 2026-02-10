@@ -2,7 +2,6 @@ import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
 import 'prosemirror-menu/style/menu.css';
 import './style.css';
-import { getFirebaseConfig } from './firebase-config';
 
 // ProseKit core
 import { LitElement, html, type PropertyValues } from 'lit';
@@ -24,6 +23,7 @@ import { defineQtiExtension } from '@qti-editor/plugin-qti-interactions/prosekit
 // Import toolbar plugin
 import { defineToolbarExtension } from '@qti-editor/plugin-toolbar';
 import { blockSelectExtension } from '@qti-editor/prosemirror-block-select-plugin';
+import { getFirebaseConfig } from './firebase-config';
 
 class QtiEditorApp extends LitElement {
   private editor: Editor;
@@ -45,7 +45,18 @@ class QtiEditorApp extends LitElement {
     // Create the combined extension with QTI support and toolbar
     const extension = union(
       defineQtiExtension(),
-      qtiAttributesExtension({ eventTarget: this.attributesEventTarget }),
+      qtiAttributesExtension({
+        eventTarget: this.attributesEventTarget,
+        // Trigger stays in app code so the attributes UI remains decoupled from schema specifics.
+        trigger: ({ state, nodes }) => {
+          if (!state.selection.empty) return null;
+          return (
+            nodes.find((node) =>
+              /(interaction|prompt)$/i.test(node.type)
+            ) ?? nodes[0] ?? null
+          );
+        },
+      }),
       qtiEditorEventsExtension({ eventTarget: this.editorEventsTarget }),
       qtiCodePanelExtension({ eventTarget: this.codeEventTarget }),
       defineToolbarExtension({
@@ -109,11 +120,11 @@ class QtiEditorApp extends LitElement {
           </div>
           <aside class="w-90 max-w-90 shrink-0 p-4">
             <div class="flex flex-col gap-4">
-              <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
               <qti-code-panel ${ref(this.codePanelRef)}></qti-code-panel>
             </div>
           </aside>
         </div>
+        <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
       </main>
     `;
   }

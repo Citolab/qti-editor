@@ -1,7 +1,7 @@
 import { createContext } from '@lit/context';
 
-import type { View } from './session.context';
 import type { ComputedItemContext } from './computed-item.context';
+import type { View } from './session.context';
 
 export type ComputedItem = ComputedItemContext & {
   categories?: string[]; // not necessary for outside world
