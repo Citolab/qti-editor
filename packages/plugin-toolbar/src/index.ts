@@ -13,5 +13,6 @@
  * ```
  */
 
-export { LitToolbar } from './toolbar'
-export { defineToolbarExtension, type ToolbarExtensionOptions } from './prosekit'
+export { LitToolbar } from './toolbar';
+export type { ToolbarInsertItem, ToolbarInsertItemsProvider, ToolbarInsertMenu } from './toolbar';
+export { defineToolbarExtension, type ToolbarExtensionOptions } from './prosekit';

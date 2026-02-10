@@ -1,10 +1,10 @@
-import 'prosekit/lit/popover'
-import './button'
+import '@prosekit/lit/popover';
+import './button';
 
 import { html, LitElement, nothing } from 'lit';
 import type { Editor } from 'prosekit/core';
 
-let imageUploadId = 0
+let imageUploadId = 0;
 
 type Uploader = (opts: { file: File; onProgress: (p: { loaded: number; total: number }) => void }) => Promise<string>;
 
@@ -42,81 +42,81 @@ export class LitImageUploadPopover extends LitElement {
   }
 
   override createRenderRoot() {
-    return this
+    return this;
   }
 
   override connectedCallback() {
-    super.connectedCallback()
-    this.classList.add('contents')
+    super.connectedCallback();
+    this.classList.add('contents');
   }
 
   handleOpenChange = (event: CustomEvent<boolean>) => {
-    const isOpen = event.detail
+    const isOpen = event.detail;
 
     if (!isOpen) {
-      this.deferResetState()
+      this.deferResetState();
     }
 
-    this.open = isOpen
-    this.requestUpdate()
+    this.open = isOpen;
+    this.requestUpdate();
   };
 
   handleFileChange = (event: Event) => {
-    const target = event.target as HTMLInputElement
-    const selectedFile = target.files?.[0]
+    const target = event.target as HTMLInputElement;
+    const selectedFile = target.files?.[0];
 
     if (selectedFile) {
-      this.file = selectedFile
-      this.url = ''
+      this.file = selectedFile;
+      this.url = '';
     } else {
-      this.file = null
+      this.file = null;
     }
 
-    this.requestUpdate()
+    this.requestUpdate();
   };
 
   handleUrlChange = (event: Event) => {
-    const target = event.target as HTMLInputElement
-    const inputUrl = target.value
+    const target = event.target as HTMLInputElement;
+    const inputUrl = target.value;
 
     if (inputUrl) {
-      this.url = inputUrl
-      this.file = null
+      this.url = inputUrl;
+      this.file = null;
     } else {
-      this.url = ''
+      this.url = '';
     }
 
-    this.requestUpdate()
+    this.requestUpdate();
   };
 
   deferResetState() {
     setTimeout(() => {
-      this.url = ''
-      this.file = null
-      this.requestUpdate()
-    }, 300)
+      this.url = '';
+      this.file = null;
+      this.requestUpdate();
+    }, 300);
   }
 
   handleSubmit = () => {
-    const editor = this.editor as any
-    if (!editor) return
+    const editor = this.editor as any;
+    if (!editor) return;
 
     if (this.url) {
-      editor.commands.insertImage({ src: this.url })
+      editor.commands.insertImage({ src: this.url });
     } else if (this.file && this.uploader) {
-      editor.commands.uploadImage({ file: this.file, uploader: this.uploader })
+      editor.commands.uploadImage({ file: this.file, uploader: this.uploader });
     }
 
-    this.open = false
-    this.deferResetState()
-    this.requestUpdate()
+    this.open = false;
+    this.deferResetState();
+    this.requestUpdate();
   };
 
   override render() {
     return html`
       <prosekit-popover-root
         .open=${this.open}
-        @open-change=${this.handleOpenChange}
+        @openChange=${this.handleOpenChange}
       >
         <prosekit-popover-trigger>
           <lit-editor-button
@@ -129,8 +129,8 @@ export class LitImageUploadPopover extends LitElement {
 
         <prosekit-popover-content class="flex flex-col gap-y-4 p-6 text-sm w-sm z-10 box-border rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-lg [&:not([data-state])]:hidden will-change-transform motion-safe:data-[state=open]:animate-in motion-safe:data-[state=closed]:animate-out motion-safe:data-[state=open]:fade-in-0 motion-safe:data-[state=closed]:fade-out-0 motion-safe:data-[state=open]:zoom-in-95 motion-safe:data-[state=closed]:zoom-out-95 motion-safe:data-[state=open]:animate-duration-150 motion-safe:data-[state=closed]:animate-duration-200 motion-safe:data-[side=bottom]:slide-in-from-top-2 motion-safe:data-[side=bottom]:slide-out-to-top-2 motion-safe:data-[side=left]:slide-in-from-right-2 motion-safe:data-[side=left]:slide-out-to-right-2 motion-safe:data-[side=right]:slide-in-from-left-2 motion-safe:data-[side=right]:slide-out-to-left-2 motion-safe:data-[side=top]:slide-in-from-bottom-2 motion-safe:data-[side=top]:slide-out-to-bottom-2">
           ${
-            !this.file
-              ? html`
+  !this.file
+    ? html`
                 <label for="id-link-${this.ariaId}">Embed Link</label>
                 <input
                   id="id-link-${this.ariaId}"
@@ -141,12 +141,12 @@ export class LitImageUploadPopover extends LitElement {
                   @input=${this.handleUrlChange}
                 />
               `
-              : nothing
-          }
+    : nothing
+}
 
           ${
-            !this.url
-              ? html`
+  !this.url
+    ? html`
                 <label for="id-upload-${this.ariaId}">Upload</label>
                 <input
                   id="id-upload-${this.ariaId}"
@@ -156,32 +156,32 @@ export class LitImageUploadPopover extends LitElement {
                   @change=${this.handleFileChange}
                 />
               `
-              : nothing
-          }
+    : nothing
+}
 
           ${
-            this.url
-              ? html`
+  this.url
+    ? html`
                 <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white dark:ring-offset-gray-950 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-300 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-0 bg-gray-900 dark:bg-gray-50 text-gray-50 dark:text-gray-900 hover:bg-gray-900/90 dark:hover:bg-gray-50/90 h-10 px-4 py-2 w-full" @click=${this.handleSubmit}>
                   Insert Image
                 </button>
               `
-              : nothing
-          }
+    : nothing
+}
 
           ${
-            this.file
-              ? html`
+  this.file
+    ? html`
                 <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white dark:ring-offset-gray-950 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-300 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-0 bg-gray-900 dark:bg-gray-50 text-gray-50 dark:text-gray-900 hover:bg-gray-900/90 dark:hover:bg-gray-50/90 h-10 px-4 py-2 w-full" @click=${this.handleSubmit}>
                   Upload Image
                 </button>
               `
-              : nothing
-          }
+    : nothing
+}
         </prosekit-popover-content>
       </prosekit-popover-root>
     `;
   }
 }
 
-customElements.define('lit-editor-image-upload-popover', LitImageUploadPopover)
+customElements.define('lit-editor-image-upload-popover', LitImageUploadPopover);

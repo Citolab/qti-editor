@@ -9,6 +9,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@prosekit/lit": "^0.5.5",
     "lit": "^3.0.0",
     "prosemirror-model": "^1.19.0",
     "prosemirror-state": "^1.4.0",

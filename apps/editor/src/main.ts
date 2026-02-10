@@ -19,9 +19,12 @@ import {
 } from '@qti-editor/plugin-qti-code';
 import { defineQtiExtension } from '@qti-editor/plugin-qti-interactions/prosekit';
 
-import { defineToolbarExtension } from '@qti-editor/plugin-toolbar';
+import {
+  defineToolbarExtension,
+} from '@qti-editor/plugin-toolbar';
 import { blockSelectExtension } from '@qti-editor/prosemirror-block-select-plugin';
 import { getFirebaseConfig } from './firebase-config';
+import { toolbarInsertMenus } from './toolbar/insert-menus';
 
 class QtiEditorApp extends LitElement {
   private editor: Editor;
@@ -56,7 +59,10 @@ class QtiEditorApp extends LitElement {
       }),
       qtiEditorEventsExtension({ eventTarget: this.editorEventsTarget }),
       qtiCodePanelExtension({ eventTarget: this.codeEventTarget }),
-      defineToolbarExtension({ getEditor: () => this.editor }),
+      defineToolbarExtension({
+        getEditor: () => this.editor,
+        insertMenus: toolbarInsertMenus,
+      }),
       blockSelectExtension
     );
 

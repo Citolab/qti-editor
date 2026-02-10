@@ -1,10 +1,9 @@
-import 'prosekit/lit/popover';
+import '@prosekit/lit/popover';
 import './button';
 import './image-upload-popover';
 
 import { html, LitElement, nothing } from 'lit';
 import type { Editor } from 'prosekit/core';
-import type { NodeType, Schema } from 'prosemirror-model';
 import type { EditorView } from 'prosemirror-view';
 
 interface ToolbarItem {
@@ -13,64 +12,20 @@ interface ToolbarItem {
   command?: () => void;
 }
 
-interface QtiInsertItem {
+export interface ToolbarInsertItem {
   label: string;
   canInsert: boolean;
   command: () => void;
 }
 
-function canInsert(view: EditorView, nodeType: NodeType): boolean {
-  const { $from } = view.state.selection;
-  for (let d = $from.depth; d >= 0; d--) {
-    const index = $from.index(d);
-    if ($from.node(d).canReplaceWith(index, index, nodeType)) {
-      return true;
-    }
-  }
-  return false;
-}
+export type ToolbarInsertItemsProvider = (view: EditorView, editor: Editor) => ToolbarInsertItem[];
 
-function getQtiItems(view: EditorView): QtiInsertItem[] {
-  const schema: Schema = view.state.schema;
-  const items: QtiInsertItem[] = [];
-
-  if (schema.nodes.qtiChoiceInteraction) {
-    const nodeType = schema.nodes.qtiChoiceInteraction;
-    items.push({
-      label: 'Choice Interaction',
-      canInsert: canInsert(view, nodeType),
-      command: () => {
-        const s = schema;
-        const node = nodeType.create(
-          { responseIdentifier: `RESPONSE_${Date.now()}` },
-          [
-            s.nodes.qtiPrompt.create({}, s.nodes.paragraph.create({}, s.text('Enter your question here...'))),
-            s.nodes.qtiSimpleChoice.create({ identifier: 'A' }, s.text('Option A')),
-            s.nodes.qtiSimpleChoice.create({ identifier: 'B' }, s.text('Option B')),
-          ]
-        );
-        view.dispatch(view.state.tr.replaceSelectionWith(node));
-        view.focus();
-      },
-    });
-  }
-
-  if (schema.nodes.qtiTextEntryInteraction) {
-    const nodeType = schema.nodes.qtiTextEntryInteraction;
-    items.push({
-      label: 'Text Entry',
-      canInsert: canInsert(view, nodeType),
-      command: () => {
-        const node = nodeType.createAndFill({ responseIdentifier: `RESPONSE_${Date.now()}` });
-        if (node) {
-          view.dispatch(view.state.tr.replaceSelectionWith(node));
-          view.focus();
-        }
-      },
-    });
-  }
-
-  return items;
+export interface ToolbarInsertMenu {
+  id: string;
+  getItems: ToolbarInsertItemsProvider;
+  tooltip?: string;
+  icon?: string;
+  hideWhenEmpty?: boolean;
 }
 
 function getToolbarItems(editor: any): Record<string, ToolbarItem | undefined> {
@@ -225,27 +180,43 @@ export class LitToolbar extends LitElement {
     uploader: {
       attribute: false
     },
+    getInsertItems: {
+      attribute: false
+    },
+    insertMenus: {
+      attribute: false
+    },
   };
 
   declare editor: Editor | null;
   declare uploader: unknown;
+  declare getInsertItems: ToolbarInsertItemsProvider | null;
+  declare insertMenus: ToolbarInsertMenu[] | null;
 
-  private qtiOpen = false;
+  private menuOpen: Record<string, boolean> = {};
 
   constructor() {
     super();
     this.editor = null;
     this.uploader = null;
+    this.getInsertItems = null;
+    this.insertMenus = null;
   }
 
-  private handleQtiOpenChange = (event: CustomEvent<boolean>) => {
-    this.qtiOpen = event.detail;
+  private handleMenuOpenChange = (menuId: string, event: CustomEvent<boolean>) => {
+    this.menuOpen = {
+      ...this.menuOpen,
+      [menuId]: event.detail,
+    };
     this.requestUpdate();
   };
 
-  private handleQtiInsert(item: QtiInsertItem) {
+  private handleMenuInsert(menuId: string, item: ToolbarInsertItem) {
     item.command();
-    this.qtiOpen = false;
+    this.menuOpen = {
+      ...this.menuOpen,
+      [menuId]: false,
+    };
     this.requestUpdate();
   }
 
@@ -266,7 +237,25 @@ export class LitToolbar extends LitElement {
 
     const items = getToolbarItems(editor);
     const view: EditorView | undefined = (editor as any).view;
-    const qtiItems = view ? getQtiItems(view) : [];
+    const configuredMenus: ToolbarInsertMenu[] = this.insertMenus
+      ?? (
+        this.getInsertItems
+          ? [
+            {
+              id: 'default-insert',
+              getItems: this.getInsertItems,
+              tooltip: 'Insert',
+              icon: 'i-lucide-plus size-5 block',
+            },
+          ]
+          : []
+      );
+    const resolvedMenus = view
+      ? configuredMenus.map((menu) => ({
+        menu,
+        items: menu.getItems(view, editor),
+      }))
+      : [];
 
     return html`
       <div class="z-2 sticky top-0 bg-white dark:bg-gray-950 box-border border-gray-200 dark:border-gray-800 border-solid border-l-0 border-r-0 border-t-0 border-b flex flex-wrap gap-1 p-2 items-center">
@@ -532,33 +521,38 @@ export class LitToolbar extends LitElement {
     : nothing
 }
         ${
-  qtiItems.length > 0
-    ? html`
+  resolvedMenus.map(({ menu, items: menuItems }) => {
+    const showMenu = menu.hideWhenEmpty !== false ? menuItems.length > 0 : true;
+    if (!showMenu) return nothing;
+
+    const menuIsOpen = !!this.menuOpen[menu.id];
+    const canInsertAny = menuItems.some((item) => item.canInsert);
+    return html`
               <prosekit-popover-root
-                .open=${this.qtiOpen}
-                @open-change=${this.handleQtiOpenChange}
+                .open=${menuIsOpen}
+                @openChange=${(event: CustomEvent<boolean>) => this.handleMenuOpenChange(menu.id, event)}
               >
                 <prosekit-popover-trigger>
                   <lit-editor-button
-                    .pressed=${this.qtiOpen}
-                    .disabled=${!qtiItems.some(i => i.canInsert)}
-                    tooltip="Insert QTI Interaction"
-                    icon="i-lucide-plus size-5 block"
+                    .pressed=${menuIsOpen}
+                    .disabled=${!canInsertAny}
+                    tooltip=${menu.tooltip ?? 'Insert'}
+                    icon=${menu.icon ?? 'i-lucide-plus size-5 block'}
                   ></lit-editor-button>
                 </prosekit-popover-trigger>
                 <prosekit-popover-content class="flex flex-col gap-1 p-2 text-sm min-w-48 z-10 box-border rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-lg [&:not([data-state])]:hidden will-change-transform motion-safe:data-[state=open]:animate-in motion-safe:data-[state=closed]:animate-out motion-safe:data-[state=open]:fade-in-0 motion-safe:data-[state=closed]:fade-out-0 motion-safe:data-[state=open]:zoom-in-95 motion-safe:data-[state=closed]:zoom-out-95 motion-safe:data-[state=open]:animate-duration-150 motion-safe:data-[state=closed]:animate-duration-200">
-                  ${qtiItems.map(item => html`
+                  ${menuItems.map(item => html`
                     <button
                       class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-gray-900 dark:text-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:pointer-events-none border-0 bg-transparent cursor-pointer"
                       ?disabled=${!item.canInsert}
                       @mousedown=${(e: MouseEvent) => e.preventDefault()}
-                      @click=${() => this.handleQtiInsert(item)}
+                      @click=${() => this.handleMenuInsert(menu.id, item)}
                     >${item.label}</button>
                   `)}
                 </prosekit-popover-content>
               </prosekit-popover-root>
-            `
-    : nothing
+            `;
+  })
 }
       </div>
     `;

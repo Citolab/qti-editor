@@ -1,5 +1,4 @@
-import 'prosekit/lit/tooltip'
-
+import '@prosekit/lit/tooltip';
 import { html, LitElement, nothing } from 'lit';
 
 export class LitButton extends LitElement {
@@ -10,35 +9,35 @@ export class LitButton extends LitElement {
     icon: { type: String }
   };
 
-  declare pressed: boolean
-  declare disabled: boolean
-  declare tooltip: string
-  declare icon: string
+  declare pressed: boolean;
+  declare disabled: boolean;
+  declare tooltip: string;
+  declare icon: string;
 
   constructor() {
-    super()
-    this.pressed = false
-    this.disabled = false
-    this.tooltip = ''
-    this.icon = ''
+    super();
+    this.pressed = false;
+    this.disabled = false;
+    this.tooltip = '';
+    this.icon = '';
   }
 
   override createRenderRoot() {
-    return this
+    return this;
   }
 
   override connectedCallback() {
-    super.connectedCallback()
-    this.classList.add('contents')
+    super.connectedCallback();
+    this.classList.add('contents');
   }
 
   handleMouseDown = (event: MouseEvent) => {
     // Prevent the editor from being blurred when the button is clicked
-    event.preventDefault()
+    event.preventDefault();
   };
 
   override render() {
-    const tooltip = this.tooltip
+    const tooltip = this.tooltip;
 
     return html`
       <prosekit-tooltip-root>
@@ -54,17 +53,17 @@ export class LitButton extends LitElement {
           </button>
         </prosekit-tooltip-trigger>
         ${
-          tooltip
-            ? html`
+  tooltip
+    ? html`
               <prosekit-tooltip-content class="z-50 overflow-hidden rounded-md border border-solid bg-gray-900 dark:bg-gray-50 px-3 py-1.5 text-xs text-gray-50 dark:text-gray-900 shadow-xs [&:not([data-state])]:hidden will-change-transform motion-safe:data-[state=open]:animate-in motion-safe:data-[state=closed]:animate-out motion-safe:data-[state=open]:fade-in-0 motion-safe:data-[state=closed]:fade-out-0 motion-safe:data-[state=open]:zoom-in-95 motion-safe:data-[state=closed]:zoom-out-95 motion-safe:data-[state=open]:animate-duration-150 motion-safe:data-[state=closed]:animate-duration-200 motion-safe:data-[side=bottom]:slide-in-from-top-2 motion-safe:data-[side=bottom]:slide-out-to-top-2 motion-safe:data-[side=left]:slide-in-from-right-2 motion-safe:data-[side=left]:slide-out-to-right-2 motion-safe:data-[side=right]:slide-in-from-left-2 motion-safe:data-[side=right]:slide-out-to-left-2 motion-safe:data-[side=top]:slide-in-from-bottom-2 motion-safe:data-[side=top]:slide-out-to-bottom-2">
                 ${tooltip}
               </prosekit-tooltip-content>
             `
-            : nothing
-        }
+    : nothing
+}
       </prosekit-tooltip-root>
     `;
   }
 }
 
-customElements.define('lit-editor-button', LitButton)
+customElements.define('lit-editor-button', LitButton);
