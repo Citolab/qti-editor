@@ -49,7 +49,8 @@ class QtiEditorApp extends LitElement {
         eventTarget: this.attributesEventTarget,
         // Trigger stays in app code so the attributes UI remains decoupled from schema specifics.
         trigger: ({ state, nodes }) => {
-          if (!state.selection.empty) return null;
+          const isNodeSelection = Boolean((state.selection as any).node);
+          if (!state.selection.empty && !isNodeSelection) return null;
           return (
             nodes.find((node) =>
               /(interaction|prompt)$/i.test(node.type)
@@ -107,10 +108,10 @@ class QtiEditorApp extends LitElement {
       <main class="app-main">
         <div class="app-body">
           <div class="editor-host">
-            <div class="box-border h-full w-full min-h-36 overflow-x-hidden rounded-md border border-solid border-gray-200 shadow-sm bg-white text-black overflow-y-auto">
+            <div class="box-border h-full w-full min-h-36 overflow-x-hidden rounded-md border border-solid border-gray-200 shadow-sm bg-white text-black overflow-hidden">
               <div
                 ${ref(this.editorRef)}
-                class="ProseMirror box-border h-full min-h-full p-8 outline-none"
+                class="editor-mount box-border h-full min-h-0 flex flex-col"
               ></div>
             </div>
           </div>

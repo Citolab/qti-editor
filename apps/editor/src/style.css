@@ -105,6 +105,65 @@ qti-prosekit-editor {
   padding: 16px;
 }
 
+.editor-mount {
+  display: flex;
+  flex-direction: column;
+  margin-inline: 1rem;
+}
+
+.editor-mount.ProseMirror {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-block: 1.5rem;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.editor-mount.ProseMirror:focus,
+.editor-mount.ProseMirror:focus-visible,
+.editor-mount.ProseMirror.ProseMirror-focused {
+  outline: none !important;
+  outline-style: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+
+.editor-mount.ProseMirror[contenteditable='true'],
+.editor-mount.ProseMirror[contenteditable='true']:focus,
+.editor-mount.ProseMirror[contenteditable='true']:focus-visible {
+  outline: none !important;
+  outline-style: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+
+.editor-host > .box-border {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.editor-host > .box-border:focus-within {
+  box-shadow: none !important;
+  outline: none !important;
+  border-color: rgb(229 231 235) !important;
+}
+
+.editor-mount.ProseMirror :is(
+  qti-choice-interaction,
+  qti-order-interaction,
+  qti-match-interaction,
+  qti-associate-interaction,
+  qti-inline-choice-interaction,
+  qti-extended-text-interaction
+) {
+  align-self: flex-start;
+  width: fit-content;
+  max-width: 100%;
+}
+
 .qti-dropdown {
   position: relative;
 }

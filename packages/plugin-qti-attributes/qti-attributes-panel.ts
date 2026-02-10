@@ -230,6 +230,25 @@ export class QtiAttributesPanel extends LitElement {
       return null;
     }
 
+    // Prefer anchoring to the selected node element itself, not caret position.
+    if (node && typeof view?.nodeDOM === 'function') {
+      try {
+        const rawNode = view.nodeDOM(node.pos) as Node | null;
+        const element = rawNode instanceof Element ? rawNode : rawNode?.parentElement ?? null;
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          return {
+            left: rect.right,
+            right: rect.right,
+            top: rect.top,
+            bottom: rect.bottom,
+          };
+        }
+      } catch {
+        // Fall back to positional coords when nodeDOM is unavailable for this node.
+      }
+    }
+
     const candidatePositions: number[] = [];
     if (selection) {
       candidatePositions.push(
