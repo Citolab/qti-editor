@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "@qti-components/prosemirror": {
-      "signature": "472f87acdab53ea78e4c36bb38a5d039",
+      "signature": "22a2fe0fdb4d873ea5c34fca30e25cf2",
       "pure": true
     },
     "@qti-components/base": {
@@ -10,7 +10,7 @@
       "pure": true
     },
     "@qti-components/interactions": {
-      "signature": "84c65ceea57184a145c795b83b1675df",
+      "signature": "b7538e960efe1164010a2479b5616a86",
       "pure": true
     },
     "@qti-components/theme": {

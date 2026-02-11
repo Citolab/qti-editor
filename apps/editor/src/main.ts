@@ -19,9 +19,7 @@ import {
 } from '@qti-editor/plugin-qti-code';
 import { defineQtiExtension } from '@qti-editor/plugin-qti-interactions/prosekit';
 
-import {
-  defineToolbarExtension,
-} from '@qti-editor/plugin-toolbar';
+import { defineToolbarExtension } from '@qti-editor/plugin-toolbar';
 import { blockSelectExtension } from '@qti-editor/prosemirror-block-select-plugin';
 import { getFirebaseConfig } from './firebase-config';
 import { toolbarInsertMenus } from './toolbar/insert-menus';
@@ -52,9 +50,9 @@ class QtiEditorApp extends LitElement {
           const isNodeSelection = Boolean((state.selection as any).node);
           if (!state.selection.empty && !isNodeSelection) return null;
           return (
-            nodes.find((node) =>
-              /(interaction|prompt)$/i.test(node.type)
-            ) ?? nodes[0] ?? null
+            nodes.find((node) => /(interaction|prompt)$/i.test(node.type)) ??
+            nodes[0] ??
+            null
           );
         },
       }),
@@ -64,7 +62,7 @@ class QtiEditorApp extends LitElement {
         getEditor: () => this.editor,
         insertMenus: toolbarInsertMenus,
       }),
-      blockSelectExtension
+      blockSelectExtension,
     );
 
     this.editor = createEditor({ extension });
@@ -77,9 +75,12 @@ class QtiEditorApp extends LitElement {
       console.log('qti:content:change', (event as CustomEvent).detail);
     });
 
-    this.editorEventsTarget.addEventListener('qti:selection:change', (event) => {
-      console.log('qti:selection:change', (event as CustomEvent).detail);
-    });
+    this.editorEventsTarget.addEventListener(
+      'qti:selection:change',
+      (event) => {
+        console.log('qti:selection:change', (event as CustomEvent).detail);
+      },
+    );
   }
 
   override createRenderRoot() {
@@ -95,7 +96,8 @@ class QtiEditorApp extends LitElement {
 
     if (this.panelRef.value) {
       this.panelRef.value.eventTarget = this.attributesEventTarget;
-      (this.panelRef.value as QtiAttributesPanel).editorView = (this.editor as any).view ?? null;
+      (this.panelRef.value as QtiAttributesPanel).editorView =
+        (this.editor as any).view ?? null;
     }
 
     if (this.codePanelRef.value) {
@@ -105,23 +107,17 @@ class QtiEditorApp extends LitElement {
 
   override render() {
     return html`
-      <main class="app-main">
-        <div class="app-body">
-          <div class="editor-host">
-            <div class="box-border h-full w-full min-h-36 overflow-x-hidden rounded-md border border-solid border-gray-200 shadow-sm bg-white text-black overflow-hidden">
-              <div
-                ${ref(this.editorRef)}
-                class="editor-mount box-border h-full min-h-0 flex flex-col"
-              ></div>
-            </div>
-          </div>
-          <aside class="w-90 max-w-90 shrink-0 p-4">
-            <div class="flex flex-col gap-4">
-              <qti-code-panel ${ref(this.codePanelRef)}></qti-code-panel>
-            </div>
-          </aside>
+      <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
+      <main class="container mx-auto max-w-4xl">
+        <div
+          class="card bg-white mt-12 rounded-md border border-solid border-gray-200 shadow-sm  text-black overflow-hidden"
+        >
+          <div
+            ${ref(this.editorRef)}
+            class="card h-full min-h-80 flex flex-col px-32 py-8"
+          ></div>
         </div>
-        <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
+          <qti-code-panel class="mt-10 max-w-2/3 mx-auto" ${ref(this.codePanelRef)}></qti-code-panel>
       </main>
     `;
   }
@@ -134,7 +130,10 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('QTI Editor Demo initializing...');
   const firebaseConfig = getFirebaseConfig();
   if (firebaseConfig) {
-    console.log('Firebase config loaded for project:', firebaseConfig.projectId);
+    console.log(
+      'Firebase config loaded for project:',
+      firebaseConfig.projectId,
+    );
   }
 
   const app = document.querySelector<HTMLDivElement>('#app')!;

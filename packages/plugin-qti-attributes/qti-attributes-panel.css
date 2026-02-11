@@ -1,0 +1,31 @@
+.ProseMirror .qti-attributes-anchor-node {
+  anchor-name: --qti-attributes-anchor;
+}
+
+qti-attributes-panel {
+
+  display: contents;
+}
+
+qti-attributes-panel .qti-attributes-popover  {
+  width: 20rem;
+  position: fixed;
+  z-index: 60;
+  top: anchor(top);
+  left: calc(anchor(left) - 0.75rem);
+  transform: none;
+  position-anchor: var(--qti-attributes-anchor-name);
+  transform: translateX(-100%);
+}
+
+/* qti-attributes-panel .qti-attributes-popover::backdrop {
+  background: transparent;
+  pointer-events: none;
+} */
+
+
+qti-attributes-panel .qti-attributes-content {
+  max-block-size: min(24rem, calc(100vh - 12rem));
+  overflow: auto;
+}
+

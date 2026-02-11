@@ -6,6 +6,11 @@
 import { definePlugin, type Extension } from 'prosekit/core';
 import type { EditorState } from 'prosekit/pm/state';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
+import { Decoration, DecorationSet } from 'prosekit/pm/view';
+import {
+  isInteractionNodeName,
+  QTI_ATTRIBUTES_ANCHOR_CLASS,
+} from './qti-attributes-panel.connector.js';
 
 // ============================================================================
 // Plugin Registration
@@ -73,6 +78,21 @@ export interface QtiAttributesOptions {
 
 const attributesPluginKey = new PluginKey('qti-attributes-panel');
 
+function findFirstInteractionAncestorRange(
+  state: EditorState,
+): { from: number; to: number } | null {
+  const { $from } = state.selection;
+  for (let depth = $from.depth; depth > 0; depth--) {
+    const node = $from.node(depth);
+    if (!isInteractionNodeName(node.type.name)) continue;
+    return {
+      from: $from.before(depth),
+      to: $from.after(depth),
+    };
+  }
+  return null;
+}
+
 function collectSelectionQtiNodes(
   state: EditorState,
   options: Required<Pick<QtiAttributesOptions, 'includeEmptyAttrs' | 'eligible'>>,
@@ -113,6 +133,18 @@ export function qtiAttributesExtension(options: QtiAttributesOptions = {}): Exte
     () =>
       new Plugin({
         key: attributesPluginKey,
+        props: {
+          decorations(state) {
+            const anchorRange = findFirstInteractionAncestorRange(state);
+            if (!anchorRange) return null;
+            return DecorationSet.create(state.doc, [
+              Decoration.node(anchorRange.from, anchorRange.to, {
+                class: QTI_ATTRIBUTES_ANCHOR_CLASS,
+                'data-qti-attributes-anchor': 'true',
+              }),
+            ]);
+          },
+        },
         view(view) {
           const dispatchUpdate = (state: EditorState) => {
             const nodes = collectSelectionQtiNodes(state, { includeEmptyAttrs, eligible });
