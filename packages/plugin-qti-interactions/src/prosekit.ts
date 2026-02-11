@@ -14,9 +14,11 @@
  */
 import '@qti-components/theme/dist/item.css';
 import '@qti-components/prosemirror/components/qti-choice-interaction/qti-choice-interaction.js';
+import '@qti-components/prosemirror/components/qti-inline-choice-interaction/qti-inline-choice-interaction.js';
 import '@qti-components/prosemirror/components/qti-prompt/qti-prompt.js';
 import '@qti-components/prosemirror/components/qti-simple-choice/qti-simple-choice.js';
 import '@qti-components/prosemirror/components/qti-text-entry-interaction/qti-text-entry-interaction.js';
+
 
 import {
   insertChoiceInteraction,
@@ -24,6 +26,9 @@ import {
 import {
   qtiChoiceInteractionNodeSpec,
 } from '@qti-components/prosemirror/components/qti-choice-interaction/qti-choice-interaction.schema.js';
+import {
+  insertInlineChoiceInteraction,
+} from '@qti-components/prosemirror/components/qti-inline-choice-interaction/qti-inline-choice-interaction.commands.js';
 import {
   qtiPromptNodeSpec,
 } from '@qti-components/prosemirror/components/qti-prompt/qti-prompt.schema.js';
@@ -69,6 +74,7 @@ export function defineQtiExtension() {
     defineKeymap({
       'Mod-Shift-q': insertChoiceInteraction,
       'Mod-Shift-t': insertTextEntryInteraction,
+      'Mod-Shift-i': insertInlineChoiceInteraction
     }),
 
     // QTI guards
