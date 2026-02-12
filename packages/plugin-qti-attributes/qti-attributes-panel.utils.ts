@@ -4,10 +4,7 @@ export interface EditorLikeView {
 
 export type PopoverSide = 'left' | 'right';
 
-export function resolveAnchorElement(
-  view: EditorLikeView | null | undefined,
-  selector: string,
-): HTMLElement | null {
+export function resolveAnchorElement(view: EditorLikeView | null | undefined, selector: string): HTMLElement | null {
   const root = view?.dom;
   if (!root || typeof root.querySelector !== 'function') return null;
   const element = root.querySelector(selector);

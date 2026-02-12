@@ -98,7 +98,7 @@ export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): 
     selectionChangeEvent = 'qti:selection:change',
     emitContentChanges = true,
     emitSelectionChanges = true,
-    eventTarget = document,
+    eventTarget = document
   } = options;
 
   let lastDocJson: string | undefined;
@@ -121,12 +121,10 @@ export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): 
             const detail: QtiContentChangeEventDetail = {
               json,
               html: div.innerHTML,
-              timestamp: Date.now(),
+              timestamp: Date.now()
             };
 
-            eventTarget.dispatchEvent(
-              new CustomEvent(contentChangeEvent, { detail, bubbles: true }),
-            );
+            eventTarget.dispatchEvent(new CustomEvent(contentChangeEvent, { detail, bubbles: true }));
           }
 
           return {
@@ -150,12 +148,10 @@ export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): 
                   const detail: QtiContentChangeEventDetail = {
                     json,
                     html: div.innerHTML,
-                    timestamp: Date.now(),
+                    timestamp: Date.now()
                   };
 
-                  eventTarget.dispatchEvent(
-                    new CustomEvent(contentChangeEvent, { detail, bubbles: true }),
-                  );
+                  eventTarget.dispatchEvent(new CustomEvent(contentChangeEvent, { detail, bubbles: true }));
                 }
               }
 
@@ -165,17 +161,15 @@ export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): 
                   from: state.selection.from,
                   to: state.selection.to,
                   empty: state.selection.empty,
-                  timestamp: Date.now(),
+                  timestamp: Date.now()
                 };
 
-                eventTarget.dispatchEvent(
-                  new CustomEvent(selectionChangeEvent, { detail, bubbles: true }),
-                );
+                eventTarget.dispatchEvent(new CustomEvent(selectionChangeEvent, { detail, bubbles: true }));
               }
-            },
+            }
           };
-        },
-      }),
+        }
+      })
   );
 }
 
@@ -199,7 +193,7 @@ export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): 
  */
 export function onQtiContentChange(
   callback: (event: CustomEvent<QtiContentChangeEventDetail>) => void,
-  options: { eventName?: string; target?: EventTarget } = {},
+  options: { eventName?: string; target?: EventTarget } = {}
 ): () => void {
   const { eventName = 'qti:content:change', target = document } = options;
   target.addEventListener(eventName, callback as EventListener);
@@ -212,7 +206,7 @@ export function onQtiContentChange(
  */
 export function onQtiSelectionChange(
   callback: (event: CustomEvent<QtiSelectionChangeEventDetail>) => void,
-  options: { eventName?: string; target?: EventTarget } = {},
+  options: { eventName?: string; target?: EventTarget } = {}
 ): () => void {
   const { eventName = 'qti:selection:change', target = document } = options;
   target.addEventListener(eventName, callback as EventListener);

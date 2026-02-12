@@ -2,12 +2,21 @@
   anchor-name: --qti-attributes-anchor;
 }
 
-qti-attributes-panel {
+.ProseMirror.ProseMirror-focused .qti-attributes-anchor-node {
+  border-radius: 0.375rem;
+  outline: 1px solid rgb(59 130 246 / 0.95);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 4px rgb(59 130 246 / 0.2);
+  transition:
+    outline-color 160ms ease,
+    box-shadow 160ms ease;
+}
 
+qti-attributes-panel {
   display: contents;
 }
 
-qti-attributes-panel .qti-attributes-popover  {
+qti-attributes-panel .qti-attributes-popover {
   width: 20rem;
   position: fixed;
   z-index: 60;
@@ -23,9 +32,7 @@ qti-attributes-panel .qti-attributes-popover  {
   pointer-events: none;
 } */
 
-
 qti-attributes-panel .qti-attributes-content {
   max-block-size: min(24rem, calc(100vh - 12rem));
   overflow: auto;
 }
-

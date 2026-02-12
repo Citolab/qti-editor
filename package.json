@@ -17,6 +17,7 @@
     "chrome:debug": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-remote-debug"
   },
   "dependencies": {
+    "eslint-plugin-lit": "^2.2.1",
     "lit": "^3.0.0",
     "prosekit": "^0.17.0",
     "typescript": "^5.0.0",

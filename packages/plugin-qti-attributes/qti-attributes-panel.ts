@@ -1,20 +1,8 @@
-import {
-  html,
-  LitElement,
-  type PropertyValues,
-  type TemplateResult,
-} from 'lit';
+import { html, LitElement, type PropertyValues, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import {
-  QTI_ATTRIBUTES_ANCHOR_CLASS,
-  QTI_ATTRIBUTES_ANCHOR_NAME,
-} from './qti-attributes-panel.connector.js';
+import { QTI_ATTRIBUTES_ANCHOR_CLASS, QTI_ATTRIBUTES_ANCHOR_NAME } from './qti-attributes-panel.connector.js';
 
-import {
-  computePopoverSide,
-  resolveAnchorElement,
-  type PopoverSide,
-} from './qti-attributes-panel.utils.js';
+import { computePopoverSide, resolveAnchorElement, type PopoverSide } from './qti-attributes-panel.utils.js';
 import type { SidePanelEventDetail, SidePanelNodeDetail } from './index.js';
 
 type AttrValue = string | number | boolean | null | undefined;
@@ -74,11 +62,7 @@ export class QtiAttributesPanel extends LitElement {
   set eventTarget(value: EventTarget | null) {
     if (this._eventTarget === value) return;
     this._eventTarget = value;
-    this.updateEventListener(
-      this._eventName,
-      this._eventName,
-      this._eventTarget,
-    );
+    this.updateEventListener(this._eventName, this._eventName, this._eventTarget);
   }
 
   get editorView() {
@@ -90,7 +74,7 @@ export class QtiAttributesPanel extends LitElement {
       state: any;
       dispatch: (tr: any) => void;
       dom?: ParentNode | null;
-    } | null,
+    } | null
   ) {
     if (this._editorView === value) return;
     this._editorView = value;
@@ -106,57 +90,38 @@ export class QtiAttributesPanel extends LitElement {
     this.nodes = Array.isArray(detail?.nodes) ? detail.nodes : [];
     const requestedNode = detail?.activeNode;
     if (requestedNode) {
-      const requestedIndex = this.nodes.findIndex(
-        (node) => node.pos === requestedNode.pos,
-      );
+      const requestedIndex = this.nodes.findIndex(node => node.pos === requestedNode.pos);
       this.selectedIndex = requestedIndex >= 0 ? requestedIndex : 0;
     } else if (this.selectedIndex >= this.nodes.length) {
       this.selectedIndex = 0;
     }
 
-    this.open =
-      typeof detail?.open === 'boolean' ? detail.open : this.nodes.length > 0;
+    this.open = typeof detail?.open === 'boolean' ? detail.open : this.nodes.length > 0;
     this.syncAnchorState();
     this.requestUpdate();
   };
 
   connectedCallback() {
     super.connectedCallback();
-    this.style.setProperty(
-      '--qti-attributes-anchor-name',
-      QTI_ATTRIBUTES_ANCHOR_NAME,
-    );
+    this.style.setProperty('--qti-attributes-anchor-name', QTI_ATTRIBUTES_ANCHOR_NAME);
     this.currentEventTarget = this.getEventTarget();
-    this.currentEventTarget.addEventListener(
-      this.eventName,
-      this.onUpdateEvent as EventListener,
-    );
+    this.currentEventTarget.addEventListener(this.eventName, this.onUpdateEvent as EventListener);
     window.addEventListener('resize', this.handleViewportChange);
   }
 
   disconnectedCallback() {
     window.removeEventListener('resize', this.handleViewportChange);
     if (this.currentEventTarget) {
-      this.currentEventTarget.removeEventListener(
-        this.eventName,
-        this.onUpdateEvent as EventListener,
-      );
+      this.currentEventTarget.removeEventListener(this.eventName, this.onUpdateEvent as EventListener);
     }
     super.disconnectedCallback();
   }
 
-  private updateEventListener(
-    prevEventName: string,
-    nextEventName: string,
-    nextTarget: EventTarget | null,
-  ) {
+  private updateEventListener(prevEventName: string, nextEventName: string, nextTarget: EventTarget | null) {
     if (!this.isConnected) return;
     const target = nextTarget ?? document;
     const prevTarget = this.currentEventTarget ?? target;
-    prevTarget.removeEventListener(
-      prevEventName,
-      this.onUpdateEvent as EventListener,
-    );
+    prevTarget.removeEventListener(prevEventName, this.onUpdateEvent as EventListener);
     target.addEventListener(nextEventName, this.onUpdateEvent as EventListener);
     this.currentEventTarget = target;
   }
@@ -172,14 +137,8 @@ export class QtiAttributesPanel extends LitElement {
   }
 
   private syncAnchorState() {
-    this.style.setProperty(
-      '--qti-attributes-anchor-name',
-      QTI_ATTRIBUTES_ANCHOR_NAME,
-    );
-    const anchorElement = resolveAnchorElement(
-      this._editorView as any,
-      `.${QTI_ATTRIBUTES_ANCHOR_CLASS}`,
-    );
+    this.style.setProperty('--qti-attributes-anchor-name', QTI_ATTRIBUTES_ANCHOR_NAME);
+    const anchorElement = resolveAnchorElement(this._editorView as any, `.${QTI_ATTRIBUTES_ANCHOR_CLASS}`);
     this.hasAnchor = Boolean(anchorElement);
     if (anchorElement) {
       this.popoverSide = computePopoverSide(anchorElement, window.innerWidth);
@@ -213,9 +172,7 @@ export class QtiAttributesPanel extends LitElement {
   }
 
   private syncPopoverVisibility() {
-    const popover = this.querySelector<HTMLElement>(
-      '[data-qti-attributes-popover]',
-    );
+    const popover = this.querySelector<HTMLElement>('[data-qti-attributes-popover]');
     if (!popover) return;
 
     if (this.open && !popover.matches(':popover-open')) {
@@ -228,20 +185,14 @@ export class QtiAttributesPanel extends LitElement {
     }
   }
 
-  private handleFieldChange(
-    attrKey: string,
-    originalValue: AttrValue,
-    event: Event,
-  ) {
+  private handleFieldChange(attrKey: string, originalValue: AttrValue, event: Event) {
     const input = event.currentTarget as HTMLInputElement;
     const nextValue = this.coerceValue(input, originalValue);
     const node = this.activeNode;
     if (!node) return;
 
     const nextAttrs = { ...node.attrs, [attrKey]: nextValue };
-    this.nodes = this.nodes.map((item, idx) =>
-      idx === this.selectedIndex ? { ...item, attrs: nextAttrs } : item,
-    );
+    this.nodes = this.nodes.map((item, idx) => (idx === this.selectedIndex ? { ...item, attrs: nextAttrs } : item));
     this.requestUpdate();
 
     this.dispatchEvent(
@@ -249,11 +200,11 @@ export class QtiAttributesPanel extends LitElement {
         detail: {
           node: { ...node, attrs: nextAttrs },
           attrs: { [attrKey]: nextValue },
-          pos: node.pos,
+          pos: node.pos
         },
         bubbles: true,
-        composed: true,
-      }),
+        composed: true
+      })
     );
 
     if (this._editorView) {
@@ -261,19 +212,12 @@ export class QtiAttributesPanel extends LitElement {
     }
   }
 
-  private applyNodeAttrs(
-    nodeDetail: SidePanelNodeDetail,
-    attrs: Record<string, any>,
-  ) {
+  private applyNodeAttrs(nodeDetail: SidePanelNodeDetail, attrs: Record<string, any>) {
     const view = this._editorView;
     if (!view) return;
 
     const resolveNodePos = (): number | null => {
-      const candidatePositions = [
-        nodeDetail.pos,
-        nodeDetail.pos + 1,
-        Math.max(0, nodeDetail.pos - 1),
-      ];
+      const candidatePositions = [nodeDetail.pos, nodeDetail.pos + 1, Math.max(0, nodeDetail.pos - 1)];
 
       for (const pos of candidatePositions) {
         const candidate = view.state.doc.nodeAt(pos);
@@ -298,15 +242,10 @@ export class QtiAttributesPanel extends LitElement {
 
     const node = view.state.doc.nodeAt(pos);
     if (!node) return;
-    view.dispatch(
-      view.state.tr.setNodeMarkup(pos, undefined, { ...node.attrs, ...attrs }),
-    );
+    view.dispatch(view.state.tr.setNodeMarkup(pos, undefined, { ...node.attrs, ...attrs }));
   }
 
-  private coerceValue(
-    input: HTMLInputElement,
-    originalValue: AttrValue,
-  ): AttrValue {
+  private coerceValue(input: HTMLInputElement, originalValue: AttrValue): AttrValue {
     if (input.type === 'checkbox') return input.checked;
     if (typeof originalValue === 'number') {
       return input.value === '' ? null : Number(input.value);
@@ -325,8 +264,7 @@ export class QtiAttributesPanel extends LitElement {
             class="checkbox checkbox-sm"
             type="checkbox"
             .checked=${Boolean(value)}
-            @change=${(event: Event) =>
-    this.handleFieldChange(key, value, event)}
+            @change=${(event: Event) => this.handleFieldChange(key, value, event)}
           />
         </label>
       `;
@@ -340,8 +278,7 @@ export class QtiAttributesPanel extends LitElement {
             class="input input-sm input-bordered w-full"
             type="number"
             .value=${String(value ?? '')}
-            @input=${(event: Event) =>
-    this.handleFieldChange(key, value, event)}
+            @input=${(event: Event) => this.handleFieldChange(key, value, event)}
           />
         </label>
       `;
@@ -371,20 +308,17 @@ export class QtiAttributesPanel extends LitElement {
         id="qti-attributes-popover"
         popover="manual"
         data-qti-attributes-popover
-        class="qti-attributes-popover card shadow-xl ${this.hasAnchor
-    ? ''
-    : 'qti-attributes-popover--fallback'} ${this.popoverSide === 'left'
-  ? 'qti-attributes-popover--left'
-  : 'qti-attributes-popover--right'}"
+        class="qti-attributes-popover card shadow-xl ${this.hasAnchor ? '' : 'qti-attributes-popover--fallback'} ${this
+          .popoverSide === 'left'
+          ? 'qti-attributes-popover--left'
+          : 'qti-attributes-popover--right'}"
         @toggle=${this.handlePopoverToggle}
       >
         <div class="card-body gap-3 p-4">
           <header class="flex items-start justify-between gap-3">
             <div>
               <h3 class="card-title text-base">QTI Attributes</h3>
-              <p class="text-xs text-base-content/70">
-                ${hasNodes ? activeNode?.type : 'No selection'}
-              </p>
+              <p class="text-xs text-base-content/70">${hasNodes ? activeNode?.type : 'No selection'}</p>
             </div>
             <div class="flex items-center gap-2">
               <button
@@ -400,44 +334,35 @@ export class QtiAttributesPanel extends LitElement {
 
           <div class="qti-attributes-content">
             ${hasNodes
-    ? html`
+              ? html`
                   ${this.nodes.length > 1
-    ? html`
+                    ? html`
                         <div class="mb-3 flex flex-col gap-2">
                           ${this.nodes.map(
-    (node, index) => html`
+                            (node, index) => html`
                               <details
                                 name="qti-attribute-nodes"
                                 class="collapse collapse-arrow border border-base-300 bg-base-100"
                                 ?open=${index === this.selectedIndex}
-                                @toggle=${(event: Event) =>
-    this.handleNodeDetailsToggle(index, event)}
+                                @toggle=${(event: Event) => this.handleNodeDetailsToggle(index, event)}
                               >
-                                <summary class="collapse-title min-h-0 py-2 text-sm font-medium">
-                                  ${node.type}
-                                </summary>
+                                <summary class="collapse-title min-h-0 py-2 text-sm font-medium">${node.type}</summary>
                                 <div class="collapse-content pb-2 text-xs text-base-content/70">
                                   Edit this node's attributes below.
                                 </div>
                               </details>
-                            `,
-  )}
+                            `
+                          )}
                         </div>
                       `
-    : null}
+                    : null}
                   <div class="flex flex-col gap-3">
                     ${attrEntries.length
-    ? attrEntries.map(([key, value]) =>
-      this.renderField(key, value as AttrValue),
-    )
-    : html`<p class="text-sm text-base-content/70">
-                          No editable attributes.
-                        </p>`}
+                      ? attrEntries.map(([key, value]) => this.renderField(key, value as AttrValue))
+                      : html`<p class="text-sm text-base-content/70">No editable attributes.</p>`}
                   </div>
                 `
-    : html`<p class="text-sm text-base-content/70">
-                  Place the cursor in a supported QTI field.
-                </p>`}
+              : html`<p class="text-sm text-base-content/70">Place the cursor in a supported QTI field.</p>`}
           </div>
         </div>
       </section>
