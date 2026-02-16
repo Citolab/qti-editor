@@ -117,7 +117,7 @@ class QtiEditorApp extends LitElement {
             class="card h-full min-h-80 flex flex-col px-32 py-8"
           ></div>
         </div>
-          <qti-code-panel class="mt-10 max-w-2/3 mx-auto" ${ref(this.codePanelRef)}></qti-code-panel>
+          <qti-code-panel class="mt-10 w-full" ${ref(this.codePanelRef)}></qti-code-panel>
       </main>
     `;
   }
