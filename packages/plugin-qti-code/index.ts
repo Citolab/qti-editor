@@ -4,8 +4,7 @@
  * Emits a CustomEvent with serialized HTML and JSON for the current document.
  */
 
-import { definePlugin, type Extension } from 'prosekit/core';
-import { DOMSerializer } from 'prosekit/pm/model';
+import { definePlugin, htmlFromNode, jsonFromNode, type Extension } from 'prosekit/core';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
 import type { EditorState } from 'prosekit/pm/state';
 
@@ -67,13 +66,11 @@ function htmlToXmlString(html: string): string {
 }
 
 function buildCodeDetail(state: EditorState): QtiCodeUpdateDetail {
-  const json = state.doc.toJSON() as QtiDocumentJson;
-  const serializer = DOMSerializer.fromSchema(state.schema);
-  const fragment = serializer.serializeFragment(state.doc.content);
+  const json = jsonFromNode(state.doc) as QtiDocumentJson;
   const html = (() => {
-    const div = document.createElement('div');
-    div.appendChild(fragment.cloneNode(true));
-    return div.innerHTML;
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = htmlFromNode(state.doc);
+    return wrapper.firstElementChild?.innerHTML ?? '';
   })();
 
   return {

@@ -9,14 +9,8 @@ import { createEditor, union, type Editor } from 'prosekit/core';
 
 // QTI plugins (using ProseKit adapters)
 import { qtiEditorEventsExtension } from '@qti-editor/plugin-editor-events';
-import {
-  QtiAttributesPanel,
-  qtiAttributesExtension,
-} from '@qti-editor/plugin-qti-attributes';
-import {
-  QtiCodePanel,
-  qtiCodePanelExtension,
-} from '@qti-editor/plugin-qti-code';
+import { QtiAttributesPanel, qtiAttributesExtension } from '@qti-editor/plugin-qti-attributes';
+import { QtiCodePanel, qtiCodePanelExtension } from '@qti-editor/plugin-qti-code';
 import { defineQtiExtension } from '@qti-editor/plugin-qti-interactions/prosekit';
 
 import { defineToolbarExtension } from '@qti-editor/plugin-toolbar';
@@ -49,20 +43,16 @@ class QtiEditorApp extends LitElement {
         trigger: ({ state, nodes }) => {
           const isNodeSelection = Boolean((state.selection as any).node);
           if (!state.selection.empty && !isNodeSelection) return null;
-          return (
-            nodes.find((node) => /(interaction|prompt)$/i.test(node.type)) ??
-            nodes[0] ??
-            null
-          );
-        },
+          return nodes.find(node => /(interaction|prompt)$/i.test(node.type)) ?? nodes[0] ?? null;
+        }
       }),
       qtiEditorEventsExtension({ eventTarget: this.editorEventsTarget }),
       qtiCodePanelExtension({ eventTarget: this.codeEventTarget }),
       defineToolbarExtension({
         getEditor: () => this.editor,
-        insertMenus: toolbarInsertMenus,
+        insertMenus: toolbarInsertMenus
       }),
-      blockSelectExtension,
+      blockSelectExtension
     );
 
     this.editor = createEditor({ extension });
@@ -71,16 +61,13 @@ class QtiEditorApp extends LitElement {
     this.codePanelRef = createRef<QtiCodePanel>();
 
     // example: use events from events plugin, probably not even necessary
-    this.editorEventsTarget.addEventListener('qti:content:change', (event) => {
+    this.editorEventsTarget.addEventListener('qti:content:change', event => {
       console.log('qti:content:change', (event as CustomEvent).detail);
     });
 
-    this.editorEventsTarget.addEventListener(
-      'qti:selection:change',
-      (event) => {
-        console.log('qti:selection:change', (event as CustomEvent).detail);
-      },
-    );
+    this.editorEventsTarget.addEventListener('qti:selection:change', event => {
+      console.log('qti:selection:change', (event as CustomEvent).detail);
+    });
   }
 
   override createRenderRoot() {
@@ -96,8 +83,7 @@ class QtiEditorApp extends LitElement {
 
     if (this.panelRef.value) {
       this.panelRef.value.eventTarget = this.attributesEventTarget;
-      (this.panelRef.value as QtiAttributesPanel).editorView =
-        (this.editor as any).view ?? null;
+      (this.panelRef.value as QtiAttributesPanel).editorView = (this.editor as any).view ?? null;
     }
 
     if (this.codePanelRef.value) {
@@ -112,12 +98,9 @@ class QtiEditorApp extends LitElement {
         <div
           class="card bg-white mt-12 rounded-md border border-solid border-gray-200 shadow-sm  text-black overflow-hidden"
         >
-          <div
-            ${ref(this.editorRef)}
-            class="card h-full min-h-80 flex flex-col px-32 py-8"
-          ></div>
+          <div ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-32 py-8"></div>
         </div>
-          <qti-code-panel class="mt-10 w-full" ${ref(this.codePanelRef)}></qti-code-panel>
+        <qti-code-panel class="mt-10 w-full" ${ref(this.codePanelRef)}></qti-code-panel>
       </main>
     `;
   }
@@ -130,10 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('QTI Editor Demo initializing...');
   const firebaseConfig = getFirebaseConfig();
   if (firebaseConfig) {
-    console.log(
-      'Firebase config loaded for project:',
-      firebaseConfig.projectId,
-    );
+    console.log('Firebase config loaded for project:', firebaseConfig.projectId);
   }
 
   const app = document.querySelector<HTMLDivElement>('#app')!;
