@@ -4,6 +4,7 @@
  */
 
 import { definePlugin, type Extension } from 'prosekit/core';
+import type { Node as ProseMirrorNode } from 'prosekit/pm/model';
 import type { EditorState } from 'prosekit/pm/state';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
 import { Decoration, DecorationSet } from 'prosekit/pm/view';
@@ -81,6 +82,14 @@ const attributesPluginKey = new PluginKey('qti-attributes-panel');
 function findFirstInteractionAncestorRange(
   state: EditorState,
 ): { from: number; to: number } | null {
+  const selectedNode = (
+    state.selection as EditorState['selection'] & { node?: ProseMirrorNode }
+  ).node;
+  // For atom interactions (e.g. inline text-entry), anchor to the selected node range itself.
+  if (selectedNode && isInteractionNodeName(selectedNode.type.name)) {
+    return { from: state.selection.from, to: state.selection.to };
+  }
+
   const { $from } = state.selection;
   for (let depth = $from.depth; depth > 0; depth--) {
     const node = $from.node(depth);
@@ -99,6 +108,17 @@ function collectSelectionQtiNodes(
 ): SidePanelNodeDetail[] {
   const nodes: SidePanelNodeDetail[] = [];
   const { $from } = state.selection;
+  const selectedNode = (
+    state.selection as EditorState['selection'] & { node?: ProseMirrorNode }
+  ).node;
+  const selectedNodePos = state.selection.from;
+
+  // NodeSelection is used for selectable atom nodes, which are not always captured by ancestor scan.
+  if (selectedNode && options.eligible(selectedNode)) {
+    if (options.includeEmptyAttrs || Object.keys(selectedNode.attrs ?? {}).length > 0) {
+      nodes.push({ type: selectedNode.type.name, attrs: selectedNode.attrs, pos: selectedNodePos });
+    }
+  }
 
   for (let depth = $from.depth; depth > 0; depth--) {
     const node = $from.node(depth);
@@ -107,6 +127,7 @@ function collectSelectionQtiNodes(
       continue;
     }
     const pos = $from.before(depth);
+    if (nodes.some(existing => existing.pos === pos && existing.type === node.type.name)) continue;
     nodes.push({ type: node.type.name, attrs: node.attrs, pos });
   }
 
