@@ -27,6 +27,7 @@ export interface QtiNodeJson {
 export interface QtiCodeUpdateDetail {
   json: QtiDocumentJson;
   html: string;
+  xml: string;
   timestamp: number;
 }
 
@@ -52,15 +53,33 @@ export interface QtiCodePanelOptions {
 
 const codePanelPluginKey = new PluginKey('qti-code-panel');
 
+function htmlToXmlString(html: string): string {
+  const wrapped = `<qti-item-body>${html}</qti-item-body>`;
+  const parsed = new DOMParser().parseFromString(wrapped, 'application/xml');
+  const parseError = parsed.querySelector('parsererror');
+
+  if (parseError) {
+    // Fall back to wrapped HTML if XML parsing fails due to malformed markup.
+    return wrapped;
+  }
+
+  return new XMLSerializer().serializeToString(parsed.documentElement);
+}
+
 function buildCodeDetail(state: EditorState): QtiCodeUpdateDetail {
   const json = state.doc.toJSON() as QtiDocumentJson;
   const serializer = DOMSerializer.fromSchema(state.schema);
   const fragment = serializer.serializeFragment(state.doc.content);
-  const div = document.createElement('div');
-  div.appendChild(fragment);
+  const html = (() => {
+    const div = document.createElement('div');
+    div.appendChild(fragment.cloneNode(true));
+    return div.innerHTML;
+  })();
+
   return {
     json,
-    html: div.innerHTML,
+    html,
+    xml: htmlToXmlString(html),
     timestamp: Date.now(),
   };
 }

@@ -1,9 +1,9 @@
-import { css, html, LitElement, type TemplateResult } from 'lit';
+import { html, LitElement, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
 import type { QtiCodeUpdateDetail } from './index';
 
-type CodeMode = 'html' | 'json';
+type CodeMode = 'html' | 'json' | 'xml';
 
 @customElement('qti-code-panel')
 export class QtiCodePanel extends LitElement {
@@ -51,6 +51,10 @@ export class QtiCodePanel extends LitElement {
     this.requestUpdate();
   };
 
+  override createRenderRoot() {
+    return this;
+  }
+
   connectedCallback() {
     super.connectedCallback();
     this.currentEventTarget = this.getEventTarget();
@@ -88,20 +92,32 @@ export class QtiCodePanel extends LitElement {
 
   private renderToolbar(): TemplateResult {
     return html`
-      <div class="toolbar">
-        <div class="title">Generated Code</div>
-        <div class="tabs">
+      <div class="flex w-full items-center justify-between gap-3 border-b border-base-300/40 pb-3 mb-3">
+        <div class="text-[0.95rem] font-bold">Generated Code</div>
+        <div class="join">
           <button
-            class=${this._mode === 'html' ? 'active' : ''}
+            class=${this._mode === 'html'
+              ? 'btn btn-xs sm:btn-sm join-item normal-case font-semibold btn-info'
+              : 'btn btn-xs sm:btn-sm join-item normal-case font-semibold btn-ghost border border-base-300/60 bg-base-100 text-base-content'}
             @click=${() => (this.mode = 'html')}
           >
             HTML
           </button>
           <button
-            class=${this._mode === 'json' ? 'active' : ''}
+            class=${this._mode === 'json'
+              ? 'btn btn-xs sm:btn-sm join-item normal-case font-semibold btn-info'
+              : 'btn btn-xs sm:btn-sm join-item normal-case font-semibold btn-ghost border border-base-300/60 bg-base-100 text-base-content'}
             @click=${() => (this.mode = 'json')}
           >
             JSON
+          </button>
+          <button
+            class=${this._mode === 'xml'
+              ? 'btn btn-xs sm:btn-sm join-item normal-case font-semibold btn-info'
+              : 'btn btn-xs sm:btn-sm join-item normal-case font-semibold btn-ghost border border-base-300/60 bg-base-100 text-base-content'}
+            @click=${() => (this.mode = 'xml')}
+          >
+            XML
           </button>
         </div>
       </div>
@@ -113,97 +129,25 @@ export class QtiCodePanel extends LitElement {
     const jsonText = this.detail?.json
       ? JSON.stringify(this.detail.json, null, 2)
       : '';
-    const displayText =
-      this._mode === 'html' ? this.formatHtml(htmlText) : jsonText;
+    const xmlText = this.detail?.xml ?? '';
+    const displayText = this._mode === 'html'
+      ? this.formatHtml(htmlText)
+      : this._mode === 'json'
+        ? jsonText
+        : xmlText;
 
     return html`
-      <section class="panel ${this.detail ? 'open' : ''}">
+      <section
+        class="card  ${this
+          .detail
+          ? 'opacity-100 translate-y-0'
+          : 'opacity-70 translate-y-2'}"
+      >
         ${this.renderToolbar()}
-        <pre class="code">${displayText || 'No content yet.'}</pre>
+        <pre class="m-0 max-h-80 max-w-full overflow-auto rounded-xl bg-neutral p-3 text-xs text-neutral-content whitespace-pre break-normal">${displayText || 'No content yet.'}</pre>
       </section>
     `;
   }
-
-  static styles = css`
-    :host {
-      display: block;
-      box-sizing: border-box;
-      width: 100%;
-      font-family: 'Space Grotesk', system-ui, sans-serif;
-      color: #0f172a;
-    }
-
-    .panel {
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      border-radius: 16px;
-      padding: 18px;
-      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
-      opacity: 0.7;
-      transform: translateY(8px);
-      transition: opacity 200ms ease, transform 200ms ease;
-    }
-
-    .panel.open {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-      margin-bottom: 12px;
-    }
-
-    .title {
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-    }
-
-    .tabs button {
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      background: #fff;
-      color: #0f172a;
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-weight: 600;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: background-color 120ms ease, border-color 120ms ease;
-    }
-
-    .tabs button.active {
-      background: #e0f2fe;
-      border-color: #38bdf8;
-      color: #075985;
-    }
-
-    .code {
-      margin: 0;
-      padding: 12px;
-      border-radius: 12px;
-      background: #0f172a;
-      color: #e2e8f0;
-      font-size: 0.75rem;
-      overflow: auto;
-      max-width: 100%;
-      max-height: 320px;
-      white-space: pre;
-      word-break: normal;
-    }
-  `;
 
   private formatHtml(html: string): string {
     let formatted = '';
