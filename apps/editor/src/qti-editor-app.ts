@@ -31,10 +31,9 @@ export class QtiEditorApp extends LitElement {
   private codeEventTarget: EventTarget;
 
   @provide({ context: itemContext })
-  public context: ItemContext = {
+  public itemContext: ItemContext = {
     variables: itemContextVariables
   };
-  
 
   constructor() {
     super();
@@ -49,11 +48,11 @@ export class QtiEditorApp extends LitElement {
       qtiAttributesExtension({
         eventTarget: this.attributesEventTarget
       }),
-      qtiEditorEventsExtension({ 
+      qtiEditorEventsExtension({
         eventTarget: this.editorEventsTarget
       }),
-      qtiCodePanelExtension({ 
-        eventTarget: this.codeEventTarget 
+      qtiCodePanelExtension({
+        eventTarget: this.codeEventTarget
       }),
       defineToolbarExtension({
         getEditor: () => this.editor,
@@ -70,15 +69,10 @@ export class QtiEditorApp extends LitElement {
     // example: use events from events plugin, probably not even necessary
     this.editorEventsTarget.addEventListener('qti:content:change', event => {
       const detail = (event as CustomEvent<{ html?: string; json?: unknown }>).detail;
-      const view = (this.editor as any).view;
-      const docJson = view?.state?.doc?.toJSON?.();
-      this.context = {
-        ...this.context,
-        state: {
-          ...(this.context.state ?? {}),
-          prosemirrorDoc: docJson ? JSON.stringify(docJson, null, 2) : null,
-          prosemirrorHtml: detail?.html ?? null
-        }
+      const parsed = new DOMParser().parseFromString('<qti-item-body>' + (detail?.html ?? '') + '</qti-item-body>', 'application/xml');
+      this.itemContext = {
+        ...this.itemContext,
+        itemBody: parsed
       };
     });
 
@@ -114,18 +108,15 @@ export class QtiEditorApp extends LitElement {
         <div
           class="card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden"
         >
-          <qti-lit-editor
-            ${ref(this.editorRef)}
-            class="card h-full min-h-80 flex flex-col px-6 py-6"
-          ></qti-lit-editor>
+          <qti-lit-editor ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></qti-lit-editor>
         </div>
         <div class="w-full lg:w-80 lg:shrink-0">
           <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
         </div>
       </div>
       <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
-      <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel>
-      <qti-composer class="block w-full"></qti-composer>
+        <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel>
+        <qti-composer class="block w-full"></qti-composer>
       </div>
     `;
   }

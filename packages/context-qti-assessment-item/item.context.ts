@@ -3,12 +3,9 @@ import type { VariableDeclaration } from '@qti-components/base';
 export interface ItemContext {
   identifier?: string;
   href?: string;
+  title?: string;
   variables?: ReadonlyArray<VariableDeclaration<string | string[] | null>>;
-  /**
-   * Optional per-interaction opaque state, keyed by responseIdentifier.
-   * Used for interactions that support state save/restore (e.g. PCI).
-   */
-  state?: Record<string, string | null>;
+  itemBody?: XMLDocument; // XML document of the item body, if available
 }
 
 export const itemContextVariables = [] as VariableDeclaration<string | string[]>[];
