@@ -34,7 +34,7 @@ export class QtiEditorApp extends LitElement {
   private codeEventTarget: EventTarget;
 
   @provide({ context: qtiEditorContext })
-  private editorPanelContext: QtiEditorContextValue;
+  public editorPanelContext: QtiEditorContextValue;
 
   constructor() {
     super();
@@ -54,8 +54,12 @@ export class QtiEditorApp extends LitElement {
       qtiAttributesExtension({
         eventTarget: this.attributesEventTarget
       }),
-      qtiEditorEventsExtension({ eventTarget: this.editorEventsTarget }),
-      qtiCodePanelExtension({ eventTarget: this.codeEventTarget }),
+      qtiEditorEventsExtension({ 
+        eventTarget: this.editorEventsTarget
+      }),
+      qtiCodePanelExtension({ 
+        eventTarget: this.codeEventTarget 
+      }),
       defineToolbarExtension({
         getEditor: () => this.editor,
         insertMenus: toolbarInsertMenus
@@ -71,6 +75,7 @@ export class QtiEditorApp extends LitElement {
     // example: use events from events plugin, probably not even necessary
     this.editorEventsTarget.addEventListener('qti:content:change', event => {
       console.log('qti:content:change', (event as CustomEvent).detail);
+
     });
 
     this.editorEventsTarget.addEventListener('qti:selection:change', event => {
