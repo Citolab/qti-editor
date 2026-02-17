@@ -1,3 +1,4 @@
+
 export function formatXml(xml: string): string {
     const PADDING = '  ';
     const reg = /(>)(<)(\/*)/g;
@@ -14,4 +15,4 @@ export function formatXml(xml: string): string {
         return PADDING.repeat(indent) + node;
       })
       .join('\n');
-  }
+}

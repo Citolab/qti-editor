@@ -29,7 +29,7 @@ export class QtiEditorApp extends LitElement {
   private attributesEventTarget: EventTarget;
   private editorEventsTarget: EventTarget;
   private codeEventTarget: EventTarget;
-  
+
   private onMetadataChange(event: Event) {
     const detail = (event as CustomEvent<{ title: string; identifier: string }>).detail;
     this.itemContext = {
@@ -78,7 +78,10 @@ export class QtiEditorApp extends LitElement {
     // example: use events from events plugin, probably not even necessary
     this.editorEventsTarget.addEventListener('qti:content:change', event => {
       const detail = (event as CustomEvent<{ html?: string; json?: unknown }>).detail;
-      const parsed = new DOMParser().parseFromString('<qti-item-body>' + (detail?.html ?? '') + '</qti-item-body>', 'application/xml');
+      const parsed = new DOMParser().parseFromString(
+        '<qti-item-body>' + (detail?.html ?? '') + '</qti-item-body>',
+        'application/xml'
+      );
       this.itemContext = {
         ...this.itemContext,
         itemBody: parsed
@@ -120,18 +123,19 @@ export class QtiEditorApp extends LitElement {
           <qti-lit-editor ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></qti-lit-editor>
         </div>
         <div class="w-full lg:w-80 lg:shrink-0">
+          <qti-composer-metadata-form
+            class="block w-full"
+            .title=${this.itemContext.title ?? ''}
+            .identifier=${this.itemContext.identifier ?? ''}
+            @metadata-change=${this.onMetadataChange}
+          >
+          </qti-composer-metadata-form>
           <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
         </div>
       </div>
       <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
         <div class="space-y-6">
           <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel>
-          <qti-composer-metadata-form
-            class="block w-full"
-            .title=${this.itemContext.title ?? ''}
-            .identifier=${this.itemContext.identifier ?? ''}
-            @metadata-change=${this.onMetadataChange}
-          ></qti-composer-metadata-form>
         </div>
         <qti-composer class="block w-full"></qti-composer>
       </div>

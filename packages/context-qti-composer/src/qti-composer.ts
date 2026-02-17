@@ -3,6 +3,7 @@ import { itemContext, type ItemContext } from '@qti-editor/context-qti-assessmen
 import { LitElement, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { formatXml } from './utils';
+import { buildAssessmentItemXml } from './qti-from-item-context';
 
 @customElement('qti-composer')
 export class QtiComposer extends LitElement {
@@ -18,8 +19,7 @@ export class QtiComposer extends LitElement {
   override willUpdate(changedProperties: Map<string, unknown>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has('itemContext')) {
-      this.itemContext?.itemBody
-      const detail = this.itemContext?.itemBody ? new XMLSerializer().serializeToString(this.itemContext.itemBody) : '';
+      const detail = buildAssessmentItemXml(this.itemContext);
       this.#formattedXml = formatXml(detail);
     }
   }
