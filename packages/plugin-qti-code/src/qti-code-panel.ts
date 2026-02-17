@@ -1,7 +1,7 @@
 import { html, LitElement, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
-import type { QtiCodeUpdateDetail } from './index';
+import type { QtiCodeUpdateDetail } from './qti-code-plugin.js';
 
 type CodeMode = 'html' | 'json' | 'xml';
 

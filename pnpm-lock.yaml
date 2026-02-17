@@ -15,6 +15,21 @@ importers:
 
   .:
     dependencies:
+      '@qti-components/base':
+        specifier: link:.yalc/@qti-components/base
+        version: link:.yalc/@qti-components/base
+      '@qti-components/interactions':
+        specifier: link:.yalc/@qti-components/interactions
+        version: link:.yalc/@qti-components/interactions
+      '@qti-components/prosemirror':
+        specifier: link:.yalc/@qti-components/prosemirror
+        version: link:.yalc/@qti-components/prosemirror
+      '@qti-components/theme':
+        specifier: link:.yalc/@qti-components/theme
+        version: link:.yalc/@qti-components/theme
+      '@qti-components/utilities':
+        specifier: link:.yalc/@qti-components/utilities
+        version: link:.yalc/@qti-components/utilities
       eslint-plugin-lit:
         specifier: ^2.2.1
         version: 2.2.1(eslint@9.39.2(jiti@2.6.1))
@@ -106,6 +121,27 @@ importers:
       '@lit/context':
         specifier: ^1.1.6
         version: 1.1.6
+      '@qti-components/base':
+        specifier: link:../../.yalc/@qti-components/base
+        version: link:../../.yalc/@qti-components/base
+      '@qti-components/interactions':
+        specifier: link:../../.yalc/@qti-components/interactions
+        version: link:../../.yalc/@qti-components/interactions
+      '@qti-components/prosemirror':
+        specifier: link:../../.yalc/@qti-components/prosemirror
+        version: link:../../.yalc/@qti-components/prosemirror
+      '@qti-components/theme':
+        specifier: link:../../.yalc/@qti-components/theme
+        version: link:../../.yalc/@qti-components/theme
+      '@qti-components/utilities':
+        specifier: link:../../.yalc/@qti-components/utilities
+        version: link:../../.yalc/@qti-components/utilities
+      '@qti-editor/context-qti-assessment-item':
+        specifier: workspace:*
+        version: link:../../packages/context-qti-assessment-item
+      '@qti-editor/context-qti-composer':
+        specifier: workspace:*
+        version: link:../../packages/context-qti-composer
       '@qti-editor/plugin-editor-context':
         specifier: workspace:*
         version: link:../../packages/plugin-editor-context
@@ -161,6 +197,44 @@ importers:
       vite:
         specifier: ^5.0.0
         version: 5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)
+
+  packages/context-qti-assessment-item:
+    dependencies:
+      '@lit/context':
+        specifier: ^1.1.6
+        version: 1.1.6
+      '@qti-components/base':
+        specifier: link:../../.yalc/@qti-components/base
+        version: link:../../.yalc/@qti-components/base
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.27
+
+  packages/context-qti-composer:
+    dependencies:
+      '@lit/context':
+        specifier: ^1.1.6
+        version: 1.1.6
+      '@qti-editor/context-qti-assessment-item':
+        specifier: workspace:*
+        version: link:../context-qti-assessment-item
+      lit:
+        specifier: ^3.0.0
+        version: 3.3.1
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.27
 
   packages/plugin-editor-context:
     dependencies:

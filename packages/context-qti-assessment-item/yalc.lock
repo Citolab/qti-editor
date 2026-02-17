@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "@qti-components/base": {
+      "signature": "f10259bf3194202fb6b73a3e1c10dabc",
+      "file": true,
+      "replaced": "link:../../.yalc/@qti-components/base"
+    }
+  }
+}

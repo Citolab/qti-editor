@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "description": "Code preview panel plugin for QTI Editor",
   "type": "module",
-  "main": "./index.ts",
+  "main": "./src/index.ts",
   "exports": {
-    ".": "./index.ts"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "build": "tsc"

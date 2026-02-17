@@ -13,7 +13,7 @@ const meta: Meta<QtiEditorApp> = {
 export default meta;
 
 export const Test: Story = {
-  render: args => {
+  render: () => {
     return html`
       <main class="container mx-auto max-w-4xl">
         <qti-editor-app data-testid="interaction"></qti-editor-app>

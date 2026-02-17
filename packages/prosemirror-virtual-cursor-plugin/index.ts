@@ -1,0 +1,1 @@
+export * from './src/virtual-cursor-plugin.js';

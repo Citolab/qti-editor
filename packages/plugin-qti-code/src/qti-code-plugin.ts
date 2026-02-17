@@ -8,8 +8,6 @@ import { definePlugin, htmlFromNode, jsonFromNode, type Extension } from 'prosek
 import { Plugin, PluginKey } from 'prosekit/pm/state';
 import type { EditorState } from 'prosekit/pm/state';
 
-export { QtiCodePanel } from './qti-code-panel.js';
-
 export interface QtiDocumentJson {
   type: string;
   content?: QtiNodeJson[];

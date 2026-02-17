@@ -3,11 +3,6 @@ import 'prosekit/basic/typography.css';
 
 // ProseKit core
 import { provide } from '@lit/context';
-import {
-  EMPTY_QTI_ATTRIBUTES_DETAIL,
-  qtiEditorContext,
-  type QtiEditorContextValue
-} from '@qti-editor/plugin-editor-context';
 import { LitElement, PropertyValues, html } from 'lit';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { createEditor, union, type Editor } from 'prosekit/core';
@@ -23,6 +18,8 @@ import { defineQtiExtension } from '@qti-editor/plugin-qti-interactions/prosekit
 import { defineToolbarExtension } from '@qti-editor/plugin-toolbar';
 import { blockSelectExtension } from '@qti-editor/prosemirror-block-select-plugin';
 import { toolbarInsertMenus } from './toolbar/insert-menus';
+import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/context-qti-assessment-item';
+import '@qti-editor/context-qti-composer';
 
 export class QtiEditorApp extends LitElement {
   private editor: Editor;
@@ -33,8 +30,11 @@ export class QtiEditorApp extends LitElement {
   private editorEventsTarget: EventTarget;
   private codeEventTarget: EventTarget;
 
-  @provide({ context: qtiEditorContext })
-  public editorPanelContext: QtiEditorContextValue;
+  @provide({ context: itemContext })
+  public context: ItemContext = {
+    variables: itemContextVariables
+  };
+  
 
   constructor() {
     super();
@@ -42,11 +42,6 @@ export class QtiEditorApp extends LitElement {
     this.attributesEventTarget = new EventTarget();
     this.editorEventsTarget = new EventTarget();
     this.codeEventTarget = new EventTarget();
-    this.editorPanelContext = {
-      attributes: EMPTY_QTI_ATTRIBUTES_DETAIL,
-      code: null,
-      editorView: null
-    };
 
     // Create the combined extension with QTI support and toolbar
     const extension = union(
@@ -74,8 +69,17 @@ export class QtiEditorApp extends LitElement {
 
     // example: use events from events plugin, probably not even necessary
     this.editorEventsTarget.addEventListener('qti:content:change', event => {
-      console.log('qti:content:change', (event as CustomEvent).detail);
-
+      const detail = (event as CustomEvent<{ html?: string; json?: unknown }>).detail;
+      const view = (this.editor as any).view;
+      const docJson = view?.state?.doc?.toJSON?.();
+      this.context = {
+        ...this.context,
+        state: {
+          ...(this.context.state ?? {}),
+          prosemirrorDoc: docJson ? JSON.stringify(docJson, null, 2) : null,
+          prosemirrorHtml: detail?.html ?? null
+        }
+      };
     });
 
     this.editorEventsTarget.addEventListener('qti:selection:change', event => {
@@ -119,7 +123,10 @@ export class QtiEditorApp extends LitElement {
           <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
         </div>
       </div>
-      <qti-code-panel class="mt-10 w-full" ${ref(this.codePanelRef)}></qti-code-panel>
+      <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+      <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel>
+      <qti-composer class="block w-full"></qti-composer>
+      </div>
     `;
   }
 }

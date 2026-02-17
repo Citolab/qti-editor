@@ -29,6 +29,17 @@ Repository skill catalog for contributors and coding agents.
   - Must not mutate source code unless explicitly asked.
   - Must start from `docs/architecture.md` as canonical context.
 
+### Skill: `yalc-install-guard`
+- Path: `.codex/skills/yalc-install-guard/SKILL.md`
+- Use when:
+  - Running `pnpm install` / `pnpm i`.
+  - Yalc links are missing after reinstall.
+  - Builds fail on unresolved `@qti-components/*` imports.
+- Expected outputs:
+  - Root/app/package `yalc:add` scripts are present.
+  - Root `postinstall` triggers yalc sync.
+  - Verification commands and build status.
+
 ## Planned Future Skills (Reserved)
 - `workspace-build-test-runner`: standard build/lint/test command workflows.
 - `panel-event-contract-changes`: safe contract evolution across plugins/panels.

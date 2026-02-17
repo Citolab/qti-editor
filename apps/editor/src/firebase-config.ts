@@ -17,7 +17,9 @@ const requiredKeys: Array<keyof ImportMetaEnv> = [
 ];
 
 function getMissingEnvKeys(): string[] {
-  return requiredKeys.filter((key) => !import.meta.env[key]?.trim());
+  return requiredKeys
+    .filter((key) => !import.meta.env[key]?.trim())
+    .map((key) => String(key));
 }
 
 export function getFirebaseConfig(): FirebaseWebConfig | null {

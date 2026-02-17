@@ -15,10 +15,18 @@
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
     "chrome:debug": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-remote-debug",
+    "yalc:add": "yalc add --no-pure @qti-components/base @qti-components/interactions @qti-components/prosemirror @qti-components/theme @qti-components/utilities",
+    "yalc": "pnpm run yalc:add && pnpm -r --if-present yalc:add",
+    "postinstall": "pnpm yalc",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@qti-components/base": "file:.yalc/@qti-components/base",
+    "@qti-components/interactions": "file:.yalc/@qti-components/interactions",
+    "@qti-components/prosemirror": "file:.yalc/@qti-components/prosemirror",
+    "@qti-components/theme": "file:.yalc/@qti-components/theme",
+    "@qti-components/utilities": "file:.yalc/@qti-components/utilities",
     "eslint-plugin-lit": "^2.2.1",
     "lit": "^3.0.0",
     "prosekit": "^0.17.0",

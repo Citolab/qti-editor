@@ -3,23 +3,23 @@
   "packages": {
     "@qti-components/prosemirror": {
       "signature": "22a2fe0fdb4d873ea5c34fca30e25cf2",
-      "pure": true
+      "file": true
     },
     "@qti-components/base": {
       "signature": "f10259bf3194202fb6b73a3e1c10dabc",
-      "pure": true
+      "file": true
     },
     "@qti-components/interactions": {
       "signature": "bdb25145a2ed17bbe301bc3962a1cd21",
-      "pure": true
+      "file": true
     },
     "@qti-components/theme": {
       "signature": "58916d6ed03680807e01cdd4a0f84878",
-      "pure": true
+      "file": true
     },
     "@qti-components/utilities": {
       "signature": "ffffac2a8fb493a65f17115df1f3b618",
-      "pure": true
+      "file": true
     }
   }
 }
