@@ -29,6 +29,15 @@ export class QtiEditorApp extends LitElement {
   private attributesEventTarget: EventTarget;
   private editorEventsTarget: EventTarget;
   private codeEventTarget: EventTarget;
+  
+  private onMetadataChange(event: Event) {
+    const detail = (event as CustomEvent<{ title: string; identifier: string }>).detail;
+    this.itemContext = {
+      ...this.itemContext,
+      title: detail.title,
+      identifier: detail.identifier
+    };
+  }
 
   @provide({ context: itemContext })
   public itemContext: ItemContext = {
@@ -115,7 +124,15 @@ export class QtiEditorApp extends LitElement {
         </div>
       </div>
       <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
-        <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel>
+        <div class="space-y-6">
+          <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel>
+          <qti-composer-metadata-form
+            class="block w-full"
+            .title=${this.itemContext.title ?? ''}
+            .identifier=${this.itemContext.identifier ?? ''}
+            @metadata-change=${this.onMetadataChange}
+          ></qti-composer-metadata-form>
+        </div>
         <qti-composer class="block w-full"></qti-composer>
       </div>
     `;

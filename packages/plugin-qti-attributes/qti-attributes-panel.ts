@@ -223,7 +223,7 @@ export class QtiAttributesPanel extends LitElement {
         <div class="card-body gap-3 p-4">
           <header class="flex items-start justify-between gap-3">
             <div>
-              <h3 class="card-title text-base">QTI Attributes</h3>
+              <h3 class="card-title text-base">QTI Interaction Attributes</h3>
               <p class="text-xs text-base-content/70">${activeNode?.type ?? 'No selection'}</p>
             </div>
           </header>
