@@ -1,6 +1,14 @@
-const xml=String.raw
+const xml = String.raw;
 
-const qtiAssessmentItem = ({ qtiItemBody, identifier, title }: { qtiItemBody: string; identifier: string; title: string }) => xml`
+const qtiAssessmentItem = ({
+  qtiItemBody,
+  identifier,
+  title
+}: {
+  qtiItemBody: string;
+  identifier: string;
+  title: string;
+}) => xml`
 <qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 

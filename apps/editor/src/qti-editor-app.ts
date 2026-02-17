@@ -2,14 +2,22 @@ import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
 
 // ProseKit core
-import { LitElement, html, type PropertyValues } from 'lit';
+import { provide } from '@lit/context';
+import {
+  EMPTY_QTI_ATTRIBUTES_DETAIL,
+  qtiEditorContext,
+  type QtiEditorContextValue
+} from '@qti-editor/plugin-editor-context';
+import { LitElement, PropertyValues, html } from 'lit';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { createEditor, union, type Editor } from 'prosekit/core';
 
 // QTI plugins (using ProseKit adapters)
 import { qtiEditorEventsExtension } from '@qti-editor/plugin-editor-events';
-import { QtiAttributesPanel, qtiAttributesExtension } from '@qti-editor/plugin-qti-attributes';
-import { QtiCodePanel, qtiCodePanelExtension } from '@qti-editor/plugin-qti-code';
+import type { QtiAttributesPanel } from '@qti-editor/plugin-qti-attributes';
+import { qtiAttributesExtension } from '@qti-editor/plugin-qti-attributes';
+import type { QtiCodePanel } from '@qti-editor/plugin-qti-code';
+import { qtiCodePanelExtension } from '@qti-editor/plugin-qti-code';
 import { defineQtiExtension } from '@qti-editor/plugin-qti-interactions/prosekit';
 
 import { defineToolbarExtension } from '@qti-editor/plugin-toolbar';
@@ -25,32 +33,26 @@ export class QtiEditorApp extends LitElement {
   private editorEventsTarget: EventTarget;
   private codeEventTarget: EventTarget;
 
+  @provide({ context: qtiEditorContext })
+  private editorPanelContext: QtiEditorContextValue;
+
   constructor() {
     super();
 
     this.attributesEventTarget = new EventTarget();
     this.editorEventsTarget = new EventTarget();
     this.codeEventTarget = new EventTarget();
+    this.editorPanelContext = {
+      attributes: EMPTY_QTI_ATTRIBUTES_DETAIL,
+      code: null,
+      editorView: null
+    };
 
     // Create the combined extension with QTI support and toolbar
     const extension = union(
       defineQtiExtension(),
       qtiAttributesExtension({
-        eventTarget: this.attributesEventTarget,
-        // Trigger stays in app code so the attributes UI remains decoupled from schema specifics.
-        trigger: ({ state, nodes }) => {
-          const isNodeSelection = Boolean((state.selection as any).node);
-          if (!state.selection.empty && !isNodeSelection) return null;
-          const interactionNodes = nodes.filter(node => /(interaction|prompt)$/i.test(node.type));
-          if (interactionNodes.length === 0) return nodes[0] ?? null;
-
-          // For NodeSelection, prefer the node that starts at the selected position.
-          const exactMatch = interactionNodes.find(node => node.pos === state.selection.from);
-          if (exactMatch) return exactMatch;
-
-          // Otherwise prefer the innermost candidate (largest start position).
-          return interactionNodes.reduce((best, node) => (node.pos > best.pos ? node : best));
-        }
+        eventTarget: this.attributesEventTarget
       }),
       qtiEditorEventsExtension({ eventTarget: this.editorEventsTarget }),
       qtiCodePanelExtension({ eventTarget: this.codeEventTarget }),
@@ -99,14 +101,20 @@ export class QtiEditorApp extends LitElement {
 
   override render() {
     return html`
-      <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
+      <div class="mt-12 flex flex-col gap-6 lg:flex-row lg:items-start">
         <div
-          class="card bg-white mt-12 rounded-md border border-solid border-gray-200 shadow-sm  text-black overflow-hidden"
+          class="card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden"
         >
-          <qti-lit-editor ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-32 py-8"></qti-lit-editor>
+          <qti-lit-editor
+            ${ref(this.editorRef)}
+            class="card h-full min-h-80 flex flex-col px-6 py-6"
+          ></qti-lit-editor>
         </div>
-        <qti-code-panel class="mt-10 w-full" ${ref(this.codePanelRef)}></qti-code-panel>
-
+        <div class="w-full lg:w-80 lg:shrink-0">
+          <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
+        </div>
+      </div>
+      <qti-code-panel class="mt-10 w-full" ${ref(this.codePanelRef)}></qti-code-panel>
     `;
   }
 }
@@ -116,6 +124,6 @@ customElements.define('qti-editor-app', QtiEditorApp);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'qti-editor-app': QtiEditorApp
+    'qti-editor-app': QtiEditorApp;
   }
 }

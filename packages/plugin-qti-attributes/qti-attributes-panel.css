@@ -1,36 +1,10 @@
-.ProseMirror .qti-attributes-anchor-node {
-  anchor-name: --qti-attributes-anchor;
-}
-
-.ProseMirror.ProseMirror-focused .qti-attributes-anchor-node {
-  border-radius: 0.375rem;
-  outline: 1px solid rgb(59 130 246 / 0.95);
-  outline-offset: 4px;
-  box-shadow: 0 0 0 4px rgb(59 130 246 / 0.2);
-  transition:
-    outline-color 160ms ease,
-    box-shadow 160ms ease;
-}
-
 qti-attributes-panel {
-  display: contents;
+  display: block;
 }
 
-qti-attributes-panel .qti-attributes-popover {
+qti-attributes-panel .qti-attributes-panel {
   width: 20rem;
-  position: fixed;
-  z-index: 60;
-  top: anchor(top);
-  left: calc(anchor(left) - 0.75rem);
-  transform: none;
-  position-anchor: var(--qti-attributes-anchor-name);
-  transform: translateX(-100%);
 }
-
-/* qti-attributes-panel .qti-attributes-popover::backdrop {
-  background: transparent;
-  pointer-events: none;
-} */
 
 qti-attributes-panel .qti-attributes-content {
   max-block-size: min(24rem, calc(100vh - 12rem));

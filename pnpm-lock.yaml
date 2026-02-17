@@ -103,6 +103,12 @@ importers:
       '@iconify-json/lucide':
         specifier: ^1.2.90
         version: 1.2.90
+      '@lit/context':
+        specifier: ^1.1.6
+        version: 1.1.6
+      '@qti-editor/plugin-editor-context':
+        specifier: workspace:*
+        version: link:../../packages/plugin-editor-context
       '@qti-editor/plugin-editor-events':
         specifier: workspace:*
         version: link:../../packages/plugin-editor-events
@@ -155,6 +161,12 @@ importers:
       vite:
         specifier: ^5.0.0
         version: 5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)
+
+  packages/plugin-editor-context:
+    dependencies:
+      '@lit/context':
+        specifier: ^1.1.6
+        version: 1.1.6
 
   packages/plugin-editor-events:
     dependencies:
@@ -860,6 +872,9 @@ packages:
 
   '@lit-labs/ssr-dom-shim@1.5.1':
     resolution: {integrity: sha512-Aou5UdlSpr5whQe8AA/bZG0jMj96CoJIWbGfZ91qieWu5AWUMKw8VR/pAkQkJYvBNhmCcWnZlyyk5oze8JIqYA==}
+
+  '@lit/context@1.1.6':
+    resolution: {integrity: sha512-M26qDE6UkQbZA2mQ3RjJ3Gzd8TxP+/0obMgE5HfkfLhEEyYE3Bui4A5XHiGPjy0MUGAyxB3QgVuw2ciS0kHn6A==}
 
   '@lit/reactive-element@2.1.1':
     resolution: {integrity: sha512-N+dm5PAYdQ8e6UlywyyrgI2t++wFGXfHx+dSJ1oBrg6FAxUj40jId++EaRm80MKX5JnlH1sBsyZ5h0bcZKemCg==}
@@ -3743,6 +3758,10 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
 
   '@lit-labs/ssr-dom-shim@1.5.1': {}
+
+  '@lit/context@1.1.6':
+    dependencies:
+      '@lit/reactive-element': 2.1.1
 
   '@lit/reactive-element@2.1.1':
     dependencies:

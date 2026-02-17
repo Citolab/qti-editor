@@ -1,17 +1,12 @@
 /*
- * QTI attributes plugin for QTI Editor
- * Emits selection-aware attribute data so external panels can render controls.
+ * QTI attributes plugin for QTI Editor.
+ * Emits editable attributes for the selected node and its ancestors.
  */
 
 import { definePlugin, type Extension } from 'prosekit/core';
 import type { Node as ProseMirrorNode } from 'prosekit/pm/model';
 import type { EditorState } from 'prosekit/pm/state';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
-import { Decoration, DecorationSet } from 'prosekit/pm/view';
-import {
-  isInteractionNodeName,
-  QTI_ATTRIBUTES_ANCHOR_CLASS,
-} from './qti-attributes-panel.connector.js';
 
 // ============================================================================
 // Plugin Registration
@@ -42,7 +37,7 @@ export type QtiAttributesTrigger = (
 
 export interface QtiAttributesOptions {
   /**
-   * Custom event name to dispatch. Defaults to "qti:side-panel:update".
+   * Custom event name to dispatch. Defaults to "qti:attributes:update".
    */
   eventName?: string;
 
@@ -53,21 +48,14 @@ export interface QtiAttributesOptions {
   eventTarget?: EventTarget;
 
   /**
-   * Whether to include nodes with empty attrs.
-   * @default true
+   * Optional filter for which nodes are eligible.
+   * @default node has attrs defined in schema
    */
-  includeEmptyAttrs?: boolean;
-
-  /**
-   * Filter for which nodes are eligible.
-   * @default node.type.name starts with "qti_"
-   */
-  eligible?: (node: { type: { name: string }; attrs?: Record<string, any> }) => boolean;
+  eligible?: (node: { type: { spec?: { attrs?: Record<string, unknown> } } }) => boolean;
 
   /**
    * Chooses which node should activate the attributes UI.
-   * Return null to keep the UI closed.
-   * @default open on first eligible ancestor when selection is collapsed
+   * @default first collected node (selected node first, then ancestors)
    */
   trigger?: QtiAttributesTrigger;
 
@@ -79,98 +67,60 @@ export interface QtiAttributesOptions {
 
 const attributesPluginKey = new PluginKey('qti-attributes-panel');
 
-function findFirstInteractionAncestorRange(
-  state: EditorState,
-): { from: number; to: number } | null {
-  const selectedNode = (
-    state.selection as EditorState['selection'] & { node?: ProseMirrorNode }
-  ).node;
-  // For atom interactions (e.g. inline text-entry), anchor to the selected node range itself.
-  if (selectedNode && isInteractionNodeName(selectedNode.type.name)) {
-    return { from: state.selection.from, to: state.selection.to };
-  }
-
-  const { $from } = state.selection;
-  for (let depth = $from.depth; depth > 0; depth--) {
-    const node = $from.node(depth);
-    if (!isInteractionNodeName(node.type.name)) continue;
-    return {
-      from: $from.before(depth),
-      to: $from.after(depth),
-    };
-  }
-  return null;
+function hasSchemaAttrs(node: ProseMirrorNode): boolean {
+  return Object.keys(node.type.spec.attrs ?? {}).length > 0;
 }
 
-function collectSelectionQtiNodes(
+function collectSelectionNodesWithSchemaAttrs(
   state: EditorState,
-  options: Required<Pick<QtiAttributesOptions, 'includeEmptyAttrs' | 'eligible'>>,
+  eligible: NonNullable<QtiAttributesOptions['eligible']>,
 ): SidePanelNodeDetail[] {
   const nodes: SidePanelNodeDetail[] = [];
-  const { $from } = state.selection;
-  const selectedNode = (
-    state.selection as EditorState['selection'] & { node?: ProseMirrorNode }
-  ).node;
-  const selectedNodePos = state.selection.from;
+  const { selection } = state;
+  const { $from } = selection;
+  const selectedNode = (selection as EditorState['selection'] & { node?: ProseMirrorNode }).node;
 
-  // NodeSelection is used for selectable atom nodes, which are not always captured by ancestor scan.
-  if (selectedNode && options.eligible(selectedNode)) {
-    if (options.includeEmptyAttrs || Object.keys(selectedNode.attrs ?? {}).length > 0) {
-      nodes.push({ type: selectedNode.type.name, attrs: selectedNode.attrs, pos: selectedNodePos });
-    }
+  if (selectedNode && eligible(selectedNode) && hasSchemaAttrs(selectedNode)) {
+    nodes.push({
+      type: selectedNode.type.name,
+      attrs: selectedNode.attrs,
+      pos: selection.from,
+    });
   }
 
   for (let depth = $from.depth; depth > 0; depth--) {
     const node = $from.node(depth);
-    if (!options.eligible(node)) continue;
-    if (!options.includeEmptyAttrs && (!node.attrs || Object.keys(node.attrs).length === 0)) {
-      continue;
-    }
+    if (!eligible(node) || !hasSchemaAttrs(node)) continue;
     const pos = $from.before(depth);
     if (nodes.some(existing => existing.pos === pos && existing.type === node.type.name)) continue;
-    nodes.push({ type: node.type.name, attrs: node.attrs, pos });
+    nodes.push({
+      type: node.type.name,
+      attrs: node.attrs,
+      pos,
+    });
   }
 
   return nodes;
 }
 
-function hasEditableAttrs(node: SidePanelNodeDetail | null): node is SidePanelNodeDetail {
-  if (!node) return false;
-  return Object.keys(node.attrs ?? {}).length > 0;
-}
-
 export function qtiAttributesExtension(options: QtiAttributesOptions = {}): Extension {
   const eventName = options.eventName ?? 'qti:attributes:update';
   const eventTarget = options.eventTarget ?? document;
-  const includeEmptyAttrs = options.includeEmptyAttrs ?? true;
-  const eligible = options.eligible ?? ((node) => node.type.name.toLowerCase().startsWith('qti'));
+  const eligible = options.eligible ?? (node => Object.keys(node.type.spec?.attrs ?? {}).length > 0);
   const trigger =
     options.trigger ??
     ((context: QtiAttributesTriggerContext) =>
-      context.state.selection.empty ? (context.nodes[0] ?? null) : null);
+      context.nodes.length > 0 ? context.nodes[0] : null);
   const onUpdate = options.onUpdate;
 
   return definePlugin(
     () =>
       new Plugin({
         key: attributesPluginKey,
-        props: {
-          decorations(state) {
-            const anchorRange = findFirstInteractionAncestorRange(state);
-            if (!anchorRange) return null;
-            return DecorationSet.create(state.doc, [
-              Decoration.node(anchorRange.from, anchorRange.to, {
-                class: QTI_ATTRIBUTES_ANCHOR_CLASS,
-                'data-qti-attributes-anchor': 'true',
-              }),
-            ]);
-          },
-        },
         view(view) {
           const dispatchUpdate = (state: EditorState) => {
-            const nodes = collectSelectionQtiNodes(state, { includeEmptyAttrs, eligible });
-            const triggeredNode = trigger({ state, nodes });
-            const activeNode = hasEditableAttrs(triggeredNode) ? triggeredNode : null;
+            const nodes = collectSelectionNodesWithSchemaAttrs(state, eligible);
+            const activeNode = trigger({ state, nodes });
             const detail: SidePanelEventDetail = {
               nodes,
               activeNode,

@@ -10,8 +10,10 @@
     "yalc": "pnpm -r yalc:add"
   },
   "dependencies": {
+    "@lit/context": "^1.1.6",
     "@egoist/tailwindcss-icons": "^1.9.2",
     "@iconify-json/lucide": "^1.2.90",
+    "@qti-editor/plugin-editor-context": "workspace:*",
     "@qti-editor/plugin-editor-events": "workspace:*",
     "@qti-editor/plugin-qti-attributes": "workspace:*",
     "@qti-editor/plugin-qti-code": "workspace:*",
