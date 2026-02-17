@@ -31,8 +31,8 @@ const getQtiToolbarItems: ToolbarInsertItemsProvider = view => {
         const s = schema;
         const node = nodeType.create({ responseIdentifier: `RESPONSE_${Date.now()}` }, [
           s.nodes.qtiPrompt.create({}, s.nodes.paragraph.create({}, s.text('Enter your question here...'))),
-          s.nodes.qtiSimpleChoice.create({ identifier: 'A' }, s.text('Option A')),
-          s.nodes.qtiSimpleChoice.create({ identifier: 'B' }, s.text('Option B'))
+          s.nodes.qtiSimpleChoice.create({ identifier: 'SIMPLE-CHOICE-IDENTIFIER' }, s.text('Option A')),
+          s.nodes.qtiSimpleChoice.create({ identifier: 'SIMPLE-CHOICE-IDENTIFIER' }, s.text('Option B'))
         ]);
         view.dispatch(view.state.tr.replaceSelectionWith(node));
         view.focus();
@@ -44,21 +44,6 @@ const getQtiToolbarItems: ToolbarInsertItemsProvider = view => {
     const nodeType = schema.nodes.qtiTextEntryInteraction;
     items.push({
       label: 'Text Entry',
-      canInsert: canInsert(view, nodeType),
-      command: () => {
-        const node = nodeType.createAndFill({ responseIdentifier: `RESPONSE_${Date.now()}` });
-        if (node) {
-          view.dispatch(view.state.tr.replaceSelectionWith(node));
-          view.focus();
-        }
-      }
-    });
-  }
-
-  if (schema.nodes.qtiInlineChoiceInteraction) {
-    const nodeType = schema.nodes.qtiInlineChoiceInteraction;
-    items.push({
-      label: 'Inline Choice',
       canInsert: canInsert(view, nodeType),
       command: () => {
         const node = nodeType.createAndFill({ responseIdentifier: `RESPONSE_${Date.now()}` });
