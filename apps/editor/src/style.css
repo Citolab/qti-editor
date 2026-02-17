@@ -4,15 +4,14 @@
  * Main stylesheet for the plugin orchestrator demo app
  */
 
- @import '../../../packages/plugin-qti-attributes/qti-attributes-panel.css';
+@import '../../../packages/plugin-qti-attributes/qti-attributes-panel.css';
 
 @import "tailwindcss";
 @source "../../../packages/plugin-toolbar/src/**/*.{ts,js}";
 @source "../../../packages/plugin-qti-attributes/src/**/*.{ts,js}";
 @source "../../../packages/plugin-qti-attributes/**/*.{ts,js}";
 
-/*---break---
- */
+/*---break---*/
 
 @plugin "@egoist/tailwindcss-icons";
 @plugin "daisyui" {

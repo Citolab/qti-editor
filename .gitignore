@@ -10,3 +10,6 @@ coverage
 *.log
 .firebase
 .vscode
+
+*storybook.log
+storybook-static

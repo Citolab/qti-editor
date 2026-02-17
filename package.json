@@ -14,7 +14,9 @@
     "build:packages": "pnpm -r --filter \"./packages/**\" run build",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "chrome:debug": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-remote-debug"
+    "chrome:debug": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-remote-debug",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "eslint-plugin-lit": "^2.2.1",
@@ -24,15 +26,27 @@
     "vite": "^5.0.0"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^5.0.1",
     "@eslint/js": "^9.39.2",
+    "@storybook/addon-a11y": "^10.2.8",
+    "@storybook/addon-docs": "^10.2.8",
+    "@storybook/addon-vitest": "^10.2.8",
+    "@storybook/web-components-vite": "^10.2.8",
+    "@tailwindcss/vite": "^4.1.18",
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
+    "@vitest/browser-playwright": "^4.0.18",
+    "@vitest/coverage-v8": "^4.0.18",
     "concurrently": "^9.2.0",
     "eslint": "^9.39.2",
     "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-storybook": "^10.2.8",
+    "playwright": "^1.58.2",
+    "storybook": "^10.2.8",
     "tsx": "^4.19.2",
-    "vite-tsconfig-paths": "^6.0.5"
+    "vite-tsconfig-paths": "^6.0.5",
+    "vitest": "^4.0.18"
   },
   "pnpm": {
     "overrides": {

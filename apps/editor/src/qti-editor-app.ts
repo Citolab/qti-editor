@@ -1,6 +1,5 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
-import './style.css';
 
 // ProseKit core
 import { LitElement, html, type PropertyValues } from 'lit';
@@ -15,10 +14,9 @@ import { defineQtiExtension } from '@qti-editor/plugin-qti-interactions/prosekit
 
 import { defineToolbarExtension } from '@qti-editor/plugin-toolbar';
 import { blockSelectExtension } from '@qti-editor/prosemirror-block-select-plugin';
-import { getFirebaseConfig } from './firebase-config';
 import { toolbarInsertMenus } from './toolbar/insert-menus';
 
-class QtiEditorApp extends LitElement {
+export class QtiEditorApp extends LitElement {
   private editor: Editor;
   private editorRef: Ref<HTMLDivElement>;
   private panelRef: Ref<QtiAttributesPanel>;
@@ -43,7 +41,15 @@ class QtiEditorApp extends LitElement {
         trigger: ({ state, nodes }) => {
           const isNodeSelection = Boolean((state.selection as any).node);
           if (!state.selection.empty && !isNodeSelection) return null;
-          return nodes.find(node => /(interaction|prompt)$/i.test(node.type)) ?? nodes[0] ?? null;
+          const interactionNodes = nodes.filter(node => /(interaction|prompt)$/i.test(node.type));
+          if (interactionNodes.length === 0) return nodes[0] ?? null;
+
+          // For NodeSelection, prefer the node that starts at the selected position.
+          const exactMatch = interactionNodes.find(node => node.pos === state.selection.from);
+          if (exactMatch) return exactMatch;
+
+          // Otherwise prefer the innermost candidate (largest start position).
+          return interactionNodes.reduce((best, node) => (node.pos > best.pos ? node : best));
         }
       }),
       qtiEditorEventsExtension({ eventTarget: this.editorEventsTarget }),
@@ -94,14 +100,13 @@ class QtiEditorApp extends LitElement {
   override render() {
     return html`
       <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
-      <main class="container mx-auto max-w-4xl">
         <div
           class="card bg-white mt-12 rounded-md border border-solid border-gray-200 shadow-sm  text-black overflow-hidden"
         >
-          <div ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-32 py-8"></div>
+          <qti-lit-editor ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-32 py-8"></qti-lit-editor>
         </div>
         <qti-code-panel class="mt-10 w-full" ${ref(this.codePanelRef)}></qti-code-panel>
-      </main>
+
     `;
   }
 }
@@ -109,20 +114,8 @@ class QtiEditorApp extends LitElement {
 // Register and initialize
 customElements.define('qti-editor-app', QtiEditorApp);
 
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('QTI Editor Demo initializing...');
-  const firebaseConfig = getFirebaseConfig();
-  if (firebaseConfig) {
-    console.log('Firebase config loaded for project:', firebaseConfig.projectId);
+declare global {
+  interface HTMLElementTagNameMap {
+    'qti-editor-app': QtiEditorApp
   }
-
-  const app = document.querySelector<HTMLDivElement>('#app')!;
-  if (!app) {
-    console.error('Could not find #app element');
-    return;
-  }
-
-  app.innerHTML = '<qti-editor-app></qti-editor-app>';
-
-  console.log('QTI Editor initialized');
-});
+}

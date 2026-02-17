@@ -13,15 +13,15 @@ function canInsert(view: Parameters<ToolbarInsertItemsProvider>[0], nodeType: an
   return false;
 }
 
-const getQtiToolbarItems: ToolbarInsertItemsProvider = (view) => {
+const getQtiToolbarItems: ToolbarInsertItemsProvider = view => {
   const schema: any = view.state.schema;
   const items = [];
 
   if (
-    schema.nodes.qtiChoiceInteraction
-    && schema.nodes.qtiPrompt
-    && schema.nodes.qtiSimpleChoice
-    && schema.nodes.paragraph
+    schema.nodes.qtiChoiceInteraction &&
+    schema.nodes.qtiPrompt &&
+    schema.nodes.qtiSimpleChoice &&
+    schema.nodes.paragraph
   ) {
     const nodeType = schema.nodes.qtiChoiceInteraction;
     items.push({
@@ -29,17 +29,14 @@ const getQtiToolbarItems: ToolbarInsertItemsProvider = (view) => {
       canInsert: canInsert(view, nodeType),
       command: () => {
         const s = schema;
-        const node = nodeType.create(
-          { responseIdentifier: `RESPONSE_${Date.now()}` },
-          [
-            s.nodes.qtiPrompt.create({}, s.nodes.paragraph.create({}, s.text('Enter your question here...'))),
-            s.nodes.qtiSimpleChoice.create({ identifier: 'A' }, s.text('Option A')),
-            s.nodes.qtiSimpleChoice.create({ identifier: 'B' }, s.text('Option B')),
-          ]
-        );
+        const node = nodeType.create({ responseIdentifier: `RESPONSE_${Date.now()}` }, [
+          s.nodes.qtiPrompt.create({}, s.nodes.paragraph.create({}, s.text('Enter your question here...'))),
+          s.nodes.qtiSimpleChoice.create({ identifier: 'A' }, s.text('Option A')),
+          s.nodes.qtiSimpleChoice.create({ identifier: 'B' }, s.text('Option B'))
+        ]);
         view.dispatch(view.state.tr.replaceSelectionWith(node));
         view.focus();
-      },
+      }
     });
   }
 
@@ -54,7 +51,22 @@ const getQtiToolbarItems: ToolbarInsertItemsProvider = (view) => {
           view.dispatch(view.state.tr.replaceSelectionWith(node));
           view.focus();
         }
-      },
+      }
+    });
+  }
+
+  if (schema.nodes.qtiInlineChoiceInteraction) {
+    const nodeType = schema.nodes.qtiInlineChoiceInteraction;
+    items.push({
+      label: 'Inline Choice',
+      canInsert: canInsert(view, nodeType),
+      command: () => {
+        const node = nodeType.createAndFill({ responseIdentifier: `RESPONSE_${Date.now()}` });
+        if (node) {
+          view.dispatch(view.state.tr.replaceSelectionWith(node));
+          view.focus();
+        }
+      }
     });
   }
 
@@ -66,6 +78,6 @@ export const toolbarInsertMenus: ToolbarInsertMenu[] = [
     id: 'qti-interactions',
     tooltip: 'Insert QTI Interaction',
     icon: 'i-lucide-plus size-5 block',
-    getItems: getQtiToolbarItems,
-  },
+    getItems: getQtiToolbarItems
+  }
 ];

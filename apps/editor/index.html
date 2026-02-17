@@ -8,9 +8,12 @@
       name="description"
       content="A modular ProseMirror editor for QTI content with plugin architecture"
     />
+    <script type="module" defer src="./src/qti-editor-app.ts"></script>
+    <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <main class="container mx-auto max-w-4xl">
+      <qti-editor-app></qti-editor-app>
+    </main>
   </body>
 </html>
