@@ -68,7 +68,6 @@ export function buildAssessmentItemXml(itemContext?: ItemContext): string {
   const root = xmlDoc.documentElement;
 
   root.setAttribute('xmlns', QTI_NS);
-  root.setAttribute('xmlns:xsi', XSI_NS);
   root.setAttributeNS(XSI_NS, 'xsi:schemaLocation', SCHEMA_LOCATION);
   root.setAttribute('identifier', itemContext.identifier?.trim() || 'item-1');
   root.setAttribute('title', itemContext.title?.trim() || 'Untitled Item');

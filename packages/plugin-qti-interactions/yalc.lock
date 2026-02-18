@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "@qti-components/prosemirror": {
-      "signature": "57d884dae8c2e21fc620ba7cf78af437",
+      "signature": "45ce4b4fca51223963902bd09302a022",
       "file": true,
       "replaced": "workspace:*"
     },

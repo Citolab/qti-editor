@@ -26,7 +26,11 @@ import { insertChoiceInteraction } from '@qti-components/prosemirror/components/
 import { qtiChoiceInteractionNodeSpec } from '@qti-components/prosemirror/components/qti-choice-interaction/qti-choice-interaction.schema.js';
 import { insertInlineChoiceInteraction } from '@qti-components/prosemirror/components/qti-inline-choice-interaction/qti-inline-choice-interaction.commands.js';
 import { qtiPromptNodeSpec } from '@qti-components/prosemirror/components/qti-prompt/qti-prompt.schema.js';
-import { qtiSimpleChoiceNodeSpec } from '@qti-components/prosemirror/components/qti-simple-choice/qti-simple-choice.schema.js';
+import {
+  qtiSimpleChoiceImageNodeSpec,
+  qtiSimpleChoiceNodeSpec,
+  qtiSimpleChoiceParagraphNodeSpec
+} from '@qti-components/prosemirror/components/qti-simple-choice/qti-simple-choice.schema.js';
 import { insertTextEntryInteraction } from '@qti-components/prosemirror/components/qti-text-entry-interaction/qti-text-entry-interaction.commands.js';
 import { qtiTextEntryInteractionNodeSpec } from '@qti-components/prosemirror/components/qti-text-entry-interaction/qti-text-entry-interaction.schema.js';
 
@@ -47,6 +51,8 @@ export function defineQtiExtension() {
   const qtiNodeExtensions = [
     defineNodeSpec({ name: 'qtiChoiceInteraction', ...qtiChoiceInteractionNodeSpec }),
     defineNodeSpec({ name: 'qtiPrompt', ...qtiPromptNodeSpec }),
+    defineNodeSpec({ name: 'qtiSimpleChoiceImage', ...qtiSimpleChoiceImageNodeSpec }),
+    defineNodeSpec({ name: 'qtiSimpleChoiceParagraph', ...qtiSimpleChoiceParagraphNodeSpec }),
     defineNodeSpec({ name: 'qtiSimpleChoice', ...qtiSimpleChoiceNodeSpec }),
     defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
     defineNodeSpec({ name: 'qtiInlineChoice', ...qtiInlineChoiceNodeSpec }),
