@@ -16,7 +16,7 @@
     "lint:check": "eslint .",
     "chrome:debug": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-remote-debug",
     "yalc:add": "yalc add --no-pure @qti-components/base @qti-components/interactions @qti-components/prosemirror @qti-components/theme @qti-components/utilities",
-    "yalc": "pnpm run yalc:add && pnpm -r --if-present yalc:add",
+    "yalc": "pnpm run yalc:add && pnpm -r --filter \"!@qti-editor/root\" --if-present --workspace-concurrency=1 yalc:add",
     "postinstall": "pnpm yalc",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

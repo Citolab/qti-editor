@@ -2,23 +2,23 @@
   "version": "v1",
   "packages": {
     "@qti-components/prosemirror": {
-      "signature": "7c097d532423d7da487b3bf441166086",
+      "signature": "472f87acdab53ea78e4c36bb38a5d039",
       "file": true
     },
     "@qti-components/base": {
-      "signature": "f10259bf3194202fb6b73a3e1c10dabc",
+      "signature": "c7896678beacb958660926aa109616ae",
       "file": true
     },
     "@qti-components/interactions": {
-      "signature": "bdb25145a2ed17bbe301bc3962a1cd21",
+      "signature": "8883825d1621071ebc0650be72c24370",
       "file": true
     },
     "@qti-components/theme": {
-      "signature": "58916d6ed03680807e01cdd4a0f84878",
+      "signature": "deeecbdeaa8162dcd30a42d1ec9727fe",
       "file": true
     },
     "@qti-components/utilities": {
-      "signature": "ffffac2a8fb493a65f17115df1f3b618",
+      "signature": "c4300dfae81fc6ddb784779d763727a0",
       "file": true
     }
   }

@@ -1,7 +1,7 @@
 {
   "name": "@qti-components/interactions",
   "description": "QTI interactions utilities",
-  "version": "1.7.0",
+  "version": "1.5.1",
   "author": "",
   "dependencies": {
     "@qti-components/base": "^1.0.0",
@@ -44,5 +44,5 @@
   "type": "module",
   "types": "dist/index.d.ts",
   "customElements": "custom-elements.json",
-  "yalcSig": "bdb25145a2ed17bbe301bc3962a1cd21"
+  "yalcSig": "8883825d1621071ebc0650be72c24370"
 }
