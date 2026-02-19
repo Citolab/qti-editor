@@ -19,23 +19,30 @@ import '@qti-components/prosemirror/components/qti-prompt/qti-prompt.js';
 import '@qti-components/prosemirror/components/qti-simple-choice/qti-simple-choice.js';
 import '@qti-components/prosemirror/components/qti-text-entry-interaction/qti-text-entry-interaction.js';
 
-import { defineBasicExtension } from 'prosekit/basic';
-import { union, defineKeymap, defineNodeSpec } from 'prosekit/core';
 
-import { insertChoiceInteraction } from '@qti-components/prosemirror/components/qti-choice-interaction/qti-choice-interaction.commands.js';
-import { qtiChoiceInteractionNodeSpec } from '@qti-components/prosemirror/components/qti-choice-interaction/qti-choice-interaction.schema.js';
-import { insertInlineChoiceInteraction } from '@qti-components/prosemirror/components/qti-inline-choice-interaction/qti-inline-choice-interaction.commands.js';
-import { qtiPromptNodeSpec } from '@qti-components/prosemirror/components/qti-prompt/qti-prompt.schema.js';
 import {
-  qtiSimpleChoiceImageNodeSpec,
+  insertChoiceInteraction,
+} from '@qti-components/prosemirror/components/qti-choice-interaction/qti-choice-interaction.commands.js';
+import {
+  qtiChoiceInteractionNodeSpec,
+} from '@qti-components/prosemirror/components/qti-choice-interaction/qti-choice-interaction.schema.js';
+import {
+  insertInlineChoiceInteraction,
+} from '@qti-components/prosemirror/components/qti-inline-choice-interaction/qti-inline-choice-interaction.commands.js';
+import {
+  qtiPromptNodeSpec,
+} from '@qti-components/prosemirror/components/qti-prompt/qti-prompt.schema.js';
+import {
   qtiSimpleChoiceNodeSpec,
-  qtiSimpleChoiceParagraphNodeSpec
 } from '@qti-components/prosemirror/components/qti-simple-choice/qti-simple-choice.schema.js';
-import { insertTextEntryInteraction } from '@qti-components/prosemirror/components/qti-text-entry-interaction/qti-text-entry-interaction.commands.js';
-import { qtiTextEntryInteractionNodeSpec } from '@qti-components/prosemirror/components/qti-text-entry-interaction/qti-text-entry-interaction.schema.js';
-
-import { qtiInlineChoiceInteractionNodeSpec } from '@qti-components/prosemirror/components/qti-inline-choice-interaction/qti-inline-choice-interaction.schema.js';
-import { qtiInlineChoiceNodeSpec } from '@qti-components/prosemirror/components/qti-inline-choice-interaction/qti-inline-choice.schema.js';
+import {
+  insertTextEntryInteraction,
+} from '@qti-components/prosemirror/components/qti-text-entry-interaction/qti-text-entry-interaction.commands.js';
+import {
+  qtiTextEntryInteractionNodeSpec,
+} from '@qti-components/prosemirror/components/qti-text-entry-interaction/qti-text-entry-interaction.schema.js';
+import { defineBasicExtension } from 'prosekit/basic';
+import { union, defineKeymap , defineNodeSpec } from 'prosekit/core';
 
 /**
  * Define the complete QTI extension for ProseKit
@@ -51,12 +58,8 @@ export function defineQtiExtension() {
   const qtiNodeExtensions = [
     defineNodeSpec({ name: 'qtiChoiceInteraction', ...qtiChoiceInteractionNodeSpec }),
     defineNodeSpec({ name: 'qtiPrompt', ...qtiPromptNodeSpec }),
-    defineNodeSpec({ name: 'qtiSimpleChoiceImage', ...qtiSimpleChoiceImageNodeSpec }),
-    defineNodeSpec({ name: 'qtiSimpleChoiceParagraph', ...qtiSimpleChoiceParagraphNodeSpec }),
     defineNodeSpec({ name: 'qtiSimpleChoice', ...qtiSimpleChoiceNodeSpec }),
     defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
-    defineNodeSpec({ name: 'qtiInlineChoice', ...qtiInlineChoiceNodeSpec }),
-    defineNodeSpec({ name: 'qtiInlineChoiceInteraction', ...qtiInlineChoiceInteractionNodeSpec })
   ];
 
   return union(
@@ -72,7 +75,7 @@ export function defineQtiExtension() {
       'Mod-Shift-q': insertChoiceInteraction,
       'Mod-Shift-t': insertTextEntryInteraction,
       'Mod-Shift-i': insertInlineChoiceInteraction
-    })
+    }),
 
     // QTI guards
     // definePlugin(() => createChoiceInteractionGuards()),
