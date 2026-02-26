@@ -28,6 +28,30 @@ Local hosting emulation:
 pnpm firebase:serve
 ```
 
+## Component Registry
+
+QTI Editor provides a shadcn-compatible component registry for customizable UI components.
+
+### Architecture
+
+- **`@qti-editor/core`** - Core ProseMirror plugins and utilities (npm package)
+- **Registry components** - Customizable Lit components (copied into your project)
+
+### Using the Registry
+
+Build and serve the registry locally:
+```sh
+pnpm registry:build
+pnpm registry:serve
+```
+
+Install a component into your project:
+```sh
+npx shadcn add http://localhost:4100/r/qti-attributes-panel.json
+```
+
+See [registry/README.md](registry/README.md) for full documentation.
+
 ## Git Hooks (Optional)
 
 If you use `yalc add`, it can leave `file:`/`link:` dependencies in `package.json`.

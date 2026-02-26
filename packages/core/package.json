@@ -1,0 +1,42 @@
+{
+  "name": "@qti-editor/core",
+  "version": "0.1.0",
+  "description": "Core functionality for QTI Editor - ProseMirror plugins and utilities",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./attributes": "./src/attributes/index.ts",
+    "./code": "./src/code/index.ts",
+    "./composer": "./src/composer/index.ts",
+    "./editor-context": "./src/editor-context/index.ts",
+    "./events": "./src/events/index.ts",
+    "./interactions": "./src/interactions/index.ts",
+    "./interactions/prosekit": "./src/interactions/prosekit.ts",
+    "./item-context": "./src/item-context/index.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "yalc:add": "yalc add @qti-components/base @qti-components/interactions @qti-components/prosemirror @qti-components/theme @qti-components/utilities"
+  },
+  "dependencies": {
+    "@lit/context": "^1.1.6",
+    "@qti-components/base": "file:.yalc/@qti-components/base",
+    "@qti-components/interactions": "file:.yalc/@qti-components/interactions",
+    "@qti-components/prosemirror": "file:.yalc/@qti-components/prosemirror",
+    "@qti-components/theme": "file:.yalc/@qti-components/theme",
+    "@qti-components/utilities": "file:.yalc/@qti-components/utilities",
+    "prosemirror-keymap": "^1.2.0",
+    "prosemirror-model": "^1.19.0",
+    "prosemirror-state": "^1.4.0",
+    "prosekit": "^0.17.0"
+  },
+  "peerDependencies": {
+    "prosekit": "^0.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

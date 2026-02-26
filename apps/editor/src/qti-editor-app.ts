@@ -6,20 +6,22 @@ import { provide } from '@lit/context';
 import { LitElement, PropertyValues, html } from 'lit';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { createEditor, union, type Editor } from 'prosekit/core';
+import { defineBasicExtension } from 'prosekit/basic';
 
 // QTI plugins (using ProseKit adapters)
-import { qtiEditorEventsExtension } from '@qti-editor/plugin-editor-events';
-import type { QtiAttributesPanel } from '@qti-editor/plugin-qti-attributes';
-import { qtiAttributesExtension } from '@qti-editor/plugin-qti-attributes';
-import type { QtiCodePanel } from '@qti-editor/plugin-qti-code';
-import { qtiCodePanelExtension } from '@qti-editor/plugin-qti-code';
-import { defineQtiExtension } from '@qti-editor/plugin-qti-interactions/prosekit';
+import { qtiEditorEventsExtension } from '@qti-editor/core/events';
+import type { QtiAttributesPanel } from './components/editor/attributes';
+import { qtiAttributesExtension } from './components/editor/attributes';
+import type { QtiCodePanel } from './components/editor/code';
+import { qtiCodePanelExtension } from './components/editor/code';
+import { defineQtiInteractionsExtension } from '@qti-editor/core/interactions/prosekit';
 
-import { defineToolbarExtension } from '@qti-editor/plugin-toolbar';
-import { blockSelectExtension } from '@qti-editor/prosemirror-block-select-plugin';
-import { toolbarInsertMenus } from './toolbar/insert-menus';
-import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/context-qti-assessment-item';
-import '@qti-editor/context-qti-composer';
+import { blockSelectExtension } from '@qti-editor/prosemirror/block-select';
+import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/toolbar';
+import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/core/item-context';
+import './components/editor/code/qti-code-panel.js';
+import './components/editor/composer/qti-composer.js';
+import './components/editor/composer/qti-composer-metadata-form.js';
 
 export class QtiEditorApp extends LitElement {
   private editor: Editor;
@@ -53,7 +55,8 @@ export class QtiEditorApp extends LitElement {
 
     // Create the combined extension with QTI support and toolbar
     const extension = union(
-      defineQtiExtension(),
+      defineBasicExtension(),
+      defineQtiInteractionsExtension(),
       qtiAttributesExtension({
         eventTarget: this.attributesEventTarget
       }),

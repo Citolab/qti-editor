@@ -18,18 +18,12 @@
     "@qti-components/prosemirror": "file:.yalc/@qti-components/prosemirror",
     "@qti-components/theme": "file:.yalc/@qti-components/theme",
     "@qti-components/utilities": "file:.yalc/@qti-components/utilities",
-    "@qti-editor/context-qti-assessment-item": "workspace:*",
-    "@qti-editor/plugin-editor-context": "workspace:*",
-    "@qti-editor/plugin-editor-events": "workspace:*",
-    "@qti-editor/plugin-qti-attributes": "workspace:*",
-    "@qti-editor/plugin-qti-code": "workspace:*",
-    "@qti-editor/plugin-qti-interactions": "workspace:*",
-    "@qti-editor/plugin-toolbar": "workspace:*",
-    "@qti-editor/prosemirror-block-select-plugin": "workspace:*",
+
+    "@qti-editor/prosemirror": "workspace:*",
+    "@qti-editor/core": "workspace:*",
     "lit": "^3.0.0",
     "prosekit": "^0.17.0",
-    "prosemirror-menu": "^1.2.0",
-    "@qti-editor/context-qti-composer": "workspace:*"
+    "prosemirror-menu": "^1.2.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",

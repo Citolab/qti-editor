@@ -12,6 +12,8 @@
     "firebase:serve": "firebase emulators:start --only hosting",
     "firebase:deploy": "pnpm build && firebase deploy --only hosting",
     "build:packages": "pnpm -r --filter \"./packages/**\" run build",
+    "registry:build": "pnpm --filter @qti-editor/registry build",
+    "registry:serve": "pnpm --filter @qti-editor/registry serve",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
     "chrome:debug": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-remote-debug",

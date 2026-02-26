@@ -1,0 +1,26 @@
+{
+  "name": "@qti-editor/extensions",
+  "version": "0.1.0",
+  "description": "QTI Editor extensions - ProseMirror plugins for QTI editing",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./attributes": "./src/attributes/index.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@qti-editor/core": "workspace:*",
+    "prosekit": "^0.17.0"
+  },
+  "peerDependencies": {
+    "prosekit": "^0.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

@@ -17,6 +17,14 @@
     "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
+      "@qti-editor/core": ["packages/core/src/index.ts"],
+      "@qti-editor/core/attributes": ["packages/core/src/attributes/index.ts"],
+      "@qti-editor/core/code": ["packages/core/src/code/index.ts"],
+      "@qti-editor/core/composer": ["packages/core/src/composer/index.ts"],
+      "@qti-editor/core/item-context": ["packages/core/src/item-context/index.ts"],
+      "@qti-editor/core/editor-context": ["packages/core/src/editor-context/index.ts"],
+      "@qti-editor/core/events": ["packages/core/src/events/index.ts"],
+      "@qti-editor/core/*": ["packages/core/src/*"],
       "@citolab/qti-editor-core": ["packages/core/src/index.ts"],
       "@citolab/qti-editor-core/*": ["packages/core/src/*"],
       "@citolab/qti-editor-plugin-slash-menu": [
@@ -40,8 +48,14 @@
       "@qti-editor/plugin-side-panel": [
         "packages/plugin-side-panel/index.ts"
       ],
-      "@qti-editor/prosemirror-block-select-plugin": [
-        "packages/prosemirror-block-select-plugin/index.ts"
+      "@qti-editor/prosemirror": [
+        "packages/prosemirror/src/index.ts"
+      ],
+      "@qti-editor/prosemirror/block-select": [
+        "packages/prosemirror/src/block-select/index.ts"
+      ],
+      "@qti-editor/prosemirror/virtual-cursor": [
+        "packages/prosemirror/src/virtual-cursor/index.ts"
       ]
     }
   }

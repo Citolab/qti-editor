@@ -1,0 +1,26 @@
+{
+  "name": "@qti-editor/lit",
+  "version": "0.1.0",
+  "description": "Lit web components for QTI Editor",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./attributes-panel": "./src/components/attributes-panel/index.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@qti-editor/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "lit": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "lit": "^3.0.0",
+    "typescript": "^5.0.0"
+  }
+}

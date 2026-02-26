@@ -1,0 +1,13 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "qti-editor",
+  "homepage": "https://github.com/citolab/qti-editor",
+  "items": [
+    {
+      "name": "qti-attributes-panel",
+      "type": "registry:ui",
+      "title": "QTI Attributes Panel",
+      "description": "A panel component that displays and edits attributes of the selected QTI node and its ancestors."
+    }
+  ]
+}
