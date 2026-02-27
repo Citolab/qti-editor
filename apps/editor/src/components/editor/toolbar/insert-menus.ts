@@ -1,4 +1,5 @@
 import type { ToolbarExtensionOptions, ToolbarInsertMenu } from './';
+import { insertSelectPointInteraction } from '@qti-editor/interactions/components/qti-select-point-interaction/qti-select-point-interaction.commands.js';
 
 type ToolbarInsertItemsProvider = NonNullable<ToolbarExtensionOptions['getInsertItems']>;
 
@@ -51,6 +52,18 @@ const getQtiToolbarItems: ToolbarInsertItemsProvider = view => {
           view.dispatch(view.state.tr.replaceSelectionWith(node));
           view.focus();
         }
+      }
+    });
+  }
+
+  if (schema.nodes.qtiSelectPointInteraction) {
+    const nodeType = schema.nodes.qtiSelectPointInteraction;
+    items.push({
+      label: 'Select Point',
+      canInsert: canInsert(view, nodeType),
+      command: () => {
+        insertSelectPointInteraction(view.state, view.dispatch);
+        view.focus();
       }
     });
   }

@@ -5,6 +5,8 @@
  * No Lit/UI dependencies - these can be used in any environment.
  */
 
+import { getInteractionComposerHandler } from '@qti-editor/interactions/composer/index.js';
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -22,8 +24,17 @@ export interface ComposerItemContext {
 export interface ResponseDeclaration {
   identifier: string;
   cardinality: 'single' | 'multiple';
-  baseType: 'identifier';
+  baseType: 'identifier' | 'point';
   correctResponse?: string;
+  areaMapping?: {
+    defaultValue: number;
+    entries: Array<{
+      shape: 'circle' | 'rect';
+      coords: string;
+      mappedValue: number;
+    }>;
+  };
+  sourceTag: string;
 }
 
 // ============================================================================
@@ -35,7 +46,7 @@ const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';
 const XML_NS = 'http://www.w3.org/XML/1998/namespace';
 const SCHEMA_LOCATION =
   'http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd';
-const RESPONSE_TEMPLATE =
+const MATCH_CORRECT_TEMPLATE =
   'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct';
 
 // ============================================================================
@@ -48,31 +59,9 @@ const RESPONSE_TEMPLATE =
 export function extractResponseDeclarations(itemBodyRoot?: Element | null): ResponseDeclaration[] {
   if (!itemBodyRoot) return [];
 
-  const interactions = itemBodyRoot.querySelectorAll('[response-identifier]');
-  const declarations: ResponseDeclaration[] = [];
-  const seenIdentifiers = new Set<string>();
-
-  interactions.forEach(interaction => {
-    const identifier = interaction.getAttribute('response-identifier')?.trim();
-    if (!identifier || seenIdentifiers.has(identifier)) return;
-
-    const tagName = interaction.tagName.toLowerCase();
-    if (tagName !== 'qti-choice-interaction') return;
-
-    const maxChoices = Number(interaction.getAttribute('max-choices') ?? '1');
-    const cardinality: ResponseDeclaration['cardinality'] =
-      Number.isFinite(maxChoices) && maxChoices > 1 ? 'multiple' : 'single';
-    const correctResponse = interaction.getAttribute('correct-response')?.trim();
-
-    declarations.push({
-      identifier,
-      cardinality,
-      baseType: 'identifier',
-      correctResponse: correctResponse || undefined,
-    });
-    seenIdentifiers.add(identifier);
-  });
-
+  const tempDoc = document.implementation.createDocument(QTI_NS, 'qti-item-body', null);
+  const tempRoot = tempDoc.importNode(itemBodyRoot, true) as Element;
+  const { declarations } = composeAndNormalizeItemBody(tempRoot, tempDoc);
   return declarations;
 }
 
@@ -112,7 +101,13 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
       ? sourceBodyDoc.documentElement
       : null);
 
-  const declarations = extractResponseDeclarations(sourceBodyRoot);
+  const composedItemBody =
+    sourceBodyRoot != null
+      ? (xmlDoc.importNode(sourceBodyRoot, true) as Element)
+      : xmlDoc.createElementNS(QTI_NS, 'qti-item-body');
+
+  const { declarations, responseTemplate } = composeAndNormalizeItemBody(composedItemBody, xmlDoc);
+
   declarations.forEach(declaration => {
     const responseDeclaration = xmlDoc.createElementNS(QTI_NS, 'qti-response-declaration');
     responseDeclaration.setAttribute('identifier', declaration.identifier);
@@ -127,6 +122,19 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
       responseDeclaration.appendChild(correctResponse);
     }
 
+    if (declaration.areaMapping) {
+      const areaMapping = xmlDoc.createElementNS(QTI_NS, 'qti-area-mapping');
+      areaMapping.setAttribute('default-value', String(declaration.areaMapping.defaultValue));
+      declaration.areaMapping.entries.forEach(entry => {
+        const areaMapEntry = xmlDoc.createElementNS(QTI_NS, 'qti-area-map-entry');
+        areaMapEntry.setAttribute('shape', entry.shape);
+        areaMapEntry.setAttribute('coords', entry.coords);
+        areaMapEntry.setAttribute('mapped-value', String(entry.mappedValue));
+        areaMapping.appendChild(areaMapEntry);
+      });
+      responseDeclaration.appendChild(areaMapping);
+    }
+
     root.appendChild(responseDeclaration);
   });
 
@@ -136,22 +144,89 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
   outcomeDeclaration.setAttribute('base-type', 'float');
   root.appendChild(outcomeDeclaration);
 
-  const itemBody =
-    sourceBodyRoot != null
-      ? (xmlDoc.importNode(sourceBodyRoot, true) as Element)
-      : xmlDoc.createElementNS(QTI_NS, 'qti-item-body');
+  root.appendChild(composedItemBody);
+
+  const responseProcessing = xmlDoc.createElementNS(QTI_NS, 'qti-response-processing');
+  responseProcessing.setAttribute('template', responseTemplate);
+  root.appendChild(responseProcessing);
+
+  return new XMLSerializer().serializeToString(xmlDoc);
+}
+
+function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
+  declarations: ResponseDeclaration[];
+  responseTemplate: string;
+} {
+  const declarations: ResponseDeclaration[] = [];
+  const seenIdentifiers = new Set<string>();
+  const templateCandidates = new Set<string>();
+
+  const elements = Array.from(itemBody.querySelectorAll('*'));
+  elements.forEach(element => {
+    const tagName = element.tagName.toLowerCase();
+    const handler = getInteractionComposerHandler(tagName);
+
+    if (handler) {
+      const composeResult = handler.compose(element, xmlDoc);
+
+      composeResult.warnings.forEach(warning => {
+        console.warn(`[QTI Composer] ${warning.message}`);
+      });
+
+      const parent = element.parentNode;
+      if (parent) {
+        parent.replaceChild(composeResult.normalizedElement, element);
+      }
+
+      if (composeResult.responseDeclaration && !seenIdentifiers.has(composeResult.responseDeclaration.identifier)) {
+        declarations.push(composeResult.responseDeclaration);
+        seenIdentifiers.add(composeResult.responseDeclaration.identifier);
+      }
+
+      if (composeResult.responseProcessingTemplate && composeResult.responseDeclaration) {
+        templateCandidates.add(composeResult.responseProcessingTemplate);
+      }
+      return;
+    }
+
+    const identifier = element.getAttribute('response-identifier')?.trim();
+    if (!identifier || seenIdentifiers.has(identifier)) return;
+
+    if (tagName === 'qti-choice-interaction') {
+      const maxChoices = Number(element.getAttribute('max-choices') ?? '1');
+      const cardinality: ResponseDeclaration['cardinality'] =
+        Number.isFinite(maxChoices) && maxChoices > 1 ? 'multiple' : 'single';
+      const correctResponse = element.getAttribute('correct-response')?.trim();
+
+      declarations.push({
+        identifier,
+        cardinality,
+        baseType: 'identifier',
+        correctResponse: correctResponse || undefined,
+        sourceTag: tagName,
+      });
+      seenIdentifiers.add(identifier);
+      return;
+    }
+
+    console.warn(
+      `[QTI Composer] Missing interaction composer handler for ${tagName}; keeping element as-is during compose.`
+    );
+  });
 
   itemBody.querySelectorAll('[correct-response]').forEach(interaction => {
     interaction.removeAttribute('correct-response');
   });
 
-  root.appendChild(itemBody);
+  if (
+    declarations.length === 1 &&
+    declarations[0].sourceTag === 'qti-select-point-interaction' &&
+    templateCandidates.size === 1
+  ) {
+    return { declarations, responseTemplate: Array.from(templateCandidates)[0] };
+  }
 
-  const responseProcessing = xmlDoc.createElementNS(QTI_NS, 'qti-response-processing');
-  responseProcessing.setAttribute('template', RESPONSE_TEMPLATE);
-  root.appendChild(responseProcessing);
-
-  return new XMLSerializer().serializeToString(xmlDoc);
+  return { declarations, responseTemplate: MATCH_CORRECT_TEMPLATE };
 }
 
 /**

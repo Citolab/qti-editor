@@ -1,7 +1,6 @@
 import { definePlugin } from 'prosekit/core';
 import type { Editor } from 'prosekit/core';
 import { Plugin } from 'prosekit/pm/state';
-import type { EditorView } from 'prosekit/pm/view';
 import type { LitToolbar, ToolbarInsertItemsProvider, ToolbarInsertMenu } from './toolbar';
 
 import './toolbar';
@@ -16,7 +15,7 @@ export interface ToolbarExtensionOptions {
 export function defineToolbarExtension(options: ToolbarExtensionOptions) {
   return definePlugin(() => {
     return new Plugin({
-      view(editorView: EditorView) {
+      view(editorView) {
         const toolbar = document.createElement('lit-editor-toolbar') as LitToolbar;
         toolbar.editor = options.getEditor();
         if (options.uploader) {

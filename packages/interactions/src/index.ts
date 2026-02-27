@@ -15,9 +15,13 @@ export * from './components/qti-text-entry-interaction/qti-text-entry-interactio
 export * from './components/qti-inline-choice-interaction/qti-inline-choice-interaction.schema.js';
 export * from './components/qti-inline-choice-interaction/qti-inline-choice.schema.js';
 export * from './components/qti-select-point-interaction/qti-select-point-interaction.schema.js';
+export * from './components/qti-select-point-interaction/qti-select-point-interaction.compose.js';
 
 // Commands
 export * from './components/qti-text-entry-interaction/qti-text-entry-interaction.commands.js';
 export * from './components/qti-choice-interaction/qti-choice-interaction.commands.js';
 export * from './components/qti-inline-choice-interaction/qti-inline-choice-interaction.commands.js';
 export * from './components/qti-select-point-interaction/qti-select-point-interaction.commands.js';
+
+// Composer transforms
+export * from './composer/index.js';

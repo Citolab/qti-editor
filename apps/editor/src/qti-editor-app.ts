@@ -17,6 +17,8 @@ import { qtiCodePanelExtension } from './components/editor/code';
 import { defineQtiInteractionsExtension } from '@qti-editor/core/interactions/prosekit';
 
 import { blockSelectExtension } from '@qti-editor/prosemirror/block-select';
+import { nodeAttrsSyncExtension } from '@qti-editor/prosemirror/node-attrs-sync';
+
 import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/toolbar';
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/core/item-context';
 import './components/editor/code/qti-code-panel.js';
@@ -70,7 +72,9 @@ export class QtiEditorApp extends LitElement {
         getEditor: () => this.editor,
         insertMenus: toolbarInsertMenus
       }),
-      blockSelectExtension
+      blockSelectExtension,
+      nodeAttrsSyncExtension
+
     );
 
     this.editor = createEditor({ extension });

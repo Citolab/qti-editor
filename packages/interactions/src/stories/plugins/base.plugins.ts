@@ -19,11 +19,10 @@ import { insertTextEntryInteraction } from '../../components/qti-text-entry-inte
 import { insertChoiceInteraction } from '../../components/qti-choice-interaction/qti-choice-interaction.commands';
 import { insertInlineChoiceInteraction } from '../../components/qti-inline-choice-interaction/qti-inline-choice-interaction.commands';
 import { insertSelectPointInteraction } from '../../components/qti-select-point-interaction/qti-select-point-interaction.commands';
-import { blockSelectPlugin } from './block-select-plugin';
-import { nodeAttrsSyncPlugin } from './node-attrs-sync-plugin';
 
 import type { Plugin } from 'prosemirror-state';
 import type { Schema } from 'prosemirror-model';
+import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror';
 
 /**
  * Creates a keymap for toggling marks (bold, italic)
