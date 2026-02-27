@@ -218,6 +218,8 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
     interaction.removeAttribute('correct-response');
   });
 
+  normalizeResponseIdentifiers(itemBody, declarations);
+
   if (
     declarations.length === 1 &&
     declarations[0].sourceTag === 'qti-select-point-interaction' &&
@@ -227,6 +229,36 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
   }
 
   return { declarations, responseTemplate: MATCH_CORRECT_TEMPLATE };
+}
+
+function normalizeResponseIdentifiers(itemBody: Element, declarations: ResponseDeclaration[]): void {
+  if (declarations.length === 0) return;
+
+  const identifierMap = new Map<string, string>();
+  if (declarations.length === 1) {
+    identifierMap.set(declarations[0].identifier, 'RESPONSE');
+  } else {
+    declarations.forEach((declaration, index) => {
+      identifierMap.set(declaration.identifier, `RESPONSE${index + 1}`);
+    });
+  }
+
+  itemBody.querySelectorAll('[response-identifier]').forEach(interaction => {
+    const currentIdentifier = interaction.getAttribute('response-identifier')?.trim();
+    if (!currentIdentifier) return;
+
+    const mappedIdentifier = identifierMap.get(currentIdentifier);
+    if (mappedIdentifier) {
+      interaction.setAttribute('response-identifier', mappedIdentifier);
+    }
+  });
+
+  declarations.forEach(declaration => {
+    const mappedIdentifier = identifierMap.get(declaration.identifier);
+    if (mappedIdentifier) {
+      declaration.identifier = mappedIdentifier;
+    }
+  });
 }
 
 /**
