@@ -15,18 +15,18 @@
  * const editor = createEditor({ extension: defineQtiExtension() });
  * ```
  */
-import '@qti-components/theme/dist/item.css';
-import '@qti-components/prosemirror/components/qti-choice-interaction/qti-choice-interaction.js';
-import '@qti-components/prosemirror/components/qti-prompt/qti-prompt.js';
-import '@qti-components/prosemirror/components/qti-simple-choice/qti-simple-choice.js';
-import '@qti-components/prosemirror/components/qti-text-entry-interaction/qti-text-entry-interaction.js';
+import '@qti-components/theme/item.css';
+import '@qti-editor/interactions/components/qti-choice-interaction/qti-choice-interaction.js';
+import '@qti-editor/interactions/components/qti-prompt/qti-prompt.js';
+import '@qti-editor/interactions/components/qti-simple-choice/qti-simple-choice.js';
+import '@qti-editor/interactions/components/qti-text-entry-interaction/qti-text-entry-interaction.js';
 
-import { insertChoiceInteraction } from '@qti-components/prosemirror/components/qti-choice-interaction/qti-choice-interaction.commands.js';
-import { qtiChoiceInteractionNodeSpec } from '@qti-components/prosemirror/components/qti-choice-interaction/qti-choice-interaction.schema.js';
-import { qtiPromptNodeSpec } from '@qti-components/prosemirror/components/qti-prompt/qti-prompt.schema.js';
-import { qtiSimpleChoiceNodeSpec } from '@qti-components/prosemirror/components/qti-simple-choice/qti-simple-choice.schema.js';
-import { insertTextEntryInteraction } from '@qti-components/prosemirror/components/qti-text-entry-interaction/qti-text-entry-interaction.commands.js';
-import { qtiTextEntryInteractionNodeSpec } from '@qti-components/prosemirror/components/qti-text-entry-interaction/qti-text-entry-interaction.schema.js';
+import { insertChoiceInteraction } from '@qti-editor/interactions/components/qti-choice-interaction/qti-choice-interaction.commands.js';
+import { qtiChoiceInteractionNodeSpec } from '@qti-editor/interactions/components/qti-choice-interaction/qti-choice-interaction.schema.js';
+import { qtiPromptNodeSpec } from '@qti-editor/interactions/components/qti-prompt/qti-prompt.schema.js';
+import { qtiSimpleChoiceNodeSpec } from '@qti-editor/interactions/components/qti-simple-choice/qti-simple-choice.schema.js';
+import { insertTextEntryInteraction } from '@qti-editor/interactions/components/qti-text-entry-interaction/qti-text-entry-interaction.commands.js';
+import { qtiTextEntryInteractionNodeSpec } from '@qti-editor/interactions/components/qti-text-entry-interaction/qti-text-entry-interaction.schema.js';
 import { defineBasicExtension } from 'prosekit/basic';
 import { defineKeymap, defineNodeSpec, union } from 'prosekit/core';
 

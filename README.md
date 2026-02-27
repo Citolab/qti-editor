@@ -3,7 +3,7 @@
 ## ProseMirror QTI Schema
 
 The ProseMirror-native QTI schema and components are provided by
-`@qti-components/prosemirror` and re-exported via
+`@qti-editor/interactions` and re-exported via
 `@qti-editor/plugin-qti-interactions`. The editor uses a thin ProseKit adapter
 to wire these into ProseKit.
 

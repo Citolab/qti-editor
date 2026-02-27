@@ -1,7 +1,7 @@
 /**
  * QTI Interactions - ProseMirror schemas and components for QTI elements
  *
- * Re-exports from @qti-components/prosemirror for use in ProseMirror-based editors.
+ * Re-exports from @qti-editor/interactions for use in ProseMirror-based editors.
  * Framework-agnostic - works with vanilla ProseMirror, Tiptap, Remirror, ProseKit, etc.
  *
  * For ProseKit integration, use the prosekit adapter:
@@ -9,4 +9,4 @@
  * import { defineQtiExtension } from '@qti-editor/core/interactions/prosekit';
  * ```
  */
-export * from '@qti-components/prosemirror';
+export * from '@qti-editor/interactions';

@@ -18,15 +18,15 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "yalc:add": "yalc add @qti-components/base @qti-components/interactions @qti-components/prosemirror @qti-components/theme @qti-components/utilities"
+    "yalc:add": "yalc add @qti-components/interactions"
   },
   "dependencies": {
     "@lit/context": "^1.1.6",
-    "@qti-components/base": "file:.yalc/@qti-components/base",
-    "@qti-components/interactions": "file:.yalc/@qti-components/interactions",
-    "@qti-components/prosemirror": "file:.yalc/@qti-components/prosemirror",
-    "@qti-components/theme": "file:.yalc/@qti-components/theme",
-    "@qti-components/utilities": "file:.yalc/@qti-components/utilities",
+    "@qti-components/base": "1.2.0",
+    "@qti-components/interactions": "1.8.0",
+    "@qti-editor/interactions": "workspace:*",
+    "@qti-components/theme": "1.1.0",
+    "@qti-components/utilities": "1.1.0",
     "prosemirror-keymap": "^1.2.0",
     "prosemirror-model": "^1.19.0",
     "prosemirror-state": "^1.4.0",

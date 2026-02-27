@@ -24,7 +24,7 @@ export default defineConfig({
     exclude: [
       '@qti-components/base',
       '@qti-components/interactions',
-      '@qti-components/prosemirror',
+      '@qti-editor/interactions',
       '@qti-components/theme',
       '@qti-components/utilities',
     ],

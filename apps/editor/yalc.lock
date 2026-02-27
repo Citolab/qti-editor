@@ -2,23 +2,19 @@
   "version": "v1",
   "packages": {
     "@qti-components/base": {
-      "signature": "c7896678beacb958660926aa109616ae",
+      "signature": "f10259bf3194202fb6b73a3e1c10dabc",
       "file": true
     },
     "@qti-components/utilities": {
-      "signature": "c4300dfae81fc6ddb784779d763727a0",
-      "file": true
-    },
-    "@qti-components/prosemirror": {
-      "signature": "472f87acdab53ea78e4c36bb38a5d039",
+      "signature": "ffffac2a8fb493a65f17115df1f3b618",
       "file": true
     },
     "@qti-components/interactions": {
-      "signature": "8883825d1621071ebc0650be72c24370",
+      "signature": "e68af198f48b323f3e87bac305fab2f0",
       "file": true
     },
     "@qti-components/theme": {
-      "signature": "deeecbdeaa8162dcd30a42d1ec9727fe",
+      "signature": "58916d6ed03680807e01cdd4a0f84878",
       "file": true
     }
   }
