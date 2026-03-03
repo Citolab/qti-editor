@@ -18,6 +18,7 @@ export class QtiComposer extends LitElement {
   public itemContext?: ItemContext;
 
   #xmlUrl = '';
+  #xml = '';
   #formattedXml = '';
   #copyStatus: 'idle' | 'success' | 'error' = 'idle';
   #copyStatusTimer: number | null = null;
@@ -30,6 +31,7 @@ export class QtiComposer extends LitElement {
     super.willUpdate(changedProperties);
     if (changedProperties.has('itemContext')) {
       const xml = buildAssessmentItemXml(this.itemContext as ComposerItemContext);
+      this.#xml = xml;
       this.#setXmlUrl(xml);
       this.#formattedXml = formatXml(xml);
     }
@@ -76,6 +78,23 @@ export class QtiComposer extends LitElement {
     }
   }
 
+  #buildQtiPreviewUrl(xml: string): string {
+    const bytes = new TextEncoder().encode(xml);
+    let binary = '';
+    bytes.forEach(byte => {
+      binary += String.fromCharCode(byte);
+    });
+    const base64 = window.btoa(binary);
+    return `https://qti.citolab.nl/preview?sharedQti=${encodeURIComponent(base64)}`;
+  }
+
+  #openInQtiPreview() {
+    const xml = this.#xml.trim();
+    if (!xml) return;
+    const previewUrl = this.#buildQtiPreviewUrl(xml);
+    window.open(previewUrl, '_blank', 'noopener,noreferrer');
+  }
+
   #setCopyStatus(status: 'idle' | 'success' | 'error') {
     this.#copyStatus = status;
     if (this.#copyStatusTimer != null) {
@@ -105,6 +124,9 @@ export class QtiComposer extends LitElement {
                 >
                   Open XML in new tab
                 </a>
+                <button class="btn btn-xs" type="button" @click=${this.#openInQtiPreview}>
+                  Open in qti.citolab.nl
+                </button>
                 <button class="btn btn-xs" type="button" @click=${this.#copyXmlToClipboard}>Copy</button>
                 ${this.#copyStatus === 'success'
                   ? html`<span class="text-xs text-success">Copied</span>`
