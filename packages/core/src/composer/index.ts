@@ -232,11 +232,7 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
 
   normalizeResponseIdentifiers(itemBody, declarations);
 
-  if (
-    declarations.length === 1 &&
-    declarations[0].sourceTag === 'qti-select-point-interaction' &&
-    templateCandidates.size === 1
-  ) {
+  if (declarations.length === 1 && templateCandidates.size === 1) {
     return { declarations, responseTemplate: Array.from(templateCandidates)[0], maxScore };
   }
 

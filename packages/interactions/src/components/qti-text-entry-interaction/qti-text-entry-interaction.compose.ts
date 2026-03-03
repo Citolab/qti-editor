@@ -1,6 +1,7 @@
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '../../composer/types.js';
 
 const TEXT_ENTRY_TAG = 'qti-text-entry-interaction';
+const MAP_RESPONSE_TEMPLATE = 'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/map_response';
 
 function toNonEmptyString(value: string | null): string | null {
   if (!value) return null;
@@ -38,6 +39,7 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
   return {
     normalizedElement,
     responseDeclaration,
+    responseProcessingTemplate: MAP_RESPONSE_TEMPLATE,
     editorOnlyAttributes,
     warnings,
   };

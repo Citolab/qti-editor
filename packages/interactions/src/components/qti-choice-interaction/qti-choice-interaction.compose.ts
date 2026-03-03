@@ -1,6 +1,7 @@
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '../../composer/types.js';
 
 const CHOICE_TAG = 'qti-choice-interaction';
+const MATCH_CORRECT_TEMPLATE = 'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct';
 
 function toFiniteNumber(value: string | null, fallback: number): number {
   if (value == null || value.trim().length === 0) return fallback;
@@ -53,6 +54,7 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   return {
     normalizedElement,
     responseDeclaration,
+    responseProcessingTemplate: MATCH_CORRECT_TEMPLATE,
     editorOnlyAttributes,
     warnings,
   };
