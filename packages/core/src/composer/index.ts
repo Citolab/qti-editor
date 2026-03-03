@@ -69,9 +69,11 @@ export function extractResponseDeclarations(itemBodyRoot?: Element | null): Resp
  * Builds a full QTI v3 assessment-item XML document from editor context.
  *
  * The function composes a `<qti-assessment-item>` root with required namespaces,
- * metadata (`identifier`, `title`), response declarations inferred from interactions
- * in `itemContext.itemBody`, a default `SCORE` outcome declaration, and default
- * response-processing template.
+ * metadata (`identifier`, `title`) and response declarations inferred from interactions
+ * in `itemContext.itemBody`.
+ *
+ * When at least one scorable interaction is present, the export also includes
+ * `SCORE`/`MAX_SCORE` outcome declarations and response-processing template.
  *
  * Interaction discovery is selector-based (`[response-identifier]`) and currently
  * maps `qti-choice-interaction` to `qti-response-declaration`.
@@ -106,7 +108,7 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
       ? (xmlDoc.importNode(sourceBodyRoot, true) as Element)
       : xmlDoc.createElementNS(QTI_NS, 'qti-item-body');
 
-  const { declarations, responseTemplate } = composeAndNormalizeItemBody(composedItemBody, xmlDoc);
+  const { declarations, responseTemplate, maxScore } = composeAndNormalizeItemBody(composedItemBody, xmlDoc);
 
   declarations.forEach(declaration => {
     const responseDeclaration = xmlDoc.createElementNS(QTI_NS, 'qti-response-declaration');
@@ -138,17 +140,34 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
     root.appendChild(responseDeclaration);
   });
 
-  const outcomeDeclaration = xmlDoc.createElementNS(QTI_NS, 'qti-outcome-declaration');
-  outcomeDeclaration.setAttribute('identifier', 'SCORE');
-  outcomeDeclaration.setAttribute('cardinality', 'single');
-  outcomeDeclaration.setAttribute('base-type', 'float');
-  root.appendChild(outcomeDeclaration);
+  if (maxScore > 0) {
+    const outcomeDeclaration = xmlDoc.createElementNS(QTI_NS, 'qti-outcome-declaration');
+    outcomeDeclaration.setAttribute('identifier', 'SCORE');
+    outcomeDeclaration.setAttribute('cardinality', 'single');
+    outcomeDeclaration.setAttribute('base-type', 'float');
+    root.appendChild(outcomeDeclaration);
+
+    const maxScoreOutcomeDeclaration = xmlDoc.createElementNS(QTI_NS, 'qti-outcome-declaration');
+    maxScoreOutcomeDeclaration.setAttribute('identifier', 'MAX_SCORE');
+    maxScoreOutcomeDeclaration.setAttribute('cardinality', 'single');
+    maxScoreOutcomeDeclaration.setAttribute('base-type', 'float');
+
+    const maxScoreDefaultValue = xmlDoc.createElementNS(QTI_NS, 'qti-default-value');
+    const maxScoreValue = xmlDoc.createElementNS(QTI_NS, 'qti-value');
+    maxScoreValue.textContent = String(maxScore);
+    maxScoreDefaultValue.appendChild(maxScoreValue);
+    maxScoreOutcomeDeclaration.appendChild(maxScoreDefaultValue);
+
+    root.appendChild(maxScoreOutcomeDeclaration);
+  }
 
   root.appendChild(composedItemBody);
 
-  const responseProcessing = xmlDoc.createElementNS(QTI_NS, 'qti-response-processing');
-  responseProcessing.setAttribute('template', responseTemplate);
-  root.appendChild(responseProcessing);
+  if (maxScore > 0) {
+    const responseProcessing = xmlDoc.createElementNS(QTI_NS, 'qti-response-processing');
+    responseProcessing.setAttribute('template', responseTemplate);
+    root.appendChild(responseProcessing);
+  }
 
   return new XMLSerializer().serializeToString(xmlDoc);
 }
@@ -156,10 +175,12 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
 function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
   declarations: ResponseDeclaration[];
   responseTemplate: string;
+  maxScore: number;
 } {
   const declarations: ResponseDeclaration[] = [];
   const seenIdentifiers = new Set<string>();
   const templateCandidates = new Set<string>();
+  let maxScore = 0;
 
   const elements = Array.from(itemBody.querySelectorAll('*'));
   elements.forEach(element => {
@@ -178,6 +199,10 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
         parent.replaceChild(composeResult.normalizedElement, element);
       }
 
+      if (composeResult.responseDeclaration) {
+        maxScore += 1;
+      }
+
       if (composeResult.responseDeclaration && !seenIdentifiers.has(composeResult.responseDeclaration.identifier)) {
         declarations.push(composeResult.responseDeclaration);
         seenIdentifiers.add(composeResult.responseDeclaration.identifier);
@@ -190,22 +215,25 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
     }
 
     const identifier = element.getAttribute('response-identifier')?.trim();
-    if (!identifier || seenIdentifiers.has(identifier)) return;
+    if (!identifier) return;
 
     if (tagName === 'qti-choice-interaction') {
+      maxScore += 1;
       const maxChoices = Number(element.getAttribute('max-choices') ?? '1');
       const cardinality: ResponseDeclaration['cardinality'] =
         Number.isFinite(maxChoices) && maxChoices > 1 ? 'multiple' : 'single';
       const correctResponse = element.getAttribute('correct-response')?.trim();
 
-      declarations.push({
-        identifier,
-        cardinality,
-        baseType: 'identifier',
-        correctResponse: correctResponse || undefined,
-        sourceTag: tagName,
-      });
-      seenIdentifiers.add(identifier);
+      if (!seenIdentifiers.has(identifier)) {
+        declarations.push({
+          identifier,
+          cardinality,
+          baseType: 'identifier',
+          correctResponse: correctResponse || undefined,
+          sourceTag: tagName,
+        });
+        seenIdentifiers.add(identifier);
+      }
       return;
     }
 
@@ -225,10 +253,10 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
     declarations[0].sourceTag === 'qti-select-point-interaction' &&
     templateCandidates.size === 1
   ) {
-    return { declarations, responseTemplate: Array.from(templateCandidates)[0] };
+    return { declarations, responseTemplate: Array.from(templateCandidates)[0], maxScore };
   }
 
-  return { declarations, responseTemplate: MATCH_CORRECT_TEMPLATE };
+  return { declarations, responseTemplate: MATCH_CORRECT_TEMPLATE, maxScore };
 }
 
 function normalizeResponseIdentifiers(itemBody: Element, declarations: ResponseDeclaration[]): void {
