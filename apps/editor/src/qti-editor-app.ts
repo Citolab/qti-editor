@@ -127,6 +127,8 @@ export class QtiEditorApp extends LitElement {
           class="card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden"
         >
           <qti-lit-editor ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></qti-lit-editor>
+          <qti-composer class="block w-full"></qti-composer>
+          <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel>
         </div>
         <div class="w-full lg:w-80 lg:shrink-0">
           <qti-composer-metadata-form
@@ -138,10 +140,6 @@ export class QtiEditorApp extends LitElement {
           </qti-composer-metadata-form>
           <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
         </div>
-      </div>
-      <div class="mt-6">
-        <qti-composer class="block w-full"></qti-composer>
-        <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel>
       </div>
     `;
   }
