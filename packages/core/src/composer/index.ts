@@ -145,6 +145,13 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
     outcomeDeclaration.setAttribute('identifier', 'SCORE');
     outcomeDeclaration.setAttribute('cardinality', 'single');
     outcomeDeclaration.setAttribute('base-type', 'float');
+
+    const scoreDefaultValue = xmlDoc.createElementNS(QTI_NS, 'qti-default-value');
+    const scoreValue = xmlDoc.createElementNS(QTI_NS, 'qti-value');
+    scoreValue.textContent = '0';
+    scoreDefaultValue.appendChild(scoreValue);
+    outcomeDeclaration.appendChild(scoreDefaultValue);
+
     root.appendChild(outcomeDeclaration);
 
     const maxScoreOutcomeDeclaration = xmlDoc.createElementNS(QTI_NS, 'qti-outcome-declaration');
