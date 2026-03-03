@@ -32,7 +32,7 @@ export const insertTextEntryInteraction: Command = (state, dispatch) => {
   if (!type) return false;
 
   const textEntry = type.create({
-    responseIdentifier: `RESPONSE_${Date.now()}`
+    responseIdentifier: `RESPONSE_${crypto.randomUUID()}`
   });
 
   if (dispatch) {

@@ -9,9 +9,8 @@ export const insertSelectPointInteraction: Command = (state, dispatch) => {
 
   if (!interactionType) return false;
 
-  const timestamp = Date.now();
   const interaction = interactionType.create({
-    responseIdentifier: `RESPONSE_${timestamp}`,
+    responseIdentifier: `RESPONSE_${crypto.randomUUID()}`,
     maxChoices: 0,
     minChoices: 0,
     areaMappings: '[]'

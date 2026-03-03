@@ -30,10 +30,10 @@ const getQtiToolbarItems: ToolbarInsertItemsProvider = view => {
       canInsert: canInsert(view, nodeType),
       command: () => {
         const s = schema;
-        const node = nodeType.create({ responseIdentifier: `RESPONSE_${Date.now()}` }, [
+        const node = nodeType.create({ responseIdentifier: `RESPONSE_${crypto.randomUUID()}` }, [
           s.nodes.qtiPrompt.create({}, s.nodes.paragraph.create({}, s.text('Enter your question here...'))),
-          s.nodes.qtiSimpleChoice.create({ identifier: 'SIMPLE-CHOICE-IDENTIFIER' }, s.text('Option A')),
-          s.nodes.qtiSimpleChoice.create({ identifier: 'SIMPLE-CHOICE-IDENTIFIER' }, s.text('Option B'))
+          s.nodes.qtiSimpleChoice.create({ identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` }, s.text('Option A')),
+          s.nodes.qtiSimpleChoice.create({ identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` }, s.text('Option B'))
         ]);
         view.dispatch(view.state.tr.replaceSelectionWith(node));
         view.focus();
@@ -47,7 +47,7 @@ const getQtiToolbarItems: ToolbarInsertItemsProvider = view => {
       label: 'Text Entry',
       canInsert: canInsert(view, nodeType),
       command: () => {
-        const node = nodeType.createAndFill({ responseIdentifier: `RESPONSE_${Date.now()}` });
+        const node = nodeType.createAndFill({ responseIdentifier: `RESPONSE_${crypto.randomUUID()}` });
         if (node) {
           view.dispatch(view.state.tr.replaceSelectionWith(node));
           view.focus();

@@ -17,16 +17,16 @@ export const insertChoiceInteraction: Command = (state, dispatch) => {
 
   if (!promptType || !choiceType || !interactionType) return false;
 
-  const timestamp = Date.now();
+  const responseIdentifier = `RESPONSE_${crypto.randomUUID()}`;
   const prompt = promptType.create(null, schema.nodes.paragraph.create(null, schema.text('Which option is correct?')));
 
   const choices = [
-    choiceType.create({ identifier: `CHOICE_${timestamp}_A` }, schema.text('Option A')),
-    choiceType.create({ identifier: `CHOICE_${timestamp}_B` }, schema.text('Option B')),
-    choiceType.create({ identifier: `CHOICE_${timestamp}_C` }, schema.text('Option C'))
+    choiceType.create({ identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` }, schema.text('Option A')),
+    choiceType.create({ identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` }, schema.text('Option B')),
+    choiceType.create({ identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` }, schema.text('Option C'))
   ];
 
-  const interaction = interactionType.create({ responseIdentifier: `CHOICE_${timestamp}`, maxChoices: 1 }, [
+  const interaction = interactionType.create({ responseIdentifier, maxChoices: 1 }, [
     prompt,
     ...choices
   ]);

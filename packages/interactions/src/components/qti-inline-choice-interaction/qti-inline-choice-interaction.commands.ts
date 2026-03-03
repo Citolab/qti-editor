@@ -12,13 +12,13 @@ export const insertInlineChoiceInteraction: Command = (state, dispatch) => {
 
   const interaction = interactionType.create(
     {
-      responseIdentifier: 'RESPONSE',
+      responseIdentifier: `RESPONSE_${crypto.randomUUID()}`,
       shuffle: false
     },
     [
-      inlineChoiceType.create({ identifier: 'G' }, schema.text('Gloucester')),
-      inlineChoiceType.create({ identifier: 'L' }, schema.text('Lancaster')),
-      inlineChoiceType.create({ identifier: 'Y' }, schema.text('York'))
+      inlineChoiceType.create({ identifier: `INLINE_CHOICE_${crypto.randomUUID()}` }, schema.text('Gloucester')),
+      inlineChoiceType.create({ identifier: `INLINE_CHOICE_${crypto.randomUUID()}` }, schema.text('Lancaster')),
+      inlineChoiceType.create({ identifier: `INLINE_CHOICE_${crypto.randomUUID()}` }, schema.text('York'))
     ]
   );
 
