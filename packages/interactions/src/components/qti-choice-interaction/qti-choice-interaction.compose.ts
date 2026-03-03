@@ -1,7 +1,5 @@
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '../../composer/types.js';
-
-const CHOICE_TAG = 'qti-choice-interaction';
-const MATCH_CORRECT_TEMPLATE = 'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct';
+import { CHOICE_INTERACTION_TAG, interactionComposerMetadataByTagName } from '../../composer/metadata.js';
 
 function toFiniteNumber(value: string | null, fallback: number): number {
   if (value == null || value.trim().length === 0) return fallback;
@@ -16,6 +14,7 @@ function toNonEmptyString(value: string | null): string | null {
 }
 
 export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: Document): InteractionComposeResult {
+  const metadata = interactionComposerMetadataByTagName[CHOICE_INTERACTION_TAG];
   const warnings: ComposerWarning[] = [];
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
@@ -24,7 +23,7 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   const maxChoices = toFiniteNumber(sourceElement.getAttribute('max-choices'), 1);
   const minChoices = toFiniteNumber(sourceElement.getAttribute('min-choices'), 0);
 
-  const editorOnlyAttributes = ['class', 'correct-response'];
+  const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
   editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
 
   normalizedElement.setAttribute('max-choices', String(maxChoices > 0 ? maxChoices : 1));
@@ -39,7 +38,7 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
     warnings.push({
       code: 'MISSING_RESPONSE_IDENTIFIER',
       message: 'qti-choice-interaction is missing response-identifier; declaration will be skipped.',
-      tagName: CHOICE_TAG,
+      tagName: metadata.tagName,
     });
   } else {
     responseDeclaration = {
@@ -47,14 +46,14 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
       cardinality: maxChoices > 1 ? 'multiple' : 'single',
       baseType: 'identifier',
       correctResponse: correctResponse ?? undefined,
-      sourceTag: CHOICE_TAG,
+      sourceTag: metadata.tagName,
     };
   }
 
   return {
     normalizedElement,
     responseDeclaration,
-    responseProcessingTemplate: MATCH_CORRECT_TEMPLATE,
+    responseProcessingTemplate: metadata.responseProcessingTemplate,
     editorOnlyAttributes,
     warnings,
   };

@@ -39,6 +39,12 @@ export interface InteractionComposeResult {
   warnings: ComposerWarning[];
 }
 
+export interface InteractionComposerMetadata {
+  tagName: string;
+  responseProcessingTemplate?: string;
+  editorOnlyAttributes: readonly string[];
+}
+
 export interface InteractionComposerHandler {
   tagName: string;
   compose(sourceElement: Element, xmlDoc: Document): InteractionComposeResult;

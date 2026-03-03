@@ -1,7 +1,5 @@
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '../../composer/types.js';
-
-const TEXT_ENTRY_TAG = 'qti-text-entry-interaction';
-const MAP_RESPONSE_TEMPLATE = 'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/map_response';
+import { interactionComposerMetadataByTagName, TEXT_ENTRY_INTERACTION_TAG } from '../../composer/metadata.js';
 
 function toNonEmptyString(value: string | null): string | null {
   if (!value) return null;
@@ -10,13 +8,14 @@ function toNonEmptyString(value: string | null): string | null {
 }
 
 export function composeTextEntryInteractionElement(sourceElement: Element, xmlDoc: Document): InteractionComposeResult {
+  const metadata = interactionComposerMetadataByTagName[TEXT_ENTRY_INTERACTION_TAG];
   const warnings: ComposerWarning[] = [];
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
   const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
 
-  const editorOnlyAttributes = ['class'];
+  const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
   editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
@@ -24,7 +23,7 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
     warnings.push({
       code: 'MISSING_RESPONSE_IDENTIFIER',
       message: 'qti-text-entry-interaction is missing response-identifier; declaration will be skipped.',
-      tagName: TEXT_ENTRY_TAG,
+      tagName: metadata.tagName,
     });
   } else {
     responseDeclaration = {
@@ -32,14 +31,14 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
       cardinality: 'single',
       baseType: 'string',
       correctResponse: correctResponse ?? undefined,
-      sourceTag: TEXT_ENTRY_TAG,
+      sourceTag: metadata.tagName,
     };
   }
 
   return {
     normalizedElement,
     responseDeclaration,
-    responseProcessingTemplate: MAP_RESPONSE_TEMPLATE,
+    responseProcessingTemplate: metadata.responseProcessingTemplate,
     editorOnlyAttributes,
     warnings,
   };

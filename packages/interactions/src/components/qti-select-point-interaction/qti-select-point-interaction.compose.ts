@@ -1,8 +1,5 @@
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration, QtiAreaMapEntry } from '../../composer/types.js';
-
-const SELECT_POINT_TAG = 'qti-select-point-interaction';
-const MAP_RESPONSE_POINT_TEMPLATE =
-  'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/map_response_point.xml';
+import { interactionComposerMetadataByTagName, SELECT_POINT_INTERACTION_TAG } from '../../composer/metadata.js';
 
 function toFiniteNumber(value: string | null, fallback: number): number {
   if (value == null || value.trim().length === 0) return fallback;
@@ -32,7 +29,7 @@ function parseAreaMappings(raw: string | null): {
     warnings.push({
       code: 'INVALID_AREA_MAPPINGS_JSON',
       message: 'qti-select-point-interaction has invalid area-mappings JSON; skipping qti-area-mapping.',
-      tagName: SELECT_POINT_TAG,
+      tagName: SELECT_POINT_INTERACTION_TAG,
     });
     return { warnings };
   }
@@ -41,7 +38,7 @@ function parseAreaMappings(raw: string | null): {
     warnings.push({
       code: 'INVALID_AREA_MAPPINGS_JSON',
       message: 'qti-select-point-interaction area-mappings is not an array; skipping qti-area-mapping.',
-      tagName: SELECT_POINT_TAG,
+      tagName: SELECT_POINT_INTERACTION_TAG,
     });
     return { warnings };
   }
@@ -58,7 +55,7 @@ function parseAreaMappings(raw: string | null): {
       warnings.push({
         code: 'INVALID_AREA_MAPPING_ENTRY',
         message: `Invalid area-mappings entry at index ${index}; expected shape (circle|rect) and coords string.`,
-        tagName: SELECT_POINT_TAG,
+        tagName: SELECT_POINT_INTERACTION_TAG,
       });
       return;
     }
@@ -97,6 +94,7 @@ function removeChildrenByTagName(element: Element, tagName: string): void {
 }
 
 export function composeSelectPointInteractionElement(sourceElement: Element, xmlDoc: Document): InteractionComposeResult {
+  const metadata = interactionComposerMetadataByTagName[SELECT_POINT_INTERACTION_TAG];
   const warnings: ComposerWarning[] = [];
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
@@ -111,16 +109,7 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
 
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
-  const editorOnlyAttributes = [
-    'class',
-    'area-mappings',
-    'image-src',
-    'image-alt',
-    'image-width',
-    'image-height',
-    'prompt',
-    'correct-response',
-  ];
+  const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
 
   editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
 
@@ -159,7 +148,7 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
     warnings.push({
       code: 'MISSING_RESPONSE_IDENTIFIER',
       message: 'qti-select-point-interaction is missing response-identifier; declaration will be skipped.',
-      tagName: SELECT_POINT_TAG,
+      tagName: metadata.tagName,
     });
   } else {
     const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
@@ -169,14 +158,14 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
       baseType: 'point',
       correctResponse: correctResponse ?? undefined,
       areaMapping: areaMappingResult.areaMapping,
-      sourceTag: SELECT_POINT_TAG,
+      sourceTag: metadata.tagName,
     };
   }
 
   return {
     normalizedElement,
     responseDeclaration,
-    responseProcessingTemplate: MAP_RESPONSE_POINT_TEMPLATE,
+    responseProcessingTemplate: metadata.responseProcessingTemplate,
     editorOnlyAttributes,
     warnings,
   };
