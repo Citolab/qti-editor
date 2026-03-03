@@ -41,8 +41,10 @@ export interface InteractionComposeResult {
 
 export interface InteractionComposerMetadata {
   tagName: string;
+  nodeTypeName: string;
   responseProcessingTemplate?: string;
   editorOnlyAttributes: readonly string[];
+  userEditableAttributes: readonly string[];
 }
 
 export interface InteractionComposerHandler {

@@ -72,6 +72,7 @@ Code plugin (`packages/plugin-qti-code/index.ts`):
 ## Interaction Composition Ownership
 - Interaction packages own XML normalization and response declaration generation in per-interaction `*.compose.ts` modules.
 - Shared interaction composer metadata (`tagName`, `responseProcessingTemplate`, `editorOnlyAttributes`) is centralized in `packages/interactions/src/composer/metadata.ts`.
+- The same metadata also defines UI policy (`userEditableAttributes`) for app-level attribute panel filtering.
 - Core composer (`packages/core/src/composer/index.ts`) orchestrates document assembly only:
   - append response declarations
   - apply identifier normalization

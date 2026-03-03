@@ -8,6 +8,7 @@
 import { html, LitElement, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import type { SidePanelEventDetail, SidePanelNodeDetail } from '@qti-editor/core/attributes';
+import { getInteractionComposerMetadataByNodeTypeName } from '@qti-editor/interactions/composer/index.js';
 
 type AttrValue = string | number | boolean | null | undefined;
 
@@ -177,6 +178,21 @@ export class QtiAttributesPanel extends LitElement {
     return input.value;
   }
 
+  private getVisibleAttrEntries(node: SidePanelNodeDetail | null): Array<[string, AttrValue]> {
+    if (!node) return [];
+
+    const attrs = node.attrs ?? {};
+    const metadata = getInteractionComposerMetadataByNodeTypeName(node.type);
+    const entries = Object.entries(attrs) as Array<[string, AttrValue]>;
+
+    if (!metadata) {
+      return entries;
+    }
+
+    const allowedAttributes = new Set(metadata.userEditableAttributes);
+    return entries.filter(([key]) => allowedAttributes.has(key));
+  }
+
   protected renderField(key: string, value: AttrValue): TemplateResult {
     const type = typeof value;
     if (type === 'boolean') {
@@ -222,8 +238,7 @@ export class QtiAttributesPanel extends LitElement {
 
   render() {
     const activeNode = this.activeNode;
-    const attrs = activeNode?.attrs ?? {};
-    const attrEntries = Object.entries(attrs);
+    const attrEntries = this.getVisibleAttrEntries(activeNode);
 
     return html`
       <section class="qti-attributes-panel card border border-base-300/50 bg-base-100">
