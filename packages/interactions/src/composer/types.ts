@@ -35,14 +35,22 @@ export interface InteractionComposeResult {
   normalizedElement: Element;
   responseDeclaration?: InteractionResponseDeclaration;
   responseProcessingTemplate?: string;
+  responseProcessingKind?: ResponseProcessingKind;
   editorOnlyAttributes: string[];
   warnings: ComposerWarning[];
 }
+
+export type ResponseProcessingKind = 'match_correct' | 'map_response' | 'map_response_point';
 
 export interface InteractionComposerMetadata {
   tagName: string;
   nodeTypeName: string;
   responseProcessingTemplate?: string;
+  responseProcessing: {
+    templateUri: string;
+    internalKind: ResponseProcessingKind;
+    internalSourceXml: string;
+  };
   editorOnlyAttributes: readonly string[];
   userEditableAttributes: readonly string[];
 }

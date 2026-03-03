@@ -166,6 +166,7 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
     normalizedElement,
     responseDeclaration,
     responseProcessingTemplate: metadata.responseProcessingTemplate,
+    responseProcessingKind: metadata.responseProcessing.internalKind,
     editorOnlyAttributes,
     warnings,
   };

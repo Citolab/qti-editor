@@ -7,6 +7,8 @@
 
 import { getInteractionComposerHandler } from '@qti-editor/interactions/composer/index.js';
 
+type ResponseProcessingKind = 'match_correct' | 'map_response' | 'map_response_point';
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -26,6 +28,7 @@ export interface ResponseDeclaration {
   cardinality: 'single' | 'multiple';
   baseType: 'identifier' | 'point' | 'string';
   correctResponse?: string;
+  responseProcessingKind?: ResponseProcessingKind;
   areaMapping?: {
     defaultValue: number;
     entries: Array<{
@@ -171,9 +174,13 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
   root.appendChild(composedItemBody);
 
   if (maxScore > 0) {
-    const responseProcessing = xmlDoc.createElementNS(QTI_NS, 'qti-response-processing');
-    responseProcessing.setAttribute('template', responseTemplate);
-    root.appendChild(responseProcessing);
+    if (declarations.length === 1) {
+      const responseProcessing = xmlDoc.createElementNS(QTI_NS, 'qti-response-processing');
+      responseProcessing.setAttribute('template', responseTemplate);
+      root.appendChild(responseProcessing);
+    } else if (declarations.length > 1) {
+      root.appendChild(buildMultiInteractionResponseProcessing(xmlDoc, declarations));
+    }
   }
 
   return new XMLSerializer().serializeToString(xmlDoc);
@@ -211,7 +218,12 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
       }
 
       if (composeResult.responseDeclaration && !seenIdentifiers.has(composeResult.responseDeclaration.identifier)) {
-        declarations.push(composeResult.responseDeclaration);
+        const responseProcessingKind = (composeResult as { responseProcessingKind?: ResponseProcessingKind })
+          .responseProcessingKind;
+        declarations.push({
+          ...composeResult.responseDeclaration,
+          responseProcessingKind,
+        });
         seenIdentifiers.add(composeResult.responseDeclaration.identifier);
       }
 
@@ -237,6 +249,82 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
   }
 
   return { declarations, responseTemplate: MATCH_CORRECT_TEMPLATE, maxScore };
+}
+
+function buildMultiInteractionResponseProcessing(xmlDoc: Document, declarations: ResponseDeclaration[]): Element {
+  const responseProcessing = xmlDoc.createElementNS(QTI_NS, 'qti-response-processing');
+
+  declarations.forEach(declaration => {
+    const kind = declaration.responseProcessingKind ?? 'match_correct';
+
+    if (kind === 'match_correct') {
+      responseProcessing.appendChild(createMatchCorrectContribution(xmlDoc, declaration.identifier));
+      return;
+    }
+
+    if (kind === 'map_response') {
+      responseProcessing.appendChild(createMapResponseContribution(xmlDoc, declaration.identifier));
+      return;
+    }
+
+    responseProcessing.appendChild(createMapResponsePointContribution(xmlDoc, declaration.identifier));
+  });
+
+  return responseProcessing;
+}
+
+function createMatchCorrectContribution(xmlDoc: Document, responseIdentifier: string): Element {
+  const responseCondition = xmlDoc.createElementNS(QTI_NS, 'qti-response-condition');
+  const responseIf = xmlDoc.createElementNS(QTI_NS, 'qti-response-if');
+  const match = xmlDoc.createElementNS(QTI_NS, 'qti-match');
+
+  const variable = xmlDoc.createElementNS(QTI_NS, 'qti-variable');
+  variable.setAttribute('identifier', responseIdentifier);
+  match.appendChild(variable);
+
+  const correct = xmlDoc.createElementNS(QTI_NS, 'qti-correct');
+  correct.setAttribute('identifier', responseIdentifier);
+  match.appendChild(correct);
+
+  responseIf.appendChild(match);
+  const incrementValue = xmlDoc.createElementNS(QTI_NS, 'qti-base-value');
+  incrementValue.setAttribute('base-type', 'float');
+  incrementValue.textContent = '1';
+  responseIf.appendChild(createScoreIncrement(xmlDoc, incrementValue));
+
+  responseCondition.appendChild(responseIf);
+  return responseCondition;
+}
+
+function createMapResponseContribution(xmlDoc: Document, responseIdentifier: string): Element {
+  const mapResponse = xmlDoc.createElementNS(QTI_NS, 'qti-map-response');
+  const variable = xmlDoc.createElementNS(QTI_NS, 'qti-variable');
+  variable.setAttribute('identifier', responseIdentifier);
+  mapResponse.appendChild(variable);
+  return createScoreIncrement(xmlDoc, mapResponse);
+}
+
+function createMapResponsePointContribution(xmlDoc: Document, responseIdentifier: string): Element {
+  const mapResponsePoint = xmlDoc.createElementNS(QTI_NS, 'qti-map-response-point');
+  const variable = xmlDoc.createElementNS(QTI_NS, 'qti-variable');
+  variable.setAttribute('identifier', responseIdentifier);
+  mapResponsePoint.appendChild(variable);
+  return createScoreIncrement(xmlDoc, mapResponsePoint);
+}
+
+function createScoreIncrement(xmlDoc: Document, contribution: Element): Element {
+  const setOutcomeValue = xmlDoc.createElementNS(QTI_NS, 'qti-set-outcome-value');
+  setOutcomeValue.setAttribute('identifier', 'SCORE');
+
+  const sum = xmlDoc.createElementNS(QTI_NS, 'qti-sum');
+  const currentScore = xmlDoc.createElementNS(QTI_NS, 'qti-variable');
+  currentScore.setAttribute('identifier', 'SCORE');
+
+  sum.appendChild(currentScore);
+  sum.appendChild(contribution);
+  setOutcomeValue.appendChild(sum);
+
+  return setOutcomeValue;
 }
 
 function normalizeResponseIdentifiers(itemBody: Element, declarations: ResponseDeclaration[]): void {

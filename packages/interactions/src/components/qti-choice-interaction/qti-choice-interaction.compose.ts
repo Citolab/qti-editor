@@ -54,6 +54,7 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
     normalizedElement,
     responseDeclaration,
     responseProcessingTemplate: metadata.responseProcessingTemplate,
+    responseProcessingKind: metadata.responseProcessing.internalKind,
     editorOnlyAttributes,
     warnings,
   };
