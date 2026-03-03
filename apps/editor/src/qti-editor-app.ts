@@ -74,7 +74,6 @@ export class QtiEditorApp extends LitElement {
       }),
       blockSelectExtension,
       nodeAttrsSyncExtension
-
     );
 
     this.editor = createEditor({ extension });
@@ -140,11 +139,9 @@ export class QtiEditorApp extends LitElement {
           <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
         </div>
       </div>
-      <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
-        <div class="space-y-6">
-          <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel>
-        </div>
+      <div class="mt-6">
         <qti-composer class="block w-full"></qti-composer>
+        <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel>
       </div>
     `;
   }
