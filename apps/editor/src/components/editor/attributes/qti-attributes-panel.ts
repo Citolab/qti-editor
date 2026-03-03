@@ -178,22 +178,28 @@ export class QtiAttributesPanel extends LitElement {
     return input.value;
   }
 
-  private getVisibleAttrEntries(node: SidePanelNodeDetail | null): Array<[string, AttrValue]> {
-    if (!node) return [];
+  private getAttrEntriesByEditability(node: SidePanelNodeDetail | null): {
+    editable: Array<[string, AttrValue]>;
+    readOnly: Array<[string, AttrValue]>;
+  } {
+    if (!node) return { editable: [], readOnly: [] };
 
     const attrs = node.attrs ?? {};
     const metadata = getInteractionComposerMetadataByNodeTypeName(node.type);
     const entries = Object.entries(attrs) as Array<[string, AttrValue]>;
 
     if (!metadata) {
-      return entries;
+      return { editable: entries, readOnly: [] };
     }
 
     const allowedAttributes = new Set(metadata.userEditableAttributes);
-    return entries.filter(([key]) => allowedAttributes.has(key));
+    const editable = entries.filter(([key]) => allowedAttributes.has(key));
+    const readOnly = entries.filter(([key]) => !allowedAttributes.has(key));
+    return { editable, readOnly };
   }
 
-  protected renderField(key: string, value: AttrValue): TemplateResult {
+  protected renderField(key: string, value: AttrValue, options?: { disabled?: boolean }): TemplateResult {
+    const disabled = Boolean(options?.disabled);
     const type = typeof value;
     if (type === 'boolean') {
       return html`
@@ -203,6 +209,7 @@ export class QtiAttributesPanel extends LitElement {
             class="checkbox checkbox-sm"
             type="checkbox"
             .checked=${Boolean(value)}
+            ?disabled=${disabled}
             @change=${(event: Event) => this.handleFieldChange(key, value, event)}
           />
         </label>
@@ -217,6 +224,7 @@ export class QtiAttributesPanel extends LitElement {
             class="input input-sm input-bordered w-full"
             type="number"
             .value=${String(value ?? '')}
+            ?disabled=${disabled}
             @input=${(event: Event) => this.handleFieldChange(key, value, event)}
           />
         </label>
@@ -230,6 +238,7 @@ export class QtiAttributesPanel extends LitElement {
           class="input input-sm input-bordered w-full"
           type="text"
           .value=${String(value ?? '')}
+          ?disabled=${disabled}
           @input=${(event: Event) => this.handleFieldChange(key, value, event)}
         />
       </label>
@@ -238,7 +247,7 @@ export class QtiAttributesPanel extends LitElement {
 
   render() {
     const activeNode = this.activeNode;
-    const attrEntries = this.getVisibleAttrEntries(activeNode);
+    const { editable, readOnly } = this.getAttrEntriesByEditability(activeNode);
 
     return html`
       <section class="qti-attributes-panel card border border-base-300/50 bg-base-100">
@@ -270,9 +279,23 @@ export class QtiAttributesPanel extends LitElement {
 
           <div class="qti-attributes-content flex flex-col gap-3">
             ${activeNode
-              ? attrEntries.length
-                ? attrEntries.map(([key, value]) => this.renderField(key, value as AttrValue))
-                : html`<p class="text-sm text-base-content/70">No editable attributes.</p>`
+              ? html`
+                  ${editable.length
+                    ? editable.map(([key, value]) => this.renderField(key, value as AttrValue))
+                    : html`<p class="text-sm text-base-content/70">No editable attributes.</p>`}
+                  ${readOnly.length
+                    ? html`
+                        <details class="rounded-lg border border-base-300/50 bg-base-50 p-2">
+                          <summary class="cursor-pointer text-sm font-medium">
+                            Read-only attributes (${readOnly.length})
+                          </summary>
+                          <div class="mt-3 flex flex-col gap-3 opacity-80">
+                            ${readOnly.map(([key, value]) => this.renderField(key, value as AttrValue, { disabled: true }))}
+                          </div>
+                        </details>
+                      `
+                    : null}
+                `
               : html`<p class="text-sm text-base-content/70">Place the cursor on a node with schema attributes.</p>`}
           </div>
         </div>
