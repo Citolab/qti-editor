@@ -24,7 +24,7 @@ export interface ComposerItemContext {
 export interface ResponseDeclaration {
   identifier: string;
   cardinality: 'single' | 'multiple';
-  baseType: 'identifier' | 'point';
+  baseType: 'identifier' | 'point' | 'string';
   correctResponse?: string;
   areaMapping?: {
     defaultValue: number;
@@ -75,8 +75,8 @@ export function extractResponseDeclarations(itemBodyRoot?: Element | null): Resp
  * When at least one scorable interaction is present, the export also includes
  * `SCORE`/`MAX_SCORE` outcome declarations and response-processing template.
  *
- * Interaction discovery is selector-based (`[response-identifier]`) and currently
- * maps `qti-choice-interaction` to `qti-response-declaration`.
+ * Interaction XML normalization and declaration generation are delegated to
+ * interaction-level composer handlers.
  *
  * The exported `<qti-item-body>` is copied from context and sanitized by removing
  * any `correct-response` attributes from interaction nodes (correct answers are
@@ -217,29 +217,6 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
 
       if (composeResult.responseProcessingTemplate && composeResult.responseDeclaration) {
         templateCandidates.add(composeResult.responseProcessingTemplate);
-      }
-      return;
-    }
-
-    const identifier = element.getAttribute('response-identifier')?.trim();
-    if (!identifier) return;
-
-    if (tagName === 'qti-choice-interaction') {
-      maxScore += 1;
-      const maxChoices = Number(element.getAttribute('max-choices') ?? '1');
-      const cardinality: ResponseDeclaration['cardinality'] =
-        Number.isFinite(maxChoices) && maxChoices > 1 ? 'multiple' : 'single';
-      const correctResponse = element.getAttribute('correct-response')?.trim();
-
-      if (!seenIdentifiers.has(identifier)) {
-        declarations.push({
-          identifier,
-          cardinality,
-          baseType: 'identifier',
-          correctResponse: correctResponse || undefined,
-          sourceTag: tagName,
-        });
-        seenIdentifiers.add(identifier);
       }
       return;
     }

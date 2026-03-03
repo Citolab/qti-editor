@@ -69,6 +69,18 @@ Code plugin (`packages/plugin-qti-code/index.ts`):
   - Serialize with `XMLSerializer`
   - Fall back to wrapped string when parser reports `parsererror`
 
+## Interaction Composition Ownership
+- Interaction packages own XML normalization and response declaration generation in per-interaction `*.compose.ts` modules.
+- Core composer (`packages/core/src/composer/index.ts`) orchestrates document assembly only:
+  - append response declarations
+  - apply identifier normalization
+  - emit outcomes and response-processing
+- Adding support for a new interaction requires:
+  - interaction compose module
+  - composer handler in `packages/interactions/src/composer/handlers/`
+  - registration in `packages/interactions/src/composer/registry.ts`
+- Core composer should not gain per-interaction special-casing logic.
+
 ## Package Boundaries
 Belongs in plugin packages:
 - ProseMirror plugin definitions and options

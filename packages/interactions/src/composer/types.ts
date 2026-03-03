@@ -25,7 +25,7 @@ export interface QtiAreaMapping {
 export interface InteractionResponseDeclaration {
   identifier: string;
   cardinality: 'single' | 'multiple';
-  baseType: 'identifier' | 'point';
+  baseType: 'identifier' | 'point' | 'string';
   correctResponse?: string;
   areaMapping?: QtiAreaMapping;
   sourceTag: string;
