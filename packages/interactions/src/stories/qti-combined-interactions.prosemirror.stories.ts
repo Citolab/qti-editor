@@ -14,6 +14,7 @@ import { qtiSimpleChoiceNodeSpec } from '../components/qti-simple-choice/qti-sim
 import { qtiInlineChoiceInteractionNodeSpec } from '../components/qti-inline-choice-interaction/qti-inline-choice-interaction.schema';
 import { qtiInlineChoiceNodeSpec } from '../components/qti-inline-choice-interaction/qti-inline-choice.schema';
 import { qtiTextEntryInteractionNodeSpec } from '../components/qti-text-entry-interaction/qti-text-entry-interaction.schema';
+import { imgSelectPointNodeSpec } from '../components/qti-select-point-interaction/img-select-point.schema';
 import { qtiSelectPointInteractionNodeSpec } from '../components/qti-select-point-interaction/qti-select-point-interaction.schema';
 import { insertChoiceInteraction } from '../components/qti-choice-interaction/qti-choice-interaction.commands';
 import { insertInlineChoiceInteraction } from '../components/qti-inline-choice-interaction/qti-inline-choice-interaction.commands';
@@ -29,6 +30,7 @@ import '../components/qti-simple-choice/qti-simple-choice';
 import '../components/qti-inline-choice-interaction/qti-inline-choice-interaction';
 import '../components/qti-inline-choice-interaction/qti-inline-choice';
 import '../components/qti-text-entry-interaction/qti-text-entry-interaction';
+import '../components/qti-select-point-interaction/img-select-point';
 import '../components/qti-select-point-interaction/qti-select-point-interaction';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
@@ -42,6 +44,7 @@ const schema = new Schema({
     qtiInlineChoiceInteraction: qtiInlineChoiceInteractionNodeSpec,
     qtiInlineChoice: qtiInlineChoiceNodeSpec,
     qtiTextEntryInteraction: qtiTextEntryInteractionNodeSpec,
+    imgSelectPoint: imgSelectPointNodeSpec,
     qtiSelectPointInteraction: qtiSelectPointInteractionNodeSpec
   },
   marks: baseMarks

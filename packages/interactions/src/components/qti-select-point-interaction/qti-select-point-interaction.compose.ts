@@ -101,11 +101,28 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
   const maxChoices = toFiniteNumber(sourceElement.getAttribute('max-choices'), 1);
   const minChoices = toFiniteNumber(sourceElement.getAttribute('min-choices'), 0);
 
-  const imageSrc = toNonEmptyString(sourceElement.getAttribute('image-src'));
-  const imageAlt = toNonEmptyString(sourceElement.getAttribute('image-alt'));
-  const imageWidth = toNonEmptyString(sourceElement.getAttribute('image-width'));
-  const imageHeight = toNonEmptyString(sourceElement.getAttribute('image-height'));
-  const prompt = toNonEmptyString(sourceElement.getAttribute('prompt'));
+  const promptFromChild = sourceElement.querySelector('qti-prompt')?.textContent;
+  const prompt = toNonEmptyString(promptFromChild) ?? toNonEmptyString(sourceElement.getAttribute('prompt'));
+
+  const imgSelectPoint = sourceElement.querySelector('img-select-point');
+  const legacyImage = sourceElement.querySelector('img');
+
+  const imageSrc =
+    toNonEmptyString(imgSelectPoint?.getAttribute('image-src')) ??
+    toNonEmptyString(sourceElement.getAttribute('image-src')) ??
+    toNonEmptyString(legacyImage?.getAttribute('src'));
+  const imageAlt =
+    toNonEmptyString(imgSelectPoint?.getAttribute('image-alt')) ??
+    toNonEmptyString(sourceElement.getAttribute('image-alt')) ??
+    toNonEmptyString(legacyImage?.getAttribute('alt'));
+  const imageWidth =
+    toNonEmptyString(imgSelectPoint?.getAttribute('image-width')) ??
+    toNonEmptyString(sourceElement.getAttribute('image-width')) ??
+    toNonEmptyString(legacyImage?.getAttribute('width'));
+  const imageHeight =
+    toNonEmptyString(imgSelectPoint?.getAttribute('image-height')) ??
+    toNonEmptyString(sourceElement.getAttribute('image-height')) ??
+    toNonEmptyString(legacyImage?.getAttribute('height'));
 
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
@@ -121,6 +138,7 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
   }
 
   removeChildrenByTagName(normalizedElement, 'img');
+  removeChildrenByTagName(normalizedElement, 'img-select-point');
   removeChildrenByTagName(normalizedElement, 'qti-prompt');
 
   if (prompt) {
@@ -140,7 +158,8 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
     normalizedElement.appendChild(image);
   }
 
-  const areaMappingResult = parseAreaMappings(sourceElement.getAttribute('area-mappings'));
+  const areaMappingsRaw = imgSelectPoint?.getAttribute('area-mappings') ?? sourceElement.getAttribute('area-mappings');
+  const areaMappingResult = parseAreaMappings(areaMappingsRaw);
   warnings.push(...areaMappingResult.warnings);
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
@@ -151,7 +170,9 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
       tagName: metadata.tagName,
     });
   } else {
-    const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
+    const correctResponse =
+      toNonEmptyString(imgSelectPoint?.getAttribute('correct-response')) ??
+      toNonEmptyString(sourceElement.getAttribute('correct-response'));
     responseDeclaration = {
       identifier: responseIdentifier,
       cardinality: maxChoices > 1 ? 'multiple' : 'single',

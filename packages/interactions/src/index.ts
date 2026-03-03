@@ -6,6 +6,7 @@ export * from './components/qti-text-entry-interaction/qti-text-entry-interactio
 export * from './components/qti-inline-choice-interaction/qti-inline-choice-interaction.js';
 export * from './components/qti-inline-choice-interaction/qti-inline-choice.js';
 export * from './components/qti-select-point-interaction/qti-select-point-interaction.js';
+export * from './components/qti-select-point-interaction/img-select-point.js';
 
 // Schemas
 export * from './components/qti-choice-interaction/qti-choice-interaction.schema.js';
@@ -15,6 +16,7 @@ export * from './components/qti-text-entry-interaction/qti-text-entry-interactio
 export * from './components/qti-inline-choice-interaction/qti-inline-choice-interaction.schema.js';
 export * from './components/qti-inline-choice-interaction/qti-inline-choice.schema.js';
 export * from './components/qti-select-point-interaction/qti-select-point-interaction.schema.js';
+export * from './components/qti-select-point-interaction/img-select-point.schema.js';
 export * from './components/qti-select-point-interaction/qti-select-point-interaction.compose.js';
 
 // Commands

@@ -1,6 +1,8 @@
 import { Schema } from 'prosemirror-model';
 import { AllSelection, EditorState } from 'prosemirror-state';
 
+import { qtiPromptNodeSpec } from '../qti-prompt/qti-prompt.schema';
+import { imgSelectPointNodeSpec } from './img-select-point.schema';
 import { insertSelectPointInteraction } from './qti-select-point-interaction.commands';
 import { qtiSelectPointInteractionNodeSpec } from './qti-select-point-interaction.schema';
 
@@ -34,6 +36,8 @@ describe('insertSelectPointInteraction', () => {
     const schema = new Schema({
       nodes: {
         ...baseNodes,
+        qtiPrompt: qtiPromptNodeSpec,
+        imgSelectPoint: imgSelectPointNodeSpec,
         qtiSelectPointInteraction: qtiSelectPointInteractionNodeSpec
       }
     });
@@ -56,9 +60,13 @@ describe('insertSelectPointInteraction', () => {
 
     const inserted = nextState?.doc.firstChild;
     expect(inserted?.type.name).toBe('qtiSelectPointInteraction');
-    expect(inserted?.attrs.responseIdentifier).toMatch(/^RESPONSE_\d+$/);
+    expect(inserted?.attrs.responseIdentifier).toMatch(/^RESPONSE_[0-9a-f-]{36}$/);
     expect(inserted?.attrs.maxChoices).toBe(0);
     expect(inserted?.attrs.minChoices).toBe(0);
-    expect(inserted?.attrs.areaMappings).toBe('[]');
+    expect(inserted?.childCount).toBe(2);
+    expect(inserted?.child(0).type.name).toBe('qtiPrompt');
+    expect(inserted?.child(0).textContent).toBe('Mark the correct point on the image.');
+    expect(inserted?.child(1).type.name).toBe('imgSelectPoint');
+    expect(inserted?.child(1).attrs.areaMappings).toBe('[]');
   });
 });

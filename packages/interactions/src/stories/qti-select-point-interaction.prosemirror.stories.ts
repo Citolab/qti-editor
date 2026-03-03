@@ -8,16 +8,22 @@ import 'prosemirror-gapcursor/style/gapcursor.css';
 
 import { baseMarks, baseNodes } from './schema/base.schema';
 import { createBasePlugins } from './plugins/base.plugins';
+import { qtiPromptNodeSpec } from '../components/qti-prompt/qti-prompt.schema';
+import { imgSelectPointNodeSpec } from '../components/qti-select-point-interaction/img-select-point.schema';
 import { qtiSelectPointInteractionNodeSpec } from '../components/qti-select-point-interaction/qti-select-point-interaction.schema';
 import { insertSelectPointInteraction } from '../components/qti-select-point-interaction/qti-select-point-interaction.commands';
 
+import '../components/qti-prompt/qti-prompt';
 import '../components/qti-select-point-interaction/qti-select-point-interaction';
+import '../components/qti-select-point-interaction/img-select-point';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 const schema = new Schema({
   nodes: {
     ...baseNodes,
+    qtiPrompt: qtiPromptNodeSpec,
+    imgSelectPoint: imgSelectPointNodeSpec,
     qtiSelectPointInteraction: qtiSelectPointInteractionNodeSpec
   },
   marks: baseMarks
@@ -39,13 +45,20 @@ export const BasicEditor: Story = {
 
     const initialContent = `
       <h1>QTI Select Point Interaction Example</h1>
-      <p>Use the button to insert a select-point interaction block atom.</p>
+      <p>Use the button to insert a select-point interaction block.</p>
       <qti-select-point-interaction
         response-identifier="RESPONSE_1"
         max-choices="0"
         min-choices="0"
-        area-mappings='[{"id":"A1","shape":"circle","coords":"120,90,30","mappedValue":1,"defaultValue":0}]'
-      ></qti-select-point-interaction>
+      >
+        <qti-prompt><p>Mark Edinburgh on this map of the United Kingdom.</p></qti-prompt>
+        <img-select-point
+          image-alt="Map of the UK"
+          image-width="196"
+          image-height="280"
+          area-mappings='[{"id":"A1","shape":"circle","coords":"120,90,30","mappedValue":1,"defaultValue":0}]'
+        ></img-select-point>
+      </qti-select-point-interaction>
     `;
 
     const initEditor = (container: HTMLElement) => {
