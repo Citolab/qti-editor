@@ -1,4 +1,4 @@
-import type { InteractionComposerMetadata } from './types.js';
+import type { InteractionComposerMetadata, NodeAttributePanelMetadata } from './types.js';
 
 export const MATCH_CORRECT_TEMPLATE = 'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct';
 export const MAP_RESPONSE_TEMPLATE = 'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/map_response';
@@ -46,6 +46,8 @@ export const SELECT_POINT_INTERACTION_TAG = 'qti-select-point-interaction' as co
 export const CHOICE_INTERACTION_NODE_TYPE = 'qtiChoiceInteraction' as const;
 export const TEXT_ENTRY_INTERACTION_NODE_TYPE = 'qtiTextEntryInteraction' as const;
 export const SELECT_POINT_INTERACTION_NODE_TYPE = 'qtiSelectPointInteraction' as const;
+export const SIMPLE_CHOICE_NODE_TYPE = 'qtiSimpleChoice' as const;
+export const INLINE_CHOICE_NODE_TYPE = 'qtiInlineChoice' as const;
 
 export const interactionComposerMetadataByTagName = {
   [CHOICE_INTERACTION_TAG]: {
@@ -58,7 +60,7 @@ export const interactionComposerMetadataByTagName = {
       internalSourceXml: MATCH_CORRECT_INTERNAL_TEMPLATE
     },
     editorOnlyAttributes: ['class'],
-    userEditableAttributes: ['maxChoices']
+    userEditableAttributes: ['maxChoices','correctResponse']
   },
   [TEXT_ENTRY_INTERACTION_TAG]: {
     tagName: TEXT_ENTRY_INTERACTION_TAG,
@@ -97,6 +99,29 @@ export const interactionComposerMetadataByNodeTypeName = Object.values(interacti
   return acc;
 }, {});
 
+export const nodeAttributePanelMetadataByNodeTypeName = {
+  [CHOICE_INTERACTION_NODE_TYPE.toLowerCase()]: {
+    nodeTypeName: CHOICE_INTERACTION_NODE_TYPE,
+    userEditableAttributes: interactionComposerMetadataByTagName[CHOICE_INTERACTION_TAG].userEditableAttributes
+  },
+  [TEXT_ENTRY_INTERACTION_NODE_TYPE.toLowerCase()]: {
+    nodeTypeName: TEXT_ENTRY_INTERACTION_NODE_TYPE,
+    userEditableAttributes: interactionComposerMetadataByTagName[TEXT_ENTRY_INTERACTION_TAG].userEditableAttributes
+  },
+  [SELECT_POINT_INTERACTION_NODE_TYPE.toLowerCase()]: {
+    nodeTypeName: SELECT_POINT_INTERACTION_NODE_TYPE,
+    userEditableAttributes: interactionComposerMetadataByTagName[SELECT_POINT_INTERACTION_TAG].userEditableAttributes
+  },
+  [SIMPLE_CHOICE_NODE_TYPE.toLowerCase()]: {
+    nodeTypeName: SIMPLE_CHOICE_NODE_TYPE,
+    userEditableAttributes: []
+  },
+  [INLINE_CHOICE_NODE_TYPE.toLowerCase()]: {
+    nodeTypeName: INLINE_CHOICE_NODE_TYPE,
+    userEditableAttributes: []
+  }
+} satisfies Record<string, NodeAttributePanelMetadata>;
+
 export function getInteractionComposerMetadata(tagName: string): InteractionComposerMetadata | undefined {
   return interactionComposerMetadataByTagName[tagName.toLowerCase()];
 }
@@ -105,4 +130,10 @@ export function getInteractionComposerMetadataByNodeTypeName(
   nodeTypeName: string
 ): InteractionComposerMetadata | undefined {
   return interactionComposerMetadataByNodeTypeName[nodeTypeName.toLowerCase()];
+}
+
+export function getNodeAttributePanelMetadataByNodeTypeName(
+  nodeTypeName: string
+): NodeAttributePanelMetadata | undefined {
+  return nodeAttributePanelMetadataByNodeTypeName[nodeTypeName.toLowerCase()];
 }

@@ -55,6 +55,11 @@ export interface InteractionComposerMetadata {
   userEditableAttributes: readonly string[];
 }
 
+export interface NodeAttributePanelMetadata {
+  nodeTypeName: string;
+  userEditableAttributes: readonly string[];
+}
+
 export interface InteractionComposerHandler {
   tagName: string;
   compose(sourceElement: Element, xmlDoc: Document): InteractionComposeResult;

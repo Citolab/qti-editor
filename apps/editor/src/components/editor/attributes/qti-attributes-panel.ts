@@ -8,7 +8,7 @@
 import { html, LitElement, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import type { SidePanelEventDetail, SidePanelNodeDetail } from '@qti-editor/core/attributes';
-import { getInteractionComposerMetadataByNodeTypeName } from '@qti-editor/interactions/composer/index.js';
+import { getNodeAttributePanelMetadataByNodeTypeName } from '@qti-editor/interactions/composer/index.js';
 
 type AttrValue = string | number | boolean | null | undefined;
 
@@ -83,16 +83,28 @@ export class QtiAttributesPanel extends LitElement {
 
   private readonly onUpdateEvent = (event: Event) => {
     const detail = (event as CustomEvent<SidePanelEventDetail>).detail;
+    const previousSelectedNode = this.activeNode;
     this.nodes = Array.isArray(detail?.nodes) ? detail.nodes : [];
 
-    const requestedNode = detail?.activeNode;
-    if (requestedNode) {
-      const requestedIndex = this.nodes.findIndex(
-        node => node.pos === requestedNode.pos && node.type === requestedNode.type,
-      );
-      this.selectedIndex = requestedIndex >= 0 ? requestedIndex : 0;
+    const preservedIndex =
+      previousSelectedNode != null
+        ? this.nodes.findIndex(
+            node => node.pos === previousSelectedNode.pos && node.type === previousSelectedNode.type,
+          )
+        : -1;
+
+    if (preservedIndex >= 0) {
+      this.selectedIndex = preservedIndex;
     } else if (this.selectedIndex >= this.nodes.length) {
-      this.selectedIndex = 0;
+      const requestedNode = detail?.activeNode;
+      if (requestedNode) {
+        const requestedIndex = this.nodes.findIndex(
+          node => node.pos === requestedNode.pos && node.type === requestedNode.type,
+        );
+        this.selectedIndex = requestedIndex >= 0 ? requestedIndex : 0;
+      } else {
+        this.selectedIndex = 0;
+      }
     }
 
     this.requestUpdate();
@@ -185,8 +197,8 @@ export class QtiAttributesPanel extends LitElement {
     if (!node) return { editable: [], readOnly: [] };
 
     const attrs = node.attrs ?? {};
-    const metadata = getInteractionComposerMetadataByNodeTypeName(node.type);
     const entries = Object.entries(attrs) as Array<[string, AttrValue]>;
+    const metadata = getNodeAttributePanelMetadataByNodeTypeName(node.type);
 
     if (!metadata) {
       return { editable: entries, readOnly: [] };
