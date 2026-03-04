@@ -30,7 +30,6 @@ import '../components/qti-simple-choice/qti-simple-choice';
 import '../components/qti-inline-choice-interaction/qti-inline-choice-interaction';
 import '../components/qti-inline-choice-interaction/qti-inline-choice';
 import '../components/qti-text-entry-interaction/qti-text-entry-interaction';
-import '../components/qti-select-point-interaction/img-select-point';
 import '../components/qti-select-point-interaction/qti-select-point-interaction';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';

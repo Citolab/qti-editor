@@ -75,8 +75,8 @@ Code plugin (`packages/plugin-qti-code/index.ts`):
 - The same metadata also defines UI policy (`userEditableAttributes`) for app-level attribute panel filtering.
 - Select-point authoring model uses a composed structure in ProseMirror:
   - wrapper `qtiSelectPointInteraction` is an isolating container (`qtiPrompt imgSelectPoint`)
-  - `imgSelectPoint` is the atom node that owns upload/drawing and image/area attributes
-  - composer export maps editor-only `img-select-point` back to native QTI `<img>`
+  - wrapper component owns upload/drawing UI and persists area mappings at wrapper level
+  - `imgSelectPoint` node serializes directly to native QTI `<img>`
 - Core composer (`packages/core/src/composer/index.ts`) orchestrates document assembly only:
   - append response declarations
   - apply identifier normalization

@@ -25,6 +25,16 @@ import './components/editor/code/qti-code-panel.js';
 import './components/editor/composer/qti-composer.js';
 import './components/editor/composer/qti-composer-metadata-form.js';
 
+const VOID_HTML_TAGS = ['img', 'br', 'hr', 'input', 'meta', 'link', 'source', 'area', 'col', 'embed', 'param', 'track', 'wbr'];
+
+function toXmlCompatibleFragment(html: string): string {
+  const voidTagPattern = new RegExp(`<(${VOID_HTML_TAGS.join('|')})(\\s[^<>]*?)?>`, 'gi');
+  return html.replace(voidTagPattern, match => {
+    if (match.endsWith('/>')) return match;
+    return `${match.slice(0, -1)} />`;
+  });
+}
+
 export class QtiEditorApp extends LitElement {
   private editor: Editor;
   private editorRef: Ref<HTMLDivElement>;
@@ -84,8 +94,9 @@ export class QtiEditorApp extends LitElement {
     // example: use events from events plugin, probably not even necessary
     this.editorEventsTarget.addEventListener('qti:content:change', event => {
       const detail = (event as CustomEvent<{ html?: string; json?: unknown }>).detail;
+      const xmlCompatibleHtml = toXmlCompatibleFragment(detail?.html ?? '');
       const parsed = new DOMParser().parseFromString(
-        '<qti-item-body>' + (detail?.html ?? '') + '</qti-item-body>',
+        '<qti-item-body>' + xmlCompatibleHtml + '</qti-item-body>',
         'application/xml'
       );
       this.itemContext = {

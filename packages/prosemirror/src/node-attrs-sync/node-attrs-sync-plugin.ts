@@ -19,9 +19,25 @@ function shallowEqualRecord(a: Record<string, unknown>, b: Record<string, unknow
   return true;
 }
 
-function resolveNodeAtDom(view: EditorView, dom: Element): { pos: number; node: ProsemirrorNode } | null {
+function resolveNodeAtDom(
+  view: EditorView,
+  dom: Element,
+  expectedTypeName?: string,
+): { pos: number; node: ProsemirrorNode } | null {
   try {
     const pos = view.posAtDOM(dom, 0);
+    const resolved = view.state.doc.resolve(pos);
+
+    // For non-atom container nodes, posAtDOM(dom, 0) often lands at first child.
+    // Walk ancestors first so wrapper-node attr sync can target the correct node.
+    if (expectedTypeName) {
+      for (let depth = resolved.depth; depth > 0; depth -= 1) {
+        const ancestor = resolved.node(depth);
+        if (ancestor.type.name !== expectedTypeName) continue;
+        return { pos: resolved.before(depth), node: ancestor };
+      }
+    }
+
     const node = view.state.doc.nodeAt(pos);
     if (!node) return null;
     return { pos, node };
@@ -47,7 +63,7 @@ export const nodeAttrsSyncPlugin = new Plugin({
       const host = target.closest(detail.tagName);
       if (!host) return;
 
-      const resolved = resolveNodeAtDom(view, host);
+      const resolved = resolveNodeAtDom(view, host, schemaType.name);
       if (!resolved) return;
 
       if (resolved.node.type !== schemaType) return;

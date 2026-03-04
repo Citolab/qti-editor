@@ -19,7 +19,6 @@ import '@qti-components/theme/item.css';
 import '@qti-editor/interactions/components/qti-choice-interaction/qti-choice-interaction.js';
 import '@qti-editor/interactions/components/qti-prompt/qti-prompt.js';
 import '@qti-editor/interactions/components/qti-select-point-interaction/qti-select-point-interaction.js';
-import '@qti-editor/interactions/components/qti-select-point-interaction/img-select-point.js';
 import '@qti-editor/interactions/components/qti-simple-choice/qti-simple-choice.js';
 import '@qti-editor/interactions/components/qti-text-entry-interaction/qti-text-entry-interaction.js';
 

@@ -6,6 +6,8 @@ type SelectPointWrapperAttrs = {
   maxChoices: number;
   minChoices: number;
   class: string | null;
+  areaMappings: string;
+  correctResponse: string | null;
 };
 
 function parseNumberAttribute(value: string | null): number | null {
@@ -31,6 +33,8 @@ function parseWrapperAttrs(node: HTMLElement): SelectPointWrapperAttrs {
     maxChoices: parseNumberAttribute(node.getAttribute('max-choices')) ?? 0,
     minChoices: parseNumberAttribute(node.getAttribute('min-choices')) ?? 0,
     class: node.getAttribute('class') || null,
+    areaMappings: node.getAttribute('area-mappings') || '[]',
+    correctResponse: node.getAttribute('correct-response') || null,
   };
 }
 
@@ -40,8 +44,7 @@ function buildPromptNode(schema: Schema, node: HTMLElement): ProseMirrorNode | n
   if (!qtiPromptType || !paragraphType) return null;
 
   const promptElement = node.querySelector('qti-prompt');
-  const promptText =
-    promptElement?.textContent?.trim() || node.getAttribute('prompt')?.trim() || 'Mark the correct point on the image.';
+  const promptText = promptElement?.textContent?.trim() || 'Mark the correct point on the image.';
 
   const paragraph = paragraphType.create(null, promptText ? schema.text(promptText) : null);
   return qtiPromptType.create(null, paragraph);
@@ -51,36 +54,17 @@ function buildImgSelectPointNode(schema: Schema, node: HTMLElement): ProseMirror
   const imgSelectPointType = schema.nodes.imgSelectPoint;
   if (!imgSelectPointType) return null;
 
-  const customImage = node.querySelector('img-select-point');
-  const legacyImage = node.querySelector('img');
-
-  const imageSrc =
-    customImage?.getAttribute('image-src') || node.getAttribute('image-src') || legacyImage?.getAttribute('src') || null;
-  const imageAlt =
-    customImage?.getAttribute('image-alt') || node.getAttribute('image-alt') || legacyImage?.getAttribute('alt') || null;
-  const imageWidth =
-    parseNumberAttribute(customImage?.getAttribute('image-width') || null) ??
-    parseNumberAttribute(node.getAttribute('image-width')) ??
-    parseNumberAttribute(legacyImage?.getAttribute('width') || null);
-  const imageHeight =
-    parseNumberAttribute(customImage?.getAttribute('image-height') || null) ??
-    parseNumberAttribute(node.getAttribute('image-height')) ??
-    parseNumberAttribute(legacyImage?.getAttribute('height') || null);
-
-  const areaMappings =
-    customImage?.getAttribute('area-mappings') || node.getAttribute('area-mappings') || '[]';
-  const className = customImage?.getAttribute('class') || null;
-  const correctResponse =
-    customImage?.getAttribute('correct-response') || node.getAttribute('correct-response') || null;
+  const image = node.querySelector('img');
+  const imageSrc = image?.getAttribute('src') || null;
+  const imageAlt = image?.getAttribute('alt') || null;
+  const imageWidth = parseNumberAttribute(image?.getAttribute('width') || null);
+  const imageHeight = parseNumberAttribute(image?.getAttribute('height') || null);
 
   return imgSelectPointType.create({
-    class: className,
-    correctResponse,
     imageSrc,
     imageAlt,
     imageWidth,
     imageHeight,
-    areaMappings,
   });
 }
 
@@ -94,6 +78,8 @@ export const qtiSelectPointInteractionNodeSpec: NodeSpec = {
     maxChoices: { default: 0 },
     minChoices: { default: 0 },
     class: { default: null },
+    areaMappings: { default: '[]' },
+    correctResponse: { default: null },
   },
   parseDOM: [
     {
@@ -120,6 +106,8 @@ export const qtiSelectPointInteractionNodeSpec: NodeSpec = {
 
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = String(node.attrs.responseIdentifier);
     if (node.attrs.class) attrs.class = String(node.attrs.class);
+    if (node.attrs.areaMappings) attrs['area-mappings'] = String(node.attrs.areaMappings);
+    if (node.attrs.correctResponse) attrs['correct-response'] = String(node.attrs.correctResponse);
 
     return ['qti-select-point-interaction', attrs, 0];
   },

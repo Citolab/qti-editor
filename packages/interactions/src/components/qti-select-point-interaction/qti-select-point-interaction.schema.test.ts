@@ -31,7 +31,7 @@ function elementLike(
       if (selector === 'qti-prompt' && promptText != null) {
         return { textContent: promptText };
       }
-      if ((selector === 'img' || selector === 'img-select-point') && nestedImage) {
+      if (selector === 'img' && nestedImage) {
         return {
           getAttribute: (name: string) => nestedImage[name] ?? null
         };
@@ -49,7 +49,9 @@ describe('qtiSelectPointInteractionNodeSpec', () => {
         'response-identifier': 'RESPONSE_1',
         'max-choices': '3',
         'min-choices': '1',
-        class: 'responsive'
+        class: 'responsive',
+        'area-mappings': '[]',
+        'correct-response': '120 100'
       }) as unknown as HTMLElement
     ) as Record<string, unknown>;
 
@@ -57,6 +59,8 @@ describe('qtiSelectPointInteractionNodeSpec', () => {
     expect(attrs.maxChoices).toBe(3);
     expect(attrs.minChoices).toBe(1);
     expect(attrs.class).toBe('responsive');
+    expect(attrs.areaMappings).toBe('[]');
+    expect(attrs.correctResponse).toBe('120 100');
   });
 
   it('builds required qtiPrompt and imgSelectPoint children from source element', () => {
@@ -67,11 +71,10 @@ describe('qtiSelectPointInteractionNodeSpec', () => {
           'response-identifier': 'RESPONSE_2'
         },
         {
-          'image-src': '/assets/map.png',
-          'image-alt': 'Fallback map',
-          'image-width': '206',
-          'image-height': '280',
-          'area-mappings': '[{"id":"A1","shape":"circle","coords":"10,20,5","mappedValue":1,"defaultValue":0}]'
+          src: '/assets/map.png',
+          alt: 'Fallback map',
+          width: '206',
+          height: '280'
         },
         'Locate Edinburgh'
       ) as unknown as Node,
@@ -87,7 +90,6 @@ describe('qtiSelectPointInteractionNodeSpec', () => {
     expect(children[1]?.attrs.imageAlt).toBe('Fallback map');
     expect(children[1]?.attrs.imageWidth).toBe(206);
     expect(children[1]?.attrs.imageHeight).toBe(280);
-    expect(String(children[1]?.attrs.areaMappings)).toContain('"shape":"circle"');
   });
 
   it('falls back to default prompt text when no qti-prompt or prompt attr exists', () => {
@@ -101,10 +103,11 @@ describe('qtiSelectPointInteractionNodeSpec', () => {
     const node = schema.nodes.qtiSelectPointInteraction.create({
       responseIdentifier: 'RESPONSE_3',
       maxChoices: 2,
-      minChoices: 0
+      minChoices: 0,
+      areaMappings: '[]'
     }, [
       schema.nodes.qtiPrompt.create(null, schema.nodes.paragraph.create(null, schema.text('Prompt'))),
-      schema.nodes.imgSelectPoint.create({ areaMappings: '[]' })
+      schema.nodes.imgSelectPoint.create()
     ]);
 
     const domSpec = qtiSelectPointInteractionNodeSpec.toDOM?.(node) as [string, Record<string, string>];
@@ -112,6 +115,7 @@ describe('qtiSelectPointInteractionNodeSpec', () => {
     expect(domSpec[1]['response-identifier']).toBe('RESPONSE_3');
     expect(domSpec[1]['max-choices']).toBe('2');
     expect(domSpec[1]['min-choices']).toBe('0');
+    expect(domSpec[1]['area-mappings']).toBe('[]');
   });
 
   it('is configured as an isolating block with required children', () => {

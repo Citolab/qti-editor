@@ -16,14 +16,13 @@ export const insertSelectPointInteraction: Command = (state, dispatch) => {
     null,
     paragraphType.create(null, schema.text('Mark the correct point on the image.')),
   );
-  const imgSelectPoint = imgSelectPointType.create({
-    areaMappings: '[]',
-  });
+  const imgSelectPoint = imgSelectPointType.create();
 
   const interaction = interactionType.create({
     responseIdentifier: `RESPONSE_${crypto.randomUUID()}`,
     maxChoices: 0,
     minChoices: 0,
+    areaMappings: '[]',
   }, [prompt, imgSelectPoint]);
 
   if (dispatch) {

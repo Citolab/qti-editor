@@ -15,3 +15,13 @@
    themes: light --default;
 }
 @custom-variant dark (&:where(.dark, .dark *));
+
+
+
+/* qti-prompt {
+   @apply bg-white rounded m-2 p-2;
+}
+
+qti-select-point-interaction {
+   @apply bg-slate-100 rounded;
+} */

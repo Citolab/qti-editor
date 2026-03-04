@@ -15,7 +15,6 @@ import { insertSelectPointInteraction } from '../components/qti-select-point-int
 
 import '../components/qti-prompt/qti-prompt';
 import '../components/qti-select-point-interaction/qti-select-point-interaction';
-import '../components/qti-select-point-interaction/img-select-point';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
@@ -50,14 +49,10 @@ export const BasicEditor: Story = {
         response-identifier="RESPONSE_1"
         max-choices="0"
         min-choices="0"
+        area-mappings='[{"id":"A1","shape":"circle","coords":"120,90,30","mappedValue":1,"defaultValue":0}]'
       >
         <qti-prompt><p>Mark Edinburgh on this map of the United Kingdom.</p></qti-prompt>
-        <img-select-point
-          image-alt="Map of the UK"
-          image-width="196"
-          image-height="280"
-          area-mappings='[{"id":"A1","shape":"circle","coords":"120,90,30","mappedValue":1,"defaultValue":0}]'
-        ></img-select-point>
+        <img alt="Map of the UK" width="196" height="280" />
       </qti-select-point-interaction>
     `;
 

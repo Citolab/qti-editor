@@ -84,11 +84,6 @@ export const interactionComposerMetadataByTagName = {
     editorOnlyAttributes: [
       'class',
       'area-mappings',
-      'image-src',
-      'image-alt',
-      'image-width',
-      'image-height',
-      'prompt',
       'correct-response'
     ],
     userEditableAttributes: ['maxChoices', 'minChoices']
