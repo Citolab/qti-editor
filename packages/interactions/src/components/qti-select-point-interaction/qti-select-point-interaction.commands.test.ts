@@ -1,6 +1,7 @@
 import { Schema } from 'prosemirror-model';
 import { AllSelection, EditorState } from 'prosemirror-state';
 
+import { qtiPromptParagraphNodeSpec } from '../qti-prompt/qti-prompt-paragraph.schema';
 import { qtiPromptNodeSpec } from '../qti-prompt/qti-prompt.schema';
 import { imgSelectPointNodeSpec } from './img-select-point.schema';
 import { insertSelectPointInteraction } from './qti-select-point-interaction.commands';
@@ -36,6 +37,7 @@ describe('insertSelectPointInteraction', () => {
     const schema = new Schema({
       nodes: {
         ...baseNodes,
+        qtiPromptParagraph: qtiPromptParagraphNodeSpec,
         qtiPrompt: qtiPromptNodeSpec,
         imgSelectPoint: imgSelectPointNodeSpec,
         qtiSelectPointInteraction: qtiSelectPointInteractionNodeSpec

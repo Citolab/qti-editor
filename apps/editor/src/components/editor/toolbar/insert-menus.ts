@@ -1,4 +1,5 @@
 import type { ToolbarExtensionOptions, ToolbarInsertMenu } from './';
+import { insertChoiceInteraction } from '@qti-editor/interactions/components/qti-choice-interaction/qti-choice-interaction.commands.js';
 import { insertSelectPointInteraction } from '@qti-editor/interactions/components/qti-select-point-interaction/qti-select-point-interaction.commands.js';
 
 type ToolbarInsertItemsProvider = NonNullable<ToolbarExtensionOptions['getInsertItems']>;
@@ -22,20 +23,15 @@ const getQtiToolbarItems: ToolbarInsertItemsProvider = view => {
     schema.nodes.qtiChoiceInteraction &&
     schema.nodes.qtiPrompt &&
     schema.nodes.qtiSimpleChoice &&
-    schema.nodes.paragraph
+    schema.nodes.qtiPromptParagraph &&
+    schema.nodes.qtiSimpleChoiceParagraph
   ) {
     const nodeType = schema.nodes.qtiChoiceInteraction;
     items.push({
       label: 'Choice Interaction',
       canInsert: canInsert(view, nodeType),
       command: () => {
-        const s = schema;
-        const node = nodeType.create({ responseIdentifier: `RESPONSE_${crypto.randomUUID()}` }, [
-          s.nodes.qtiPrompt.create({}, s.nodes.paragraph.create({}, s.text('Enter your question here...'))),
-          s.nodes.qtiSimpleChoice.create({ identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` }, s.text('Option A')),
-          s.nodes.qtiSimpleChoice.create({ identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` }, s.text('Option B'))
-        ]);
-        view.dispatch(view.state.tr.replaceSelectionWith(node));
+        insertChoiceInteraction(view.state, view.dispatch);
         view.focus();
       }
     });

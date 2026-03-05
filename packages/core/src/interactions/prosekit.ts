@@ -31,6 +31,7 @@ import { qtiSelectPointInteractionNodeSpec } from '@qti-editor/interactions/comp
 import { qtiSimpleChoiceNodeSpec } from '@qti-editor/interactions/components/qti-simple-choice/qti-simple-choice.schema.js';
 import { insertTextEntryInteraction } from '@qti-editor/interactions/components/qti-text-entry-interaction/qti-text-entry-interaction.commands.js';
 import { qtiTextEntryInteractionNodeSpec } from '@qti-editor/interactions/components/qti-text-entry-interaction/qti-text-entry-interaction.schema.js';
+import { qtiPromptParagraphNodeSpec, qtiSimpleChoiceParagraphNodeSpec } from '@qti-editor/interactions';
 import { defineBasicExtension } from 'prosekit/basic';
 import { defineKeymap, defineNodeSpec, union } from 'prosekit/core';
 
@@ -41,9 +42,11 @@ import { defineKeymap, defineNodeSpec, union } from 'prosekit/core';
 export function defineQtiInteractionsExtension() {
   return union(
     defineNodeSpec({ name: 'qtiChoiceInteraction', ...qtiChoiceInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiPromptParagraph', ...qtiPromptParagraphNodeSpec }),
     defineNodeSpec({ name: 'qtiPrompt', ...qtiPromptNodeSpec }),
     defineNodeSpec({ name: 'imgSelectPoint', ...imgSelectPointNodeSpec }),
     defineNodeSpec({ name: 'qtiSelectPointInteraction', ...qtiSelectPointInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiSimpleChoiceParagraph', ...qtiSimpleChoiceParagraphNodeSpec }),
     defineNodeSpec({ name: 'qtiSimpleChoice', ...qtiSimpleChoiceNodeSpec }),
     defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
     defineKeymap({

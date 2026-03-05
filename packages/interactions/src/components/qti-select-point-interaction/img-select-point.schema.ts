@@ -11,7 +11,7 @@ function isElementLike(node: Node | string): node is HTMLElement {
 }
 
 export const imgSelectPointNodeSpec: NodeSpec = {
-  group: 'block',
+  group: 'block qtiMedia',
   atom: true,
   selectable: true,
   attrs: {

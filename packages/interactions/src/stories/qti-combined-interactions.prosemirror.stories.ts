@@ -9,7 +9,9 @@ import 'prosemirror-gapcursor/style/gapcursor.css';
 import { baseMarks, baseNodes } from './schema/base.schema';
 import { createBasePlugins } from './plugins/base.plugins';
 import { qtiChoiceInteractionNodeSpec } from '../components/qti-choice-interaction/qti-choice-interaction.schema';
+import { qtiPromptParagraphNodeSpec } from '../components/qti-prompt/qti-prompt-paragraph.schema';
 import { qtiPromptNodeSpec } from '../components/qti-prompt/qti-prompt.schema';
+import { qtiSimpleChoiceParagraphNodeSpec } from '../components/qti-simple-choice/qti-simple-choice-paragraph.schema';
 import { qtiSimpleChoiceNodeSpec } from '../components/qti-simple-choice/qti-simple-choice.schema';
 import { qtiInlineChoiceInteractionNodeSpec } from '../components/qti-inline-choice-interaction/qti-inline-choice-interaction.schema';
 import { qtiInlineChoiceNodeSpec } from '../components/qti-inline-choice-interaction/qti-inline-choice.schema';
@@ -38,7 +40,9 @@ const schema = new Schema({
   nodes: {
     ...baseNodes,
     qtiChoiceInteraction: qtiChoiceInteractionNodeSpec,
+    qtiPromptParagraph: qtiPromptParagraphNodeSpec,
     qtiPrompt: qtiPromptNodeSpec,
+    qtiSimpleChoiceParagraph: qtiSimpleChoiceParagraphNodeSpec,
     qtiSimpleChoice: qtiSimpleChoiceNodeSpec,
     qtiInlineChoiceInteraction: qtiInlineChoiceInteractionNodeSpec,
     qtiInlineChoice: qtiInlineChoiceNodeSpec,

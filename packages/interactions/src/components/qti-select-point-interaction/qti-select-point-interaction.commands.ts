@@ -7,14 +7,14 @@ export const insertSelectPointInteraction: Command = (state, dispatch) => {
   const { schema } = state;
   const interactionType = schema.nodes.qtiSelectPointInteraction;
   const promptType = schema.nodes.qtiPrompt;
+  const promptParagraphType = schema.nodes.qtiPromptParagraph;
   const imgSelectPointType = schema.nodes.imgSelectPoint;
-  const paragraphType = schema.nodes.paragraph;
 
-  if (!interactionType || !promptType || !imgSelectPointType || !paragraphType) return false;
+  if (!interactionType || !promptType || !promptParagraphType || !imgSelectPointType) return false;
 
   const prompt = promptType.create(
     null,
-    paragraphType.create(null, schema.text('Mark the correct point on the image.')),
+    promptParagraphType.create(null, schema.text('Mark the correct point on the image.')),
   );
   const imgSelectPoint = imgSelectPointType.create();
 

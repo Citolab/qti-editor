@@ -1,5 +1,6 @@
 import { Schema } from 'prosemirror-model';
 
+import { qtiPromptParagraphNodeSpec } from '../qti-prompt/qti-prompt-paragraph.schema';
 import { qtiPromptNodeSpec } from '../qti-prompt/qti-prompt.schema';
 import { imgSelectPointNodeSpec } from './img-select-point.schema';
 import { qtiSelectPointInteractionNodeSpec } from './qti-select-point-interaction.schema';
@@ -8,12 +9,8 @@ const schema = new Schema({
   nodes: {
     doc: { content: 'block+' },
     text: { group: 'inline' },
-    paragraph: {
-      group: 'block',
-      content: 'inline*',
-      parseDOM: [{ tag: 'p' }],
-      toDOM: () => ['p', 0] as const
-    },
+    paragraph: { group: 'block', content: 'inline*' },
+    qtiPromptParagraph: qtiPromptParagraphNodeSpec,
     qtiPrompt: qtiPromptNodeSpec,
     imgSelectPoint: imgSelectPointNodeSpec,
     qtiSelectPointInteraction: qtiSelectPointInteractionNodeSpec
@@ -106,7 +103,7 @@ describe('qtiSelectPointInteractionNodeSpec', () => {
       minChoices: 0,
       areaMappings: '[]'
     }, [
-      schema.nodes.qtiPrompt.create(null, schema.nodes.paragraph.create(null, schema.text('Prompt'))),
+      schema.nodes.qtiPrompt.create(null, schema.nodes.qtiPromptParagraph.create(null, schema.text('Prompt'))),
       schema.nodes.imgSelectPoint.create()
     ]);
 

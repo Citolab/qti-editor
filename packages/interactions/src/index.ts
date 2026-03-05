@@ -9,7 +9,9 @@ export * from './components/qti-select-point-interaction/qti-select-point-intera
 
 // Schemas
 export * from './components/qti-choice-interaction/qti-choice-interaction.schema.js';
+export * from './components/qti-prompt/qti-prompt-paragraph.schema.js';
 export * from './components/qti-prompt/qti-prompt.schema.js';
+export * from './components/qti-simple-choice/qti-simple-choice-paragraph.schema.js';
 export * from './components/qti-simple-choice/qti-simple-choice.schema.js';
 export * from './components/qti-text-entry-interaction/qti-text-entry-interaction.schema.js';
 export * from './components/qti-inline-choice-interaction/qti-inline-choice-interaction.schema.js';

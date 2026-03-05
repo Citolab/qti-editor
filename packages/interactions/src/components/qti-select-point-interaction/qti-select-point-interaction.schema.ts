@@ -40,13 +40,13 @@ function parseWrapperAttrs(node: HTMLElement): SelectPointWrapperAttrs {
 
 function buildPromptNode(schema: Schema, node: HTMLElement): ProseMirrorNode | null {
   const qtiPromptType = schema.nodes.qtiPrompt;
-  const paragraphType = schema.nodes.paragraph;
-  if (!qtiPromptType || !paragraphType) return null;
+  const promptParagraphType = schema.nodes.qtiPromptParagraph;
+  if (!qtiPromptType || !promptParagraphType) return null;
 
   const promptElement = node.querySelector('qti-prompt');
   const promptText = promptElement?.textContent?.trim() || 'Mark the correct point on the image.';
 
-  const paragraph = paragraphType.create(null, promptText ? schema.text(promptText) : null);
+  const paragraph = promptParagraphType.create(null, promptText ? schema.text(promptText) : null);
   return qtiPromptType.create(null, paragraph);
 }
 

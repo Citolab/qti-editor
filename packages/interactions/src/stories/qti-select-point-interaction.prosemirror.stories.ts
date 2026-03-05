@@ -8,6 +8,7 @@ import 'prosemirror-gapcursor/style/gapcursor.css';
 
 import { baseMarks, baseNodes } from './schema/base.schema';
 import { createBasePlugins } from './plugins/base.plugins';
+import { qtiPromptParagraphNodeSpec } from '../components/qti-prompt/qti-prompt-paragraph.schema';
 import { qtiPromptNodeSpec } from '../components/qti-prompt/qti-prompt.schema';
 import { imgSelectPointNodeSpec } from '../components/qti-select-point-interaction/img-select-point.schema';
 import { qtiSelectPointInteractionNodeSpec } from '../components/qti-select-point-interaction/qti-select-point-interaction.schema';
@@ -21,6 +22,7 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 const schema = new Schema({
   nodes: {
     ...baseNodes,
+    qtiPromptParagraph: qtiPromptParagraphNodeSpec,
     qtiPrompt: qtiPromptNodeSpec,
     imgSelectPoint: imgSelectPointNodeSpec,
     qtiSelectPointInteraction: qtiSelectPointInteractionNodeSpec

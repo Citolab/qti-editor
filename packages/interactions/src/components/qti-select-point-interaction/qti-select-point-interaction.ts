@@ -121,15 +121,6 @@ export class QtiSelectPointInteractionEdit extends Interaction {
         height: 100%;
       }
 
-      .empty-state {
-        display: grid;
-        place-items: center;
-        min-height: 160px;
-        color: #6b7280;
-        font-size: 12px;
-        padding: 16px;
-      }
-
       .meta {
         margin-top: 8px;
         font-size: 12px;
@@ -753,7 +744,7 @@ export class QtiSelectPointInteractionEdit extends Interaction {
               ${this.areaEntries.map(entry => this.#renderAreaShape(entry))} ${this.#renderDraft()}
               </svg>
             `
-          : html`<div class="empty-state">Set image source via URL or upload.</div>`}
+          : nothing}
       </div>
 
       <div class="meta">Mappings: ${this.areaEntries.length} | mode: ${this.drawMode}</div>
