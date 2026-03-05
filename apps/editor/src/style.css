@@ -17,11 +17,30 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 
+p {
+   @apply p-2;
+}
 
-/* qti-prompt {
-   @apply bg-white rounded m-2 p-2;
+qti-prompt {
+   @apply bg-white rounded my-0 px-2 mb-2;
+}
+
+qti-choice-interaction {
+   @apply bg-slate-100 rounded p-2 my-1;
+}
+
+qti-simple-choice {
+   @apply bg-white rounded p-2;
 }
 
 qti-select-point-interaction {
-   @apply bg-slate-100 rounded;
-} */
+   @apply bg-slate-100 rounded p-2 my-1;
+
+   img {
+      /* @apply; */
+   }
+}
+
+qti-text-entry-interaction {
+   @apply  bg-slate-100 rounded p-2;
+}

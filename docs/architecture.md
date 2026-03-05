@@ -73,6 +73,7 @@ Code plugin (`packages/plugin-qti-code/index.ts`):
 - Interaction packages own XML normalization and response declaration generation in per-interaction `*.compose.ts` modules.
 - Shared interaction composer metadata (`tagName`, `responseProcessingTemplate`, `editorOnlyAttributes`) is centralized in `packages/interactions/src/composer/metadata.ts`.
 - The same metadata also defines UI policy (`userEditableAttributes`) for app-level attribute panel filtering.
+- Shared reusable key commands (including chained Enter behavior helpers) live in `packages/interactions/src/commands/` and are exported via `@qti-editor/interactions`.
 - Select-point authoring model uses a composed structure in ProseMirror:
   - wrapper `qtiSelectPointInteraction` is an isolating container (`qtiPrompt imgSelectPoint`)
   - wrapper component owns upload/drawing UI and persists area mappings at wrapper level

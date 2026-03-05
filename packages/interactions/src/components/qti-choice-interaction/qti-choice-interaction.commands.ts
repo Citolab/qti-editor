@@ -4,6 +4,9 @@
  * ProseMirror commands for inserting and manipulating choice interactions.
  */
 
+import { chainCommands, splitBlock } from 'prosemirror-commands';
+import { createInsertSiblingOnEnterCommand } from '../../commands/enter.js';
+
 import type { Command } from 'prosemirror-state';
 
 /**
@@ -47,3 +50,30 @@ export const insertChoiceInteraction: Command = (state, dispatch) => {
   }
   return true;
 };
+
+/**
+ * Handles Enter inside qti-simple-choice paragraphs by inserting a new empty
+ * sibling qti-simple-choice directly after the current one.
+ */
+export const insertSimpleChoiceOnEnter: Command = (state, dispatch) => {
+  const choiceType = state.schema.nodes.qtiSimpleChoice;
+  const paragraphType = state.schema.nodes.qtiSimpleChoiceParagraph;
+  if (!choiceType || !paragraphType) return false;
+
+  return createInsertSiblingOnEnterCommand({
+    ancestorNodeName: 'qtiSimpleChoice',
+    selectionOffset: 2,
+    createSiblingNode: () =>
+      choiceType.create(
+        { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
+        paragraphType.create()
+      ),
+  })(state, dispatch);
+};
+
+/**
+ * Enter command chain for choice interactions.
+ * 1) Insert new simple choice when inside qti-simple-choice.
+ * 2) Fallback to regular block split behavior elsewhere.
+ */
+export const qtiChoiceEnterCommand: Command = chainCommands(insertSimpleChoiceOnEnter, splitBlock);
