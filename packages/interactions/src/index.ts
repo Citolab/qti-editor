@@ -22,6 +22,7 @@ export * from './components/qti-select-point-interaction/qti-select-point-intera
 
 // Commands
 export * from './commands/enter.js';
+export * from './commands/insert.js';
 export * from './components/qti-text-entry-interaction/qti-text-entry-interaction.commands.js';
 export * from './components/qti-choice-interaction/qti-choice-interaction.commands.js';
 export * from './components/qti-inline-choice-interaction/qti-inline-choice-interaction.commands.js';
