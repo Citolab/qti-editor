@@ -1,5 +1,15 @@
-import 'prosekit/lit/tooltip';
+import { TooltipContent, TooltipRoot, TooltipTrigger } from 'prosekit/lit/tooltip';
 import { html, LitElement, nothing } from 'lit';
+
+if (!customElements.get('prosekit-tooltip-root')) {
+  customElements.define('prosekit-tooltip-root', TooltipRoot);
+}
+if (!customElements.get('prosekit-tooltip-trigger')) {
+  customElements.define('prosekit-tooltip-trigger', TooltipTrigger);
+}
+if (!customElements.get('prosekit-tooltip-content')) {
+  customElements.define('prosekit-tooltip-content', TooltipContent);
+}
 
 export class LitButton extends LitElement {
   static override properties = {

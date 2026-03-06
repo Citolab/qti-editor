@@ -1,10 +1,20 @@
-import 'prosekit/lit/popover';
+import { PopoverContent, PopoverRoot, PopoverTrigger } from 'prosekit/lit/popover';
 import './button';
 import './image-upload-popover';
 
 import { html, LitElement, nothing } from 'lit';
 import type { Editor } from 'prosekit/core';
 import type { EditorView } from 'prosekit/pm/view';
+
+if (!customElements.get('prosekit-popover-root')) {
+  customElements.define('prosekit-popover-root', PopoverRoot);
+}
+if (!customElements.get('prosekit-popover-trigger')) {
+  customElements.define('prosekit-popover-trigger', PopoverTrigger);
+}
+if (!customElements.get('prosekit-popover-content')) {
+  customElements.define('prosekit-popover-content', PopoverContent);
+}
 
 interface ToolbarItem {
   isActive: boolean;
