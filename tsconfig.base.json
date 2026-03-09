@@ -83,6 +83,15 @@
       ],
       "@qti-editor/prosemirror/node-attrs-sync": [
         "packages/prosemirror/src/node-attrs-sync/index.ts"
+      ],
+      "@qti-editor/prosemirror-block-select": [
+        "packages/prosemirror-block-select/src/index.ts"
+      ],
+      "@qti-editor/prosemirror-node-attrs-sync": [
+        "packages/prosemirror-node-attrs-sync/src/index.ts"
+      ],
+      "@qti-editor/prosemirror-virtual-cursor": [
+        "packages/prosemirror-virtual-cursor/src/index.ts"
       ]
     }
   }

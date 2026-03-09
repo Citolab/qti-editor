@@ -1,0 +1,22 @@
+{
+  "name": "@qti-editor/prosemirror-virtual-cursor",
+  "version": "0.1.0",
+  "description": "Standalone virtual-cursor ProseMirror plugin package",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "prosemirror-model": "^1.19.0",
+    "prosemirror-state": "^1.4.0",
+    "prosemirror-view": "^1.31.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

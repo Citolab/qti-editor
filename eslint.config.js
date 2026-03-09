@@ -181,4 +181,4 @@ wcConfigs['flat/recommended'], // Storybook-specific rules
     '**/cdn/**', // CDN build files
     'scripts/**' // Utility scripts
   ]
-}, ...storybook.configs["flat/recommended"]];
+}, ...storybookConfigs["flat/recommended"]];

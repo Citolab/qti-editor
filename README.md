@@ -12,6 +12,20 @@ Dev workflow (auto-regenerate CEM + schema while the editor runs):
 pnpm dev
 ```
 
+## Cookbook Editors
+
+Runnable cookbook variants live under `apps/*` and demonstrate progressive integration levels:
+
+- `@qti-editor/cookbook-prosemirror-minimal`
+- `@qti-editor/cookbook-prosemirror-context-attrs`
+- `@qti-editor/cookbook-prosekit-full`
+
+Single web component package:
+
+- `@qti-editor/coco` exposing `<qti-coco-editor>`
+
+See [docs/cookbook.md](docs/cookbook.md) for the variant matrix and commands.
+
 ## Firebase Hosting
 
 This repo now includes Firebase Hosting configuration for the editor app.

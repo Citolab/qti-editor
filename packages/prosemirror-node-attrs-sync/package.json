@@ -1,0 +1,28 @@
+{
+  "name": "@qti-editor/prosemirror-node-attrs-sync",
+  "version": "0.1.0",
+  "description": "Standalone node-attrs-sync ProseMirror plugin package",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "prosemirror-model": "^1.19.0",
+    "prosemirror-state": "^1.4.0",
+    "prosemirror-view": "^1.31.0"
+  },
+  "peerDependencies": {
+    "prosekit": "^0.17.1"
+  },
+  "peerDependenciesMeta": {
+    "prosekit": { "optional": true }
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

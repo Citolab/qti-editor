@@ -7,6 +7,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./attributes": "./src/attributes/index.ts",
+    "./cookbook": "./src/cookbook/index.ts",
     "./code": "./src/code/index.ts",
     "./composer": "./src/composer/index.ts",
     "./editor-context": "./src/editor-context/index.ts",

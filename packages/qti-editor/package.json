@@ -17,13 +17,15 @@
     "./core/item-context": "./src/core/item-context.ts",
     "./extensions": "./src/extensions.ts",
     "./extensions/attributes": "./src/extensions/attributes.ts",
-    "./lit": "./src/lit.ts"
+    "./lit": "./src/lit.ts",
+    "./coco": "./src/coco.ts"
   },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@qti-editor/coco": "workspace:*",
     "@qti-editor/core": "workspace:*",
     "@qti-editor/extensions": "workspace:*",
     "@qti-editor/lit": "workspace:*"

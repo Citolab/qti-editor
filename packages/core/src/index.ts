@@ -6,5 +6,6 @@
  */
 
 export * from './attributes/index';
+export * from './cookbook/index';
 export * from './composer/index';
 export * from './item-context/index';
