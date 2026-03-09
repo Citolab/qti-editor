@@ -2,10 +2,10 @@
 
 ## ProseMirror QTI Schema
 
-The ProseMirror-native QTI schema and components are provided by
-`@qti-editor/interactions` and re-exported via
-`@qti-editor/plugin-qti-interactions`. The editor uses a thin ProseKit adapter
-to wire these into ProseKit.
+The ProseMirror-native QTI schema and components are provided by split
+`@qti-editor/interactions-*` packages (shared + per interaction) and re-exported
+via `@qti-editor/core/interactions`. The editor uses a thin ProseKit adapter to
+wire these into ProseKit.
 
 Dev workflow (auto-regenerate CEM + schema while the editor runs):
 ```sh

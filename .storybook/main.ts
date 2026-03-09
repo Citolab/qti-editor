@@ -5,9 +5,7 @@ import type { StorybookConfig } from '@storybook/web-components-vite';
 
 const config: StorybookConfig = {
   "stories": [
-    "../stories/**/*.mdx",
-    "../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-    "../apps/editor/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+    "../apps/editor/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   "addons": [
     "@chromatic-com/storybook",
@@ -24,8 +22,7 @@ const config: StorybookConfig = {
         tailwindcss(),
         tsconfigPaths({
           projects: [
-            './tsconfig.json',
-            './packages/plugin-qti-interactions/tsconfig.json',
+            './tsconfig.json'
           ],
           ignoreConfigErrors: true,
         }),

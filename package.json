@@ -25,7 +25,6 @@
   "dependencies": {
     "@qti-components/base": "1.2.0",
     "@qti-components/interactions": "1.8.0",
-    "@qti-editor/interactions": "workspace:*",
     "@qti-components/theme": "1.1.0",
     "@qti-components/utilities": "1.1.0",
     "eslint-plugin-lit": "^2.2.1",

@@ -1,6 +1,6 @@
 import type { ToolbarExtensionOptions, ToolbarInsertMenu } from './';
-import { insertChoiceInteraction } from '@qti-editor/interactions/components/qti-choice-interaction/qti-choice-interaction.commands.js';
-import { insertSelectPointInteraction } from '@qti-editor/interactions/components/qti-select-point-interaction/qti-select-point-interaction.commands.js';
+import { insertChoiceInteraction } from '@qti-editor/interactions-qti-choice';
+import { insertSelectPointInteraction } from '@qti-editor/interactions-qti-select-point';
 
 type ToolbarInsertItemsProvider = NonNullable<ToolbarExtensionOptions['getInsertItems']>;
 

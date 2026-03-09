@@ -1,0 +1,31 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "qti-composer",
+  "type": "registry:ui",
+  "title": "QTI Composer",
+  "description": "Displays composed QTI XML from item context. Shows formatted XML output with download link.",
+  "dependencies": [
+    "lit",
+    "@lit/context",
+    "@qti-editor/core"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "src/lit/ui/qti-composer/index.ts",
+      "type": "registry:component",
+      "content": "/**\n * QTI Composer - UI Component\n *\n * Displays the composed QTI XML from item context.\n * Customize styling as needed.\n */\n\nimport { consume } from '@lit/context';\nimport { html, LitElement } from 'lit';\nimport { customElement, state } from 'lit/decorators.js';\nimport { buildAssessmentItemXml, formatXml, type ComposerItemContext } from '@qti-editor/core/composer';\nimport { itemContext, type ItemContext } from '@qti-editor/core/item-context';\n\n@customElement('qti-composer')\nexport class QtiComposer extends LitElement {\n  @consume({ context: itemContext, subscribe: true })\n  @state()\n  public itemContext?: ItemContext;\n\n  #xmlUrl = '';\n  #formattedXml = '';\n\n  override createRenderRoot() {\n    return this;\n  }\n\n  override willUpdate(changedProperties: Map<string, unknown>) {\n    super.willUpdate(changedProperties);\n    if (changedProperties.has('itemContext')) {\n      const xml = buildAssessmentItemXml(this.itemContext as ComposerItemContext);\n      this.#setXmlUrl(xml);\n      this.#formattedXml = formatXml(xml);\n    }\n  }\n\n  override disconnectedCallback() {\n    super.disconnectedCallback();\n    this.#revokeXmlUrl();\n  }\n\n  #setXmlUrl(xml: string) {\n    this.#revokeXmlUrl();\n    if (!xml.trim()) {\n      this.#xmlUrl = '';\n      return;\n    }\n    const xmlWithDeclaration = xml.startsWith('<?xml')\n      ? xml\n      : `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\\n${xml}`;\n    const xmlFile = new File([xmlWithDeclaration], 'assessment-item.xml', {\n      type: 'application/xml',\n    });\n    this.#xmlUrl = URL.createObjectURL(xmlFile);\n  }\n\n  #revokeXmlUrl() {\n    if (!this.#xmlUrl) return;\n    URL.revokeObjectURL(this.#xmlUrl);\n    this.#xmlUrl = '';\n  }\n\n  override render() {\n    return html`\n      <h3 class=\"text-sm font-semibold mb-2\">Composer XML</h3>\n      <section class=\"card border border-base-300/50 bg-base-100 p-4\">\n        ${this.#xmlUrl\n          ? html`\n              <a\n                class=\"mb-2 inline-block text-xs link link-primary\"\n                href=${this.#xmlUrl}\n                target=\"_blank\"\n                rel=\"noopener noreferrer\"\n              >\n                Open XML in new tab\n              </a>\n              <pre class=\"m-0 max-h-80 overflow-auto rounded border border-base-300/50 bg-base-200 p-3 text-xs\">${this.#formattedXml}</pre>\n            `\n          : html`<p class=\"text-xs text-base-content/70\">No XML available.</p>`}\n      </section>\n    `;\n  }\n}\n\ndeclare global {\n  interface HTMLElementTagNameMap {\n    'qti-composer': QtiComposer;\n  }\n}\n"
+    },
+    {
+      "path": "src/lit/examples/qti-composer/index.ts",
+      "type": "registry:example",
+      "content": "/**\n * QTI Composer Example - Entry Point\n *\n * Re-exports all parts needed for the QTI composer example.\n */\n\n// Core types and functions\nexport type { ComposerItemContext } from '@qti-editor/core/composer';\nexport { buildAssessmentItemXml, formatXml, extractResponseDeclarations } from '@qti-editor/core/composer';\n\n// Item context\nexport type { ItemContext } from '@qti-editor/core/item-context';\nexport { itemContext, itemContextVariables } from '@qti-editor/core/item-context';\n\n// Editor example (provides context)\nexport { QtiComposerProvider } from './editor.js';\n\n// UI component\nexport { QtiComposer } from '../../ui/qti-composer/index.js';\n"
+    },
+    {
+      "path": "src/lit/examples/qti-composer/editor.ts",
+      "type": "registry:example",
+      "content": "/**\n * QTI Composer Editor Example\n *\n * This file demonstrates how to provide item context and use\n * the QtiComposer component in a Lit application.\n */\n\nimport '../../ui/qti-composer/index.js';\n\nimport { provide } from '@lit/context';\nimport { html, LitElement } from 'lit';\nimport { customElement, state } from 'lit/decorators.js';\nimport { itemContext, type ItemContext } from '@qti-editor/core/item-context';\n\n/**\n * Example provider component that wraps the QtiComposer.\n * In a real application, you would provide the itemContext from\n * your editor state or data layer.\n */\n@customElement('qti-composer-provider')\nexport class QtiComposerProvider extends LitElement {\n  /**\n   * The item context to provide to child components.\n   * Update this when your item data changes.\n   */\n  @provide({ context: itemContext })\n  @state()\n  public itemCtx: ItemContext = {\n    identifier: 'example-item',\n    title: 'Example Assessment Item',\n    variables: [],\n    itemBody: undefined,\n  };\n\n  override createRenderRoot() {\n    return this;\n  }\n\n  /**\n   * Updates the item context. Call this when your item data changes.\n   */\n  public updateItemContext(ctx: Partial<ItemContext>) {\n    this.itemCtx = { ...this.itemCtx, ...ctx };\n  }\n\n  override render() {\n    return html`\n      <div class=\"qti-composer-wrapper\">\n        <qti-composer></qti-composer>\n      </div>\n    `;\n  }\n}\n\ndeclare global {\n  interface HTMLElementTagNameMap {\n    'qti-composer-provider': QtiComposerProvider;\n  }\n}\n"
+    }
+  ]
+}

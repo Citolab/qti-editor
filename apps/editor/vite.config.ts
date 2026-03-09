@@ -4,19 +4,54 @@ import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
-const interactionsSrcRoot = fileURLToPath(new URL('../../packages/interactions/src', import.meta.url));
+const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/interactions-shared/src', import.meta.url));
+const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/interactions-qti-choice/src', import.meta.url));
+const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/interactions-qti-text-entry/src', import.meta.url));
+const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/interactions-qti-select-point/src', import.meta.url));
+const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/interactions-qti-inline-choice/src', import.meta.url));
 
 export default defineConfig({
   resolve: {
     alias: [
       {
-        // Keep existing explicit .js import style, but resolve to TS sources for HMR.
-        find: /^@qti-editor\/interactions\/(.*)\.js$/,
-        replacement: `${interactionsSrcRoot}/$1.ts`,
+        find: /^@qti-editor\/interactions-shared\/(.*)\.js$/,
+        replacement: `${interactionsSharedSrcRoot}/$1.ts`,
       },
       {
-        find: /^@qti-editor\/interactions$/,
-        replacement: `${interactionsSrcRoot}/index.ts`,
+        find: /^@qti-editor\/interactions-shared$/,
+        replacement: `${interactionsSharedSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions-qti-choice\/(.*)\.js$/,
+        replacement: `${interactionsChoiceSrcRoot}/$1.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions-qti-choice$/,
+        replacement: `${interactionsChoiceSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions-qti-text-entry\/(.*)\.js$/,
+        replacement: `${interactionsTextEntrySrcRoot}/$1.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions-qti-text-entry$/,
+        replacement: `${interactionsTextEntrySrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions-qti-select-point\/(.*)\.js$/,
+        replacement: `${interactionsSelectPointSrcRoot}/$1.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions-qti-select-point$/,
+        replacement: `${interactionsSelectPointSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions-qti-inline-choice\/(.*)\.js$/,
+        replacement: `${interactionsInlineChoiceSrcRoot}/$1.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions-qti-inline-choice$/,
+        replacement: `${interactionsInlineChoiceSrcRoot}/index.ts`,
       },
     ],
   },
@@ -40,7 +75,11 @@ export default defineConfig({
     exclude: [
       '@qti-components/base',
       '@qti-components/interactions',
-      '@qti-editor/interactions',
+      '@qti-editor/interactions-shared',
+      '@qti-editor/interactions-qti-choice',
+      '@qti-editor/interactions-qti-text-entry',
+      '@qti-editor/interactions-qti-select-point',
+      '@qti-editor/interactions-qti-inline-choice',
       '@qti-components/theme',
       '@qti-components/utilities',
     ],

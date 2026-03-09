@@ -11,7 +11,7 @@ This document is the canonical architecture reference for this repository. Use i
 
 ## Extension Composition And Order
 The app wires extensions in `apps/editor/src/main.ts` using this order:
-1. `defineQtiExtension()` from `packages/plugin-qti-interactions/src/prosekit.ts`
+1. `defineQtiInteractionsExtension()` from `packages/core/src/interactions/prosekit.ts`
 2. `qtiAttributesExtension(...)` from `packages/plugin-qti-attributes/index.ts`
 3. `qtiEditorEventsExtension(...)` from `packages/plugin-editor-events/index.ts`
 4. `qtiCodePanelExtension(...)` from `packages/plugin-qti-code/index.ts`
@@ -71,10 +71,11 @@ Code plugin (`packages/plugin-qti-code/index.ts`):
 
 ## Interaction Composition Ownership
 - Interaction packages own XML normalization and response declaration generation in per-interaction `*.compose.ts` modules.
-- Shared interaction composer metadata (`tagName`, `responseProcessingTemplate`, `editorOnlyAttributes`) is centralized in `packages/interactions/src/composer/metadata.ts`.
-- The same metadata also defines UI policy (`userEditableAttributes`) for app-level attribute panel filtering.
-- Shared reusable key commands (including chained Enter behavior helpers) live in `packages/interactions/src/commands/` and are exported via `@qti-editor/interactions`.
-- Interactions package-local architecture notes are documented in `packages/interactions/architecture.md`.
+- Shared interaction primitives (prompt/simple-choice nodes, shared command helpers, composer types) live in `packages/interactions-shared`.
+- Each interaction package (`packages/interactions-qti-*`) owns its local metadata and composer handler.
+- `packages/core/src/interactions/composer.ts` is the aggregation boundary that exposes:
+  - handler lookup for core composer
+  - node attribute metadata for the app side panel
 - Select-point authoring model uses a composed structure in ProseMirror:
   - wrapper `qtiSelectPointInteraction` is an isolating container (`qtiPrompt imgSelectPoint`)
   - wrapper component owns upload/drawing UI and persists area mappings at wrapper level
@@ -84,9 +85,9 @@ Code plugin (`packages/plugin-qti-code/index.ts`):
   - apply identifier normalization
   - emit outcomes and response-processing
 - Adding support for a new interaction requires:
-  - interaction compose module
-  - composer handler in `packages/interactions/src/composer/handlers/`
-  - registration in `packages/interactions/src/composer/registry.ts`
+  - interaction compose module in its `packages/interactions-qti-*` package
+  - metadata + handler export from that package
+  - registration in `packages/core/src/interactions/composer.ts`
 - Core composer should not gain per-interaction special-casing logic.
 
 ## Package Boundaries
@@ -140,7 +141,8 @@ Run the narrowest useful check first:
 - Firebase hosting scripts exist for deploy/serve; local app development remains Vite-based.
 
 ## Ownership Pointers
-- QTI schema and interaction node specs: `packages/plugin-qti-interactions`
+- Shared interaction primitives: `packages/interactions-shared`
+- Interaction-specific schema/commands/components/composer: `packages/interactions-qti-*`
 - Attribute side panel and update flow: `packages/plugin-qti-attributes`
 - Code preview and serialization payloads: `packages/plugin-qti-code`
 - Generic editor event emission: `packages/plugin-editor-events`

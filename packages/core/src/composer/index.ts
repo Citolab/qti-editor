@@ -5,7 +5,7 @@
  * No Lit/UI dependencies - these can be used in any environment.
  */
 
-import { getInteractionComposerHandler } from '@qti-editor/interactions/composer/index.js';
+import { getInteractionComposerHandler } from '../interactions/composer.js';
 
 type ResponseProcessingKind = 'match_correct' | 'map_response' | 'map_response_point';
 
