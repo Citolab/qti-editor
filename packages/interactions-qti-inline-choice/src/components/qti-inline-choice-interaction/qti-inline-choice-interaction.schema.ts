@@ -8,7 +8,8 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
     correctResponse: { default: null }
   },
   content: 'qtiInlineChoice+',
-  group: 'block',
+  inline: true,
+  group: 'inline',
   parseDOM: [
     {
       tag: 'qti-inline-choice-interaction',

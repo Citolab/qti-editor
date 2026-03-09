@@ -1,5 +1,6 @@
 import type { ToolbarExtensionOptions, ToolbarInsertMenu } from './';
 import { insertChoiceInteraction } from '@qti-editor/interactions-qti-choice';
+import { insertInlineChoiceInteraction } from '@qti-editor/core/interactions';
 import { insertSelectPointInteraction } from '@qti-editor/interactions-qti-select-point';
 
 type ToolbarInsertItemsProvider = NonNullable<ToolbarExtensionOptions['getInsertItems']>;
@@ -59,6 +60,18 @@ const getQtiToolbarItems: ToolbarInsertItemsProvider = view => {
       canInsert: canInsert(view, nodeType),
       command: () => {
         insertSelectPointInteraction(view.state, view.dispatch);
+        view.focus();
+      }
+    });
+  }
+
+  if (schema.nodes.qtiInlineChoiceInteraction && schema.nodes.qtiInlineChoice) {
+    const nodeType = schema.nodes.qtiInlineChoiceInteraction;
+    items.push({
+      label: 'Inline Choice',
+      canInsert: canInsert(view, nodeType),
+      command: () => {
+        insertInlineChoiceInteraction(view.state, view.dispatch);
         view.focus();
       }
     });

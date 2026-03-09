@@ -18,7 +18,7 @@
 import '@qti-components/theme/item.css';
 import {
   insertChoiceInteraction,
-  qtiChoiceEnterCommand,
+  insertSimpleChoiceOnEnter,
   qtiChoiceInteractionNodeSpec,
 } from '@qti-editor/interactions-qti-choice';
 import {
@@ -26,6 +26,13 @@ import {
   insertSelectPointInteraction,
   qtiSelectPointInteractionNodeSpec,
 } from '@qti-editor/interactions-qti-select-point';
+import {
+  insertInlineChoiceInteraction,
+  insertInlineChoiceOnEnter,
+  qtiInlineChoiceInteractionNodeSpec,
+  qtiInlineChoiceParagraphNodeSpec,
+  qtiInlineChoiceNodeSpec,
+} from '@qti-editor/interactions-qti-inline-choice';
 import {
   insertTextEntryInteraction,
   qtiTextEntryInteractionNodeSpec,
@@ -52,10 +59,15 @@ export function defineQtiInteractionsExtension() {
     defineNodeSpec({ name: 'qtiSelectPointInteraction', ...qtiSelectPointInteractionNodeSpec }),
     defineNodeSpec({ name: 'qtiSimpleChoiceParagraph', ...qtiSimpleChoiceParagraphNodeSpec }),
     defineNodeSpec({ name: 'qtiSimpleChoice', ...qtiSimpleChoiceNodeSpec }),
+    defineNodeSpec({ name: 'qtiInlineChoiceInteraction', ...qtiInlineChoiceInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiInlineChoiceParagraph', ...qtiInlineChoiceParagraphNodeSpec }),
+    defineNodeSpec({ name: 'qtiInlineChoice', ...qtiInlineChoiceNodeSpec }),
     defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
     defineKeymap({
-      Enter: qtiChoiceEnterCommand,
+      Enter: (state, dispatch, view) =>
+        insertSimpleChoiceOnEnter(state, dispatch, view) || insertInlineChoiceOnEnter(state, dispatch, view),
       'Mod-Shift-q': insertChoiceInteraction,
+      'Mod-Shift-l': insertInlineChoiceInteraction,
       'Mod-Shift-p': insertSelectPointInteraction,
       'Mod-Shift-t': insertTextEntryInteraction,
     }),

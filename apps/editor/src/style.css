@@ -33,6 +33,10 @@ qti-simple-choice {
    @apply bg-white rounded p-2;
 }
 
+qti-inline-choice-interaction {
+   @apply bg-slate-100 rounded p-2 my-1;
+}
+
 qti-select-point-interaction {
    @apply bg-slate-100 rounded p-2 my-1;
 

@@ -9,6 +9,7 @@ import 'prosemirror-view/style/prosemirror.css';
 import {
   insertInlineChoiceInteraction,
   qtiInlineChoiceInteractionNodeSpec,
+  qtiInlineChoiceParagraphNodeSpec,
   qtiInlineChoiceNodeSpec,
 } from '@qti-editor/interactions-qti-inline-choice';
 
@@ -23,6 +24,7 @@ const schema = new Schema({
   nodes: {
     ...baseNodes,
     qtiInlineChoiceInteraction: qtiInlineChoiceInteractionNodeSpec,
+    qtiInlineChoiceParagraph: qtiInlineChoiceParagraphNodeSpec,
     qtiInlineChoice: qtiInlineChoiceNodeSpec,
   },
   marks: baseMarks,
@@ -42,7 +44,7 @@ export const BasicEditor: Story = {
   render: () => {
     let currentView: EditorView | null = null;
 
-    const initialContent = `<h1>QTI Inline Choice Interaction Example</h1><p>Use Enter inside a choice to split/create another choice node.</p><qti-inline-choice-interaction response-identifier="RESPONSE" shuffle="false"><qti-inline-choice identifier="G">Gloucester</qti-inline-choice><qti-inline-choice identifier="L">Lancaster</qti-inline-choice><qti-inline-choice identifier="Y">York</qti-inline-choice></qti-inline-choice-interaction>`;
+    const initialContent = `<h1>QTI Inline Choice Interaction Example</h1><p>Use Enter inside a choice to split/create another choice node.</p><qti-inline-choice-interaction response-identifier="RESPONSE" shuffle="false"><qti-inline-choice identifier="G"><p>Gloucester</p></qti-inline-choice><qti-inline-choice identifier="L"><p>Lancaster</p></qti-inline-choice><qti-inline-choice identifier="Y"><p>York</p></qti-inline-choice></qti-inline-choice-interaction>`;
 
     const initEditor = (container: HTMLElement) => {
       if (currentView) currentView.destroy();

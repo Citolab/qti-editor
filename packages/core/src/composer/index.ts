@@ -369,10 +369,22 @@ export function formatXml(xml: string): string {
   return xml
     .split('\n')
     .map(node => {
-      let indent = 0;
-      if (node.match(/^<\/\w/)) pad -= 1;
-      indent = pad;
-      if (node.match(/^<\w[^>]*[^\/]>.*$/)) pad += 1;
+      const trimmed = node.trim();
+      const isClosingTag = /^<\//.test(trimmed);
+      const isSelfClosingTag = /\/>$/.test(trimmed);
+      const isDeclarationOrDirective = /^<\?/.test(trimmed) || /^<!/.test(trimmed);
+      const isOpeningTag = /^<[^!?/][^>]*>$/.test(trimmed) && !isSelfClosingTag;
+
+      if (isClosingTag) {
+        pad = Math.max(pad - 1, 0);
+      }
+
+      const indent = Math.max(pad, 0);
+
+      if (isOpeningTag && !isDeclarationOrDirective) {
+        pad += 1;
+      }
+
       return PADDING.repeat(indent) + node;
     })
     .join('\n');

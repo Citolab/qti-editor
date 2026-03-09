@@ -9,6 +9,12 @@ let inlineChoiceMenuCounter = 0;
 
 export class QtiInlineChoiceInteraction extends Interaction {
   private _calculatedMinWidth: number;
+
+  static override shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
   static override get styles() {
     return [
       styles,
