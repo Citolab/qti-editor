@@ -7,22 +7,23 @@ import './components/ui/qti-composer.js';
 import './components/ui/qti-composer-metadata-form.js';
 
 import { provide } from '@lit/context';
-import { LitElement, PropertyValues, html } from 'lit';
+import { LitElement, html } from 'lit';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { customElement, property } from 'lit/decorators.js';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { defineBasicExtension } from 'prosekit/basic';
 import { DOMParser as PMDOMParser } from 'prosekit/pm/model';
-
 import { qtiEditorEventsExtension } from '@qti-editor/core/events';
 import { qtiAttributesExtension } from '@qti-editor/core/attributes';
 import { qtiCodePanelExtension, type QtiCodeUpdateDetail } from '@qti-editor/core/code';
 import { defineQtiInteractionsExtension } from '@qti-editor/core/interactions/prosekit';
-import { defineToolbarExtension, toolbarInsertMenus } from './components/toolbar/index.js';
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/core/item-context';
-
 import { blockSelectExtension } from '@qti-editor/prosemirror-block-select';
 import { nodeAttrsSyncExtension } from '@qti-editor/prosemirror-node-attrs-sync';
+
+import { defineToolbarExtension, toolbarInsertMenus } from './components/toolbar/index.js';
+
+import type { PropertyValues} from 'lit';
 
 export interface QtiCocoChangeDetail {
   html: string;
@@ -175,17 +176,17 @@ export class QtiCocoEditor extends LitElement {
       <div class="mt-12 flex flex-col gap-6 lg:flex-row lg:items-start">
         <div class="card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden">
           <qti-lit-editor ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></qti-lit-editor>
-          <qti-composer class="block w-full"></qti-composer>
-          <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel>
+          <qti-coco-composer class="block w-full"></qti-coco-composer>
+          <qti-coco-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-coco-code-panel>
         </div>
         <div class="w-full lg:w-80 lg:shrink-0">
-          <qti-composer-metadata-form
+          <qti-coco-composer-metadata-form
             class="block w-full"
             .title=${this.title}
             .identifier=${this.identifier}
             @metadata-change=${this.onMetadataChange}
-          ></qti-composer-metadata-form>
-          <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
+          ></qti-coco-composer-metadata-form>
+          <qti-coco-attributes-panel ${ref(this.panelRef)}></qti-coco-attributes-panel>
         </div>
       </div>
     `;

@@ -11,7 +11,6 @@ import type { SidePanelEventDetail, SidePanelNodeDetail } from '@qti-editor/core
 
 type AttrValue = string | number | boolean | null | undefined;
 
-@customElement('qti-attributes-panel')
 export class QtiAttributesPanel extends LitElement {
   static override styles = css`
     :host {
@@ -270,8 +269,11 @@ export class QtiAttributesPanel extends LitElement {
   }
 }
 
+@customElement('qti-coco-attributes-panel')
+class QtiCocoAttributesPanel extends QtiAttributesPanel {}
+
 declare global {
   interface HTMLElementTagNameMap {
-    'qti-attributes-panel': QtiAttributesPanel;
+    'qti-coco-attributes-panel': QtiCocoAttributesPanel;
   }
 }

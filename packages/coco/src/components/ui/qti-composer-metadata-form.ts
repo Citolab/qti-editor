@@ -8,7 +8,6 @@
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
-@customElement('qti-composer-metadata-form')
 export class QtiComposerMetadataForm extends LitElement {
   @property({ type: String })
   public title = '';
@@ -72,8 +71,11 @@ export class QtiComposerMetadataForm extends LitElement {
   }
 }
 
+@customElement('qti-coco-composer-metadata-form')
+class QtiCocoComposerMetadataForm extends QtiComposerMetadataForm {}
+
 declare global {
   interface HTMLElementTagNameMap {
-    'qti-composer-metadata-form': QtiComposerMetadataForm;
+    'qti-coco-composer-metadata-form': QtiCocoComposerMetadataForm;
   }
 }

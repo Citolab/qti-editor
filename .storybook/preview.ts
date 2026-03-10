@@ -1,6 +1,8 @@
 import type { Preview } from '@storybook/web-components-vite';
 
-import '../apps/editor/src/qti-editor-app'
+import '@qti-components/theme/item.css';
+import '@qti-components/base';
+import '../apps/editor/src/qti-editor-app';
 import '../apps/editor/src/style.css';
 
 const preview: Preview = {

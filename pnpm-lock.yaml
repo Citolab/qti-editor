@@ -284,9 +284,6 @@ importers:
       '@qti-components/utilities':
         specifier: 1.1.0
         version: 1.1.0(lit@3.3.2)
-      '@qti-editor/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@qti-editor/interactions-qti-choice':
         specifier: workspace:*
         version: link:../../packages/interactions-qti-choice

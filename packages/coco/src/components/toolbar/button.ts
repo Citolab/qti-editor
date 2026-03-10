@@ -76,4 +76,6 @@ export class LitButton extends LitElement {
   }
 }
 
-customElements.define('lit-editor-button', LitButton);
+if (!customElements.get('lit-editor-button')) {
+  customElements.define('lit-editor-button', LitButton);
+}

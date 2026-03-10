@@ -2,6 +2,7 @@ import { PopoverContent, PopoverRoot, PopoverTrigger } from 'prosekit/lit/popove
 import './button';
 
 import { html, LitElement, nothing } from 'lit';
+
 import type { Editor } from 'prosekit/core';
 
 if (!customElements.get('prosekit-popover-root')) {
@@ -194,4 +195,6 @@ export class LitImageUploadPopover extends LitElement {
   }
 }
 
-customElements.define('lit-editor-image-upload-popover', LitImageUploadPopover);
+if (!customElements.get('lit-editor-image-upload-popover')) {
+  customElements.define('lit-editor-image-upload-popover', LitImageUploadPopover);
+}

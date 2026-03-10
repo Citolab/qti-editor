@@ -12,7 +12,6 @@ import type { QtiCodeUpdateDetail } from '@qti-editor/core/code';
 
 type CodeMode = 'html' | 'json' | 'xml';
 
-@customElement('qti-code-panel')
 export class QtiCodePanel extends LitElement {
   private _eventName = 'qti:code:update';
   private _eventTarget: EventTarget | null = null;
@@ -179,8 +178,11 @@ export class QtiCodePanel extends LitElement {
   }
 }
 
+@customElement('qti-coco-code-panel')
+class QtiCocoCodePanel extends QtiCodePanel {}
+
 declare global {
   interface HTMLElementTagNameMap {
-    'qti-code-panel': QtiCodePanel;
+    'qti-coco-code-panel': QtiCocoCodePanel;
   }
 }

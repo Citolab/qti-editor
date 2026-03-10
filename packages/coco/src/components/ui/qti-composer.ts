@@ -11,7 +11,6 @@ import { customElement, state } from 'lit/decorators.js';
 import { buildAssessmentItemXml, formatXml, type ComposerItemContext } from '@qti-editor/core/composer';
 import { itemContext, type ItemContext } from '@qti-editor/core/item-context';
 
-@customElement('qti-composer')
 export class QtiComposer extends LitElement {
   @consume({ context: itemContext, subscribe: true })
   @state()
@@ -81,8 +80,11 @@ export class QtiComposer extends LitElement {
   }
 }
 
+@customElement('qti-coco-composer')
+class QtiCocoComposer extends QtiComposer {}
+
 declare global {
   interface HTMLElementTagNameMap {
-    'qti-composer': QtiComposer;
+    'qti-coco-composer': QtiCocoComposer;
   }
 }
