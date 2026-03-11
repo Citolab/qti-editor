@@ -19,6 +19,8 @@ const server = createServer((req, res) => {
     sendJson(res, 400, { ok: false, message: 'Missing URL.' });
     return;
   }
+  // eslint-disable-next-line no-console
+  console.log(`[mock-api] ${new Date().toISOString()} ${req.method ?? 'UNKNOWN'} ${req.url}`);
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204, OK_HEADERS);
@@ -42,6 +44,8 @@ const server = createServer((req, res) => {
         sendJson(res, 400, { ok: false, message: 'Invalid JSON body.' });
         return;
       }
+      // eslint-disable-next-line no-console
+      console.log('[mock-api] request payload:', parsed);
 
       sendJson(res, 200, {
         ok: true,
