@@ -2,7 +2,7 @@ import '../components/qti-attributes-panel.js';
 import '../components/qti-code-panel.js';
 import '../components/qti-composer-metadata-form.js';
 
-import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, NgZone, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, inject, NgZone, ViewChild } from '@angular/core';
 import { buildAssessmentItemXml, formatXml } from '@qti-editor/core/composer';
 import {
   insertChoiceInteraction,
@@ -169,10 +169,8 @@ function collectSelectionNodes(state: EditorState): SidePanelNodeDetail[] {
   `,
 })
 export class EditorComponent implements OnDestroy {
-  constructor(
-    private readonly ngZone: NgZone,
-    private readonly cdr: ChangeDetectorRef,
-  ) {}
+  private readonly ngZone = inject(NgZone);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   // Using a setter instead of ngAfterViewInit so the editor re-mounts
   // reliably after every HMR cycle (Angular may not re-fire ngAfterViewInit).
