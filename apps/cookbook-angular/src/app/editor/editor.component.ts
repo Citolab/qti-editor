@@ -2,18 +2,16 @@ import '../components/qti-attributes-panel.js';
 import '../components/qti-code-panel.js';
 import '../components/qti-composer-metadata-form.js';
 
-import {
-  Component,
-  CUSTOM_ELEMENTS_SCHEMA,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, NgZone, ViewChild } from '@angular/core';
 import { buildAssessmentItemXml, formatXml } from '@qti-editor/core/composer';
 import {
   insertChoiceInteraction,
+  insertSimpleChoiceOnEnter,
   qtiChoiceInteractionNodeSpec,
 } from '@qti-editor/interactions-qti-choice';
 import {
   insertInlineChoiceInteraction,
+  insertInlineChoiceOnEnter,
   qtiInlineChoiceInteractionNodeSpec,
   qtiInlineChoiceNodeSpec,
   qtiInlineChoiceParagraphNodeSpec,
@@ -36,12 +34,15 @@ import {
 import { blockSelectPlugin } from '@qti-editor/prosemirror-block-select';
 import { nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-node-attrs-sync';
 import { baseKeymap, toggleMark, wrapIn } from 'prosemirror-commands';
+import { gapCursor } from 'prosemirror-gapcursor';
 import { history } from 'prosemirror-history';
 import { keymap } from 'prosemirror-keymap';
 import { Dropdown, MenuItem, menuBar } from 'prosemirror-menu';
 import { DOMParser as PMDOMParser, DOMSerializer, Schema } from 'prosemirror-model';
 import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
+
+import { ExampleServerRequestComponent } from '../components/example-server-request.component.js';
 
 import type { ElementRef, OnDestroy } from '@angular/core';
 import type { SidePanelEventDetail, SidePanelNodeDetail } from '@qti-editor/core/attributes';
@@ -130,6 +131,7 @@ function collectSelectionNodes(state: EditorState): SidePanelNodeDetail[] {
 @Component({
   selector: 'app-editor',
   standalone: true,
+  imports: [ExampleServerRequestComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `
     <!-- Page header -->
@@ -149,6 +151,14 @@ function collectSelectionNodes(state: EditorState): SidePanelNodeDetail[] {
           <div #editorHost></div>
         </div>
         <qti-code-panel #codePanel class="block"></qti-code-panel>
+        <app-example-server-request
+          [isSendingCode]="isSendingCode"
+          [hasCodePayload]="!!latestCodeDetail"
+          [latestCodeTimestampLabel]="latestCodeTimestampLabel"
+          [endpoint]="sampleSubmitEndpoint"
+          [requestStatus]="requestStatus"
+          (sendRequest)="sendCodeToExampleServer()"
+        />
       </div>
 
       <!-- Sidebar -->
@@ -159,6 +169,11 @@ function collectSelectionNodes(state: EditorState): SidePanelNodeDetail[] {
   `,
 })
 export class EditorComponent implements OnDestroy {
+  constructor(
+    private readonly ngZone: NgZone,
+    private readonly cdr: ChangeDetectorRef,
+  ) {}
+
   // Using a setter instead of ngAfterViewInit so the editor re-mounts
   // reliably after every HMR cycle (Angular may not re-fire ngAfterViewInit).
   private _editorHostEl: HTMLDivElement | null = null;
@@ -187,12 +202,23 @@ export class EditorComponent implements OnDestroy {
   private editorView: EditorView | null = null;
   private readonly attributesEventTarget = new EventTarget();
   private readonly codeEventTarget = new EventTarget();
+  private readonly codeUpdateListener = (event: Event) => {
+    this.setLatestCodeDetail((event as CustomEvent<QtiCodeUpdateDetail>).detail ?? null);
+  };
   private metadataChangeListener: ((e: Event) => void) | null = null;
 
   private itemTitle = '';
   private itemIdentifier = '';
+  private isDestroyed = false;
+  public latestCodeDetail: QtiCodeUpdateDetail | null = null;
+  public latestCodeTimestampLabel = 'No code payload yet.';
+  public isSendingCode = false;
+  public requestStatus = 'No request sent yet.';
+  public readonly sampleSubmitEndpoint = '/api/example/qti-item';
 
   ngOnDestroy() {
+    this.isDestroyed = true;
+    this.codeEventTarget.removeEventListener('qti:code:update', this.codeUpdateListener);
     this.editorView?.destroy();
     this.editorView = null;
   }
@@ -247,8 +273,7 @@ export class EditorComponent implements OnDestroy {
     ];
 
     const insertItems = insertActions.map(
-      ({ label, command }) =>
-        new MenuItem({ label, title: label, run: command }),
+      ({ label, command }) => new MenuItem({ label, title: label, run: command }),
     );
 
     const insertDropdown = new Dropdown(insertItems, { label: 'Insert', title: 'Insert interaction' });
@@ -262,8 +287,17 @@ export class EditorComponent implements OnDestroy {
       plugins: [
         menuBar({ content: [[insertDropdown], formatItems], floating: false }),
         history(),
+        gapCursor(),
         blockSelectPlugin,
         nodeAttrsSyncPlugin,
+        keymap({
+          Enter: (state, dispatch, view) =>
+            insertSimpleChoiceOnEnter(state, dispatch, view) || insertInlineChoiceOnEnter(state, dispatch, view),
+          'Mod-Shift-q': insertChoiceInteraction,
+          'Mod-Shift-l': insertInlineChoiceInteraction,
+          'Mod-Shift-p': insertSelectPointInteraction,
+          'Mod-Shift-t': insertTextEntryInteraction,
+        }),
         keymap(baseKeymap),
       ],
     });
@@ -293,6 +327,9 @@ export class EditorComponent implements OnDestroy {
       this.codePanel.nativeElement.eventTarget = this.codeEventTarget;
       this.codePanel.nativeElement.mode = 'xml';
     }
+
+    this.codeEventTarget.removeEventListener('qti:code:update', this.codeUpdateListener);
+    this.codeEventTarget.addEventListener('qti:code:update', this.codeUpdateListener);
 
     if (this.metadataForm) {
       // Remove previous listener before re-adding (handles HMR re-init)
@@ -345,6 +382,52 @@ export class EditorComponent implements OnDestroy {
       timestamp: Date.now(),
     };
 
+    this.setLatestCodeDetail(detail);
     this.codeEventTarget.dispatchEvent(new CustomEvent('qti:code:update', { detail }));
+  }
+
+  private setLatestCodeDetail(detail: QtiCodeUpdateDetail | null) {
+    this.ngZone.run(() => {
+      this.latestCodeDetail = detail;
+      this.latestCodeTimestampLabel = this.latestCodeDetail
+        ? new Date(this.latestCodeDetail.timestamp).toLocaleString()
+        : 'No code payload yet.';
+      if (!this.isDestroyed) this.cdr.detectChanges();
+    });
+  }
+
+  public async sendCodeToExampleServer() {
+    if (!this.latestCodeDetail || this.isSendingCode) return;
+
+    this.isSendingCode = true;
+    this.requestStatus = 'Sending payload...';
+    if (!this.isDestroyed) this.cdr.detectChanges();
+
+    try {
+      const response = await fetch(this.sampleSubmitEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          generatedAt: new Date(this.latestCodeDetail.timestamp).toISOString(),
+          xml: this.latestCodeDetail.xml,
+          html: this.latestCodeDetail.html,
+          json: this.latestCodeDetail.json,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} ${response.statusText}`);
+      }
+
+      this.requestStatus = `Request succeeded with HTTP ${response.status}.`;
+      if (!this.isDestroyed) this.cdr.detectChanges();
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : 'Unknown error';
+      this.requestStatus = `Request failed. The endpoint is a placeholder. ${reason}`;
+      if (!this.isDestroyed) this.cdr.detectChanges();
+    } finally {
+      this.isSendingCode = false;
+      if (!this.isDestroyed) this.cdr.detectChanges();
+    }
   }
 }

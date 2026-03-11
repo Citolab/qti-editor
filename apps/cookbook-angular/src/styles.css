@@ -1,4 +1,7 @@
 @import 'tailwindcss';
+@import 'prosemirror-view/style/prosemirror.css';
+@import 'prosemirror-menu/style/menu.css';
+@import 'prosemirror-gapcursor/style/gapcursor.css';
 @plugin 'daisyui';
 
 /* ─── WikiWijs / Kennisnet theme ─────────────────────────────────────────────
