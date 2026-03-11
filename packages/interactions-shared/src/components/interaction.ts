@@ -3,7 +3,7 @@ import { LitElement } from 'lit';
 
 export abstract class Interaction extends LitElement {
   @property({ type: String, attribute: 'response-identifier' })
-  responseIdentifier: string;
+  responseIdentifier = '';
 
   @property({ type: String, attribute: 'correct-response' })
   public correctResponse: string | string[] | null = null;

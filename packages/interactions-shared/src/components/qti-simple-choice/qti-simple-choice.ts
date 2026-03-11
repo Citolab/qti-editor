@@ -28,7 +28,7 @@ export class QtiSimpleChoiceEdit extends LitElement {
 
   // property label
   @property({ type: String, attribute: false })
-  public marker: string;
+  public marker = '';
 
   override render() {
     return html`<div part="ch">

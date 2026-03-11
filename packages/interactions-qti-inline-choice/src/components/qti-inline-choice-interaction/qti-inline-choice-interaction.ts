@@ -8,8 +8,6 @@ import { Interaction } from '@qti-editor/interactions-shared/components/interact
 let inlineChoiceMenuCounter = 0;
 
 export class QtiInlineChoiceInteraction extends Interaction {
-  private _calculatedMinWidth: number;
-
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
     delegatesFocus: true,

@@ -1,5 +1,5 @@
-import { html, LitElement, nothing } from 'lit';
-import { property, query, state } from 'lit/decorators.js';
+import { html } from 'lit';
+import { property } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef } from 'lit/directives/ref.js';
 
@@ -12,9 +12,9 @@ export class QtiTextEntryInteractionEdit extends Interaction {
   static override styles: CSSResultGroup = styles;
   inputRef = createRef<HTMLInputElement>();
 
-  @property({ type: String, attribute: 'pattern-mask' }) patternMask: string;
+  @property({ type: String, attribute: 'pattern-mask' }) patternMask = '';
 
-  @property({ type: String, attribute: 'placeholder-text' }) placeholderText: string;
+  @property({ type: String, attribute: 'placeholder-text' }) placeholderText = '';
 
   override render() {
     return html`<input

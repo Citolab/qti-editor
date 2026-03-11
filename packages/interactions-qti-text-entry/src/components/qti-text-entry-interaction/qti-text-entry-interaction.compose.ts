@@ -1,5 +1,5 @@
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interactions-shared/composer/types.js';
-import { textEntryInteractionComposerMetadata, TEXT_ENTRY_INTERACTION_TAG } from '../../composer/metadata.js';
+import { textEntryInteractionComposerMetadata } from '../../composer/metadata.js';
 
 function toNonEmptyString(value: string | null): string | null {
   if (!value) return null;

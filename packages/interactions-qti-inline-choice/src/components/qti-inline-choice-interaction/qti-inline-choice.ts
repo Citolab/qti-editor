@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit';
+import { html, LitElement } from 'lit';
 export class QtiInlineChoice extends LitElement {
   override render() {
     return html` <slot></slot> `;
