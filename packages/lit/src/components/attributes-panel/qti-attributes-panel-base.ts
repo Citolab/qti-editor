@@ -1,5 +1,6 @@
 import { html, LitElement, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+
 import type { SidePanelEventDetail, SidePanelNodeDetail } from '@qti-editor/core/attributes';
 
 export { QtiAttributesPanelBase };

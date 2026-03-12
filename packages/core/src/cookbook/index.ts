@@ -1,6 +1,3 @@
-import type { NodeSpec } from 'prosemirror-model';
-import type { Command, EditorState } from 'prosemirror-state';
-import type { SidePanelNodeDetail } from '../attributes/index.js';
 import {
   insertChoiceInteraction,
   qtiChoiceInteractionNodeSpec,
@@ -26,6 +23,10 @@ import {
   qtiSimpleChoiceNodeSpec,
   qtiSimpleChoiceParagraphNodeSpec,
 } from '@qti-editor/interactions-shared';
+
+import type { SidePanelNodeDetail } from '../attributes/index.js';
+import type { Command, EditorState } from 'prosemirror-state';
+import type { NodeSpec } from 'prosemirror-model';
 
 export interface CookbookInsertAction {
   id: string;

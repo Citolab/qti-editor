@@ -7,6 +7,7 @@
 
 import { definePlugin, htmlFromNode, jsonFromNode, type Extension } from 'prosekit/core';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
+
 import type { EditorState } from 'prosekit/pm/state';
 
 /**
