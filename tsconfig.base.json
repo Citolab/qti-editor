@@ -95,6 +95,12 @@
       ],
       "@qti-editor/interactions-shared": [
         "packages/interactions-shared/src/index.ts"
+      ],
+      "@qti-editor/interactions-shared/*": [
+        "packages/interactions-shared/src/*"
+      ],
+      "@qti-editor/interactions-shared/*.js": [
+        "packages/interactions-shared/src/*.ts"
       ]
     }
   }

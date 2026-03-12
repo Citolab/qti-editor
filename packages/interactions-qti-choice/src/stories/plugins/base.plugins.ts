@@ -1,7 +1,7 @@
-import { baseKeymap, toggleMark, undo, redo } from 'prosemirror-commands';
+import { baseKeymap, toggleMark } from 'prosemirror-commands';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
-import { history } from 'prosemirror-history';
+import { history, undo, redo } from 'prosemirror-history';
 import { keymap } from 'prosemirror-keymap';
 import { blockSelectPlugin } from '@qti-editor/prosemirror-block-select';
 import { nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-node-attrs-sync';

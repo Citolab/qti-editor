@@ -29,6 +29,8 @@
   },
   "devDependencies": {
     "lit": "^3.3.1",
+    "@qti-editor/prosemirror-block-select": "workspace:*",
+    "@qti-editor/prosemirror-node-attrs-sync": "workspace:*",
     "prosemirror-model": "^1.25.4",
     "prosemirror-state": "^1.4.4"
   }

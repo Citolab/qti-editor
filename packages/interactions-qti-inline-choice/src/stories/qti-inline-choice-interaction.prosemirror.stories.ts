@@ -3,6 +3,7 @@ import { ref } from 'lit/directives/ref.js';
 import { DOMParser, Schema } from 'prosemirror-model';
 import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
+
 import 'prosemirror-gapcursor/style/gapcursor.css';
 import 'prosemirror-view/style/prosemirror.css';
 

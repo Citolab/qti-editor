@@ -1,17 +1,18 @@
-import { baseKeymap, toggleMark, undo, redo } from 'prosemirror-commands';
+import { baseKeymap, toggleMark } from 'prosemirror-commands';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
-import { history } from 'prosemirror-history';
+import { history, undo, redo } from 'prosemirror-history';
 import { keymap } from 'prosemirror-keymap';
 import { blockSelectPlugin } from '@qti-editor/prosemirror-block-select';
 import { nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-node-attrs-sync';
 
-import type { Schema } from 'prosemirror-model';
-import type { Plugin } from 'prosemirror-state';
 import { insertSelectPointInteraction } from '../../components/qti-select-point-interaction/qti-select-point-interaction.commands.js';
 
+import type { Schema } from 'prosemirror-model';
+import type { Command, Plugin } from 'prosemirror-state';
+
 export function createMarkKeymaps(schema: Schema): Plugin {
-  const bindings: Record<string, unknown> = {};
+  const bindings: Record<string, Command> = {};
   if (schema.marks.bold) bindings['Mod-b'] = toggleMark(schema.marks.bold);
   if (schema.marks.italic) bindings['Mod-i'] = toggleMark(schema.marks.italic);
   return keymap(bindings);

@@ -1,4 +1,5 @@
 import { Fragment } from 'prosemirror-model';
+
 import type { DOMOutputSpec, Node as ProseMirrorNode, NodeSpec, Schema } from 'prosemirror-model';
 
 type SelectPointWrapperAttrs = {

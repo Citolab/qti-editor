@@ -55,7 +55,11 @@ wcConfigs['flat/recommended'], // Storybook-specific rules
     'import/resolver': {
       typescript: {
         alwaysTryTypes: true,
-        project: './tsconfig.json'
+        project: [
+          './tsconfig.json',
+          './packages/*/tsconfig.json',
+          './apps/*/tsconfig.json'
+        ]
       }
     }
   },

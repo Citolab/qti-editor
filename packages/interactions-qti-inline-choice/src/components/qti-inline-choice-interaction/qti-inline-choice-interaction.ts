@@ -1,9 +1,9 @@
 import { css, html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
+import { Interaction } from '@qti-editor/interactions-shared';
 
 import styles from '@qti-components/interactions/components/qti-inline-choice-interaction/qti-inline-choice-interaction.styles.js';
 
-import { Interaction } from '@qti-editor/interactions-shared/components/interaction.js';
 
 let inlineChoiceMenuCounter = 0;
 
