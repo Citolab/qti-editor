@@ -3,7 +3,8 @@ import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
 import { history } from 'prosemirror-history';
 import { keymap } from 'prosemirror-keymap';
-import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror';
+import { blockSelectPlugin } from '@qti-editor/prosemirror-block-select';
+import { nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-node-attrs-sync';
 
 import type { Schema } from 'prosemirror-model';
 import type { Plugin } from 'prosemirror-state';

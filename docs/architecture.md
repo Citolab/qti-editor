@@ -16,7 +16,7 @@ The app wires extensions in `apps/editor/src/main.ts` using this order:
 3. `qtiEditorEventsExtension(...)` from `packages/plugin-editor-events/index.ts`
 4. `qtiCodePanelExtension(...)` from `packages/plugin-qti-code/index.ts`
 5. `defineToolbarExtension(...)` from `packages/plugin-toolbar/src/prosekit.ts`
-6. `blockSelectExtension` from `packages/prosemirror-block-select-plugin`
+6. `blockSelectExtension` from `packages/prosemirror-block-select`
 
 Why order matters:
 - QTI node specs/keymaps must be present before downstream plugins consume document shape.
