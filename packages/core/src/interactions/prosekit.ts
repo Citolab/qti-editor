@@ -22,6 +22,14 @@ import {
   qtiChoiceInteractionNodeSpec,
 } from '@qti-editor/interactions-qti-choice';
 import {
+  insertExtendedTextInteraction,
+  qtiExtendedTextInteractionNodeSpec,
+} from '@qti-editor/interactions-qti-extended-text';
+import {
+  insertMatchInteraction,
+  qtiMatchInteractionNodeSpec,
+} from '@qti-editor/interactions-qti-match';
+import {
   imgSelectPointNodeSpec,
   insertSelectPointInteraction,
   qtiSelectPointInteractionNodeSpec,
@@ -40,8 +48,11 @@ import {
 import {
   qtiPromptNodeSpec,
   qtiPromptParagraphNodeSpec,
+  qtiSimpleAssociableChoiceNodeSpec,
+  qtiSimpleAssociableChoiceParagraphNodeSpec,
   qtiSimpleChoiceNodeSpec,
   qtiSimpleChoiceParagraphNodeSpec,
+  qtiSimpleMatchSetNodeSpec,
 } from '@qti-editor/interactions-shared';
 import { defineBasicExtension } from 'prosekit/basic';
 import { defineKeymap, defineNodeSpec, union } from 'prosekit/core';
@@ -63,6 +74,11 @@ export function defineQtiInteractionsExtension() {
     defineNodeSpec({ name: 'qtiInlineChoiceParagraph', ...qtiInlineChoiceParagraphNodeSpec }),
     defineNodeSpec({ name: 'qtiInlineChoice', ...qtiInlineChoiceNodeSpec }),
     defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiMatchInteraction', ...qtiMatchInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiSimpleMatchSet', ...qtiSimpleMatchSetNodeSpec }),
+    defineNodeSpec({ name: 'qtiSimpleAssociableChoice', ...qtiSimpleAssociableChoiceNodeSpec }),
+    defineNodeSpec({ name: 'qtiSimpleAssociableChoiceParagraph', ...qtiSimpleAssociableChoiceParagraphNodeSpec }),
+    defineNodeSpec({ name: 'qtiExtendedTextInteraction', ...qtiExtendedTextInteractionNodeSpec }),
     defineKeymap({
       Enter: (state, dispatch, view) =>
         insertSimpleChoiceOnEnter(state, dispatch, view) || insertInlineChoiceOnEnter(state, dispatch, view),
@@ -70,6 +86,8 @@ export function defineQtiInteractionsExtension() {
       'Mod-Shift-l': insertInlineChoiceInteraction,
       'Mod-Shift-p': insertSelectPointInteraction,
       'Mod-Shift-t': insertTextEntryInteraction,
+      'Mod-Shift-m': insertMatchInteraction,
+      'Mod-Shift-e': insertExtendedTextInteraction,
     }),
   );
 }

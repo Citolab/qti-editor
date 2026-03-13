@@ -5,6 +5,19 @@ import {
   choiceNodeAttributePanelMetadataByNodeTypeName,
 } from '@qti-editor/interactions-qti-choice';
 import {
+  EXTENDED_TEXT_INTERACTION_TAG,
+  extendedTextComposerHandler,
+  extendedTextInteractionComposerMetadata,
+  extendedTextNodeAttributePanelMetadataByNodeTypeName,
+} from '@qti-editor/interactions-qti-extended-text';
+import { inlineChoiceNodeAttributePanelMetadataByNodeTypeName } from '@qti-editor/interactions-qti-inline-choice';
+import {
+  MATCH_INTERACTION_TAG,
+  matchComposerHandler,
+  matchInteractionComposerMetadata,
+  matchNodeAttributePanelMetadataByNodeTypeName,
+} from '@qti-editor/interactions-qti-match';
+import {
   SELECT_POINT_INTERACTION_TAG,
   selectPointComposerHandler,
   selectPointInteractionComposerMetadata,
@@ -16,7 +29,6 @@ import {
   textEntryInteractionComposerMetadata,
   textEntryNodeAttributePanelMetadataByNodeTypeName,
 } from '@qti-editor/interactions-qti-text-entry';
-import { inlineChoiceNodeAttributePanelMetadataByNodeTypeName } from '@qti-editor/interactions-qti-inline-choice';
 import {
   sharedNodeAttributePanelMetadataByNodeTypeName,
   type InteractionComposerHandler,
@@ -26,8 +38,10 @@ import {
 
 const interactionComposerMetadataByTagName: Record<string, InteractionComposerMetadata> = {
   [CHOICE_INTERACTION_TAG]: choiceInteractionComposerMetadata,
-  [TEXT_ENTRY_INTERACTION_TAG]: textEntryInteractionComposerMetadata,
+  [EXTENDED_TEXT_INTERACTION_TAG]: extendedTextInteractionComposerMetadata,
+  [MATCH_INTERACTION_TAG]: matchInteractionComposerMetadata,
   [SELECT_POINT_INTERACTION_TAG]: selectPointInteractionComposerMetadata,
+  [TEXT_ENTRY_INTERACTION_TAG]: textEntryInteractionComposerMetadata,
 };
 
 const interactionComposerMetadataByNodeTypeName = Object.values(interactionComposerMetadataByTagName).reduce<
@@ -39,16 +53,20 @@ const interactionComposerMetadataByNodeTypeName = Object.values(interactionCompo
 
 const nodeAttributePanelMetadataByNodeTypeName = {
   ...choiceNodeAttributePanelMetadataByNodeTypeName,
-  ...textEntryNodeAttributePanelMetadataByNodeTypeName,
+  ...extendedTextNodeAttributePanelMetadataByNodeTypeName,
+  ...inlineChoiceNodeAttributePanelMetadataByNodeTypeName,
+  ...matchNodeAttributePanelMetadataByNodeTypeName,
   ...selectPointNodeAttributePanelMetadataByNodeTypeName,
   ...sharedNodeAttributePanelMetadataByNodeTypeName,
-  ...inlineChoiceNodeAttributePanelMetadataByNodeTypeName,
+  ...textEntryNodeAttributePanelMetadataByNodeTypeName,
 } satisfies Record<string, NodeAttributePanelMetadata>;
 
 const handlersByTagName = new Map<string, InteractionComposerHandler>([
   [choiceComposerHandler.tagName, choiceComposerHandler],
-  [textEntryComposerHandler.tagName, textEntryComposerHandler],
+  [extendedTextComposerHandler.tagName, extendedTextComposerHandler],
+  [matchComposerHandler.tagName, matchComposerHandler],
   [selectPointComposerHandler.tagName, selectPointComposerHandler],
+  [textEntryComposerHandler.tagName, textEntryComposerHandler],
 ]);
 
 export function getInteractionComposerMetadata(tagName: string): InteractionComposerMetadata | undefined {

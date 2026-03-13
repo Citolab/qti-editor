@@ -1,11 +1,11 @@
 import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
+import { Interaction } from '@qti-editor/interactions-shared/components/interaction.js';
 
 import { watch } from '@qti-components/utilities';
 import { VocabularyMixin } from '@qti-components/interactions/mixins/vocabulary/vocabulary-mixin.js';
 import styles from '@qti-components/interactions/components/qti-choice-interaction/qti-choice-interaction.styles.js';
 
-import { Interaction } from '@qti-editor/interactions-shared/components/interaction.js';
 
 import type { CSSResultGroup } from 'lit';
 

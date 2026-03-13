@@ -14,11 +14,19 @@ import {
   qtiChoiceInteractionNodeSpec,
 } from '@qti-editor/interactions-qti-choice';
 import {
+  insertExtendedTextInteraction,
+  qtiExtendedTextInteractionNodeSpec,
+} from '@qti-editor/interactions-qti-extended-text';
+import {
   insertInlineChoiceInteraction,
   qtiInlineChoiceInteractionNodeSpec,
   qtiInlineChoiceNodeSpec,
   qtiInlineChoiceParagraphNodeSpec,
 } from '@qti-editor/interactions-qti-inline-choice';
+import {
+  insertMatchInteraction,
+  qtiMatchInteractionNodeSpec,
+} from '@qti-editor/interactions-qti-match';
 import {
   imgSelectPointNodeSpec,
   insertSelectPointInteraction,
@@ -31,8 +39,11 @@ import {
 import {
   qtiPromptNodeSpec,
   qtiPromptParagraphNodeSpec,
+  qtiSimpleAssociableChoiceNodeSpec,
+  qtiSimpleAssociableChoiceParagraphNodeSpec,
   qtiSimpleChoiceNodeSpec,
   qtiSimpleChoiceParagraphNodeSpec,
+  qtiSimpleMatchSetNodeSpec,
 } from '@qti-editor/interactions-shared';
 import { blockSelectPlugin } from '@qti-editor/prosemirror-block-select';
 import { nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-node-attrs-sync';
@@ -78,6 +89,11 @@ const cookbookQtiNodes: Record<string, NodeSpec> = {
   qtiInlineChoiceParagraph: qtiInlineChoiceParagraphNodeSpec,
   qtiInlineChoice: qtiInlineChoiceNodeSpec,
   qtiTextEntryInteraction: qtiTextEntryInteractionNodeSpec,
+  qtiMatchInteraction: qtiMatchInteractionNodeSpec,
+  qtiSimpleMatchSet: qtiSimpleMatchSetNodeSpec,
+  qtiSimpleAssociableChoice: qtiSimpleAssociableChoiceNodeSpec,
+  qtiSimpleAssociableChoiceParagraph: qtiSimpleAssociableChoiceParagraphNodeSpec,
+  qtiExtendedTextInteraction: qtiExtendedTextInteractionNodeSpec,
 };
 
 function createCookbookInsertActions(): InsertAction[] {
@@ -86,6 +102,8 @@ function createCookbookInsertActions(): InsertAction[] {
     { id: 'inline-choice', label: 'Inline Choice', command: insertInlineChoiceInteraction },
     { id: 'text-entry', label: 'Text Entry', command: insertTextEntryInteraction },
     { id: 'select-point', label: 'Select Point', command: insertSelectPointInteraction },
+    { id: 'match', label: 'Match Interaction', command: insertMatchInteraction },
+    { id: 'extended-text', label: 'Extended Text', command: insertExtendedTextInteraction },
   ];
 }
 

@@ -6,11 +6,19 @@ import {
   qtiChoiceInteractionNodeSpec
 } from '@qti-editor/interactions-qti-choice';
 import {
+  insertExtendedTextInteraction,
+  qtiExtendedTextInteractionNodeSpec
+} from '@qti-editor/interactions-qti-extended-text';
+import {
   insertInlineChoiceInteraction,
   qtiInlineChoiceInteractionNodeSpec,
   qtiInlineChoiceNodeSpec,
   qtiInlineChoiceParagraphNodeSpec
 } from '@qti-editor/interactions-qti-inline-choice';
+import {
+  insertMatchInteraction,
+  qtiMatchInteractionNodeSpec
+} from '@qti-editor/interactions-qti-match';
 import {
   imgSelectPointNodeSpec,
   insertSelectPointInteraction,
@@ -20,8 +28,11 @@ import { insertTextEntryInteraction, qtiTextEntryInteractionNodeSpec } from '@qt
 import {
   qtiPromptNodeSpec,
   qtiPromptParagraphNodeSpec,
+  qtiSimpleAssociableChoiceNodeSpec,
+  qtiSimpleAssociableChoiceParagraphNodeSpec,
   qtiSimpleChoiceNodeSpec,
-  qtiSimpleChoiceParagraphNodeSpec
+  qtiSimpleChoiceParagraphNodeSpec,
+  qtiSimpleMatchSetNodeSpec
 } from '@qti-editor/interactions-shared';
 import { blockSelectPlugin } from '@qti-editor/prosemirror-block-select';
 import { nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-node-attrs-sync';
@@ -88,7 +99,12 @@ const qtiNodes: Record<string, NodeSpec> = {
   qtiInlineChoiceInteraction: qtiInlineChoiceInteractionNodeSpec,
   qtiInlineChoiceParagraph: qtiInlineChoiceParagraphNodeSpec,
   qtiInlineChoice: qtiInlineChoiceNodeSpec,
-  qtiTextEntryInteraction: qtiTextEntryInteractionNodeSpec
+  qtiTextEntryInteraction: qtiTextEntryInteractionNodeSpec,
+  qtiMatchInteraction: qtiMatchInteractionNodeSpec,
+  qtiSimpleMatchSet: qtiSimpleMatchSetNodeSpec,
+  qtiSimpleAssociableChoice: qtiSimpleAssociableChoiceNodeSpec,
+  qtiSimpleAssociableChoiceParagraph: qtiSimpleAssociableChoiceParagraphNodeSpec,
+  qtiExtendedTextInteraction: qtiExtendedTextInteractionNodeSpec
 };
 
 function createInsertActions(): InsertAction[] {
@@ -96,7 +112,9 @@ function createInsertActions(): InsertAction[] {
     { label: 'Choice Interaction', command: insertChoiceInteraction },
     { label: 'Inline Choice', command: insertInlineChoiceInteraction },
     { label: 'Text Entry', command: insertTextEntryInteraction },
-    { label: 'Select Point', command: insertSelectPointInteraction }
+    { label: 'Select Point', command: insertSelectPointInteraction },
+    { label: 'Match Interaction', command: insertMatchInteraction },
+    { label: 'Extended Text', command: insertExtendedTextInteraction }
   ];
 }
 

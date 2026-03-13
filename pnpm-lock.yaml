@@ -144,6 +144,12 @@ importers:
       '@qti-editor/interactions-qti-choice':
         specifier: workspace:*
         version: link:../../packages/interactions-qti-choice
+      '@qti-editor/interactions-qti-extended-text':
+        specifier: workspace:*
+        version: link:../../packages/interactions-qti-extended-text
+      '@qti-editor/interactions-qti-match':
+        specifier: workspace:*
+        version: link:../../packages/interactions-qti-match
       '@qti-editor/interactions-qti-select-point':
         specifier: workspace:*
         version: link:../../packages/interactions-qti-select-point
@@ -211,9 +217,15 @@ importers:
       '@qti-editor/interactions-qti-choice':
         specifier: workspace:*
         version: link:../../packages/interactions-qti-choice
+      '@qti-editor/interactions-qti-extended-text':
+        specifier: workspace:*
+        version: link:../../packages/interactions-qti-extended-text
       '@qti-editor/interactions-qti-inline-choice':
         specifier: workspace:*
         version: link:../../packages/interactions-qti-inline-choice
+      '@qti-editor/interactions-qti-match':
+        specifier: workspace:*
+        version: link:../../packages/interactions-qti-match
       '@qti-editor/interactions-qti-select-point':
         specifier: workspace:*
         version: link:../../packages/interactions-qti-select-point
@@ -287,9 +299,15 @@ importers:
       '@qti-editor/interactions-qti-choice':
         specifier: workspace:*
         version: link:../../packages/interactions-qti-choice
+      '@qti-editor/interactions-qti-extended-text':
+        specifier: workspace:*
+        version: link:../../packages/interactions-qti-extended-text
       '@qti-editor/interactions-qti-inline-choice':
         specifier: workspace:*
         version: link:../../packages/interactions-qti-inline-choice
+      '@qti-editor/interactions-qti-match':
+        specifier: workspace:*
+        version: link:../../packages/interactions-qti-match
       '@qti-editor/interactions-qti-select-point':
         specifier: workspace:*
         version: link:../../packages/interactions-qti-select-point
@@ -372,6 +390,12 @@ importers:
       '@qti-editor/interactions-qti-choice':
         specifier: workspace:*
         version: link:../../packages/interactions-qti-choice
+      '@qti-editor/interactions-qti-extended-text':
+        specifier: workspace:*
+        version: link:../../packages/interactions-qti-extended-text
+      '@qti-editor/interactions-qti-match':
+        specifier: workspace:*
+        version: link:../../packages/interactions-qti-match
       '@qti-editor/interactions-qti-select-point':
         specifier: workspace:*
         version: link:../../packages/interactions-qti-select-point
@@ -445,6 +469,12 @@ importers:
       '@qti-editor/interactions-qti-choice':
         specifier: workspace:*
         version: link:../interactions-qti-choice
+      '@qti-editor/interactions-qti-extended-text':
+        specifier: workspace:*
+        version: link:../interactions-qti-extended-text
+      '@qti-editor/interactions-qti-match':
+        specifier: workspace:*
+        version: link:../interactions-qti-match
       '@qti-editor/interactions-qti-select-point':
         specifier: workspace:*
         version: link:../interactions-qti-select-point
@@ -491,9 +521,15 @@ importers:
       '@qti-editor/interactions-qti-choice':
         specifier: workspace:*
         version: link:../interactions-qti-choice
+      '@qti-editor/interactions-qti-extended-text':
+        specifier: workspace:*
+        version: link:../interactions-qti-extended-text
       '@qti-editor/interactions-qti-inline-choice':
         specifier: workspace:*
         version: link:../interactions-qti-inline-choice
+      '@qti-editor/interactions-qti-match':
+        specifier: workspace:*
+        version: link:../interactions-qti-match
       '@qti-editor/interactions-qti-select-point':
         specifier: workspace:*
         version: link:../interactions-qti-select-point
@@ -564,6 +600,31 @@ importers:
         specifier: ^1.4.4
         version: 1.4.4
 
+  packages/interactions-qti-extended-text:
+    dependencies:
+      '@qti-components/interactions':
+        specifier: 1.8.0
+        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities':
+        specifier: 1.1.0
+        version: 1.1.0(lit@3.3.2)
+      '@qti-editor/interactions-shared':
+        specifier: workspace:*
+        version: link:../interactions-shared
+    devDependencies:
+      lit:
+        specifier: ^3.3.1
+        version: 3.3.2
+      prosemirror-commands:
+        specifier: ^1.7.1
+        version: 1.7.1
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+
   packages/interactions-qti-inline-choice:
     dependencies:
       '@qti-components/interactions':
@@ -576,6 +637,31 @@ importers:
       lit:
         specifier: ^3.3.1
         version: 3.3.1
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+
+  packages/interactions-qti-match:
+    dependencies:
+      '@qti-components/interactions':
+        specifier: 1.8.0
+        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities':
+        specifier: 1.1.0
+        version: 1.1.0(lit@3.3.2)
+      '@qti-editor/interactions-shared':
+        specifier: workspace:*
+        version: link:../interactions-shared
+    devDependencies:
+      lit:
+        specifier: ^3.3.1
+        version: 3.3.2
+      prosemirror-commands:
+        specifier: ^1.7.1
+        version: 1.7.1
       prosemirror-model:
         specifier: ^1.25.4
         version: 1.25.4

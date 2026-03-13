@@ -1,5 +1,7 @@
 import type { ToolbarExtensionOptions, ToolbarInsertMenu } from './';
 import { insertChoiceInteraction } from '@qti-editor/interactions-qti-choice';
+import { insertExtendedTextInteraction } from '@qti-editor/interactions-qti-extended-text';
+import { insertMatchInteraction } from '@qti-editor/interactions-qti-match';
 import { insertInlineChoiceInteraction } from '@qti-editor/core/interactions';
 import { insertSelectPointInteraction } from '@qti-editor/interactions-qti-select-point';
 
@@ -72,6 +74,30 @@ const getQtiToolbarItems: ToolbarInsertItemsProvider = view => {
       canInsert: canInsert(view, nodeType),
       command: () => {
         insertInlineChoiceInteraction(view.state, view.dispatch);
+        view.focus();
+      }
+    });
+  }
+
+  if (schema.nodes.qtiMatchInteraction && schema.nodes.qtiSimpleMatchSet && schema.nodes.qtiSimpleAssociableChoice) {
+    const nodeType = schema.nodes.qtiMatchInteraction;
+    items.push({
+      label: 'Match Interaction',
+      canInsert: canInsert(view, nodeType),
+      command: () => {
+        insertMatchInteraction(view.state, view.dispatch);
+        view.focus();
+      }
+    });
+  }
+
+  if (schema.nodes.qtiExtendedTextInteraction) {
+    const nodeType = schema.nodes.qtiExtendedTextInteraction;
+    items.push({
+      label: 'Extended Text',
+      canInsert: canInsert(view, nodeType),
+      command: () => {
+        insertExtendedTextInteraction(view.state, view.dispatch);
         view.focus();
       }
     });

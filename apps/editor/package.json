@@ -17,6 +17,8 @@
     "@qti-components/interactions": "1.8.0",
     "@qti-editor/interactions-qti-choice": "workspace:*",
     "@qti-editor/interactions-qti-select-point": "workspace:*",
+    "@qti-editor/interactions-qti-extended-text": "workspace:*",
+    "@qti-editor/interactions-qti-match": "workspace:*",
     "@qti-components/theme": "1.1.0",
     "@qti-components/utilities": "1.1.0",
     "@qti-editor/prosemirror-block-select": "workspace:*",
