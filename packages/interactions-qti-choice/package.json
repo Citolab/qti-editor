@@ -20,8 +20,12 @@
     "clean": "rm -rf dist && find src -type f -name '*.js' -delete && find src -type f -name '*.js.map' -delete && find src -type f -name '*.d.ts' -delete && find src -type f -name '*.d.ts.map' -delete"
   },
   "dependencies": {
-    "@qti-components/interactions": "1.8.0",
-    "@qti-components/utilities": "1.1.0",
+    "@qti-components/base": "^1.4.0",
+    "@qti-components/interactions": "^1.10.0",
+    "@qti-components/utilities": "^1.3.0",
+    "@qti-components/choice-interaction": "^1.0.1",
+    "@qti-components/interactions-core": "^1.0.1",
+
     "@qti-editor/interactions-shared": "workspace:*"
   },
   "peerDependencies": {

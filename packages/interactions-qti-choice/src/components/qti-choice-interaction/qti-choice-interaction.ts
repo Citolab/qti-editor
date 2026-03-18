@@ -1,17 +1,25 @@
-import { html, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { Interaction } from '@qti-editor/interactions-shared/components/interaction.js';
 
 import { watch } from '@qti-components/utilities';
-import { VocabularyMixin } from '@qti-components/interactions/mixins/vocabulary/vocabulary-mixin.js';
-import styles from '@qti-components/interactions/components/qti-choice-interaction/qti-choice-interaction.styles.js';
-
+import styles from '@qti-components/choice-interaction/styles';
+import { VocabularyMixin } from '@qti-components/interactions-core';
 
 import type { CSSResultGroup } from 'lit';
 
 export type Orientation = 'horizontal' | 'vertical' | undefined;
 export class QtiChoiceInteractionEdit extends VocabularyMixin(Interaction, 'qti-simple-choice') {
-  static styles: CSSResultGroup = styles;
+  static override get styles() {
+    return [
+      styles,
+      css`
+        :host {
+          white-space: nowrap;
+        }
+      `
+    ];
+  }
 
   @property({ type: Number, attribute: 'min-choices' })
   public minChoices = 0;

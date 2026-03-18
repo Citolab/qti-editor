@@ -1,7 +1,7 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import styles from '@qti-components/interactions/elements/qti-simple-choice/qti-simple-choice.styles.js';
+// import styles from '@qti-components/interactions/elements/qti-simple-associable-choice/qti-simple-associable-choice.js';
 
 import type { CSSResultGroup } from 'lit';
 
@@ -10,20 +10,19 @@ import type { CSSResultGroup } from 'lit';
  * Used in qti-match-interaction and qti-associate-interaction.
  */
 export class QtiSimpleAssociableChoiceEdit extends LitElement {
-  static override styles: CSSResultGroup = [
-    styles,
-    css`
-      :host {
-        user-select: unset !important;
-        cursor: unset !important;
-        display: block;
-        padding: 0.5em;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        margin: 0.25em 0;
-      }
-    `
-  ];
+  static override styles = css`
+    :host {
+      display: flex;
+      user-select: none;
+    }
+    slot {
+      width: 100%;
+      display: block;
+    }
+    slot[name='qti-simple-associable-choice'] {
+      width: auto;
+    }
+  `;
 
   public internals: ElementInternals;
   constructor() {
@@ -44,7 +43,8 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
   public fixed: boolean = false;
 
   override render() {
-    return html`<slot></slot>`;
+    return html`<slot part="slot"></slot>
+      <slot part="dropslot" name="qti-simple-associable-choice"></slot> `;
   }
 }
 customElements.define('qti-simple-associable-choice', QtiSimpleAssociableChoiceEdit);

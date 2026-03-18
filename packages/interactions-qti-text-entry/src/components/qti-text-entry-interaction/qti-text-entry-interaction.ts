@@ -1,15 +1,24 @@
-import { html, LitElement, nothing } from 'lit';
+import { css, html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef } from 'lit/directives/ref.js';
-
-import styles from '@qti-components/interactions/components/qti-text-entry-interaction/qti-text-entry-interaction.styles.js';
-
 import { Interaction } from '@qti-editor/interactions-shared/components/interaction.js';
+
+import styles from '@qti-components/text-entry-interaction/styles';
+
 
 import type { CSSResultGroup } from 'lit';
 export class QtiTextEntryInteractionEdit extends Interaction {
-  static override styles: CSSResultGroup = styles;
+  static override get styles() {
+    return [
+      styles,
+      css`
+        :host {
+          white-space: nowrap;
+        }
+      `
+    ];
+  }
   inputRef = createRef<HTMLInputElement>();
 
   @property({ type: String, attribute: 'pattern-mask' }) patternMask: string;

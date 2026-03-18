@@ -22,6 +22,7 @@
   "dependencies": {
     "@qti-components/interactions": "1.8.0",
     "@qti-components/utilities": "1.1.0",
+    "@qti-components/extended-text-interaction": "^1.0.1",
     "@qti-editor/interactions-shared": "workspace:*"
   },
   "peerDependencies": {

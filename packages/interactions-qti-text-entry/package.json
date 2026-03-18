@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "@qti-components/interactions": "1.8.0",
-    "@qti-editor/interactions-shared": "workspace:*"
+    "@qti-editor/interactions-shared": "workspace:*",
+    "@qti-components/text-entry-interaction": "^1.0.0"
   },
   "peerDependencies": {
     "lit": "^3.3.1"

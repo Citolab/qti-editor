@@ -2,49 +2,23 @@ import { css, html } from 'lit';
 import { property } from 'lit/decorators.js';
 import { Interaction } from '@qti-editor/interactions-shared/components/interaction.js';
 
+import styles from '@qti-components/extended-text-interaction/styles';
+
 import type { CSSResultGroup } from 'lit';
 
-/**
- * Editor component for qti-extended-text-interaction.
- * Renders a textarea-like input for extended text responses.
- */
+
 export class QtiExtendedTextInteractionEdit extends Interaction {
-  static override styles: CSSResultGroup = css`
-    :host {
-      display: block;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 1em;
-      margin: 1em 0;
-      background: #fafafa;
-    }
-    ::slotted(qti-prompt) {
-      display: block;
-      margin-bottom: 1em;
-      font-weight: 500;
-    }
-    .textarea-placeholder {
-      width: 100%;
-      min-height: 6em;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background: #fff;
-      padding: 0.75em;
-      box-sizing: border-box;
-      color: #999;
-      font-style: italic;
-      resize: vertical;
-    }
-    :host(.qti-height-lines-3) .textarea-placeholder {
-      min-height: 3em;
-    }
-    :host(.qti-height-lines-6) .textarea-placeholder {
-      min-height: 6em;
-    }
-    :host(.qti-height-lines-15) .textarea-placeholder {
-      min-height: 15em;
-    }
-  `;
+  static override get styles() {
+    return [
+      styles,
+      css`
+        :host {
+          white-space: nowrap;
+        }
+      `
+    ];
+  }
+
 
   @property({ type: Number, attribute: 'expected-length' })
   public expectedLength: number | null = null;
