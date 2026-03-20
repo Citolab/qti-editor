@@ -23,7 +23,7 @@ import { defineQtiInteractionsExtension } from './extensions/qti-interactions-ex
 import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/toolbar';
 import { qtiCodePanelExtension } from './components/editor/code';
 import { qtiAttributesExtension } from './components/editor/attributes';
-import { defineSemanticPasteExtension } from './extensions/make-semantic-html.js';
+import { defineSemanticPasteExtension } from './extensions/paste-semantic-html.js';
 
 import type { QtiCodePanel } from './components/editor/code';
 import type { PropertyValues} from 'lit';
