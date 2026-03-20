@@ -17,6 +17,9 @@ export class QtiComposer extends LitElement {
   @state()
   public itemContext?: ItemContext;
 
+  @state()
+  private liveComposeEnabled = false;
+
   #xmlUrl = '';
   #xml = '';
   #formattedXml = '';
@@ -29,11 +32,17 @@ export class QtiComposer extends LitElement {
 
   override willUpdate(changedProperties: Map<string, unknown>) {
     super.willUpdate(changedProperties);
-    if (changedProperties.has('itemContext')) {
-      const xml = buildAssessmentItemXml(this.itemContext as ComposerItemContext);
-      this.#xml = xml;
-      this.#setXmlUrl(xml);
-      this.#formattedXml = formatXml(xml);
+    if (changedProperties.has('liveComposeEnabled') && !this.liveComposeEnabled) {
+      this.#clearXmlState();
+      return;
+    }
+
+    if (!this.liveComposeEnabled) {
+      return;
+    }
+
+    if (changedProperties.has('itemContext') || changedProperties.has('liveComposeEnabled')) {
+      this.#composeXml();
     }
   }
 
@@ -65,6 +74,24 @@ export class QtiComposer extends LitElement {
     if (!this.#xmlUrl) return;
     URL.revokeObjectURL(this.#xmlUrl);
     this.#xmlUrl = '';
+  }
+
+  #clearXmlState() {
+    this.#revokeXmlUrl();
+    this.#xml = '';
+    this.#formattedXml = '';
+  }
+
+  #composeXml() {
+    if (!this.itemContext) {
+      this.#clearXmlState();
+      return;
+    }
+
+    const xml = buildAssessmentItemXml(this.itemContext as ComposerItemContext);
+    this.#xml = xml;
+    this.#setXmlUrl(xml);
+    this.#formattedXml = formatXml(xml);
   }
 
   async #copyXmlToClipboard() {
@@ -109,11 +136,28 @@ export class QtiComposer extends LitElement {
     }
   }
 
+  #onLiveComposeToggle(event: Event) {
+    this.liveComposeEnabled = (event.target as HTMLInputElement).checked;
+  }
+
   override render() {
     return html`
       <section class="card border border-base-300/50 bg-base-100 p-4 space-y-3">
-        <h3 class="text-sm font-semibold">Composer XML</h3>
-        ${this.#xmlUrl
+        <div class="flex items-center justify-between gap-3">
+          <h3 class="text-sm font-semibold">Composer XML</h3>
+          <label class="flex items-center gap-2 text-xs">
+            <span class="font-medium">Live XML compose</span>
+            <input
+              class="toggle toggle-sm toggle-primary"
+              type="checkbox"
+              .checked=${this.liveComposeEnabled}
+              @change=${this.#onLiveComposeToggle}
+            />
+          </label>
+        </div>
+        ${!this.liveComposeEnabled
+          ? html`<p class="text-xs text-base-content/70">Live XML composing is off.</p>`
+          : this.#xmlUrl
           ? html`
               <div class="flex items-center gap-3">
                 <a
