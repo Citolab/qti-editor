@@ -15,10 +15,12 @@ import { nodeAttrsSyncExtension } from '@qti-editor/prosemirror-node-attrs-sync'
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/core/item-context';
 
 import { defineBasicExtension } from './extensions/basic-extension.js';
+import { definePasteDebugExtension } from './extensions/paste-debug-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension.js';
 import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/toolbar';
 import { qtiCodePanelExtension } from './components/editor/code';
 import { qtiAttributesExtension } from './components/editor/attributes';
+import { defineSemanticPasteExtension } from './extensions/make-semantic-html.js';
 
 import type { QtiCodePanel } from './components/editor/code';
 import type { PropertyValues} from 'lit';
@@ -69,6 +71,8 @@ export class QtiEditorApp extends LitElement {
     const extension = union(
       defineBasicExtension(),
       defineQtiInteractionsExtension(),
+      defineSemanticPasteExtension(),
+      // definePasteDebugExtension(),
       qtiAttributesExtension({
         eventTarget: this.attributesEventTarget
       }),
