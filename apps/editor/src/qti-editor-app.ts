@@ -156,7 +156,7 @@ export class QtiEditorApp extends LitElement {
     return html`
       <div class="mt-12 flex flex-col gap-6 lg:flex-row lg:items-start">
         <div
-          class="card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden"
+          class="card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm"
         >
           <qti-lit-editor ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></qti-lit-editor>
           <qti-composer class="block w-full"></qti-composer>
