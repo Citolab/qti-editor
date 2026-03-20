@@ -3,7 +3,9 @@ import './button';
 import './image-upload-popover';
 
 import { html, LitElement, nothing } from 'lit';
+
 import type { Editor } from 'prosekit/core';
+import { Selection } from 'prosekit/pm/state';
 import type { EditorView } from 'prosekit/pm/view';
 
 if (!customElements.get('prosekit-popover-root')) {
@@ -204,6 +206,7 @@ export class LitToolbar extends LitElement {
   declare insertMenus: ToolbarInsertMenu[] | null;
 
   private menuOpen: Record<string, boolean> = {};
+  private lastSelectionJSON: ReturnType<Selection['toJSON']> | null = null;
 
   constructor() {
     super();
@@ -214,6 +217,9 @@ export class LitToolbar extends LitElement {
   }
 
   private handleMenuOpenChange = (menuId: string, event: CustomEvent<boolean>) => {
+    if (event.detail) {
+      this.snapshotSelection();
+    }
     this.menuOpen = {
       ...this.menuOpen,
       [menuId]: event.detail
@@ -221,7 +227,35 @@ export class LitToolbar extends LitElement {
     this.requestUpdate();
   };
 
+  private snapshotSelection() {
+    const view: EditorView | undefined = (this.editor as any)?.view;
+    if (!view) return;
+    const { selection } = view.state;
+    if (selection.empty) return;
+    this.lastSelectionJSON = selection.toJSON();
+  }
+
+  private restoreSelection() {
+    const view: EditorView | undefined = (this.editor as any)?.view;
+    if (!view || !this.lastSelectionJSON) return;
+
+    try {
+      const restored = Selection.fromJSON(view.state.doc, this.lastSelectionJSON);
+      view.dispatch(view.state.tr.setSelection(restored));
+    } catch {
+      // Ignore stale selection snapshots after document changes.
+    }
+  }
+
+  private handleMenuTriggerMouseDown = (event: MouseEvent) => {
+    this.snapshotSelection();
+    event.preventDefault();
+  };
+
   private handleMenuInsert(menuId: string, item: ToolbarInsertItem) {
+    if (menuId === 'qti-convert') {
+      this.restoreSelection();
+    }
     item.command();
     this.menuOpen = {
       ...this.menuOpen,
@@ -287,6 +321,7 @@ export class LitToolbar extends LitElement {
                   .disabled=${!canInsertAny}
                   tooltip=${menu.tooltip ?? 'Insert'}
                   icon=${menu.icon ?? 'i-lucide-plus size-5 block'}
+                  @mousedown=${this.handleMenuTriggerMouseDown}
                 ></lit-editor-button>
               </prosekit-popover-trigger>
               <prosekit-popover-content

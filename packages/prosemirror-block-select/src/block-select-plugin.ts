@@ -135,6 +135,25 @@ function findBlockAt(doc: ProsemirrorNode, pos: number): { pos: number; node: Pr
   return null;
 }
 
+// function findBlockAt(doc: ProsemirrorNode, pos: number): { pos: number; node: ProsemirrorNode } | null {
+//   const safePos = Math.max(0, Math.min(pos, doc.content.size));
+//   const $pos = doc.resolve(safePos);
+
+//   // Always normalize to the top-level block under the cursor.
+//   // This avoids anchoring inside inner paragraph wrappers (e.g. list content),
+//   // which causes visually "half" selections that skip first markers.
+//   if ($pos.depth >= 1) {
+//     const rootBlock = $pos.node(1);
+//     if (rootBlock && rootBlock.isBlock) {
+//       return { pos: $pos.start(1) - 1, node: rootBlock };
+//     }
+//   }
+
+//   const after = $pos.nodeAfter;
+//   if (after && after.isBlock) return { pos: $pos.pos, node: after };
+//   return null;
+// }
+
 /**
  * The core ProseMirror Plugin for block selection.
  */

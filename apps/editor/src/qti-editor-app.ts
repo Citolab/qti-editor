@@ -24,8 +24,8 @@ import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/
 import { qtiCodePanelExtension } from './components/editor/code';
 import { qtiAttributesExtension } from './components/editor/attributes';
 import { defineSemanticPasteExtension } from './extensions/paste-semantic-html.js';
+import { toolbarConvertMenus } from './extensions/toolbar-convert-menus.js';
 
-import type { QtiCodePanel } from './components/editor/code';
 import type { PropertyValues} from 'lit';
 import type { QtiAttributesPanel } from './components/editor/attributes';
 
@@ -90,7 +90,7 @@ export class QtiEditorApp extends LitElement {
       }),
       defineToolbarExtension({
         getEditor: () => this.editor,
-        insertMenus: toolbarInsertMenus
+        insertMenus: [...toolbarInsertMenus, ...toolbarConvertMenus]
       }),
       blockSelectExtension,
       nodeAttrsSyncExtension
