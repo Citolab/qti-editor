@@ -15,7 +15,10 @@ import { nodeAttrsSyncExtension } from '@qti-editor/prosemirror-node-attrs-sync'
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/core/item-context';
 
 import { defineBasicExtension } from './extensions/basic-extension.js';
-import { definePasteDebugExtension } from './extensions/paste-debug-extension.js';
+import {
+  defineLocalStorageDocPersistenceExtension,
+  readPersistedStateFromLocalStorage,
+} from './extensions/local-storage-doc-persistence-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension.js';
 import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/toolbar';
 import { qtiCodePanelExtension } from './components/editor/code';
@@ -28,6 +31,7 @@ import type { QtiAttributesPanel } from './components/editor/attributes';
 
 
 const VOID_HTML_TAGS = ['img', 'br', 'hr', 'input', 'meta', 'link', 'source', 'area', 'col', 'embed', 'param', 'track', 'wbr'];
+const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
 
 function toXmlCompatibleFragment(html: string): string {
   const voidTagPattern = new RegExp(`<(${VOID_HTML_TAGS.join('|')})(\\s[^<>]*?)?>`, 'gi');
@@ -72,7 +76,9 @@ export class QtiEditorApp extends LitElement {
       defineBasicExtension(),
       defineQtiInteractionsExtension(),
       defineSemanticPasteExtension(),
-      // definePasteDebugExtension(),
+      defineLocalStorageDocPersistenceExtension({
+        storageKey: EDITOR_DOC_STORAGE_KEY,
+      }),
       qtiAttributesExtension({
         eventTarget: this.attributesEventTarget
       }),
@@ -90,7 +96,16 @@ export class QtiEditorApp extends LitElement {
       nodeAttrsSyncExtension
     );
 
-    this.editor = createEditor({ extension });
+    const restoredState = readPersistedStateFromLocalStorage(EDITOR_DOC_STORAGE_KEY);
+    try {
+      this.editor = createEditor({
+        extension,
+        defaultContent: restoredState.doc,
+      });
+    } catch {
+      window.localStorage.removeItem(EDITOR_DOC_STORAGE_KEY);
+      this.editor = createEditor({ extension });
+    }
     this.editorRef = createRef<HTMLDivElement>();
     this.panelRef = createRef<QtiAttributesPanel>();
     this.codePanelRef = createRef<QtiCodePanel>();
