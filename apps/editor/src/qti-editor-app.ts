@@ -45,7 +45,7 @@ export class QtiEditorApp extends LitElement {
   private editor: Editor;
   private editorRef: Ref<HTMLDivElement>;
   private panelRef: Ref<QtiAttributesPanel>;
-  private codePanelRef: Ref<QtiCodePanel>;
+  // private codePanelRef: Ref<QtiCodePanel>;
   private attributesEventTarget: EventTarget;
   private editorEventsTarget: EventTarget;
   private codeEventTarget: EventTarget;
@@ -108,7 +108,7 @@ export class QtiEditorApp extends LitElement {
     }
     this.editorRef = createRef<HTMLDivElement>();
     this.panelRef = createRef<QtiAttributesPanel>();
-    this.codePanelRef = createRef<QtiCodePanel>();
+    // this.codePanelRef = createRef<QtiCodePanel>();
 
     // example: use events from events plugin, probably not even necessary
     this.editorEventsTarget.addEventListener('qti:content:change', event => {
@@ -145,10 +145,12 @@ export class QtiEditorApp extends LitElement {
       (this.panelRef.value as QtiAttributesPanel).editorView = (this.editor as any).view ?? null;
     }
 
-    if (this.codePanelRef.value) {
-      this.codePanelRef.value.eventTarget = this.codeEventTarget;
-    }
+    // if (this.codePanelRef.value) {
+    //   this.codePanelRef.value.eventTarget = this.codeEventTarget;
+    // }
   }
+            // <!-- <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel> -->
+
 
   override render() {
     return html`
@@ -158,7 +160,6 @@ export class QtiEditorApp extends LitElement {
         >
           <qti-lit-editor ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></qti-lit-editor>
           <qti-composer class="block w-full"></qti-composer>
-          <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel>
         </div>
         <div class="w-full lg:w-80 lg:shrink-0">
           <qti-composer-metadata-form
