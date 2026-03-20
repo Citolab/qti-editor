@@ -128,19 +128,32 @@ function findBlockAt(doc: ProsemirrorNode, pos: number): { pos: number; node: Pr
   const safePos = Math.max(0, Math.min(pos, doc.content.size));
   const $pos = doc.resolve(safePos);
 
-  // Always normalize to the top-level block under the cursor.
-  // This avoids anchoring inside inner paragraph wrappers (e.g. list content),
-  // which causes visually "half" selections that skip first markers.
+  // Default behavior: nearest block under cursor.
+  // This preserves text selection ergonomics for slotted/shadow content.
+  let nearest: { pos: number; node: ProsemirrorNode } | null = null;
+  const after = $pos.nodeAfter;
+  if (after && after.isBlock) {
+    nearest = { pos: $pos.pos, node: after };
+  } else {
+    for (let i = $pos.depth; i >= 0; i--) {
+      const node = $pos.node(i);
+      if (node && node.isBlock && node !== doc) {
+        nearest = { pos: $pos.before(i), node };
+        break;
+      }
+    }
+  }
+  if (!nearest) return null;
+
+  // Flat-list special case: normalize child paragraph hits to the top-level list
+  // wrapper so block-select includes the first marker (no "half selection").
   if ($pos.depth >= 1) {
     const rootBlock = $pos.node(1);
-    if (rootBlock && rootBlock.isBlock) {
+    if (rootBlock?.isBlock && rootBlock.type.name === 'list' && nearest.node.type.name !== 'list') {
       return { pos: $pos.start(1) - 1, node: rootBlock };
     }
   }
-
-  const after = $pos.nodeAfter;
-  if (after && after.isBlock) return { pos: $pos.pos, node: after };
-  return null;
+  return nearest;
 }
 
 /**
