@@ -1,149 +1,434 @@
 # QTI Editor Architecture
 
 ## Purpose
-This document is the canonical architecture reference for this repository. Use it to decide where changes belong before writing code.
 
-## System Map
-- App shell: `apps/editor/src/main.ts`
-- Editor runtime: ProseKit editor created with `createEditor` and composed via `union(...)`
-- Plugin packages: `packages/plugin-*`
-- ProseMirror utility plugins: `packages/prosemirror-*`
+This document is the canonical architecture reference for this repository.
 
-## Extension Composition And Order
-The app wires extensions in `apps/editor/src/main.ts` using this order:
-1. `defineQtiInteractionsExtension()` from `packages/core/src/interactions/prosekit.ts`
-2. `qtiAttributesExtension(...)` from `packages/plugin-qti-attributes/index.ts`
-3. `qtiEditorEventsExtension(...)` from `packages/plugin-editor-events/index.ts`
-4. `qtiCodePanelExtension(...)` from `packages/plugin-qti-code/index.ts`
-5. `defineToolbarExtension(...)` from `packages/plugin-toolbar/src/prosekit.ts`
-6. `blockSelectExtension` from `packages/prosemirror-block-select-plugin`
+Its job is to keep the package structure stable as the codebase grows, especially when new code is scaffolded with AI. Before adding files, use this document to decide:
 
-Why order matters:
-- QTI node specs/keymaps must be present before downstream plugins consume document shape.
-- Attribute/code/events plugins observe state and emit data for UI panels.
-- Toolbar extension mounts UI around editor DOM and expects editor instance already created.
+- whether the code belongs in `apps/editor`
+- whether it belongs in `registry/`
+- whether it belongs in a reusable package
+- which package layer owns it
 
-## Data And Event Flow
-### ProseMirror Updates
-- ProseMirror state updates inside plugin `view.update(...)` handlers.
-- Plugins serialize or inspect state, then emit custom events to configured event targets.
+If a generated change cannot be placed clearly using this document, stop and resolve the ownership question before writing more code.
 
-### Event Targets In App
-Defined in `apps/editor/src/main.ts`:
-- `attributesEventTarget`
-- `editorEventsTarget`
-- `codeEventTarget`
+## Core Rule
 
-Each target is passed into its plugin and matching panel/listener.
+`apps/*` are examples and demos.
 
-### Event Contracts
-Editor events plugin (`packages/plugin-editor-events/index.ts`):
-- `qti:content:change` -> `QtiContentChangeEventDetail` (`json`, `html`, `timestamp`)
-- `qti:selection:change` -> `QtiSelectionChangeEventDetail` (`from`, `to`, `empty`, `timestamp`)
+They are not the source of truth for reusable behavior, domain logic, editor primitives, or QTI composition logic.
 
-Attributes plugin (`packages/plugin-qti-attributes/index.ts`):
-- `qti:attributes:update` -> `SidePanelEventDetail` (`nodes`, `activeNode`, `open`)
+When in doubt, prefer putting reusable logic in a package and letting the app consume it.
 
-Code plugin (`packages/plugin-qti-code/index.ts`):
-- `qti:code:update` -> `QtiCodeUpdateDetail` (`json`, `html`, `xml`, `timestamp`)
+## Target Topology
 
-## UI Components And Responsibilities
-- `qti-attributes-panel` (`packages/plugin-qti-attributes/qti-attributes-panel.ts`):
-  - Consumes `SidePanelEventDetail`
-  - Renders editable node attrs
-  - Applies attr updates back to editor view
-- `qti-code-panel` (`packages/plugin-qti-code/qti-code-panel.ts`):
-  - Consumes `QtiCodeUpdateDetail`
-  - Shows HTML/JSON/XML tabs for generated output
-- Toolbar component (`packages/plugin-toolbar/src/toolbar.ts` + `packages/plugin-toolbar/src/prosekit.ts`):
-  - Mounted near editor root
-  - Provides insert actions/menu wiring
+```text
+packages/
+  prosemirror/
+    core
+    attributes
+    attributes-ui
+    attributes-ui-prosekit
+    interaction-shared
+    interaction-choice
+    interaction-inline-choice
+    interaction-match
+    interaction-text-entry
+    interaction-extended-text
+    interaction-select-point
 
-## Serialization Boundaries
-- Content serialization lives in event/code plugins, not in app shell.
-- `QtiCodeUpdateDetail` is produced in `packages/plugin-qti-code/index.ts`.
-- Current XML path in code plugin:
-  - Build HTML from ProseMirror DOM serializer
-  - Wrap HTML in `<qti-item-body>`
-  - Parse with `DOMParser(..., 'application/xml')`
-  - Serialize with `XMLSerializer`
-  - Fall back to wrapped string when parser reports `parsererror`
+  qti/
+    core
+    editor-kit
 
-## Interaction Composition Ownership
-- Interaction packages own XML normalization and response declaration generation in per-interaction `*.compose.ts` modules.
-- Shared interaction primitives (prompt/simple-choice nodes, shared command helpers, composer types) live in `packages/interactions-shared`.
-- Each interaction package (`packages/interactions-qti-*`) owns its local metadata and composer handler.
-- `packages/core/src/interactions/composer.ts` is the aggregation boundary that exposes:
-  - handler lookup for core composer
-  - node attribute metadata for the app side panel
-- Select-point authoring model uses a composed structure in ProseMirror:
-  - wrapper `qtiSelectPointInteraction` is an isolating container (`qtiPrompt imgSelectPoint`)
-  - wrapper component owns upload/drawing UI and persists area mappings at wrapper level
-  - `imgSelectPoint` node serializes directly to native QTI `<img>`
-- Core composer (`packages/core/src/composer/index.ts`) orchestrates document assembly only:
-  - append response declarations
-  - apply identifier normalization
-  - emit outcomes and response-processing
-- Adding support for a new interaction requires:
-  - interaction compose module in its `packages/interactions-qti-*` package
-  - metadata + handler export from that package
-  - registration in `packages/core/src/interactions/composer.ts`
-- Core composer should not gain per-interaction special-casing logic.
+  prosekit/
+    core
 
-## Package Boundaries
-Belongs in plugin packages:
-- ProseMirror plugin definitions and options
-- Event payload types and event names
-- Panel/component behavior tied to that plugin domain
+registry/
+  prosekit-core/
+  prosekit-ui/
 
-Belongs in app wiring (`apps/editor/src/main.ts`):
-- Extension composition order
-- Event target ownership
-- Cross-plugin integration decisions
-- App-level trigger predicates and menu configuration
+apps/
+  editor/
+  cookbook-*
+```
 
-## Change Patterns
-### Add A Plugin Safely
-1. Create plugin package entrypoint and typed options/events.
-2. Export integration surface.
-3. Wire extension in `apps/editor/src/main.ts` with explicit order.
-4. If UI is needed, mount a dedicated component and connect event target.
+This remains the intended end state even while the current codebase is still migrating toward it.
 
-### Add A New Emitted Event Safely
-1. Define event detail type in plugin package.
-2. Emit from plugin `view` lifecycle with dedup logic when needed.
-3. Add listener/consumer in app or panel with matching target and event name.
-4. Keep event name stable; document breaking changes.
+## Layer Ownership
 
-### Add A Panel Mode/Output Safely
-1. Extend detail contract first (producer + type).
-2. Add rendering mode in panel component.
-3. Keep fallback content for empty state.
-4. Verify output tab content with realistic editor state.
+### `packages/prosemirror/*`
 
-## Verification Checklist
+Owns:
+
+- generic ProseMirror plugins and utilities
+- interaction node specs
+- commands
+- node views and authoring behavior
+- generic attributes engine
+- framework-agnostic or ProseMirror-first editor behavior
+- minimal ProseMirror-first attributes UI for direct field editing
+
+Does not own:
+
+- QTI XML composition orchestration
+- app-specific wiring
+- product/demo shell code
+
+### `packages/qti/*`
+
+Owns:
+
+- assessment item composition
+- per-interaction QTI compose modules
+- XML generation
+- response declarations
+- identifier normalization
+- QTI metadata registries
+- supported QTI editor-kit assembly
+
+Does not own:
+
+- generic ProseMirror behavior
+- app-specific UI
+- copyable scaffold code
+
+### `packages/prosekit/*`
+
+Owns:
+
+- stable reusable ProseKit package surfaces
+- reusable integration primitives that are generic enough to maintain as package APIs
+- richer ProseKit-oriented attributes UI affordances when those become stable package surfaces
+
+Does not own:
+
+- domain-specific QTI business logic
+- temporary starter code
+- app-local experiments
+
+### `registry/prosekit-core/*`
+
+Owns:
+
+- copyable ProseKit-oriented editor infrastructure that may eventually belong in ProseKit itself
+- upstreamable block-handle-style integrations
+- starter code that is still proving its API shape
+
+Does not own:
+
+- canonical domain logic
+- QTI composition rules
+- app-specific product behavior
+
+### `registry/prosekit-ui/*`
+
+Owns:
+
+- copyable ProseKit-based UI that is useful in this ecosystem but should not become ProseKit core
+- code panel
+- composer panel
+- composer metadata form
+- QTI-facing panel shells
+
+Does not own:
+
+- generic editor engine behavior
+- QTI composition logic
+- the only implementation of a reusable package contract
+
+### `apps/*`
+
+Owns:
+
+- runnable demos
+- full authoring flows
+- realistic playgrounds
+- end-to-end integration references
+- app shell behavior
+
+Does not own:
+
+- reusable editor primitives
+- reusable interaction behavior
+- reusable attributes logic
+- canonical composition logic
+- the only copy of code intended for reuse elsewhere
+
+## Installed Registry Code In Apps
+
+Apps may contain code installed from the registry, but that code must be treated differently from app-local code.
+
+Recommended layout inside an app:
+
+```text
+apps/editor/src/components/
+  registry/
+  local/
+  overrides/
+```
+
+Meaning:
+
+- `registry/*`
+  copied scaffold code that still conceptually tracks a registry source
+- `local/*`
+  app-specific code for this editor only
+- `overrides/*`
+  intentional forks of installed registry code
+
+### Rules for installed registry code
+
+- Do not mix installed registry code and app-local code in the same folder without an explicit reason.
+- Do not silently customize copied registry code in place.
+- If a copied registry file is changed for this app only, treat it as a fork and move or mark it under `overrides/*`.
+- If a change should benefit other editors, update the registry source instead of only the installed app copy.
+
+### Synced vs forked state
+
+Installed registry files should have a visible state:
+
+- `synced`
+  still intended to track the shared registry scaffold
+- `forked`
+  intentionally diverged for this app instance
+
+Recommended mechanisms:
+
+- header comment in copied files that records the registry source
+- app-level manifest file such as `apps/editor/registry-components.json`
+- a check script or CI rule that flags edits under `src/components/registry/*` unless the manifest marks them as `forked`
+
+### What not to do
+
+- Do not delete installed components on every app start to force a fresh install.
+- Do not rely only on memory or convention to remember which files came from the registry.
+- Do not leave copied registry files in a misleading location that makes them look like canonical shared code.
+
+The goal is visibility and intentional divergence, not automatic destruction and reinstallation.
+
+## Placement Decision Rules
+
+Use these rules before adding code.
+
+### Rule 1: Is it reusable beyond one app?
+
+- If no, it may belong in `apps/*`.
+- If yes, it does not belong only in `apps/*`.
+
+### Rule 2: Is it editor behavior or document behavior?
+
+- If yes, it belongs in `packages/prosemirror/*`.
+
+Examples:
+
+- commands
+- node specs
+- plugin state
+- selection helpers
+- transaction helpers
+- block selection
+- attribute syncing
+
+### Rule 3: Is it QTI semantics or export behavior?
+
+- If yes, it belongs in `packages/qti/*`.
+
+Examples:
+
+- XML composition
+- per-interaction compose handlers
+- response declaration generation
+- identifier normalization
+- QTI metadata registries
+- QTI editor-kit assembly
+
+### Rule 4: Is it stable reusable ProseKit infrastructure?
+
+- If yes, it belongs in `packages/prosekit/*`.
+
+Examples:
+
+- richer attributes UI affordances
+- icon-based class pickers
+- curated choice UIs
+- stable ProseKit-specific editor controls
+
+### Rule 5: Is it copyable starter code rather than a stable package API?
+
+- If yes, it belongs in `registry/`.
+
+Then decide which registry track:
+
+- `registry/prosekit-core/*`
+  for ProseKit-core candidates
+- `registry/prosekit-ui/*`
+  for ProseKit-based UI that should remain outside ProseKit core
+
+### Rule 6: Is it only needed to demonstrate usage?
+
+- If yes, prefer `apps/*` or Storybook stories.
+- Do not place demo-only code in reusable packages.
+
+## AI Scaffolding Rules
+
+These rules are specifically for future AI-assisted scaffolding.
+
+Before generating code, answer these questions explicitly:
+
+1. Is this reusable package code, registry scaffold code, or app example code?
+2. If it is package code, which layer owns it: `prosemirror`, `qti`, or `prosekit`?
+3. If it is registry code, is it a ProseKit-core candidate or ProseKit UI?
+4. If it is app code, why is it not reusable package or registry code?
+
+If those questions are not answered, the change is not ready to scaffold.
+
+### What AI should not do
+
+- Do not add reusable logic only in `apps/editor`.
+- Do not add canonical business logic in `registry/`.
+- Do not add generic ProseMirror behavior in `packages/qti/*`.
+- Do not add QTI composition logic in `packages/prosemirror/*`.
+- Do not create new top-level architecture buckets without updating this document first.
+- Do not modify installed registry code in an app without deciding whether the change belongs in the registry source or is an intentional app-local fork.
+
+Specifically:
+
+- interaction node specs, commands, node views, and authoring behavior belong in `packages/prosemirror/*`
+- per-interaction QTI compose handlers belong in `packages/qti/core`
+- a simple field-based attributes UI can live under the ProseMirror layer
+- a richer ProseKit-oriented attributes UI can live under the ProseMirror or ProseKit layer depending on maturity:
+  - start as `packages/prosemirror/attributes-ui-prosekit` while tightly coupled to the attributes engine
+  - promote into `packages/prosekit/*` only if it becomes a stable reusable ProseKit surface
+
+### Promotion rules
+
+Generated code may start in one of three places depending on maturity:
+
+- `apps/*`
+  if it is a demo-only integration
+- `registry/*`
+  if it is copyable starter code still proving its shape
+- `packages/*`
+  if it is already a stable reusable surface
+
+Promotion path:
+
+- app experiment
+  -> registry scaffold
+  -> reusable package
+
+or
+
+- app experiment
+  -> reusable package
+
+depending on whether the code is intended to be copied or consumed as an API.
+
+## Naming Rules
+
+- Use `interaction-*` for editor-facing interaction packages.
+- Use `qti-*` only for packages that primarily own QTI semantics or export behavior.
+- Use `prosekit-*` only for stable reusable ProseKit surfaces.
+- Keep package names stable once introduced unless there is an explicit migration plan.
+
+## Storybook And Registry Roles
+
+### Storybook
+
+Storybook is the primary documentation surface for:
+
+- package documentation
+- isolated editor behavior
+- reusable UI states
+- regression fixtures
+- guided “build your editor” documentation
+
+Storybook should document:
+
+- how to start from a bare ProseMirror editor
+- how to add interaction packages
+- how to add styles
+- how to add `block-select`
+- how to add `sync-attributes`
+- how to add the attributes engine
+- how to add attribute, code, and composer panels
+- how to add optional ProseKit-oriented pieces
+
+### Registry
+
+Registry is the primary distribution surface for:
+
+- copyable UI components
+- starter scaffolds
+- cookbook-style example installs
+
+The registry remains one service with one build/serve flow, even though it contains two organizational tracks:
+
+- `registry/prosekit-core/*`
+- `registry/prosekit-ui/*`
+
+## Tests
+
+### Unit tests belong in packages
+
+Unit tests should verify:
+
+- commands
+- node specs
+- parsing and serialization
+- plugin state transitions
+- helper functions
+- QTI composition helpers
+- per-interaction compose handlers
+- extension builder logic
+
+These should live next to package source, not in app tests.
+
+### Integration tests verify cross-package contracts
+
+Integration tests should cover:
+
+- real `EditorState` insertion flows
+- attributes engine transaction updates
+- interaction schema compatibility
+- generated XML from realistic documents
+- event wiring across editor-kit surfaces
+
+### App tests stay thin
+
+App tests should only cover:
+
+- app shell behavior
+- full integration smoke paths
+- demo-specific wiring
+
+Apps must not become the only place where reusable behavior is verified.
+
+## Verification Order
+
 Run the narrowest useful check first:
-1. Changed package build:
-   - `pnpm --filter @qti-editor/plugin-qti-code build`
-   - `pnpm --filter @qti-editor/plugin-qti-attributes build`
-   - `pnpm --filter @qti-editor/plugin-editor-events build`
-2. App build:
-   - `pnpm --filter @qti-editor/app build`
-3. Cross-package verification:
-   - `pnpm -r --filter "./packages/**" run build`
-4. Repository lint check (non-mutating):
-   - `pnpm lint:check`
 
-## Known Constraints
-- Some QTI dependencies are linked via yalc overrides (`package.json` `pnpm.overrides`).
-- App styling uses Tailwind + DaisyUI (`apps/editor`); light DOM components can consume those classes directly.
-- Shadow DOM components do not automatically receive app-level utility classes unless styles are provided in shadow scope.
-- Firebase hosting scripts exist for deploy/serve; local app development remains Vite-based.
+1. changed package build
+2. affected package tests
+3. Storybook story verification when UI or regressions are involved
+4. app build if package behavior surfaces in app integration
+5. broader workspace build only when multiple shared contracts moved
 
-## Ownership Pointers
-- Shared interaction primitives: `packages/interactions-shared`
-- Interaction-specific schema/commands/components/composer: `packages/interactions-qti-*`
-- Attribute side panel and update flow: `packages/plugin-qti-attributes`
-- Code preview and serialization payloads: `packages/plugin-qti-code`
-- Generic editor event emission: `packages/plugin-editor-events`
-- Toolbar integration: `packages/plugin-toolbar`
+Typical commands:
+
+- `pnpm --filter <changed-package> build`
+- `pnpm --filter @qti-editor/app build`
+- `pnpm -r --filter "./packages/**" run build`
+- `pnpm lint:check`
+
+## Migration Note
+
+Some current source paths still reflect the old structure. During migration:
+
+- preserve existing import contracts unless a rename is deliberate
+- move logic toward the target layers described above
+- do not treat current file locations as proof of correct ownership
+
+When this document and the current implementation disagree, use the target ownership model as the decision guide for new work.
