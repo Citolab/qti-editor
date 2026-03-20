@@ -53,3 +53,7 @@ qti-select-point-interaction {
 qti-text-entry-interaction {
    @apply  bg-slate-100 rounded p-2;
 }
+
+qti-extended-text-interaction {
+   @apply  bg-slate-100 rounded p-2;
+}

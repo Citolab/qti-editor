@@ -6,8 +6,6 @@ import { Interaction } from '@qti-editor/interactions-shared/components/interact
 
 import styles from '@qti-components/text-entry-interaction/styles';
 
-
-import type { CSSResultGroup } from 'lit';
 export class QtiTextEntryInteractionEdit extends Interaction {
   static override get styles() {
     return [
@@ -25,18 +23,17 @@ export class QtiTextEntryInteractionEdit extends Interaction {
 
   @property({ type: String, attribute: 'placeholder-text' }) placeholderText: string;
 
+  private _getPlaceholderText(): string {
+    if (this.placeholderText) {
+      return this.placeholderText;
+    }
+    return 'Candidate enters text response here...';
+  }
+
   override render() {
-    return html`<input
-      part="input"
-      spellcheck="false"
-      autocomplete="off"
-      @keydown="${(event: KeyboardEvent) => event.stopImmediatePropagation()}"
-      type="${this.patternMask == '[0-9]*' ? 'number' : 'text'}"
-      placeholder="${ifDefined(this.placeholderText ? this.placeholderText : undefined)}"
-      pattern="${ifDefined(this.patternMask ? this.patternMask : undefined)}"
-      maxlength=${1000}
-      readonly
-    />`;
+    return html`<div part="input">
+      ${this._getPlaceholderText()}
+    </div>`;
   }
 }
 

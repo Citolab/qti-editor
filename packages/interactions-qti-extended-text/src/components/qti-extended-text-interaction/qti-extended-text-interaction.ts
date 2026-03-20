@@ -67,8 +67,8 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
   override render() {
     const style = this.expectedLines ? `min-height: ${this._getMinHeight()}` : '';
     return html`
-      <slot></slot>
-      <div class="textarea-placeholder" style="${style}">
+      <slot name="prompt"></slot>
+      <div part="textarea">
         ${this._getPlaceholderText()}
       </div>
     `;
