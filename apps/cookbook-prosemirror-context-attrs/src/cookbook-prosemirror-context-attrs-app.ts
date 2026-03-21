@@ -7,35 +7,35 @@ import { provide } from '@lit/context';
 import { html, LitElement, type PropertyValues } from 'lit';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { customElement } from 'lit/decorators.js';
-import { buildAssessmentItemXml, formatXml } from '@qti-editor/core/composer';
-import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/core/item-context';
+import { buildAssessmentItemXml, formatXml } from '@qti-editor/qti-core/composer';
+import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/qti-editor-kit/item-context';
 import {
   insertChoiceInteraction,
   qtiChoiceInteractionNodeSpec,
-} from '@qti-editor/interactions-qti-choice';
+} from '@qti-editor/interaction-choice';
 import {
   insertExtendedTextInteraction,
   qtiExtendedTextInteractionNodeSpec,
-} from '@qti-editor/interactions-qti-extended-text';
+} from '@qti-editor/interaction-extended-text';
 import {
   insertInlineChoiceInteraction,
   qtiInlineChoiceInteractionNodeSpec,
   qtiInlineChoiceNodeSpec,
   qtiInlineChoiceParagraphNodeSpec,
-} from '@qti-editor/interactions-qti-inline-choice';
+} from '@qti-editor/interaction-inline-choice';
 import {
   insertMatchInteraction,
   qtiMatchInteractionNodeSpec,
-} from '@qti-editor/interactions-qti-match';
+} from '@qti-editor/interaction-match';
 import {
   imgSelectPointNodeSpec,
   insertSelectPointInteraction,
   qtiSelectPointInteractionNodeSpec,
-} from '@qti-editor/interactions-qti-select-point';
+} from '@qti-editor/interaction-select-point';
 import {
   insertTextEntryInteraction,
   qtiTextEntryInteractionNodeSpec,
-} from '@qti-editor/interactions-qti-text-entry';
+} from '@qti-editor/interaction-text-entry';
 import {
   qtiPromptNodeSpec,
   qtiPromptParagraphNodeSpec,
@@ -44,9 +44,8 @@ import {
   qtiSimpleChoiceNodeSpec,
   qtiSimpleChoiceParagraphNodeSpec,
   qtiSimpleMatchSetNodeSpec,
-} from '@qti-editor/interactions-shared';
-import { blockSelectPlugin } from '@qti-editor/prosemirror-block-select';
-import { nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-node-attrs-sync';
+} from '@qti-editor/interaction-shared';
+import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror';
 import { baseKeymap, toggleMark, wrapIn } from 'prosemirror-commands';
 import { history } from 'prosemirror-history';
 import { keymap } from 'prosemirror-keymap';
@@ -56,7 +55,7 @@ import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 
 import type { SidePanelEventDetail, SidePanelNodeDetail } from '@qti-editor/core/attributes';
-import type { QtiCodeUpdateDetail } from '@qti-editor/core/code';
+import type { QtiCodeUpdateDetail } from '@qti-editor/qti-editor-kit/code';
 import type { MarkType, NodeSpec } from 'prosemirror-model';
 import type { Command } from 'prosemirror-state';
 

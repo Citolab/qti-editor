@@ -45,6 +45,33 @@ importers:
       '@eslint/js':
         specifier: ^9.39.2
         version: 9.39.4
+      '@qti-editor/interaction-choice':
+        specifier: workspace:*
+        version: link:packages/prosemirror/interaction-choice
+      '@qti-editor/interaction-inline-choice':
+        specifier: workspace:*
+        version: link:packages/prosemirror/interaction-inline-choice
+      '@qti-editor/interaction-select-point':
+        specifier: workspace:*
+        version: link:packages/prosemirror/interaction-select-point
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:packages/prosemirror/interaction-shared
+      '@qti-editor/interaction-text-entry':
+        specifier: workspace:*
+        version: link:packages/prosemirror/interaction-text-entry
+      '@qti-editor/prosemirror':
+        specifier: workspace:*
+        version: link:packages/prosemirror/core
+      '@qti-editor/prosemirror-attributes':
+        specifier: workspace:*
+        version: link:packages/prosemirror/attributes
+      '@qti-editor/prosemirror-attributes-ui':
+        specifier: workspace:*
+        version: link:packages/prosemirror/attributes-ui
+      '@qti-editor/prosemirror-attributes-ui-prosekit':
+        specifier: workspace:*
+        version: link:packages/prosemirror/attributes-ui-prosekit
       '@storybook/addon-a11y':
         specifier: ^10.2.8
         version: 10.3.0(storybook@10.3.0(@testing-library/dom@10.4.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
@@ -99,6 +126,30 @@ importers:
       playwright:
         specifier: ^1.58.2
         version: 1.58.2
+      prosemirror-commands:
+        specifier: ^1.7.1
+        version: 1.7.1
+      prosemirror-dropcursor:
+        specifier: ^1.8.2
+        version: 1.8.2
+      prosemirror-gapcursor:
+        specifier: ^1.3.2
+        version: 1.4.1
+      prosemirror-history:
+        specifier: ^1.4.1
+        version: 1.5.0
+      prosemirror-keymap:
+        specifier: ^1.2.3
+        version: 1.2.3
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+      prosemirror-view:
+        specifier: 1.41.4
+        version: 1.41.4
       storybook:
         specifier: ^10.2.8
         version: 10.3.0(@testing-library/dom@10.4.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -129,9 +180,24 @@ importers:
       '@qti-components/base':
         specifier: 1.2.0
         version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/choice-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/extended-text-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions':
         specifier: 1.8.0
         version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/match-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/text-entry-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/theme':
         specifier: 1.1.0
         version: 1.1.0
@@ -141,24 +207,27 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@qti-editor/interactions-qti-choice':
+      '@qti-editor/interaction-choice':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-choice
-      '@qti-editor/interactions-qti-extended-text':
+        version: link:../../packages/prosemirror/interaction-choice
+      '@qti-editor/interaction-extended-text':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-extended-text
-      '@qti-editor/interactions-qti-match':
+        version: link:../../packages/prosemirror/interaction-extended-text
+      '@qti-editor/interaction-match':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-match
-      '@qti-editor/interactions-qti-select-point':
+        version: link:../../packages/prosemirror/interaction-match
+      '@qti-editor/interaction-select-point':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-select-point
-      '@qti-editor/prosemirror-block-select':
+        version: link:../../packages/prosemirror/interaction-select-point
+      '@qti-editor/prosemirror':
         specifier: workspace:*
-        version: link:../../packages/prosemirror-block-select
-      '@qti-editor/prosemirror-node-attrs-sync':
+        version: link:../../packages/prosemirror/core
+      '@qti-editor/qti-core':
         specifier: workspace:*
-        version: link:../../packages/prosemirror-node-attrs-sync
+        version: link:../../packages/qti/core
+      '@qti-editor/qti-editor-kit':
+        specifier: workspace:*
+        version: link:../../packages/qti/editor-kit
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -202,9 +271,27 @@ importers:
       '@qti-components/base':
         specifier: 1.2.0
         version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/choice-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/extended-text-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/inline-choice-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions':
         specifier: 1.8.0
         version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/match-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/text-entry-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/theme':
         specifier: 1.1.0
         version: 1.1.0
@@ -214,27 +301,36 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@qti-editor/interactions-qti-choice':
+      '@qti-editor/interaction-choice':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-choice
-      '@qti-editor/interactions-qti-extended-text':
+        version: link:../../packages/prosemirror/interaction-choice
+      '@qti-editor/interaction-extended-text':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-extended-text
-      '@qti-editor/interactions-qti-inline-choice':
+        version: link:../../packages/prosemirror/interaction-extended-text
+      '@qti-editor/interaction-inline-choice':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-inline-choice
-      '@qti-editor/interactions-qti-match':
+        version: link:../../packages/prosemirror/interaction-inline-choice
+      '@qti-editor/interaction-match':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-match
-      '@qti-editor/interactions-qti-select-point':
+        version: link:../../packages/prosemirror/interaction-match
+      '@qti-editor/interaction-select-point':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-select-point
-      '@qti-editor/interactions-qti-text-entry':
+        version: link:../../packages/prosemirror/interaction-select-point
+      '@qti-editor/interaction-shared':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-text-entry
-      '@qti-editor/interactions-shared':
+        version: link:../../packages/prosemirror/interaction-shared
+      '@qti-editor/interaction-text-entry':
         specifier: workspace:*
-        version: link:../../packages/interactions-shared
+        version: link:../../packages/prosemirror/interaction-text-entry
+      '@qti-editor/prosemirror':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/core
+      '@qti-editor/qti-core':
+        specifier: workspace:*
+        version: link:../../packages/qti/core
+      '@qti-editor/qti-editor-kit':
+        specifier: workspace:*
+        version: link:../../packages/qti/editor-kit
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -287,42 +383,57 @@ importers:
       '@qti-components/base':
         specifier: 1.2.0
         version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/choice-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/extended-text-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/inline-choice-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions':
         specifier: 1.8.0
         version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/match-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/text-entry-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/theme':
         specifier: 1.1.0
         version: 1.1.0
       '@qti-components/utilities':
         specifier: 1.1.0
         version: 1.1.0(lit@3.3.2)
-      '@qti-editor/interactions-qti-choice':
+      '@qti-editor/interaction-choice':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-choice
-      '@qti-editor/interactions-qti-extended-text':
+        version: link:../../packages/prosemirror/interaction-choice
+      '@qti-editor/interaction-extended-text':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-extended-text
-      '@qti-editor/interactions-qti-inline-choice':
+        version: link:../../packages/prosemirror/interaction-extended-text
+      '@qti-editor/interaction-inline-choice':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-inline-choice
-      '@qti-editor/interactions-qti-match':
+        version: link:../../packages/prosemirror/interaction-inline-choice
+      '@qti-editor/interaction-match':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-match
-      '@qti-editor/interactions-qti-select-point':
+        version: link:../../packages/prosemirror/interaction-match
+      '@qti-editor/interaction-select-point':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-select-point
-      '@qti-editor/interactions-qti-text-entry':
+        version: link:../../packages/prosemirror/interaction-select-point
+      '@qti-editor/interaction-shared':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-text-entry
-      '@qti-editor/interactions-shared':
+        version: link:../../packages/prosemirror/interaction-shared
+      '@qti-editor/interaction-text-entry':
         specifier: workspace:*
-        version: link:../../packages/interactions-shared
-      '@qti-editor/prosemirror-block-select':
+        version: link:../../packages/prosemirror/interaction-text-entry
+      '@qti-editor/prosemirror':
         specifier: workspace:*
-        version: link:../../packages/prosemirror-block-select
-      '@qti-editor/prosemirror-node-attrs-sync':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror-node-attrs-sync
+        version: link:../../packages/prosemirror/core
       prosemirror-commands:
         specifier: ^1.7.1
         version: 1.7.1
@@ -375,9 +486,24 @@ importers:
       '@qti-components/base':
         specifier: 1.2.0
         version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/choice-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/extended-text-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions':
         specifier: 1.8.0
         version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/match-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/text-entry-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/theme':
         specifier: 1.1.0
         version: 1.1.0
@@ -387,24 +513,30 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@qti-editor/interactions-qti-choice':
+      '@qti-editor/interaction-choice':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-choice
-      '@qti-editor/interactions-qti-extended-text':
+        version: link:../../packages/prosemirror/interaction-choice
+      '@qti-editor/interaction-extended-text':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-extended-text
-      '@qti-editor/interactions-qti-match':
+        version: link:../../packages/prosemirror/interaction-extended-text
+      '@qti-editor/interaction-match':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-match
-      '@qti-editor/interactions-qti-select-point':
+        version: link:../../packages/prosemirror/interaction-match
+      '@qti-editor/interaction-select-point':
         specifier: workspace:*
-        version: link:../../packages/interactions-qti-select-point
-      '@qti-editor/prosemirror-block-select':
+        version: link:../../packages/prosemirror/interaction-select-point
+      '@qti-editor/prosemirror':
         specifier: workspace:*
-        version: link:../../packages/prosemirror-block-select
-      '@qti-editor/prosemirror-node-attrs-sync':
+        version: link:../../packages/prosemirror/core
+      '@qti-editor/prosemirror-attributes-ui-prosekit':
         specifier: workspace:*
-        version: link:../../packages/prosemirror-node-attrs-sync
+        version: link:../../packages/prosemirror/attributes-ui-prosekit
+      '@qti-editor/qti-core':
+        specifier: workspace:*
+        version: link:../../packages/qti/core
+      '@qti-editor/qti-editor-kit':
+        specifier: workspace:*
+        version: link:../../packages/qti/editor-kit
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -440,117 +572,17 @@ importers:
         specifier: ^5.0.0
         version: 5.4.21(@types/node@20.19.37)(lightningcss@1.31.1)
 
-  packages/coco:
-    dependencies:
-      '@egoist/tailwindcss-icons':
-        specifier: ^1.9.2
-        version: 1.9.2(tailwindcss@4.2.1)
-      '@iconify-json/lucide':
-        specifier: ^1.2.96
-        version: 1.2.98
-      '@lit/context':
-        specifier: ^1.1.6
-        version: 1.1.6
-      '@qti-components/base':
-        specifier: 1.2.0
-        version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions':
-        specifier: 1.8.0
-        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/theme':
-        specifier: 1.1.0
-        version: 1.1.0
-      '@qti-components/utilities':
-        specifier: 1.1.0
-        version: 1.1.0(lit@3.3.2)
-      '@qti-editor/core':
-        specifier: workspace:*
-        version: link:../core
-      '@qti-editor/interactions-qti-choice':
-        specifier: workspace:*
-        version: link:../interactions-qti-choice
-      '@qti-editor/interactions-qti-extended-text':
-        specifier: workspace:*
-        version: link:../interactions-qti-extended-text
-      '@qti-editor/interactions-qti-match':
-        specifier: workspace:*
-        version: link:../interactions-qti-match
-      '@qti-editor/interactions-qti-select-point':
-        specifier: workspace:*
-        version: link:../interactions-qti-select-point
-      '@qti-editor/prosemirror-block-select':
-        specifier: workspace:*
-        version: link:../prosemirror-block-select
-      '@qti-editor/prosemirror-node-attrs-sync':
-        specifier: workspace:*
-        version: link:../prosemirror-node-attrs-sync
-      lit:
-        specifier: ^3.3.2
-        version: 3.3.2
-      prosekit:
-        specifier: ^0.18.4
-        version: 0.18.4(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      prosemirror-menu:
-        specifier: ^1.3.0
-        version: 1.3.0
-    devDependencies:
-      '@types/node':
-        specifier: ^20.0.0
-        version: 20.19.37
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-
   packages/core:
     dependencies:
-      '@lit/context':
-        specifier: ^1.1.6
-        version: 1.1.6
-      '@qti-components/base':
-        specifier: 1.2.0
-        version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions':
-        specifier: 1.8.0
-        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/theme':
-        specifier: 1.1.0
-        version: 1.1.0
-      '@qti-components/utilities':
-        specifier: 1.1.0
-        version: 1.1.0(lit@3.3.2)
-      '@qti-editor/interactions-qti-choice':
+      '@qti-editor/prosemirror-attributes':
         specifier: workspace:*
-        version: link:../interactions-qti-choice
-      '@qti-editor/interactions-qti-extended-text':
+        version: link:../prosemirror/attributes
+      '@qti-editor/qti-core':
         specifier: workspace:*
-        version: link:../interactions-qti-extended-text
-      '@qti-editor/interactions-qti-inline-choice':
+        version: link:../qti/core
+      '@qti-editor/qti-editor-kit':
         specifier: workspace:*
-        version: link:../interactions-qti-inline-choice
-      '@qti-editor/interactions-qti-match':
-        specifier: workspace:*
-        version: link:../interactions-qti-match
-      '@qti-editor/interactions-qti-select-point':
-        specifier: workspace:*
-        version: link:../interactions-qti-select-point
-      '@qti-editor/interactions-qti-text-entry':
-        specifier: workspace:*
-        version: link:../interactions-qti-text-entry
-      '@qti-editor/interactions-shared':
-        specifier: workspace:*
-        version: link:../interactions-shared
-      prosekit:
-        specifier: ^0.17.0
-        version: 0.17.1(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      prosemirror-keymap:
-        specifier: ^1.2.0
-        version: 1.2.3
-      prosemirror-model:
-        specifier: ^1.19.0
-        version: 1.25.4
-      prosemirror-state:
-        specifier: ^1.4.0
-        version: 1.4.4
+        version: link:../qti/editor-kit
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
@@ -558,197 +590,12 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
-
-  packages/extensions:
-    dependencies:
-      '@qti-editor/core':
-        specifier: workspace:*
-        version: link:../core
-      prosekit:
-        specifier: ^0.17.0
-        version: 0.17.1(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-    devDependencies:
-      '@types/node':
-        specifier: ^20.0.0
-        version: 20.19.37
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-
-  packages/interactions-qti-choice:
-    dependencies:
-      '@qti-components/base':
-        specifier: ^1.4.0
-        version: 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/choice-interaction':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions':
-        specifier: ^1.10.0
-        version: 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities':
-        specifier: ^1.3.0
-        version: 1.3.1(lit@3.3.2)
-      '@qti-editor/interactions-shared':
-        specifier: workspace:*
-        version: link:../interactions-shared
-    devDependencies:
-      lit:
-        specifier: ^3.3.1
-        version: 3.3.2
-      prosemirror-commands:
-        specifier: ^1.7.1
-        version: 1.7.1
-      prosemirror-model:
-        specifier: ^1.25.4
-        version: 1.25.4
-      prosemirror-state:
-        specifier: ^1.4.4
-        version: 1.4.4
-
-  packages/interactions-qti-extended-text:
-    dependencies:
-      '@qti-components/extended-text-interaction':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions':
-        specifier: 1.8.0
-        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities':
-        specifier: 1.1.0
-        version: 1.1.0(lit@3.3.2)
-      '@qti-editor/interactions-shared':
-        specifier: workspace:*
-        version: link:../interactions-shared
-    devDependencies:
-      lit:
-        specifier: ^3.3.1
-        version: 3.3.2
-      prosemirror-commands:
-        specifier: ^1.7.1
-        version: 1.7.1
-      prosemirror-model:
-        specifier: ^1.25.4
-        version: 1.25.4
-      prosemirror-state:
-        specifier: ^1.4.4
-        version: 1.4.4
-
-  packages/interactions-qti-inline-choice:
-    dependencies:
-      '@qti-components/inline-choice-interaction':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions':
-        specifier: 1.8.0
-        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interactions-shared':
-        specifier: workspace:*
-        version: link:../interactions-shared
-    devDependencies:
-      lit:
-        specifier: ^3.3.1
-        version: 3.3.2
-      prosemirror-model:
-        specifier: ^1.25.4
-        version: 1.25.4
-      prosemirror-state:
-        specifier: ^1.4.4
-        version: 1.4.4
-
-  packages/interactions-qti-match:
-    dependencies:
-      '@qti-components/interactions':
-        specifier: 1.8.0
-        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/match-interaction':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities':
-        specifier: 1.1.0
-        version: 1.1.0(lit@3.3.2)
-      '@qti-editor/interactions-shared':
-        specifier: workspace:*
-        version: link:../interactions-shared
-    devDependencies:
-      lit:
-        specifier: ^3.3.1
-        version: 3.3.2
-      prosemirror-commands:
-        specifier: ^1.7.1
-        version: 1.7.1
-      prosemirror-model:
-        specifier: ^1.25.4
-        version: 1.25.4
-      prosemirror-state:
-        specifier: ^1.4.4
-        version: 1.4.4
-
-  packages/interactions-qti-select-point:
-    dependencies:
-      '@qti-components/select-point-interaction':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interactions-shared':
-        specifier: workspace:*
-        version: link:../interactions-shared
-    devDependencies:
-      lit:
-        specifier: ^3.3.1
-        version: 3.3.2
-      prosemirror-model:
-        specifier: ^1.25.4
-        version: 1.25.4
-      prosemirror-state:
-        specifier: ^1.4.4
-        version: 1.4.4
-
-  packages/interactions-qti-text-entry:
-    dependencies:
-      '@qti-components/interactions':
-        specifier: 1.8.0
-        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/text-entry-interaction':
-        specifier: ^1.0.0
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interactions-shared':
-        specifier: workspace:*
-        version: link:../interactions-shared
-    devDependencies:
-      lit:
-        specifier: ^3.3.1
-        version: 3.3.2
-      prosemirror-model:
-        specifier: ^1.25.4
-        version: 1.25.4
-      prosemirror-state:
-        specifier: ^1.4.4
-        version: 1.4.4
-
-  packages/interactions-shared:
-    dependencies:
-      '@qti-components/interactions':
-        specifier: 1.8.0
-        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
-    devDependencies:
-      lit:
-        specifier: ^3.3.1
-        version: 3.3.2
-      prosemirror-model:
-        specifier: ^1.25.4
-        version: 1.25.4
-      prosemirror-state:
-        specifier: ^1.4.4
-        version: 1.4.4
 
   packages/lit:
     dependencies:
-      '@qti-editor/core':
+      '@qti-editor/prosemirror-attributes-ui':
         specifier: workspace:*
-        version: link:../core
+        version: link:../prosemirror/attributes-ui
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
@@ -760,7 +607,88 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  packages/prosemirror:
+  packages/prosemirror-block-select:
+    dependencies:
+      '@qti-editor/prosemirror':
+        specifier: workspace:*
+        version: link:../prosemirror/core
+      prosekit:
+        specifier: ^0.17.1
+        version: 0.17.1(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/prosemirror-node-attrs-sync:
+    dependencies:
+      '@qti-editor/prosemirror':
+        specifier: workspace:*
+        version: link:../prosemirror/core
+      prosekit:
+        specifier: ^0.17.1
+        version: 0.17.1(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/prosemirror-virtual-cursor:
+    dependencies:
+      '@qti-editor/prosemirror':
+        specifier: workspace:*
+        version: link:../prosemirror/core
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/prosemirror/attributes:
+    dependencies:
+      prosekit:
+        specifier: ^0.17.0
+        version: 0.17.1(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/prosemirror/attributes-ui:
+    dependencies:
+      '@qti-editor/prosemirror-attributes':
+        specifier: workspace:*
+        version: link:../attributes
+      lit:
+        specifier: ^3.3.2
+        version: 3.3.2
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/prosemirror/attributes-ui-prosekit:
+    dependencies:
+      '@qti-editor/prosemirror-attributes-ui':
+        specifier: workspace:*
+        version: link:../attributes-ui
+      lit:
+        specifier: ^3.3.2
+        version: 3.3.2
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/prosemirror/core:
     dependencies:
       prosekit:
         specifier: ^0.17.1
@@ -788,80 +716,256 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  packages/prosemirror-block-select:
+  packages/prosemirror/interaction-choice:
     dependencies:
-      prosekit:
-        specifier: ^0.17.1
-        version: 0.17.1(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      prosemirror-model:
-        specifier: ^1.19.0
-        version: 1.25.4
-      prosemirror-state:
+      '@qti-components/base':
         specifier: ^1.4.0
-        version: 1.4.4
-      prosemirror-view:
-        specifier: 1.41.4
-        version: 1.41.4
+        version: 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/choice-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions':
+        specifier: ^1.10.0
+        version: 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities':
+        specifier: ^1.3.0
+        version: 1.3.1(lit@3.3.2)
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../interaction-shared
     devDependencies:
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-
-  packages/prosemirror-node-attrs-sync:
-    dependencies:
-      prosekit:
-        specifier: ^0.17.1
-        version: 0.17.1(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      prosemirror-model:
-        specifier: ^1.19.0
-        version: 1.25.4
-      prosemirror-state:
-        specifier: ^1.4.0
-        version: 1.4.4
-      prosemirror-view:
-        specifier: 1.41.4
-        version: 1.41.4
-    devDependencies:
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-
-  packages/prosemirror-virtual-cursor:
-    dependencies:
-      prosemirror-model:
-        specifier: ^1.19.0
-        version: 1.25.4
-      prosemirror-state:
-        specifier: ^1.4.0
-        version: 1.4.4
-      prosemirror-view:
-        specifier: 1.41.4
-        version: 1.41.4
-    devDependencies:
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-
-  packages/qti-editor:
-    dependencies:
-      '@qti-editor/coco':
-        specifier: workspace:*
-        version: link:../coco
-      '@qti-editor/core':
-        specifier: workspace:*
-        version: link:../core
-      '@qti-editor/extensions':
-        specifier: workspace:*
-        version: link:../extensions
-      '@qti-editor/lit':
-        specifier: workspace:*
-        version: link:../lit
       lit:
-        specifier: ^3.0.0
+        specifier: ^3.3.1
         version: 3.3.2
+      prosemirror-commands:
+        specifier: ^1.7.1
+        version: 1.7.1
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+
+  packages/prosemirror/interaction-extended-text:
+    dependencies:
+      '@qti-components/extended-text-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions':
+        specifier: 1.8.0
+        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities':
+        specifier: 1.1.0
+        version: 1.1.0(lit@3.3.2)
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../interaction-shared
+    devDependencies:
+      lit:
+        specifier: ^3.3.1
+        version: 3.3.2
+      prosemirror-commands:
+        specifier: ^1.7.1
+        version: 1.7.1
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+
+  packages/prosemirror/interaction-inline-choice:
+    dependencies:
+      '@qti-components/inline-choice-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions':
+        specifier: 1.8.0
+        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../interaction-shared
+    devDependencies:
+      lit:
+        specifier: ^3.3.1
+        version: 3.3.2
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+
+  packages/prosemirror/interaction-match:
+    dependencies:
+      '@qti-components/interactions':
+        specifier: 1.8.0
+        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/match-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities':
+        specifier: 1.1.0
+        version: 1.1.0(lit@3.3.2)
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../interaction-shared
+    devDependencies:
+      lit:
+        specifier: ^3.3.1
+        version: 3.3.2
+      prosemirror-commands:
+        specifier: ^1.7.1
+        version: 1.7.1
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+
+  packages/prosemirror/interaction-select-point:
+    dependencies:
+      '@qti-components/select-point-interaction':
+        specifier: ^1.0.1
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../interaction-shared
+    devDependencies:
+      lit:
+        specifier: ^3.3.1
+        version: 3.3.2
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+
+  packages/prosemirror/interaction-shared:
+    dependencies:
+      '@qti-components/interactions':
+        specifier: 1.8.0
+        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
+    devDependencies:
+      lit:
+        specifier: ^3.3.1
+        version: 3.3.2
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+
+  packages/prosemirror/interaction-text-entry:
+    dependencies:
+      '@qti-components/interactions':
+        specifier: 1.8.0
+        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/text-entry-interaction':
+        specifier: ^1.0.0
+        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../interaction-shared
+    devDependencies:
+      lit:
+        specifier: ^3.3.1
+        version: 3.3.2
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+
+  packages/qti/core:
+    dependencies:
+      '@qti-editor/interaction-choice':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-choice
+      '@qti-editor/interaction-extended-text':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-extended-text
+      '@qti-editor/interaction-inline-choice':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-inline-choice
+      '@qti-editor/interaction-match':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-match
+      '@qti-editor/interaction-select-point':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-select-point
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-shared
+      '@qti-editor/interaction-text-entry':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-text-entry
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/qti/editor-kit:
+    dependencies:
+      '@lit/context':
+        specifier: ^1.1.6
+        version: 1.1.6
+      '@qti-components/base':
+        specifier: 1.2.0
+        version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions':
+        specifier: 1.8.0
+        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/theme':
+        specifier: 1.1.0
+        version: 1.1.0
+      '@qti-components/utilities':
+        specifier: 1.1.0
+        version: 1.1.0(lit@3.3.2)
+      '@qti-editor/interaction-choice':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-choice
+      '@qti-editor/interaction-extended-text':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-extended-text
+      '@qti-editor/interaction-inline-choice':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-inline-choice
+      '@qti-editor/interaction-match':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-match
+      '@qti-editor/interaction-select-point':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-select-point
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-shared
+      '@qti-editor/interaction-text-entry':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-text-entry
       prosekit:
         specifier: ^0.17.0
         version: 0.17.1(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      prosemirror-keymap:
+        specifier: ^1.2.0
+        version: 1.2.3
+      prosemirror-model:
+        specifier: ^1.19.0
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.0
+        version: 1.4.4
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
@@ -875,9 +979,18 @@ importers:
       '@lit/context':
         specifier: ^1.1.0
         version: 1.1.6
-      '@qti-editor/core':
+      '@qti-editor/interaction-choice':
         specifier: workspace:*
-        version: link:../packages/core
+        version: link:../packages/prosemirror/interaction-choice
+      '@qti-editor/prosemirror-attributes-ui-prosekit':
+        specifier: workspace:*
+        version: link:../packages/prosemirror/attributes-ui-prosekit
+      '@qti-editor/qti-core':
+        specifier: workspace:*
+        version: link:../packages/qti/core
+      '@qti-editor/qti-editor-kit':
+        specifier: workspace:*
+        version: link:../packages/qti/editor-kit
       lit:
         specifier: ^3.2.0
         version: 3.3.2

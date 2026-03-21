@@ -2,19 +2,19 @@
 import {
   insertSimpleChoiceOnEnter,
   qtiChoiceInteractionNodeSpec,
-} from '@qti-editor/interactions-qti-choice';
+} from '@qti-editor/interaction-choice';
 import {
   qtiExtendedTextInteractionNodeSpec,
-} from '@qti-editor/interactions-qti-extended-text';
+} from '@qti-editor/interaction-extended-text';
 import {
   qtiTextEntryInteractionNodeSpec,
-} from '@qti-editor/interactions-qti-text-entry';
+} from '@qti-editor/interaction-text-entry';
 import {
   qtiPromptNodeSpec,
   qtiPromptParagraphNodeSpec,
   qtiSimpleChoiceNodeSpec,
   qtiSimpleChoiceParagraphNodeSpec,
-} from '@qti-editor/interactions-shared';
+} from '@qti-editor/interaction-shared';
 import { defineKeymap, defineNodeSpec, union } from 'prosekit/core';
 
 /**

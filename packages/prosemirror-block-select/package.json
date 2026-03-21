@@ -1,7 +1,7 @@
 {
   "name": "@qti-editor/prosemirror-block-select",
   "version": "0.1.0",
-  "description": "Standalone block-select ProseMirror plugin package",
+  "description": "Compatibility wrapper for the canonical @qti-editor/prosemirror block-select entrypoint",
   "type": "module",
   "main": "./src/index.ts",
   "exports": {
@@ -12,9 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "prosemirror-model": "^1.19.0",
-    "prosemirror-state": "^1.4.0",
-    "prosemirror-view": "^1.31.0"
+    "@qti-editor/prosemirror": "workspace:*"
   },
   "peerDependencies": {
     "prosekit": "^0.17.1"

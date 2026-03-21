@@ -4,27 +4,27 @@ import {
   insertChoiceInteraction,
   qtiChoiceEnterCommand,
   qtiChoiceInteractionNodeSpec
-} from '@qti-editor/interactions-qti-choice';
+} from '@qti-editor/interaction-choice';
 import {
   insertExtendedTextInteraction,
   qtiExtendedTextInteractionNodeSpec
-} from '@qti-editor/interactions-qti-extended-text';
+} from '@qti-editor/interaction-extended-text';
 import {
   insertInlineChoiceInteraction,
   qtiInlineChoiceInteractionNodeSpec,
   qtiInlineChoiceNodeSpec,
   qtiInlineChoiceParagraphNodeSpec
-} from '@qti-editor/interactions-qti-inline-choice';
+} from '@qti-editor/interaction-inline-choice';
 import {
   insertMatchInteraction,
   qtiMatchInteractionNodeSpec
-} from '@qti-editor/interactions-qti-match';
+} from '@qti-editor/interaction-match';
 import {
   imgSelectPointNodeSpec,
   insertSelectPointInteraction,
   qtiSelectPointInteractionNodeSpec
-} from '@qti-editor/interactions-qti-select-point';
-import { insertTextEntryInteraction, qtiTextEntryInteractionNodeSpec } from '@qti-editor/interactions-qti-text-entry';
+} from '@qti-editor/interaction-select-point';
+import { insertTextEntryInteraction, qtiTextEntryInteractionNodeSpec } from '@qti-editor/interaction-text-entry';
 import {
   qtiPromptNodeSpec,
   qtiPromptParagraphNodeSpec,
@@ -33,9 +33,8 @@ import {
   qtiSimpleChoiceNodeSpec,
   qtiSimpleChoiceParagraphNodeSpec,
   qtiSimpleMatchSetNodeSpec
-} from '@qti-editor/interactions-shared';
-import { blockSelectPlugin } from '@qti-editor/prosemirror-block-select';
-import { nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-node-attrs-sync';
+} from '@qti-editor/interaction-shared';
+import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror';
 import { baseKeymap, toggleMark, wrapIn } from 'prosemirror-commands';
 import { history } from 'prosemirror-history';
 import { gapCursor } from 'prosemirror-gapcursor';

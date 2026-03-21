@@ -6,13 +6,7 @@
  *
  * For ProseKit integration, use:
  * ```typescript
- * import { defineQtiExtension } from '@qti-editor/core/interactions/prosekit';
+ * import { defineQtiExtension } from '@qti-editor/qti-editor-kit/interactions/prosekit';
  * ```
  */
-export * from '@qti-editor/interactions-shared';
-export * from '@qti-editor/interactions-qti-choice';
-export * from '@qti-editor/interactions-qti-extended-text';
-export * from '@qti-editor/interactions-qti-inline-choice';
-export * from '@qti-editor/interactions-qti-match';
-export * from '@qti-editor/interactions-qti-select-point';
-export * from '@qti-editor/interactions-qti-text-entry';
+export * from '@qti-editor/qti-editor-kit/interactions';

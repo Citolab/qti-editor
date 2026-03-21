@@ -2,7 +2,7 @@
  * QTI Composer Components
  * 
  * Local copies from registry - customize as needed.
- * Core functionality comes from @qti-editor/core.
+ * Core functionality comes from @qti-editor/qti-core.
  */
 
 // Core types and functions
@@ -12,7 +12,7 @@ export {
   extractResponseDeclarations,
   type ComposerItemContext,
   type ResponseDeclaration,
-} from '@qti-editor/core/composer';
+} from '@qti-editor/qti-core/composer';
 
 // UI components (local copies, customizable)
 export { QtiComposer } from './qti-composer.js';

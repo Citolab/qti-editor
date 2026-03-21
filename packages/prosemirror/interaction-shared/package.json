@@ -1,0 +1,33 @@
+{
+  "name": "@qti-editor/interaction-shared",
+  "description": "Shared QTI interaction schemas, elements, commands, and composer types",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./*": "./dist/*"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "pnpm clean && tsc --paths null",
+    "clean": "rm -rf dist && find src -type f -name '*.js' -delete && find src -type f -name '*.js.map' -delete && find src -type f -name '*.d.ts' -delete && find src -type f -name '*.d.ts.map' -delete"
+  },
+  "dependencies": {
+    "@qti-components/interactions": "1.8.0"
+  },
+  "peerDependencies": {
+    "lit": "^3.3.1"
+  },
+  "devDependencies": {
+    "lit": "^3.3.1",
+    "prosemirror-model": "^1.25.4",
+    "prosemirror-state": "^1.4.4"
+  }
+}

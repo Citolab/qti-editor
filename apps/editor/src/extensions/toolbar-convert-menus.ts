@@ -2,7 +2,7 @@ import type { ToolbarInsertMenu } from '../components/editor/toolbar';
 import {
   canConvertFlatListToChoiceInteraction,
   convertFlatListToChoiceInteraction
-} from '@qti-editor/interactions-qti-choice';
+} from '@qti-editor/interaction-choice';
 
 export const toolbarConvertMenus: ToolbarInsertMenu[] = [
   {

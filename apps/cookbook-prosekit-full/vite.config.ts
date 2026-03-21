@@ -4,53 +4,53 @@ import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
-const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/interactions-shared/src', import.meta.url));
-const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/interactions-qti-choice/src', import.meta.url));
-const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/interactions-qti-text-entry/src', import.meta.url));
-const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/interactions-qti-select-point/src', import.meta.url));
-const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/interactions-qti-inline-choice/src', import.meta.url));
+const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-shared/src', import.meta.url));
+const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-choice/src', import.meta.url));
+const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-text-entry/src', import.meta.url));
+const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-select-point/src', import.meta.url));
+const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-inline-choice/src', import.meta.url));
 
 export default defineConfig({
   resolve: {
     alias: [
       {
-        find: /^@qti-editor\/interactions-shared\/(.*)\.js$/,
+        find: /^@qti-editor\/interaction-shared\/(.*)\.js$/,
         replacement: `${interactionsSharedSrcRoot}/$1.ts`,
       },
       {
-        find: /^@qti-editor\/interactions-shared$/,
+        find: /^@qti-editor\/interaction-shared$/,
         replacement: `${interactionsSharedSrcRoot}/index.ts`,
       },
       {
-        find: /^@qti-editor\/interactions-qti-choice\/(.*)\.js$/,
+        find: /^@qti-editor\/interaction-choice\/(.*)\.js$/,
         replacement: `${interactionsChoiceSrcRoot}/$1.ts`,
       },
       {
-        find: /^@qti-editor\/interactions-qti-choice$/,
+        find: /^@qti-editor\/interaction-choice$/,
         replacement: `${interactionsChoiceSrcRoot}/index.ts`,
       },
       {
-        find: /^@qti-editor\/interactions-qti-text-entry\/(.*)\.js$/,
+        find: /^@qti-editor\/interaction-text-entry\/(.*)\.js$/,
         replacement: `${interactionsTextEntrySrcRoot}/$1.ts`,
       },
       {
-        find: /^@qti-editor\/interactions-qti-text-entry$/,
+        find: /^@qti-editor\/interaction-text-entry$/,
         replacement: `${interactionsTextEntrySrcRoot}/index.ts`,
       },
       {
-        find: /^@qti-editor\/interactions-qti-select-point\/(.*)\.js$/,
+        find: /^@qti-editor\/interaction-select-point\/(.*)\.js$/,
         replacement: `${interactionsSelectPointSrcRoot}/$1.ts`,
       },
       {
-        find: /^@qti-editor\/interactions-qti-select-point$/,
+        find: /^@qti-editor\/interaction-select-point$/,
         replacement: `${interactionsSelectPointSrcRoot}/index.ts`,
       },
       {
-        find: /^@qti-editor\/interactions-qti-inline-choice\/(.*)\.js$/,
+        find: /^@qti-editor\/interaction-inline-choice\/(.*)\.js$/,
         replacement: `${interactionsInlineChoiceSrcRoot}/$1.ts`,
       },
       {
-        find: /^@qti-editor\/interactions-qti-inline-choice$/,
+        find: /^@qti-editor\/interaction-inline-choice$/,
         replacement: `${interactionsInlineChoiceSrcRoot}/index.ts`,
       },
     ],
@@ -75,11 +75,11 @@ export default defineConfig({
     exclude: [
       '@qti-components/base',
       '@qti-components/interactions',
-      '@qti-editor/interactions-shared',
-      '@qti-editor/interactions-qti-choice',
-      '@qti-editor/interactions-qti-text-entry',
-      '@qti-editor/interactions-qti-select-point',
-      '@qti-editor/interactions-qti-inline-choice',
+      '@qti-editor/interaction-shared',
+      '@qti-editor/interaction-choice',
+      '@qti-editor/interaction-text-entry',
+      '@qti-editor/interaction-select-point',
+      '@qti-editor/interaction-inline-choice',
       '@qti-components/theme',
       '@qti-components/utilities',
     ],

@@ -1,13 +1,12 @@
 {
   "name": "@qti-editor/core",
   "version": "0.1.0",
-  "description": "Core functionality for QTI Editor - ProseMirror plugins and utilities",
+  "description": "Compatibility re-export layer for legacy QTI Editor core entrypoints",
   "type": "module",
   "main": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
     "./attributes": "./src/attributes/index.ts",
-    "./cookbook": "./src/cookbook/index.ts",
     "./code": "./src/code/index.ts",
     "./composer": "./src/composer/index.ts",
     "./editor-context": "./src/editor-context/index.ts",
@@ -23,25 +22,9 @@
     "yalc:add": "yalc add @qti-components/interactions"
   },
   "dependencies": {
-    "@lit/context": "^1.1.6",
-    "@qti-components/base": "1.2.0",
-    "@qti-components/interactions": "1.8.0",
-    "@qti-editor/interactions-qti-choice": "workspace:*",
-    "@qti-editor/interactions-qti-extended-text": "workspace:*",
-    "@qti-editor/interactions-qti-inline-choice": "workspace:*",
-    "@qti-editor/interactions-qti-match": "workspace:*",
-    "@qti-editor/interactions-qti-select-point": "workspace:*",
-    "@qti-editor/interactions-qti-text-entry": "workspace:*",
-    "@qti-editor/interactions-shared": "workspace:*",
-    "@qti-components/theme": "1.1.0",
-    "@qti-components/utilities": "1.1.0",
-    "prosemirror-keymap": "^1.2.0",
-    "prosemirror-model": "^1.19.0",
-    "prosemirror-state": "^1.4.0",
-    "prosekit": "^0.17.0"
-  },
-  "peerDependencies": {
-    "prosekit": "^0.17.0"
+    "@qti-editor/qti-editor-kit": "workspace:*",
+    "@qti-editor/qti-core": "workspace:*",
+    "@qti-editor/prosemirror-attributes": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

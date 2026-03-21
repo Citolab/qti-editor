@@ -8,22 +8,22 @@
       "type": "registry:ui",
       "title": "QTI Attributes Panel",
       "description": "A panel component that displays and edits attributes of the selected QTI node and its ancestors.",
-      "dependencies": ["lit", "prosekit", "@qti-editor/core"],
+      "dependencies": ["lit", "prosekit", "@qti-editor/core", "@qti-editor/qti-core", "@qti-editor/interaction-choice", "@qti-editor/prosemirror-attributes-ui-prosekit"],
       "files": [
         {
-          "path": "src/lit/ui/attributes-panel/index.ts",
+          "path": "src/qti-prosekit-ui/ui/attributes-panel/index.ts",
           "type": "registry:component"
         },
         {
-          "path": "src/lit/examples/attributes-panel/index.ts",
+          "path": "src/qti-prosekit-ui/examples/attributes-panel/index.ts",
           "type": "registry:example"
         },
         {
-          "path": "src/lit/examples/attributes-panel/extension.ts",
+          "path": "src/qti-prosekit-ui/examples/attributes-panel/extension.ts",
           "type": "registry:example"
         },
         {
-          "path": "src/lit/examples/attributes-panel/editor.ts",
+          "path": "src/qti-prosekit-ui/examples/attributes-panel/editor.ts",
           "type": "registry:example"
         }
       ]
@@ -33,18 +33,18 @@
       "type": "registry:ui",
       "title": "QTI Composer",
       "description": "Displays composed QTI XML from item context. Shows formatted XML output with download link.",
-      "dependencies": ["lit", "@lit/context", "@qti-editor/core"],
+      "dependencies": ["lit", "@lit/context", "@qti-editor/qti-core", "@qti-editor/qti-editor-kit"],
       "files": [
         {
-          "path": "src/lit/ui/qti-composer/index.ts",
+          "path": "src/qti-prosekit-ui/ui/qti-composer/index.ts",
           "type": "registry:component"
         },
         {
-          "path": "src/lit/examples/qti-composer/index.ts",
+          "path": "src/qti-prosekit-ui/examples/qti-composer/index.ts",
           "type": "registry:example"
         },
         {
-          "path": "src/lit/examples/qti-composer/editor.ts",
+          "path": "src/qti-prosekit-ui/examples/qti-composer/editor.ts",
           "type": "registry:example"
         }
       ]
@@ -57,15 +57,15 @@
       "dependencies": ["lit"],
       "files": [
         {
-          "path": "src/lit/ui/qti-composer-metadata-form/index.ts",
+          "path": "src/qti-prosekit-ui/ui/qti-composer-metadata-form/index.ts",
           "type": "registry:component"
         },
         {
-          "path": "src/lit/examples/qti-composer-metadata-form/index.ts",
+          "path": "src/qti-prosekit-ui/examples/qti-composer-metadata-form/index.ts",
           "type": "registry:example"
         },
         {
-          "path": "src/lit/examples/qti-composer-metadata-form/editor.ts",
+          "path": "src/qti-prosekit-ui/examples/qti-composer-metadata-form/editor.ts",
           "type": "registry:example"
         }
       ]
@@ -75,22 +75,22 @@
       "type": "registry:ui",
       "title": "QTI Code Panel",
       "description": "A panel that displays editor document as HTML, JSON, or XML. Listens to code update events from the qtiCodePanelExtension.",
-      "dependencies": ["lit", "prosekit", "@qti-editor/core"],
+      "dependencies": ["lit", "prosekit", "@qti-editor/qti-editor-kit"],
       "files": [
         {
-          "path": "src/lit/ui/qti-code-panel/index.ts",
+          "path": "src/qti-prosekit-ui/ui/qti-code-panel/index.ts",
           "type": "registry:component"
         },
         {
-          "path": "src/lit/examples/qti-code-panel/index.ts",
+          "path": "src/qti-prosekit-ui/examples/qti-code-panel/index.ts",
           "type": "registry:example"
         },
         {
-          "path": "src/lit/examples/qti-code-panel/extension.ts",
+          "path": "src/qti-prosekit-ui/examples/qti-code-panel/extension.ts",
           "type": "registry:example"
         },
         {
-          "path": "src/lit/examples/qti-code-panel/editor.ts",
+          "path": "src/qti-prosekit-ui/examples/qti-code-panel/editor.ts",
           "type": "registry:example"
         }
       ]

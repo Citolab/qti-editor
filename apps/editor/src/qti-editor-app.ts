@@ -1,18 +1,17 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
-import './components/editor/code/qti-code-panel.js';
-import './components/editor/composer/qti-composer.js';
-import './components/editor/composer/qti-composer-metadata-form.js';
+import './components/registry/editor/code/qti-code-panel.js';
+import './components/registry/editor/composer/qti-composer.js';
+import './components/registry/editor/composer/qti-composer-metadata-form.js';
 
 import { provide } from '@lit/context';
 import { LitElement, html } from 'lit';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { createEditor, union, type Editor } from 'prosekit/core';
-import { qtiEditorEventsExtension } from '@qti-editor/core/events';
-// import { defineQtiInteractionsExtension } from '@qti-editor/core/interactions/prosekit';
-import { blockSelectExtension } from '@qti-editor/prosemirror-block-select';
-import { nodeAttrsSyncExtension } from '@qti-editor/prosemirror-node-attrs-sync';
-import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/core/item-context';
+import { qtiEditorEventsExtension } from '@qti-editor/qti-editor-kit/events';
+// import { defineQtiInteractionsExtension } from '@qti-editor/qti-editor-kit/interactions/prosekit';
+import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror';
+import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/qti-editor-kit/item-context';
 
 import { defineBasicExtension } from './extensions/basic-extension.js';
 import {
@@ -21,13 +20,13 @@ import {
 } from './extensions/local-storage-doc-persistence-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension.js';
 import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/toolbar';
-import { qtiCodePanelExtension } from './components/editor/code';
-import { qtiAttributesExtension } from './components/editor/attributes';
+import { qtiCodePanelExtension } from './components/registry/editor/code';
+import { qtiAttributesExtension } from './components/registry/editor/attributes';
 import { defineSemanticPasteExtension } from './extensions/paste-semantic-html.js';
 import { toolbarConvertMenus } from './extensions/toolbar-convert-menus.js';
 
 import type { PropertyValues} from 'lit';
-import type { QtiAttributesPanel } from './components/editor/attributes';
+import type { QtiAttributesPanel } from './components/registry/editor/attributes';
 
 
 const VOID_HTML_TAGS = ['img', 'br', 'hr', 'input', 'meta', 'link', 'source', 'area', 'col', 'embed', 'param', 'track', 'wbr'];

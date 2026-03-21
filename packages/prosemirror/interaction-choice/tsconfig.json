@@ -1,0 +1,23 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true,
+    "noEmit": false,
+    "useDefineForClassFields": false,
+    "allowImportingTsExtensions": false,
+    "moduleResolution": "bundler",
+    "paths": {
+      "@qti-editor/interaction-choice": ["./src/index.ts"],
+      "@qti-editor/interaction-choice/*": ["./src/*"]
+    },
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["src/index.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.stories.ts", "src/stories/**", "node_modules", "dist"]
+}

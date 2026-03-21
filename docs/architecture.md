@@ -56,6 +56,8 @@ apps/
 
 This remains the intended end state even while the current codebase is still migrating toward it.
 
+Deprecated umbrella surfaces such as `packages/qti-editor` and `packages/coco` are intentionally not part of this topology.
+
 ## Layer Ownership
 
 ### `packages/prosemirror/*`

@@ -1,12 +1,25 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "rootDir": "src",
     "outDir": "dist",
     "declaration": true,
     "declarationMap": true,
     "noEmit": false,
-    "allowImportingTsExtensions": false
+    "allowImportingTsExtensions": false,
+    "paths": {
+      "@qti-editor/qti-editor-kit": ["../qti/editor-kit/dist/index.d.ts"],
+      "@qti-editor/qti-editor-kit/code": ["../qti/editor-kit/dist/code/index.d.ts"],
+      "@qti-editor/qti-editor-kit/editor-context": ["../qti/editor-kit/dist/editor-context/index.d.ts"],
+      "@qti-editor/qti-editor-kit/events": ["../qti/editor-kit/dist/events/index.d.ts"],
+      "@qti-editor/qti-editor-kit/interactions": ["../qti/editor-kit/dist/interactions/index.d.ts"],
+      "@qti-editor/qti-editor-kit/interactions/prosekit": ["../qti/editor-kit/dist/interactions/prosekit.d.ts"],
+      "@qti-editor/qti-editor-kit/item-context": ["../qti/editor-kit/dist/item-context/index.d.ts"],
+      "@qti-editor/qti-core": ["../qti/core/dist/index.d.ts"],
+      "@qti-editor/qti-core/composer": ["../qti/core/dist/composer/index.d.ts"],
+      "@qti-editor/qti-core/interactions/composer": ["../qti/core/dist/interactions/composer.d.ts"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

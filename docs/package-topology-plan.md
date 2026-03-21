@@ -99,27 +99,27 @@ This remains one registry service and one build/serve flow. The split is organiz
   Wrapper decision:
   either retire it or keep as a thin re-export wrapper for one release.
 
-- `packages/interactions-shared`
+- `packages/prosemirror/interaction-shared`
   -> `packages/prosemirror/interaction-shared`
   Notes:
   shared prompt/simple-choice building blocks and common command helpers stay with the authoring layer.
 
-- `packages/interactions-qti-choice`
+- `packages/prosemirror/interaction-choice`
   -> `packages/prosemirror/interaction-choice`
 
-- `packages/interactions-qti-inline-choice`
+- `packages/prosemirror/interaction-inline-choice`
   -> `packages/prosemirror/interaction-inline-choice`
 
-- `packages/interactions-qti-match`
+- `packages/prosemirror/interaction-match`
   -> `packages/prosemirror/interaction-match`
 
-- `packages/interactions-qti-text-entry`
+- `packages/prosemirror/interaction-text-entry`
   -> `packages/prosemirror/interaction-text-entry`
 
-- `packages/interactions-qti-extended-text`
+- `packages/prosemirror/interaction-extended-text`
   -> `packages/prosemirror/interaction-extended-text`
 
-- `packages/interactions-qti-select-point`
+- `packages/prosemirror/interaction-select-point`
   -> `packages/prosemirror/interaction-select-point`
 
 ### QTI layer
@@ -137,14 +137,14 @@ This remains one registry service and one build/serve flow. The split is organiz
   remove as a standalone package.
 
 - `packages/qti-editor`
-  -> retire unless a compatibility umbrella package is explicitly needed
-  Recommendation:
-  remove it from the target topology for now.
+  -> retired
+  Notes:
+  removed in favor of direct canonical imports from `packages/qti/*`, `packages/prosemirror/*`, and `registry/`.
 
 - `packages/coco`
-  -> retire unless a single embeddable editor bundle remains an explicit product goal
-  Recommendation:
-  remove it from the target topology for now.
+  -> retired
+  Notes:
+  removed from the workspace; use `apps/*` and registry scaffolds instead of a bundled single-tag editor surface.
 
 ### ProseKit layer
 
@@ -189,13 +189,13 @@ This remains one registry service and one build/serve flow. The split is organiz
 ### PR 3: rename the interaction layer to interaction packages
 
 - Move:
-  - `packages/interactions-shared` -> `packages/prosemirror/interaction-shared`
-  - `packages/interactions-qti-choice` -> `packages/prosemirror/interaction-choice`
-  - `packages/interactions-qti-inline-choice` -> `packages/prosemirror/interaction-inline-choice`
-  - `packages/interactions-qti-match` -> `packages/prosemirror/interaction-match`
-  - `packages/interactions-qti-text-entry` -> `packages/prosemirror/interaction-text-entry`
-  - `packages/interactions-qti-extended-text` -> `packages/prosemirror/interaction-extended-text`
-  - `packages/interactions-qti-select-point` -> `packages/prosemirror/interaction-select-point`
+  - `packages/prosemirror/interaction-shared` -> `packages/prosemirror/interaction-shared`
+  - `packages/prosemirror/interaction-choice` -> `packages/prosemirror/interaction-choice`
+  - `packages/prosemirror/interaction-inline-choice` -> `packages/prosemirror/interaction-inline-choice`
+  - `packages/prosemirror/interaction-match` -> `packages/prosemirror/interaction-match`
+  - `packages/prosemirror/interaction-text-entry` -> `packages/prosemirror/interaction-text-entry`
+  - `packages/prosemirror/interaction-extended-text` -> `packages/prosemirror/interaction-extended-text`
+  - `packages/prosemirror/interaction-select-point` -> `packages/prosemirror/interaction-select-point`
 - Update package names and internal imports
 - Update Vite alias files:
   - `apps/editor/vite.config.ts`
@@ -250,8 +250,8 @@ This is intentionally a later migration step. Do not do this before:
 
 ### PR 7: remove umbrella packages and finalize consumer surfaces
 
-- Retire `packages/qti-editor` unless compatibility requirements justify keeping an umbrella package
-- Retire `packages/coco` unless product requirements revive the single-bundle path
+- `packages/qti-editor` is retired
+- `packages/coco` is retired
 - Finalize top-level consumer docs around:
   - low-level ProseMirror builder
   - QTI export/composer builder
@@ -321,7 +321,7 @@ Storybook should be the primary home for reusable UI, isolated editor behavior, 
 
 ### Storybook configuration change implied by this plan
 
-The current Storybook config only picks up stories from `apps/editor` and `packages/coco`. The target config should discover stories from:
+The current Storybook config should discover stories from:
 
 - `packages/**/src/**/*.stories.@(js|jsx|mjs|ts|tsx)`
 - `registry/**/**/*.stories.@(js|jsx|mjs|ts|tsx)`
@@ -551,6 +551,7 @@ Scope:
 Files likely touched:
 - `packages/interactions-*`
 - `packages/prosemirror/item-*`
+- `packages/prosemirror/interaction-*`
 - `packages/core/**` imports only where needed
 - app and cookbook imports
 - Vite alias files

@@ -9,18 +9,17 @@ import { createEditor, union, type Editor } from 'prosekit/core';
 import { defineBasicExtension } from 'prosekit/basic';
 
 // QTI plugins (using ProseKit adapters)
-import { qtiEditorEventsExtension } from '@qti-editor/core/events';
+import { qtiEditorEventsExtension } from '@qti-editor/qti-editor-kit/events';
 import type { QtiAttributesPanel } from './components/editor/attributes';
 import { qtiAttributesExtension } from './components/editor/attributes';
 import type { QtiCodePanel } from './components/editor/code';
 import { qtiCodePanelExtension } from './components/editor/code';
-import { defineQtiInteractionsExtension } from '@qti-editor/core/interactions/prosekit';
+import { defineQtiInteractionsExtension } from '@qti-editor/qti-editor-kit/interactions/prosekit';
 
-import { blockSelectExtension } from '@qti-editor/prosemirror-block-select';
-import { nodeAttrsSyncExtension } from '@qti-editor/prosemirror-node-attrs-sync';
+import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror';
 
 import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/toolbar';
-import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/core/item-context';
+import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/qti-editor-kit/item-context';
 import './components/editor/code/qti-code-panel.js';
 import './components/editor/composer/qti-composer.js';
 import './components/editor/composer/qti-composer-metadata-form.js';

@@ -8,7 +8,7 @@
 
 import { html, LitElement, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import type { QtiCodeUpdateDetail } from '@qti-editor/core/code';
+import type { QtiCodeUpdateDetail } from '@qti-editor/qti-editor-kit/code';
 
 type CodeMode = 'html' | 'json' | 'xml';
 

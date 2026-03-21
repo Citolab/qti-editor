@@ -1,0 +1,45 @@
+{
+  "name": "@qti-editor/qti-editor-kit",
+  "version": "0.1.0",
+  "description": "Supported QTI editor-kit assembly surfaces for ProseMirror and ProseKit consumers",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./code": "./src/code/index.ts",
+    "./editor-context": "./src/editor-context/index.ts",
+    "./events": "./src/events/index.ts",
+    "./interactions": "./src/interactions/index.ts",
+    "./interactions/prosekit": "./src/interactions/prosekit.ts",
+    "./item-context": "./src/item-context/index.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@lit/context": "^1.1.6",
+    "@qti-components/base": "1.2.0",
+    "@qti-components/interactions": "1.8.0",
+    "@qti-components/theme": "1.1.0",
+    "@qti-components/utilities": "1.1.0",
+    "@qti-editor/interaction-choice": "workspace:*",
+    "@qti-editor/interaction-extended-text": "workspace:*",
+    "@qti-editor/interaction-inline-choice": "workspace:*",
+    "@qti-editor/interaction-match": "workspace:*",
+    "@qti-editor/interaction-select-point": "workspace:*",
+    "@qti-editor/interaction-shared": "workspace:*",
+    "@qti-editor/interaction-text-entry": "workspace:*",
+    "prosemirror-keymap": "^1.2.0",
+    "prosemirror-model": "^1.19.0",
+    "prosemirror-state": "^1.4.0",
+    "prosekit": "^0.17.0"
+  },
+  "peerDependencies": {
+    "prosekit": "^0.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

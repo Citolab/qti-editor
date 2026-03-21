@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@qti-editor/core": "workspace:*"
+    "@qti-editor/prosemirror-attributes-ui": "workspace:*"
   },
   "peerDependencies": {
     "lit": "^3.0.0"

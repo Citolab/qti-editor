@@ -1,11 +1,21 @@
 # qti-editor
 
-## ProseMirror QTI Schema
+## Architecture
 
-The ProseMirror-native QTI schema and components are provided by split
-`@qti-editor/interactions-*` packages (shared + per interaction) and re-exported
-via `@qti-editor/core/interactions`. The editor uses a thin ProseKit adapter to
-wire these into ProseKit.
+The repository now uses layered packages instead of umbrella bundles:
+
+- `@qti-editor/prosemirror`
+  Generic ProseMirror utilities such as block-select, node-attrs-sync, and virtual-cursor.
+- `@qti-editor/interaction-*`
+  ProseMirror-first interaction packages.
+- `@qti-editor/prosemirror-attributes*`
+  The generic attributes engine plus minimal and ProseKit-oriented attributes UI.
+- `@qti-editor/qti-core`
+  QTI composition, XML generation, and serialization semantics.
+- `@qti-editor/qti-editor-kit`
+  Supported editor assembly surfaces.
+- `@qti-editor/registry`
+  Copyable ProseKit-oriented UI scaffolds and examples.
 
 Dev workflow (auto-regenerate CEM + schema while the editor runs):
 ```sh
@@ -19,10 +29,6 @@ Runnable cookbook variants live under `apps/*` and demonstrate progressive integ
 - `@qti-editor/cookbook-prosemirror-minimal`
 - `@qti-editor/cookbook-prosemirror-context-attrs`
 - `@qti-editor/cookbook-prosekit-full`
-
-Single web component package:
-
-- `@qti-editor/coco` exposing `<qti-coco-editor>`
 
 See [docs/cookbook.md](docs/cookbook.md) for the variant matrix and commands.
 
@@ -48,7 +54,8 @@ QTI Editor provides a shadcn-compatible component registry for customizable UI c
 
 ### Architecture
 
-- **`@qti-editor/core`** - Core ProseMirror plugins and utilities (npm package)
+- **`@qti-editor/qti-core`** - QTI composition and export semantics
+- **`@qti-editor/qti-editor-kit`** - supported editor-kit assembly surfaces
 - **Registry components** - Customizable Lit components (copied into your project)
 
 ### Using the Registry

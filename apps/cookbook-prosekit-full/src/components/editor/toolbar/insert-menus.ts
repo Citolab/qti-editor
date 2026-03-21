@@ -1,9 +1,9 @@
 import type { ToolbarExtensionOptions, ToolbarInsertMenu } from './';
-import { insertChoiceInteraction } from '@qti-editor/interactions-qti-choice';
-import { insertExtendedTextInteraction } from '@qti-editor/interactions-qti-extended-text';
-import { insertMatchInteraction } from '@qti-editor/interactions-qti-match';
-import { insertInlineChoiceInteraction } from '@qti-editor/core/interactions';
-import { insertSelectPointInteraction } from '@qti-editor/interactions-qti-select-point';
+import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
+import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
+import { insertMatchInteraction } from '@qti-editor/interaction-match';
+import { insertInlineChoiceInteraction } from '@qti-editor/qti-editor-kit/interactions';
+import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
 
 type ToolbarInsertItemsProvider = NonNullable<ToolbarExtensionOptions['getInsertItems']>;
 

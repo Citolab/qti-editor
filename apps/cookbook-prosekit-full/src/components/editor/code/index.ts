@@ -11,4 +11,4 @@ export {
   type QtiCodeUpdateDetail,
   type QtiDocumentJson,
   type QtiNodeJson,
-} from '@qti-editor/core/code';
+} from '@qti-editor/qti-editor-kit/code';

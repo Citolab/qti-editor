@@ -1,0 +1,29 @@
+{
+  "name": "@qti-editor/qti-core",
+  "version": "0.1.0",
+  "description": "QTI semantics, composer registry, and XML export orchestration for QTI Editor",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./composer": "./src/composer/index.ts",
+    "./interactions/composer": "./src/interactions/composer.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@qti-editor/interaction-choice": "workspace:*",
+    "@qti-editor/interaction-extended-text": "workspace:*",
+    "@qti-editor/interaction-inline-choice": "workspace:*",
+    "@qti-editor/interaction-match": "workspace:*",
+    "@qti-editor/interaction-select-point": "workspace:*",
+    "@qti-editor/interaction-shared": "workspace:*",
+    "@qti-editor/interaction-text-entry": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

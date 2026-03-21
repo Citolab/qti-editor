@@ -8,8 +8,8 @@
 import { consume } from '@lit/context';
 import { html, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { buildAssessmentItemXml, formatXml, type ComposerItemContext } from '@qti-editor/core/composer';
-import { itemContext, type ItemContext } from '@qti-editor/core/item-context';
+import { buildAssessmentItemXml, formatXml, type ComposerItemContext } from '@qti-editor/qti-core/composer';
+import { itemContext, type ItemContext } from '@qti-editor/qti-editor-kit/item-context';
 
 @customElement('qti-composer')
 export class QtiComposer extends LitElement {

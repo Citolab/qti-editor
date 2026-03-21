@@ -5,12 +5,12 @@ import type { StorybookConfig } from '@storybook/web-components-vite';
 
 const config: StorybookConfig = {
   "stories": [
-    "../apps/editor/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-    "../packages/coco/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+    "../packages/**/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../registry/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../apps/**/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   "addons": [
     "@chromatic-com/storybook",
-    "@storybook/addon-vitest",
     "@storybook/addon-a11y",
     "@storybook/addon-docs"
   ],

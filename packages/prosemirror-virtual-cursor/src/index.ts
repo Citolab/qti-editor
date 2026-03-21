@@ -2,4 +2,7 @@
  * @qti-editor/prosemirror-virtual-cursor
  */
 
-export { createVirtualCursor, type VirtualCursorOptions } from './virtual-cursor-plugin.js';
+export {
+  createVirtualCursor,
+  type VirtualCursorOptions,
+} from '@qti-editor/prosemirror/virtual-cursor';
