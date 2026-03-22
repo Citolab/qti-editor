@@ -6,7 +6,7 @@
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -20,12 +20,40 @@ const registry = JSON.parse(readFileSync(registryPath, 'utf-8'));
 // Ensure output directory exists
 mkdirSync(publicDir, { recursive: true });
 
+function toImportPath(fromPath, toPath) {
+  const relativePath = posix.relative(posix.dirname(fromPath), toPath);
+  const normalized = relativePath.replace(/\.(ts|tsx)$/, '.js');
+  return normalized.startsWith('.') ? normalized : `./${normalized}`;
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function transformPackageImports(content, filePath, modulePathByName) {
+  let transformed = content;
+
+  for (const [moduleName, outputPath] of modulePathByName.entries()) {
+    const importPath = toImportPath(filePath, outputPath);
+    const pattern = new RegExp(`(['"])${escapeRegExp(moduleName)}\\1`, 'g');
+    transformed = transformed.replace(pattern, `$1${importPath}$1`);
+  }
+
+  return transformed;
+}
+
 console.log(`Building registry: ${registry.name}`);
 console.log(`Output directory: ${publicDir}`);
 
 // Build each registry item
 for (const item of registry.items) {
   console.log(`  Processing: ${item.name}`);
+
+  const modulePathByName = new Map(
+    item.files
+      .filter(file => file.module)
+      .map(file => [file.module, file.path]),
+  );
   
   const registryItem = {
     $schema: 'https://ui.shadcn.com/schema/registry-item.json',
@@ -41,14 +69,18 @@ for (const item of registry.items) {
 
   // Read and embed file contents
   for (const file of item.files) {
-    const filePath = join(rootDir, file.path);
+    const filePath = join(rootDir, file.source || file.path);
     
     if (!existsSync(filePath)) {
       console.error(`    ERROR: File not found: ${filePath}`);
       process.exit(1);
     }
 
-    const content = readFileSync(filePath, 'utf-8');
+    const content = transformPackageImports(
+      readFileSync(filePath, 'utf-8'),
+      file.path,
+      modulePathByName,
+    );
     
     registryItem.files.push({
       path: file.path,

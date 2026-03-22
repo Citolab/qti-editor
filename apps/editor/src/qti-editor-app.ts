@@ -1,36 +1,30 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
-import './components/editor/ui/slash-menu/index';
-import './components/registry/editor/code/qti-code-panel.js';
-import './components/registry/editor/composer/qti-composer.js';
-import './components/registry/editor/composer/qti-composer-metadata-form.js';
-import './components/editor/toolbar/';
+import '@qti-editor/ui/components/blocks/code-panel';
+import '@qti-editor/ui/components/blocks/composer';
+import '@qti-editor/ui/components/blocks/composer-metadata-form';
+import '@qti-editor/ui/components/editor/ui/slash-menu';
+import '@qti-editor/ui/components/editor/ui/toolbar';
+
 import { provide } from '@lit/context';
-import { LitElement, html } from 'lit';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
-import { createEditor, union, type Editor } from 'prosekit/core';
+import { LitElement, html, type PropertyValues } from 'lit';
+import { qtiCodePanelExtension } from '@qti-editor/ui/components/blocks/code-panel';
+import { qtiAttributesExtension, type QtiAttributesPanel } from '@qti-editor/ui/components/blocks/attributes-panel';
 import { qtiEditorEventsExtension } from '@qti-editor/qti-editor-kit/events';
-// import { defineQtiInteractionsExtension } from '@qti-editor/qti-editor-kit/interactions/prosekit';
-import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror';
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/qti-editor-kit/item-context';
+import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror';
+import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
+import { sampleUploader } from '@qti-editor/ui/components/editor/sample/sample-uploader';
 
 import { defineBasicExtension } from './extensions/basic-extension.js';
+import { defineSemanticPasteExtension } from './extensions/paste-semantic-html.js';
 import {
   defineLocalStorageDocPersistenceExtension,
   readPersistedStateFromLocalStorage
 } from './extensions/local-storage-doc-persistence-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension.js';
-// import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/toolbar';
-// import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/ui/toolbar';
-import { qtiCodePanelExtension } from './components/registry/editor/code';
-import { qtiAttributesExtension } from './components/registry/editor/attributes';
-import { defineSemanticPasteExtension } from './extensions/paste-semantic-html.js';
-import { toolbarConvertMenus } from './extensions/toolbar-convert-menus.js';
-import { sampleUploader } from './components/editor/sample/sample-uploader.js';
-
-import type { PropertyValues } from 'lit';
-import type { QtiAttributesPanel } from './components/registry/editor/attributes';
 
 const VOID_HTML_TAGS = [
   'img',
@@ -172,6 +166,7 @@ export class QtiEditorApp extends LitElement {
     return html`
       <div class="mt-12 flex flex-col gap-6 lg:flex-row lg:items-start">
         <div class="card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm">
+
           <lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>
 
           <div ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></div>

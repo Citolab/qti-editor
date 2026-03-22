@@ -21,4 +21,4 @@ export { defineExtension, type CodePanelExtensionOptions } from './extension.js'
 export { LitEditorCodePanel, registerLitEditorCodePanel } from './editor.js';
 
 // UI component
-export { QtiCodePanel } from '../../ui/qti-code-panel/index.js';
+export { QtiCodePanel } from '@qti-editor/qti-editor-kit/ui/code-panel';

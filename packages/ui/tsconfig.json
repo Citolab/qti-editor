@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "src",
+    "allowJs": true,
+    "checkJs": false,
+    "paths": {
+      "@qti-editor/ui": ["./src/index.ts"],
+      "@qti-editor/ui/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.js"]
+}

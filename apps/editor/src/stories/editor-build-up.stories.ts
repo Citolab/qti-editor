@@ -8,11 +8,9 @@ import { history } from 'prosemirror-history';
 import { keymap } from 'prosemirror-keymap';
 import 'prosemirror-gapcursor/style/gapcursor.css';
 import 'prosemirror-view/style/prosemirror.css';
-
 import '@qti-editor/interaction-choice';
 import '@qti-editor/interaction-shared';
-import '../components/registry/editor/attributes/qti-attributes-panel.js';
-
+import '@qti-editor/ui/components/blocks/attributes-panel';
 import {
   qtiChoiceInteractionNodeSpec,
   insertChoiceInteraction,
@@ -40,7 +38,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          'Cookbook-style editor assembly examples that show how to grow from bare ProseMirror to interactions, then add generic editor utilities and an attributes panel.',
+          'Scaffold-style editor assembly examples that show how to grow from bare ProseMirror to interactions, then add generic editor utilities and an attributes panel.',
       },
     },
   },

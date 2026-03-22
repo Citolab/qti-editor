@@ -9,7 +9,6 @@ packages/
   prosemirror/
     core
     attributes
-    attributes-ui
     attributes-ui-prosekit
     interaction-shared
     interaction-choice
@@ -45,7 +44,7 @@ This remains one registry service and one build/serve flow. The split is organiz
 - Generic ProseMirror plugins and utilities
 - Interaction node specs, commands, node views, authoring behavior
 - Generic attribute inspection and update engine
-- Minimal ProseMirror-first attributes UI for simple field editing
+- ProseMirror-native primitives that may also have sibling `.../prosekit` adapter entrypoints
 
 `packages/qti/*`
 - QTI composer registry and orchestration
@@ -83,21 +82,6 @@ This remains one registry service and one build/serve flow. The split is organiz
   -> `packages/prosemirror/core`
   Notes:
   keep this as the canonical source of generic PM utilities.
-
-- `packages/prosemirror-block-select`
-  -> merge source into `packages/prosemirror/core/src/block-select`
-  Wrapper decision:
-  either retire it or keep as a thin re-export wrapper for one release.
-
-- `packages/prosemirror-node-attrs-sync`
-  -> merge source into `packages/prosemirror/core/src/node-attrs-sync`
-  Wrapper decision:
-  either retire it or keep as a thin re-export wrapper for one release.
-
-- `packages/prosemirror-virtual-cursor`
-  -> merge source into `packages/prosemirror/core/src/virtual-cursor`
-  Wrapper decision:
-  either retire it or keep as a thin re-export wrapper for one release.
 
 - `packages/prosemirror/interaction-shared`
   -> `packages/prosemirror/interaction-shared`
@@ -154,9 +138,9 @@ This remains one registry service and one build/serve flow. The split is organiz
   use `registry/prosekit-core` for ProseKit-core candidates such as block-handle-style infrastructure. Use `registry/prosekit-ui` for ProseKit-based UI that should remain outside ProseKit itself. Keep one registry package, one registry server, and one published index.
 
 - `packages/lit`
-  -> evaluate after attributes extraction
-  Recommendation:
-  keep only generic reusable Lit primitives here. If the code is mainly ProseKit/QTI scaffolding, move it into `registry/` first and only later into `packages/prosekit/*` if it becomes stable enough.
+  -> retired
+  Notes:
+  the remaining compatibility wrapper is removed rather than kept as a public package.
 
 ## Source File Move Checklist
 
@@ -167,24 +151,18 @@ This remains one registry service and one build/serve flow. The split is organiz
   - to include `packages/*` and `packages/*/*`
 - Add this document as the migration source of truth
 - Update architecture references that still describe interaction packages as `interactions-qti-*`
-- Decide whether wrapper packages for standalone `prosemirror-*` utilities stay temporarily
 
 ### PR 2: canonicalize the ProseMirror utility layer
 
-- Move:
-  - `packages/prosemirror/src/*`
-  - `packages/prosemirror-block-select/src/*`
-  - `packages/prosemirror-node-attrs-sync/src/*`
-  - `packages/prosemirror-virtual-cursor/src/*`
-  into:
-  - `packages/prosemirror/core/src/*`
-- Update imports in:
-  - `apps/editor/src/qti-editor-app.ts`
-  - `apps/cookbook-prosemirror-minimal/src/main.ts`
-  - `apps/cookbook-prosemirror-context-attrs/src/cookbook-prosemirror-context-attrs-app.ts`
-  - `apps/cookbook-prosekit-full/src/qti-editor-app.ts`
-  - any stories importing `@qti-editor/prosemirror-block-select` or `@qti-editor/prosemirror-node-attrs-sync`
-- Preserve old package entrypoints as wrappers if needed to avoid one large breaking step
+- Canonical source lives in:
+  - `packages/prosemirror/core/src/block-select/*`
+  - `packages/prosemirror/core/src/node-attrs-sync/*`
+  - `packages/prosemirror/core/src/virtual-cursor/*`
+- Canonical imports are:
+  - `@qti-editor/prosemirror/block-select`
+  - `@qti-editor/prosemirror/node-attrs-sync`
+  - `@qti-editor/prosemirror/virtual-cursor`
+- Legacy standalone wrapper packages are removed once consumers migrate.
 
 ### PR 3: rename the interaction layer to interaction packages
 
@@ -199,8 +177,7 @@ This remains one registry service and one build/serve flow. The split is organiz
 - Update package names and internal imports
 - Update Vite alias files:
   - `apps/editor/vite.config.ts`
-  - `apps/cookbook-prosekit-full/vite.config.ts`
-- Update cookbook and app imports
+- Update app imports
 - Leave QTI compose modules in place temporarily if splitting them now would expand scope too far
 
 ### PR 4: extract the generic attributes engine
@@ -208,18 +185,15 @@ This remains one registry service and one build/serve flow. The split is organiz
 - Move generic attribute selection/update logic out of `packages/core/src/attributes`
 - Create:
   - `packages/prosemirror/attributes`
-  - `packages/prosemirror/attributes-ui`
   - `packages/prosemirror/attributes-ui-prosekit`
-- Scope the two UI layers differently:
-  - `attributes-ui`
-    simple field-based editor for string attrs, booleans, presence/absence checks, and lightweight validation
-  - `attributes-ui-prosekit`
-    richer guided UI with icons, predefined classes, curated choices, and more opinionated ProseKit-oriented affordances
+- Scope the supported UI layer as `attributes-ui-prosekit`
+  - richer guided UI with icons, predefined classes, curated choices, and more opinionated ProseKit-oriented affordances
+  - keep any generic field-editing base logic internal to that package instead of maintaining a second public UI package
 - Keep QTI-specific editable attribute metadata in the QTI layer
 - Update consumers in:
-  - `apps/editor/src/components/editor/attributes/*`
-  - `apps/cookbook-prosekit-full/src/components/editor/attributes/*`
-  - `apps/cookbook-prosemirror-context-attrs/src/components/ui/*`
+  - `packages/qti/editor-kit/src/ui/*` as the canonical first-party runtime surface
+  - first-party apps via direct imports from `@qti-editor/qti-editor-kit/ui/*`
+  - registry examples by rewriting those package imports during registry build
 
 ### PR 5: split QTI composition from editor-kit assembly
 
@@ -239,14 +213,9 @@ This is intentionally a later migration step. Do not do this before:
 - Split `registry/` into `registry/prosekit-core` and `registry/prosekit-ui`
 - Add block-handle scaffolds and related upstreamable editor primitives to `registry/prosekit-core`
 - Keep code/composer/panel starter UI in `registry/prosekit-ui`
-- Keep only generic Lit primitives in `packages/lit`, or move non-generic starter UI into `registry/`
+- Remove obsolete Lit compatibility wrappers instead of preserving them as separate packages
 - Promote only stable and generic ProseKit surfaces into `packages/prosekit/core` or a future packaged ProseKit editor-kit surface
-- Move cookbook-like reusable examples out of app-local ownership where appropriate
-- Introduce an installed-registry policy for apps:
-  - `src/components/registry/*` for synced installed scaffold code
-  - `src/components/local/*` for app-only code
-  - `src/components/overrides/*` for intentional forks
-  - app manifest or file headers to mark `synced` vs `forked`
+- Introduce an installed-registry policy for third-party apps that intentionally keep copied scaffold code
 
 ### PR 7: remove umbrella packages and finalize consumer surfaces
 
@@ -295,13 +264,12 @@ Storybook should be the primary home for reusable UI, isolated editor behavior, 
 - Editor preset stories:
   - minimal ProseMirror
   - ProseMirror plus attributes engine
-  - ProseMirror plus ProseMirror attributes UI
   - ProseKit plus ProseKit attributes UI
   - ProseKit plus registry UI
   - full supported QTI editor-kit assembly
 - Attribute UI comparison stories:
-  - simple ProseMirror field editor
-  - richer ProseKit attributes UI with icons and curated choices
+  - ProseKit attributes UI with curated choices
+  - QTI wrapper policy layered on top of the ProseKit attributes UI
 - Build-up documentation stories:
   - start from a bare ProseMirror editor
   - add interaction packages
@@ -345,7 +313,7 @@ The Storybook information architecture should include:
   - overview of the available editor-building layers
   - when to use raw ProseMirror, QTI core, registry UI, or ProseKit surfaces
 - `Docs/Scaffolds`
-  - installable cookbook-style examples exposed through the registry
+  - installable scaffold examples exposed through the registry
   - description of what each scaffold gives you
   - commands or registry install steps needed to scaffold them
 - `Docs/Build Your Editor`
@@ -361,16 +329,14 @@ The Storybook information architecture should include:
 - `Docs/Presets`
   - minimal ProseMirror preset
   - ProseMirror with attributes preset
-  - ProseMirror with ProseMirror attributes UI preset
   - ProseKit with ProseKit attributes UI preset
   - ProseKit with registry UI preset
   - full supported QTI editor-kit preset
 - `Docs/Attributes UI`
-  - when to use the simple ProseMirror attributes UI
-  - when to use the richer ProseKit attributes UI
-  - how both consume the same underlying attributes engine and metadata
+  - how the ProseKit attributes UI consumes the shared attributes engine and metadata
+  - how the QTI wrapper layers policy on top
 
-Storybook may and should run many simplified cookbook-style examples for testing and documentation purposes. These do not need to remain full standalone apps as long as they are:
+Storybook may and should run many simplified scaffold-style examples for testing and documentation purposes. These do not need to remain full standalone apps as long as they are:
 
 - isolated enough to demonstrate one assembly step clearly
 - stable enough to serve as regression fixtures
@@ -378,9 +344,9 @@ Storybook may and should run many simplified cookbook-style examples for testing
 
 ## Registry Scaffolds
 
-Cookbook examples should move conceptually closer to the registry model.
+Example presets should move conceptually closer to the registry model.
 
-Instead of treating cookbooks only as runnable apps, the target model should allow selected examples to be installed as copyable scaffolds, similar to shadcn-style registry items.
+Instead of treating example presets only as runnable apps, the target model should allow selected examples to be installed as copyable scaffolds, similar to shadcn-style registry items.
 
 Recommended registry scaffold categories:
 
@@ -409,18 +375,18 @@ When a scaffold is installed into an app, the installed files should remain visi
 - unmodified installed files are local copies of shared scaffolds
 - modified files must be marked as intentional forks if they diverge from the shared source
 
-### Cookbook role after this change
+### Example role after this change
 
-Cookbook apps can remain as runnable playgrounds, but they should no longer be the only place where this knowledge lives.
+Standalone example apps are intentionally removed. The same knowledge should live in Storybook docs and installable registry scaffolds instead.
 
 Target split:
 
 - Storybook:
-  primary documentation, guided build-up path, and simplified cookbook-style regression presets
+  primary documentation, guided build-up path, and simplified scaffold-style regression presets
 - Registry:
   copyable scaffold distribution
 - Apps:
-  runnable playgrounds and realistic integration demos
+  the main supported integration surface
 
 ## Test Strategy
 
@@ -553,7 +519,7 @@ Files likely touched:
 - `packages/prosemirror/item-*`
 - `packages/prosemirror/interaction-*`
 - `packages/core/**` imports only where needed
-- app and cookbook imports
+- app imports
 - Vite alias files
 
 Do not include:
@@ -565,15 +531,14 @@ Do not include:
 Run the narrowest useful checks first.
 
 For PR 2:
-- `pnpm --filter @qti-editor/prosemirror build`
-- wrapper package builds if wrappers remain
-- `pnpm --filter @qti-editor/app build`
+  - `pnpm --filter @qti-editor/prosemirror build`
+  - `pnpm --filter @qti-editor/app build`
 
 For PR 3:
 - build each moved item package
 - `pnpm --filter @qti-editor/core build`
 - `pnpm --filter @qti-editor/app build`
-- cookbook builds that import moved packages
+- app builds that import moved packages
 
 For later PRs:
 - `pnpm -r --filter "./packages/**" run build`

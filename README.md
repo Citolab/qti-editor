@@ -9,7 +9,7 @@ The repository now uses layered packages instead of umbrella bundles:
 - `@qti-editor/interaction-*`
   ProseMirror-first interaction packages.
 - `@qti-editor/prosemirror-attributes*`
-  The generic attributes engine plus minimal and ProseKit-oriented attributes UI.
+  The generic attributes engine plus the supported ProseKit-oriented attributes UI.
 - `@qti-editor/qti-core`
   QTI composition, XML generation, and serialization semantics.
 - `@qti-editor/qti-editor-kit`
@@ -21,16 +21,6 @@ Dev workflow (auto-regenerate CEM + schema while the editor runs):
 ```sh
 pnpm dev
 ```
-
-## Cookbook Editors
-
-Runnable cookbook variants live under `apps/*` and demonstrate progressive integration levels:
-
-- `@qti-editor/cookbook-prosemirror-minimal`
-- `@qti-editor/cookbook-prosemirror-context-attrs`
-- `@qti-editor/cookbook-prosekit-full`
-
-See [docs/cookbook.md](docs/cookbook.md) for the variant matrix and commands.
 
 ## Firebase Hosting
 

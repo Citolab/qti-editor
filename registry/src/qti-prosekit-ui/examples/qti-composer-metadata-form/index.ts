@@ -8,4 +8,4 @@
 export { QtiMetadataFormExample } from './editor.js';
 
 // UI component
-export { QtiComposerMetadataForm } from '../../ui/qti-composer-metadata-form/index.js';
+export { QtiComposerMetadataForm } from '@qti-editor/qti-editor-kit/ui/composer-metadata-form';

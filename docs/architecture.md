@@ -28,7 +28,6 @@ packages/
   prosemirror/
     core
     attributes
-    attributes-ui
     attributes-ui-prosekit
     interaction-shared
     interaction-choice
@@ -51,7 +50,6 @@ registry/
 
 apps/
   editor/
-  cookbook-*
 ```
 
 This remains the intended end state even while the current codebase is still migrating toward it.
@@ -70,7 +68,6 @@ Owns:
 - node views and authoring behavior
 - generic attributes engine
 - framework-agnostic or ProseMirror-first editor behavior
-- minimal ProseMirror-first attributes UI for direct field editing
 
 Does not own:
 
@@ -102,7 +99,7 @@ Owns:
 
 - stable reusable ProseKit package surfaces
 - reusable integration primitives that are generic enough to maintain as package APIs
-- richer ProseKit-oriented attributes UI affordances when those become stable package surfaces
+- supported ProseKit-oriented UI surfaces when they are part of the maintained editor-kit story
 
 Does not own:
 
@@ -160,7 +157,9 @@ Does not own:
 
 ## Installed Registry Code In Apps
 
-Apps may contain code installed from the registry, but that code must be treated differently from app-local code.
+Third-party consumer apps may contain code installed from the registry, but that code must be treated differently from app-local code.
+
+First-party apps inside this monorepo should prefer direct imports from `packages/*` for canonical runtime behavior. The registry is the external distribution format, not the default internal runtime source.
 
 Recommended layout inside an app:
 
@@ -199,8 +198,8 @@ Installed registry files should have a visible state:
 Recommended mechanisms:
 
 - header comment in copied files that records the registry source
-- app-level manifest file such as `apps/editor/registry-components.json`
-- a check script or CI rule that flags edits under `src/components/registry/*` unless the manifest marks them as `forked`
+- registry build metadata that records canonical source files and install paths
+- a check script or CI rule that flags divergence only in projects that intentionally keep copied registry installs
 
 ### What not to do
 
@@ -270,7 +269,7 @@ Then decide which registry track:
 
 ### Rule 6: Is it only needed to demonstrate usage?
 
-- If yes, prefer `apps/*` or Storybook stories.
+- If yes, prefer Storybook stories first and `apps/*` only when a full integration shell is necessary.
 - Do not place demo-only code in reusable packages.
 
 ## AI Scaffolding Rules
@@ -299,10 +298,12 @@ Specifically:
 
 - interaction node specs, commands, node views, and authoring behavior belong in `packages/prosemirror/*`
 - per-interaction QTI compose handlers belong in `packages/qti/core`
-- a simple field-based attributes UI can live under the ProseMirror layer
-- a richer ProseKit-oriented attributes UI can live under the ProseMirror or ProseKit layer depending on maturity:
-  - start as `packages/prosemirror/attributes-ui-prosekit` while tightly coupled to the attributes engine
-  - promote into `packages/prosekit/*` only if it becomes a stable reusable ProseKit surface
+- the canonical attributes engine lives under the ProseMirror layer
+- supported app-facing attributes UI is ProseKit-first
+- if a feature is a thin ProseKit wrapper over ProseMirror primitives, expose both:
+  - a ProseMirror-native entrypoint
+  - a sibling `.../prosekit` entrypoint
+- do not require dual entrypoints for app-facing UI surfaces like the package-owned attributes, code, or composer panels
 
 ### Promotion rules
 
@@ -364,7 +365,7 @@ Registry is the primary distribution surface for:
 
 - copyable UI components
 - starter scaffolds
-- cookbook-style example installs
+- scaffold-style example installs
 
 The registry remains one service with one build/serve flow, even though it contains two organizational tracks:
 

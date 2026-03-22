@@ -16,4 +16,4 @@ export { itemContext, itemContextVariables } from '@qti-editor/qti-editor-kit/it
 export { QtiComposerProvider } from './editor.js';
 
 // UI component
-export { QtiComposer } from '../../ui/qti-composer/index.js';
+export { QtiComposer } from '@qti-editor/qti-editor-kit/ui/composer';

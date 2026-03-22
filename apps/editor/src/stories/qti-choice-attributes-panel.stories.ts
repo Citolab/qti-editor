@@ -1,11 +1,12 @@
 import { html, nothing } from 'lit';
 import { ref } from 'lit/directives/ref.js';
+import '@qti-editor/ui/components/blocks/attributes-panel';
+
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
-
-import '../components/registry/editor/attributes/qti-attributes-panel.js';
-
-import type { ChoiceInteractionPanelPresentation } from '../components/registry/editor/attributes/qti-attributes-panel.js';
-import type { QtiAttributesPanel } from '../components/registry/editor/attributes/qti-attributes-panel.js';
+import type {
+  ChoiceInteractionPanelPresentation,
+  QtiAttributesPanel,
+} from '@qti-editor/ui/components/blocks/attributes-panel';
 
 const eventName = 'qti:attributes:update';
 

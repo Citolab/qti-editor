@@ -1,0 +1,48 @@
+{
+  "name": "@qti-editor/ui",
+  "version": "0.1.0",
+  "description": "Canonical UI source for QTI Editor blocks and vendored ProseKit-shaped components",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components/editor/ui/button": "./src/components/editor/ui/button/index.js",
+    "./components/editor/ui/image-upload-popover": "./src/components/editor/ui/image-upload-popover/index.js",
+    "./components/editor/ui/toolbar": "./src/components/editor/ui/toolbar/index.js",
+    "./components/editor/ui/slash-menu": "./src/components/editor/ui/slash-menu/index.js",
+    "./components/editor/sample/sample-uploader": "./src/components/editor/sample/sample-uploader.js",
+    "./components/blocks/attributes-panel": "./src/components/blocks/attributes-panel/index.ts",
+    "./components/blocks/code-panel": "./src/components/blocks/code-panel/index.ts",
+    "./components/blocks/composer": "./src/components/blocks/composer/index.ts",
+    "./components/blocks/composer-metadata-form": "./src/components/blocks/composer-metadata-form/index.ts",
+    "./components/blocks/editor-chrome": "./src/components/blocks/editor-chrome/index.ts",
+    "./components/blocks/interaction-insert-menu": "./src/components/blocks/interaction-insert-menu/index.ts",
+    "./components/blocks/convert-menu": "./src/components/blocks/convert-menu/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "registry:transform": "node scripts/transform-imports.mjs",
+    "registry:build": "pnpm run registry:transform && npx shadcn@latest build ./registry.json --cwd ./dist --output ./public/r",
+    "registry:serve": "npx serve dist/public -p 4100 --cors"
+  },
+  "dependencies": {
+    "@egoist/tailwindcss-icons": "^1.9.2",
+    "@iconify-json/lucide": "^1.2.98",
+    "@lit/context": "^1.1.6",
+    "@qti-editor/core": "workspace:*",
+    "@qti-editor/interaction-choice": "workspace:*",
+    "@qti-editor/interaction-extended-text": "workspace:*",
+    "@qti-editor/interaction-match": "workspace:*",
+    "@qti-editor/interaction-select-point": "workspace:*",
+    "@qti-editor/prosemirror-attributes-ui-prosekit": "workspace:*",
+    "@qti-editor/qti-core": "workspace:*",
+    "lit": "^3.3.2",
+    "prosekit": "^0.17.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "serve": "^14.0.0",
+    "typescript": "^5.0.0"
+  }
+}

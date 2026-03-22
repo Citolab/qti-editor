@@ -4,6 +4,8 @@ import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
+const coreSrcRoot = fileURLToPath(new URL('../../packages/core/src', import.meta.url));
+const qtiCoreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
 const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-shared/src', import.meta.url));
 const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-choice/src', import.meta.url));
 const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-extended-text/src', import.meta.url));
@@ -18,6 +20,46 @@ export default defineConfig({
       {
         find: /^@qti-editor\/interaction-shared\/(.*)\.js$/,
         replacement: `${interactionsSharedSrcRoot}/$1.ts`,
+      },
+      {
+        find: /^@qti-editor\/core\/attributes$/,
+        replacement: `${coreSrcRoot}/attributes/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/core\/code$/,
+        replacement: `${coreSrcRoot}/code/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/core\/composer$/,
+        replacement: `${coreSrcRoot}/composer/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/core\/editor-context$/,
+        replacement: `${coreSrcRoot}/editor-context/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/core\/events$/,
+        replacement: `${coreSrcRoot}/events/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/core\/item-context$/,
+        replacement: `${coreSrcRoot}/item-context/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/core$/,
+        replacement: `${coreSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-core\/composer$/,
+        replacement: `${qtiCoreSrcRoot}/composer/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-core\/interactions\/composer$/,
+        replacement: `${qtiCoreSrcRoot}/interactions/composer.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-core$/,
+        replacement: `${qtiCoreSrcRoot}/index.ts`,
       },
       {
         find: /^@qti-editor\/interaction-shared$/,

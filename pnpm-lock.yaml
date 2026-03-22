@@ -68,9 +68,6 @@ importers:
       '@qti-editor/prosemirror-attributes':
         specifier: workspace:*
         version: link:packages/prosemirror/attributes
-      '@qti-editor/prosemirror-attributes-ui':
-        specifier: workspace:*
-        version: link:packages/prosemirror/attributes-ui
       '@qti-editor/prosemirror-attributes-ui-prosekit':
         specifier: workspace:*
         version: link:packages/prosemirror/attributes-ui-prosekit
@@ -676,9 +673,9 @@ importers:
 
   packages/prosemirror/attributes-ui-prosekit:
     dependencies:
-      '@qti-editor/prosemirror-attributes-ui':
+      '@qti-editor/prosemirror-attributes':
         specifier: workspace:*
-        version: link:../attributes-ui
+        version: link:../attributes
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -935,6 +932,9 @@ importers:
       '@qti-components/utilities':
         specifier: 1.1.0
         version: 1.1.0(lit@3.3.2)
+      '@qti-editor/core':
+        specifier: workspace:*
+        version: link:../../core
       '@qti-editor/interaction-choice':
         specifier: workspace:*
         version: link:../../prosemirror/interaction-choice
@@ -956,6 +956,15 @@ importers:
       '@qti-editor/interaction-text-entry':
         specifier: workspace:*
         version: link:../../prosemirror/interaction-text-entry
+      '@qti-editor/prosemirror-attributes-ui-prosekit':
+        specifier: workspace:*
+        version: link:../../prosemirror/attributes-ui-prosekit
+      '@qti-editor/qti-core':
+        specifier: workspace:*
+        version: link:../core
+      lit:
+        specifier: ^3.3.2
+        version: 3.3.2
       prosekit:
         specifier: ^0.17.0
         version: 0.17.1(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -972,6 +981,58 @@ importers:
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.37
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/ui:
+    dependencies:
+      '@egoist/tailwindcss-icons':
+        specifier: ^1.9.2
+        version: 1.9.2(tailwindcss@4.2.1)
+      '@iconify-json/lucide':
+        specifier: ^1.2.98
+        version: 1.2.98
+      '@lit/context':
+        specifier: ^1.1.6
+        version: 1.1.6
+      '@qti-editor/core':
+        specifier: workspace:*
+        version: link:../core
+      '@qti-editor/interaction-choice':
+        specifier: workspace:*
+        version: link:../prosemirror/interaction-choice
+      '@qti-editor/interaction-extended-text':
+        specifier: workspace:*
+        version: link:../prosemirror/interaction-extended-text
+      '@qti-editor/interaction-match':
+        specifier: workspace:*
+        version: link:../prosemirror/interaction-match
+      '@qti-editor/interaction-select-point':
+        specifier: workspace:*
+        version: link:../prosemirror/interaction-select-point
+      '@qti-editor/prosemirror-attributes-ui-prosekit':
+        specifier: workspace:*
+        version: link:../prosemirror/attributes-ui-prosekit
+      '@qti-editor/qti-core':
+        specifier: workspace:*
+        version: link:../qti/core
+      '@qti-editor/qti-editor-kit':
+        specifier: workspace:*
+        version: link:../qti/editor-kit
+      lit:
+        specifier: ^3.3.2
+        version: 3.3.2
+      prosekit:
+        specifier: ^0.17.1
+        version: 0.17.1(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      serve:
+        specifier: ^14.0.0
+        version: 14.2.6
       typescript:
         specifier: ^5.0.0
         version: 5.9.3

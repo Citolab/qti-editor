@@ -6,8 +6,7 @@
 
 @import '@qti-components/theme/item.css';
 @import "tailwindcss";
-@source "../../../packages/plugin-toolbar/src/**/*.{ts,js}";
-@source "../../../registry/src/lit/**/*.{ts,js}";
+@source "../../../packages/ui/src/**/*.{ts,js}";
 
 /*---break---*/
 

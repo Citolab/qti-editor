@@ -5,7 +5,7 @@
  * component and handle metadata changes.
  */
 
-import '../../ui/qti-composer-metadata-form/index.js';
+import '@qti-editor/qti-editor-kit/ui/composer-metadata-form';
 
 import { html, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';

@@ -12,6 +12,8 @@
       "files": [
         {
           "path": "src/qti-prosekit-ui/ui/attributes-panel/index.ts",
+          "source": "../packages/qti/editor-kit/src/ui/attributes-panel/index.ts",
+          "module": "@qti-editor/qti-editor-kit/ui/attributes-panel",
           "type": "registry:component"
         },
         {
@@ -37,6 +39,8 @@
       "files": [
         {
           "path": "src/qti-prosekit-ui/ui/qti-composer/index.ts",
+          "source": "../packages/qti/editor-kit/src/ui/composer/index.ts",
+          "module": "@qti-editor/qti-editor-kit/ui/composer",
           "type": "registry:component"
         },
         {
@@ -58,6 +62,8 @@
       "files": [
         {
           "path": "src/qti-prosekit-ui/ui/qti-composer-metadata-form/index.ts",
+          "source": "../packages/qti/editor-kit/src/ui/composer-metadata-form/index.ts",
+          "module": "@qti-editor/qti-editor-kit/ui/composer-metadata-form",
           "type": "registry:component"
         },
         {
@@ -79,6 +85,8 @@
       "files": [
         {
           "path": "src/qti-prosekit-ui/ui/qti-code-panel/index.ts",
+          "source": "../packages/qti/editor-kit/src/ui/code-panel/index.ts",
+          "module": "@qti-editor/qti-editor-kit/ui/code-panel",
           "type": "registry:component"
         },
         {

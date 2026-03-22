@@ -78,11 +78,14 @@
       "@qti-editor/prosemirror-attributes": [
         "packages/prosemirror/attributes/src/index.ts"
       ],
-      "@qti-editor/prosemirror-attributes-ui": [
-        "packages/prosemirror/attributes-ui/src/index.ts"
-      ],
       "@qti-editor/prosemirror-attributes-ui-prosekit": [
         "packages/prosemirror/attributes-ui-prosekit/src/index.ts"
+      ],
+      "@qti-editor/ui": [
+        "packages/ui/src/index.ts"
+      ],
+      "@qti-editor/ui/*": [
+        "packages/ui/src/*"
       ],
       "@qti-editor/qti-core": [
         "packages/qti/core/src/index.ts"
@@ -128,15 +131,6 @@
       ],
       "@qti-editor/prosemirror/node-attrs-sync": [
         "packages/prosemirror/core/src/node-attrs-sync/index.ts"
-      ],
-      "@qti-editor/prosemirror-block-select": [
-        "packages/prosemirror-block-select/src/index.ts"
-      ],
-      "@qti-editor/prosemirror-node-attrs-sync": [
-        "packages/prosemirror-node-attrs-sync/src/index.ts"
-      ],
-      "@qti-editor/prosemirror-virtual-cursor": [
-        "packages/prosemirror-virtual-cursor/src/index.ts"
       ],
       "@qti-editor/interaction-choice": [
         "packages/prosemirror/interaction-choice/src/index.ts"

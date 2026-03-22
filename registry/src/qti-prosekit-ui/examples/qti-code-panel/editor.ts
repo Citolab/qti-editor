@@ -5,7 +5,7 @@
  * component with a ProseKit editor.
  */
 
-import '../../ui/qti-code-panel/index.js';
+import '@qti-editor/qti-editor-kit/ui/code-panel';
 
 import { html, LitElement, type PropertyDeclaration, type PropertyValues } from 'lit';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';

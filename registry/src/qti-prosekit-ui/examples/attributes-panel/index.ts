@@ -22,4 +22,4 @@ export { defineExtension, type AttributesPanelExtensionOptions } from './extensi
 export { LitEditorAttributesPanel, registerLitEditorAttributesPanel } from './editor.js';
 
 // UI component
-export { QtiAttributesPanel } from '../../ui/attributes-panel/index.js';
+export { QtiAttributesPanel } from '@qti-editor/qti-editor-kit/ui/attributes-panel';

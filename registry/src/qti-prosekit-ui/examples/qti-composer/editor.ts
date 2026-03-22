@@ -5,7 +5,7 @@
  * the QtiComposer component in a Lit application.
  */
 
-import '../../ui/qti-composer/index.js';
+import '@qti-editor/qti-editor-kit/ui/composer';
 
 import { provide } from '@lit/context';
 import { html, LitElement } from 'lit';

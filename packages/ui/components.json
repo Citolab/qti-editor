@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": false,
+  "tailwind": {
+    "config": "",
+    "css": "src/style.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@qti-editor/ui/components",
+    "utils": "@qti-editor/ui/lib/utils",
+    "ui": "@qti-editor/ui/components/ui",
+    "blocks": "@qti-editor/ui/components/blocks",
+    "lib": "@qti-editor/ui/lib",
+    "hooks": "@qti-editor/ui/hooks"
+  },
+  "registries": {
+    "@prosekit": "https://prosekit.dev/r/{name}.json"
+  }
+}
