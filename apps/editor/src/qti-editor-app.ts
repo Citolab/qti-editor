@@ -6,6 +6,9 @@ import '@qti-editor/ui/components/blocks/composer-metadata-form';
 import '@qti-editor/ui/components/editor/ui/slash-menu';
 import '@qti-editor/ui/components/editor/ui/toolbar';
 
+import '@qti-editor/ui/components/blocks/interaction-insert-menu';
+import '@qti-editor/ui/components/blocks/convert-menu';
+
 import { provide } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { LitElement, html, type PropertyValues } from 'lit';
@@ -166,9 +169,11 @@ export class QtiEditorApp extends LitElement {
     return html`
       <div class="mt-12 flex flex-col gap-6 lg:flex-row lg:items-start">
         <div class="card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm">
-
-          <lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>
-
+          <div class="flex gap-2">
+            <qti-interaction-insert-menu .editor=${this.editor} class="block"></qti-interaction-insert-menu>
+            <qti-convert-menu .editor=${this.editor} class="block"></qti-convert-menu>
+            </div>
+            <lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>
           <div ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></div>
 
           <lit-editor-slash-menu .editor=${this.editor} style="display: contents;"></lit-editor-slash-menu>

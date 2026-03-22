@@ -14,8 +14,8 @@ The repository now uses layered packages instead of umbrella bundles:
   QTI composition, XML generation, and serialization semantics.
 - `@qti-editor/qti-editor-kit`
   Supported editor assembly surfaces.
-- `@qti-editor/registry`
-  Copyable ProseKit-oriented UI scaffolds and examples.
+- `@qti-editor/ui`
+  Canonical copyable UI source plus shadcn-compatible registry artifacts.
 
 Dev workflow (auto-regenerate CEM + schema while the editor runs):
 ```sh
@@ -24,11 +24,14 @@ pnpm dev
 
 ## Firebase Hosting
 
-This repo now includes Firebase Hosting configuration for the editor app.
+This repo uses one Firebase Hosting site with a staged deploy bundle:
+- `/` editor app
+- `/storybook/` Storybook docs
+- `/r/` shadcn registry JSON
 
 1. Set your Firebase project id in `.firebaserc` (replace `your-firebase-project-id`).
 2. Fill `apps/editor/.env` with your Firebase Web app config values.
-3. Build and deploy:
+3. Build all hosting artifacts and deploy:
 ```sh
 pnpm firebase:deploy
 ```
@@ -60,8 +63,6 @@ Install a component into your project:
 ```sh
 npx shadcn add http://localhost:4100/r/qti-attributes-panel.json
 ```
-
-See [registry/README.md](registry/README.md) for full documentation.
 
 ## Git Hooks (Optional)
 

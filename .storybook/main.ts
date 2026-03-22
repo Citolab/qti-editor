@@ -6,7 +6,6 @@ import type { StorybookConfig } from '@storybook/web-components-vite';
 const config: StorybookConfig = {
   "stories": [
     "../packages/**/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-    "../registry/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../apps/**/src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   "addons": [

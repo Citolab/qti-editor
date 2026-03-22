@@ -1,7 +1,25 @@
 {
   "hosting": {
-    "public": "apps/editor/dist",
+    "public": "hosting/dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {
+        "source": "/r/**",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          }
+        ]
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/storybook",
+        "destination": "/storybook/index.html",
+        "type": 301
+      }
+    ],
     "rewrites": [{ "source": "**", "destination": "/index.html" }]
   }
 }
