@@ -34,7 +34,7 @@
     "@qti-components/utilities": "1.1.0",
     "eslint-plugin-lit": "^2.2.1",
     "lit": "^3.0.0",
-    "prosekit": "^0.17.0",
+    "prosekit": "^0.18.4",
     "typescript": "^5.0.0",
     "vite": "^5.0.0"
   },

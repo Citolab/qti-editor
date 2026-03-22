@@ -15,7 +15,6 @@
     "./components/blocks/code-panel": "./src/components/blocks/code-panel/index.ts",
     "./components/blocks/composer": "./src/components/blocks/composer/index.ts",
     "./components/blocks/composer-metadata-form": "./src/components/blocks/composer-metadata-form/index.ts",
-    "./components/blocks/editor-chrome": "./src/components/blocks/editor-chrome/index.ts",
     "./components/blocks/interaction-insert-menu": "./src/components/blocks/interaction-insert-menu/index.ts",
     "./components/blocks/convert-menu": "./src/components/blocks/convert-menu/index.ts"
   },
@@ -23,7 +22,7 @@
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "registry:transform": "node scripts/transform-imports.mjs",
-    "registry:build": "pnpm run registry:transform && npx shadcn@latest build ./registry.json --cwd ./dist --output ./public/r",
+    "registry:build": "node scripts/transform-imports.mjs && cd dist && npx shadcn@latest build ./registry.json --output ./public/r && cd .. && node scripts/copy-to-web.mjs",
     "registry:serve": "npx serve dist/public -p 4100 --cors"
   },
   "dependencies": {
@@ -38,7 +37,7 @@
     "@qti-editor/prosemirror-attributes-ui-prosekit": "workspace:*",
     "@qti-editor/qti-core": "workspace:*",
     "lit": "^3.3.2",
-    "prosekit": "^0.17.1"
+    "prosekit": "^0.18.4"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

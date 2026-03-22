@@ -6,6 +6,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const coreSrcRoot = fileURLToPath(new URL('../../packages/core/src', import.meta.url));
 const qtiCoreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
+const qtiEditorKitSrcRoot = fileURLToPath(new URL('../../packages/qti/editor-kit/src', import.meta.url));
 const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-shared/src', import.meta.url));
 const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-choice/src', import.meta.url));
 const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-extended-text/src', import.meta.url));
@@ -60,6 +61,34 @@ export default defineConfig({
       {
         find: /^@qti-editor\/qti-core$/,
         replacement: `${qtiCoreSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-editor-kit\/code$/,
+        replacement: `${qtiEditorKitSrcRoot}/code/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-editor-kit\/editor-context$/,
+        replacement: `${qtiEditorKitSrcRoot}/editor-context/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-editor-kit\/events$/,
+        replacement: `${qtiEditorKitSrcRoot}/events/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-editor-kit\/interactions\/prosekit$/,
+        replacement: `${qtiEditorKitSrcRoot}/interactions/prosekit.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-editor-kit\/interactions$/,
+        replacement: `${qtiEditorKitSrcRoot}/interactions/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-editor-kit\/item-context$/,
+        replacement: `${qtiEditorKitSrcRoot}/item-context/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-editor-kit$/,
+        replacement: `${qtiEditorKitSrcRoot}/index.ts`,
       },
       {
         find: /^@qti-editor\/interaction-shared$/,

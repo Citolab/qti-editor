@@ -13,10 +13,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "prosekit": "^0.17.0"
+    "prosekit": "^0.18.4"
   },
   "peerDependencies": {
-    "prosekit": "^0.17.0"
+    "prosekit": "^0.18.4"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

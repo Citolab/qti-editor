@@ -1,0 +1,35 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "lit-editor-slash-menu",
+  "title": "Lit Editor Slash Menu",
+  "description": "Vendored ProseKit Lit slash menu source used by the default editor chrome.",
+  "dependencies": [
+    "lit",
+    "prosekit"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/editor/ui/slash-menu/index.js",
+      "content": "import './slash-menu'\nimport './slash-menu-item'\nimport './slash-menu-empty'\n",
+      "type": "registry:component"
+    },
+    {
+      "path": "components/editor/ui/slash-menu/slash-menu.js",
+      "content": "import 'prosekit/lit/autocomplete'\n\nimport { html, LitElement } from 'lit';\nimport { canUseRegexLookbehind } from 'prosekit/core'\n\n// Match inputs like \"/\", \"/table\", \"/heading 1\" etc. Do not match \"/ heading\".\nconst regex = canUseRegexLookbehind() ? /(?<!\\S)\\/(\\S.*)?$/u : /\\/(\\S.*)?$/u\n\nclass SlashMenuElement extends LitElement {\n  static properties = {\n    editor: {\n      attribute: false\n    },\n  };\n\n  createRenderRoot() {\n    return this\n  }\n\n  render() {\n    const editor = this.editor\n    if (!editor) {\n      return html``;\n    }\n\n    return html`<prosekit-autocomplete-popover\n      .editor=${editor}\n      .regex=${regex}\n      class=\"relative block max-h-100 min-w-60 select-none overflow-auto whitespace-nowrap p-1 z-10 box-border rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-lg [&:not([data-state])]:hidden\"\n    >\n      <prosekit-autocomplete-list .editor=${editor}>\n        <lit-editor-slash-menu-item\n          class=\"contents\"\n          label=\"Text\"\n          @select=${() => editor.commands.setParagraph()}\n        ></lit-editor-slash-menu-item>\n        <lit-editor-slash-menu-item\n          class=\"contents\"\n          label=\"Heading 1\"\n          kbd=\"#\"\n          @select=${() => editor.commands.setHeading({ level: 1 })}\n        ></lit-editor-slash-menu-item>\n        <lit-editor-slash-menu-item\n          class=\"contents\"\n          label=\"Heading 2\"\n          kbd=\"##\"\n          @select=${() => editor.commands.setHeading({ level: 2 })}\n        ></lit-editor-slash-menu-item>\n        <lit-editor-slash-menu-item\n          class=\"contents\"\n          label=\"Heading 3\"\n          kbd=\"###\"\n          @select=${() => editor.commands.setHeading({ level: 3 })}\n        ></lit-editor-slash-menu-item>\n        <lit-editor-slash-menu-item\n          class=\"contents\"\n          label=\"Bullet list\"\n          kbd=\"-\"\n          @select=${() => editor.commands.wrapInList({ kind: 'bullet' })}\n        ></lit-editor-slash-menu-item>\n        <lit-editor-slash-menu-item\n          class=\"contents\"\n          label=\"Ordered list\"\n          kbd=\"1.\"\n          @select=${() => editor.commands.wrapInList({ kind: 'ordered' })}\n        ></lit-editor-slash-menu-item>\n        <lit-editor-slash-menu-item\n          class=\"contents\"\n          label=\"Task list\"\n          kbd=\"[]\"\n          @select=${() => editor.commands.wrapInList({ kind: 'task' })}\n        ></lit-editor-slash-menu-item>\n        <lit-editor-slash-menu-item\n          class=\"contents\"\n          label=\"Toggle list\"\n          kbd=\">>\"\n          @select=${() => editor.commands.wrapInList({ kind: 'toggle' })}\n        ></lit-editor-slash-menu-item>\n        <lit-editor-slash-menu-item\n          class=\"contents\"\n          label=\"Quote\"\n          kbd=\">\"\n          @select=${() => editor.commands.setBlockquote()}\n        ></lit-editor-slash-menu-item>\n        <lit-editor-slash-menu-item\n          class=\"contents\"\n          label=\"Table\"\n          @select=${() => editor.commands.insertTable({ row: 3, col: 3 })}\n        ></lit-editor-slash-menu-item>\n        <lit-editor-slash-menu-item\n          class=\"contents\"\n          label=\"Divider\"\n          kbd=\"---\"\n          @select=${() => editor.commands.insertHorizontalRule()}\n        ></lit-editor-slash-menu-item>\n        <lit-editor-slash-menu-item\n          class=\"contents\"\n          label=\"Code\"\n          kbd=\"\\`\\`\\`\"\n          @select=${() => editor.commands.setCodeBlock()}\n        ></lit-editor-slash-menu-item>\n        <lit-editor-slash-menu-empty class=\"contents\"></lit-editor-slash-menu-empty>\n      </prosekit-autocomplete-list>\n    </prosekit-autocomplete-popover>`;\n  }\n}\n\ncustomElements.define('lit-editor-slash-menu', SlashMenuElement)\n",
+      "type": "registry:component"
+    },
+    {
+      "path": "components/editor/ui/slash-menu/slash-menu-item.js",
+      "content": "import 'prosekit/lit/autocomplete'\n\nimport { html, LitElement } from 'lit'\n\nclass SlashMenuItemElement extends LitElement {\n  static properties = {\n    label: { type: String },\n    kbd: { type: String },\n  };\n\n  constructor() {\n    super()\n    this.label = ''\n    this.kbd = ''\n  }\n\n  createRenderRoot() {\n    return this\n  }\n\n  handleSelect = (event) => {\n    this.dispatchEvent(new CustomEvent('select', { detail: event.detail }))\n  }\n\n  render() {\n    return html`<prosekit-autocomplete-item\n      @select=${this.handleSelect}\n      class=\"relative flex items-center justify-between min-w-32 scroll-my-1 rounded-sm px-3 py-1.5 box-border cursor-default select-none whitespace-nowrap outline-hidden data-focused:bg-gray-100 dark:data-focused:bg-gray-800\"\n    >\n      <span>${this.label}</span>\n      ${this.kbd ? html`<kbd class=\"text-xs font-mono text-gray-400 dark:text-gray-500\">${this.kbd}</kbd>` : ''}\n    </prosekit-autocomplete-item>`;\n  }\n}\n\ncustomElements.define('lit-editor-slash-menu-item', SlashMenuItemElement)\n",
+      "type": "registry:component"
+    },
+    {
+      "path": "components/editor/ui/slash-menu/slash-menu-empty.js",
+      "content": "import 'prosekit/lit/autocomplete'\n\nimport { html, LitElement } from 'lit'\n\nclass SlashMenuEmptyElement extends LitElement {\n  createRenderRoot() {\n    return this\n  }\n\n  render() {\n    return html`\n      <prosekit-autocomplete-empty class=\"relative flex items-center justify-between min-w-32 scroll-my-1 rounded-sm px-3 py-1.5 box-border cursor-default select-none whitespace-nowrap outline-hidden data-focused:bg-gray-100 dark:data-focused:bg-gray-800\">\n        <span>No results</span>\n      </prosekit-autocomplete-empty>\n    `;\n  }\n}\n\ncustomElements.define('lit-editor-slash-menu-empty', SlashMenuEmptyElement)\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:ui"
+}

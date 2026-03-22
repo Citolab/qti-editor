@@ -16,26 +16,23 @@
         "@qti-editor/interaction-choice",
         "@qti-editor/prosemirror-attributes-ui-prosekit"
       ],
+      "devDependencies": [],
+      "registryDependencies": [],
       "files": [
         {
           "path": "components/blocks/attributes-panel/index.ts",
-          "source": "src/components/blocks/attributes-panel/index.ts",
-          "module": "@qti-editor/ui/components/blocks/attributes-panel",
           "type": "registry:component"
         },
         {
           "path": "examples/attributes-panel/index.ts",
-          "source": "src/examples/attributes-panel/index.ts",
           "type": "registry:example"
         },
         {
           "path": "examples/attributes-panel/extension.ts",
-          "source": "src/examples/attributes-panel/extension.ts",
           "type": "registry:example"
         },
         {
           "path": "examples/attributes-panel/editor.ts",
-          "source": "src/examples/attributes-panel/editor.ts",
           "type": "registry:example"
         }
       ]
@@ -45,22 +42,25 @@
       "type": "registry:ui",
       "title": "QTI Composer",
       "description": "Displays composed QTI XML from item context.",
-      "dependencies": ["lit", "@lit/context", "@qti-editor/qti-core", "@qti-editor/qti-editor-kit"],
+      "dependencies": [
+        "lit",
+        "@lit/context",
+        "@qti-editor/qti-core",
+        "@qti-editor/qti-editor-kit"
+      ],
+      "devDependencies": [],
+      "registryDependencies": [],
       "files": [
         {
           "path": "components/blocks/composer/index.ts",
-          "source": "src/components/blocks/composer/index.ts",
-          "module": "@qti-editor/ui/components/blocks/composer",
           "type": "registry:component"
         },
         {
           "path": "examples/qti-composer/index.ts",
-          "source": "src/examples/qti-composer/index.ts",
           "type": "registry:example"
         },
         {
           "path": "examples/qti-composer/editor.ts",
-          "source": "src/examples/qti-composer/editor.ts",
           "type": "registry:example"
         }
       ]
@@ -70,22 +70,22 @@
       "type": "registry:ui",
       "title": "QTI Composer Metadata Form",
       "description": "A form for editing QTI item metadata.",
-      "dependencies": ["lit"],
+      "dependencies": [
+        "lit"
+      ],
+      "devDependencies": [],
+      "registryDependencies": [],
       "files": [
         {
           "path": "components/blocks/composer-metadata-form/index.ts",
-          "source": "src/components/blocks/composer-metadata-form/index.ts",
-          "module": "@qti-editor/ui/components/blocks/composer-metadata-form",
           "type": "registry:component"
         },
         {
           "path": "examples/qti-composer-metadata-form/index.ts",
-          "source": "src/examples/qti-composer-metadata-form/index.ts",
           "type": "registry:example"
         },
         {
           "path": "examples/qti-composer-metadata-form/editor.ts",
-          "source": "src/examples/qti-composer-metadata-form/editor.ts",
           "type": "registry:example"
         }
       ]
@@ -95,27 +95,28 @@
       "type": "registry:ui",
       "title": "QTI Code Panel",
       "description": "A panel that displays editor document as HTML, JSON, or XML.",
-      "dependencies": ["lit", "prosekit", "@qti-editor/qti-editor-kit"],
+      "dependencies": [
+        "lit",
+        "prosekit",
+        "@qti-editor/qti-editor-kit"
+      ],
+      "devDependencies": [],
+      "registryDependencies": [],
       "files": [
         {
           "path": "components/blocks/code-panel/index.ts",
-          "source": "src/components/blocks/code-panel/index.ts",
-          "module": "@qti-editor/ui/components/blocks/code-panel",
           "type": "registry:component"
         },
         {
           "path": "examples/qti-code-panel/index.ts",
-          "source": "src/examples/qti-code-panel/index.ts",
           "type": "registry:example"
         },
         {
           "path": "examples/qti-code-panel/extension.ts",
-          "source": "src/examples/qti-code-panel/extension.ts",
           "type": "registry:example"
         },
         {
           "path": "examples/qti-code-panel/editor.ts",
-          "source": "src/examples/qti-code-panel/editor.ts",
           "type": "registry:example"
         }
       ]
@@ -129,35 +130,31 @@
         "lit",
         "prosekit"
       ],
+      "devDependencies": [],
+      "registryDependencies": [],
       "files": [
         {
           "path": "components/editor/ui/toolbar/index.js",
-          "source": "src/components/editor/ui/toolbar/index.js",
           "type": "registry:component"
         },
         {
           "path": "components/editor/ui/toolbar/toolbar.js",
-          "source": "src/components/editor/ui/toolbar/toolbar.js",
           "type": "registry:component"
         },
         {
           "path": "components/editor/ui/button/index.js",
-          "source": "src/components/editor/ui/button/index.js",
           "type": "registry:component"
         },
         {
           "path": "components/editor/ui/button/button.js",
-          "source": "src/components/editor/ui/button/button.js",
           "type": "registry:component"
         },
         {
           "path": "components/editor/ui/image-upload-popover/index.js",
-          "source": "src/components/editor/ui/image-upload-popover/index.js",
           "type": "registry:component"
         },
         {
           "path": "components/editor/ui/image-upload-popover/image-upload-popover.js",
-          "source": "src/components/editor/ui/image-upload-popover/image-upload-popover.js",
           "type": "registry:component"
         }
       ]
@@ -171,25 +168,23 @@
         "lit",
         "prosekit"
       ],
+      "devDependencies": [],
+      "registryDependencies": [],
       "files": [
         {
           "path": "components/editor/ui/slash-menu/index.js",
-          "source": "src/components/editor/ui/slash-menu/index.js",
           "type": "registry:component"
         },
         {
           "path": "components/editor/ui/slash-menu/slash-menu.js",
-          "source": "src/components/editor/ui/slash-menu/slash-menu.js",
           "type": "registry:component"
         },
         {
           "path": "components/editor/ui/slash-menu/slash-menu-item.js",
-          "source": "src/components/editor/ui/slash-menu/slash-menu-item.js",
           "type": "registry:component"
         },
         {
           "path": "components/editor/ui/slash-menu/slash-menu-empty.js",
-          "source": "src/components/editor/ui/slash-menu/slash-menu-empty.js",
           "type": "registry:component"
         }
       ]
@@ -208,11 +203,11 @@
         "@qti-editor/interaction-select-point",
         "@qti-editor/qti-editor-kit"
       ],
+      "devDependencies": [],
+      "registryDependencies": [],
       "files": [
         {
           "path": "components/blocks/interaction-insert-menu/index.ts",
-          "source": "src/components/blocks/interaction-insert-menu/index.ts",
-          "module": "@qti-editor/ui/components/blocks/interaction-insert-menu",
           "type": "registry:component"
         }
       ]
@@ -227,11 +222,11 @@
         "prosekit",
         "@qti-editor/interaction-choice"
       ],
+      "devDependencies": [],
+      "registryDependencies": [],
       "files": [
         {
           "path": "components/blocks/convert-menu/index.ts",
-          "source": "src/components/blocks/convert-menu/index.ts",
-          "module": "@qti-editor/ui/components/blocks/convert-menu",
           "type": "registry:component"
         }
       ]

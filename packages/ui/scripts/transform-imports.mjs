@@ -12,17 +12,8 @@ const registrySource = JSON.parse(readFileSync(registrySourcePath, 'utf-8'));
 rmSync(distDir, { recursive: true, force: true });
 mkdirSync(distDir, { recursive: true });
 
-const aliasPatterns = [
-  [/@qti-editor\/ui\/components\//g, '@/components/'],
-  [/@qti-editor\/ui\/lib\//g, '@/lib/'],
-  [/@qti-editor\/ui\/hooks\//g, '@/hooks/'],
-];
-
 function transformImports(content) {
-  return aliasPatterns.reduce(
-    (value, [pattern, replacement]) => value.replace(pattern, replacement),
-    content,
-  );
+  return content.replace(/@qti-editor\/ui\/(components|lib|hooks|types)/g, '@/$1');
 }
 
 const distRegistry = {
