@@ -1,9 +1,13 @@
+import { createRequire } from 'node:module';
+import { dirname } from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
+const require = createRequire(import.meta.url);
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
+const litReactiveElementRoot = dirname(require.resolve('@lit/reactive-element'));
 const coreSrcRoot = fileURLToPath(new URL('../../packages/core/src', import.meta.url));
 const qtiCoreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
 const qtiEditorKitSrcRoot = fileURLToPath(new URL('../../packages/qti/editor-kit/src', import.meta.url));
@@ -21,6 +25,26 @@ export default defineConfig({
       {
         find: /^@qti-editor\/interaction-shared\/(.*)\.js$/,
         replacement: `${interactionsSharedSrcRoot}/$1.ts`,
+      },
+      {
+        find: /^@lit\/reactive-element$/,
+        replacement: `${litReactiveElementRoot}/reactive-element.js`,
+      },
+      {
+        find: /^@lit\/reactive-element\/css-tag\.js$/,
+        replacement: `${litReactiveElementRoot}/css-tag.js`,
+      },
+      {
+        find: /^@lit\/reactive-element\/reactive-controller\.js$/,
+        replacement: `${litReactiveElementRoot}/reactive-controller.js`,
+      },
+      {
+        find: /^@lit\/reactive-element\/polyfill-support\.js$/,
+        replacement: `${litReactiveElementRoot}/polyfill-support.js`,
+      },
+      {
+        find: /^@lit\/reactive-element\/decorators\/(.*)$/,
+        replacement: `${litReactiveElementRoot}/decorators/$1`,
       },
       {
         find: /^@qti-editor\/core\/attributes$/,

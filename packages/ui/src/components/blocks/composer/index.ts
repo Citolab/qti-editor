@@ -15,16 +15,22 @@ import { itemContext, type ItemContext } from '@qti-editor/qti-editor-kit/item-c
 export class QtiComposer extends LitElement {
   @consume({ context: itemContext, subscribe: true })
   @state()
-  public itemContext?: ItemContext;
+  declare public itemContext?: ItemContext;
 
   @state()
-  private liveComposeEnabled = false;
+  declare private liveComposeEnabled: boolean;
 
   #xmlUrl = '';
   #xml = '';
   #formattedXml = '';
   #copyStatus: 'idle' | 'success' | 'error' = 'idle';
   #copyStatusTimer: number | null = null;
+
+  constructor() {
+    super();
+    this.liveComposeEnabled = false;
+    this.itemContext = undefined;
+  }
 
   override createRenderRoot() {
     return this;
