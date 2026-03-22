@@ -17,7 +17,6 @@
 }
 @custom-variant dark (&:where(.dark, .dark *));
 
-
 p {
    @apply p-2;
 }

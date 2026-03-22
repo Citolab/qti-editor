@@ -4,7 +4,7 @@ import './components/editor/ui/slash-menu/index';
 import './components/registry/editor/code/qti-code-panel.js';
 import './components/registry/editor/composer/qti-composer.js';
 import './components/registry/editor/composer/qti-composer-metadata-form.js';
-
+import './components/editor/toolbar/';
 import { provide } from '@lit/context';
 import { LitElement, html } from 'lit';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
@@ -21,11 +21,13 @@ import {
   readPersistedStateFromLocalStorage
 } from './extensions/local-storage-doc-persistence-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension.js';
-import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/toolbar';
+// import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/toolbar';
+// import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/ui/toolbar';
 import { qtiCodePanelExtension } from './components/registry/editor/code';
 import { qtiAttributesExtension } from './components/registry/editor/attributes';
 import { defineSemanticPasteExtension } from './extensions/paste-semantic-html.js';
 import { toolbarConvertMenus } from './extensions/toolbar-convert-menus.js';
+import { sampleUploader } from './components/editor/sample/sample-uploader.js';
 
 import type { PropertyValues } from 'lit';
 import type { QtiAttributesPanel } from './components/registry/editor/attributes';
@@ -103,10 +105,10 @@ export class QtiEditorApp extends LitElement {
       qtiCodePanelExtension({
         eventTarget: this.codeEventTarget
       }),
-      defineToolbarExtension({
-        getEditor: () => this.editor,
-        insertMenus: [...toolbarInsertMenus, ...toolbarConvertMenus]
-      }),
+      // defineToolbarExtension({
+      //   getEditor: () => this.editor,
+      //   insertMenus: [...toolbarInsertMenus, ...toolbarConvertMenus]
+      // }),
       blockSelectExtension,
       nodeAttrsSyncExtension
     );
@@ -170,7 +172,9 @@ export class QtiEditorApp extends LitElement {
     return html`
       <div class="mt-12 flex flex-col gap-6 lg:flex-row lg:items-start">
         <div class="card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm">
-          <qti-lit-editor ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></qti-lit-editor>
+          <lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>
+
+          <div ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></div>
 
           <lit-editor-slash-menu .editor=${this.editor} style="display: contents;"></lit-editor-slash-menu>
 
