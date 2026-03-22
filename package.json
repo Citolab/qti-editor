@@ -19,9 +19,11 @@
     "chrome:debug": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-remote-debug",
     "yalc:add": "yalc add --no-pure @qti-components/interactions",
     "yalc": "pnpm run yalc:add && pnpm -r --filter \"!@qti-editor/root\" --if-present --workspace-concurrency=1 yalc:add",
-    "qti-components:link:on": "node scripts/qti-components-links.mjs on",
-    "qti-components:link:off": "node scripts/qti-components-links.mjs off",
-    "qti-components:link:status": "node scripts/qti-components-links.mjs status",
+    "qti-components:link:on": "node scripts/qti-components-source.mjs link-on",
+    "qti-components:pack:refresh": "node scripts/qti-components-source.mjs pack-refresh",
+    "qti-components:pack:on": "node scripts/qti-components-source.mjs pack-on",
+    "qti-components:source:off": "node scripts/qti-components-source.mjs off",
+    "qti-components:source:status": "node scripts/qti-components-source.mjs status",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -82,7 +84,9 @@
   },
   "pnpm": {
     "overrides": {
-      "prosemirror-view": "1.41.4"
+      "prosemirror-view": "1.41.4",
+      "@qti-components/interactions-core": "file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz",
+      "@qti-components/choice-interaction": "file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz"
     }
   }
 }

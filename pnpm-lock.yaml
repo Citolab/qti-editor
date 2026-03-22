@@ -6,6 +6,8 @@ settings:
 
 overrides:
   prosemirror-view: 1.41.4
+  '@qti-components/interactions-core': file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz
+  '@qti-components/choice-interaction': file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz
 
 importers:
 
@@ -181,8 +183,8 @@ importers:
         specifier: 1.2.0
         version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/choice-interaction':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz
+        version: file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/extended-text-interaction':
         specifier: ^1.0.1
         version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -190,8 +192,8 @@ importers:
         specifier: 1.8.0
         version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions-core':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz
+        version: file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/match-interaction':
         specifier: ^1.0.1
         version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -272,8 +274,8 @@ importers:
         specifier: 1.2.0
         version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/choice-interaction':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz
+        version: file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/extended-text-interaction':
         specifier: ^1.0.1
         version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -284,8 +286,8 @@ importers:
         specifier: 1.8.0
         version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions-core':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz
+        version: file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/match-interaction':
         specifier: ^1.0.1
         version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -384,8 +386,8 @@ importers:
         specifier: 1.2.0
         version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/choice-interaction':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz
+        version: file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/extended-text-interaction':
         specifier: ^1.0.1
         version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -396,8 +398,8 @@ importers:
         specifier: 1.8.0
         version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions-core':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz
+        version: file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/match-interaction':
         specifier: ^1.0.1
         version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -487,8 +489,8 @@ importers:
         specifier: 1.2.0
         version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/choice-interaction':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz
+        version: file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/extended-text-interaction':
         specifier: ^1.0.1
         version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -496,8 +498,8 @@ importers:
         specifier: 1.8.0
         version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions-core':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz
+        version: file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/match-interaction':
         specifier: ^1.0.1
         version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -722,14 +724,14 @@ importers:
         specifier: ^1.4.0
         version: 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/choice-interaction':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz
+        version: file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions':
         specifier: ^1.10.0
         version: 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions-core':
-        specifier: ^1.0.1
-        version: 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz
+        version: file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities':
         specifier: ^1.3.0
         version: 1.3.1(lit@3.3.2)
@@ -1775,8 +1777,9 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/choice-interaction@1.0.1':
-    resolution: {integrity: sha512-xen1GX4XVe9PtKsbZRCrBT2+zJUQF3hKVkqNfSdRRIc8FdwgNYm/QmnFRxhbxk9wIrTHAl6YtW6MP9fCl1VYXQ==}
+  '@qti-components/choice-interaction@file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz':
+    resolution: {integrity: sha512-RacfgXhqrjtOWq80/fRf/oeSRT7dmVLBpGhBYw5Ay+OE6fN2BXeZoFe3u9gLGKC06k/XNnTvaiuD7u46ZCkepg==, tarball: file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz}
+    version: 1.1.0
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -1841,8 +1844,9 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/interactions-core@1.0.1':
-    resolution: {integrity: sha512-l+EUBw+viwGdiKqYBfyieRWtveKTxt6uG6iVBz6JOUMqEn3Vs5Ath7HuAgTEG0cYOYlCAunRkic/qMPCKgtLCA==}
+  '@qti-components/interactions-core@file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz':
+    resolution: {integrity: sha512-lfKgvxQaxoQnYShO2WmOY6EzMAz0nNZgMwXd4Q0mQ6zf2XBqxj9AK4iO57fasO4dBsjSMmWAobyjlNHixHTviw==, tarball: file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz}
+    version: 1.1.0
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -5751,7 +5755,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5767,11 +5771,11 @@ snapshots:
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/choice-interaction@1.0.1(@lit/context@1.1.6)(lit@3.3.2)':
+  '@qti-components/choice-interaction@file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5779,7 +5783,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5787,7 +5791,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5795,7 +5799,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5803,7 +5807,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5811,7 +5815,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5819,7 +5823,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5827,7 +5831,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5835,7 +5839,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5843,7 +5847,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5851,11 +5855,11 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/interactions-core@1.0.1(@lit/context@1.1.6)(lit@3.3.2)':
+  '@qti-components/interactions-core@file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -5867,7 +5871,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/associate-interaction': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/choice-interaction': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/choice-interaction': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/custom-interaction': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/end-attempt-interaction': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/extended-text-interaction': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -5878,7 +5882,7 @@ snapshots:
       '@qti-components/hotspot-interaction': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/hottext-interaction': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/inline-choice-interaction': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/match-interaction': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/media-interaction': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/order-interaction': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -5901,7 +5905,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5909,7 +5913,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5917,7 +5921,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5925,7 +5929,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5933,7 +5937,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5941,7 +5945,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5949,7 +5953,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5957,7 +5961,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 
@@ -5967,7 +5971,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.0.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:../../../Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.1(lit@3.3.2)
       lit: 3.3.2
 

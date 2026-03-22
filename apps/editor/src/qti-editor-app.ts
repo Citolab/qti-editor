@@ -1,5 +1,6 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
+import './components/editor/ui/slash-menu/index';
 import './components/registry/editor/code/qti-code-panel.js';
 import './components/registry/editor/composer/qti-composer.js';
 import './components/registry/editor/composer/qti-composer-metadata-form.js';
@@ -12,11 +13,12 @@ import { qtiEditorEventsExtension } from '@qti-editor/qti-editor-kit/events';
 // import { defineQtiInteractionsExtension } from '@qti-editor/qti-editor-kit/interactions/prosekit';
 import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror';
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/qti-editor-kit/item-context';
+import { definePlaceholder } from 'prosekit/extensions/placeholder';
 
 import { defineBasicExtension } from './extensions/basic-extension.js';
 import {
   defineLocalStorageDocPersistenceExtension,
-  readPersistedStateFromLocalStorage,
+  readPersistedStateFromLocalStorage
 } from './extensions/local-storage-doc-persistence-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension.js';
 import { defineToolbarExtension, toolbarInsertMenus } from './components/editor/toolbar';
@@ -25,11 +27,24 @@ import { qtiAttributesExtension } from './components/registry/editor/attributes'
 import { defineSemanticPasteExtension } from './extensions/paste-semantic-html.js';
 import { toolbarConvertMenus } from './extensions/toolbar-convert-menus.js';
 
-import type { PropertyValues} from 'lit';
+import type { PropertyValues } from 'lit';
 import type { QtiAttributesPanel } from './components/registry/editor/attributes';
 
-
-const VOID_HTML_TAGS = ['img', 'br', 'hr', 'input', 'meta', 'link', 'source', 'area', 'col', 'embed', 'param', 'track', 'wbr'];
+const VOID_HTML_TAGS = [
+  'img',
+  'br',
+  'hr',
+  'input',
+  'meta',
+  'link',
+  'source',
+  'area',
+  'col',
+  'embed',
+  'param',
+  'track',
+  'wbr'
+];
 const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
 
 function toXmlCompatibleFragment(html: string): string {
@@ -75,8 +90,9 @@ export class QtiEditorApp extends LitElement {
       defineBasicExtension(),
       defineQtiInteractionsExtension(),
       defineSemanticPasteExtension(),
+      definePlaceholder({ placeholder: 'Press / for commands...' }),
       defineLocalStorageDocPersistenceExtension({
-        storageKey: EDITOR_DOC_STORAGE_KEY,
+        storageKey: EDITOR_DOC_STORAGE_KEY
       }),
       qtiAttributesExtension({
         eventTarget: this.attributesEventTarget
@@ -99,7 +115,7 @@ export class QtiEditorApp extends LitElement {
     try {
       this.editor = createEditor({
         extension,
-        defaultContent: restoredState.doc,
+        defaultContent: restoredState.doc
       });
     } catch {
       window.localStorage.removeItem(EDITOR_DOC_STORAGE_KEY);
@@ -148,16 +164,16 @@ export class QtiEditorApp extends LitElement {
     //   this.codePanelRef.value.eventTarget = this.codeEventTarget;
     // }
   }
-            // <!-- <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel> -->
-
+  // <!-- <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel> -->
 
   override render() {
     return html`
       <div class="mt-12 flex flex-col gap-6 lg:flex-row lg:items-start">
-        <div
-          class="card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm"
-        >
+        <div class="card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm">
           <qti-lit-editor ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></qti-lit-editor>
+
+          <lit-editor-slash-menu .editor=${this.editor} style="display: contents;"></lit-editor-slash-menu>
+
           <qti-composer class="block w-full"></qti-composer>
         </div>
         <div class="w-full lg:w-80 lg:shrink-0">
