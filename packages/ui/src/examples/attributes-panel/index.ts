@@ -11,9 +11,9 @@ export type {
   QtiAttributesTriggerContext,
   QtiAttributesTrigger,
   QtiAttributesOptions,
-} from '@qti-editor/core/attributes';
+} from '@qti-editor/prosemirror-attributes';
 
-export { qtiAttributesExtension, qtiSidePanelExtension, updateQtiNodeAttrs } from '@qti-editor/core/attributes';
+export { qtiAttributesExtension, qtiSidePanelExtension, updateQtiNodeAttrs } from '@qti-editor/prosemirror-attributes';
 
 // Extension configuration
 export { defineExtension, type AttributesPanelExtensionOptions } from './extension.js';

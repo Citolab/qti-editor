@@ -12,7 +12,7 @@
         "lit",
         "prosekit",
         "@qti-editor/core",
-        "@qti-editor/qti-core",
+        "@qti-editor/prosemirror-attributes",
         "@qti-editor/prosemirror-attributes-ui-prosekit"
       ],
       "registryDependencies": ["qti-choice-attributes-editor", "qti-text-entry-attributes-editor"],
@@ -85,7 +85,7 @@
       "type": "registry:ui",
       "title": "QTI Composer",
       "description": "Displays composed QTI XML from item context.",
-      "dependencies": ["lit", "@lit/context", "@qti-editor/qti-core", "@qti-editor/qti-editor-kit"],
+      "dependencies": ["lit", "@lit/context", "@qti-editor/core", "@qti-editor/qti-editor-kit"],
       "files": [
         {
           "path": "components/blocks/composer/index.ts",

@@ -1,5 +1,5 @@
 {
-  "name": "@qti-editor/qti-core",
+  "name": "@qti-editor/core",
   "version": "0.1.0",
   "description": "QTI semantics, composer registry, and XML export orchestration for QTI Editor",
   "type": "module",

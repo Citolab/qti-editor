@@ -7,7 +7,19 @@
     "checkJs": false,
     "paths": {
       "@qti-editor/ui": ["./src/index.ts"],
-      "@qti-editor/ui/*": ["./src/*"]
+      "@qti-editor/ui/*": ["./src/*"],
+      "@qti-editor/core/composer": ["../qti/core/dist/composer/index.d.ts"],
+      "@qti-editor/core/interactions/composer": ["../qti/core/dist/interactions/composer.d.ts"],
+      "@qti-editor/interaction-choice": ["../prosemirror/interaction-choice/dist/index.d.ts"],
+      "@qti-editor/interaction-extended-text": ["../prosemirror/interaction-extended-text/dist/index.d.ts"],
+      "@qti-editor/interaction-match": ["../prosemirror/interaction-match/dist/index.d.ts"],
+      "@qti-editor/interaction-select-point": ["../prosemirror/interaction-select-point/dist/index.d.ts"],
+      "@qti-editor/interaction-text-entry": ["../prosemirror/interaction-text-entry/dist/index.d.ts"],
+      "@qti-editor/prosemirror-attributes": ["../prosemirror/attributes/dist/index.d.ts"],
+      "@qti-editor/prosemirror-attributes-ui-prosekit": ["../prosemirror/attributes-ui-prosekit/dist/index.d.ts"],
+      "@qti-editor/qti-editor-kit/code": ["../qti/editor-kit/dist/code/index.d.ts"],
+      "@qti-editor/qti-editor-kit/interactions": ["../qti/editor-kit/dist/interactions/index.d.ts"],
+      "@qti-editor/qti-editor-kit/item-context": ["../qti/editor-kit/dist/item-context/index.d.ts"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.js"]

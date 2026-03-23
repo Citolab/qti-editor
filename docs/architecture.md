@@ -26,7 +26,7 @@ When in doubt, prefer putting reusable logic in a package and letting the app co
 ```text
 packages/
   prosemirror/
-    core
+    extensions
     attributes
     attributes-ui-prosekit
     interaction-shared

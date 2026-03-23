@@ -5,7 +5,7 @@
  */
 
 import { union, type Extension } from 'prosekit/core';
-import { qtiAttributesExtension, type QtiAttributesOptions } from '@qti-editor/core/attributes';
+import { qtiAttributesExtension, type QtiAttributesOptions } from '@qti-editor/prosemirror-attributes';
 
 export interface AttributesPanelExtensionOptions extends QtiAttributesOptions {
   // Add any additional options specific to this example
@@ -27,4 +27,4 @@ export function defineExtension(options: AttributesPanelExtensionOptions = {}): 
   );
 }
 
-export type { QtiAttributesOptions } from '@qti-editor/core/attributes';
+export type { QtiAttributesOptions } from '@qti-editor/prosemirror-attributes';

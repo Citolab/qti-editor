@@ -37,8 +37,8 @@
     "@qti-editor/interaction-match": "workspace:*",
     "@qti-editor/interaction-select-point": "workspace:*",
     "@qti-editor/interaction-text-entry": "workspace:*",
+    "@qti-editor/prosemirror-attributes": "workspace:*",
     "@qti-editor/prosemirror-attributes-ui-prosekit": "workspace:*",
-    "@qti-editor/qti-core": "workspace:*",
     "lit": "^3.3.2",
     "prosekit": "^0.18.4"
   },

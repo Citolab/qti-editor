@@ -7,7 +7,7 @@ import {
   formatXml,
   type ComposerItemContext,
   type ResponseDeclaration,
-} from '@qti-editor/qti-core/composer';
+} from '@qti-editor/core/composer';
 
 import { itemContext, type ItemContext } from '@qti-editor/qti-editor-kit/item-context';
 

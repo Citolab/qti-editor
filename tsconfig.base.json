@@ -22,34 +22,22 @@
     "baseUrl": ".",
     "paths": {
       "@qti-editor/core": [
-        "packages/core/src/index.ts"
-      ],
-      "@qti-editor/core/attributes": [
-        "packages/core/src/attributes/index.ts"
-      ],
-      "@qti-editor/core/code": [
-        "packages/core/src/code/index.ts"
+        "packages/qti/core/src/index.ts"
       ],
       "@qti-editor/core/composer": [
-        "packages/core/src/composer/index.ts"
+        "packages/qti/core/src/composer/index.ts"
       ],
-      "@qti-editor/core/item-context": [
-        "packages/core/src/item-context/index.ts"
-      ],
-      "@qti-editor/core/editor-context": [
-        "packages/core/src/editor-context/index.ts"
-      ],
-      "@qti-editor/core/events": [
-        "packages/core/src/events/index.ts"
+      "@qti-editor/core/interactions/composer": [
+        "packages/qti/core/src/interactions/composer.ts"
       ],
       "@qti-editor/core/*": [
-        "packages/core/src/*"
+        "packages/qti/core/src/*"
       ],
       "@citolab/qti-editor-core": [
-        "packages/core/src/index.ts"
+        "packages/qti/core/src/index.ts"
       ],
       "@citolab/qti-editor-core/*": [
-        "packages/core/src/*"
+        "packages/qti/core/src/*"
       ],
       "@citolab/qti-editor-plugin-slash-menu": [
         "packages/plugin-slash-menu/src/index.ts"
@@ -73,7 +61,7 @@
         "packages/plugin-side-panel/index.ts"
       ],
       "@qti-editor/prosemirror": [
-        "packages/prosemirror/core/src/index.ts"
+        "packages/prosemirror/extensions/src/index.ts"
       ],
       "@qti-editor/prosemirror-attributes": [
         "packages/prosemirror/attributes/src/index.ts"
@@ -86,18 +74,6 @@
       ],
       "@qti-editor/ui/*": [
         "packages/ui/src/*"
-      ],
-      "@qti-editor/qti-core": [
-        "packages/qti/core/src/index.ts"
-      ],
-      "@qti-editor/qti-core/composer": [
-        "packages/qti/core/src/composer/index.ts"
-      ],
-      "@qti-editor/qti-core/interactions/composer": [
-        "packages/qti/core/src/interactions/composer.ts"
-      ],
-      "@qti-editor/qti-core/*": [
-        "packages/qti/core/src/*"
       ],
       "@qti-editor/qti-editor-kit": [
         "packages/qti/editor-kit/src/index.ts"
@@ -124,13 +100,19 @@
         "packages/qti/editor-kit/src/*"
       ],
       "@qti-editor/prosemirror/block-select": [
-        "packages/prosemirror/core/src/block-select/index.ts"
+        "packages/prosemirror/extensions/src/block-select/index.ts"
       ],
       "@qti-editor/prosemirror/virtual-cursor": [
-        "packages/prosemirror/core/src/virtual-cursor/index.ts"
+        "packages/prosemirror/extensions/src/virtual-cursor/index.ts"
       ],
       "@qti-editor/prosemirror/node-attrs-sync": [
-        "packages/prosemirror/core/src/node-attrs-sync/index.ts"
+        "packages/prosemirror/extensions/src/node-attrs-sync/index.ts"
+      ],
+      "@qti-editor/prosemirror/paste-semantic-html": [
+        "packages/prosemirror/extensions/src/paste-semantic-html/index.ts"
+      ],
+      "@qti-editor/prosemirror/local-storage-doc-persistence-extension": [
+        "packages/prosemirror/extensions/src/local-storage-doc-persistence-extension/index.ts"
       ],
       "@qti-editor/interaction-choice": [
         "packages/prosemirror/interaction-choice/src/index.ts"

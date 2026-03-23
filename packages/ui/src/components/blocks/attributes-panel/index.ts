@@ -1,7 +1,7 @@
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { union, type Extension } from 'prosekit/core';
-import { getNodeAttributePanelMetadataByNodeTypeName } from '@qti-editor/qti-core/interactions/composer';
+import { getNodeAttributePanelMetadataByNodeTypeName } from '@qti-editor/core/interactions/composer';
 import {
   qtiAttributesExtension,
   qtiSidePanelExtension,
@@ -11,7 +11,7 @@ import {
   type QtiAttributesTriggerContext,
   type SidePanelEventDetail,
   type SidePanelNodeDetail,
-} from '@qti-editor/core/attributes';
+} from '@qti-editor/prosemirror-attributes';
 import {
   ProsekitAttributesPanel,
   type AttributesFriendlyEditorMetadata,

@@ -16,17 +16,18 @@ import { qtiCodePanelExtension } from '@qti-editor/ui/components/blocks/code-pan
 import { qtiAttributesExtension, type QtiAttributesPanel } from '@qti-editor/ui/components/blocks/attributes-panel';
 import { qtiEditorEventsExtension } from '@qti-editor/qti-editor-kit/events';
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/qti-editor-kit/item-context';
-import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror';
+import {
+  blockSelectExtension,
+  defineLocalStorageDocPersistenceExtension,
+  defineSemanticPasteExtension,
+  nodeAttrsSyncExtension,
+  readPersistedStateFromLocalStorage
+} from '@qti-editor/prosemirror';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { sampleUploader } from '@qti-editor/ui/components/editor/sample/sample-uploader';
 
 import { defineBasicExtension } from './extensions/basic-extension.js';
-import { defineSemanticPasteExtension } from './extensions/paste-semantic-html.js';
-import {
-  defineLocalStorageDocPersistenceExtension,
-  readPersistedStateFromLocalStorage
-} from './extensions/local-storage-doc-persistence-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension.js';
 
 const VOID_HTML_TAGS = [

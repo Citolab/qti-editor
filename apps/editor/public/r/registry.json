@@ -12,7 +12,7 @@
         "lit",
         "prosekit",
         "@qti-editor/core",
-        "@qti-editor/qti-core",
+        "@qti-editor/prosemirror-attributes",
         "@qti-editor/prosemirror-attributes-ui-prosekit"
       ],
       "devDependencies": [],
@@ -91,7 +91,7 @@
       "dependencies": [
         "lit",
         "@lit/context",
-        "@qti-editor/qti-core",
+        "@qti-editor/core",
         "@qti-editor/qti-editor-kit"
       ],
       "devDependencies": [],

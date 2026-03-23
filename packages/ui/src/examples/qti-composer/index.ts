@@ -5,8 +5,8 @@
  */
 
 // Core types and functions
-export type { ComposerItemContext } from '@qti-editor/qti-core/composer';
-export { buildAssessmentItemXml, formatXml, extractResponseDeclarations } from '@qti-editor/qti-core/composer';
+export type { ComposerItemContext } from '@qti-editor/core/composer';
+export { buildAssessmentItemXml, formatXml, extractResponseDeclarations } from '@qti-editor/core/composer';
 
 // Item context
 export type { ItemContext } from '@qti-editor/qti-editor-kit/item-context';
