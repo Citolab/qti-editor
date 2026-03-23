@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "yalc:add": "yalc add @qti-components/interactions",
     "preview": "vite preview"
   },
   "dependencies": {
