@@ -33,7 +33,8 @@ export const choiceInteractionComposerMetadata = {
     internalSourceXml: MATCH_CORRECT_INTERNAL_TEMPLATE,
   },
   editorOnlyAttributes: ['class'],
-  userEditableAttributes: ['class', 'maxChoices', 'correctResponse'],
+  // maxChoices and correctResponse are set by clicking choices, not edited directly
+  userEditableAttributes: ['class'],
 } satisfies InteractionComposerMetadata;
 
 export const choiceNodeAttributePanelMetadataByNodeTypeName = {

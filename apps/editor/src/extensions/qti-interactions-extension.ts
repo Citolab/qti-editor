@@ -2,6 +2,7 @@
 import {
   insertSimpleChoiceOnEnter,
   qtiChoiceInteractionNodeSpec,
+  defineCorrectResponseClickExtension,
 } from '@qti-editor/interaction-choice';
 import {
   qtiExtendedTextInteractionNodeSpec,
@@ -37,6 +38,8 @@ export function defineQtiInteractionsExtension() {
       // 'Mod-Shift-t': insertTextEntryInteraction,
       // 'Mod-Shift-e': insertExtendedTextInteraction,
     }),
+    // Enable clicking on choice radio/checkbox to set correct responses
+    defineCorrectResponseClickExtension(),
   );
 }
 

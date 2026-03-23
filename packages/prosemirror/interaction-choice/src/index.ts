@@ -6,3 +6,5 @@ export * from './components/qti-choice-interaction/qti-choice-interaction.compos
 export * from './composer/metadata.js';
 export * from './composer/handler.js';
 export * from './attributes/choice-interaction-class-editor.js';
+
+export * from './extensions/index.js';
