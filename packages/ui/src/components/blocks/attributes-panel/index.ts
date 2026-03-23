@@ -66,6 +66,22 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
     this.updateActiveNodeAttrs(detail.attrs as Record<string, any>);
   }
 
+  /**
+   * Prevents mousedown from stealing focus and changing editor selection.
+   * Only allows focus for interactive elements (inputs, buttons, selects).
+   */
+  private handlePanelMousedown(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const interactiveElements = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'];
+    const isInteractive = 
+      interactiveElements.includes(target.tagName) ||
+      target.closest('input, textarea, select, button, [contenteditable="true"]');
+    
+    if (!isInteractive) {
+      event.preventDefault();
+    }
+  }
+
   private renderFriendlyEditor(
     editor: AttributesFriendlyEditorMetadata,
     activeNode: AttributesNodeDetail | null,
@@ -98,6 +114,7 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
       <section
         class="card border border-base-300/50 bg-base-100"
         @qti:attributes:patch=${this.handleFriendlyEditorPatch}
+        @mousedown=${this.handlePanelMousedown}
       >
         <div class="card-body gap-3 p-4">
           ${this.renderHeader(activeNode)} ${this.renderNodeSwitcher()}

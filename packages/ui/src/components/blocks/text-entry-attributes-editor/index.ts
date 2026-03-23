@@ -2,7 +2,6 @@ import { html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import {
   getPrimaryTextEntryCorrectResponse,
-  normalizeTextEntryCorrectResponses,
   parseTextEntryCaseSensitiveAttribute,
   parseTextEntryClassState,
   parseTextEntryCorrectResponses,
@@ -63,7 +62,14 @@ export class QtiTextEntryAttributesEditor extends LitElement {
   }
 
   private getCorrectResponses(activeNode: AttributesNodeDetail): string[] {
-    const parsed = parseTextEntryCorrectResponses(activeNode.attrs.correctResponses);
+    // Return raw array if already an array - preserve empty strings for editing
+    const responses = activeNode.attrs.correctResponses;
+    if (Array.isArray(responses)) {
+      return responses.map((r: unknown) => String(r ?? ''));
+    }
+
+    // Fall back to parsing for legacy/string values
+    const parsed = parseTextEntryCorrectResponses(responses);
     if (parsed.length > 0) return parsed;
 
     const legacy = parseTextEntryLegacyCorrectResponse(activeNode.attrs.correctResponse);
@@ -87,11 +93,12 @@ export class QtiTextEntryAttributesEditor extends LitElement {
   }
 
   private updateResponses(nextResponses: string[]) {
-    const normalizedResponses = normalizeTextEntryCorrectResponses(nextResponses);
-    const primaryCorrectResponse = getPrimaryTextEntryCorrectResponse(normalizedResponses);
+    // Don't normalize here - allow empty strings while editing
+    // Normalization happens when composing the QTI output
+    const primaryCorrectResponse = getPrimaryTextEntryCorrectResponse(nextResponses);
 
     this.emitPatch({
-      correctResponses: normalizedResponses,
+      correctResponses: nextResponses,
       correctResponse: primaryCorrectResponse,
     });
   }

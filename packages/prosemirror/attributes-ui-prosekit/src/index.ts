@@ -100,9 +100,22 @@ export class ProsekitAttributesPanel extends LitElement {
   @state()
   protected selectedIndex = 0;
 
+  /**
+   * When true, the panel is being interacted with and should preserve
+   * its current state even if the editor selection changes.
+   */
+  @state()
+  protected isInteracting = false;
+
   protected currentEventTarget: EventTarget | null = null;
 
   protected readonly onUpdateEvent = (event: Event) => {
+    // Ignore updates while user is interacting with the panel
+    // This prevents focus/selection changes from clearing the panel
+    if (this.isInteracting) {
+      return;
+    }
+
     const detail = (event as CustomEvent<AttributesEventDetail>).detail;
     const previousSelectedNode = this.activeNode;
     this.nodes = Array.isArray(detail?.nodes) ? detail.nodes : [];
@@ -133,14 +146,32 @@ export class ProsekitAttributesPanel extends LitElement {
     super.connectedCallback();
     this.currentEventTarget = this.getEventTarget();
     this.currentEventTarget.addEventListener(this.eventName, this.onUpdateEvent as EventListener);
+    
+    // Track focus within the panel to prevent losing selection
+    this.addEventListener('focusin', this.handlePanelFocusIn);
+    this.addEventListener('focusout', this.handlePanelFocusOut);
   }
 
   override disconnectedCallback() {
     if (this.currentEventTarget) {
       this.currentEventTarget.removeEventListener(this.eventName, this.onUpdateEvent as EventListener);
     }
+    this.removeEventListener('focusin', this.handlePanelFocusIn);
+    this.removeEventListener('focusout', this.handlePanelFocusOut);
     super.disconnectedCallback();
   }
+
+  private handlePanelFocusIn = () => {
+    this.isInteracting = true;
+  };
+
+  private handlePanelFocusOut = (event: FocusEvent) => {
+    // Only stop interacting if focus moves outside the panel
+    const relatedTarget = event.relatedTarget as HTMLElement | null;
+    if (!relatedTarget || !this.contains(relatedTarget)) {
+      this.isInteracting = false;
+    }
+  };
 
   protected override updated(changedProperties: Map<string, unknown>) {
     if (changedProperties.has('eventName') || changedProperties.has('eventTarget')) {
