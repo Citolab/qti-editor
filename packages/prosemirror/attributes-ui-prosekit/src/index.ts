@@ -6,7 +6,7 @@ import {
   type AttributesNodeDetail,
 } from '@qti-editor/prosemirror-attributes';
 
-import type { EditorState } from 'prosemirror-state';
+import type { EditorState } from 'prosekit/pm/state';
 
 type AttrValue = string | number | boolean | string[] | null | undefined;
 
