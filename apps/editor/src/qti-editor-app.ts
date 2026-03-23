@@ -172,8 +172,8 @@ export class QtiEditorApp extends LitElement {
           <div class="flex gap-2">
             <qti-interaction-insert-menu .editor=${this.editor} class="block"></qti-interaction-insert-menu>
             <qti-convert-menu .editor=${this.editor} class="block"></qti-convert-menu>
-            </div>
-            <lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>
+          </div>
+          <lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>
           <div ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></div>
 
           <lit-editor-slash-menu .editor=${this.editor} style="display: contents;"></lit-editor-slash-menu>

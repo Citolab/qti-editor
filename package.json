@@ -17,14 +17,6 @@
     "registry:serve": "pnpm --filter @qti-editor/ui registry:serve",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "chrome:debug": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-remote-debug",
-    "yalc:add": "yalc add --no-pure @qti-components/interactions",
-    "yalc": "pnpm run yalc:add && pnpm -r --filter \"!@qti-editor/root\" --if-present --workspace-concurrency=1 yalc:add",
-    "qti-components:link:on": "node scripts/qti-components-source.mjs link-on",
-    "qti-components:pack:refresh": "node scripts/qti-components-source.mjs pack-refresh",
-    "qti-components:pack:on": "node scripts/qti-components-source.mjs pack-on",
-    "qti-components:source:off": "node scripts/qti-components-source.mjs off",
-    "qti-components:source:status": "node scripts/qti-components-source.mjs status",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build --output-dir storybook-static"
   },
@@ -68,14 +60,6 @@
     "@qti-editor/interaction-select-point": "workspace:*",
     "@qti-editor/interaction-shared": "workspace:*",
     "@qti-editor/interaction-text-entry": "workspace:*",
-    "prosemirror-commands": "^1.7.1",
-    "prosemirror-dropcursor": "^1.8.2",
-    "prosemirror-gapcursor": "^1.3.2",
-    "prosemirror-history": "^1.4.1",
-    "prosemirror-keymap": "^1.2.3",
-    "prosemirror-model": "^1.25.4",
-    "prosemirror-state": "^1.4.4",
-    "prosemirror-view": "^1.41.4",
     "storybook": "^10.2.8",
     "tsx": "^4.19.2",
     "typescript-eslint": "^8.56.1",
@@ -84,9 +68,8 @@
   },
   "pnpm": {
     "overrides": {
-      "prosemirror-view": "1.41.4",
-      "@qti-components/interactions-core": "file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-interactions-core-1.1.0.tgz",
-      "@qti-components/choice-interaction": "file:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/.local-packs/qti-components-choice-interaction-1.1.0.tgz"
+      "@qti-components/interactions-core": "link:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/packages/interactions/core",
+      "@qti-components/choice-interaction": "link:/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/packages/interactions/choice-interaction"
     }
   }
 }
