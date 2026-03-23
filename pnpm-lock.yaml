@@ -636,6 +636,9 @@ importers:
       '@qti-editor/interaction-select-point':
         specifier: workspace:*
         version: link:../prosemirror/interaction-select-point
+      '@qti-editor/interaction-text-entry':
+        specifier: workspace:*
+        version: link:../prosemirror/interaction-text-entry
       '@qti-editor/prosemirror-attributes-ui-prosekit':
         specifier: workspace:*
         version: link:../prosemirror/attributes-ui-prosekit
@@ -658,31 +661,6 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
-
-  registry:
-    dependencies:
-      '@lit/context':
-        specifier: ^1.1.0
-        version: 1.1.6
-      '@qti-editor/interaction-choice':
-        specifier: workspace:*
-        version: link:../packages/prosemirror/interaction-choice
-      '@qti-editor/prosemirror-attributes-ui-prosekit':
-        specifier: workspace:*
-        version: link:../packages/prosemirror/attributes-ui-prosekit
-      '@qti-editor/qti-core':
-        specifier: workspace:*
-        version: link:../packages/qti/core
-      '@qti-editor/qti-editor-kit':
-        specifier: workspace:*
-        version: link:../packages/qti/editor-kit
-      lit:
-        specifier: ^3.2.0
-        version: 3.3.2
-    devDependencies:
-      serve:
-        specifier: ^14.0.0
-        version: 14.2.6
 
 packages:
 

@@ -8,6 +8,9 @@ export type {
   AttributesPanelExtensionOptions,
   ChoiceInteractionPanelPresentation,
 } from './components/blocks/attributes-panel/index.js';
+export { QtiChoiceAttributesEditor } from './components/blocks/choice-attributes-editor/index.js';
+export type { ChoiceInteractionPanelPresentation as ChoiceAttributesEditorPresentation } from './components/blocks/choice-attributes-editor/index.js';
+export { QtiTextEntryAttributesEditor } from './components/blocks/text-entry-attributes-editor/index.js';
 export {
   QtiCodePanel,
   qtiCodePanelExtension,

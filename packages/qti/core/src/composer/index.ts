@@ -20,6 +20,14 @@ export interface ResponseDeclaration {
   cardinality: 'single' | 'multiple';
   baseType: 'identifier' | 'point' | 'string';
   correctResponse?: string;
+  stringMapping?: {
+    defaultValue: number;
+    entries: Array<{
+      mapKey: string;
+      mappedValue: number;
+      caseSensitive: boolean;
+    }>;
+  };
   responseProcessingKind?: ResponseProcessingKind;
   areaMapping?: {
     defaultValue: number;
@@ -89,6 +97,21 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
       value.textContent = declaration.correctResponse;
       correctResponse.appendChild(value);
       responseDeclaration.appendChild(correctResponse);
+    }
+
+    if (declaration.stringMapping?.entries.length) {
+      const mapping = xmlDoc.createElementNS(QTI_NS, 'qti-mapping');
+      mapping.setAttribute('default-value', String(declaration.stringMapping.defaultValue));
+
+      declaration.stringMapping.entries.forEach(entry => {
+        const mapEntry = xmlDoc.createElementNS(QTI_NS, 'qti-map-entry');
+        mapEntry.setAttribute('map-key', entry.mapKey);
+        mapEntry.setAttribute('mapped-value', String(entry.mappedValue));
+        mapEntry.setAttribute('case-sensitive', String(entry.caseSensitive));
+        mapping.appendChild(mapEntry);
+      });
+
+      responseDeclaration.appendChild(mapping);
     }
 
     if (declaration.areaMapping) {

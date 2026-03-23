@@ -13,9 +13,9 @@
         "prosekit",
         "@qti-editor/core",
         "@qti-editor/qti-core",
-        "@qti-editor/interaction-choice",
         "@qti-editor/prosemirror-attributes-ui-prosekit"
       ],
+      "registryDependencies": ["qti-choice-attributes-editor", "qti-text-entry-attributes-editor"],
       "files": [
         {
           "path": "components/blocks/attributes-panel/index.ts",
@@ -37,6 +37,46 @@
           "path": "examples/attributes-panel/editor.ts",
           "source": "src/examples/attributes-panel/editor.ts",
           "type": "registry:example"
+        }
+      ]
+    },
+    {
+      "name": "qti-choice-attributes-editor",
+      "type": "registry:ui",
+      "title": "QTI Choice Attributes Editor",
+      "description": "Standalone choice-interaction class editor UI used by the attributes panel host.",
+      "dependencies": ["lit", "@qti-editor/interaction-choice"],
+      "files": [
+        {
+          "path": "components/blocks/choice-attributes-editor/index.ts",
+          "source": "src/components/blocks/choice-attributes-editor/index.ts",
+          "module": "@qti-editor/ui/components/blocks/choice-attributes-editor",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/blocks/attributes-panel/patch-event.ts",
+          "source": "src/components/blocks/attributes-panel/patch-event.ts",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "qti-text-entry-attributes-editor",
+      "type": "registry:ui",
+      "title": "QTI Text Entry Attributes Editor",
+      "description": "Standalone text-entry editor for width presets, case sensitivity, and accepted-answer synonyms.",
+      "dependencies": ["lit", "@qti-editor/interaction-text-entry"],
+      "files": [
+        {
+          "path": "components/blocks/text-entry-attributes-editor/index.ts",
+          "source": "src/components/blocks/text-entry-attributes-editor/index.ts",
+          "module": "@qti-editor/ui/components/blocks/text-entry-attributes-editor",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/blocks/attributes-panel/patch-event.ts",
+          "source": "src/components/blocks/attributes-panel/patch-event.ts",
+          "type": "registry:component"
         }
       ]
     },

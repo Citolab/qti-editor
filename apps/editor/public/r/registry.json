@@ -13,11 +13,13 @@
         "prosekit",
         "@qti-editor/core",
         "@qti-editor/qti-core",
-        "@qti-editor/interaction-choice",
         "@qti-editor/prosemirror-attributes-ui-prosekit"
       ],
       "devDependencies": [],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "qti-choice-attributes-editor",
+        "qti-text-entry-attributes-editor"
+      ],
       "files": [
         {
           "path": "components/blocks/attributes-panel/index.ts",
@@ -34,6 +36,50 @@
         {
           "path": "examples/attributes-panel/editor.ts",
           "type": "registry:example"
+        }
+      ]
+    },
+    {
+      "name": "qti-choice-attributes-editor",
+      "type": "registry:ui",
+      "title": "QTI Choice Attributes Editor",
+      "description": "Standalone choice-interaction class editor UI used by the attributes panel host.",
+      "dependencies": [
+        "lit",
+        "@qti-editor/interaction-choice"
+      ],
+      "devDependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "components/blocks/choice-attributes-editor/index.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/blocks/attributes-panel/patch-event.ts",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "qti-text-entry-attributes-editor",
+      "type": "registry:ui",
+      "title": "QTI Text Entry Attributes Editor",
+      "description": "Standalone text-entry editor for width presets, case sensitivity, and accepted-answer synonyms.",
+      "dependencies": [
+        "lit",
+        "@qti-editor/interaction-text-entry"
+      ],
+      "devDependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "components/blocks/text-entry-attributes-editor/index.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/blocks/attributes-panel/patch-event.ts",
+          "type": "registry:component"
         }
       ]
     },

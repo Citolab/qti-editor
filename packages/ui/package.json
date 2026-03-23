@@ -16,7 +16,9 @@
     "./components/blocks/composer": "./src/components/blocks/composer/index.ts",
     "./components/blocks/composer-metadata-form": "./src/components/blocks/composer-metadata-form/index.ts",
     "./components/blocks/interaction-insert-menu": "./src/components/blocks/interaction-insert-menu/index.ts",
-    "./components/blocks/convert-menu": "./src/components/blocks/convert-menu/index.ts"
+    "./components/blocks/convert-menu": "./src/components/blocks/convert-menu/index.ts",
+    "./components/blocks/choice-attributes-editor": "./src/components/blocks/choice-attributes-editor/index.ts",
+    "./components/blocks/text-entry-attributes-editor": "./src/components/blocks/text-entry-attributes-editor/index.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
@@ -34,6 +36,7 @@
     "@qti-editor/interaction-extended-text": "workspace:*",
     "@qti-editor/interaction-match": "workspace:*",
     "@qti-editor/interaction-select-point": "workspace:*",
+    "@qti-editor/interaction-text-entry": "workspace:*",
     "@qti-editor/prosemirror-attributes-ui-prosekit": "workspace:*",
     "@qti-editor/qti-core": "workspace:*",
     "lit": "^3.3.2",

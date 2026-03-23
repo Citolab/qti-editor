@@ -8,7 +8,7 @@ import {
 
 import type { EditorState } from 'prosemirror-state';
 
-type AttrValue = string | number | boolean | null | undefined;
+type AttrValue = string | number | boolean | string[] | null | undefined;
 
 export type {
   AttributesEventDetail,

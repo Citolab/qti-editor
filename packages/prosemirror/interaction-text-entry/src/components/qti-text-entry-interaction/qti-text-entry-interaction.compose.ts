@@ -1,4 +1,11 @@
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interaction-shared/composer/types.js';
+import {
+  getPrimaryTextEntryCorrectResponse,
+  normalizeTextEntryCorrectResponses,
+  parseTextEntryCaseSensitiveAttribute,
+  parseTextEntryCorrectResponses,
+  parseTextEntryLegacyCorrectResponse,
+} from '../../attributes/text-entry-attributes-editor.js';
 import { textEntryInteractionComposerMetadata } from '../../composer/metadata.js';
 
 function toNonEmptyString(value: string | null): string | null {
@@ -13,7 +20,23 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
-  const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
+  const legacyCorrectResponse = parseTextEntryLegacyCorrectResponse(
+    sourceElement.getAttribute('correct-response'),
+  );
+  const parsedCorrectResponses = parseTextEntryCorrectResponses(
+    sourceElement.getAttribute('correct-responses'),
+  );
+  const correctResponses = normalizeTextEntryCorrectResponses(
+    parsedCorrectResponses.length > 0
+      ? parsedCorrectResponses
+      : legacyCorrectResponse
+        ? [legacyCorrectResponse]
+        : [],
+  );
+  const correctResponse = getPrimaryTextEntryCorrectResponse(correctResponses);
+  const caseSensitive = parseTextEntryCaseSensitiveAttribute(
+    sourceElement.getAttribute('case-sensitive'),
+  );
 
   const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
   editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
@@ -31,6 +54,17 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
       cardinality: 'single',
       baseType: 'string',
       correctResponse: correctResponse ?? undefined,
+      stringMapping:
+        correctResponses.length > 0
+          ? {
+              defaultValue: 0,
+              entries: correctResponses.map(mapKey => ({
+                mapKey,
+                mappedValue: 1,
+                caseSensitive,
+              })),
+            }
+          : undefined,
       sourceTag: metadata.tagName,
     };
   }

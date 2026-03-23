@@ -22,12 +22,24 @@ export interface QtiAreaMapping {
   entries: QtiAreaMapEntry[];
 }
 
+export interface QtiStringMapEntry {
+  mapKey: string;
+  mappedValue: number;
+  caseSensitive: boolean;
+}
+
+export interface QtiStringMapping {
+  defaultValue: number;
+  entries: QtiStringMapEntry[];
+}
+
 export interface InteractionResponseDeclaration {
   identifier: string;
   cardinality: 'single' | 'multiple';
   baseType: 'identifier' | 'point' | 'string';
   correctResponse?: string;
   areaMapping?: QtiAreaMapping;
+  stringMapping?: QtiStringMapping;
   sourceTag: string;
 }
 

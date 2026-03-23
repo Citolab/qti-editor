@@ -1,4 +1,5 @@
 import type { InteractionComposerMetadata, NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
+import { textEntryAttributesFriendlyEditor } from '../attributes/text-entry-attributes-editor.js';
 
 export const MAP_RESPONSE_TEMPLATE = 'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/map_response';
 
@@ -23,13 +24,15 @@ export const textEntryInteractionComposerMetadata = {
     internalKind: 'map_response',
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['class'],
-  userEditableAttributes: [],
+  editorOnlyAttributes: ['class', 'case-sensitive', 'correct-responses'],
+  userEditableAttributes: ['class', 'caseSensitive', 'correctResponses', 'correctResponse'],
 } satisfies InteractionComposerMetadata;
 
 export const textEntryNodeAttributePanelMetadataByNodeTypeName = {
   [TEXT_ENTRY_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: TEXT_ENTRY_INTERACTION_NODE_TYPE,
     userEditableAttributes: textEntryInteractionComposerMetadata.userEditableAttributes,
+    hiddenRawAttributes: ['class', 'caseSensitive', 'correctResponses', 'correctResponse'],
+    friendlyEditors: [textEntryAttributesFriendlyEditor],
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;
