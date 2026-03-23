@@ -5,7 +5,6 @@ import '@qti-editor/ui/components/blocks/composer';
 import '@qti-editor/ui/components/blocks/composer-metadata-form';
 import '@qti-editor/ui/components/editor/ui/slash-menu';
 import '@qti-editor/ui/components/editor/ui/toolbar';
-
 import '@qti-editor/ui/components/blocks/interaction-insert-menu';
 import '@qti-editor/ui/components/blocks/convert-menu';
 
@@ -30,36 +29,15 @@ import { sampleUploader } from '@qti-editor/ui/components/editor/sample/sample-u
 import { defineBasicExtension } from './extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension.js';
 
-const VOID_HTML_TAGS = [
-  'img',
-  'br',
-  'hr',
-  'input',
-  'meta',
-  'link',
-  'source',
-  'area',
-  'col',
-  'embed',
-  'param',
-  'track',
-  'wbr'
-];
-const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
+import type { QtiComposer } from '@qti-editor/ui/components/blocks/composer';
 
-function toXmlCompatibleFragment(html: string): string {
-  const voidTagPattern = new RegExp(`<(${VOID_HTML_TAGS.join('|')})(\\s[^<>]*?)?>`, 'gi');
-  return html.replace(voidTagPattern, match => {
-    if (match.endsWith('/>')) return match;
-    return `${match.slice(0, -1)} />`;
-  });
-}
+const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
 
 export class QtiEditorApp extends LitElement {
   private editor: Editor;
   private editorRef: Ref<HTMLDivElement>;
   private panelRef: Ref<QtiAttributesPanel>;
-  // private codePanelRef: Ref<QtiCodePanel>;
+  private composerRef: Ref<QtiComposer>;
   private attributesEventTarget: EventTarget;
   private editorEventsTarget: EventTarget;
   private codeEventTarget: EventTarget;
@@ -91,22 +69,10 @@ export class QtiEditorApp extends LitElement {
       defineQtiInteractionsExtension(),
       defineSemanticPasteExtension(),
       definePlaceholder({ placeholder: 'Press / for commands...' }),
-      defineLocalStorageDocPersistenceExtension({
-        storageKey: EDITOR_DOC_STORAGE_KEY
-      }),
-      qtiAttributesExtension({
-        eventTarget: this.attributesEventTarget
-      }),
-      qtiEditorEventsExtension({
-        eventTarget: this.editorEventsTarget
-      }),
-      qtiCodePanelExtension({
-        eventTarget: this.codeEventTarget
-      }),
-      // defineToolbarExtension({
-      //   getEditor: () => this.editor,
-      //   insertMenus: [...toolbarInsertMenus, ...toolbarConvertMenus]
-      // }),
+      defineLocalStorageDocPersistenceExtension({ storageKey: EDITOR_DOC_STORAGE_KEY }),
+      qtiAttributesExtension({ eventTarget: this.attributesEventTarget }),
+      qtiEditorEventsExtension({ eventTarget: this.editorEventsTarget }),
+      qtiCodePanelExtension({ eventTarget: this.codeEventTarget }),
       blockSelectExtension,
       nodeAttrsSyncExtension
     );
@@ -123,21 +89,7 @@ export class QtiEditorApp extends LitElement {
     }
     this.editorRef = createRef<HTMLDivElement>();
     this.panelRef = createRef<QtiAttributesPanel>();
-    // this.codePanelRef = createRef<QtiCodePanel>();
-
-    // example: use events from events plugin, probably not even necessary
-    this.editorEventsTarget.addEventListener('qti:content:change', event => {
-      const detail = (event as CustomEvent<{ html?: string; json?: unknown }>).detail;
-      const xmlCompatibleHtml = toXmlCompatibleFragment(detail?.html ?? '');
-      const parsed = new DOMParser().parseFromString(
-        '<qti-item-body>' + xmlCompatibleHtml + '</qti-item-body>',
-        'application/xml'
-      );
-      this.itemContext = {
-        ...this.itemContext,
-        itemBody: parsed
-      };
-    });
+    this.composerRef = createRef<QtiComposer>();
 
     this.editorEventsTarget.addEventListener('qti:selection:change', event => {
       console.log('qti:selection:change', (event as CustomEvent).detail);
@@ -160,11 +112,10 @@ export class QtiEditorApp extends LitElement {
       (this.panelRef.value as QtiAttributesPanel).editorView = (this.editor as any).view ?? null;
     }
 
-    // if (this.codePanelRef.value) {
-    //   this.codePanelRef.value.eventTarget = this.codeEventTarget;
-    // }
+    if (this.composerRef.value) {
+      this.composerRef.value.eventTarget = this.editorEventsTarget;
+    }
   }
-  // <!-- <qti-code-panel class="block w-full" ${ref(this.codePanelRef)}></qti-code-panel> -->
 
   override render() {
     return html`
@@ -181,7 +132,7 @@ export class QtiEditorApp extends LitElement {
 
           <lit-editor-slash-menu .editor=${this.editor} style="display: contents;"></lit-editor-slash-menu>
 
-          <qti-composer class="block w-full"></qti-composer>
+          <qti-composer ${ref(this.composerRef)} class="block w-full"></qti-composer>
         </div>
         <div class="w-full lg:w-80 lg:shrink-0 lg:h-screen lg:overflow-y-auto">
           <qti-composer-metadata-form
@@ -191,10 +142,7 @@ export class QtiEditorApp extends LitElement {
             @metadata-change=${this.onMetadataChange}
           >
           </qti-composer-metadata-form>
-          <qti-attributes-panel
-            ${ref(this.panelRef)}
-            class="block w-full sticky top-0"
-          ></qti-attributes-panel>
+          <qti-attributes-panel ${ref(this.panelRef)} class="block w-full sticky top-0"></qti-attributes-panel>
         </div>
       </div>
     `;

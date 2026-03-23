@@ -11,6 +11,19 @@ import {
 
 import { itemContext, type ItemContext } from '@qti-editor/qti-editor-kit/item-context';
 
+const VOID_HTML_TAGS = [
+  'img', 'br', 'hr', 'input', 'meta', 'link',
+  'source', 'area', 'col', 'embed', 'param', 'track', 'wbr',
+];
+
+function toXmlCompatibleFragment(html: string): string {
+  const voidTagPattern = new RegExp(`<(${VOID_HTML_TAGS.join('|')})(\\s[^<>]*?)?>`, 'gi');
+  return html.replace(voidTagPattern, match => {
+    if (match.endsWith('/>')) return match;
+    return `${match.slice(0, -1)} />`;
+  });
+}
+
 @customElement('qti-composer')
 export class QtiComposer extends LitElement {
   @consume({ context: itemContext, subscribe: true })
@@ -25,11 +38,24 @@ export class QtiComposer extends LitElement {
   #formattedXml = '';
   #copyStatus: 'idle' | 'success' | 'error' = 'idle';
   #copyStatusTimer: number | null = null;
+  #eventTarget: EventTarget | null = null;
+  #contentChangeHandler: ((event: Event) => void) | null = null;
 
   constructor() {
     super();
     this.liveComposeEnabled = false;
     this.itemContext = undefined;
+  }
+
+  get eventTarget(): EventTarget | null {
+    return this.#eventTarget;
+  }
+
+  set eventTarget(value: EventTarget | null) {
+    if (this.#eventTarget === value) return;
+    this.#unbindContentChange();
+    this.#eventTarget = value;
+    this.#bindContentChange();
   }
 
   override createRenderRoot() {
@@ -54,11 +80,36 @@ export class QtiComposer extends LitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.#unbindContentChange();
     this.#revokeXmlUrl();
     if (this.#copyStatusTimer != null) {
       window.clearTimeout(this.#copyStatusTimer);
       this.#copyStatusTimer = null;
     }
+  }
+
+  #bindContentChange() {
+    if (!this.#eventTarget) return;
+    this.#contentChangeHandler = (event: Event) => {
+      const detail = (event as CustomEvent<{ html?: string }>).detail;
+      const xmlCompatibleHtml = toXmlCompatibleFragment(detail?.html ?? '');
+      const parsed = new DOMParser().parseFromString(
+        '<qti-item-body>' + xmlCompatibleHtml + '</qti-item-body>',
+        'application/xml',
+      );
+      this.itemContext = {
+        ...this.itemContext,
+        itemBody: parsed,
+      };
+    };
+    this.#eventTarget.addEventListener('qti:content:change', this.#contentChangeHandler);
+  }
+
+  #unbindContentChange() {
+    if (this.#eventTarget && this.#contentChangeHandler) {
+      this.#eventTarget.removeEventListener('qti:content:change', this.#contentChangeHandler);
+    }
+    this.#contentChangeHandler = null;
   }
 
   #setXmlUrl(xml: string) {
