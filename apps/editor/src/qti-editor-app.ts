@@ -169,18 +169,20 @@ export class QtiEditorApp extends LitElement {
     return html`
       <div class="mt-12 flex flex-col gap-6 lg:flex-row lg:items-start">
         <div class="card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm">
-          <div class="flex gap-2">
-            <qti-interaction-insert-menu .editor=${this.editor} class="block"></qti-interaction-insert-menu>
-            <qti-convert-menu .editor=${this.editor} class="block"></qti-convert-menu>
+          <div class="sticky top-0 bg-white/90 backdrop-blur-sm z-10 border-b border-gray-200">
+            <div class="flex gap-2">
+              <qti-interaction-insert-menu .editor=${this.editor} class="block"></qti-interaction-insert-menu>
+              <qti-convert-menu .editor=${this.editor} class="block"></qti-convert-menu>
+            </div>
+            <lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>
           </div>
-          <lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>
           <div ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></div>
 
           <lit-editor-slash-menu .editor=${this.editor} style="display: contents;"></lit-editor-slash-menu>
 
           <qti-composer class="block w-full"></qti-composer>
         </div>
-        <div class="w-full lg:w-80 lg:shrink-0">
+        <div class="w-full lg:w-80 lg:shrink-0 lg:h-screen lg:overflow-y-auto">
           <qti-composer-metadata-form
             class="block w-full"
             .title=${this.itemContext.title ?? ''}
@@ -188,7 +190,10 @@ export class QtiEditorApp extends LitElement {
             @metadata-change=${this.onMetadataChange}
           >
           </qti-composer-metadata-form>
-          <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
+          <qti-attributes-panel
+            ${ref(this.panelRef)}
+            class="block w-full sticky top-0"
+          ></qti-attributes-panel>
         </div>
       </div>
     `;
