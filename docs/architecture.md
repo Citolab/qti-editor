@@ -7,7 +7,7 @@ This document is the canonical architecture reference for this repository.
 Its job is to keep the package structure stable as the codebase grows, especially when new code is scaffolded with AI. Before adding files, use this document to decide:
 
 - whether the code belongs in `apps/editor`
-- whether it belongs in `registry/`
+- whether it belongs in `packages/ui` (copyable UI registry source)
 - whether it belongs in a reusable package
 - which package layer owns it
 
@@ -40,13 +40,7 @@ packages/
   qti/
     core
     editor-kit
-
-  prosekit/
-    core
-
-registry/
-  prosekit-core/
-  prosekit-ui/
+  ui
 
 apps/
   editor/
@@ -107,25 +101,12 @@ Does not own:
 - temporary starter code
 - app-local experiments
 
-### `registry/prosekit-core/*`
+### `packages/ui/*`
 
 Owns:
 
-- copyable ProseKit-oriented editor infrastructure that may eventually belong in ProseKit itself
-- upstreamable block-handle-style integrations
-- starter code that is still proving its API shape
-
-Does not own:
-
-- canonical domain logic
-- QTI composition rules
-- app-specific product behavior
-
-### `registry/prosekit-ui/*`
-
-Owns:
-
-- copyable ProseKit-based UI that is useful in this ecosystem but should not become ProseKit core
+- copyable ProseKit-based UI and QTI-facing UI blocks for shadcn-style distribution
+- vendored upstream ProseKit/shadcn-style UI dependencies used by those blocks
 - code panel
 - composer panel
 - composer metadata form
@@ -161,26 +142,11 @@ Third-party consumer apps may contain code installed from the registry, but that
 
 First-party apps inside this monorepo should prefer direct imports from `packages/*` for canonical runtime behavior. The registry is the external distribution format, not the default internal runtime source.
 
-Recommended layout inside an app:
-
-```text
-apps/editor/src/components/
-  registry/
-  local/
-  overrides/
-```
-
-Meaning:
-
-- `registry/*`
-  copied scaffold code that still conceptually tracks a registry source
-- `local/*`
-  app-specific code for this editor only
-- `overrides/*`
-  intentional forks of installed registry code
+First-party monorepo apps should import directly from package surfaces (for example `@qti-editor/ui/*`) instead of storing copied registry code in app source.
 
 ### Rules for installed registry code
 
+- First-party monorepo apps should not keep copied registry code as their default runtime model.
 - Do not mix installed registry code and app-local code in the same folder without an explicit reason.
 - Do not silently customize copied registry code in place.
 - If a copied registry file is changed for this app only, treat it as a fork and move or mark it under `overrides/*`.
@@ -258,14 +224,7 @@ Examples:
 
 ### Rule 5: Is it copyable starter code rather than a stable package API?
 
-- If yes, it belongs in `registry/`.
-
-Then decide which registry track:
-
-- `registry/prosekit-core/*`
-  for ProseKit-core candidates
-- `registry/prosekit-ui/*`
-  for ProseKit-based UI that should remain outside ProseKit core
+- If yes, it belongs in `packages/ui/src/*` and must be represented in `packages/ui/registry.json`.
 
 ### Rule 6: Is it only needed to demonstrate usage?
 
@@ -288,7 +247,7 @@ If those questions are not answered, the change is not ready to scaffold.
 ### What AI should not do
 
 - Do not add reusable logic only in `apps/editor`.
-- Do not add canonical business logic in `registry/`.
+- Do not add canonical business logic in `packages/ui`.
 - Do not add generic ProseMirror behavior in `packages/qti/*`.
 - Do not add QTI composition logic in `packages/prosemirror/*`.
 - Do not create new top-level architecture buckets without updating this document first.
@@ -311,7 +270,7 @@ Generated code may start in one of three places depending on maturity:
 
 - `apps/*`
   if it is a demo-only integration
-- `registry/*`
+- `packages/ui/*`
   if it is copyable starter code still proving its shape
 - `packages/*`
   if it is already a stable reusable surface
@@ -368,9 +327,8 @@ Registry is the primary distribution surface for:
 - scaffold-style example installs
 
 The registry remains one service with one build/serve flow, even though it contains two organizational tracks:
-
-- `registry/prosekit-core/*`
-- `registry/prosekit-ui/*`
+- source and metadata in `packages/ui`
+- generated JSON artifacts under `/r/*` during hosting build
 
 ## Tests
 

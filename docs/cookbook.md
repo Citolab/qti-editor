@@ -59,9 +59,9 @@ The registry should expose installable scaffolds so consumers can install a star
 
 Target scaffold areas:
 
-- `registry/prosekit-ui/scaffolds/prosemirror-minimal`
-- `registry/prosekit-ui/scaffolds/prosemirror-attributes`
-- `registry/prosekit-ui/scaffolds/prosekit-full`
+- `packages/ui/src/components/blocks/*` as installable registry blocks
+- `packages/ui/src/components/editor/ui/*` for vendored ProseKit-shaped UI dependencies
+- `packages/ui/registry.json` as the single registry index
 
 Each scaffold should describe:
 
