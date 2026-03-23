@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import styles from '@qti-components/interactions/elements/qti-simple-choice/qti-simple-choice.styles.js';
+
 import { CorrectResponseClickMixin } from '../../mixins/correct-response-click.mixin.js';
 
 import type { CSSResultGroup } from 'lit';

@@ -1,5 +1,6 @@
-import type { LitElement, PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
+
+import type { LitElement, PropertyValues } from 'lit';
 
 /**
  * Event name for correct response selection changes.
