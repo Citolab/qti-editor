@@ -21,10 +21,6 @@
     "build-storybook": "storybook build --output-dir storybook-static"
   },
   "dependencies": {
-    "@qti-components/base": "1.2.0",
-    "@qti-components/interactions": "1.8.0",
-    "@qti-components/theme": "1.1.0",
-    "@qti-components/utilities": "1.1.0",
     "eslint-plugin-lit": "^2.2.1",
     "lit": "^3.0.0",
     "prosekit": "^0.18.4",
@@ -34,14 +30,6 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^5.0.1",
     "@eslint/js": "^9.39.2",
-    "@qti-editor/interaction-choice": "workspace:*",
-    "@qti-editor/interaction-inline-choice": "workspace:*",
-    "@qti-editor/interaction-select-point": "workspace:*",
-    "@qti-editor/interaction-shared": "workspace:*",
-    "@qti-editor/interaction-text-entry": "workspace:*",
-    "@qti-editor/prosemirror": "workspace:*",
-    "@qti-editor/prosemirror-attributes": "workspace:*",
-    "@qti-editor/prosemirror-attributes-ui-prosekit": "workspace:*",
     "@storybook/addon-a11y": "^10.2.8",
     "@storybook/addon-docs": "^10.2.8",
     "@storybook/addon-vitest": "^10.2.8",

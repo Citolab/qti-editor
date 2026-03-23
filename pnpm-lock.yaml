@@ -12,18 +12,6 @@ importers:
 
   .:
     dependencies:
-      '@qti-components/base':
-        specifier: 1.2.0
-        version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions':
-        specifier: 1.8.0
-        version: 1.8.0(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/theme':
-        specifier: 1.1.0
-        version: 1.1.0
-      '@qti-components/utilities':
-        specifier: 1.1.0
-        version: 1.1.0(lit@3.3.2)
       eslint-plugin-lit:
         specifier: ^2.2.1
         version: 2.2.1(eslint@9.39.4(jiti@2.6.1))
@@ -46,30 +34,6 @@ importers:
       '@eslint/js':
         specifier: ^9.39.2
         version: 9.39.4
-      '@qti-editor/interaction-choice':
-        specifier: workspace:*
-        version: link:packages/prosemirror/interaction-choice
-      '@qti-editor/interaction-inline-choice':
-        specifier: workspace:*
-        version: link:packages/prosemirror/interaction-inline-choice
-      '@qti-editor/interaction-select-point':
-        specifier: workspace:*
-        version: link:packages/prosemirror/interaction-select-point
-      '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:packages/prosemirror/interaction-shared
-      '@qti-editor/interaction-text-entry':
-        specifier: workspace:*
-        version: link:packages/prosemirror/interaction-text-entry
-      '@qti-editor/prosemirror':
-        specifier: workspace:*
-        version: link:packages/prosemirror/extensions
-      '@qti-editor/prosemirror-attributes':
-        specifier: workspace:*
-        version: link:packages/prosemirror/attributes
-      '@qti-editor/prosemirror-attributes-ui-prosekit':
-        specifier: workspace:*
-        version: link:packages/prosemirror/attributes-ui-prosekit
       '@storybook/addon-a11y':
         specifier: ^10.2.8
         version: 10.3.0(storybook@10.3.0(@testing-library/dom@10.4.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
