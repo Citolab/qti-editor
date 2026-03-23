@@ -1,0 +1,219 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Docs/Building Your Editor" />
+
+# Building Your Own QTI Editor
+
+This guide walks you through creating a QTI editor from scratch using the `@qti-editor` packages.
+The editor is built on [ProseKit](https://prosekit.dev) (a toolkit on top of ProseMirror) and [Lit](https://lit.dev) web components.
+
+## 1. Install dependencies
+
+```bash
+npm install lit prosekit @lit/context
+npm install @qti-editor/core @qti-editor/qti-editor-kit @qti-editor/prosemirror @qti-editor/ui
+npm install @qti-editor/interaction-choice @qti-editor/interaction-extended-text @qti-editor/interaction-text-entry @qti-editor/interaction-shared
+npm install @qti-editor/prosemirror-attributes @qti-editor/prosemirror-attributes-ui-prosekit
+```
+
+## 2. Copy UI components from the registry
+
+The UI layer is distributed as a [shadcn-style registry](https://ui.shadcn.com/docs/registry).
+You can copy individual components into your project and modify them freely.
+
+| Component | What it does |
+|---|---|
+| `qti-attributes-panel` | Displays and edits attributes of the selected QTI node |
+| `qti-choice-attributes-editor` | Choice interaction class editor (orientation, labels, stacking) |
+| `qti-text-entry-attributes-editor` | Text entry editor (width, case sensitivity, synonyms) |
+| `qti-composer` | Displays composed QTI XML from item context |
+| `qti-composer-metadata-form` | Form for editing QTI item metadata (title, identifier) |
+| `qti-code-panel` | Shows editor document as HTML, JSON, or XML |
+| `qti-interaction-insert-menu` | Dropdown for inserting QTI interaction nodes |
+| `qti-convert-menu` | Dropdown for converting a selection into a QTI interaction |
+| `lit-editor-toolbar` | ProseKit Lit toolbar (bold, italic, headings, lists, images) |
+| `lit-editor-slash-menu` | ProseKit Lit slash command menu |
+
+To install a component using the shadcn CLI:
+
+```bash
+npx shadcn@latest add <component-name> --registry https://your-registry-url/r
+```
+
+Or copy the source files from `@qti-editor/ui/src/components/` directly.
+
+## 3. Define extensions
+
+The editor is composed from two extension groups you control:
+
+### Basic extension (rich-text features)
+
+Create your own basic extension by picking ProseKit extensions.
+Add or remove features like headings, lists, tables, images:
+
+```ts
+import {
+  defineBaseCommands, defineBaseKeymap, defineHistory, union
+} from 'prosekit/core';
+import { defineBold } from 'prosekit/extensions/bold';
+import { defineDoc } from 'prosekit/extensions/doc';
+import { defineGapCursor } from 'prosekit/extensions/gap-cursor';
+import { defineHardBreak } from 'prosekit/extensions/hard-break';
+import { defineHeading } from 'prosekit/extensions/heading';
+import { defineImage } from 'prosekit/extensions/image';
+import { defineItalic } from 'prosekit/extensions/italic';
+import { defineList } from 'prosekit/extensions/list';
+import { defineParagraph } from 'prosekit/extensions/paragraph';
+import { defineTable } from 'prosekit/extensions/table';
+import { defineText } from 'prosekit/extensions/text';
+import { defineVirtualSelection } from 'prosekit/extensions/virtual-selection';
+import { defineModClickPrevention } from 'prosekit/extensions/mod-click-prevention';
+
+export function defineBasicExtension() {
+  return union(
+    defineDoc(),
+    defineText(),
+    defineParagraph(),
+    defineHeading(),
+    defineList(),
+    defineImage(),
+    defineHardBreak(),
+    defineTable(),
+    defineItalic(),
+    defineBold(),
+    defineBaseKeymap(),
+    defineBaseCommands(),
+    defineHistory(),
+    defineGapCursor(),
+    defineVirtualSelection(),
+    defineModClickPrevention(),
+  );
+}
+```
+
+### QTI interactions extension
+
+This registers QTI node specs (choice, text-entry, extended-text) and keymaps:
+
+```ts
+import {
+  insertSimpleChoiceOnEnter,
+  qtiChoiceInteractionNodeSpec,
+  defineCorrectResponseClickExtension,
+} from '@qti-editor/interaction-choice';
+import { qtiExtendedTextInteractionNodeSpec } from '@qti-editor/interaction-extended-text';
+import { qtiTextEntryInteractionNodeSpec } from '@qti-editor/interaction-text-entry';
+import {
+  qtiPromptNodeSpec, qtiPromptParagraphNodeSpec,
+  qtiSimpleChoiceNodeSpec, qtiSimpleChoiceParagraphNodeSpec,
+} from '@qti-editor/interaction-shared';
+import { defineKeymap, defineNodeSpec, union } from 'prosekit/core';
+
+export function defineQtiInteractionsExtension() {
+  return union(
+    defineNodeSpec({ name: 'qtiChoiceInteraction', ...qtiChoiceInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiPromptParagraph', ...qtiPromptParagraphNodeSpec }),
+    defineNodeSpec({ name: 'qtiPrompt', ...qtiPromptNodeSpec }),
+    defineNodeSpec({ name: 'qtiSimpleChoiceParagraph', ...qtiSimpleChoiceParagraphNodeSpec }),
+    defineNodeSpec({ name: 'qtiSimpleChoice', ...qtiSimpleChoiceNodeSpec }),
+    defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiExtendedTextInteraction', ...qtiExtendedTextInteractionNodeSpec }),
+    defineKeymap({
+      Enter: (state, dispatch, view) => insertSimpleChoiceOnEnter(state, dispatch, view),
+    }),
+    defineCorrectResponseClickExtension(),
+  );
+}
+```
+
+## 4. Create the editor
+
+Combine extensions and create a ProseKit editor instance:
+
+```ts
+import { createEditor, union } from 'prosekit/core';
+import { definePlaceholder } from 'prosekit/extensions/placeholder';
+import {
+  blockSelectExtension, nodeAttrsSyncExtension,
+  defineSemanticPasteExtension,
+} from '@qti-editor/prosemirror';
+import { qtiAttributesExtension } from '@qti-editor/ui/components/blocks/attributes-panel';
+import { qtiEditorEventsExtension } from '@qti-editor/qti-editor-kit/events';
+
+const attributesEventTarget = new EventTarget();
+const editorEventsTarget = new EventTarget();
+
+const extension = union(
+  defineBasicExtension(),
+  defineQtiInteractionsExtension(),
+  defineSemanticPasteExtension(),
+  definePlaceholder({ placeholder: 'Press / for commands...' }),
+  qtiAttributesExtension({ eventTarget: attributesEventTarget }),
+  qtiEditorEventsExtension({ eventTarget: editorEventsTarget }),
+  blockSelectExtension,
+  nodeAttrsSyncExtension,
+);
+
+const editor = createEditor({ extension });
+```
+
+Then mount it on a DOM element:
+
+```ts
+const el = document.querySelector('#editor');
+editor.mount(el);
+```
+
+## 5. Add UI panels
+
+Wire up the attributes panel and toolbar using Lit or plain DOM:
+
+```html
+<!-- Toolbar -->
+<lit-editor-toolbar .editor=${editor}></lit-editor-toolbar>
+
+<!-- Editor surface -->
+<div id="editor"></div>
+
+<!-- Slash menu -->
+<lit-editor-slash-menu .editor=${editor}></lit-editor-slash-menu>
+
+<!-- Insert interaction dropdown -->
+<qti-interaction-insert-menu .editor=${editor}></qti-interaction-insert-menu>
+
+<!-- Attributes panel (set eventTarget after mount) -->
+<qti-attributes-panel></qti-attributes-panel>
+```
+
+Set the `eventTarget` on the attributes panel so it receives selection updates:
+
+```ts
+const panel = document.querySelector('qti-attributes-panel');
+panel.eventTarget = attributesEventTarget;
+panel.editorView = editor.view;
+```
+
+## 6. Listen to editor events
+
+The events extension emits content and selection changes:
+
+```ts
+editorEventsTarget.addEventListener('qti:content:change', (event) => {
+  const { html, json } = event.detail;
+  // Use html or json to update your QTI composer, save state, etc.
+});
+
+editorEventsTarget.addEventListener('qti:selection:change', (event) => {
+  const { node, pos } = event.detail;
+  // React to selection changes
+});
+```
+
+## What you can modify
+
+- **Basic extension** -- add or remove ProseKit extensions (e.g. drop tables, add underline)
+- **QTI interactions** -- include only the interaction types you need
+- **UI components** -- copy from registry and customize styling, labels, and behavior
+- **Attributes panel** -- provide a custom `choiceInteractionPresentation` to rename labels, reorder groups, add tooltips
+- **Toolbar** -- the `lit-editor-toolbar` is a vendored source you can edit directly
+- **Slash menu** -- the `lit-editor-slash-menu` is also vendored and customizable
