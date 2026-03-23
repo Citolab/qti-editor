@@ -10,8 +10,10 @@ import {
   textEntryWidthClassOptions,
   type TextEntryWidthClassOption,
 } from '@qti-editor/interaction-text-entry';
-import type { AttributesNodeDetail } from '@qti-editor/prosemirror-attributes-ui-prosekit';
+
 import { QTI_ATTRIBUTES_PATCH_EVENT, type QtiAttributesPatchDetail } from '@qti-editor/ui/components/blocks/attributes-panel/patch-event';
+
+import type { AttributesNodeDetail } from '@qti-editor/prosemirror-attributes-ui-prosekit';
 
 const TEXT_ENTRY_NODE_TYPE = 'qtitextentryinteraction';
 

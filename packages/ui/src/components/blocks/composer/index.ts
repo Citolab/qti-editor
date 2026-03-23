@@ -8,7 +8,6 @@ import {
   type ComposerItemContext,
   type ResponseDeclaration,
 } from '@qti-editor/core/composer';
-
 import { itemContext, type ItemContext } from '@qti-editor/qti-editor-kit/item-context';
 
 const VOID_HTML_TAGS = [
@@ -23,7 +22,7 @@ function toXmlCompatibleFragment(html: string): string {
     return `${match.slice(0, -1)} />`;
   });
 }
-
+ 
 @customElement('qti-composer')
 export class QtiComposer extends LitElement {
   @consume({ context: itemContext, subscribe: true })

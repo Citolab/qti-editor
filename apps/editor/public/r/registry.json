@@ -24,18 +24,6 @@
         {
           "path": "components/blocks/attributes-panel/index.ts",
           "type": "registry:component"
-        },
-        {
-          "path": "examples/attributes-panel/index.ts",
-          "type": "registry:example"
-        },
-        {
-          "path": "examples/attributes-panel/extension.ts",
-          "type": "registry:example"
-        },
-        {
-          "path": "examples/attributes-panel/editor.ts",
-          "type": "registry:example"
         }
       ]
     },
@@ -100,14 +88,6 @@
         {
           "path": "components/blocks/composer/index.ts",
           "type": "registry:component"
-        },
-        {
-          "path": "examples/qti-composer/index.ts",
-          "type": "registry:example"
-        },
-        {
-          "path": "examples/qti-composer/editor.ts",
-          "type": "registry:example"
         }
       ]
     },
@@ -125,14 +105,6 @@
         {
           "path": "components/blocks/composer-metadata-form/index.ts",
           "type": "registry:component"
-        },
-        {
-          "path": "examples/qti-composer-metadata-form/index.ts",
-          "type": "registry:example"
-        },
-        {
-          "path": "examples/qti-composer-metadata-form/editor.ts",
-          "type": "registry:example"
         }
       ]
     },
@@ -152,18 +124,6 @@
         {
           "path": "components/blocks/code-panel/index.ts",
           "type": "registry:component"
-        },
-        {
-          "path": "examples/qti-code-panel/index.ts",
-          "type": "registry:example"
-        },
-        {
-          "path": "examples/qti-code-panel/extension.ts",
-          "type": "registry:example"
-        },
-        {
-          "path": "examples/qti-code-panel/editor.ts",
-          "type": "registry:example"
         }
       ]
     },

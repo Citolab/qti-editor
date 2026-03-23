@@ -22,21 +22,6 @@
           "source": "src/components/blocks/attributes-panel/index.ts",
           "module": "@qti-editor/ui/components/blocks/attributes-panel",
           "type": "registry:component"
-        },
-        {
-          "path": "examples/attributes-panel/index.ts",
-          "source": "src/examples/attributes-panel/index.ts",
-          "type": "registry:example"
-        },
-        {
-          "path": "examples/attributes-panel/extension.ts",
-          "source": "src/examples/attributes-panel/extension.ts",
-          "type": "registry:example"
-        },
-        {
-          "path": "examples/attributes-panel/editor.ts",
-          "source": "src/examples/attributes-panel/editor.ts",
-          "type": "registry:example"
         }
       ]
     },
@@ -92,16 +77,6 @@
           "source": "src/components/blocks/composer/index.ts",
           "module": "@qti-editor/ui/components/blocks/composer",
           "type": "registry:component"
-        },
-        {
-          "path": "examples/qti-composer/index.ts",
-          "source": "src/examples/qti-composer/index.ts",
-          "type": "registry:example"
-        },
-        {
-          "path": "examples/qti-composer/editor.ts",
-          "source": "src/examples/qti-composer/editor.ts",
-          "type": "registry:example"
         }
       ]
     },
@@ -117,16 +92,6 @@
           "source": "src/components/blocks/composer-metadata-form/index.ts",
           "module": "@qti-editor/ui/components/blocks/composer-metadata-form",
           "type": "registry:component"
-        },
-        {
-          "path": "examples/qti-composer-metadata-form/index.ts",
-          "source": "src/examples/qti-composer-metadata-form/index.ts",
-          "type": "registry:example"
-        },
-        {
-          "path": "examples/qti-composer-metadata-form/editor.ts",
-          "source": "src/examples/qti-composer-metadata-form/editor.ts",
-          "type": "registry:example"
         }
       ]
     },
@@ -142,21 +107,6 @@
           "source": "src/components/blocks/code-panel/index.ts",
           "module": "@qti-editor/ui/components/blocks/code-panel",
           "type": "registry:component"
-        },
-        {
-          "path": "examples/qti-code-panel/index.ts",
-          "source": "src/examples/qti-code-panel/index.ts",
-          "type": "registry:example"
-        },
-        {
-          "path": "examples/qti-code-panel/extension.ts",
-          "source": "src/examples/qti-code-panel/extension.ts",
-          "type": "registry:example"
-        },
-        {
-          "path": "examples/qti-code-panel/editor.ts",
-          "source": "src/examples/qti-code-panel/editor.ts",
-          "type": "registry:example"
         }
       ]
     },
