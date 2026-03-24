@@ -5,8 +5,10 @@
  * Subscribe to events to display or process the code output.
  */
 
-import { definePlugin, htmlFromNode, jsonFromNode, type Extension } from 'prosekit/core';
+import { definePlugin, jsonFromNode, type Extension } from 'prosekit/core';
+import { ListDOMSerializer } from 'prosekit/extensions/list';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
+
 import type { EditorState } from 'prosekit/pm/state';
 
 export interface QtiDocumentJson {
@@ -52,8 +54,10 @@ function htmlToXmlString(html: string): string {
 function buildCodeDetail(state: EditorState): QtiCodeUpdateDetail {
   const json = jsonFromNode(state.doc) as QtiDocumentJson;
   const html = (() => {
+    const serializer = ListDOMSerializer.fromSchema(state.schema);
+    const fragment = serializer.serializeFragment(state.doc.content);
     const wrapper = document.createElement('div');
-    wrapper.innerHTML = htmlFromNode(state.doc);
+    wrapper.appendChild(fragment);
     return wrapper.firstElementChild?.innerHTML ?? '';
   })();
 

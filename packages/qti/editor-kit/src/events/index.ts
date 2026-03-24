@@ -6,7 +6,7 @@
  */
 
 import { definePlugin, type Extension } from 'prosekit/core';
-import { DOMSerializer } from 'prosekit/pm/model';
+import { ListDOMSerializer } from 'prosekit/extensions/list';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
 
 export interface QtiDocumentJson {
@@ -65,7 +65,7 @@ export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): 
             const json = view.state.doc.toJSON() as QtiDocumentJson;
             lastDocJson = JSON.stringify(json);
 
-            const serializer = DOMSerializer.fromSchema(view.state.schema);
+            const serializer = ListDOMSerializer.fromSchema(view.state.schema);
             const fragment = serializer.serializeFragment(view.state.doc.content);
             const div = document.createElement('div');
             div.appendChild(fragment);
@@ -90,7 +90,7 @@ export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): 
                 if (jsonStr !== lastDocJson) {
                   lastDocJson = jsonStr;
 
-                  const serializer = DOMSerializer.fromSchema(state.schema);
+                  const serializer = ListDOMSerializer.fromSchema(state.schema);
                   const fragment = serializer.serializeFragment(state.doc.content);
                   const div = document.createElement('div');
                   div.appendChild(fragment);
