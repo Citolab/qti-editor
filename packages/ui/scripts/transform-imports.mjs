@@ -8,12 +8,17 @@ const distDir = join(rootDir, 'dist');
 const registrySourcePath = join(rootDir, 'registry.json');
 
 const registrySource = JSON.parse(readFileSync(registrySourcePath, 'utf-8'));
+const REGISTRY_BASE_URL = process.env.REGISTRY_BASE_URL ?? 'https://qti-editor.citolab.nl/r';
 
 rmSync(distDir, { recursive: true, force: true });
 mkdirSync(distDir, { recursive: true });
 
-function transformImports(content) {
-  return content.replace(/@qti-editor\/ui\/(components|lib|hooks|types)/g, '@/$1');
+function transformContent(content) {
+  // Rewrite internal @qti-editor/ui imports to @/ alias
+  content = content.replace(/@qti-editor\/ui\/(components|lib|hooks|types)/g, '@/$1');
+  // Strip `declare` from decorated property declarations (shadcn's babel doesn't support allowDeclareFields)
+  content = content.replace(/^(\s*@\w+\([^)]*\)\s*\n\s*)declare\s+(public\s+|private\s+|protected\s+)?/gm, '$1$2');
+  return content;
 }
 
 const distRegistry = {
@@ -31,14 +36,16 @@ for (const item of registrySource.items) {
     description: item.description,
     dependencies: item.dependencies ?? [],
     devDependencies: item.devDependencies ?? [],
-    registryDependencies: item.registryDependencies ?? [],
+    registryDependencies: (item.registryDependencies ?? []).map(dep =>
+      dep.startsWith('http') ? dep : `${REGISTRY_BASE_URL}/${dep}.json`
+    ),
     files: [],
   };
 
   for (const file of item.files) {
     const sourcePath = join(rootDir, file.source ?? file.path);
     const distPath = join(distDir, file.path);
-    const content = transformImports(readFileSync(sourcePath, 'utf-8'));
+    const content = transformContent(readFileSync(sourcePath, 'utf-8'));
 
     mkdirSync(dirname(distPath), { recursive: true });
     writeFileSync(distPath, content);
