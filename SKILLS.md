@@ -29,16 +29,19 @@ Repository skill catalog for contributors and coding agents.
   - Must not mutate source code unless explicitly asked.
   - Must start from `docs/architecture.md` as canonical context.
 
-### Skill: `yalc-install-guard`
-- Path: `.codex/skills/yalc-install-guard/SKILL.md`
+### Local Override Workflow (No Skill)
+- This repository currently uses local pnpm override automation instead of a dedicated `yalc` skill.
 - Use when:
-  - Running `pnpm install` / `pnpm i`.
-  - Yalc links are missing after reinstall.
-  - Builds fail on unresolved `@qti-components/*` imports.
-- Expected outputs:
-  - Root/app/package `yalc:add` scripts are present.
-  - Root `postinstall` triggers yalc sync.
-  - Verification commands and build status.
+  - You need local `@qti-components/*` overrides without changing committed `package.json` / lockfile.
+  - You need to pin local overrides to a Git SHA and convert them to local tarballs.
+- Relevant files:
+  - `.pnpmfile.cjs`
+  - `pnpm-local-overrides.json` (local, gitignored)
+  - `scripts/qti-local-overrides-sync.mjs`
+- Commands:
+  - `pnpm run qti-overrides:status`
+  - `pnpm run qti-overrides:sync`
+  - `pnpm run qti-overrides:install`
 
 ## Planned Future Skills (Reserved)
 - `workspace-build-test-runner`: standard build/lint/test command workflows.
