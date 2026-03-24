@@ -41,8 +41,8 @@
   },
   "dependencies": {
     "@lit/context": "^1.1.6",
-    "@qti-components/base": "1.2.0",
-    "@qti-components/interactions": "1.8.0",
+    "@qti-components/base": "1.4.1",
+    "@qti-components/interactions": "1.10.1",
     "@qti-components/theme": "1.1.0",
     "@qti-components/utilities": "1.1.0",
     "@qti-editor/core": "workspace:*",
@@ -55,10 +55,10 @@
     "@qti-editor/interaction-text-entry": "workspace:*",
     "@qti-editor/prosemirror-attributes-ui-prosekit": "workspace:*",
     "lit": "^3.3.2",
+    "prosekit": "^0.18.4",
     "prosemirror-keymap": "^1.2.0",
     "prosemirror-model": "^1.19.0",
-    "prosemirror-state": "^1.4.0",
-    "prosekit": "^0.18.4"
+    "prosemirror-state": "^1.4.0"
   },
   "peerDependencies": {
     "prosekit": "^0.18.4"

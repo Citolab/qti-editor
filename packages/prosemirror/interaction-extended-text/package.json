@@ -21,11 +21,11 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-components/interactions": "1.8.0",
-    "@qti-components/utilities": "1.1.0",
     "@qti-components/extended-text-interaction": "^1.0.1",
-    "@qti-editor/interfaces": "workspace:*",
-    "@qti-editor/interaction-shared": "workspace:*"
+    "@qti-components/interactions": "1.10.1",
+    "@qti-components/utilities": "1.1.0",
+    "@qti-editor/interaction-shared": "workspace:*",
+    "@qti-editor/interfaces": "workspace:*"
   },
   "peerDependencies": {
     "lit": "^3.3.1"

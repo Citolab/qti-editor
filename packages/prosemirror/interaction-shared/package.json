@@ -21,7 +21,7 @@
     "clean": "rm -rf dist && find src -type f -name '*.js' -delete && find src -type f -name '*.js.map' -delete && find src -type f -name '*.d.ts' -delete && find src -type f -name '*.d.ts.map' -delete"
   },
   "dependencies": {
-    "@qti-components/interactions": "1.8.0",
+    "@qti-components/interactions-core": "^1.1.2",
     "@qti-editor/interfaces": "workspace:*"
   },
   "peerDependencies": {
