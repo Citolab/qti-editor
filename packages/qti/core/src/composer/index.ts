@@ -93,9 +93,14 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
 
     if (declaration.correctResponse) {
       const correctResponse = xmlDoc.createElementNS(QTI_NS, 'qti-correct-response');
-      const value = xmlDoc.createElementNS(QTI_NS, 'qti-value');
-      value.textContent = declaration.correctResponse;
-      correctResponse.appendChild(value);
+      const values = declaration.cardinality === 'multiple'
+        ? declaration.correctResponse.split(',').map(v => v.trim()).filter(Boolean)
+        : [declaration.correctResponse];
+      values.forEach(v => {
+        const value = xmlDoc.createElementNS(QTI_NS, 'qti-value');
+        value.textContent = v;
+        correctResponse.appendChild(value);
+      });
       responseDeclaration.appendChild(correctResponse);
     }
 

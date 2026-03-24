@@ -26,12 +26,15 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
   editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
 
-  normalizedElement.setAttribute('max-choices', String(maxChoices > 0 ? maxChoices : 1));
+  normalizedElement.setAttribute('max-choices', String(maxChoices));
   if (minChoices > 0) {
     normalizedElement.setAttribute('min-choices', String(minChoices));
   } else {
     normalizedElement.removeAttribute('min-choices');
   }
+
+  // QTI spec: max-choices=0 means unlimited, max-choices=1 means single selection
+  const isMultiple = maxChoices !== 1;
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
   if (!responseIdentifier) {
@@ -43,7 +46,7 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   } else {
     responseDeclaration = {
       identifier: responseIdentifier,
-      cardinality: maxChoices > 1 ? 'multiple' : 'single',
+      cardinality: isMultiple ? 'multiple' : 'single',
       baseType: 'identifier',
       correctResponse: correctResponse ?? undefined,
       sourceTag: metadata.tagName,
