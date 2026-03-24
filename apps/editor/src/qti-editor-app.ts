@@ -3,8 +3,8 @@ import 'prosekit/basic/typography.css';
 import '@qti-editor/ui/components/blocks/code-panel';
 import '@qti-editor/ui/components/blocks/composer';
 import '@qti-editor/ui/components/blocks/composer-metadata-form';
-import '@qti-editor/ui/components/editor/ui/slash-menu';
 import '@qti-editor/ui/components/editor/ui/toolbar';
+import './components/qti-slash-menu.js';
 import '@qti-editor/ui/components/blocks/interaction-insert-menu';
 import '@qti-editor/ui/components/blocks/convert-menu';
 
@@ -28,6 +28,7 @@ import { sampleUploader } from '@qti-editor/ui/components/editor/sample/sample-u
 
 import { defineBasicExtension } from './extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension.js';
+import { defineSlashMenuGuardExtension } from './extensions/slash-menu-guard-extension.js';
 
 import type { QtiComposer } from '@qti-editor/ui/components/blocks/composer';
 
@@ -83,7 +84,8 @@ export class QtiEditorApp extends LitElement {
       qtiEditorEventsExtension({ eventTarget: this.editorEventsTarget }),
       qtiCodePanelExtension({ eventTarget: this.codeEventTarget }),
       blockSelectExtension,
-      nodeAttrsSyncExtension
+      nodeAttrsSyncExtension,
+      defineSlashMenuGuardExtension()
     );
 
     const restoredState = readPersistedStateFromLocalStorage(EDITOR_DOC_STORAGE_KEY);
@@ -139,7 +141,7 @@ export class QtiEditorApp extends LitElement {
           </div>
           <div ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></div>
 
-          <lit-editor-slash-menu .editor=${this.editor} style="display: contents;"></lit-editor-slash-menu>
+          <qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>
 
           <qti-composer ${ref(this.composerRef)} class="block w-full"></qti-composer>
         </div>
