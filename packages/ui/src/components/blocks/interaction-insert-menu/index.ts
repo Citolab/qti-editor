@@ -8,7 +8,7 @@ import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
 import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
 import { insertMatchInteraction } from '@qti-editor/interaction-match';
 import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
-import { insertInlineChoiceInteraction } from '@qti-editor/qti-editor-kit/interactions';
+import { insertInlineChoiceInteraction } from '@qti-editor/interaction-inline-choice';
 
 if (!customElements.get('prosekit-popover-root')) {
   customElements.define('prosekit-popover-root', PopoverRoot);

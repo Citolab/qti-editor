@@ -75,29 +75,26 @@
       "@qti-editor/ui/*": [
         "packages/ui/src/*"
       ],
-      "@qti-editor/qti-editor-kit": [
-        "packages/qti/editor-kit/src/index.ts"
+      "@qti-editor/prosekit-integration": [
+        "packages/qti/prosekit-integration/src/index.ts"
       ],
-      "@qti-editor/qti-editor-kit/code": [
-        "packages/qti/editor-kit/src/code/index.ts"
+      "@qti-editor/prosekit-integration/code": [
+        "packages/qti/prosekit-integration/src/code/index.ts"
       ],
-      "@qti-editor/qti-editor-kit/editor-context": [
-        "packages/qti/editor-kit/src/editor-context/index.ts"
+      "@qti-editor/prosekit-integration/editor-context": [
+        "packages/qti/prosekit-integration/src/editor-context/index.ts"
       ],
-      "@qti-editor/qti-editor-kit/events": [
-        "packages/qti/editor-kit/src/events/index.ts"
+      "@qti-editor/prosekit-integration/events": [
+        "packages/qti/prosekit-integration/src/events/index.ts"
       ],
-      "@qti-editor/qti-editor-kit/interactions": [
-        "packages/qti/editor-kit/src/interactions/index.ts"
+      "@qti-editor/prosekit-integration/interactions/prosekit": [
+        "packages/qti/prosekit-integration/src/interactions/prosekit.ts"
       ],
-      "@qti-editor/qti-editor-kit/interactions/prosekit": [
-        "packages/qti/editor-kit/src/interactions/prosekit.ts"
+      "@qti-editor/prosekit-integration/item-context": [
+        "packages/qti/prosekit-integration/src/item-context/index.ts"
       ],
-      "@qti-editor/qti-editor-kit/item-context": [
-        "packages/qti/editor-kit/src/item-context/index.ts"
-      ],
-      "@qti-editor/qti-editor-kit/*": [
-        "packages/qti/editor-kit/src/*"
+      "@qti-editor/prosekit-integration/*": [
+        "packages/qti/prosekit-integration/src/*"
       ],
       "@qti-editor/prosemirror/block-select": [
         "packages/prosemirror/extensions/src/block-select/index.ts"

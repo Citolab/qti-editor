@@ -9,18 +9,7 @@ import { definePlugin, type Extension } from 'prosekit/core';
 import { ListDOMSerializer } from 'prosekit/extensions/list';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
 
-export interface QtiDocumentJson {
-  type: string;
-  content?: QtiNodeJson[];
-}
-
-export interface QtiNodeJson {
-  type: string;
-  attrs?: Record<string, unknown>;
-  content?: QtiNodeJson[];
-  text?: string;
-  marks?: Array<{ type: string; attrs?: Record<string, unknown> }>;
-}
+import type { QtiDocumentJson } from '../types.js';
 
 export interface QtiContentChangeEventDetail {
   json: QtiDocumentJson;

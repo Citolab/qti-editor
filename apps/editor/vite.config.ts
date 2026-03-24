@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url);
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const litReactiveElementRoot = dirname(require.resolve('@lit/reactive-element'));
 const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
-const qtiEditorKitSrcRoot = fileURLToPath(new URL('../../packages/qti/editor-kit/src', import.meta.url));
+const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/qti/prosekit-integration/src', import.meta.url));
 const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-shared/src', import.meta.url));
 const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-choice/src', import.meta.url));
 const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-extended-text/src', import.meta.url));
@@ -58,32 +58,28 @@ export default defineConfig({
         replacement: `${coreSrcRoot}/index.ts`,
       },
       {
-        find: /^@qti-editor\/qti-editor-kit\/code$/,
-        replacement: `${qtiEditorKitSrcRoot}/code/index.ts`,
+        find: /^@qti-editor\/prosekit-integration\/code$/,
+        replacement: `${prosekitIntegrationSrcRoot}/code/index.ts`,
       },
       {
-        find: /^@qti-editor\/qti-editor-kit\/editor-context$/,
-        replacement: `${qtiEditorKitSrcRoot}/editor-context/index.ts`,
+        find: /^@qti-editor\/prosekit-integration\/editor-context$/,
+        replacement: `${prosekitIntegrationSrcRoot}/editor-context/index.ts`,
       },
       {
-        find: /^@qti-editor\/qti-editor-kit\/events$/,
-        replacement: `${qtiEditorKitSrcRoot}/events/index.ts`,
+        find: /^@qti-editor\/prosekit-integration\/events$/,
+        replacement: `${prosekitIntegrationSrcRoot}/events/index.ts`,
       },
       {
-        find: /^@qti-editor\/qti-editor-kit\/interactions\/prosekit$/,
-        replacement: `${qtiEditorKitSrcRoot}/interactions/prosekit.ts`,
+        find: /^@qti-editor\/prosekit-integration\/interactions\/prosekit$/,
+        replacement: `${prosekitIntegrationSrcRoot}/interactions/prosekit.ts`,
       },
       {
-        find: /^@qti-editor\/qti-editor-kit\/interactions$/,
-        replacement: `${qtiEditorKitSrcRoot}/interactions/index.ts`,
+        find: /^@qti-editor\/prosekit-integration\/item-context$/,
+        replacement: `${prosekitIntegrationSrcRoot}/item-context/index.ts`,
       },
       {
-        find: /^@qti-editor\/qti-editor-kit\/item-context$/,
-        replacement: `${qtiEditorKitSrcRoot}/item-context/index.ts`,
-      },
-      {
-        find: /^@qti-editor\/qti-editor-kit$/,
-        replacement: `${qtiEditorKitSrcRoot}/index.ts`,
+        find: /^@qti-editor\/prosekit-integration$/,
+        replacement: `${prosekitIntegrationSrcRoot}/index.ts`,
       },
       {
         find: /^@qti-editor\/interaction-shared$/,
