@@ -33,9 +33,20 @@ function applyOverrides(deps) {
 
   for (const [name, overrideValue] of Object.entries(overrides)) {
     if (Object.prototype.hasOwnProperty.call(deps, name)) {
-      deps[name] = overrideValue;
+      deps[name] = normalizeOverrideValue(overrideValue);
     }
   }
+}
+
+function normalizeOverrideValue(value) {
+  if (typeof value !== 'string') return value;
+
+  // Ensure local tarball paths resolve from repo root, not individual workspace package dirs.
+  if (value.startsWith('file:.qti-components-packs/')) {
+    return `file:${path.join(__dirname, value.slice('file:'.length))}`;
+  }
+
+  return value;
 }
 
 function readPackage(pkg, context) {

@@ -176,7 +176,7 @@ function sync() {
         throw new Error(`Expected tarball not found: ${tarballPath}`);
       }
 
-      const fileOverride = `file:${path.posix.join('.qti-components-packs', sanitizeForPath(group.ref), tarballName)}`;
+      const fileOverride = `file:${path.join(rootDir, '.qti-components-packs', sanitizeForPath(group.ref), tarballName)}`;
       config.overrides[item.packageName] = fileOverride;
       console.log(`${item.packageName} -> ${fileOverride}`);
     }
