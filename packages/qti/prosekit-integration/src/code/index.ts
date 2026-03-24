@@ -11,18 +11,8 @@ import { Plugin, PluginKey } from 'prosekit/pm/state';
 
 import type { EditorState } from 'prosekit/pm/state';
 
-export interface QtiDocumentJson {
-  type: string;
-  content?: QtiNodeJson[];
-}
-
-export interface QtiNodeJson {
-  type: string;
-  attrs?: Record<string, unknown>;
-  content?: QtiNodeJson[];
-  text?: string;
-  marks?: Array<{ type: string; attrs?: Record<string, unknown> }>;
-}
+export type { QtiDocumentJson, QtiNodeJson } from '../types.js';
+import type { QtiDocumentJson } from '../types.js';
 
 export interface QtiCodeUpdateDetail {
   json: QtiDocumentJson;

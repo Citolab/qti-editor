@@ -4,30 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  prosemirror-view: ^1.41.7
-
 pnpmfileChecksum: sha256-5i5NCu6mIF1NFKJcXL8rPYd/wo7XIH0ZkxRjcy+xW4E=
 
 importers:
 
   .:
-    dependencies:
-      eslint-plugin-lit:
-        specifier: ^2.2.1
-        version: 2.2.1(eslint@9.39.4(jiti@2.6.1))
-      lit:
-        specifier: ^3.0.0
-        version: 3.3.2
-      prosekit:
-        specifier: ^0.18.4
-        version: 0.18.4(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-      vite:
-        specifier: ^6.4.1
-        version: 6.4.1(@types/node@20.19.37)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^5.0.1
@@ -92,6 +73,9 @@ importers:
       eslint-plugin-import:
         specifier: ^2.32.0
         version: 2.32.0(@typescript-eslint/parser@8.57.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@4.4.4)(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-lit:
+        specifier: ^2.2.1
+        version: 2.2.1(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-storybook:
         specifier: ^10.2.8
         version: 10.3.0(eslint@9.39.4(jiti@2.6.1))(storybook@10.3.0(@testing-library/dom@10.4.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(typescript@5.9.3)
@@ -101,12 +85,18 @@ importers:
       globals:
         specifier: ^17.4.0
         version: 17.4.0
+      lit:
+        specifier: ^3.0.0
+        version: 3.3.2
       multi-semantic-release:
         specifier: ^3.0.0
         version: 3.1.0(typescript@5.9.3)
       playwright:
         specifier: ^1.58.2
         version: 1.58.2
+      prosekit:
+        specifier: ^0.18.4
+        version: 0.18.4(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       semantic-release:
         specifier: ^24.0.0
         version: 24.2.9(typescript@5.9.3)
@@ -116,9 +106,15 @@ importers:
       tsx:
         specifier: ^4.19.2
         version: 4.21.0
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
       typescript-eslint:
         specifier: ^8.56.1
         version: 8.57.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+      vite:
+        specifier: ^6.4.1
+        version: 6.4.1(@types/node@20.19.37)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)
       vite-tsconfig-paths:
         specifier: ^6.0.5
         version: 6.1.1(typescript@5.9.3)(vite@6.4.1(@types/node@20.19.37)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0))
@@ -155,15 +151,15 @@ importers:
       '@qti-editor/interaction-select-point':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-select-point
+      '@qti-editor/prosekit-integration':
+        specifier: workspace:*
+        version: link:../../packages/qti/prosekit-integration
       '@qti-editor/prosemirror':
         specifier: workspace:*
         version: link:../../packages/prosemirror/extensions
       '@qti-editor/prosemirror-attributes-ui-prosekit':
         specifier: workspace:*
         version: link:../../packages/prosemirror/attributes-ui-prosekit
-      '@qti-editor/qti-editor-kit':
-        specifier: workspace:*
-        version: link:../../packages/qti/editor-kit
       '@qti-editor/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -264,7 +260,7 @@ importers:
         specifier: ^1.4.0
         version: 1.4.4
       prosemirror-view:
-        specifier: ^1.41.7
+        specifier: ^1.31.0
         version: 1.41.7
     devDependencies:
       typescript:
@@ -562,6 +558,34 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  packages/qti/prosekit-integration:
+    dependencies:
+      '@lit/context':
+        specifier: ^1.1.6
+        version: 1.1.6
+      '@qti-components/base':
+        specifier: 1.2.0
+        version: 1.2.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/theme':
+        specifier: 1.1.0
+        version: 1.1.0
+      '@qti-editor/core':
+        specifier: workspace:*
+        version: link:../core
+      lit:
+        specifier: ^3.3.2
+        version: 3.3.2
+      prosekit:
+        specifier: ^0.18.4
+        version: 0.18.4(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   packages/ui:
     dependencies:
       '@egoist/tailwindcss-icons':
@@ -582,6 +606,9 @@ importers:
       '@qti-editor/interaction-extended-text':
         specifier: workspace:*
         version: link:../prosemirror/interaction-extended-text
+      '@qti-editor/interaction-inline-choice':
+        specifier: workspace:*
+        version: link:../prosemirror/interaction-inline-choice
       '@qti-editor/interaction-match':
         specifier: workspace:*
         version: link:../prosemirror/interaction-match
@@ -591,6 +618,9 @@ importers:
       '@qti-editor/interaction-text-entry':
         specifier: workspace:*
         version: link:../prosemirror/interaction-text-entry
+      '@qti-editor/prosekit-integration':
+        specifier: workspace:*
+        version: link:../qti/prosekit-integration
       '@qti-editor/prosemirror-attributes':
         specifier: workspace:*
         version: link:../prosemirror/attributes
@@ -4557,7 +4587,7 @@ packages:
       prosemirror-model: ^1.19.3
       prosemirror-state: ^1.4.3
       prosemirror-transform: ^1.8.0
-      prosemirror-view: ^1.41.7
+      prosemirror-view: ^1.32.4
       refractor: ^5.0.0
       sugar-high: ^0.6.1 || ^0.7.0 || ^0.8.0 || ^0.9.0
     peerDependenciesMeta:

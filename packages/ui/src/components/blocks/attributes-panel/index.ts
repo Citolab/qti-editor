@@ -18,6 +18,7 @@ import {
   type AttributesNodeDetail,
   type NodeAttributePanelMetadata,
 } from '@qti-editor/prosemirror-attributes-ui-prosekit';
+
 import '@qti-editor/ui/components/blocks/choice-attributes-editor';
 import '@qti-editor/ui/components/blocks/text-entry-attributes-editor';
 import { type ChoiceInteractionPanelPresentation } from '@qti-editor/ui/components/blocks/choice-attributes-editor';
@@ -45,7 +46,7 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
       }
 
       const panelMetadata: NodeAttributePanelMetadata = {
-        nodeTypeName: nodeType,
+        nodeTypeName: metadata.nodeTypeName,
         editableAttributes: [...(metadata.editableAttributes ?? [])],
         hiddenAttributes: [...(metadata.hiddenAttributes ?? [])],
         friendlyEditors: (metadata.friendlyEditors ?? []) as AttributeFriendlyEditorDefinition[],

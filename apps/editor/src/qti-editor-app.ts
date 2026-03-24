@@ -13,8 +13,8 @@ import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { LitElement, html, type PropertyValues } from 'lit';
 import { qtiCodePanelExtension } from '@qti-editor/ui/components/blocks/code-panel';
 import { qtiAttributesExtension, type QtiAttributesPanel } from '@qti-editor/ui/components/blocks/attributes-panel';
-import { qtiEditorEventsExtension } from '@qti-editor/qti-editor-kit/events';
-import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/qti-editor-kit/item-context';
+import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
+import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
 import {
   blockSelectExtension,
   defineLocalStorageDocPersistenceExtension,

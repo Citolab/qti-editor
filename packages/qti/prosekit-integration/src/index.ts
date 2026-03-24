@@ -4,12 +4,11 @@
  * Supported editor assembly surfaces for QTI editing.
  */
 
+export type { QtiDocumentJson, QtiNodeJson } from './types.js';
 export {
   qtiCodePanelExtension,
   type QtiCodePanelOptions,
   type QtiCodeUpdateDetail,
-  type QtiDocumentJson,
-  type QtiNodeJson,
 } from './code/index.js';
 export * from './editor-context/index.js';
 export {
@@ -20,5 +19,4 @@ export {
   type QtiEditorEventsOptions,
   type QtiSelectionChangeEventDetail,
 } from './events/index.js';
-export * from './interactions/index.js';
 export * from './item-context/index.js';

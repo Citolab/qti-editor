@@ -8,7 +8,7 @@ import {
   type ComposerItemContext,
   type ResponseDeclaration,
 } from '@qti-editor/core/composer';
-import { itemContext, type ItemContext } from '@qti-editor/qti-editor-kit/item-context';
+import { itemContext, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
 
 const VOID_HTML_TAGS = [
   'img', 'br', 'hr', 'input', 'meta', 'link',

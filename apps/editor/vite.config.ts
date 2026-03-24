@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url);
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const litReactiveElementRoot = dirname(require.resolve('@lit/reactive-element'));
 const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
-const qtiEditorKitSrcRoot = fileURLToPath(new URL('../../packages/qti/editor-kit/src', import.meta.url));
+const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/qti/prosekit-integration/src', import.meta.url));
 const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-shared/src', import.meta.url));
 const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-choice/src', import.meta.url));
 const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-extended-text/src', import.meta.url));
@@ -17,6 +17,8 @@ const interactionsMatchSrcRoot = fileURLToPath(new URL('../../packages/prosemirr
 const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-text-entry/src', import.meta.url));
 const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-select-point/src', import.meta.url));
 const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-inline-choice/src', import.meta.url));
+const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes/src', import.meta.url));
+const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes-ui-prosekit/src', import.meta.url));
 
 export default defineConfig({
   resolve: {
@@ -58,32 +60,28 @@ export default defineConfig({
         replacement: `${coreSrcRoot}/index.ts`,
       },
       {
-        find: /^@qti-editor\/qti-editor-kit\/code$/,
-        replacement: `${qtiEditorKitSrcRoot}/code/index.ts`,
+        find: /^@qti-editor\/prosekit-integration\/code$/,
+        replacement: `${prosekitIntegrationSrcRoot}/code/index.ts`,
       },
       {
-        find: /^@qti-editor\/qti-editor-kit\/editor-context$/,
-        replacement: `${qtiEditorKitSrcRoot}/editor-context/index.ts`,
+        find: /^@qti-editor\/prosekit-integration\/editor-context$/,
+        replacement: `${prosekitIntegrationSrcRoot}/editor-context/index.ts`,
       },
       {
-        find: /^@qti-editor\/qti-editor-kit\/events$/,
-        replacement: `${qtiEditorKitSrcRoot}/events/index.ts`,
+        find: /^@qti-editor\/prosekit-integration\/events$/,
+        replacement: `${prosekitIntegrationSrcRoot}/events/index.ts`,
       },
       {
-        find: /^@qti-editor\/qti-editor-kit\/interactions\/prosekit$/,
-        replacement: `${qtiEditorKitSrcRoot}/interactions/prosekit.ts`,
+        find: /^@qti-editor\/prosekit-integration\/interactions\/prosekit$/,
+        replacement: `${prosekitIntegrationSrcRoot}/interactions/prosekit.ts`,
       },
       {
-        find: /^@qti-editor\/qti-editor-kit\/interactions$/,
-        replacement: `${qtiEditorKitSrcRoot}/interactions/index.ts`,
+        find: /^@qti-editor\/prosekit-integration\/item-context$/,
+        replacement: `${prosekitIntegrationSrcRoot}/item-context/index.ts`,
       },
       {
-        find: /^@qti-editor\/qti-editor-kit\/item-context$/,
-        replacement: `${qtiEditorKitSrcRoot}/item-context/index.ts`,
-      },
-      {
-        find: /^@qti-editor\/qti-editor-kit$/,
-        replacement: `${qtiEditorKitSrcRoot}/index.ts`,
+        find: /^@qti-editor\/prosekit-integration$/,
+        replacement: `${prosekitIntegrationSrcRoot}/index.ts`,
       },
       {
         find: /^@qti-editor\/interaction-shared$/,
@@ -137,6 +135,22 @@ export default defineConfig({
         find: /^@qti-editor\/interaction-inline-choice$/,
         replacement: `${interactionsInlineChoiceSrcRoot}/index.ts`,
       },
+      {
+        find: /^@qti-editor\/prosemirror-attributes\/(.*)\.js$/,
+        replacement: `${prosemirrorAttributesSrcRoot}/$1.ts`,
+      },
+      {
+        find: /^@qti-editor\/prosemirror-attributes$/,
+        replacement: `${prosemirrorAttributesSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/prosemirror-attributes-ui-prosekit\/(.*)\.js$/,
+        replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/$1.ts`,
+      },
+      {
+        find: /^@qti-editor\/prosemirror-attributes-ui-prosekit$/,
+        replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/index.ts`,
+      },
     ],
   },
   plugins: [
@@ -166,6 +180,8 @@ export default defineConfig({
       '@qti-editor/interaction-text-entry',
       '@qti-editor/interaction-select-point',
       '@qti-editor/interaction-inline-choice',
+      '@qti-editor/prosemirror-attributes',
+      '@qti-editor/prosemirror-attributes-ui-prosekit',
       '@qti-components/theme',
       '@qti-components/utilities',
     ],

@@ -44,7 +44,28 @@ Recommended build-up path:
 6. Add the generic attributes engine.
 7. Add the ProseKit-oriented attributes panel.
 8. Add code and composer panels.
-9. Add supported QTI editor-kit assembly.
+9. Add QTI ProseKit assembly via `@qti-editor/prosekit-integration`.
+
+For step 9, use `defineQtiExtension()` for a full setup including basic editor features, or `defineQtiInteractionsExtension()` if you are composing the extension manually:
+
+```ts
+import {
+  defineQtiExtension,
+  qtiEditorEventsExtension,
+  qtiCodePanelExtension,
+} from '@qti-editor/prosekit-integration';
+import { createEditor } from 'prosekit/core';
+
+const editor = createEditor({
+  extension: union(
+    defineQtiExtension(),
+    qtiEditorEventsExtension({ eventTarget: myTarget }),
+    qtiCodePanelExtension({ eventTarget: myCodeTarget }),
+  ),
+});
+```
+
+`defineQtiInteractionsExtension()` iterates the descriptor registry in `@qti-editor/core` and assembles node spec extensions and a keymap automatically. Adding a new interaction to the registry is the only step required — no manual extension wiring.
 
 Storybook should also document:
 

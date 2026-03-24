@@ -8,7 +8,7 @@ import {
   type QtiCodeUpdateDetail,
   type QtiDocumentJson,
   type QtiNodeJson,
-} from '@qti-editor/qti-editor-kit/code';
+} from '@qti-editor/prosekit-integration/code';
 
 export interface CodePanelExtensionOptions extends QtiCodePanelOptions {}
 
