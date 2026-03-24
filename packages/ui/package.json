@@ -25,7 +25,7 @@
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "registry:transform": "node scripts/transform-imports.mjs",
-    "registry:build": "node scripts/transform-imports.mjs && cd dist && npx shadcn@latest build ./registry.json --output ./public/r && cd .. && node scripts/copy-to-web.mjs",
+    "registry:build": "node scripts/transform-imports.mjs && cd dist && npx shadcn@latest build ./registry.json --output ./public/r",
     "registry:serve": "npx serve dist/public -p 4100 --cors"
   },
   "dependencies": {

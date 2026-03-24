@@ -16,6 +16,7 @@ pnpm-local-overrides.json
 *storybook.log
 storybook-static
 hosting/dist
+apps/editor/public/r
 
 .claude/settings.json
 .claude/claude.log
