@@ -3,19 +3,38 @@
   "version": "0.1.0",
   "description": "Pure ProseMirror plugins for QTI Editor - block selection and virtual cursor",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./block-select": "./src/block-select/index.ts",
-    "./virtual-cursor": "./src/virtual-cursor/index.ts",
-    "./node-attrs-sync": "./src/node-attrs-sync/index.ts",
-    "./paste-semantic-html": "./src/paste-semantic-html/index.ts",
-    "./local-storage-doc-persistence-extension": "./src/local-storage-doc-persistence-extension/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./block-select": {
+      "types": "./dist/block-select/index.d.ts",
+      "default": "./dist/block-select/index.js"
+    },
+    "./virtual-cursor": {
+      "types": "./dist/virtual-cursor/index.d.ts",
+      "default": "./dist/virtual-cursor/index.js"
+    },
+    "./node-attrs-sync": {
+      "types": "./dist/node-attrs-sync/index.d.ts",
+      "default": "./dist/node-attrs-sync/index.js"
+    },
+    "./paste-semantic-html": {
+      "types": "./dist/paste-semantic-html/index.d.ts",
+      "default": "./dist/paste-semantic-html/index.js"
+    },
+    "./local-storage-doc-persistence-extension": {
+      "types": "./dist/local-storage-doc-persistence-extension/index.d.ts",
+      "default": "./dist/local-storage-doc-persistence-extension/index.js"
+    }
   },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "prosemirror-commands": "^1.5.0",
@@ -29,9 +48,17 @@
     "prosekit": "^0.18.4"
   },
   "peerDependenciesMeta": {
-    "prosekit": { "optional": true }
+    "prosekit": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }

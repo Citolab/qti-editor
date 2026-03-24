@@ -19,7 +19,9 @@
     "lint:check": "eslint .",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build --output-dir storybook-static",
-    "qti-overrides:status": "node scripts/qti-local-overrides-sync.mjs status",
+    "ci:release:changed": "multi-semantic-release",
+    "ci:release:changed:dry": "multi-semantic-release --dry-run",
+"qti-overrides:status": "node scripts/qti-local-overrides-sync.mjs status",
     "qti-overrides:sync": "node scripts/qti-local-overrides-sync.mjs sync",
     "qti-overrides:install": "node scripts/qti-local-overrides-sync.mjs sync && pnpm install"
   },
@@ -56,6 +58,12 @@
     "tsx": "^4.19.2",
     "typescript-eslint": "^8.56.1",
     "vite-tsconfig-paths": "^6.0.5",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "multi-semantic-release": "^3.0.0",
+    "semantic-release": "^24.0.0",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/release-notes-generator": "^14.0.0",
+    "@semantic-release/npm": "^12.0.0",
+    "@semantic-release/github": "^11.0.0"
   }
 }

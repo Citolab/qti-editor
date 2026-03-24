@@ -1,5 +1,6 @@
 {
   "name": "@qti-editor/ui",
+  "private": true,
   "version": "0.1.0",
   "description": "Canonical UI source for QTI Editor blocks and vendored ProseKit-shaped components",
   "type": "module",

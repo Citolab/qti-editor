@@ -3,19 +3,41 @@
   "version": "0.1.0",
   "description": "Supported QTI editor-kit assembly surfaces for ProseMirror and ProseKit consumers",
   "type": "module",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
   "exports": {
-    ".": "./src/index.ts",
-    "./code": "./src/code/index.ts",
-    "./editor-context": "./src/editor-context/index.ts",
-    "./events": "./src/events/index.ts",
-    "./interactions": "./src/interactions/index.ts",
-    "./interactions/prosekit": "./src/interactions/prosekit.ts",
-    "./item-context": "./src/item-context/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./code": {
+      "types": "./dist/code/index.d.ts",
+      "default": "./dist/code/index.js"
+    },
+    "./editor-context": {
+      "types": "./dist/editor-context/index.d.ts",
+      "default": "./dist/editor-context/index.js"
+    },
+    "./events": {
+      "types": "./dist/events/index.d.ts",
+      "default": "./dist/events/index.js"
+    },
+    "./interactions": {
+      "types": "./dist/interactions/index.d.ts",
+      "default": "./dist/interactions/index.js"
+    },
+    "./interactions/prosekit": {
+      "types": "./dist/interactions/prosekit.d.ts",
+      "default": "./dist/interactions/prosekit.js"
+    },
+    "./item-context": {
+      "types": "./dist/item-context/index.d.ts",
+      "default": "./dist/item-context/index.js"
+    }
   },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@lit/context": "^1.1.6",
@@ -44,5 +66,12 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }

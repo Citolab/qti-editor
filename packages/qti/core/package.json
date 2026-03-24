@@ -3,15 +3,25 @@
   "version": "0.1.0",
   "description": "QTI semantics, composer registry, and XML export orchestration for QTI Editor",
   "type": "module",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
   "exports": {
-    ".": "./src/index.ts",
-    "./composer": "./src/composer/index.ts",
-    "./interactions/composer": "./src/interactions/composer.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./composer": {
+      "types": "./dist/composer/index.d.ts",
+      "default": "./dist/composer/index.js"
+    },
+    "./interactions/composer": {
+      "types": "./dist/interactions/composer.d.ts",
+      "default": "./dist/interactions/composer.js"
+    }
   },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@qti-editor/interfaces": "workspace:*",
@@ -26,5 +36,12 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }
