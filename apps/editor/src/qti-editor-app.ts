@@ -68,7 +68,16 @@ export class QtiEditorApp extends LitElement {
       defineBasicExtension(),
       defineQtiInteractionsExtension(),
       defineSemanticPasteExtension(),
-      definePlaceholder({ placeholder: 'Press / for commands...' }),
+      definePlaceholder({
+        placeholder: (state) => {
+          const $pos = state.selection.$anchor;
+          for (let d = $pos.depth; d > 0; d--) {
+            const placeholder = $pos.node(d).type.spec.placeholder;
+            if (placeholder) return placeholder;
+          }
+          return 'Press / for commands...';
+        }
+      }),
       defineLocalStorageDocPersistenceExtension({ storageKey: EDITOR_DOC_STORAGE_KEY }),
       qtiAttributesExtension({ eventTarget: this.attributesEventTarget }),
       qtiEditorEventsExtension({ eventTarget: this.editorEventsTarget }),

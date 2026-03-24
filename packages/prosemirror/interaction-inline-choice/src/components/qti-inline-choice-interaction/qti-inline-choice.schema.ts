@@ -1,6 +1,7 @@
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiInlineChoiceNodeSpec: NodeSpec = {
+  placeholder: 'Enter option…',
   attrs: {
     identifier: { default: 'A' }
   },

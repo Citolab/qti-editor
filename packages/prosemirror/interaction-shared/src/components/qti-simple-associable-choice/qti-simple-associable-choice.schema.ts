@@ -2,6 +2,7 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiSimpleAssociableChoiceNodeSpec: NodeSpec = {
   group: 'block',
+  placeholder: 'Enter matching option…',
   content: 'qtiSimpleAssociableChoiceParagraph | qtiMedia',
   attrs: {
     identifier: { default: 'A' },

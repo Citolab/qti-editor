@@ -3,6 +3,7 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 export const qtiSimpleChoiceNodeSpec: NodeSpec = {
   group: 'block',
   content: 'qtiSimpleChoiceParagraph',
+  placeholder: 'Enter answer option…',
   attrs: {
     identifier: { default: 'A' }
   },
