@@ -19,9 +19,9 @@
     "lint:check": "eslint .",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build --output-dir storybook-static",
-    "qti-components:status": "node scripts/qti-components-git-overrides.mjs status",
-    "qti-components:sync": "node scripts/qti-components-git-overrides.mjs sync",
-    "qti-components:install": "node scripts/qti-components-git-overrides.mjs sync && CI=true pnpm install --no-frozen-lockfile"
+    "qti-overrides:status": "node scripts/qti-local-overrides-sync.mjs status",
+    "qti-overrides:sync": "node scripts/qti-local-overrides-sync.mjs sync",
+    "qti-overrides:install": "node scripts/qti-local-overrides-sync.mjs sync && pnpm install"
   },
   "dependencies": {
     "eslint-plugin-lit": "^2.2.1",
@@ -57,15 +57,5 @@
     "typescript-eslint": "^8.56.1",
     "vite-tsconfig-paths": "^6.0.5",
     "vitest": "^4.0.18"
-  },
-  "qtiComponentsGitOverrides": {
-    "@qti-components/interactions-core": "github:Citolab/qti-components#648154ec0c5b3dac8a5118ab450df3d6c508c8a3&path:/packages/interactions/core",
-    "@qti-components/choice-interaction": "github:Citolab/qti-components#648154ec0c5b3dac8a5118ab450df3d6c508c8a3&path:/packages/interactions/choice-interaction"
-  },
-  "pnpm": {
-    "overrides": {
-      "@qti-components/interactions-core": "file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz",
-      "@qti-components/choice-interaction": "file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-choice-interaction-1.1.0.tgz"
-    }
   }
 }
