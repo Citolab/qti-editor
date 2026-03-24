@@ -1,5 +1,6 @@
-import type { InteractionComposerMetadata, NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
 import { textEntryAttributesFriendlyEditor } from '../attributes/text-entry-attributes-editor.js';
+
+import type { InteractionComposerMetadata, NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
 
 export const MAP_RESPONSE_TEMPLATE = 'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/map_response';
 

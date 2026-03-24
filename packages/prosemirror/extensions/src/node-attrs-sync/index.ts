@@ -8,6 +8,7 @@ export { nodeAttrsSyncPlugin } from './node-attrs-sync-plugin.js';
 
 // ProseKit extension wrapper (optional - only works when prosekit is available)
 import { definePlugin } from 'prosekit/core';
+
 import { nodeAttrsSyncPlugin } from './node-attrs-sync-plugin.js';
 
 /**

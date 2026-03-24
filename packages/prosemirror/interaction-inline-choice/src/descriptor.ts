@@ -1,4 +1,3 @@
-import type { InteractionDescriptor } from '@qti-editor/interfaces';
 
 import {
   insertInlineChoiceInteraction,
@@ -12,6 +11,8 @@ import {
   inlineChoiceNodeAttributePanelMetadataByNodeTypeName,
 } from './composer/metadata.js';
 import { inlineChoiceComposerHandler } from './composer/handler.js';
+
+import type { InteractionDescriptor } from '@qti-editor/interfaces';
 
 export const inlineChoiceInteractionDescriptor = {
   tagName: 'qti-inline-choice-interaction',

@@ -1,3 +1,4 @@
+/* eslint-disable lit/attribute-value-entities */
 /**
  * QTI Slash Menu
  *
@@ -17,6 +18,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
 import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
+
 import type { EditorView } from 'prosekit/pm/view';
 
 const regex = canUseRegexLookbehind() ? /(?<!\S)\/(\S.*)?$/u : /\/(\S.*)?$/u;

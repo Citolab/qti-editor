@@ -1,3 +1,4 @@
+/* eslint-disable wc/no-constructor-attributes */
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 

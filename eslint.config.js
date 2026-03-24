@@ -170,6 +170,7 @@ wcConfigs['flat/recommended'], // Storybook-specific rules
 {
   ignores: [
     'node_modules/**',
+    'packages/ui/src/components/editor/**', // Clean prosekit installs — do not lint or modify
     '**/dist/**', // Build output directories
     'build/**',
     'coverage/**',
@@ -179,6 +180,7 @@ wcConfigs['flat/recommended'], // Storybook-specific rules
     '**/*.config.*', // Config files (prettier, etc.)
     '**/*.mjs', // Module JavaScript files
     '**/cdn/**', // CDN build files
-    'scripts/**' // Utility scripts
+    'scripts/**', // Utility scripts
+    '.pnpmfile.cjs'
   ]
 }, ...storybookConfigs["flat/recommended"]];

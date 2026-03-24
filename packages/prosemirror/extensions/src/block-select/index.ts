@@ -8,6 +8,7 @@ export { blockSelectPlugin, NodeRangeSelection } from './block-select-plugin.js'
 
 // ProseKit extension wrapper (optional - only works when prosekit is available)
 import { definePlugin } from 'prosekit/core';
+
 import { blockSelectPlugin } from './block-select-plugin.js';
 
 /**

@@ -1,4 +1,3 @@
-import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interaction-shared/composer/types.js';
 import {
   getPrimaryTextEntryCorrectResponse,
   normalizeTextEntryCorrectResponses,
@@ -7,6 +6,8 @@ import {
   parseTextEntryLegacyCorrectResponse,
 } from '../../attributes/text-entry-attributes-editor.js';
 import { textEntryInteractionComposerMetadata } from '../../composer/metadata.js';
+
+import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interaction-shared/composer/types.js';
 
 function toNonEmptyString(value: string | null): string | null {
   if (!value) return null;

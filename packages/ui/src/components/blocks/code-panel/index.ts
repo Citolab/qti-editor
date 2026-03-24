@@ -1,7 +1,6 @@
 import { html, LitElement, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { union, type Extension } from 'prosekit/core';
-
 import {
   qtiCodePanelExtension,
   type QtiCodePanelOptions,

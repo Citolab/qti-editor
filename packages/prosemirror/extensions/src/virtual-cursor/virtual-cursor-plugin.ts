@@ -6,10 +6,11 @@
  */
 
 import { Mark } from 'prosemirror-model';
-import type { ResolvedPos, Schema } from 'prosemirror-model';
 import { Plugin, PluginKey, TextSelection } from 'prosemirror-state';
-import type { Selection } from 'prosemirror-state';
 import { Decoration, DecorationSet } from 'prosemirror-view';
+
+import type { ResolvedPos, Schema } from 'prosemirror-model';
+import type { Selection } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 
 export interface VirtualCursorOptions {

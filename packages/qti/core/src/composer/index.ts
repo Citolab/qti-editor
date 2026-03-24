@@ -6,6 +6,7 @@
  */
 
 import { getInteractionComposerHandler } from '../interactions/composer.js';
+
 import type { ResponseProcessingKind } from '@qti-editor/interfaces';
 
 export interface ComposerItemContext {

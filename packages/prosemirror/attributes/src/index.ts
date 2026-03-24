@@ -1,7 +1,8 @@
 import { definePlugin, type Extension } from 'prosekit/core';
+import { Plugin, PluginKey } from 'prosekit/pm/state';
+
 import type { Node as ProseMirrorNode } from 'prosekit/pm/model';
 import type { EditorState } from 'prosekit/pm/state';
-import { Plugin, PluginKey } from 'prosekit/pm/state';
 
 export interface AttributesNodeDetail {
   type: string;

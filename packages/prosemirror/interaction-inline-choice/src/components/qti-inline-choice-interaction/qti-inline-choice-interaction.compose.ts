@@ -1,5 +1,6 @@
-import type { InteractionComposeResult, InteractionResponseDeclaration, ComposerWarning } from '@qti-editor/interaction-shared/composer/types.js';
 import { inlineChoiceInteractionComposerMetadata } from '../../composer/metadata.js';
+
+import type { InteractionComposeResult, InteractionResponseDeclaration, ComposerWarning } from '@qti-editor/interaction-shared/composer/types.js';
 
 function toNonEmptyString(value: string | null): string | null {
   if (!value) return null;

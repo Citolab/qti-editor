@@ -1,7 +1,7 @@
 import { Schema } from 'prosemirror-model';
 import { AllSelection, EditorState } from 'prosemirror-state';
-
 import { qtiPromptParagraphNodeSpec, qtiPromptNodeSpec } from '@qti-editor/interaction-shared';
+
 import { imgSelectPointNodeSpec } from './img-select-point.schema';
 import { insertSelectPointInteraction } from './qti-select-point-interaction.commands';
 import { qtiSelectPointInteractionNodeSpec } from './qti-select-point-interaction.schema';

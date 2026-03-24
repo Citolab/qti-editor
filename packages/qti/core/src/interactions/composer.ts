@@ -4,6 +4,7 @@ import { inlineChoiceInteractionDescriptor } from '@qti-editor/interaction-inlin
 import { matchInteractionDescriptor } from '@qti-editor/interaction-match';
 import { selectPointInteractionDescriptor } from '@qti-editor/interaction-select-point';
 import { textEntryInteractionDescriptor } from '@qti-editor/interaction-text-entry';
+
 import type {
   InteractionComposerHandler,
   InteractionComposerMetadata,

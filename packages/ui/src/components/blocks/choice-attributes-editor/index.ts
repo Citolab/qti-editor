@@ -7,8 +7,10 @@ import {
   type ChoiceInteractionClassGroupId,
   type ChoiceInteractionClassState,
 } from '@qti-editor/interaction-choice';
-import type { AttributesNodeDetail } from '@qti-editor/prosemirror-attributes-ui-prosekit';
+
 import { QTI_ATTRIBUTES_PATCH_EVENT, type QtiAttributesPatchDetail } from '@qti-editor/ui/components/blocks/attributes-panel/patch-event';
+
+import type { AttributesNodeDetail } from '@qti-editor/prosemirror-attributes-ui-prosekit';
 
 type ChoiceInteractionOptionPresentation = {
   label?: string;

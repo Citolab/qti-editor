@@ -10,7 +10,6 @@ import { ListDOMSerializer } from 'prosekit/extensions/list';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
 
 import type { EditorState } from 'prosekit/pm/state';
-
 export type { QtiDocumentJson, QtiNodeJson } from '../types.js';
 import type { QtiDocumentJson } from '../types.js';
 

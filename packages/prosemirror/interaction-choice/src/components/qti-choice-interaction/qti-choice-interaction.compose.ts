@@ -1,5 +1,6 @@
-import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interaction-shared/composer/types.js';
 import { choiceInteractionComposerMetadata } from '../../composer/metadata.js';
+
+import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interaction-shared/composer/types.js';
 
 function toFiniteNumber(value: string | null, fallback: number): number {
   if (value == null || value.trim().length === 0) return fallback;

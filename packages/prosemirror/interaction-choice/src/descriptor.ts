@@ -1,15 +1,17 @@
-import type { InteractionDescriptor } from '@qti-editor/interfaces';
-
-import { insertChoiceInteraction, insertSimpleChoiceOnEnter } from './components/qti-choice-interaction/qti-choice-interaction.commands.js';
-import { qtiChoiceInteractionNodeSpec } from './components/qti-choice-interaction/qti-choice-interaction.schema.js';
-import { choiceInteractionComposerMetadata, choiceNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
-import { choiceComposerHandler } from './composer/handler.js';
 import {
   qtiPromptNodeSpec,
   qtiPromptParagraphNodeSpec,
   qtiSimpleChoiceNodeSpec,
   qtiSimpleChoiceParagraphNodeSpec,
 } from '@qti-editor/interaction-shared';
+
+import { insertChoiceInteraction, insertSimpleChoiceOnEnter } from './components/qti-choice-interaction/qti-choice-interaction.commands.js';
+import { qtiChoiceInteractionNodeSpec } from './components/qti-choice-interaction/qti-choice-interaction.schema.js';
+import { choiceInteractionComposerMetadata, choiceNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
+import { choiceComposerHandler } from './composer/handler.js';
+
+import type { InteractionDescriptor } from '@qti-editor/interfaces';
+
 
 export const choiceInteractionDescriptor = {
   tagName: 'qti-choice-interaction',

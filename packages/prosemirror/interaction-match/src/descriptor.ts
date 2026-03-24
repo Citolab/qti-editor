@@ -1,9 +1,3 @@
-import type { InteractionDescriptor } from '@qti-editor/interfaces';
-
-import { insertMatchInteraction } from './components/qti-match-interaction/qti-match-interaction.commands.js';
-import { qtiMatchInteractionNodeSpec } from './components/qti-match-interaction/qti-match-interaction.schema.js';
-import { matchInteractionComposerMetadata, matchNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
-import { matchComposerHandler } from './composer/handler.js';
 import {
   qtiPromptNodeSpec,
   qtiPromptParagraphNodeSpec,
@@ -11,6 +5,14 @@ import {
   qtiSimpleAssociableChoiceNodeSpec,
   qtiSimpleAssociableChoiceParagraphNodeSpec,
 } from '@qti-editor/interaction-shared';
+
+import { insertMatchInteraction } from './components/qti-match-interaction/qti-match-interaction.commands.js';
+import { qtiMatchInteractionNodeSpec } from './components/qti-match-interaction/qti-match-interaction.schema.js';
+import { matchInteractionComposerMetadata, matchNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
+import { matchComposerHandler } from './composer/handler.js';
+
+import type { InteractionDescriptor } from '@qti-editor/interfaces';
+
 
 export const matchInteractionDescriptor = {
   tagName: 'qti-match-interaction',

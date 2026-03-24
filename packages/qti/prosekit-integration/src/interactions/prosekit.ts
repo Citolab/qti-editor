@@ -6,6 +6,7 @@ import '@qti-components/theme/item.css';
 import { listInteractionDescriptors } from '@qti-editor/core/interactions/composer';
 import { defineBasicExtension } from 'prosekit/basic';
 import { defineKeymap, defineNodeSpec, union, type Extension } from 'prosekit/core';
+
 import type { Command } from 'prosekit/pm/state';
 
 export function defineQtiInteractionsExtension() {

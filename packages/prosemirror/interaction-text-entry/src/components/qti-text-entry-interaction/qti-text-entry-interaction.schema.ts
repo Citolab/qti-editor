@@ -1,4 +1,3 @@
-import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 import {
   getPrimaryTextEntryCorrectResponse,
   parseTextEntryCaseSensitiveAttribute,
@@ -8,6 +7,8 @@ import {
   serializeTextEntryClassState,
   serializeTextEntryCorrectResponsesAttribute,
 } from '../../attributes/text-entry-attributes-editor.js';
+
+import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
   attrs: {

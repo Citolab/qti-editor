@@ -1,14 +1,16 @@
+/* eslint-disable wc/no-self-class, lit/attribute-value-entities */
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { Selection } from 'prosekit/pm/state';
-import type { EditorView } from 'prosekit/pm/view';
 import { PopoverContent, PopoverRoot, PopoverTrigger } from 'prosekit/lit/popover';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
 import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
 import { insertMatchInteraction } from '@qti-editor/interaction-match';
 import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
 import { insertInlineChoiceInteraction } from '@qti-editor/interaction-inline-choice';
+
+import type { EditorView } from 'prosekit/pm/view';
 
 if (!customElements.get('prosekit-popover-root')) {
   customElements.define('prosekit-popover-root', PopoverRoot);

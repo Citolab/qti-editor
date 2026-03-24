@@ -8,7 +8,6 @@ import { createRef, ref } from 'lit/directives/ref.js';
 import { createEditor } from 'prosekit/core'
 
 import { sampleUploader } from '../../sample/sample-uploader'
-
 import { defineExtension } from './extension'
 
 export class LitEditor extends LitElement {
