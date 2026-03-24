@@ -1,6 +1,6 @@
 import { Schema } from 'prosemirror-model';
-
 import { qtiPromptParagraphNodeSpec, qtiPromptNodeSpec } from '@qti-editor/interaction-shared';
+
 import { imgSelectPointNodeSpec } from './img-select-point.schema';
 import { qtiSelectPointInteractionNodeSpec } from './qti-select-point-interaction.schema';
 
@@ -77,22 +77,20 @@ describe('qtiSelectPointInteractionNodeSpec', () => {
       schema
     );
 
-    const children = content?.toArray() ?? [];
-    expect(children).toHaveLength(2);
-    expect(children[0]?.type.name).toBe('qtiPrompt');
-    expect(children[0]?.textContent).toBe('Locate Edinburgh');
-    expect(children[1]?.type.name).toBe('imgSelectPoint');
-    expect(children[1]?.attrs.imageSrc).toBe('/assets/map.png');
-    expect(children[1]?.attrs.imageAlt).toBe('Fallback map');
-    expect(children[1]?.attrs.imageWidth).toBe(206);
-    expect(children[1]?.attrs.imageHeight).toBe(280);
+    expect(content?.childCount).toBe(2);
+    expect(content?.child(0)?.type.name).toBe('qtiPrompt');
+    expect(content?.child(0)?.textContent).toBe('Locate Edinburgh');
+    expect(content?.child(1)?.type.name).toBe('imgSelectPoint');
+    expect(content?.child(1)?.attrs.imageSrc).toBe('/assets/map.png');
+    expect(content?.child(1)?.attrs.imageAlt).toBe('Fallback map');
+    expect(content?.child(1)?.attrs.imageWidth).toBe(206);
+    expect(content?.child(1)?.attrs.imageHeight).toBe(280);
   });
 
   it('falls back to default prompt text when no qti-prompt or prompt attr exists', () => {
     const rule = qtiSelectPointInteractionNodeSpec.parseDOM?.[0];
     const content = rule?.getContent?.(elementLike({}) as unknown as Node, schema);
-    const children = content?.toArray() ?? [];
-    expect(children[0]?.textContent).toBe('Mark the correct point on the image.');
+    expect(content?.child(0)?.textContent).toBe('Mark the correct point on the image.');
   });
 
   it('serializes to qti-select-point-interaction attrs only', () => {

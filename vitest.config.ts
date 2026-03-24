@@ -18,6 +18,19 @@ export default defineConfig({
     projects: [
       {
         extends: true,
+        test: {
+          name: 'unit',
+          globals: true,
+          include: ['packages/**/src/**/*.test.ts'],
+          server: {
+            deps: {
+              inline: [/@qti-components\//],
+            },
+          },
+        },
+      },
+      {
+        extends: true,
         plugins: [
           storybookTest({
             configDir: path.join(dirname, '.storybook'),
