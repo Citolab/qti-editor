@@ -39,6 +39,6 @@ export const matchInteractionComposerMetadata = {
 export const matchNodeAttributePanelMetadataByNodeTypeName = {
   [MATCH_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: MATCH_INTERACTION_NODE_TYPE,
-    userEditableAttributes: matchInteractionComposerMetadata.userEditableAttributes,
+    editableAttributes: matchInteractionComposerMetadata.userEditableAttributes,
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

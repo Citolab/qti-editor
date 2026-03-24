@@ -31,6 +31,6 @@ export const selectPointInteractionComposerMetadata = {
 export const selectPointNodeAttributePanelMetadataByNodeTypeName = {
   [SELECT_POINT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: SELECT_POINT_INTERACTION_NODE_TYPE,
-    userEditableAttributes: selectPointInteractionComposerMetadata.userEditableAttributes,
+    editableAttributes: selectPointInteractionComposerMetadata.userEditableAttributes,
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

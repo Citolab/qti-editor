@@ -40,8 +40,8 @@ export const choiceInteractionComposerMetadata = {
 export const choiceNodeAttributePanelMetadataByNodeTypeName = {
   [CHOICE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: CHOICE_INTERACTION_NODE_TYPE,
-    userEditableAttributes: choiceInteractionComposerMetadata.userEditableAttributes,
-    hiddenRawAttributes: ['class'],
+    editableAttributes: choiceInteractionComposerMetadata.userEditableAttributes,
+    hiddenAttributes: ['class'],
     friendlyEditors: [choiceInteractionClassFriendlyEditor],
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

@@ -90,8 +90,7 @@ export function defineCorrectResponseClickExtension(): Extension {
         key: correctResponseClickPluginKey,
         view(view) {
           const handleToggle = (event: Event) => {
-            const customEvent = event as CustomEvent<QtiCorrectResponseToggleDetail>;
-            const choiceElement = event.target as HTMLElement;
+            const choiceElement = (event as CustomEvent<QtiCorrectResponseToggleDetail>).target as HTMLElement;
             
             // Find the parent interaction
             const interactionElement = findParentInteraction(choiceElement);

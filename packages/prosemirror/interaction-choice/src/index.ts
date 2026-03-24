@@ -8,3 +8,4 @@ export * from './composer/handler.js';
 export * from './attributes/choice-interaction-class-editor.js';
 
 export * from './extensions/index.js';
+export * from './descriptor.js';

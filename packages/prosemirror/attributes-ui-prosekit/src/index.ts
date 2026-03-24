@@ -6,6 +6,10 @@ import {
   type AttributesNodeDetail,
 } from '@qti-editor/prosemirror-attributes';
 
+import type {
+  AttributeFieldDefinition,
+  NodeAttributePanelMetadata,
+} from '@qti-editor/interfaces';
 import type { EditorState } from 'prosekit/pm/state';
 
 type AttrValue = string | number | boolean | string[] | null | undefined;
@@ -15,35 +19,17 @@ export type {
   AttributesNodeDetail,
 } from '@qti-editor/prosemirror-attributes';
 
-export type AttributesFieldOption = {
-  value: string;
-  label: string;
-};
-
-export type AttributesFieldMetadata = {
-  label?: string;
-  input?: 'text' | 'number' | 'checkbox' | 'select';
-  options?: AttributesFieldOption[];
-  readOnly?: boolean;
-};
-
-export type AttributesFriendlyEditorMetadata = {
-  attribute: string;
-  kind: string;
-  config?: unknown;
-};
-
-export type AttributesPanelMetadata = {
-  editableAttributes?: string[];
-  hiddenAttributes?: string[];
-  friendlyEditors?: AttributesFriendlyEditorMetadata[];
-  fields?: Record<string, AttributesFieldMetadata>;
-};
+export type {
+  AttributeFieldOption,
+  AttributeFieldDefinition,
+  AttributeFriendlyEditorDefinition,
+  NodeAttributePanelMetadata,
+} from '@qti-editor/interfaces';
 
 export type AttributesMetadataResolver = (
   nodeType: string,
   node: AttributesNodeDetail,
-) => AttributesPanelMetadata | null;
+) => NodeAttributePanelMetadata | null;
 
 @customElement('prosekit-attributes-panel')
 export class ProsekitAttributesPanel extends LitElement {
@@ -207,12 +193,12 @@ export class ProsekitAttributesPanel extends LitElement {
     this.selectedIndex = index;
   }
 
-  protected getPanelMetadata(node: AttributesNodeDetail | null): AttributesPanelMetadata | null {
+  protected getPanelMetadata(node: AttributesNodeDetail | null): NodeAttributePanelMetadata | null {
     if (!node) return null;
     return this.metadataResolver?.(node.type, node) ?? null;
   }
 
-  protected getFieldMetadata(key: string, value: AttrValue): AttributesFieldMetadata {
+  protected getFieldMetadata(key: string, value: AttrValue): AttributeFieldDefinition {
     const metadata = this.getPanelMetadata(this.activeNode);
     const fieldMetadata = metadata?.fields?.[key] ?? {};
     const inferredInput =
@@ -340,7 +326,7 @@ export class ProsekitAttributesPanel extends LitElement {
   protected renderTextField(
     key: string,
     value: AttrValue,
-    fieldMetadata: AttributesFieldMetadata,
+    fieldMetadata: AttributeFieldDefinition,
     disabled = false,
   ) {
     return html`
@@ -360,7 +346,7 @@ export class ProsekitAttributesPanel extends LitElement {
   protected renderCheckboxField(
     key: string,
     value: AttrValue,
-    fieldMetadata: AttributesFieldMetadata,
+    fieldMetadata: AttributeFieldDefinition,
     disabled = false,
   ) {
     return html`
@@ -380,7 +366,7 @@ export class ProsekitAttributesPanel extends LitElement {
   protected renderSelectField(
     key: string,
     value: AttrValue,
-    fieldMetadata: AttributesFieldMetadata,
+    fieldMetadata: AttributeFieldDefinition,
     disabled = false,
   ) {
     return html`
@@ -404,7 +390,7 @@ export class ProsekitAttributesPanel extends LitElement {
   protected renderField(
     key: string,
     value: AttrValue,
-    fieldMetadata: AttributesFieldMetadata,
+    fieldMetadata: AttributeFieldDefinition,
     disabled = false,
   ): TemplateResult {
     if (fieldMetadata.input === 'checkbox') {

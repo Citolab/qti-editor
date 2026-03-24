@@ -1,7 +1,7 @@
-import type { NodeAttributeFriendlyEditorDefinition } from '@qti-editor/interaction-shared/composer/types.js';
+import type { AttributeFriendlyEditorDefinition } from '@qti-editor/interfaces';
 
 export interface TextEntryAttributesFriendlyEditorDefinition
-  extends NodeAttributeFriendlyEditorDefinition {
+  extends AttributeFriendlyEditorDefinition {
   kind: 'textEntryAttributes';
 }
 

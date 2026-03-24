@@ -1,4 +1,4 @@
-import type { NodeAttributeFriendlyEditorDefinition } from '@qti-editor/interaction-shared/composer/types.js';
+import type { AttributeFriendlyEditorDefinition } from '@qti-editor/interfaces';
 
 export type ChoiceInteractionClassGroupId =
   | 'labels'
@@ -31,7 +31,7 @@ export interface ChoiceInteractionClassState {
 }
 
 export interface ChoiceInteractionClassFriendlyEditorDefinition
-  extends NodeAttributeFriendlyEditorDefinition {
+  extends AttributeFriendlyEditorDefinition {
   kind: 'choiceInteractionClass';
 }
 

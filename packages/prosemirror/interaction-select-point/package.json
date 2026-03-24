@@ -3,23 +3,17 @@
   "description": "QTI select-point interaction schemas, components, commands, and composer",
   "version": "0.1.0",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./*": "./dist/*"
+    ".": "./src/index.ts",
+    "./*": "./src/*"
   },
-  "files": [
-    "dist/**/*"
-  ],
   "scripts": {
-    "build": "pnpm --filter @qti-editor/interaction-shared build && pnpm clean && tsc",
-    "clean": "rm -rf dist && find src -type f -name '*.js' -delete && find src -type f -name '*.js.map' -delete && find src -type f -name '*.d.ts' -delete && find src -type f -name '*.d.ts.map' -delete"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@qti-editor/interfaces": "workspace:*",
     "@qti-editor/interaction-shared": "workspace:*",
     "@qti-components/select-point-interaction": "^1.0.1"
   },

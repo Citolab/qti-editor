@@ -6,3 +6,4 @@ export * from './components/qti-select-point-interaction/img-select-point.schema
 
 export * from './composer/metadata.js';
 export * from './composer/handler.js';
+export * from './descriptor.js';

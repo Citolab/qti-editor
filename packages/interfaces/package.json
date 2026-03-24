@@ -1,0 +1,19 @@
+{
+  "name": "@qti-editor/interfaces",
+  "description": "Contract types for the QTI editor — zero runtime dependencies",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "prosemirror-model": "^1.25.4",
+    "prosemirror-state": "^1.4.4",
+    "typescript": "^5.0.0"
+  }
+}

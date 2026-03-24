@@ -3,76 +3,45 @@
  */
 
 import '@qti-components/theme/item.css';
-import {
-  insertChoiceInteraction,
-  insertSimpleChoiceOnEnter,
-  qtiChoiceInteractionNodeSpec,
-} from '@qti-editor/interaction-choice';
-import {
-  insertExtendedTextInteraction,
-  qtiExtendedTextInteractionNodeSpec,
-} from '@qti-editor/interaction-extended-text';
-import {
-  insertMatchInteraction,
-  qtiMatchInteractionNodeSpec,
-} from '@qti-editor/interaction-match';
-import {
-  imgSelectPointNodeSpec,
-  insertSelectPointInteraction,
-  qtiSelectPointInteractionNodeSpec,
-} from '@qti-editor/interaction-select-point';
-import {
-  insertInlineChoiceInteraction,
-  insertInlineChoiceOnEnter,
-  qtiInlineChoiceInteractionNodeSpec,
-  qtiInlineChoiceNodeSpec,
-  qtiInlineChoiceParagraphNodeSpec,
-} from '@qti-editor/interaction-inline-choice';
-import {
-  insertTextEntryInteraction,
-  qtiTextEntryInteractionNodeSpec,
-} from '@qti-editor/interaction-text-entry';
-import {
-  qtiPromptNodeSpec,
-  qtiPromptParagraphNodeSpec,
-  qtiSimpleAssociableChoiceNodeSpec,
-  qtiSimpleAssociableChoiceParagraphNodeSpec,
-  qtiSimpleChoiceNodeSpec,
-  qtiSimpleChoiceParagraphNodeSpec,
-  qtiSimpleMatchSetNodeSpec,
-} from '@qti-editor/interaction-shared';
+import { listInteractionDescriptors } from '@qti-editor/core/interactions/composer';
 import { defineBasicExtension } from 'prosekit/basic';
-import { defineKeymap, defineNodeSpec, union } from 'prosekit/core';
+import { defineKeymap, defineNodeSpec, union, type Extension } from 'prosekit/core';
+import type { Command } from 'prosekit/pm/state';
 
 export function defineQtiInteractionsExtension() {
-  return union(
-    defineNodeSpec({ name: 'qtiChoiceInteraction', ...qtiChoiceInteractionNodeSpec }),
-    defineNodeSpec({ name: 'qtiPromptParagraph', ...qtiPromptParagraphNodeSpec }),
-    defineNodeSpec({ name: 'qtiPrompt', ...qtiPromptNodeSpec }),
-    defineNodeSpec({ name: 'imgSelectPoint', ...imgSelectPointNodeSpec }),
-    defineNodeSpec({ name: 'qtiSelectPointInteraction', ...qtiSelectPointInteractionNodeSpec }),
-    defineNodeSpec({ name: 'qtiSimpleChoiceParagraph', ...qtiSimpleChoiceParagraphNodeSpec }),
-    defineNodeSpec({ name: 'qtiSimpleChoice', ...qtiSimpleChoiceNodeSpec }),
-    defineNodeSpec({ name: 'qtiInlineChoiceInteraction', ...qtiInlineChoiceInteractionNodeSpec }),
-    defineNodeSpec({ name: 'qtiInlineChoiceParagraph', ...qtiInlineChoiceParagraphNodeSpec }),
-    defineNodeSpec({ name: 'qtiInlineChoice', ...qtiInlineChoiceNodeSpec }),
-    defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
-    defineNodeSpec({ name: 'qtiMatchInteraction', ...qtiMatchInteractionNodeSpec }),
-    defineNodeSpec({ name: 'qtiSimpleMatchSet', ...qtiSimpleMatchSetNodeSpec }),
-    defineNodeSpec({ name: 'qtiSimpleAssociableChoice', ...qtiSimpleAssociableChoiceNodeSpec }),
-    defineNodeSpec({ name: 'qtiSimpleAssociableChoiceParagraph', ...qtiSimpleAssociableChoiceParagraphNodeSpec }),
-    defineNodeSpec({ name: 'qtiExtendedTextInteraction', ...qtiExtendedTextInteractionNodeSpec }),
-    defineKeymap({
-      Enter: (state, dispatch, view) =>
-        insertSimpleChoiceOnEnter(state, dispatch, view) || insertInlineChoiceOnEnter(state, dispatch, view),
-      'Mod-Shift-q': insertChoiceInteraction,
-      'Mod-Shift-l': insertInlineChoiceInteraction,
-      'Mod-Shift-p': insertSelectPointInteraction,
-      'Mod-Shift-t': insertTextEntryInteraction,
-      'Mod-Shift-m': insertMatchInteraction,
-      'Mod-Shift-e': insertExtendedTextInteraction,
-    }),
-  );
+  const descriptors = listInteractionDescriptors();
+
+  // Collect node specs, deduplicating by name (shared specs appear in multiple descriptors)
+  const seenSpecs = new Set<string>();
+  const nodeSpecExtensions: Extension[] = [];
+  for (const descriptor of descriptors) {
+    for (const { name, spec } of descriptor.nodeSpecs) {
+      if (seenSpecs.has(name)) continue;
+      seenSpecs.add(name);
+      nodeSpecExtensions.push(defineNodeSpec({ name, ...spec }));
+    }
+  }
+
+  // Build keymap from descriptors
+  const keymap: Record<string, Command> = {};
+
+  // Enter commands: tried in registration order, first match wins
+  const enterCommands = descriptors
+    .map(d => d.enterCommand)
+    .filter((cmd): cmd is Command => cmd != null);
+
+  if (enterCommands.length > 0) {
+    keymap['Enter'] = (state, dispatch, view) =>
+      enterCommands.some(cmd => cmd(state, dispatch, view));
+  }
+
+  for (const descriptor of descriptors) {
+    if (descriptor.insertCommand && descriptor.keyboardShortcut) {
+      keymap[descriptor.keyboardShortcut] = descriptor.insertCommand;
+    }
+  }
+
+  return union(...nodeSpecExtensions, defineKeymap(keymap));
 }
 
 export function defineQtiExtension() {

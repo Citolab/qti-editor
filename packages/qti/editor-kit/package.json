@@ -23,6 +23,7 @@
     "@qti-components/interactions": "1.8.0",
     "@qti-components/theme": "1.1.0",
     "@qti-components/utilities": "1.1.0",
+    "@qti-editor/core": "workspace:*",
     "@qti-editor/interaction-choice": "workspace:*",
     "@qti-editor/interaction-extended-text": "workspace:*",
     "@qti-editor/interaction-inline-choice": "workspace:*",

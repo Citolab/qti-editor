@@ -6,3 +6,5 @@ export * from './components/qti-inline-choice-interaction/qti-inline-choice.sche
 export * from './components/qti-inline-choice-interaction/qti-inline-choice-paragraph.schema.js';
 
 export * from './composer/metadata.js';
+export * from './composer/handler.js';
+export * from './descriptor.js';

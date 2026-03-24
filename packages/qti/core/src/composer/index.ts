@@ -6,8 +6,7 @@
  */
 
 import { getInteractionComposerHandler } from '../interactions/composer.js';
-
-type ResponseProcessingKind = 'match_correct' | 'map_response' | 'map_response_point';
+import type { ResponseProcessingKind } from '@qti-editor/interfaces';
 
 export interface ComposerItemContext {
   identifier?: string;

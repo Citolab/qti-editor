@@ -19,6 +19,6 @@ export const extendedTextInteractionComposerMetadata = {
 export const extendedTextNodeAttributePanelMetadataByNodeTypeName = {
   [EXTENDED_TEXT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: EXTENDED_TEXT_INTERACTION_NODE_TYPE,
-    userEditableAttributes: extendedTextInteractionComposerMetadata.userEditableAttributes,
+    editableAttributes: extendedTextInteractionComposerMetadata.userEditableAttributes,
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

@@ -6,3 +6,4 @@ export * from './attributes/text-entry-attributes-editor.js';
 
 export * from './composer/metadata.js';
 export * from './composer/handler.js';
+export * from './descriptor.js';

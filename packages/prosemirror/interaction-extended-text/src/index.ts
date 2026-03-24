@@ -5,3 +5,4 @@ export * from './components/qti-extended-text-interaction/qti-extended-text-inte
 
 export * from './composer/metadata.js';
 export * from './composer/handler.js';
+export * from './descriptor.js';

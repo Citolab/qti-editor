@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@qti-editor/interfaces": "workspace:*",
     "@qti-editor/prosemirror-attributes": "workspace:*",
     "lit": "^3.3.2"
   },
