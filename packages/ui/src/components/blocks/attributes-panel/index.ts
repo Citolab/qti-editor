@@ -14,9 +14,9 @@ import {
 } from '@qti-editor/prosemirror-attributes';
 import {
   ProsekitAttributesPanel,
-  type AttributesFriendlyEditorMetadata,
+  type AttributeFriendlyEditorDefinition,
   type AttributesNodeDetail,
-  type AttributesPanelMetadata,
+  type NodeAttributePanelMetadata,
 } from '@qti-editor/prosemirror-attributes-ui-prosekit';
 import '@qti-editor/ui/components/blocks/choice-attributes-editor';
 import '@qti-editor/ui/components/blocks/text-entry-attributes-editor';
@@ -39,15 +39,16 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
       const metadata = getNodeAttributePanelMetadataByNodeTypeName(nodeType);
       if (!metadata) return null;
 
-      const fields: AttributesPanelMetadata['fields'] = {};
+      const fields: NodeAttributePanelMetadata['fields'] = {};
       for (const key of Object.keys(node.attrs ?? {})) {
         fields[key] = { label: key };
       }
 
-      const panelMetadata: AttributesPanelMetadata = {
-        editableAttributes: [...metadata.userEditableAttributes],
-        hiddenAttributes: [...(metadata.hiddenRawAttributes ?? [])],
-        friendlyEditors: (metadata.friendlyEditors ?? []) as AttributesFriendlyEditorMetadata[],
+      const panelMetadata: NodeAttributePanelMetadata = {
+        nodeTypeName: nodeType,
+        editableAttributes: [...(metadata.editableAttributes ?? [])],
+        hiddenAttributes: [...(metadata.hiddenAttributes ?? [])],
+        friendlyEditors: (metadata.friendlyEditors ?? []) as AttributeFriendlyEditorDefinition[],
         fields,
       };
 
@@ -83,7 +84,7 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
   }
 
   private renderFriendlyEditor(
-    editor: AttributesFriendlyEditorMetadata,
+    editor: AttributeFriendlyEditorDefinition,
     activeNode: AttributesNodeDetail | null,
   ): TemplateResult | typeof nothing {
     if (!activeNode) return nothing;

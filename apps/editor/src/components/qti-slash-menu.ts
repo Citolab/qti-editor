@@ -17,8 +17,6 @@ import { customElement, property } from 'lit/decorators.js';
 import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
 import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
-import { insertInlineChoiceInteraction } from '@qti-editor/qti-editor-kit/interactions';
-
 import type { EditorView } from 'prosekit/pm/view';
 
 const regex = canUseRegexLookbehind() ? /(?<!\S)\/(\S.*)?$/u : /\/(\S.*)?$/u;
