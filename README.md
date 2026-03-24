@@ -43,35 +43,42 @@ pnpm firebase:serve
 
 ## QTI Components Git Overrides
 
-This repo supports pinning selected `@qti-components/*` packages to a specific
-GitHub commit without publishing to npm.
+This repo uses a local-only override file so dependency overrides do not touch
+`package.json` or `pnpm-lock.yaml`.
 
-Configuration lives in root `package.json`:
+How it works:
 
-- `qtiComponentsGitOverrides`: source-of-truth Git specs
-- `pnpm.overrides`: generated local `file:` tarball overrides used by installs
+- `.pnpmfile.cjs` reads `pnpm-local-overrides.json` (if present).
+- When `enabled: true`, matching dependencies are rewritten during resolution.
+- The local config file is gitignored.
 
-Supported Git spec format:
+Create `pnpm-local-overrides.json` in the repo root:
 
-- `github:<org>/<repo>#<sha>&path:/<package/subdir>`
-
-Workflow:
-
-1. Update `qtiComponentsGitOverrides` entries (repo + commit SHA + package path).
-2. Run:
-```sh
-pnpm run qti-components:install
+```json
+{
+  "enabled": true,
+  "sourceOverrides": {
+    "@qti-components/interactions-core": "github:Citolab/qti-components#648154ec0c5b3dac8a5118ab450df3d6c508c8a3&path:/packages/interactions/core",
+    "@qti-components/choice-interaction": "github:Citolab/qti-components#648154ec0c5b3dac8a5118ab450df3d6c508c8a3&path:/packages/interactions/choice-interaction"
+  },
+  "overrides": {
+    "@qti-components/interactions-core": "file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz",
+    "@qti-components/choice-interaction": "file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-choice-interaction-1.1.0.tgz"
+  }
+}
 ```
-3. Commit the resulting updates:
-- `package.json`
-- `pnpm-lock.yaml`
-- `.qti-components-packs/<sha>/*.tgz`
 
-Helper commands:
+Automation commands:
 
-- `pnpm run qti-components:status` shows current source Git overrides and active `file:` overrides.
-- `pnpm run qti-components:sync` refreshes only the tarball overrides in `package.json`.
-- `pnpm run qti-components:install` runs sync + `pnpm install --no-frozen-lockfile`.
+```sh
+pnpm run qti-overrides:status
+pnpm run qti-overrides:sync
+pnpm run qti-overrides:install
+```
+
+`qti-overrides:sync` builds tarballs from `sourceOverrides` and writes `file:` paths to `overrides`.
+
+Disable quickly by setting `"enabled": false` (or deleting the file).
 
 ## Component Registry
 
