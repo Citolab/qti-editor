@@ -69,6 +69,9 @@ export class QtiEditorApp extends LitElement {
       defineBasicExtension(),
       defineQtiInteractionsExtension(),
       defineSemanticPasteExtension(),
+      defineSlashMenuGuardExtension(),
+      // The placeholder extension is used to mark certain nodes (e.g. interaction content)
+      // so the slash menu guard can detect them and suppress the menu when the cursor is inside.
       definePlaceholder({
         placeholder: (state) => {
           const $pos = state.selection.$anchor;
@@ -85,7 +88,7 @@ export class QtiEditorApp extends LitElement {
       qtiCodePanelExtension({ eventTarget: this.codeEventTarget }),
       blockSelectExtension,
       nodeAttrsSyncExtension,
-      defineSlashMenuGuardExtension()
+
     );
 
     const restoredState = readPersistedStateFromLocalStorage(EDITOR_DOC_STORAGE_KEY);
