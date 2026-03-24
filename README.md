@@ -41,6 +41,38 @@ Local hosting emulation:
 pnpm firebase:serve
 ```
 
+## QTI Components Git Overrides
+
+This repo supports pinning selected `@qti-components/*` packages to a specific
+GitHub commit without publishing to npm.
+
+Configuration lives in root `package.json`:
+
+- `qtiComponentsGitOverrides`: source-of-truth Git specs
+- `pnpm.overrides`: generated local `file:` tarball overrides used by installs
+
+Supported Git spec format:
+
+- `github:<org>/<repo>#<sha>&path:/<package/subdir>`
+
+Workflow:
+
+1. Update `qtiComponentsGitOverrides` entries (repo + commit SHA + package path).
+2. Run:
+```sh
+pnpm run qti-components:install
+```
+3. Commit the resulting updates:
+- `package.json`
+- `pnpm-lock.yaml`
+- `.qti-components-packs/<sha>/*.tgz`
+
+Helper commands:
+
+- `pnpm run qti-components:status` shows current source Git overrides and active `file:` overrides.
+- `pnpm run qti-components:sync` refreshes only the tarball overrides in `package.json`.
+- `pnpm run qti-components:install` runs sync + `pnpm install --no-frozen-lockfile`.
+
 ## Component Registry
 
 QTI Editor provides a shadcn-compatible component registry for customizable UI components.
