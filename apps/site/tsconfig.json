@@ -1,0 +1,16 @@
+{
+  "extends": [
+    "astro/tsconfigs/strict",
+    "../../tsconfig.base.json"
+  ],
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "allowJs": true,
+    "checkJs": false
+  },
+  "include": [
+    "src",
+    "astro.config.mjs"
+  ]
+}

@@ -1,0 +1,59 @@
+---
+title: Angular Integration
+description: Embed QTI Editor in an Angular application.
+slug: docs/frameworks/angular
+---
+
+This guide outlines a minimal Angular integration for QTI Editor.
+
+## 1. Install dependencies
+
+```bash
+pnpm add @qti-editor/core @qti-editor/ui @qti-editor/prosekit-integration lit prosekit
+```
+
+## 2. Create an editor component
+
+```ts
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { createEditor } from 'prosekit/core';
+
+@Component({
+  selector: 'app-qti-editor',
+  template: '<div #mountPoint></div>',
+})
+export class QtiEditorComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('mountPoint', { static: true })
+  mountPoint!: ElementRef<HTMLDivElement>;
+
+  private editor: ReturnType<typeof createEditor> | null = null;
+
+  ngAfterViewInit(): void {
+    this.editor = createEditor({
+      extension: [],
+      defaultContent: '<p>Start authoring QTI content.</p>',
+    });
+
+    this.mountPoint.nativeElement.appendChild(this.editor.mount());
+  }
+
+  ngOnDestroy(): void {
+    this.editor?.destroy();
+    this.editor = null;
+  }
+}
+```
+
+## 3. Use the component in a page template
+
+```html
+<section>
+  <h1>QTI Authoring</h1>
+  <app-qti-editor></app-qti-editor>
+</section>
+```
+
+## Notes
+
+- Use Angular standalone components or module-based setup depending on your app architecture.
+- Move extension definitions to a dedicated service/module when integrating custom interactions.
