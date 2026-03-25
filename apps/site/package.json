@@ -1,0 +1,37 @@
+{
+  "name": "@qti-editor/site",
+  "private": true,
+  "version": "0.1.0",
+  "description": "QTI Editor marketing and documentation site",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check",
+    "clean": "rm -rf dist .astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.30.6",
+    "@egoist/tailwindcss-icons": "^1.9.2",
+    "@lit/context": "^1.1.6",
+    "@qti-components/theme": "1.1.0",
+    "@qti-editor/interaction-choice": "workspace:*",
+    "@qti-editor/interaction-extended-text": "workspace:*",
+    "@qti-editor/interaction-shared": "workspace:*",
+    "@qti-editor/interaction-text-entry": "workspace:*",
+    "@qti-editor/prosekit-integration": "workspace:*",
+    "@qti-editor/prosemirror": "workspace:*",
+    "@qti-editor/ui": "workspace:*",
+    "astro": "^5.7.2",
+    "lit": "^3.3.2",
+    "prosekit": "^0.18.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@tailwindcss/vite": "^4.1.18",
+    "daisyui": "^5.1.6",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.0.0"
+  }
+}

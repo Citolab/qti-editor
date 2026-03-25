@@ -1,0 +1,53 @@
+/**
+ * QTI Editor Integration Styles
+ *
+ * Main stylesheet for the website editor demo.
+ */
+
+@import '@qti-components/theme/item.css';
+@import "tailwindcss";
+@source "../../../packages/ui/src/**/*.{ts,js}";
+
+/*---break---*/
+
+@plugin "@egoist/tailwindcss-icons";
+@plugin "daisyui" {
+  themes: light --default;
+}
+@custom-variant dark (&:where(.dark, .dark *));
+
+qti-editor-app p {
+  @apply p-2;
+}
+
+qti-editor-app qti-prompt {
+  @apply bg-white rounded my-0 px-2 mb-2;
+}
+
+qti-editor-app qti-choice-interaction {
+  @apply bg-slate-100 rounded p-2 my-1;
+}
+
+qti-editor-app qti-simple-choice {
+  @apply bg-white rounded p-2;
+}
+
+qti-editor-app qti-inline-choice-interaction {
+  @apply bg-slate-100 rounded p-2 my-1;
+}
+
+qti-editor-app qti-match-interaction {
+  @apply bg-slate-100 rounded p-2 my-1;
+}
+
+qti-editor-app qti-select-point-interaction {
+  @apply bg-slate-100 rounded p-2 my-1;
+}
+
+qti-editor-app qti-text-entry-interaction {
+  @apply bg-slate-100 rounded p-2;
+}
+
+qti-editor-app qti-extended-text-interaction {
+  @apply bg-slate-100 rounded p-2;
+}

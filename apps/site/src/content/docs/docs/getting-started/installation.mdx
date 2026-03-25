@@ -1,0 +1,27 @@
+---
+title: Installation
+description: Install and run the QTI Editor website package.
+slug: docs/getting-started/installation
+---
+
+## Install dependencies
+
+```bash
+pnpm install
+```
+
+## Run the docs site
+
+From the monorepo root:
+
+```bash
+pnpm --filter @qti-editor/site dev
+```
+
+## Build for production
+
+```bash
+pnpm --filter @qti-editor/site build
+```
+
+The generated static output is written to `packages/site/dist`.
