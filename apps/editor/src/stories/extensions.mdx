@@ -1,0 +1,172 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Docs/2. Extensions" />
+
+# Defining Extensions
+
+The editor is composed from two extension groups: a **basic extension** for
+standard rich-text features and a **QTI interactions extension** for the
+assessment-specific node types.
+
+## Basic extension
+
+Create a file `basic-extension.ts` that unions the ProseKit extensions you want.
+Add or remove features freely — for example, drop `defineTable` if you do
+not need tables, or add `defineUnderline` for underline support.
+
+```ts
+// basic-extension.ts
+import {
+  defineBaseCommands, defineBaseKeymap, defineHistory, union,
+} from 'prosekit/core';
+import { defineBold } from 'prosekit/extensions/bold';
+import { defineDoc } from 'prosekit/extensions/doc';
+import { defineGapCursor } from 'prosekit/extensions/gap-cursor';
+import { defineHardBreak } from 'prosekit/extensions/hard-break';
+import { defineHeading } from 'prosekit/extensions/heading';
+import { defineImage } from 'prosekit/extensions/image';
+import { defineItalic } from 'prosekit/extensions/italic';
+import { defineList } from 'prosekit/extensions/list';
+import { defineParagraph } from 'prosekit/extensions/paragraph';
+import { defineTable } from 'prosekit/extensions/table';
+import { defineText } from 'prosekit/extensions/text';
+import { defineVirtualSelection } from 'prosekit/extensions/virtual-selection';
+import { defineModClickPrevention } from 'prosekit/extensions/mod-click-prevention';
+
+export function defineBasicExtension() {
+  return union(
+    defineDoc(),
+    defineText(),
+    defineParagraph(),
+    defineHeading(),
+    defineList(),
+    defineImage(),
+    defineHardBreak(),
+    defineTable(),
+    defineItalic(),
+    defineBold(),
+    defineBaseKeymap(),
+    defineBaseCommands(),
+    defineHistory(),
+    defineGapCursor(),
+    defineVirtualSelection(),
+    defineModClickPrevention(),
+  );
+}
+```
+
+This is a plain ProseKit extension — nothing QTI-specific here.
+See the [ProseKit docs](https://prosekit.dev) for the full list of available
+extensions.
+
+## QTI interactions extension
+
+Create a second file `qti-interactions-extension.ts` that registers the QTI node
+specs and keymaps. Include only the interaction types your editor needs.
+
+```ts
+// qti-interactions-extension.ts
+import {
+  insertSimpleChoiceOnEnter,
+  qtiChoiceInteractionNodeSpec,
+  defineCorrectResponseClickExtension,
+} from '@qti-editor/interaction-choice';
+import {
+  qtiExtendedTextInteractionNodeSpec,
+} from '@qti-editor/interaction-extended-text';
+import {
+  qtiTextEntryInteractionNodeSpec,
+} from '@qti-editor/interaction-text-entry';
+import {
+  qtiPromptNodeSpec,
+  qtiPromptParagraphNodeSpec,
+  qtiSimpleChoiceNodeSpec,
+  qtiSimpleChoiceParagraphNodeSpec,
+} from '@qti-editor/interaction-shared';
+import { defineKeymap, defineNodeSpec, union } from 'prosekit/core';
+
+export function defineQtiInteractionsExtension() {
+  return union(
+    // Choice interaction nodes
+    defineNodeSpec({ name: 'qtiChoiceInteraction', ...qtiChoiceInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiPromptParagraph', ...qtiPromptParagraphNodeSpec }),
+    defineNodeSpec({ name: 'qtiPrompt', ...qtiPromptNodeSpec }),
+    defineNodeSpec({ name: 'qtiSimpleChoiceParagraph', ...qtiSimpleChoiceParagraphNodeSpec }),
+    defineNodeSpec({ name: 'qtiSimpleChoice', ...qtiSimpleChoiceNodeSpec }),
+
+    // Text entry (fill-in-the-blank)
+    defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
+
+    // Extended text (free-form text area)
+    defineNodeSpec({ name: 'qtiExtendedTextInteraction', ...qtiExtendedTextInteractionNodeSpec }),
+
+    // Keymaps
+    defineKeymap({
+      Enter: (state, dispatch, view) =>
+        insertSimpleChoiceOnEnter(state, dispatch, view),
+    }),
+
+    // Click radio/checkbox to set correct responses
+    defineCorrectResponseClickExtension(),
+  );
+}
+```
+
+### How node specs work
+
+Each interaction package exports a plain object with the ProseMirror `NodeSpec`
+fields (`content`, `group`, `attrs`, `parseDOM`, `toDOM`). You register them
+with ProseKit via `defineNodeSpec`. The `name` you choose becomes the node type
+name in the ProseMirror schema.
+
+The shared package (`@qti-editor/interaction-shared`) provides node specs that
+are reused across multiple interactions: `qtiPrompt` (the question text area),
+`qtiSimpleChoice` (a single answer option), and their paragraph wrappers.
+
+### Adding more interaction types
+
+To add the match interaction:
+
+```bash
+npm install @qti-editor/interaction-match
+```
+
+```ts
+import {
+  qtiMatchInteractionNodeSpec,
+  qtiSimpleMatchSetNodeSpec,
+  qtiSimpleAssociableChoiceNodeSpec,
+  // ...
+} from '@qti-editor/interaction-match';
+
+// Add to your union:
+defineNodeSpec({ name: 'qtiMatchInteraction', ...qtiMatchInteractionNodeSpec }),
+defineNodeSpec({ name: 'qtiSimpleMatchSet', ...qtiSimpleMatchSetNodeSpec }),
+defineNodeSpec({ name: 'qtiSimpleAssociableChoice', ...qtiSimpleAssociableChoiceNodeSpec }),
+```
+
+The same pattern applies to `@qti-editor/interaction-select-point` and
+`@qti-editor/interaction-inline-choice`.
+
+## ProseMirror utility extensions
+
+The `@qti-editor/prosemirror` package provides additional plugins you can add
+to your editor:
+
+| Export | What it does |
+|---|---|
+| `blockSelectExtension` | Enables block-level node selection (click the edge of a block to select it) |
+| `nodeAttrsSyncExtension` | Syncs ProseMirror node attributes to the DOM (keeps web component attributes up to date) |
+| `defineSemanticPasteExtension()` | Normalizes pasted HTML to preserve semantic structure |
+| `defineLocalStorageDocPersistenceExtension(options)` | Auto-saves and restores the document from localStorage |
+
+```ts
+import {
+  blockSelectExtension,
+  nodeAttrsSyncExtension,
+  defineSemanticPasteExtension,
+  defineLocalStorageDocPersistenceExtension,
+} from '@qti-editor/prosemirror';
+```
+
+← [Introduction](?path=/docs/docs-1-introduction--docs) | Next: [Editor Setup](?path=/docs/docs-3-editor-setup--docs) →

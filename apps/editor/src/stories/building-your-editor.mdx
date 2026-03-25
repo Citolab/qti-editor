@@ -1,219 +1,83 @@
 import { Meta } from '@storybook/addon-docs/blocks';
 
-<Meta title="Docs/Building Your Editor" />
+<Meta title="Docs/1. Introduction" />
 
 # Building Your Own QTI Editor
 
-This guide walks you through creating a QTI editor from scratch using the `@qti-editor` packages.
-The editor is built on [ProseKit](https://prosekit.dev) (a toolkit on top of ProseMirror) and [Lit](https://lit.dev) web components.
+The QTI Editor is a modular, open-source editor for authoring
+[QTI 3.0](https://www.imsglobal.org/spec/qti/v3p0) assessment items.
+It is built on [ProseKit](https://prosekit.dev) (a toolkit on top of ProseMirror)
+and uses [Lit](https://lit.dev) web components for the UI layer.
 
-## 1. Install dependencies
+You can use it as a complete, ready-made editor or pick individual packages to
+compose your own.
+
+## Architecture overview
+
+The editor is split into three layers:
+
+- **ProseMirror extensions** — node specs for QTI interactions, plus
+  utility plugins (block select, paste normalization, attribute syncing).
+- **ProseKit integration** — wraps ProseMirror extensions for use with
+  ProseKit's `createEditor` / `union` API, plus event helpers and item context.
+- **UI components** — Lit web components for the toolbar, slash menu,
+  attributes panel, interaction insert menu, and more. Distributed as a
+  [shadcn-style registry](https://ui.shadcn.com/docs/registry) so you can copy
+  them into your project and modify freely.
+
+## Packages
+
+| Package | Purpose |
+|---|---|
+| `@qti-editor/core` | QTI XML composer — turns editor state into valid QTI 3.0 XML |
+| `@qti-editor/prosemirror` | Pure ProseMirror plugins: block select, virtual cursor, node-attrs sync, semantic paste, local-storage persistence |
+| `@qti-editor/prosekit-integration` | ProseKit wrappers for events, item context, and interaction helpers |
+| `@qti-editor/interaction-choice` | Choice interaction (multiple choice / multiple response) |
+| `@qti-editor/interaction-text-entry` | Inline text entry (fill-in-the-blank) |
+| `@qti-editor/interaction-extended-text` | Extended text (free-form text area) |
+| `@qti-editor/interaction-match` | Match interaction (table-based matching) |
+| `@qti-editor/interaction-select-point` | Select-point interaction (click on an image) |
+| `@qti-editor/interaction-inline-choice` | Inline choice (dropdown within text) |
+| `@qti-editor/interaction-shared` | Shared node specs and web components used by all interaction packages |
+| `@qti-editor/ui` | Lit UI components — toolbar, slash menu, attributes panel, composer, etc. |
+
+## Create a new project
+
+Start with a Vite project using the Lit template:
+
+```bash
+npm create vite@latest my-qti-editor -- --template lit-ts
+cd my-qti-editor
+```
+
+Install the core dependencies:
 
 ```bash
 npm install lit prosekit @lit/context
-npm install @qti-editor/core @qti-editor/qti-editor-kit @qti-editor/prosemirror @qti-editor/ui
-npm install @qti-editor/interaction-choice @qti-editor/interaction-extended-text @qti-editor/interaction-text-entry @qti-editor/interaction-shared
-npm install @qti-editor/prosemirror-attributes @qti-editor/prosemirror-attributes-ui-prosekit
 ```
 
-## 2. Copy UI components from the registry
-
-The UI layer is distributed as a [shadcn-style registry](https://ui.shadcn.com/docs/registry).
-You can copy individual components into your project and modify them freely.
-
-| Component | What it does |
-|---|---|
-| `qti-attributes-panel` | Displays and edits attributes of the selected QTI node |
-| `qti-choice-attributes-editor` | Choice interaction class editor (orientation, labels, stacking) |
-| `qti-text-entry-attributes-editor` | Text entry editor (width, case sensitivity, synonyms) |
-| `qti-composer` | Displays composed QTI XML from item context |
-| `qti-composer-metadata-form` | Form for editing QTI item metadata (title, identifier) |
-| `qti-code-panel` | Shows editor document as HTML, JSON, or XML |
-| `qti-interaction-insert-menu` | Dropdown for inserting QTI interaction nodes |
-| `qti-convert-menu` | Dropdown for converting a selection into a QTI interaction |
-| `lit-editor-toolbar` | ProseKit Lit toolbar (bold, italic, headings, lists, images) |
-| `lit-editor-slash-menu` | ProseKit Lit slash command menu |
-
-To install a component using the shadcn CLI:
+Install the QTI Editor packages you need:
 
 ```bash
-npx shadcn@latest add https://qti-editor.citolab.nl/r/<component-name>.json
+npm install @qti-editor/core @qti-editor/prosemirror @qti-editor/prosekit-integration
+npm install @qti-editor/interaction-choice @qti-editor/interaction-shared
 ```
 
-Or copy the source files from `@qti-editor/ui/src/components/` directly.
+Add more interaction packages as needed (`@qti-editor/interaction-text-entry`,
+`@qti-editor/interaction-extended-text`, `@qti-editor/interaction-match`, etc.).
 
-## 3. Define extensions
+## Copy UI components from the registry
 
-The editor is composed from two extension groups you control:
+The UI components are distributed as a shadcn-style registry. Install them with
+the shadcn CLI:
 
-### Basic extension (rich-text features)
-
-Create your own basic extension by picking ProseKit extensions.
-Add or remove features like headings, lists, tables, images:
-
-```ts
-import {
-  defineBaseCommands, defineBaseKeymap, defineHistory, union
-} from 'prosekit/core';
-import { defineBold } from 'prosekit/extensions/bold';
-import { defineDoc } from 'prosekit/extensions/doc';
-import { defineGapCursor } from 'prosekit/extensions/gap-cursor';
-import { defineHardBreak } from 'prosekit/extensions/hard-break';
-import { defineHeading } from 'prosekit/extensions/heading';
-import { defineImage } from 'prosekit/extensions/image';
-import { defineItalic } from 'prosekit/extensions/italic';
-import { defineList } from 'prosekit/extensions/list';
-import { defineParagraph } from 'prosekit/extensions/paragraph';
-import { defineTable } from 'prosekit/extensions/table';
-import { defineText } from 'prosekit/extensions/text';
-import { defineVirtualSelection } from 'prosekit/extensions/virtual-selection';
-import { defineModClickPrevention } from 'prosekit/extensions/mod-click-prevention';
-
-export function defineBasicExtension() {
-  return union(
-    defineDoc(),
-    defineText(),
-    defineParagraph(),
-    defineHeading(),
-    defineList(),
-    defineImage(),
-    defineHardBreak(),
-    defineTable(),
-    defineItalic(),
-    defineBold(),
-    defineBaseKeymap(),
-    defineBaseCommands(),
-    defineHistory(),
-    defineGapCursor(),
-    defineVirtualSelection(),
-    defineModClickPrevention(),
-  );
-}
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/lit-editor-toolbar.json
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-attributes-panel.json
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-interaction-insert-menu.json
 ```
 
-### QTI interactions extension
+These components are copied into your project as source files. You own them and
+can modify them however you like.
 
-This registers QTI node specs (choice, text-entry, extended-text) and keymaps:
-
-```ts
-import {
-  insertSimpleChoiceOnEnter,
-  qtiChoiceInteractionNodeSpec,
-  defineCorrectResponseClickExtension,
-} from '@qti-editor/interaction-choice';
-import { qtiExtendedTextInteractionNodeSpec } from '@qti-editor/interaction-extended-text';
-import { qtiTextEntryInteractionNodeSpec } from '@qti-editor/interaction-text-entry';
-import {
-  qtiPromptNodeSpec, qtiPromptParagraphNodeSpec,
-  qtiSimpleChoiceNodeSpec, qtiSimpleChoiceParagraphNodeSpec,
-} from '@qti-editor/interaction-shared';
-import { defineKeymap, defineNodeSpec, union } from 'prosekit/core';
-
-export function defineQtiInteractionsExtension() {
-  return union(
-    defineNodeSpec({ name: 'qtiChoiceInteraction', ...qtiChoiceInteractionNodeSpec }),
-    defineNodeSpec({ name: 'qtiPromptParagraph', ...qtiPromptParagraphNodeSpec }),
-    defineNodeSpec({ name: 'qtiPrompt', ...qtiPromptNodeSpec }),
-    defineNodeSpec({ name: 'qtiSimpleChoiceParagraph', ...qtiSimpleChoiceParagraphNodeSpec }),
-    defineNodeSpec({ name: 'qtiSimpleChoice', ...qtiSimpleChoiceNodeSpec }),
-    defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
-    defineNodeSpec({ name: 'qtiExtendedTextInteraction', ...qtiExtendedTextInteractionNodeSpec }),
-    defineKeymap({
-      Enter: (state, dispatch, view) => insertSimpleChoiceOnEnter(state, dispatch, view),
-    }),
-    defineCorrectResponseClickExtension(),
-  );
-}
-```
-
-## 4. Create the editor
-
-Combine extensions and create a ProseKit editor instance:
-
-```ts
-import { createEditor, union } from 'prosekit/core';
-import { definePlaceholder } from 'prosekit/extensions/placeholder';
-import {
-  blockSelectExtension, nodeAttrsSyncExtension,
-  defineSemanticPasteExtension,
-} from '@qti-editor/prosemirror';
-import { qtiAttributesExtension } from '@qti-editor/ui/components/blocks/attributes-panel';
-import { qtiEditorEventsExtension } from '@qti-editor/qti-editor-kit/events';
-
-const attributesEventTarget = new EventTarget();
-const editorEventsTarget = new EventTarget();
-
-const extension = union(
-  defineBasicExtension(),
-  defineQtiInteractionsExtension(),
-  defineSemanticPasteExtension(),
-  definePlaceholder({ placeholder: 'Press / for commands...' }),
-  qtiAttributesExtension({ eventTarget: attributesEventTarget }),
-  qtiEditorEventsExtension({ eventTarget: editorEventsTarget }),
-  blockSelectExtension,
-  nodeAttrsSyncExtension,
-);
-
-const editor = createEditor({ extension });
-```
-
-Then mount it on a DOM element:
-
-```ts
-const el = document.querySelector('#editor');
-editor.mount(el);
-```
-
-## 5. Add UI panels
-
-Wire up the attributes panel and toolbar using Lit or plain DOM:
-
-```html
-<!-- Toolbar -->
-<lit-editor-toolbar .editor=${editor}></lit-editor-toolbar>
-
-<!-- Editor surface -->
-<div id="editor"></div>
-
-<!-- Slash menu -->
-<lit-editor-slash-menu .editor=${editor}></lit-editor-slash-menu>
-
-<!-- Insert interaction dropdown -->
-<qti-interaction-insert-menu .editor=${editor}></qti-interaction-insert-menu>
-
-<!-- Attributes panel (set eventTarget after mount) -->
-<qti-attributes-panel></qti-attributes-panel>
-```
-
-Set the `eventTarget` on the attributes panel so it receives selection updates:
-
-```ts
-const panel = document.querySelector('qti-attributes-panel');
-panel.eventTarget = attributesEventTarget;
-panel.editorView = editor.view;
-```
-
-## 6. Listen to editor events
-
-The events extension emits content and selection changes:
-
-```ts
-editorEventsTarget.addEventListener('qti:content:change', (event) => {
-  const { html, json } = event.detail;
-  // Use html or json to update your QTI composer, save state, etc.
-});
-
-editorEventsTarget.addEventListener('qti:selection:change', (event) => {
-  const { node, pos } = event.detail;
-  // React to selection changes
-});
-```
-
-## What you can modify
-
-- **Basic extension** -- add or remove ProseKit extensions (e.g. drop tables, add underline)
-- **QTI interactions** -- include only the interaction types you need
-- **UI components** -- copy from registry and customize styling, labels, and behavior
-- **Attributes panel** -- provide a custom `choiceInteractionPresentation` to rename labels, reorder groups, add tooltips
-- **Toolbar** -- the `lit-editor-toolbar` is a vendored source you can edit directly
-- **Slash menu** -- the `lit-editor-slash-menu` is also vendored and customizable
+Next: [Defining Extensions](?path=/docs/docs-2-extensions--docs) →

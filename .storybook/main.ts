@@ -1,4 +1,5 @@
 import tailwindcss from '@tailwindcss/vite';
+import remarkGfm from 'remark-gfm';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 import type { StorybookConfig } from '@storybook/web-components-vite';
@@ -13,7 +14,16 @@ const config: StorybookConfig = {
   "addons": [
     "@chromatic-com/storybook",
     "@storybook/addon-a11y",
-    "@storybook/addon-docs"
+    {
+      name: "@storybook/addon-docs",
+      options: {
+        mdxPluginOptions: {
+          mdxCompileOptions: {
+            remarkPlugins: [remarkGfm],
+          },
+        },
+      },
+    },
   ],
   "framework": "@storybook/web-components-vite",
   async viteFinal(config: any, { configType }: { configType?: string }) {

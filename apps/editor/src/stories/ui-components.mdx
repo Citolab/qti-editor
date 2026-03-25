@@ -1,0 +1,101 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Docs/4. UI Components" />
+
+# UI Components
+
+All UI components are distributed as a
+[shadcn-style component registry](https://ui.shadcn.com/docs/registry).
+When you install a component, its source files are copied into your project.
+You own them and can modify them however you like.
+
+## Installing components
+
+Use the shadcn CLI to install any component by its full URL:
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/<component-name>.json
+```
+
+For example:
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-attributes-panel.json
+npx shadcn@latest add https://qti-editor.citolab.nl/r/lit-editor-toolbar.json
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-interaction-insert-menu.json
+```
+
+Components that depend on other registry components will prompt you to install
+those as well.
+
+## Component reference
+
+### Editor chrome
+
+| Component | Description | Key properties |
+|---|---|---|
+| `lit-editor-toolbar` | Rich-text toolbar with buttons for bold, italic, headings, lists, images, and tables. | `.editor` — the ProseKit editor instance, `.uploader` — optional image upload handler |
+| `lit-editor-slash-menu` | Slash command popover — type `/` to open, then filter by typing. | `.editor` — the ProseKit editor instance |
+
+### QTI-specific
+
+| Component | Description | Key properties |
+|---|---|---|
+| `qti-attributes-panel` | Displays and edits attributes of the selected QTI node. Shows different sub-editors depending on the node type (choice, text-entry, etc.). | `.eventTarget` — EventTarget shared with `qtiAttributesExtension`, `.editorView` — the ProseMirror EditorView |
+| `qti-choice-attributes-editor` | Sub-editor for choice interaction attributes: orientation, labels, shuffle, max-choices. | Used internally by `qti-attributes-panel` |
+| `qti-text-entry-attributes-editor` | Sub-editor for text-entry attributes: expected length, pattern mask, case sensitivity. | Used internally by `qti-attributes-panel` |
+| `qti-interaction-insert-menu` | Dropdown button that inserts QTI interaction nodes (choice, text-entry, extended-text, match, select-point). | `.editor` — the ProseKit editor instance |
+| `qti-convert-menu` | Dropdown button that converts an existing text selection into a QTI interaction. | `.editor` — the ProseKit editor instance |
+
+### Composer and metadata
+
+| Component | Description | Key properties |
+|---|---|---|
+| `qti-composer` | Renders the composed QTI 3.0 XML from the current item context. Listens to content changes and recomposes automatically. | `.eventTarget` — EventTarget shared with `qtiEditorEventsExtension` |
+| `qti-composer-metadata-form` | Form for editing item metadata (title and identifier). Emits a `metadata-change` event. | `.title` — item title, `.identifier` — item identifier |
+| `qti-code-panel` | Debug panel that displays the editor document as HTML, JSON, or XML. | `.eventTarget` — EventTarget shared with `qtiCodePanelExtension` |
+
+## Customizing components
+
+Since registry components are copied as source files, you can customize them
+directly. Common modifications:
+
+- **Toolbar** — add or remove toolbar buttons, change icons, rearrange
+  groups. The toolbar is built from ProseKit's `useEditor` and standard Lit
+  rendering.
+
+- **Attributes panel** — add new attribute editors for custom interaction
+  types, change the layout, or add validation.
+
+- **Insert menu** — add entries for your own custom node types or remove
+  interaction types you do not support.
+
+- **Slash menu** — add new slash commands, change the filtering logic, or
+  restyle the popover.
+
+## Extension + component pairing
+
+Some UI components come with a matching ProseMirror extension that must be
+included in your editor setup:
+
+| Component | Required extension | Shared via |
+|---|---|---|
+| `qti-attributes-panel` | `qtiAttributesExtension(options)` | An `EventTarget` instance |
+| `qti-composer` | `qtiEditorEventsExtension(options)` | An `EventTarget` instance |
+| `qti-code-panel` | `qtiCodePanelExtension(options)` | An `EventTarget` instance |
+
+The extension and component communicate through a shared `EventTarget` object.
+Create one `EventTarget` per pair and pass it to both the extension and the
+component:
+
+```ts
+const attributesEventTarget = new EventTarget();
+
+// In the editor setup:
+qtiAttributesExtension({ eventTarget: attributesEventTarget })
+
+// On the component:
+panel.eventTarget = attributesEventTarget;
+```
+
+← [Editor Setup](?path=/docs/docs-3-editor-setup--docs)

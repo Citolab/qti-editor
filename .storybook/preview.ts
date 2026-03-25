@@ -1,10 +1,13 @@
 import type { Preview } from '@storybook/web-components-vite';
 
-import '@qti-components/theme/item.css';
-import '../apps/editor/src/qti-editor-app';
-import '../apps/editor/src/style.css';
-
 const preview: Preview = {
+  parameters: {
+    options: {
+      storySort: {
+        order: ['Docs', ['1. Introduction', '2. Extensions', '3. Editor Setup', '4. UI Components']],
+      },
+    },
+  },
 };
 
 export default preview;

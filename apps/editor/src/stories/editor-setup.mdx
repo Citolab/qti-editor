@@ -1,0 +1,254 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Docs/3. Editor Setup" />
+
+# Editor Setup
+
+This page shows how to combine your extensions, create a ProseKit editor, mount
+it to the DOM, and wire up the UI components.
+
+## Create the editor
+
+Bring together the extensions from the previous page and create a ProseKit
+editor instance:
+
+```ts
+import { createEditor, union } from 'prosekit/core';
+import { definePlaceholder } from 'prosekit/extensions/placeholder';
+import {
+  blockSelectExtension,
+  nodeAttrsSyncExtension,
+  defineSemanticPasteExtension,
+  defineLocalStorageDocPersistenceExtension,
+  readPersistedStateFromLocalStorage,
+} from '@qti-editor/prosemirror';
+import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
+import { qtiAttributesExtension } from '@qti-editor/ui/components/blocks/attributes-panel';
+
+import { defineBasicExtension } from './basic-extension';
+import { defineQtiInteractionsExtension } from './qti-interactions-extension';
+
+// Event buses for communicating between the editor and UI components
+const attributesEventTarget = new EventTarget();
+const editorEventsTarget = new EventTarget();
+
+const STORAGE_KEY = 'my-editor:doc:v1';
+
+const extension = union(
+  defineBasicExtension(),
+  defineQtiInteractionsExtension(),
+  defineSemanticPasteExtension(),
+  definePlaceholder({ placeholder: 'Press / for commands...' }),
+  defineLocalStorageDocPersistenceExtension({ storageKey: STORAGE_KEY }),
+  qtiAttributesExtension({ eventTarget: attributesEventTarget }),
+  qtiEditorEventsExtension({ eventTarget: editorEventsTarget }),
+  blockSelectExtension,
+  nodeAttrsSyncExtension,
+);
+
+// Restore a previously saved document, if any
+const restoredState = readPersistedStateFromLocalStorage(STORAGE_KEY);
+
+const editor = createEditor({
+  extension,
+  defaultContent: restoredState.doc,
+});
+```
+
+## Mount the editor
+
+ProseKit's `createEditor` returns an editor instance that you mount on a DOM
+element. The element becomes the contenteditable surface:
+
+```ts
+const editorElement = document.querySelector('#editor');
+editor.mount(editorElement);
+```
+
+Make sure to include the ProseKit base styles in your entry point:
+
+```ts
+import 'prosekit/basic/style.css';
+import 'prosekit/basic/typography.css';
+```
+
+## Wire up UI components
+
+After mounting the editor, connect the UI components. Each component is a
+standard custom element that you can place anywhere in your page.
+
+### Toolbar
+
+```html
+<lit-editor-toolbar></lit-editor-toolbar>
+<div id="editor"></div>
+```
+
+```ts
+import '@qti-editor/ui/components/editor/ui/toolbar';
+
+const toolbar = document.querySelector('lit-editor-toolbar');
+toolbar.editor = editor;
+```
+
+### Attributes panel
+
+The attributes panel displays editable properties for the currently selected
+QTI node (e.g. choice orientation, correct response, text-entry width).
+
+```html
+<qti-attributes-panel></qti-attributes-panel>
+```
+
+```ts
+import '@qti-editor/ui/components/blocks/attributes-panel';
+
+const panel = document.querySelector('qti-attributes-panel');
+panel.eventTarget = attributesEventTarget;
+panel.editorView = editor.view;
+```
+
+### Interaction insert menu
+
+A dropdown button that inserts QTI interaction nodes into the document:
+
+```html
+<qti-interaction-insert-menu></qti-interaction-insert-menu>
+```
+
+```ts
+import '@qti-editor/ui/components/blocks/interaction-insert-menu';
+
+const menu = document.querySelector('qti-interaction-insert-menu');
+menu.editor = editor;
+```
+
+## Listen to editor events
+
+The events extension emits `CustomEvent`s on the event target you provided.
+Use these to react to content and selection changes:
+
+```ts
+import { onQtiContentChange, onQtiSelectionChange }
+  from '@qti-editor/prosekit-integration/events';
+
+// Content change — fires when the document changes
+const unsubContent = onQtiContentChange((event) => {
+  const { html, json, timestamp } = event.detail;
+  console.log('Document changed:', html);
+}, editorEventsTarget);
+
+// Selection change — fires when the cursor moves
+const unsubSelection = onQtiSelectionChange((event) => {
+  const { from, to, empty, timestamp } = event.detail;
+  console.log('Selection:', { from, to, empty });
+}, editorEventsTarget);
+
+// Call unsub functions to remove listeners when done
+// unsubContent();
+// unsubSelection();
+```
+
+## Using Lit
+
+If your application uses Lit, you can bind properties directly in templates
+instead of using imperative DOM access:
+
+```ts
+import { LitElement, html } from 'lit';
+import { createRef, ref } from 'lit/directives/ref.js';
+import '@qti-editor/ui/components/editor/ui/toolbar';
+import '@qti-editor/ui/components/blocks/attributes-panel';
+
+class MyEditor extends LitElement {
+  private editor = createEditor({ extension });
+  private editorRef = createRef();
+
+  override createRenderRoot() {
+    return this; // render into light DOM for ProseKit styles
+  }
+
+  override updated() {
+    if (this.editorRef.value) {
+      this.editor.mount(this.editorRef.value);
+    }
+  }
+
+  override render() {
+    return html`
+      <lit-editor-toolbar .editor=${this.editor}></lit-editor-toolbar>
+      <div ${ref(this.editorRef)}></div>
+      <qti-attributes-panel
+        .eventTarget=${attributesEventTarget}
+        .editorView=${this.editor.view}
+      ></qti-attributes-panel>
+    `;
+  }
+}
+```
+
+## Minimal complete example
+
+Here is a minimal HTML page that creates a working QTI editor:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My QTI Editor</title>
+  <script type="module" src="./editor.ts"></script>
+</head>
+<body>
+  <lit-editor-toolbar></lit-editor-toolbar>
+  <qti-interaction-insert-menu></qti-interaction-insert-menu>
+  <div id="editor" style="min-height: 400px; padding: 1rem;"></div>
+  <qti-attributes-panel></qti-attributes-panel>
+</body>
+</html>
+```
+
+And the corresponding `editor.ts`:
+
+```ts
+import 'prosekit/basic/style.css';
+import 'prosekit/basic/typography.css';
+import '@qti-editor/ui/components/editor/ui/toolbar';
+import '@qti-editor/ui/components/blocks/attributes-panel';
+import '@qti-editor/ui/components/blocks/interaction-insert-menu';
+
+import { createEditor, union } from 'prosekit/core';
+import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror';
+import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
+import { qtiAttributesExtension } from '@qti-editor/ui/components/blocks/attributes-panel';
+import { defineBasicExtension } from './basic-extension';
+import { defineQtiInteractionsExtension } from './qti-interactions-extension';
+
+const attributesEventTarget = new EventTarget();
+const editorEventsTarget = new EventTarget();
+
+const editor = createEditor({
+  extension: union(
+    defineBasicExtension(),
+    defineQtiInteractionsExtension(),
+    qtiAttributesExtension({ eventTarget: attributesEventTarget }),
+    qtiEditorEventsExtension({ eventTarget: editorEventsTarget }),
+    blockSelectExtension,
+    nodeAttrsSyncExtension,
+  ),
+});
+
+// Mount
+editor.mount(document.querySelector('#editor'));
+
+// Wire UI
+document.querySelector('lit-editor-toolbar').editor = editor;
+document.querySelector('qti-interaction-insert-menu').editor = editor;
+
+const panel = document.querySelector('qti-attributes-panel');
+panel.eventTarget = attributesEventTarget;
+panel.editorView = editor.view;
+```
+
+← [Extensions](?path=/docs/docs-2-extensions--docs) | Next: [UI Components](?path=/docs/docs-4-ui-components--docs) →
