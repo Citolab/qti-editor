@@ -33,10 +33,10 @@ const CHOICE_INTERACTION_NODE_TYPE = 'qtichoiceinteraction';
 @customElement('qti-choice-attributes-editor')
 export class QtiChoiceAttributesEditor extends LitElement {
   @property({ attribute: false })
-  accessor activeNode: AttributesNodeDetail | null = null;
+  activeNode: AttributesNodeDetail | null = null;
 
   @property({ attribute: false })
-  accessor presentation: ChoiceInteractionPanelPresentation | null = null;
+  presentation: ChoiceInteractionPanelPresentation | null = null;
 
   override createRenderRoot() {
     return this;

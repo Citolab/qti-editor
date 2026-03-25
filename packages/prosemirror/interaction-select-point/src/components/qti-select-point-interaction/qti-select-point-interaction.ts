@@ -134,34 +134,34 @@ export class QtiSelectPointInteractionEdit extends Interaction {
   ];
 
   @property({ type: String, attribute: 'area-mappings' })
-  accessor areaMappings = '[]';
+  areaMappings = '[]';
 
   @state()
-  accessor drawMode: DrawMode = 'select';
+  drawMode: DrawMode = 'select';
 
   @state()
-  accessor imageReady = false;
+  imageReady = false;
 
   @state()
-  accessor imageSrc: string | null = null;
+  imageSrc: string | null = null;
 
   @state()
-  accessor imageAlt: string | null = null;
+  imageAlt: string | null = null;
 
   @state()
-  accessor imageWidth: number | null = null;
+  imageWidth: number | null = null;
 
   @state()
-  accessor imageHeight: number | null = null;
+  imageHeight: number | null = null;
 
   @state()
-  accessor areaEntries: AreaMappingEntry[] = [];
+  areaEntries: AreaMappingEntry[] = [];
 
   @state()
-  accessor draft: DraftShape | null = null;
+  draft: DraftShape | null = null;
 
   @state()
-  accessor sourceError: string | null = null;
+  sourceError: string | null = null;
 
   #imageElement: HTMLImageElement | null = null;
   #dragging = false;

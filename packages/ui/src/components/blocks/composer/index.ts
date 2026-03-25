@@ -27,10 +27,10 @@ function toXmlCompatibleFragment(html: string): string {
 export class QtiComposer extends LitElement {
   @consume({ context: itemContext, subscribe: true })
   @state()
-  accessor itemContext: ItemContext = {} as ItemContext;
+  itemContext: ItemContext = {} as ItemContext;
 
   @state()
-  accessor liveComposeEnabled = false;
+  liveComposeEnabled = false;
 
   #xmlUrl = '';
   #xml = '';

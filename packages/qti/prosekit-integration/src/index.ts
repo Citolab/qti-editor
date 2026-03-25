@@ -20,3 +20,5 @@ export {
   type QtiSelectionChangeEventDetail,
 } from './events/index.js';
 export * from './item-context/index.js';
+export { xmlFromNode, xmlToHTML } from './save-xml/index.js';
+export { qtiFromNode } from './save-qti/index.js';

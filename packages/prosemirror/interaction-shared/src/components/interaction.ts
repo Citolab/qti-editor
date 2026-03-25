@@ -3,8 +3,8 @@ import { LitElement } from 'lit';
 
 export abstract class Interaction extends LitElement {
   @property({ type: String, attribute: 'response-identifier' })
-  accessor responseIdentifier = '';
+  responseIdentifier = '';
 
   @property({ type: String, attribute: 'correct-response' })
-  accessor correctResponse: string | string[] | null = null;
+  correctResponse: string | string[] | null = null;
 }

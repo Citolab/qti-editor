@@ -4,10 +4,10 @@ import { customElement, property } from 'lit/decorators.js';
 @customElement('qti-composer-metadata-form')
 export class QtiComposerMetadataForm extends LitElement {
   @property({ type: String })
-  accessor title = '';
+  title = '';
 
   @property({ type: String })
-  accessor identifier = '';
+  identifier = '';
 
   override createRenderRoot() {
     return this;

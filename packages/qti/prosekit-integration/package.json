@@ -10,7 +10,9 @@
     "./editor-context": "./src/editor-context/index.ts",
     "./events": "./src/events/index.ts",
     "./interactions/prosekit": "./src/interactions/prosekit.ts",
-    "./item-context": "./src/item-context/index.ts"
+    "./item-context": "./src/item-context/index.ts",
+    "./save-xml": "./src/save-xml/index.ts",
+    "./save-qti": "./src/save-qti/index.ts"
   },
   "scripts": {
     "build": "tsc",

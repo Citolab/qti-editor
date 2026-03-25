@@ -21,16 +21,16 @@ export class QtiMatchInteractionEdit extends Interaction {
   }
 
   @property({ type: Number, attribute: 'max-associations' })
-  accessor maxAssociations: number = 1;
+  maxAssociations: number = 1;
 
   @property({ type: Number, attribute: 'min-associations' })
-  accessor minAssociations: number = 0;
+  minAssociations: number = 0;
 
   @property({ type: Boolean })
-  accessor shuffle: boolean = false;
+  shuffle: boolean = false;
 
   @property({ type: String, attribute: 'class' })
-  accessor classes: string | null = null;
+  classes: string | null = null;
 
   override render() {
     return html`

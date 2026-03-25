@@ -19,34 +19,34 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
 
 
   @property({ type: Number, attribute: 'expected-length' })
-  accessor expectedLength: number | null = null;
+  expectedLength: number | null = null;
 
   @property({ type: Number, attribute: 'expected-lines' })
-  accessor expectedLines: number | null = null;
+  expectedLines: number | null = null;
 
   @property({ type: String, attribute: 'placeholder-text' })
-  accessor placeholderText: string | null = null;
+  placeholderText: string | null = null;
 
   @property({ type: String })
-  accessor format: 'plain' | 'preformatted' | 'xhtml' = 'plain';
+  format: 'plain' | 'preformatted' | 'xhtml' = 'plain';
 
   @property({ type: String, attribute: 'pattern-mask' })
-  accessor patternMask: string | null = null;
+  patternMask: string | null = null;
 
   @property({ type: Number })
-  accessor base: number = 10;
+  base: number = 10;
 
   @property({ type: String, attribute: 'string-identifier' })
-  accessor stringIdentifier: string | null = null;
+  stringIdentifier: string | null = null;
 
   @property({ type: Number, attribute: 'max-strings' })
-  accessor maxStrings: number | null = null;
+  maxStrings: number | null = null;
 
   @property({ type: Number, attribute: 'min-strings' })
-  accessor minStrings: number = 0;
+  minStrings: number = 0;
 
   @property({ type: String, attribute: 'class' })
-  accessor classes: string | null = null;
+  classes: string | null = null;
 
   private _getPlaceholderText(): string {
     if (this.placeholderText) {

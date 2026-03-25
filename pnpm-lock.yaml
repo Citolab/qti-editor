@@ -198,6 +198,76 @@ importers:
         specifier: ^5.0.0
         version: 5.4.21(@types/node@20.19.37)(lightningcss@1.32.0)
 
+  apps/qti-minimal:
+    dependencies:
+      '@egoist/tailwindcss-icons':
+        specifier: ^1.9.2
+        version: 1.9.2(tailwindcss@4.2.2)
+      '@iconify-json/lucide':
+        specifier: ^1.2.96
+        version: 1.2.98
+      '@lit/context':
+        specifier: ^1.1.6
+        version: 1.1.6
+      '@qti-components/theme':
+        specifier: 1.1.0
+        version: 1.1.0
+      '@qti-editor/core':
+        specifier: workspace:*
+        version: link:../../packages/qti/core
+      '@qti-editor/interaction-choice':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-choice
+      '@qti-editor/interaction-extended-text':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-extended-text
+      '@qti-editor/interaction-match':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-match
+      '@qti-editor/interaction-select-point':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-select-point
+      '@qti-editor/prosekit-integration':
+        specifier: workspace:*
+        version: link:../../packages/qti/prosekit-integration
+      '@qti-editor/prosemirror':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/extensions
+      '@qti-editor/prosemirror-attributes-ui-prosekit':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/attributes-ui-prosekit
+      '@qti-editor/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      lit:
+        specifier: ^3.3.2
+        version: 3.3.2
+      prosekit:
+        specifier: ^0.18.4
+        version: 0.18.4(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+    devDependencies:
+      '@tailwindcss/vite':
+        specifier: ^4.1.18
+        version: 4.2.2(vite@5.4.21(@types/node@20.19.37)(lightningcss@1.32.0))
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      daisyui:
+        specifier: ^5.1.6
+        version: 5.5.19
+      tailwindcss:
+        specifier: ^4.1.18
+        version: 4.2.2
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.37)(lightningcss@1.32.0)
+      vite-tsconfig-paths:
+        specifier: ^4.3.1
+        version: 4.3.2(typescript@5.9.3)(vite@5.4.21(@types/node@20.19.37)(lightningcss@1.32.0))
+
   packages/interfaces:
     devDependencies:
       prosemirror-model:
@@ -486,73 +556,6 @@ importers:
       '@qti-editor/interfaces':
         specifier: workspace:*
         version: link:../../interfaces
-    devDependencies:
-      '@types/node':
-        specifier: ^20.0.0
-        version: 20.19.37
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-
-  packages/qti/editor-kit:
-    dependencies:
-      '@lit/context':
-        specifier: ^1.1.6
-        version: 1.1.6
-      '@qti-components/base':
-        specifier: 1.4.1
-        version: 1.4.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions':
-        specifier: 1.10.1
-        version: 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/theme':
-        specifier: 1.1.0
-        version: 1.1.0
-      '@qti-components/utilities':
-        specifier: 1.1.0
-        version: 1.1.0(lit@3.3.2)
-      '@qti-editor/core':
-        specifier: workspace:*
-        version: link:../core
-      '@qti-editor/interaction-choice':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-choice
-      '@qti-editor/interaction-extended-text':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-extended-text
-      '@qti-editor/interaction-inline-choice':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-inline-choice
-      '@qti-editor/interaction-match':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-match
-      '@qti-editor/interaction-select-point':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-select-point
-      '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-shared
-      '@qti-editor/interaction-text-entry':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-text-entry
-      '@qti-editor/prosemirror-attributes-ui-prosekit':
-        specifier: workspace:*
-        version: link:../../prosemirror/attributes-ui-prosekit
-      lit:
-        specifier: ^3.3.2
-        version: 3.3.2
-      prosekit:
-        specifier: ^0.18.4
-        version: 0.18.4(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.11.0)(prosemirror-view@1.41.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      prosemirror-keymap:
-        specifier: ^1.2.0
-        version: 1.2.3
-      prosemirror-model:
-        specifier: ^1.19.0
-        version: 1.25.4
-      prosemirror-state:
-        specifier: ^1.4.0
-        version: 1.4.4
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
@@ -5500,6 +5503,14 @@ packages:
 
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
+
+  vite-tsconfig-paths@4.3.2:
+    resolution: {integrity: sha512-0Vd/a6po6Q+86rPlntHye7F31zA2URZMbH8M3saAZ/xR9QoGN/L21bxEGfXdWmFdNkqPpRdxFT7nmNe12e9/uA==}
+    peerDependencies:
+      vite: '*'
+    peerDependenciesMeta:
+      vite:
+        optional: true
 
   vite-tsconfig-paths@6.1.1:
     resolution: {integrity: sha512-2cihq7zliibCCZ8P9cKJrQBkfgdvcFkOOc3Y02o3GWUDLgqjWsZudaoiuOwO/gzTzy17cS5F7ZPo4bsnS4DGkg==}
@@ -11091,6 +11102,17 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
+
+  vite-tsconfig-paths@4.3.2(typescript@5.9.3)(vite@5.4.21(@types/node@20.19.37)(lightningcss@1.32.0)):
+    dependencies:
+      debug: 4.4.3
+      globrex: 0.1.2
+      tsconfck: 3.1.6(typescript@5.9.3)
+    optionalDependencies:
+      vite: 5.4.21(@types/node@20.19.37)(lightningcss@1.32.0)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
 
   vite-tsconfig-paths@6.1.1(typescript@5.9.3)(vite@6.4.1(@types/node@20.19.37)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)):
     dependencies:

@@ -61,16 +61,16 @@ export class ProsekitAttributesPanel extends LitElement {
   ];
 
   @property({ type: String })
-  accessor eventName = 'pm:attributes:update';
+  eventName = 'pm:attributes:update';
 
   @property({ type: String })
-  accessor changeEventName = 'pm:attributes:change';
+  changeEventName = 'pm:attributes:change';
 
   @property({ attribute: false })
-  accessor eventTarget: EventTarget | null = null;
+  eventTarget: EventTarget | null = null;
 
   @property({ attribute: false })
-  accessor editorView:
+  editorView:
     | {
         state: EditorState;
         dispatch: (tr: unknown) => void;
@@ -78,20 +78,20 @@ export class ProsekitAttributesPanel extends LitElement {
     | null = null;
 
   @property({ attribute: false })
-  accessor metadataResolver: AttributesMetadataResolver | null = null;
+  metadataResolver: AttributesMetadataResolver | null = null;
 
   @state()
-  accessor nodes: AttributesNodeDetail[] = [];
+  nodes: AttributesNodeDetail[] = [];
 
   @state()
-  accessor selectedIndex = 0;
+  selectedIndex = 0;
 
   /**
    * When true, the panel is being interacted with and should preserve
    * its current state even if the editor selection changes.
    */
   @state()
-  accessor isInteracting = false;
+  isInteracting = false;
 
   protected currentEventTarget: EventTarget | null = null;
 

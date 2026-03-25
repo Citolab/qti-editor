@@ -27,16 +27,16 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
   }
 
   @property({ type: String })
-  accessor identifier: string = 'A';
+  identifier: string = 'A';
 
   @property({ type: Number, attribute: 'match-max' })
-  accessor matchMax: number = 1;
+  matchMax: number = 1;
 
   @property({ type: Number, attribute: 'match-min' })
-  accessor matchMin: number = 0;
+  matchMin: number = 0;
 
   @property({ type: Boolean })
-  accessor fixed: boolean = false;
+  fixed: boolean = false;
 
   override render() {
     return html`<slot part="slot"></slot>

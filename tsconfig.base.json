@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
+    "experimentalDecorators": true,
     "useDefineForClassFields": true,
     "lib": [
       "ES2020",
@@ -28,6 +29,9 @@
       ],
       "@qti-editor/core/interactions/composer": [
         "packages/qti/core/src/interactions/composer.ts"
+      ],
+      "@qti-editor/prosekit-integration/save-qti": [
+        "packages/qti/prosekit-integration/src/save-qti/index.ts"
       ],
       "@qti-editor/core/*": [
         "packages/qti/core/src/*"
@@ -91,6 +95,9 @@
       ],
       "@qti-editor/prosekit-integration/item-context": [
         "packages/qti/prosekit-integration/src/item-context/index.ts"
+      ],
+      "@qti-editor/prosekit-integration/save-xml": [
+        "packages/qti/prosekit-integration/src/save-xml/index.ts"
       ],
       "@qti-editor/prosekit-integration/*": [
         "packages/qti/prosekit-integration/src/*"

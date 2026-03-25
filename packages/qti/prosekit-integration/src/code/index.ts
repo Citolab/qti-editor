@@ -8,6 +8,7 @@
 import { definePlugin, jsonFromNode, type Extension } from 'prosekit/core';
 import { ListDOMSerializer } from 'prosekit/extensions/list';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
+import { xmlFromNode } from '../save-xml/index.js';
 
 import type { EditorState } from 'prosekit/pm/state';
 export type { QtiDocumentJson, QtiNodeJson } from '../types.js';
@@ -28,32 +29,18 @@ export interface QtiCodePanelOptions {
 
 const codePanelPluginKey = new PluginKey('qti-code-panel');
 
-function htmlToXmlString(html: string): string {
-  const wrapped = `<qti-item-body>${html}</qti-item-body>`;
-  const parsed = new DOMParser().parseFromString(wrapped, 'application/xml');
-  const parseError = parsed.querySelector('parsererror');
-
-  if (parseError) {
-    return wrapped;
-  }
-
-  return new XMLSerializer().serializeToString(parsed.documentElement);
-}
-
 function buildCodeDetail(state: EditorState): QtiCodeUpdateDetail {
   const json = jsonFromNode(state.doc) as QtiDocumentJson;
-  const html = (() => {
-    const serializer = ListDOMSerializer.fromSchema(state.schema);
-    const fragment = serializer.serializeFragment(state.doc.content);
-    const wrapper = document.createElement('div');
-    wrapper.appendChild(fragment);
-    return wrapper.firstElementChild?.innerHTML ?? '';
-  })();
+  const serializer = ListDOMSerializer.fromSchema(state.schema);
+  const fragment = serializer.serializeFragment(state.doc.content);
+  const wrapper = document.createElement('div');
+  wrapper.appendChild(fragment);
+  const html = wrapper.firstElementChild?.innerHTML ?? '';
 
   return {
     json,
     html,
-    xml: htmlToXmlString(html),
+    xml: xmlFromNode(state.doc),
     timestamp: Date.now(),
   };
 }

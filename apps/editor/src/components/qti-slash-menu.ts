@@ -26,7 +26,7 @@ const regex = canUseRegexLookbehind() ? /(?<!\S)\/(\S.*)?$/u : /\/(\S.*)?$/u;
 @customElement('qti-slash-menu')
 export class QtiSlashMenu extends LitElement {
   @property({ attribute: false })
-  accessor editor: Editor | null = null;
+  editor: Editor | null = null;
 
   override createRenderRoot() {
     return this;

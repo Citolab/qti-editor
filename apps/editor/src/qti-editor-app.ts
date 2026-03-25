@@ -11,9 +11,6 @@ import '@qti-editor/ui/components/blocks/convert-menu';
 import { provide } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { LitElement, html, type PropertyValues } from 'lit';
-import { qtiCodePanelExtension } from '@qti-editor/ui/components/blocks/code-panel';
-import { qtiAttributesExtension, type QtiAttributesPanel } from '@qti-editor/ui/components/blocks/attributes-panel';
-import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
 import {
   blockSelectExtension,
@@ -30,18 +27,11 @@ import { defineBasicExtension } from './extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension.js';
 import { defineSlashMenuGuardExtension } from './extensions/slash-menu-guard-extension.js';
 
-import type { QtiComposer } from '@qti-editor/ui/components/blocks/composer';
-
 const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
 
 export class QtiEditorApp extends LitElement {
   private editor: Editor;
   private editorRef: Ref<HTMLDivElement>;
-  private panelRef: Ref<QtiAttributesPanel>;
-  private composerRef: Ref<QtiComposer>;
-  private attributesEventTarget: EventTarget;
-  private editorEventsTarget: EventTarget;
-  private codeEventTarget: EventTarget;
 
   private onMetadataChange(event: Event) {
     const detail = (event as CustomEvent<{ title: string; identifier: string }>).detail;
@@ -53,18 +43,13 @@ export class QtiEditorApp extends LitElement {
   }
 
   @provide({ context: itemContext })
-  accessor itemContext: ItemContext = {
+  itemContext: ItemContext = {
     variables: itemContextVariables
   };
 
   constructor() {
     super();
 
-    this.attributesEventTarget = new EventTarget();
-    this.editorEventsTarget = new EventTarget();
-    this.codeEventTarget = new EventTarget();
-
-    // Create the combined extension with QTI support and toolbar
     const extension = union(
       defineBasicExtension(),
       defineQtiInteractionsExtension(),
@@ -83,12 +68,8 @@ export class QtiEditorApp extends LitElement {
         }
       }),
       defineLocalStorageDocPersistenceExtension({ storageKey: EDITOR_DOC_STORAGE_KEY }),
-      qtiAttributesExtension({ eventTarget: this.attributesEventTarget }),
-      qtiEditorEventsExtension({ eventTarget: this.editorEventsTarget }),
-      qtiCodePanelExtension({ eventTarget: this.codeEventTarget }),
       blockSelectExtension,
       nodeAttrsSyncExtension,
-
     );
 
     const restoredState = readPersistedStateFromLocalStorage(EDITOR_DOC_STORAGE_KEY);
@@ -102,12 +83,6 @@ export class QtiEditorApp extends LitElement {
       this.editor = createEditor({ extension });
     }
     this.editorRef = createRef<HTMLDivElement>();
-    this.panelRef = createRef<QtiAttributesPanel>();
-    this.composerRef = createRef<QtiComposer>();
-
-    this.editorEventsTarget.addEventListener('qti:selection:change', event => {
-      console.log('qti:selection:change', (event as CustomEvent).detail);
-    });
   }
 
   override createRenderRoot() {
@@ -119,15 +94,6 @@ export class QtiEditorApp extends LitElement {
 
     if (this.editorRef.value) {
       this.editor.mount(this.editorRef.value);
-    }
-
-    if (this.panelRef.value) {
-      this.panelRef.value.eventTarget = this.attributesEventTarget;
-      (this.panelRef.value as QtiAttributesPanel).editorView = (this.editor as any).view ?? null;
-    }
-
-    if (this.composerRef.value) {
-      this.composerRef.value.eventTarget = this.editorEventsTarget;
     }
   }
 
@@ -146,7 +112,7 @@ export class QtiEditorApp extends LitElement {
 
           <qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>
 
-          <qti-composer ${ref(this.composerRef)} class="block w-full"></qti-composer>
+          <qti-composer .editor=${this.editor} class="block w-full"></qti-composer>
         </div>
         <div class="w-full lg:w-80 lg:shrink-0 lg:h-screen lg:overflow-y-auto">
           <qti-composer-metadata-form
@@ -156,7 +122,7 @@ export class QtiEditorApp extends LitElement {
             @metadata-change=${this.onMetadataChange}
           >
           </qti-composer-metadata-form>
-          <qti-attributes-panel ${ref(this.panelRef)} class="block w-full sticky top-0"></qti-attributes-panel>
+          <qti-attributes-panel .editor=${this.editor} class="block w-full sticky top-0"></qti-attributes-panel>
         </div>
       </div>
     `;

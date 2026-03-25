@@ -47,7 +47,7 @@ export class QtiSimpleChoiceEdit extends CorrectResponseClickMixin(QtiSimpleChoi
 
   // property label
   @property({ type: String, attribute: false })
-  accessor marker = '';
+  marker = '';
 
   override render() {
     return html`<div part="ch" @click=${this.handleControlClick}>
