@@ -1,20 +1,13 @@
-/* eslint-disable wc/no-constructor-attributes */
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 @customElement('qti-composer-metadata-form')
 export class QtiComposerMetadataForm extends LitElement {
   @property({ type: String })
-  declare public title: string;
+  accessor title = '';
 
   @property({ type: String })
-  declare public identifier: string;
-
-  constructor() {
-    super();
-    this.title = '';
-    this.identifier = '';
-  }
+  accessor identifier = '';
 
   override createRenderRoot() {
     return this;

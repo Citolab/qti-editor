@@ -33,13 +33,13 @@
     "@iconify-json/lucide": "^1.2.98",
     "@lit/context": "^1.1.6",
     "@qti-editor/core": "workspace:*",
-    "@qti-editor/prosekit-integration": "workspace:*",
     "@qti-editor/interaction-choice": "workspace:*",
     "@qti-editor/interaction-extended-text": "workspace:*",
     "@qti-editor/interaction-inline-choice": "workspace:*",
     "@qti-editor/interaction-match": "workspace:*",
     "@qti-editor/interaction-select-point": "workspace:*",
     "@qti-editor/interaction-text-entry": "workspace:*",
+    "@qti-editor/prosekit-integration": "workspace:*",
     "@qti-editor/prosemirror-attributes": "workspace:*",
     "@qti-editor/prosemirror-attributes-ui-prosekit": "workspace:*",
     "lit": "^3.3.2",
@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "esbuild": "^0.27.4",
     "serve": "^14.0.0",
     "typescript": "^5.0.0"
   }

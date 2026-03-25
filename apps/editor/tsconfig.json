@@ -4,8 +4,6 @@
     "types": [
       "vite/client"
     ],
-    "experimentalDecorators": true,
-    "useDefineForClassFields": false,
     "allowJs": true,
     "checkJs": false
   },

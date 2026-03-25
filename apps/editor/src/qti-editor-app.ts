@@ -53,7 +53,7 @@ export class QtiEditorApp extends LitElement {
   }
 
   @provide({ context: itemContext })
-  public itemContext: ItemContext = {
+  accessor itemContext: ItemContext = {
     variables: itemContextVariables
   };
 

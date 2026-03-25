@@ -25,7 +25,7 @@ export class QtiInlineChoiceInteraction extends Interaction {
   }
 
   @state()
-  protected _dropdownOpen = false;
+  accessor _dropdownOpen = false;
 
   private readonly _menuId = `qti-inline-choice-menu-${inlineChoiceMenuCounter++}`;
 

@@ -18,9 +18,9 @@ export class QtiTextEntryInteractionEdit extends Interaction {
   }
   inputRef = createRef<HTMLInputElement>();
 
-  @property({ type: String, attribute: 'pattern-mask' }) patternMask = '';
+  @property({ type: String, attribute: 'pattern-mask' }) accessor patternMask = '';
 
-  @property({ type: String, attribute: 'placeholder-text' }) placeholderText = '';
+  @property({ type: String, attribute: 'placeholder-text' }) accessor placeholderText = '';
 
   private _getPlaceholderText(): string {
     if (this.placeholderText) {

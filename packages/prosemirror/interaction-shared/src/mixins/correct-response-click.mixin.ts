@@ -56,19 +56,13 @@ export const CorrectResponseClickMixin = <T extends Constructor<LitElement & { i
      * Note: Do NOT use reflect: true - ProseMirror manages this attribute.
      */
     @property({ type: String })
-    declare identifier: string;
+    accessor identifier = '';
 
     /**
      * Whether this choice is currently selected as a correct response.
      */
     @state()
-    declare selected: boolean;
-
-    constructor(...args: any[]) {
-      super(...args);
-      this.identifier = '';
-      this.selected = false;
-    }
+    accessor selected = false;
 
     override updated(changedProperties: PropertyValues) {
       super.updated(changedProperties);

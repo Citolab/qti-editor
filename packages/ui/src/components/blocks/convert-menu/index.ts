@@ -43,19 +43,13 @@ function getConvertItems(view: EditorView): ConvertMenuItem[] {
 @customElement('qti-convert-menu')
 export class QtiConvertMenu extends LitElement {
   @property({ attribute: false })
-  declare public editor: Editor | null;
+  accessor editor: Editor | null = null;
 
   @state()
-  declare private open: boolean;
+  accessor open = false;
 
   private removeUpdateExtension?: () => void;
   private lastSelectionJson: ReturnType<Selection['toJSON']> | null = null;
-
-  constructor() {
-    super();
-    this.editor = null;
-    this.open = false;
-  }
 
   override createRenderRoot() {
     return this;

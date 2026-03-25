@@ -29,12 +29,7 @@ const widthOptionLabels: Record<TextEntryWidthClassOption, string> = {
 @customElement('qti-text-entry-attributes-editor')
 export class QtiTextEntryAttributesEditor extends LitElement {
   @property({ attribute: false })
-  declare public activeNode: AttributesNodeDetail | null;
-
-  constructor() {
-    super();
-    this.activeNode = null;
-  }
+  accessor activeNode: AttributesNodeDetail | null = null;
 
   override createRenderRoot() {
     return this;

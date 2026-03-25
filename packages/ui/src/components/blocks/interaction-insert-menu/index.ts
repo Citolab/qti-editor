@@ -129,19 +129,13 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
 @customElement('qti-interaction-insert-menu')
 export class QtiInteractionInsertMenu extends LitElement {
   @property({ attribute: false })
-  declare public editor: Editor | null;
+  accessor editor: Editor | null = null;
 
   @state()
-  declare private open: boolean;
+  accessor open = false;
 
   private removeUpdateExtension?: () => void;
   private lastSelectionJson: ReturnType<Selection['toJSON']> | null = null;
-
-  constructor() {
-    super();
-    this.editor = null;
-    this.open = false;
-  }
 
   override createRenderRoot() {
     return this;

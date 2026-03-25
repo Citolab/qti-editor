@@ -8,7 +8,7 @@ import { property } from 'lit/decorators.js';
 export class QtiSimpleMatchSetEdit extends LitElement {
 
   @property({ type: String, attribute: 'id' })
-  public matchSetId: string | null = null;
+  accessor matchSetId: string | null = null;
 
   override render() {
     return html`<slot></slot>`;

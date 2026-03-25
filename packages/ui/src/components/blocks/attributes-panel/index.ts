@@ -29,11 +29,10 @@ export interface AttributesPanelExtensionOptions extends QtiAttributesOptions {}
 @customElement('qti-attributes-panel')
 export class QtiAttributesPanel extends ProsekitAttributesPanel {
   @property({ attribute: false })
-  declare public choiceInteractionPresentation: ChoiceInteractionPanelPresentation | null;
+  accessor choiceInteractionPresentation: ChoiceInteractionPanelPresentation | null = null;
 
   constructor() {
     super();
-    this.choiceInteractionPresentation = null;
     this.eventName = 'qti:attributes:update';
     this.changeEventName = 'qti:attributes:change';
     this.metadataResolver = (nodeType, node) => {

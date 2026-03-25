@@ -21,13 +21,13 @@ export class QtiChoiceInteractionEdit extends ChoiceInteractionBase {
   }
 
   @property({ type: Number, attribute: 'min-choices' })
-  public minChoices = 0;
+  accessor minChoices = 0;
 
   @property({ type: Number, attribute: 'max-choices' })
-  public maxChoices = 1;
+  accessor maxChoices = 1;
 
   @property({ type: String, attribute: 'class' })
-  public classes: 'qti-orientation-vertical' | 'qti-orientation-horizontal' | undefined;
+  accessor classes: 'qti-orientation-vertical' | 'qti-orientation-horizontal' | undefined;
 
   protected _internals: ElementInternals;
   #mutationObserver: MutationObserver | null = null;

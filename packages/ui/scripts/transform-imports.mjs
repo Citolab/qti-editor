@@ -1,6 +1,7 @@
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import esbuild from 'esbuild';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
@@ -13,11 +14,20 @@ const REGISTRY_BASE_URL = process.env.REGISTRY_BASE_URL ?? 'https://qti-editor.c
 rmSync(distDir, { recursive: true, force: true });
 mkdirSync(distDir, { recursive: true });
 
-function transformContent(content) {
+function transformContent(content, filePath) {
   // Rewrite internal @qti-editor/ui imports to @/ alias
   content = content.replace(/@qti-editor\/ui\/(components|lib|hooks|types)/g, '@/$1');
-  // Strip `declare` from decorated property declarations (shadcn's babel doesn't support allowDeclareFields)
-  content = content.replace(/^(\s*@\w+\([^)]*\)\s*\n\s*)declare\s+(public\s+|private\s+|protected\s+)?/gm, '$1$2');
+
+  // Strip types via esbuild (preserves decorators, accessor, class fields as-is)
+  if (filePath.endsWith('.ts') || filePath.endsWith('.tsx')) {
+    const result = esbuild.transformSync(content, {
+      loader: filePath.endsWith('.tsx') ? 'tsx' : 'ts',
+      format: 'esm',
+      target: 'esnext',
+    });
+    content = result.code;
+  }
+
   return content;
 }
 
@@ -44,14 +54,16 @@ for (const item of registrySource.items) {
 
   for (const file of item.files) {
     const sourcePath = join(rootDir, file.source ?? file.path);
-    const distPath = join(distDir, file.path);
-    const content = transformContent(readFileSync(sourcePath, 'utf-8'));
+    const originalPath = file.path;
+    const jsPath = originalPath.replace(/\.tsx?$/, '.js');
+    const distPath = join(distDir, jsPath);
+    const content = transformContent(readFileSync(sourcePath, 'utf-8'), originalPath);
 
     mkdirSync(dirname(distPath), { recursive: true });
     writeFileSync(distPath, content);
 
     distItem.files.push({
-      path: file.path,
+      path: jsPath,
       type: file.type,
       target: file.target,
     });
