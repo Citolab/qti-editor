@@ -4,56 +4,172 @@ description: Embed QTI Editor in an Angular application.
 slug: docs/frameworks/angular
 ---
 
-This guide outlines a minimal Angular integration for QTI Editor.
+This guide shows how to embed the QTI Editor in an Angular application using a service to own the editor lifecycle, and Angular signals to bridge content-change events into reactive state.
 
 ## 1. Install dependencies
 
 ```bash
-pnpm add @qti-editor/core @qti-editor/ui @qti-editor/prosekit-integration lit prosekit
+pnpm add prosekit @qti-editor/prosekit-integration
 ```
 
-## 2. Create an editor component
+## 2. Create `EditorService`
+
+The service owns the editor instance, a private `EventTarget`, and exposes content and selection as signals.
 
 ```ts
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { createEditor } from 'prosekit/core';
+// editor.service.ts
+import { Injectable, signal } from '@angular/core';
+import { createEditor, union } from 'prosekit/core';
+import { defineDoc, defineParagraph, defineText } from 'prosekit/extensions/doc';
+import {
+  qtiEditorEventsExtension,
+  onQtiContentChange,
+  onQtiSelectionChange,
+  type QtiContentChangeEventDetail,
+  type QtiSelectionChangeEventDetail,
+} from '@qti-editor/prosekit-integration';
 
-@Component({
-  selector: 'app-qti-editor',
-  template: '<div #mountPoint></div>',
-})
-export class QtiEditorComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('mountPoint', { static: true })
-  mountPoint!: ElementRef<HTMLDivElement>;
+@Injectable({ providedIn: 'root' })
+export class EditorService {
+  readonly content = signal<QtiContentChangeEventDetail | null>(null);
+  readonly selection = signal<QtiSelectionChangeEventDetail | null>(null);
 
-  private editor: ReturnType<typeof createEditor> | null = null;
+  private readonly eventTarget = new EventTarget();
+  private unsubContent: (() => void) | null = null;
+  private unsubSelection: (() => void) | null = null;
 
-  ngAfterViewInit(): void {
-    this.editor = createEditor({
-      extension: [],
-      defaultContent: '<p>Start authoring QTI content.</p>',
-    });
+  readonly editor = createEditor({
+    extension: union(
+      defineDoc(),
+      defineText(),
+      defineParagraph(),
+      qtiEditorEventsExtension({ eventTarget: this.eventTarget }),
+    ),
+  });
 
-    this.mountPoint.nativeElement.appendChild(this.editor.mount());
+  constructor() {
+    this.unsubContent = onQtiContentChange(
+      (e) => this.content.set(e.detail),
+      this.eventTarget,
+    );
+
+    this.unsubSelection = onQtiSelectionChange(
+      (e) => this.selection.set(e.detail),
+      this.eventTarget,
+    );
   }
 
-  ngOnDestroy(): void {
-    this.editor?.destroy();
-    this.editor = null;
+  destroy(): void {
+    this.unsubContent?.();
+    this.unsubSelection?.();
+    (this.editor as any).view?.destroy();
   }
 }
 ```
 
-## 3. Use the component in a page template
+## 3. Create `EditorComponent`
 
-```html
-<section>
-  <h1>QTI Authoring</h1>
-  <app-qti-editor></app-qti-editor>
-</section>
+Mounts the editor to the DOM in `ngAfterViewInit` and tears it down in `ngOnDestroy`.
+
+```ts
+// editor.component.ts
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
+import { EditorService } from './editor.service';
+
+@Component({
+  selector: 'app-editor',
+  standalone: true,
+  template: `<div #mount style="min-height: 200px; border: 1px solid #ccc; padding: 16px;"></div>`,
+})
+export class EditorComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('mount', { static: true })
+  mountEl!: ElementRef<HTMLDivElement>;
+
+  private editorService = inject(EditorService);
+
+  ngAfterViewInit(): void {
+    this.editorService.editor.mount(this.mountEl.nativeElement);
+  }
+
+  ngOnDestroy(): void {
+    this.editorService.destroy();
+  }
+}
 ```
+
+## 4. Consume signals in a sibling component
+
+Components that only display content or selection state import nothing from ProseKit — they read signals directly from the service.
+
+```ts
+// content-panel.component.ts
+import { Component, computed, inject } from '@angular/core';
+import { EditorService } from './editor.service';
+
+@Component({
+  selector: 'app-content-panel',
+  standalone: true,
+  template: `
+    @if (content()) {
+      <details>
+        <summary>Saved content</summary>
+        <pre style="font-size: 12px">{{ content()!.html }}</pre>
+      </details>
+    }
+    @if (selectionLabel()) {
+      <p style="font-size: 12px">Selection: {{ selectionLabel() }}</p>
+    }
+  `,
+})
+export class ContentPanelComponent {
+  private editorService = inject(EditorService);
+
+  readonly content = this.editorService.content;
+
+  readonly selectionLabel = computed(() => {
+    const sel = this.editorService.selection();
+    return sel && !sel.empty ? `${sel.from}–${sel.to}` : null;
+  });
+}
+```
+
+## 5. Wire up in your page component
+
+```ts
+// app.component.ts
+import { Component } from '@angular/core';
+import { EditorComponent } from './editor.component';
+import { ContentPanelComponent } from './content-panel.component';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [EditorComponent, ContentPanelComponent],
+  template: `
+    <main>
+      <h1>QTI Authoring</h1>
+      <app-editor />
+      <app-content-panel />
+    </main>
+  `,
+})
+export class AppComponent {}
+```
+
+## Content change payload
+
+`onQtiContentChange` gives you the full document on every change:
+
+| Field | Type | Description |
+|---|---|---|
+| `json` | `QtiDocumentJson` | ProseMirror document as JSON |
+| `html` | `string` | Serialised HTML of the item body |
+| `timestamp` | `number` | `Date.now()` at time of change |
 
 ## Notes
 
-- Use Angular standalone components or module-based setup depending on your app architecture.
-- Move extension definitions to a dedicated service/module when integrating custom interactions.
+- The private `new EventTarget()` in `EditorService` scopes events to this editor instance — they do not bubble to `document`.
+- Signals bridge `CustomEvent` into Angular reactivity without Zone.js `EventEmitter`.
+- `EditorService` is `providedIn: 'root'` — if you need multiple independent editors, provide it at the component level instead.
+- Extend the `union(...)` call with `@qti-editor/interactions-*` packages to enable QTI interaction nodes (choice, inline-choice, text-entry, select-point).
+- `editor.view?.destroy()` is the correct cleanup call — there is no `editor.unmount()`.

@@ -4,47 +4,108 @@ description: Embed QTI Editor in a React application.
 slug: docs/frameworks/react
 ---
 
-This guide shows a minimal React integration pattern for QTI Editor packages.
+This guide shows how to embed the QTI Editor in a React component, wire up content-change events, and save the result to state.
 
 ## 1. Install dependencies
 
 ```bash
-pnpm add @qti-editor/core @qti-editor/ui @qti-editor/prosekit-integration lit prosekit
+pnpm add prosekit @qti-editor/prosekit-integration
 ```
 
-## 2. Create `QtiEditorHost.tsx`
+## 2. Create a `useQtiEditor` hook
+
+The hook owns the editor lifecycle and exposes a mount ref, the latest content, and the current selection.
 
 ```tsx
-import { useEffect, useRef } from 'react';
-import { createEditor } from 'prosekit/core';
+// useQtiEditor.ts
+import { useEffect, useRef, useState } from 'react';
+import { createEditor, union } from 'prosekit/core';
+import { defineDoc, defineParagraph, defineText } from 'prosekit/extensions/doc';
+import {
+  qtiEditorEventsExtension,
+  onQtiContentChange,
+  onQtiSelectionChange,
+  type QtiContentChangeEventDetail,
+  type QtiSelectionChangeEventDetail,
+} from '@qti-editor/prosekit-integration';
 
-export function QtiEditorHost() {
+export function useQtiEditor() {
   const mountRef = useRef<HTMLDivElement>(null);
+  const [content, setContent] = useState<QtiContentChangeEventDetail | null>(null);
+  const [selection, setSelection] = useState<QtiSelectionChangeEventDetail | null>(null);
 
   useEffect(() => {
-    if (!mountRef.current) {
-      return;
-    }
+    if (!mountRef.current) return;
+
+    // Private event target — keeps events scoped to this editor instance.
+    const eventTarget = new EventTarget();
 
     const editor = createEditor({
-      extension: [],
-      defaultContent: '<p>Start authoring QTI content.</p>',
+      extension: union(
+        defineDoc(),
+        defineText(),
+        defineParagraph(),
+        qtiEditorEventsExtension({ eventTarget }),
+      ),
     });
 
-    mountRef.current.appendChild(editor.mount());
+    editor.mount(mountRef.current);
+
+    const unsubContent = onQtiContentChange(
+      (e) => setContent(e.detail),
+      eventTarget,
+    );
+
+    const unsubSelection = onQtiSelectionChange(
+      (e) => setSelection(e.detail),
+      eventTarget,
+    );
 
     return () => {
-      editor.destroy();
+      unsubContent();
+      unsubSelection();
+      (editor as any).view?.destroy();
     };
   }, []);
 
-  return <div ref={mountRef} />;
+  return { mountRef, content, selection };
 }
 ```
 
-## 3. Place the host in your app (`App.tsx`)
+## 3. Use the hook in a component
 
 ```tsx
+// QtiEditorHost.tsx
+import { useQtiEditor } from './useQtiEditor';
+
+export function QtiEditorHost() {
+  const { mountRef, content, selection } = useQtiEditor();
+
+  return (
+    <div>
+      <div ref={mountRef} style={{ minHeight: 200, border: '1px solid #ccc', padding: 16 }} />
+
+      {content && (
+        <details style={{ marginTop: 12 }}>
+          <summary>Saved content</summary>
+          <pre style={{ fontSize: 12 }}>{content.html}</pre>
+        </details>
+      )}
+
+      {selection && !selection.empty && (
+        <p style={{ fontSize: 12 }}>
+          Selection: {selection.from}–{selection.to}
+        </p>
+      )}
+    </div>
+  );
+}
+```
+
+## 4. Place in your app
+
+```tsx
+// App.tsx
 import { QtiEditorHost } from './QtiEditorHost';
 
 export default function App() {
@@ -57,7 +118,18 @@ export default function App() {
 }
 ```
 
+## Content change payload
+
+`onQtiContentChange` gives you the full document on every change:
+
+| Field | Type | Description |
+|---|---|---|
+| `json` | `QtiDocumentJson` | ProseMirror document as JSON |
+| `html` | `string` | Serialised HTML of the item body |
+| `timestamp` | `number` | `Date.now()` at time of change |
+
 ## Notes
 
-- Keep editor configuration in a dedicated module when you add custom interactions.
-- Add toolbar and side panel wiring after base rendering is stable.
+- Pass a **private** `new EventTarget()` to `qtiEditorEventsExtension` so events stay scoped to this instance and don't leak to `document`.
+- Extend the `union(...)` call with `@qti-editor/interactions-*` packages to enable QTI interaction nodes (choice, inline-choice, text-entry, select-point).
+- `editor.view?.destroy()` is the correct cleanup call — there is no `editor.unmount()`.

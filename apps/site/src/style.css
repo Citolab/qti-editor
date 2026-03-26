@@ -53,11 +53,11 @@ qti-editor-app qti-extended-text-interaction {
 }
 
 qti-editor-app qti-composer-metadata-form {
-  @apply block rounded-md border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800;
+  @apply block;
 }
 
 qti-editor-app qti-attributes-panel {
-  @apply mt-3 block rounded-md border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800;
+  @apply mt-3 block;
 }
 
 qti-editor-app qti-composer section.card {
