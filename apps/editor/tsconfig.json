@@ -4,6 +4,7 @@
     "types": [
       "vite/client"
     ],
+    "jsx": "react-jsx",
     "allowJs": true,
     "checkJs": false
   },

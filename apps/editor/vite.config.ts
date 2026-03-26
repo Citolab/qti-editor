@@ -3,6 +3,7 @@ import { dirname } from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 const require = createRequire(import.meta.url);
@@ -154,6 +155,7 @@ export default defineConfig({
     ],
   },
   plugins: [
+    react(),
     tailwindcss(),
     tsconfigPaths({ ignoreConfigErrors: true }),
     {

@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "pnpm --filter @qti-editor/app dev",
     "build": "pnpm build:packages && pnpm --filter @qti-editor/app build",
-    "deploy:build": "pnpm registry:build && pnpm --filter @qti-editor/app build && pnpm build-storybook && node scripts/prepare-hosting.mjs",
+    "deploy:build": "pnpm registry:build && pnpm --filter @qti-editor/site build && pnpm --filter @qti-editor/app build && pnpm build-storybook && node scripts/prepare-hosting.mjs",
     "preview": "pnpm --filter @qti-editor/app preview",
     "firebase:serve": "pnpm deploy:build && firebase emulators:start --only hosting",
     "firebase:deploy": "pnpm deploy:build && firebase deploy --only hosting",

@@ -1,5 +1,13 @@
 {
   "projects": {
     "default": "qti-editor-d2ea2"
+  },
+  "targets": {
+    "qti-editor-d2ea2": {
+      "hosting": {
+        "site": ["qti-editor-d2ea2"],
+        "editor": ["qti-editor-playground"]
+      }
+    }
   }
 }
