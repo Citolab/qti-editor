@@ -21,7 +21,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-components/inline-choice-interaction": "^1.0.1",
+    "@qti-components/inline-choice-interaction": "^1.1.3",
     "@qti-components/interactions": "1.10.1",
     "@qti-editor/interaction-shared": "workspace:*",
     "@qti-editor/interfaces": "workspace:*"
