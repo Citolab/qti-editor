@@ -30,15 +30,12 @@ import { defineBasicExtension } from './extensions/basic-extension';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension';
 import { defineSlashMenuGuardExtension } from './extensions/slash-menu-guard-extension';
 
-import type { QtiComposer } from '@qti-editor/ui/components/blocks/composer';
-
 const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
 
 export class QtiEditorApp extends LitElement {
   private editor: Editor;
   private editorRef: Ref<HTMLDivElement>;
   private panelRef: Ref<QtiAttributesPanel>;
-  private composerRef: Ref<QtiComposer>;
   private attributesEventTarget: EventTarget;
   private editorEventsTarget: EventTarget;
   private codeEventTarget: EventTarget;
@@ -103,7 +100,6 @@ export class QtiEditorApp extends LitElement {
     }
     this.editorRef = createRef<HTMLDivElement>();
     this.panelRef = createRef<QtiAttributesPanel>();
-    this.composerRef = createRef<QtiComposer>();
 
     this.editorEventsTarget.addEventListener('qti:selection:change', event => {
       console.log('qti:selection:change', (event as CustomEvent).detail);
@@ -125,10 +121,6 @@ export class QtiEditorApp extends LitElement {
       this.panelRef.value.eventTarget = this.attributesEventTarget;
       (this.panelRef.value as QtiAttributesPanel).editorView = (this.editor as any).view ?? null;
     }
-
-    if (this.composerRef.value) {
-      this.composerRef.value.eventTarget = this.editorEventsTarget;
-    }
   }
 
   override render() {
@@ -146,7 +138,7 @@ export class QtiEditorApp extends LitElement {
 
           <qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>
 
-          <qti-composer ${ref(this.composerRef)} class="block w-full"></qti-composer>
+          <qti-composer .editor=${this.editor} class="block w-full"></qti-composer>
         </div>
         <div class="w-full lg:w-80 lg:shrink-0 lg:max-h-[72vh] lg:overflow-y-auto">
           <qti-composer-metadata-form

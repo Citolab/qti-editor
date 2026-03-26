@@ -21,15 +21,15 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-editor/interfaces": "workspace:*",
+    "@qti-components/select-point-interaction": "^1.0.1",
     "@qti-editor/interaction-shared": "workspace:*",
-    "@qti-components/select-point-interaction": "^1.0.1"
+    "@qti-editor/interfaces": "workspace:*"
   },
   "peerDependencies": {
     "lit": "^3.3.1"
   },
   "devDependencies": {
-    "lit": "^3.3.1",
+    "lit": "^3.3.2",
     "prosemirror-model": "^1.25.4",
     "prosemirror-state": "^1.4.4"
   },
