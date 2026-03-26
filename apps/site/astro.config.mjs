@@ -227,6 +227,15 @@ export default defineConfig({
           items: [
             { label: 'Overview', slug: 'docs/overview' },
             { label: 'Installation', slug: 'docs/getting-started/installation' },
+            { label: 'Using the Registry', slug: 'docs/getting-started/registry' },
+          ],
+        },
+        {
+          label: 'Using the Editor',
+          items: [
+            { label: 'Writing & Formatting', slug: 'docs/using-the-editor/writing' },
+            { label: 'QTI Interactions', slug: 'docs/using-the-editor/qti-interactions' },
+            { label: 'Converting Content', slug: 'docs/using-the-editor/converting-content' },
           ],
         },
         {

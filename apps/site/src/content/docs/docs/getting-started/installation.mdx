@@ -1,27 +1,63 @@
 ---
 title: Installation
-description: Install and run the QTI Editor website package.
+description: Add QTI Editor to your project from npm.
 slug: docs/getting-started/installation
 ---
 
-## Install dependencies
+QTI Editor is split into focused packages so you only install what you need.
+
+## Minimal setup
+
+To embed an editor and receive content-change events, you need two packages:
 
 ```bash
-pnpm install
+pnpm add prosekit @qti-editor/prosekit-integration
 ```
 
-## Run the docs site
+| Package | Purpose |
+|---|---|
+| `prosekit` | Core editor engine (ProseMirror wrapper) |
+| `@qti-editor/prosekit-integration` | Events, item context, and QTI extension helpers |
 
-From the monorepo root:
+That is enough to follow the [React](/docs/frameworks/react) and [Angular](/docs/frameworks/angular) integration guides.
+
+## Adding QTI interactions
+
+Install the interaction packages you need:
 
 ```bash
-pnpm --filter @qti-editor/site dev
+pnpm add @qti-editor/interaction-choice \
+         @qti-editor/interaction-inline-choice \
+         @qti-editor/interaction-text-entry \
+         @qti-editor/interaction-select-point
 ```
 
-## Build for production
+| Package | Interaction type |
+|---|---|
+| `@qti-editor/interaction-choice` | `<qti-choice-interaction>` |
+| `@qti-editor/interaction-inline-choice` | `<qti-inline-choice-interaction>` |
+| `@qti-editor/interaction-text-entry` | `<qti-text-entry-interaction>` |
+| `@qti-editor/interaction-select-point` | `<qti-select-point-interaction>` |
+
+Each package exports a ProseMirror `Command` function to insert the interaction node and a ProseKit extension to register the schema and web components.
+
+## Adding the full UI
+
+For the built-in toolbar, attribute panel, and insert menus:
 
 ```bash
-pnpm --filter @qti-editor/site build
+pnpm add @qti-editor/ui lit
 ```
 
-The generated static output is written to `packages/site/dist`.
+`@qti-editor/ui` ships Lit web components and requires `lit` as a peer dependency.
+
+## Package overview
+
+| Package | What it provides |
+|---|---|
+| `prosekit` | Editor engine |
+| `@qti-editor/prosekit-integration` | Events, item context, XML composer bridge |
+| `@qti-editor/core` | QTI semantics, composer registry, XML export |
+| `@qti-editor/prosemirror` | Pure ProseMirror plugins (block selection, node attr sync) |
+| `@qti-editor/ui` | Toolbar, attribute panel, insert menus (Lit web components) |
+| `@qti-editor/interaction-*` | Individual QTI interaction nodes, schemas, and commands |

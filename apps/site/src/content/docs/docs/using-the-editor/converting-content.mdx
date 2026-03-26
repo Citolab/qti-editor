@@ -1,0 +1,72 @@
+---
+title: Converting Content
+description: Turn existing text and lists into QTI interactions with the Convert menu.
+slug: docs/using-the-editor/converting-content
+---
+
+The **Convert** button in the floating toolbar lets you turn existing document content into a QTI interaction in one click — without re-typing anything.
+
+## How it works
+
+Select one or more blocks in the editor, then open the Convert menu. Each available conversion is listed; items that cannot run on the current selection are disabled. Choosing an item replaces the selected blocks with the corresponding interaction node.
+
+## Flat List → Choice Interaction
+
+Converts a flat bullet or ordered list — or a set of selected paragraphs — into a `qti-choice-interaction`.
+
+**What qualifies:**
+
+- A flat (non-nested) bullet or ordered list
+- One or more paragraphs
+- A mix of the above
+
+**What the conversion does:**
+
+1. Each selected block becomes a `qtiSimpleChoice`, preserving its inline text content.
+2. A default prompt ("Select one option") is added above the choices.
+3. The original blocks are removed and replaced with the fully-formed interaction node.
+4. `responseIdentifier` and choice `identifier` attributes are auto-generated as UUIDs.
+
+**Example — before:**
+
+```
+• Paris
+• London
+• Berlin
+```
+
+**Example — after:**
+
+```
+[Choice Interaction]
+  Prompt: Select one option
+  ○ Paris
+  ○ London
+  ○ Berlin
+```
+
+## Selecting blocks for conversion
+
+There are three ways to select content before converting:
+
+- **Cursor in a single block** — place the cursor anywhere in a list or paragraph; the Convert menu will act on that block alone.
+- **Text selection across blocks** — drag to select text spanning multiple blocks; all touched root blocks are included.
+- **Block selection** — click the block handle to the left of a line to select the whole block, then `Shift+click` additional handles to extend the selection. This is the most precise method for multi-block conversions.
+
+## Programmatic conversion
+
+You can run the same conversion in code using the command functions directly:
+
+```ts
+import {
+  canConvertFlatListToChoiceInteraction,
+  convertFlatListToChoiceInteraction,
+} from '@qti-editor/interaction-choice';
+
+// Check first — the command is a no-op if the selection is not convertible
+if (canConvertFlatListToChoiceInteraction(view)) {
+  convertFlatListToChoiceInteraction(view);
+}
+```
+
+Both functions take an `EditorView` and operate on the current selection state.
