@@ -6,6 +6,7 @@ import '@qti-editor/ui/components/blocks/composer-metadata-form';
 import '@qti-editor/ui/components/editor/ui/toolbar';
 import './components/qti-slash-menu.js';
 import '@qti-editor/ui/components/blocks/interaction-insert-menu';
+import '@qti-editor/ui/components/blocks/attributes-panel';
 import '@qti-editor/ui/components/blocks/convert-menu';
 
 import { provide } from '@lit/context';

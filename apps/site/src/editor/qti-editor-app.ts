@@ -1,5 +1,6 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
+import '@qti-editor/ui/components/blocks/attributes-panel';
 import '@qti-editor/ui/components/blocks/code-panel';
 import '@qti-editor/ui/components/blocks/composer';
 import '@qti-editor/ui/components/blocks/composer-metadata-form';
@@ -14,7 +15,6 @@ import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiCodePanelExtension } from '@qti-editor/ui/components/blocks/code-panel';
-import { qtiAttributesExtension, type QtiAttributesPanel } from '@qti-editor/ui/components/blocks/attributes-panel';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
 import {
@@ -35,8 +35,6 @@ const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
 export class QtiEditorApp extends LitElement {
   private editor: Editor;
   private editorRef: Ref<HTMLDivElement>;
-  private panelRef: Ref<QtiAttributesPanel>;
-  private attributesEventTarget: EventTarget;
   private editorEventsTarget: EventTarget;
   private codeEventTarget: EventTarget;
 
@@ -88,7 +86,6 @@ export class QtiEditorApp extends LitElement {
   constructor() {
     super();
 
-    this.attributesEventTarget = new EventTarget();
     this.editorEventsTarget = new EventTarget();
     this.codeEventTarget = new EventTarget();
 
@@ -111,7 +108,6 @@ export class QtiEditorApp extends LitElement {
         }
       }),
       defineLocalStorageDocPersistenceExtension({ storageKey: EDITOR_DOC_STORAGE_KEY }),
-      qtiAttributesExtension({ eventTarget: this.attributesEventTarget }),
       qtiEditorEventsExtension({ eventTarget: this.editorEventsTarget }),
       qtiCodePanelExtension({ eventTarget: this.codeEventTarget }),
       blockSelectExtension,
@@ -130,7 +126,6 @@ export class QtiEditorApp extends LitElement {
       this.editor = createEditor({ extension });
     }
     this.editorRef = createRef<HTMLDivElement>();
-    this.panelRef = createRef<QtiAttributesPanel>();
 
     this.editorEventsTarget.addEventListener('qti:selection:change', event => {
       console.log('qti:selection:change', (event as CustomEvent).detail);
@@ -168,10 +163,6 @@ export class QtiEditorApp extends LitElement {
       });
     }
 
-    if (this.panelRef.value) {
-      this.panelRef.value.eventTarget = this.attributesEventTarget;
-      (this.panelRef.value as QtiAttributesPanel).editorView = (this.editor as any).view ?? null;
-    }
   }
 
   override render() {
@@ -228,7 +219,7 @@ export class QtiEditorApp extends LitElement {
             @metadata-change=${this.onMetadataChange}
           >
           </qti-composer-metadata-form>
-          <qti-attributes-panel ${ref(this.panelRef)}></qti-attributes-panel>
+          <qti-attributes-panel .editor=${this.editor}></qti-attributes-panel>
         </div>
       </div>
     `;

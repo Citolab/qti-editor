@@ -6,6 +6,7 @@
  */
 
 import { ListDOMSerializer } from 'prosekit/extensions/list';
+
 import type { ProseMirrorNode } from 'prosekit/pm/model';
 
 /** Serialize a ProseMirror doc node to QTI item-body XML string. */
@@ -14,10 +15,9 @@ export function xmlFromNode(node: ProseMirrorNode): string {
   const fragment = serializer.serializeFragment(node.content);
   const wrapper = document.createElement('div');
   wrapper.appendChild(fragment);
-  const html = wrapper.firstElementChild?.innerHTML ?? '';
-  return htmlToXmlString(html);
+  return htmlToXmlString(wrapper.innerHTML);
 }
-
+ 
 function htmlToXmlString(html: string): string {
   const wrapped = `<qti-item-body>${html}</qti-item-body>`;
   const parsed = new DOMParser().parseFromString(wrapped, 'application/xml');

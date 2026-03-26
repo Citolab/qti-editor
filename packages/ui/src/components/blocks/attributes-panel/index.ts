@@ -1,6 +1,6 @@
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { union, type Extension } from 'prosekit/core';
+import { defineMountHandler, union, type Editor, type Extension } from 'prosekit/core';
 import { getNodeAttributePanelMetadataByNodeTypeName } from '@qti-editor/core/interactions/composer';
 import {
   qtiAttributesExtension,
@@ -31,6 +31,25 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
   @property({ attribute: false })
   choiceInteractionPresentation: ChoiceInteractionPanelPresentation | null = null;
 
+  #editor: Editor | null = null;
+  #internalEventTarget = new EventTarget();
+  #unregisterExtension: VoidFunction | null = null;
+
+  get editor(): Editor | null {
+    return this.#editor;
+  }
+
+  set editor(value: Editor | null) {
+    if (this.#editor === value) return;
+    this.#teardownExtension();
+    this.#editor = value;
+    this.#setupExtension();
+  }
+
+  protected override getEventTarget(): EventTarget {
+    return this.#internalEventTarget;
+  }
+
   constructor() {
     super();
     this.eventName = 'qti:attributes:update';
@@ -54,6 +73,34 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
 
       return panelMetadata;
     };
+  }
+
+  #setupExtension() {
+    if (!this.#editor) return;
+
+    const ext = union(
+      qtiAttributesExtension({ eventTarget: this.#internalEventTarget }),
+      defineMountHandler(() => {
+        this.editorView = (this.#editor as any).view ?? null;
+      }),
+    );
+
+    this.#unregisterExtension = this.#editor.use(ext);
+
+    if (this.#editor.mounted) {
+      this.editorView = (this.#editor as any).view ?? null;
+    }
+  }
+
+  #teardownExtension() {
+    this.#unregisterExtension?.();
+    this.#unregisterExtension = null;
+    this.editorView = null;
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.#teardownExtension();
   }
 
   private handleFriendlyEditorPatch(event: CustomEvent<QtiAttributesPatchDetail>) {
