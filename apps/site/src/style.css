@@ -21,33 +21,81 @@ qti-editor-app p {
 }
 
 qti-editor-app qti-prompt {
-  @apply bg-white rounded my-0 px-2 mb-2;
+  @apply bg-white rounded my-0 px-2 mb-2 dark:bg-slate-800 dark:text-slate-100;
 }
 
 qti-editor-app qti-choice-interaction {
-  @apply bg-slate-100 rounded p-2 my-1;
+  @apply bg-slate-100 rounded p-2 my-1 dark:bg-slate-700;
 }
 
 qti-editor-app qti-simple-choice {
-  @apply bg-white rounded p-2;
+  @apply bg-white rounded p-2 dark:bg-slate-800 dark:text-slate-100;
 }
 
 qti-editor-app qti-inline-choice-interaction {
-  @apply bg-slate-100 rounded p-2 my-1;
+  @apply bg-slate-100 rounded p-2 my-1 dark:bg-slate-700;
 }
 
 qti-editor-app qti-match-interaction {
-  @apply bg-slate-100 rounded p-2 my-1;
+  @apply bg-slate-100 rounded p-2 my-1 dark:bg-slate-700;
 }
 
 qti-editor-app qti-select-point-interaction {
-  @apply bg-slate-100 rounded p-2 my-1;
+  @apply bg-slate-100 rounded p-2 my-1 dark:bg-slate-700;
 }
 
 qti-editor-app qti-text-entry-interaction {
-  @apply bg-slate-100 rounded p-2;
+  @apply bg-slate-100 rounded p-2 dark:bg-slate-700 dark:text-slate-100;
 }
 
 qti-editor-app qti-extended-text-interaction {
-  @apply bg-slate-100 rounded p-2;
+  @apply bg-slate-100 rounded p-2 dark:bg-slate-700 dark:text-slate-100;
+}
+
+qti-editor-app qti-composer-metadata-form {
+  @apply block rounded-md border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800;
+}
+
+qti-editor-app qti-attributes-panel {
+  @apply mt-3 block rounded-md border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800;
+}
+
+qti-editor-app qti-composer section.card {
+  @apply dark:border-slate-700 dark:bg-slate-800;
+}
+
+qti-editor-app qti-composer h3,
+qti-editor-app qti-composer label,
+qti-editor-app qti-composer span {
+  @apply dark:text-slate-100;
+}
+
+qti-editor-app qti-composer p {
+  @apply dark:text-slate-300;
+}
+
+qti-editor-app qti-composer pre {
+  @apply dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100;
+}
+
+qti-editor-app qti-composer-metadata-form section.card,
+qti-editor-app qti-attributes-panel section.card {
+  @apply dark:border-slate-700 dark:bg-slate-800;
+}
+
+qti-editor-app qti-composer-metadata-form h3,
+qti-editor-app qti-attributes-panel h3 {
+  @apply dark:text-slate-100;
+}
+
+qti-editor-app qti-composer-metadata-form .label-text,
+qti-editor-app qti-attributes-panel p {
+  @apply dark:text-slate-300;
+}
+
+qti-editor-app qti-composer-metadata-form input,
+qti-editor-app qti-attributes-panel input,
+qti-editor-app qti-attributes-panel select,
+qti-editor-app qti-attributes-panel textarea {
+  @apply dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100;
 }

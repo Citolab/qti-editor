@@ -12,57 +12,62 @@ import '../style.css';
       name="description"
       content="QTI Editor is a composable editor for assessment authoring with framework-ready integration guides."
     />
+    <script is:inline>
+      const darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      const applyTheme = () => {
+        document.documentElement.classList.toggle('dark', darkMedia.matches);
+      };
+      applyTheme();
+      darkMedia.addEventListener('change', applyTheme);
+    </script>
   </head>
-  <body
-    class="min-h-screen font-['Avenir_Next','Segoe_UI',sans-serif] text-slate-800"
-    style="background: radial-gradient(circle at 10% 10%, #fce7d6 0%, transparent 38%), radial-gradient(circle at 90% 0%, #e4d7f0 0%, transparent 35%), #f9f7f4;"
-  >
+  <body class="min-h-screen bg-[#f9f7f4] font-['Avenir_Next','Segoe_UI',sans-serif] text-slate-800 dark:bg-[#0b1020] dark:text-slate-100">
     <main class="relative z-10 mx-auto max-w-[980px] px-5 pt-16 pb-20">
-      <section class="rounded-3xl border border-[#e5ddd1] bg-[#fffdf8] px-8 py-12 shadow-[0_18px_55px_rgba(15,118,110,0.08)]">
-        <h1 class="m-0 text-5xl font-bold text-[#449b44]">
+      <section class="rounded-3xl border border-[#e5ddd1] bg-[#fffdf8] px-8 py-12 shadow-[0_18px_55px_rgba(15,118,110,0.08)] dark:border-slate-700 dark:bg-slate-900 dark:shadow-[0_20px_65px_rgba(0,0,0,0.45)]">
+        <h1 class="m-0 text-5xl font-bold text-[#449b44] dark:text-emerald-400">
           QTI Editor
         </h1>
-        <h2 class="mt-2 text-[1.25rem] font-semibold text-slate-700">For modern assessment authoring</h2>
-        <p class="text-slate-600 leading-relaxed mt-5">
+        <h2 class="mt-2 text-[1.25rem] font-semibold text-slate-700 dark:text-slate-200">For modern assessment authoring</h2>
+        <p class="mt-5 text-slate-600 leading-relaxed dark:text-slate-300">
           A composable authoring experience for QTI interactions. Usable as a standalone editor or integrated into your stack of choice. Check out the docs for more details and framework-specific guides to get started.
         </p>
         <div class="mt-6 flex flex-wrap gap-3">
           <a
-            class="inline-block rounded-full bg-[#449b44] px-[1.2rem] py-[0.72rem] font-semibold text-white no-underline transition-colors hover:bg-[#3a8639]"
+            class="inline-block rounded-full bg-[#449b44] px-[1.2rem] py-[0.72rem] font-semibold text-white no-underline transition-colors hover:bg-[#3a8639] dark:bg-emerald-500 dark:hover:bg-emerald-400 dark:text-slate-950"
             href="/docs">Read documentation</a
           >
           <a
-            class="inline-block rounded-full border border-[#e5ddd1] bg-white px-[1.2rem] py-[0.72rem] font-semibold text-[#449b44] no-underline"
+            class="inline-block rounded-full border border-[#e5ddd1] bg-white px-[1.2rem] py-[0.72rem] font-semibold text-[#449b44] no-underline dark:border-slate-700 dark:bg-slate-800 dark:text-emerald-300"
             href="/docs/frameworks/react">See React guide</a
           >
           <a
-            class="inline-block rounded-full border border-[#e5ddd1] bg-white px-[1.2rem] py-[0.72rem] font-semibold text-[#449b44] no-underline"
+            class="inline-block rounded-full border border-[#e5ddd1] bg-white px-[1.2rem] py-[0.72rem] font-semibold text-[#449b44] no-underline dark:border-slate-700 dark:bg-slate-800 dark:text-emerald-300"
             href="/docs/frameworks/angular">See Angular guide</a
           >
         </div>
       </section>
 
-      <section class="mt-8 rounded-2xl border border-[#e5ddd1] bg-white p-4" aria-label="Interactive editor demo">
-        <h2 class="mt-0 mb-3 text-[1.05rem]">Live Editor Demo</h2>
+      <section class="mt-8 rounded-2xl border border-[#e5ddd1] bg-white p-4 dark:border-slate-700 dark:bg-slate-900" aria-label="Interactive editor demo">
+        <h2 class="mt-0 mb-3 text-[1.05rem] dark:text-slate-100">Live Editor Demo</h2>
         <qti-editor-app class="block max-h-[80vh] overflow-y-auto"></qti-editor-app>
       </section>
 
       <section class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4" aria-label="Highlights">
-        <article class="rounded-2xl border border-[#e5ddd1] bg-white p-4">
-          <h2 class="mt-0 text-[1.05rem]">Framework examples</h2>
-          <p class="mb-0 text-slate-600 leading-relaxed">
+        <article class="rounded-2xl border border-[#e5ddd1] bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+          <h2 class="mt-0 text-[1.05rem] dark:text-slate-100">Framework examples</h2>
+          <p class="mb-0 text-slate-600 leading-relaxed dark:text-slate-300">
             Start from React and Angular integration pages with package setup and component wiring.
           </p>
         </article>
-        <article class="rounded-2xl border border-[#e5ddd1] bg-white p-4">
-          <h2 class="mt-0 text-[1.05rem]">QTI focused</h2>
-          <p class="mb-0 text-slate-600 leading-relaxed">
+        <article class="rounded-2xl border border-[#e5ddd1] bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+          <h2 class="mt-0 text-[1.05rem] dark:text-slate-100">QTI focused</h2>
+          <p class="mb-0 text-slate-600 leading-relaxed dark:text-slate-300">
             Build authoring workflows around QTI interactions with a shared package architecture.
           </p>
         </article>
-        <article class="rounded-2xl border border-[#e5ddd1] bg-white p-4">
-          <h2 class="mt-0 text-[1.05rem]">Docs-first onboarding</h2>
-          <p class="mb-0 text-slate-600 leading-relaxed">
+        <article class="rounded-2xl border border-[#e5ddd1] bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+          <h2 class="mt-0 text-[1.05rem] dark:text-slate-100">Docs-first onboarding</h2>
+          <p class="mb-0 text-slate-600 leading-relaxed dark:text-slate-300">
             Keep implementation and API guidance close to examples to speed up adoption.
           </p>
         </article>
