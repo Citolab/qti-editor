@@ -1,0 +1,67 @@
+---
+title: QTI Interactions
+description: Inserting and editing QTI interaction nodes in the editor.
+slug: docs/using-the-editor/qti-interactions
+---
+
+QTI interactions are specialised block nodes that represent assessable elements. They are inserted from the **Interactions** toolbar button and each produces a fully-formed, schema-valid structure.
+
+## Inserting an interaction
+
+Click the **Interactions** button in the floating toolbar to open the insert menu. Only the interactions whose schema nodes are registered in your editor extension are listed. Each item is disabled when the cursor is in a position where that node cannot be inserted.
+
+Interactions can also be inserted programmatically using the command functions:
+
+```ts
+import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
+import { insertTextEntryInteraction } from '@qti-editor/interaction-text-entry';
+import { insertInlineChoiceInteraction } from '@qti-editor/interaction-inline-choice';
+import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
+
+// Call as a ProseMirror Command:
+insertChoiceInteraction(view.state, view.dispatch, view);
+```
+
+## Available interactions
+
+### Choice Interaction
+
+Inserts a `qti-choice-interaction` with a prompt and three placeholder choices (Option A, B, C).
+
+- **Edit the prompt** by clicking into the prompt area and typing.
+- **Edit choice text** by clicking into any choice and typing.
+- **Add a choice** by pressing `Enter` at the end of a choice — a new sibling choice is inserted automatically.
+- **Mark correct responses** by clicking the radio button or checkbox next to a choice.
+
+### Text Entry Interaction
+
+Inserts an inline `qti-text-entry-interaction` node at the cursor position. It renders as a short input field inside a sentence. Edit its attributes (expected length, case sensitivity, accepted answers) via the attributes panel.
+
+### Inline Choice Interaction
+
+Inserts a `qti-inline-choice-interaction` at the cursor position — a dropdown that the candidate selects from inline within a sentence. Options are managed through the attributes panel.
+
+### Select Point Interaction
+
+Inserts a `qti-select-point-interaction` block where candidates click a coordinate on an image. Configure the image source and hotspot areas via the attributes panel.
+
+### Extended Text Interaction
+
+Inserts a `qti-extended-text-interaction` block — a multi-line free-text response area. Configure expected length and format via the attributes panel.
+
+### Match Interaction
+
+Inserts a `qti-match-interaction` with two sets of items that candidates associate with each other. Edit row and column labels directly in the table cells.
+
+## Attributes panel
+
+When the cursor is inside any interaction node, the **Attributes** panel (right sidebar) shows the schema-defined attributes for that node and its ancestors. Changes are applied live to the editor document.
+
+Attributes vary by interaction type but commonly include:
+
+| Attribute | Description |
+|---|---|
+| `responseIdentifier` | Links the interaction to a response declaration |
+| `maxChoices` | Maximum number of selectable options (choice interaction) |
+| `expectedLength` | Character limit hint (text entry / extended text) |
+| `caseSensitive` | Whether the response match is case-sensitive (text entry) |

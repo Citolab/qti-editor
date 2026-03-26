@@ -20,6 +20,7 @@ const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/pro
 const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-inline-choice/src', import.meta.url));
 const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes/src', import.meta.url));
 const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes-ui-prosekit/src', import.meta.url));
+const uiSrcRoot = fileURLToPath(new URL('../../packages/ui/src', import.meta.url));
 
 export default defineConfig({
   vite: {
@@ -153,16 +154,37 @@ export default defineConfig({
           find: /^@qti-editor\/prosemirror-attributes-ui-prosekit$/,
           replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/index.ts`,
         },
+        {
+          find: /^@qti-editor\/ui\/components\/blocks\/([^/]+)$/,
+          replacement: `${uiSrcRoot}/components/blocks/$1/index.ts`,
+        },
+        {
+          find: /^@qti-editor\/ui\/components\/editor\/ui\/([^/]+)$/,
+          replacement: `${uiSrcRoot}/components/editor/ui/$1/index.js`,
+        },
+        {
+          find: /^@qti-editor\/ui\/components\/editor\/sample\/([^/]+)$/,
+          replacement: `${uiSrcRoot}/components/editor/sample/$1.js`,
+        },
+        {
+          find: /^@qti-editor\/ui$/,
+          replacement: `${uiSrcRoot}/index.ts`,
+        },
       ],
     },
     plugins: [
       tailwindcss(),
       tsconfigPaths({ ignoreConfigErrors: true }),
     ],
+    esbuild: {
+      target: 'esnext',
+    },
     optimizeDeps: {
+      include: ['lit', 'lit/decorators.js'],
       exclude: [
         '@qti-components/base',
         '@qti-components/interactions',
+        '@qti-editor/ui',
         '@qti-editor/interaction-shared',
         '@qti-editor/interaction-choice',
         '@qti-editor/interaction-extended-text',
@@ -175,11 +197,15 @@ export default defineConfig({
         '@qti-components/theme',
         '@qti-components/utilities',
       ],
+      esbuildOptions: {
+        target: 'esnext',
+      },
       force: true,
     },
     ssr: {
       noExternal: [
         /^@qti-components\//,
+        /^@qti-editor\/ui/,
       ],
     },
     server: {
@@ -201,6 +227,15 @@ export default defineConfig({
           items: [
             { label: 'Overview', slug: 'docs/overview' },
             { label: 'Installation', slug: 'docs/getting-started/installation' },
+            { label: 'Using the Registry', slug: 'docs/getting-started/registry' },
+          ],
+        },
+        {
+          label: 'Using the Editor',
+          items: [
+            { label: 'Writing & Formatting', slug: 'docs/using-the-editor/writing' },
+            { label: 'QTI Interactions', slug: 'docs/using-the-editor/qti-interactions' },
+            { label: 'Converting Content', slug: 'docs/using-the-editor/converting-content' },
           ],
         },
         {

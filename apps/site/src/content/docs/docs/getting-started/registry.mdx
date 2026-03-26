@@ -1,0 +1,213 @@
+---
+title: Using the Registry
+description: Install individual QTI Editor UI components into your project via the shadcn-compatible registry.
+slug: docs/getting-started/registry
+---
+
+The QTI Editor registry is a [shadcn/ui-compatible](https://ui.shadcn.com) component registry. Instead of installing a monolithic UI library, you copy individual Lit web components directly into your project and own them fully — no upstream lock-in.
+
+Registry base URL: `https://qti-editor.citolab.nl/r`
+
+## Prerequisites
+
+Components are Lit web components styled with Tailwind CSS and DaisyUI. Your project needs:
+
+```bash
+pnpm add lit tailwindcss daisyui
+```
+
+## Installing a component
+
+Use the shadcn CLI with the full component URL:
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/<component-name>.json
+```
+
+This copies the component source into your project and installs its npm dependencies. You can then modify the file freely.
+
+## Component catalogue
+
+### `qti-composer-metadata-form`
+
+A form for editing QTI item metadata (title and identifier). Fully standalone — no editor instance required.
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-composer-metadata-form.json
+```
+
+**Dependencies:** `lit`
+
+```html
+<qti-composer-metadata-form
+  title="My Item"
+  identifier="item-001"
+></qti-composer-metadata-form>
+```
+
+Emits a `metadata-change` CustomEvent with `{ title, identifier }` on input.
+
+---
+
+### `qti-composer`
+
+Displays the composed QTI XML output for the current item. Driven by `qti:content:change` events from the editor.
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-composer.json
+```
+
+**Dependencies:** `lit`, `@lit/context`, `@qti-editor/core`
+
+Wire up the same private `EventTarget` you pass to `qtiEditorEventsExtension`:
+
+```ts
+import '@/components/blocks/composer';
+
+const eventTarget = new EventTarget();
+// pass to qtiEditorEventsExtension({ eventTarget }) in your editor setup
+
+const composer = document.querySelector('qti-composer');
+composer.eventTarget = eventTarget;
+```
+
+---
+
+### `qti-code-panel`
+
+Displays the editor document as HTML, JSON, or QTI XML with a tab switcher. Driven by `qti:content:change` events.
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-code-panel.json
+```
+
+**Dependencies:** `lit`, `prosekit`, `@qti-editor/core`
+
+```ts
+import '@/components/blocks/code-panel';
+import { qtiCodePanelExtension } from '@/components/blocks/code-panel';
+
+const codeEventTarget = new EventTarget();
+
+// Add to your editor extension union:
+qtiCodePanelExtension({ eventTarget: codeEventTarget });
+
+// Wire the element:
+const panel = document.querySelector('qti-code-panel');
+panel.eventTarget = codeEventTarget;
+```
+
+---
+
+### `qti-attributes-panel`
+
+Displays and edits the schema attributes for the currently selected QTI node and its ancestors.
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-attributes-panel.json
+```
+
+**Dependencies:** `lit`, `prosekit`, `@qti-editor/core`, `@qti-editor/prosemirror-attributes`, `@qti-editor/prosemirror-attributes-ui-prosekit`
+
+**Registry dependencies (auto-installed):** `qti-choice-attributes-editor`, `qti-text-entry-attributes-editor`
+
+```ts
+import '@/components/blocks/attributes-panel';
+import { qtiAttributesExtension } from '@qti-editor/prosemirror-attributes-ui-prosekit';
+
+const attributesEventTarget = new EventTarget();
+
+// Add to your editor extension union:
+qtiAttributesExtension({ eventTarget: attributesEventTarget });
+
+// Wire the element:
+const panel = document.querySelector('qti-attributes-panel');
+panel.eventTarget = attributesEventTarget;
+panel.editorView = editor.view;
+```
+
+---
+
+### `lit-editor-toolbar`
+
+A ProseKit-compatible Lit toolbar with bold, italic, heading, list, table, and image-upload buttons.
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/lit-editor-toolbar.json
+```
+
+**Dependencies:** `lit`, `prosekit`
+
+```ts
+import '@/components/editor/ui/toolbar';
+
+// Assign the ProseKit editor instance via the .editor property:
+const toolbar = document.querySelector('lit-editor-toolbar');
+toolbar.editor = editor;
+toolbar.uploader = myUploadFn; // optional image upload handler
+```
+
+---
+
+### `lit-editor-slash-menu`
+
+A `/`-triggered slash command menu for inserting nodes.
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/lit-editor-slash-menu.json
+```
+
+**Dependencies:** `lit`, `prosekit`
+
+```ts
+import '@/components/editor/ui/slash-menu';
+
+const menu = document.querySelector('lit-editor-slash-menu');
+menu.editor = editor;
+```
+
+---
+
+### `qti-interaction-insert-menu`
+
+A dropdown button for inserting QTI interaction nodes (choice, text-entry, inline-choice, select-point) into the editor.
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-interaction-insert-menu.json
+```
+
+**Dependencies:** `lit`, `prosekit`, `@qti-editor/interaction-choice`, `@qti-editor/interaction-text-entry`, `@qti-editor/interaction-select-point`
+
+```ts
+import '@/components/blocks/interaction-insert-menu';
+
+const menu = document.querySelector('qti-interaction-insert-menu');
+menu.editor = editor;
+```
+
+---
+
+### `qti-convert-menu`
+
+A dropdown for converting the current text selection into a QTI choice interaction.
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-convert-menu.json
+```
+
+**Dependencies:** `lit`, `prosekit`, `@qti-editor/interaction-choice`
+
+```ts
+import '@/components/blocks/convert-menu';
+
+const menu = document.querySelector('qti-convert-menu');
+menu.editor = editor;
+```
+
+---
+
+## Notes
+
+- Each component is a **Lit custom element** — framework-agnostic and usable in any HTML context. In React and Angular, assign properties via a ref rather than HTML attributes for object values (editor instance, eventTarget).
+- When the shadcn CLI installs a component, it rewrites `@qti-editor/ui/...` imports to `@/...` using your project's path aliases. Make sure `@/` resolves to your project's `src/` directory.
+- Components with `registryDependencies` (e.g. `qti-attributes-panel`) will automatically pull in their sub-components in a single CLI command.

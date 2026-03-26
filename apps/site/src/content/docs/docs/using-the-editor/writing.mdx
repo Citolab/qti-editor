@@ -1,0 +1,43 @@
+---
+title: Writing & Formatting
+description: How to author content in the QTI Editor.
+slug: docs/using-the-editor/writing
+---
+
+The QTI Editor is a rich-text editor built on ProseMirror. It supports standard document editing with a toolbar, keyboard shortcuts, and a slash command menu.
+
+## Toolbar
+
+The toolbar provides one-click access to the most common formatting actions:
+
+| Button | Action |
+|---|---|
+| **B** | Bold |
+| *I* | Italic |
+| H1 / H2 / H3 | Heading levels |
+| List | Bullet or ordered list |
+| Table | Insert a table |
+| Image | Upload or embed an image |
+
+## Keyboard shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Mod+B` | Bold |
+| `Mod+I` | Italic |
+| `Mod+Z` | Undo |
+| `Mod+Shift+Z` | Redo |
+| `Enter` | New paragraph (or new choice inside a choice interaction) |
+| `Shift+Enter` | Hard line break |
+
+`Mod` is `Cmd` on macOS and `Ctrl` on Windows/Linux.
+
+## Slash menu
+
+Type `/` at the start of a line to open the slash command menu. It lets you insert headings, lists, tables, and other block nodes without leaving the keyboard.
+
+The menu is filtered as you type — `/h2` narrows to heading level 2, `/bul` to a bullet list, and so on.
+
+## Block selection
+
+Click the block handle that appears to the left of any paragraph or heading to select the whole block. Hold `Shift` and click additional blocks to extend the selection. A block selection is what the **Convert** menu uses to determine which content to transform.
