@@ -23,8 +23,6 @@ import {
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
-import { qtiAttributesExtension } from '@qti-editor/ui/components/blocks/attributes-panel';
-
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
@@ -46,7 +44,6 @@ function toXmlCompatibleFragment(html: string): string {
 export class QtiEditorApp extends LitElement {
   private editor: Editor;
   private editorRef: Ref<HTMLDivElement>;
-  private attributesEventTarget = new EventTarget();
   private composerEventTarget = new EventTarget();
 
   // ── Toolbar handoff ─────────────────────────────────────────────────────
@@ -121,7 +118,6 @@ export class QtiEditorApp extends LitElement {
       defineLocalStorageDocPersistenceExtension({ storageKey: EDITOR_DOC_STORAGE_KEY }),
       blockSelectExtension,
       nodeAttrsSyncExtension,
-      qtiAttributesExtension({ eventTarget: this.attributesEventTarget }),
       qtiEditorEventsExtension({
         emitSelectionChanges: false,
         eventTarget: this.composerEventTarget,
@@ -239,7 +235,7 @@ export class QtiEditorApp extends LitElement {
 
           <qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>
 
-          <qti-composer class="block w-full"></qti-composer>
+          <qti-composer .editor=${this.editor} class="block w-full"></qti-composer>
         </div>
         <div class="w-full lg:w-80 lg:shrink-0 lg:h-screen lg:overflow-y-auto">
           <qti-composer-metadata-form
@@ -250,8 +246,7 @@ export class QtiEditorApp extends LitElement {
           >
           </qti-composer-metadata-form>
           <qti-attributes-panel
-            .eventTarget=${this.attributesEventTarget}
-            .editorView=${this._editorMounted ? this.editor.view : null}
+            .editor=${this.editor}
             class="block w-full sticky top-0 mt-5"
           ></qti-attributes-panel>
         </div>
