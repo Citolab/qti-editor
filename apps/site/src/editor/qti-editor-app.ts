@@ -59,9 +59,10 @@ export class QtiEditorApp extends LitElement {
 
   private _onHandlePointerMove = (e: PointerEvent) => {
     if (!(e.currentTarget as HTMLElement).hasPointerCapture(e.pointerId)) return;
+    const cardRect = this.querySelector<HTMLElement>('.editor-card')!.getBoundingClientRect();
     this._floatPos = {
-      x: e.clientX - this._dragOffset.x,
-      y: e.clientY - this._dragOffset.y
+      x: e.clientX - cardRect.left - this._dragOffset.x,
+      y: e.clientY - cardRect.top - this._dragOffset.y
     };
     this.requestUpdate();
     e.preventDefault();
@@ -160,9 +161,13 @@ export class QtiEditorApp extends LitElement {
         // need those same viewport coords — but we must wait one frame so the
         // browser has fully laid out the sticky toolbar and editor pane first.
         const paneRect = this.editorRef.value.getBoundingClientRect();
+        const cardRect = this.querySelector<HTMLElement>('.editor-card')!.getBoundingClientRect();
         const toolbar = this.querySelector<HTMLElement>('.float-toolbar');
         const toolbarWidth = toolbar?.offsetWidth ?? 0;
-        this._floatPos = { x: paneRect.right - toolbarWidth - 12, y: paneRect.top + 12 };
+        this._floatPos = {
+          x: paneRect.right - toolbarWidth - 12 - cardRect.left,
+          y: paneRect.top + 12 - cardRect.top
+        };
         this.requestUpdate();
       });
     }
@@ -179,8 +184,8 @@ export class QtiEditorApp extends LitElement {
 
   override render() {
     const floatStyle = this._floatPos
-      ? `position:fixed;left:${this._floatPos.x}px;top:${this._floatPos.y}px;`
-      : `position:fixed;top:12px;right:12px;`;
+      ? `position:absolute;left:${this._floatPos.x}px;top:${this._floatPos.y}px;`
+      : `position:absolute;top:12px;right:12px;`;
 
     const gripIcon = html`<svg width="8" height="20" viewBox="0 0 8 20" fill="currentColor" aria-hidden="true">
       <circle cx="2" cy="4"  r="1.4"/><circle cx="6" cy="4"  r="1.4"/>
@@ -191,7 +196,7 @@ export class QtiEditorApp extends LitElement {
 
     return html`
       <div class="mt-12 flex flex-col gap-6 lg:flex-row lg:items-start">
-        <div class="editor-card min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+        <div class="editor-card relative min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
           <div class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/90">
             <lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>
           </div>
