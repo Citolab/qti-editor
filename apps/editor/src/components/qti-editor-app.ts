@@ -30,6 +30,18 @@ import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-e
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
 
 const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
+const VOID_HTML_TAGS = [
+  'img', 'br', 'hr', 'input', 'meta', 'link',
+  'source', 'area', 'col', 'embed', 'param', 'track', 'wbr',
+];
+
+function toXmlCompatibleFragment(html: string): string {
+  const voidTagPattern = new RegExp(`<(${VOID_HTML_TAGS.join('|')})(\\s[^<>]*?)?>`, 'gi');
+  return html.replace(voidTagPattern, match => {
+    if (match.endsWith('/>')) return match;
+    return `${match.slice(0, -1)} />`;
+  });
+}
 
 export class QtiEditorApp extends LitElement {
   private editor: Editor;
@@ -127,6 +139,19 @@ export class QtiEditorApp extends LitElement {
       this.editor = createEditor({ extension });
     }
     this.editorRef = createRef<HTMLDivElement>();
+
+    this.composerEventTarget.addEventListener('qti:content:change', event => {
+      const detail = (event as CustomEvent<{ html?: string }>).detail;
+      const xmlCompatibleHtml = toXmlCompatibleFragment(detail?.html ?? '');
+      const parsed = new DOMParser().parseFromString(
+        '<qti-item-body>' + xmlCompatibleHtml + '</qti-item-body>',
+        'application/xml',
+      );
+      this.itemContext = {
+        ...this.itemContext,
+        itemBody: parsed,
+      };
+    });
   }
 
   override createRenderRoot() {
@@ -214,10 +239,7 @@ export class QtiEditorApp extends LitElement {
 
           <qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>
 
-          <qti-composer
-            .eventTarget=${this.composerEventTarget}
-            class="block w-full"
-          ></qti-composer>
+          <qti-composer class="block w-full"></qti-composer>
         </div>
         <div class="w-full lg:w-80 lg:shrink-0 lg:h-screen lg:overflow-y-auto">
           <qti-composer-metadata-form

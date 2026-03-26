@@ -192,6 +192,7 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
   elements.forEach(element => {
     const tagName = element.tagName.toLowerCase();
     const handler = getInteractionComposerHandler(tagName);
+    const isInteractionCandidate = tagName.endsWith('-interaction') || element.hasAttribute('response-identifier');
 
     if (handler) {
       const composeResult = handler.compose(element, xmlDoc);
@@ -225,9 +226,11 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
       return;
     }
 
-    console.warn(
-      `[QTI Composer] Missing interaction composer handler for ${tagName}; keeping element as-is during compose.`
-    );
+    if (isInteractionCandidate) {
+      console.warn(
+        `[QTI Composer] Missing interaction composer handler for ${tagName}; keeping element as-is during compose.`
+      );
+    }
   });
 
   itemBody.querySelectorAll('[correct-response]').forEach(interaction => {

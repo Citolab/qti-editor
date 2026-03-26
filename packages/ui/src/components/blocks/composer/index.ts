@@ -35,6 +35,7 @@ export class QtiComposer extends LitElement {
   #xmlUrl = '';
   #xml = '';
   #formattedXml = '';
+  #composeError = '';
   #copyStatus: 'idle' | 'success' | 'error' = 'idle';
   #copyStatusTimer: number | null = null;
   #eventTarget: EventTarget | null = null;
@@ -130,18 +131,26 @@ export class QtiComposer extends LitElement {
     this.#revokeXmlUrl();
     this.#xml = '';
     this.#formattedXml = '';
+    this.#composeError = '';
   }
 
   #composeXml() {
-    if (!this.itemContext) {
-      this.#clearXmlState();
-      return;
-    }
+    try {
+      if (!this.itemContext) {
+        this.#clearXmlState();
+        return;
+      }
 
-    const xml = buildAssessmentItemXml(this.itemContext as ComposerItemContext);
-    this.#xml = xml;
-    this.#setXmlUrl(xml);
-    this.#formattedXml = formatXml(xml);
+      const xml = buildAssessmentItemXml(this.itemContext as ComposerItemContext);
+      this.#xml = xml;
+      this.#setXmlUrl(xml);
+      this.#formattedXml = formatXml(xml);
+      this.#composeError = '';
+    } catch (error) {
+      this.#clearXmlState();
+      this.#composeError = error instanceof Error ? error.message : 'Unknown compose error';
+      console.error('[qti-composer] Failed to compose XML', error);
+    }
   }
 
   async #copyXmlToClipboard() {
@@ -186,9 +195,12 @@ export class QtiComposer extends LitElement {
     }
   }
 
-  #onLiveComposeToggle(event: Event) {
+  #onLiveComposeToggle = (event: Event) => {
     this.liveComposeEnabled = (event.target as HTMLInputElement).checked;
-  }
+    if (this.liveComposeEnabled) {
+      this.#composeXml();
+    }
+  };
 
   override render() {
     return html`
@@ -207,6 +219,8 @@ export class QtiComposer extends LitElement {
         </div>
         ${!this.liveComposeEnabled
           ? html`<p class="text-xs text-base-content/70">Live XML composing is off.</p>`
+          : this.#composeError
+            ? html`<p class="text-xs text-error">Compose failed: ${this.#composeError}</p>`
           : this.#xmlUrl
             ? html`
                 <div class="flex items-center gap-3">
