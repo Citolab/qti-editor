@@ -1,36 +1,30 @@
 import { consume } from '@lit/context';
 import { html, LitElement } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
-import {
-  buildAssessmentItemXml,
-  extractResponseDeclarations,
-  formatXml,
-  type ComposerItemContext,
-  type ResponseDeclaration,
-} from '@qti-editor/core/composer';
+import { customElement } from 'lit/decorators.js';
+import { defineDocChangeHandler, defineMountHandler, union, type Editor } from 'prosekit/core';
+import { qtiFromNode } from '@qti-editor/prosekit-integration/save-qti';
+import { formatXml } from '@qti-editor/core/composer';
 import { itemContext, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
 
-const VOID_HTML_TAGS = [
-  'img', 'br', 'hr', 'input', 'meta', 'link',
-  'source', 'area', 'col', 'embed', 'param', 'track', 'wbr',
-];
+const DEBOUNCE_MS = 300;
 
-function toXmlCompatibleFragment(html: string): string {
-  const voidTagPattern = new RegExp(`<(${VOID_HTML_TAGS.join('|')})(\\s[^<>]*?)?>`, 'gi');
-  return html.replace(voidTagPattern, match => {
-    if (match.endsWith('/>')) return match;
-    return `${match.slice(0, -1)} />`;
-  });
-}
- 
 @customElement('qti-composer')
 export class QtiComposer extends LitElement {
   @consume({ context: itemContext, subscribe: true })
-  @state()
   itemContext: ItemContext = {} as ItemContext;
 
-  @state()
-  liveComposeEnabled = false;
+  #liveComposeEnabled = false;
+
+  get liveComposeEnabled(): boolean {
+    return this.#liveComposeEnabled;
+  }
+
+  set liveComposeEnabled(value: boolean) {
+    const old = this.#liveComposeEnabled;
+    if (old === value) return;
+    this.#liveComposeEnabled = value;
+    this.requestUpdate('liveComposeEnabled', old);
+  }
 
   #xmlUrl = '';
   #xml = '';
@@ -38,18 +32,19 @@ export class QtiComposer extends LitElement {
   #composeError = '';
   #copyStatus: 'idle' | 'success' | 'error' = 'idle';
   #copyStatusTimer: number | null = null;
-  #eventTarget: EventTarget | null = null;
-  #contentChangeHandler: ((event: Event) => void) | null = null;
+  #debounceTimer: number | null = null;
+  #editor: Editor | null = null;
+  #unregisterExtension: VoidFunction | null = null;
 
-  get eventTarget(): EventTarget | null {
-    return this.#eventTarget;
+  get editor(): Editor | null {
+    return this.#editor;
   }
 
-  set eventTarget(value: EventTarget | null) {
-    if (this.#eventTarget === value) return;
-    this.#unbindContentChange();
-    this.#eventTarget = value;
-    this.#bindContentChange();
+  set editor(value: Editor | null) {
+    if (this.#editor === value) return;
+    this.#teardownExtension();
+    this.#editor = value;
+    this.#setupExtension();
   }
 
   override createRenderRoot() {
@@ -74,7 +69,8 @@ export class QtiComposer extends LitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.#unbindContentChange();
+    this.#teardownExtension();
+    this.#cancelDebounce();
     this.#revokeXmlUrl();
     if (this.#copyStatusTimer != null) {
       window.clearTimeout(this.#copyStatusTimer);
@@ -82,28 +78,53 @@ export class QtiComposer extends LitElement {
     }
   }
 
-  #bindContentChange() {
-    if (!this.#eventTarget) return;
-    this.#contentChangeHandler = (event: Event) => {
-      const detail = (event as CustomEvent<{ html?: string }>).detail;
-      const xmlCompatibleHtml = toXmlCompatibleFragment(detail?.html ?? '');
-      const parsed = new DOMParser().parseFromString(
-        '<qti-item-body>' + xmlCompatibleHtml + '</qti-item-body>',
-        'application/xml',
-      );
-      this.itemContext = {
-        ...this.itemContext,
-        itemBody: parsed,
-      };
+  #setupExtension() {
+    if (!this.#editor) return;
+
+    const onDocChange = () => {
+      if (this.liveComposeEnabled) {
+        this.#debouncedComposeXml();
+      }
     };
-    this.#eventTarget.addEventListener('qti:content:change', this.#contentChangeHandler);
+
+    if (this.#editor.mounted) {
+      this.#unregisterExtension = this.#editor.use(
+        defineDocChangeHandler(onDocChange),
+      );
+    } else {
+      this.#unregisterExtension = this.#editor.use(
+        union(
+          defineMountHandler(() => {
+            if (this.liveComposeEnabled) {
+              this.#composeXml();
+              this.requestUpdate();
+            }
+          }),
+          defineDocChangeHandler(onDocChange),
+        ),
+      );
+    }
   }
 
-  #unbindContentChange() {
-    if (this.#eventTarget && this.#contentChangeHandler) {
-      this.#eventTarget.removeEventListener('qti:content:change', this.#contentChangeHandler);
+  #teardownExtension() {
+    this.#unregisterExtension?.();
+    this.#unregisterExtension = null;
+  }
+
+  #cancelDebounce() {
+    if (this.#debounceTimer != null) {
+      window.clearTimeout(this.#debounceTimer);
+      this.#debounceTimer = null;
     }
-    this.#contentChangeHandler = null;
+  }
+
+  #debouncedComposeXml() {
+    this.#cancelDebounce();
+    this.#debounceTimer = window.setTimeout(() => {
+      this.#debounceTimer = null;
+      this.#composeXml();
+      this.requestUpdate();
+    }, DEBOUNCE_MS);
   }
 
   #setXmlUrl(xml: string) {
@@ -135,22 +156,19 @@ export class QtiComposer extends LitElement {
   }
 
   #composeXml() {
-    try {
-      if (!this.itemContext) {
-        this.#clearXmlState();
-        return;
-      }
-
-      const xml = buildAssessmentItemXml(this.itemContext as ComposerItemContext);
-      this.#xml = xml;
-      this.#setXmlUrl(xml);
-      this.#formattedXml = formatXml(xml);
-      this.#composeError = '';
-    } catch (error) {
+    if (!this.#editor?.mounted) {
       this.#clearXmlState();
-      this.#composeError = error instanceof Error ? error.message : 'Unknown compose error';
-      console.error('[qti-composer] Failed to compose XML', error);
+      return;
     }
+
+    const doc = this.#editor.state.doc;
+    const xml = qtiFromNode(doc, {
+      identifier: this.itemContext?.identifier,
+      title: this.itemContext?.title,
+    });
+    this.#xml = xml;
+    this.#setXmlUrl(xml);
+    this.#formattedXml = formatXml(xml);
   }
 
   async #copyXmlToClipboard() {
@@ -251,10 +269,6 @@ export class QtiComposer extends LitElement {
     `;
   }
 }
-
-export { buildAssessmentItemXml, extractResponseDeclarations, formatXml };
-
-export type { ComposerItemContext, ResponseDeclaration };
 
 declare global {
   interface HTMLElementTagNameMap {
