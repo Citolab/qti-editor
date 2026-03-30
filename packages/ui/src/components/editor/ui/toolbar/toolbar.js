@@ -1,5 +1,7 @@
 import '../button/index'
 import '../image-upload-popover/index'
+import '../../../blocks/interaction-insert-menu/index.ts'
+import '../../../blocks/convert-menu/index.ts'
 
 import { html, LitElement, nothing } from 'lit';
 import { defineUpdateHandler } from 'prosekit/core';
@@ -204,6 +206,8 @@ class LitToolbar extends LitElement {
 
     return html`
       <div class="z-2 box-border border-gray-200 dark:border-gray-800 border-solid border-l-0 border-r-0 border-t-0 border-b flex flex-wrap gap-1 p-2 items-center">
+        <qti-interaction-insert-menu .editor=${editor}></qti-interaction-insert-menu>
+        <qti-convert-menu .editor=${editor}></qti-convert-menu>
         ${
           items.undo
             ? html`

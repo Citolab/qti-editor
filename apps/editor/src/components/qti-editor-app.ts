@@ -6,8 +6,6 @@ import '@qti-editor/ui/components/blocks/composer-metadata-form';
 import '@qti-editor/ui/components/blocks/attributes-panel';
 import '@qti-editor/ui/components/editor/ui/toolbar';
 import './qti-slash-menu.js';
-import '@qti-editor/ui/components/blocks/interaction-insert-menu';
-import '@qti-editor/ui/components/blocks/convert-menu';
 
 import { provide } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
@@ -23,6 +21,7 @@ import {
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
+
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
@@ -48,38 +47,6 @@ export class QtiEditorApp extends LitElement {
 
   // ── Toolbar handoff ─────────────────────────────────────────────────────
   private _editorMounted = false;
-
-  // ── Floating toolbar drag state ─────────────────────────────────────────
-  private _floatPos: { x: number; y: number } | null = null;
-  private _floatInitialized = false;
-  private _dragOffset = { x: 0, y: 0 };
-
-  private _onHandlePointerDown = (e: PointerEvent) => {
-    const handle = e.currentTarget as HTMLElement;
-    const toolbar = handle.parentElement!;
-    const rect = toolbar.getBoundingClientRect();
-    this._dragOffset = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-    handle.setPointerCapture(e.pointerId);
-    handle.style.cursor = 'grabbing';
-    e.preventDefault();
-  };
-
-  private _onHandlePointerMove = (e: PointerEvent) => {
-    if (!(e.currentTarget as HTMLElement).hasPointerCapture(e.pointerId)) return;
-    const cardRect = this.querySelector<HTMLElement>('.editor-card')!.getBoundingClientRect();
-    this._floatPos = {
-      x: e.clientX - cardRect.left - this._dragOffset.x,
-      y: e.clientY - cardRect.top - this._dragOffset.y
-    };
-    this.requestUpdate();
-    e.preventDefault();
-  };
-
-  private _onHandlePointerUp = (e: PointerEvent) => {
-    const handle = e.currentTarget as HTMLElement;
-    handle.releasePointerCapture(e.pointerId);
-    handle.style.cursor = 'grab';
-  };
 
   private onMetadataChange(event: Event) {
     const detail = (event as CustomEvent<{ title: string; identifier: string }>).detail;
@@ -173,78 +140,24 @@ export class QtiEditorApp extends LitElement {
         }, 0);
       }
     }
-
-    // Position the floating toolbar in the top-right of the editor pane on first render
-    if (!this._floatInitialized && this.editorRef.value) {
-      this._floatInitialized = true;
-      requestAnimationFrame(() => {
-        if (!this.editorRef.value) return;
-        const paneRect = this.editorRef.value.getBoundingClientRect();
-        const cardRect = this.querySelector<HTMLElement>('.editor-card')!.getBoundingClientRect();
-        const toolbar = this.querySelector<HTMLElement>('.float-toolbar');
-        const toolbarWidth = toolbar?.offsetWidth ?? 0;
-        this._floatPos = {
-          x: paneRect.right - toolbarWidth - 12 - cardRect.left,
-          y: paneRect.top + 12 - cardRect.top
-        };
-        this.requestUpdate();
-      });
-    }
   }
 
   override render() {
-    const floatStyle = this._floatPos
-      ? `position:absolute;left:${this._floatPos.x}px;top:${this._floatPos.y}px;`
-      : `position:absolute;top:12px;right:12px;`;
-
-    const gripIcon = html`<svg width="8" height="20" viewBox="0 0 8 20" fill="currentColor" aria-hidden="true">
-      <circle cx="2" cy="4"  r="1.4"/><circle cx="6" cy="4"  r="1.4"/>
-      <circle cx="2" cy="9"  r="1.4"/><circle cx="6" cy="9"  r="1.4"/>
-      <circle cx="2" cy="14" r="1.4"/><circle cx="6" cy="14" r="1.4"/>
-      <circle cx="2" cy="19" r="1.4"/><circle cx="6" cy="19" r="1.4"/>
-    </svg>`;
-
     return html`
-      <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
-        <div class="editor-card relative min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm">
-          <!-- Draggable floating toolbar -->
-          <div
-            style=${floatStyle + 'z-index:9999;'}
-            class="float-toolbar flex items-stretch rounded-[10px] overflow-hidden select-none
-                   bg-white
-                   border border-black/10
-                   shadow-[0_4px_16px_rgba(0,0,0,0.12),0_1px_4px_rgba(0,0,0,0.06)]"
-          >
-            <div
-              title="Drag to reposition"
-              class="flex items-center shrink-0 px-1.5 cursor-grab
-                     bg-stone-100
-                     border-r border-black/8
-                     text-stone-400"
-              @pointerdown=${this._onHandlePointerDown}
-              @pointermove=${this._onHandlePointerMove}
-              @pointerup=${this._onHandlePointerUp}
-            >${gripIcon}</div>
-            <div class="flex items-center gap-0.5 p-1 px-1.5">
-              <qti-interaction-insert-menu .editor=${this.editor} class="block"></qti-interaction-insert-menu>
-              <qti-convert-menu .editor=${this.editor} class="block"></qti-convert-menu>
-            </div>
-          </div>
-
-          <div ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col px-6 py-6"></div>
-
+      <lit-editor-toolbar .editor=${this.editor} class="block w-full shrink-0"></lit-editor-toolbar>
+      <div class="flex flex-1 min-h-0 gap-4 p-4 overflow-hidden">
+        <div class="editor-card relative flex min-w-0 flex-1 flex-col rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden">
+          <div ${ref(this.editorRef)} class="card flex-1 min-h-0 px-6 py-6 overflow-auto"></div>
           <qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>
-
-          <qti-composer .editor=${this.editor} class="block w-full"></qti-composer>
+          <qti-composer .editor=${this.editor} class="block w-full shrink-0"></qti-composer>
         </div>
-        <div class="w-full lg:w-80 lg:shrink-0 lg:h-screen lg:overflow-y-auto">
+        <div class="w-80 shrink-0 overflow-y-auto">
           <qti-composer-metadata-form
             class="block w-full"
             .title=${this.itemContext.title ?? ''}
             .identifier=${this.itemContext.identifier ?? ''}
             @metadata-change=${this.onMetadataChange}
-          >
-          </qti-composer-metadata-form>
+          ></qti-composer-metadata-form>
           <qti-attributes-panel
             .editor=${this.editor}
             class="block w-full sticky top-0 mt-5"

@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import type { KeyboardEvent } from 'react';
+import { IconPencil } from '../../lib/icons';
 
 interface FileNameInputProps {
   fileName: string;
@@ -59,6 +60,25 @@ export function FileNameInput({
           }
         }}
       />
+      <button
+        type="button"
+        onClick={() => inputRef.current?.focus()}
+        title="Rename"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: '2px',
+          border: 'none',
+          background: 'transparent',
+          color: '#9ca3af',
+          cursor: 'pointer',
+          flexShrink: 0,
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#374151')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = '#9ca3af')}
+      >
+        <IconPencil />
+      </button>
       {isDirty && (
         <span
           style={{
