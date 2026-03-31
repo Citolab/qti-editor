@@ -1,4 +1,5 @@
 import { useImperativeHandle, useRef, forwardRef } from 'react';
+
 import type { QtiEditorApp } from '../qti-editor-app.js';
 
 export interface EditorLayoutHandle {

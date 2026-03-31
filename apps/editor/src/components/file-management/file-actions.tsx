@@ -21,7 +21,7 @@ export function FileActions({ onNew, onSave, onExport, isDirty }: FileActionsPro
       </ToolbarButton>
 
       <ToolbarButton onClick={onExport} title="Export as QTI XML">
-        <IconDownload /> Export XML
+        <IconDownload /> Export QTI
       </ToolbarButton>
     </>
   );

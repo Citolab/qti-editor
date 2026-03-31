@@ -35,10 +35,12 @@ const VOID_HTML_TAGS = [
 
 function toXmlCompatibleFragment(html: string): string {
   const voidTagPattern = new RegExp(`<(${VOID_HTML_TAGS.join('|')})(\\s[^<>]*?)?>`, 'gi');
-  return html.replace(voidTagPattern, match => {
-    if (match.endsWith('/>')) return match;
-    return `${match.slice(0, -1)} />`;
-  });
+  return html
+    .replace(/&nbsp;/g, '&#160;') // XML doesn't define &nbsp;
+    .replace(voidTagPattern, match => {
+      if (match.endsWith('/>')) return match;
+      return `${match.slice(0, -1)} />`;
+    });
 }
 
 export class QtiEditorApp extends LitElement {
