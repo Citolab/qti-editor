@@ -22,16 +22,34 @@ function isFlatList(listNode: ProseMirrorNode, listType: any): boolean {
   return !hasNestedList;
 }
 
+function hasOnlyTextInlineContent(node: ProseMirrorNode): boolean {
+  for (let i = 0; i < node.childCount; i++) {
+    if (!node.child(i).isText) return false;
+  }
+  return true;
+}
+
 function isConvertibleRootBlock(node: ProseMirrorNode, schema: any): ConvertibleBlockKind | null {
   const paragraphType = schema.nodes.paragraph;
   const listType = schema.nodes.list;
   if (paragraphType && node.type === paragraphType) {
+    if (!hasOnlyTextInlineContent(node)) return null;
     return 'paragraph';
   }
   if (listType && node.type === listType) {
     const listKind = node.attrs?.kind;
     if (!['bullet', 'ordered'].includes(listKind)) return null;
     if (!isFlatList(node, listType)) return null;
+    // Reject list items whose paragraph content includes non-text nodes
+    let hasNonTextContent = false;
+    node.descendants(child => {
+      if (child.type === paragraphType && !hasOnlyTextInlineContent(child)) {
+        hasNonTextContent = true;
+        return false;
+      }
+      return !hasNonTextContent;
+    });
+    if (hasNonTextContent) return null;
     return 'list';
   }
   return null;
