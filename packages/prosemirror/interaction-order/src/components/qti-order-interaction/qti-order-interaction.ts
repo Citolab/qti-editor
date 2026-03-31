@@ -1,6 +1,7 @@
 import { html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { Interaction } from '@qti-editor/interaction-shared/components/interaction.js';
+import { QtiI18nController } from '@qti-editor/interaction-shared';
 
 import styles, { LIGHT_DOM_STYLES } from './qti-order-interaction.styles.js';
 
@@ -10,6 +11,8 @@ import styles, { LIGHT_DOM_STYLES } from './qti-order-interaction.styles.js';
  */
 export class QtiOrderInteractionEdit extends Interaction {
   static override styles = styles;
+
+  private readonly i18n = new QtiI18nController(this);
 
   @property({ type: Boolean })
   shuffle: boolean = false;
@@ -180,7 +183,7 @@ export class QtiOrderInteractionEdit extends Interaction {
   private _renderOrderPanel() {
     return html`
       <div class="order-panel">
-        <div class="order-panel-title">Correct Response</div>
+        <div class="order-panel-title">${this.i18n.t('order.correctResponse')}</div>
         <div class="order-list">
           ${this._order.map((id, i) => html`
             <div class="order-row">
@@ -190,14 +193,14 @@ export class QtiOrderInteractionEdit extends Interaction {
                 <button
                   type="button"
                   class="order-arrow-btn"
-                  aria-label="Move up"
+                  aria-label=${this.i18n.t('order.moveUp')}
                   ?disabled=${i === 0}
                   @click=${(e: Event) => { e.stopPropagation(); this._moveUp(i); }}
                 >▲</button>
                 <button
                   type="button"
                   class="order-arrow-btn"
-                  aria-label="Move down"
+                  aria-label=${this.i18n.t('order.moveDown')}
                   ?disabled=${i === this._order.length - 1}
                   @click=${(e: Event) => { e.stopPropagation(); this._moveDown(i); }}
                 >▼</button>

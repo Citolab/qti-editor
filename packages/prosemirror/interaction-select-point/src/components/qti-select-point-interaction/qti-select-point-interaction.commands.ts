@@ -1,11 +1,13 @@
 import { createInsertBlockInteractionCommand } from '@qti-editor/interaction-shared/commands/insert.js';
+import { translateQti } from '@qti-editor/interaction-shared';
 
 import type { Command } from 'prosemirror-state';
+import type { EditorView } from 'prosekit/pm/view';
 
 /**
  * Command to insert a select point interaction at the current selection.
  */
-export const insertSelectPointInteraction: Command = (state, dispatch) => {
+export const insertSelectPointInteraction: Command = (state, dispatch, view?: EditorView) => {
   return createInsertBlockInteractionCommand({
     createNode: currentState => {
       const { schema } = currentState;
@@ -18,7 +20,7 @@ export const insertSelectPointInteraction: Command = (state, dispatch) => {
 
       const prompt = promptType.create(
         null,
-        promptParagraphType.create(null, schema.text('Mark the correct point on the image.')),
+        promptParagraphType.create(null, schema.text(translateQti('prompt.selectPoint.default', { target: view?.dom ?? null }))),
       );
       const imgSelectPoint = imgSelectPointType.create();
 

@@ -1,6 +1,7 @@
 import { html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { Interaction } from '@qti-editor/interaction-shared/components/interaction.js';
+import { QtiI18nController } from '@qti-editor/interaction-shared';
 
 import styles, { LIGHT_DOM_STYLES } from './qti-match-interaction.styles.js';
 
@@ -43,6 +44,8 @@ function getState(key: string): MatchState {
  */
 export class QtiMatchInteractionEdit extends Interaction {
   static override styles = styles;
+
+  private readonly i18n = new QtiI18nController(this);
 
   @property({ type: Number, attribute: 'max-associations' })
   maxAssociations: number = 1;
@@ -303,21 +306,21 @@ export class QtiMatchInteractionEdit extends Interaction {
     
     return html`
       <div class="associations-panel">
-        <div class="associations-panel-title">Correct Response</div>
+        <div class="associations-panel-title">${this.i18n.t('match.correctResponse')}</div>
         <div class="association-list">
           ${state.pendingSourceId ? html`
             <span class="pending-indicator">
-              Select target for: <strong>${this._getLabel(state.pendingSourceId)}</strong>
+              ${this.i18n.t('match.selectTargetFor', { label: this._getLabel(state.pendingSourceId) })}
               <button 
                 type="button" 
                 class="association-chip-remove" 
-                aria-label="Cancel"
+                aria-label=${this.i18n.t('match.cancel')}
                 @click=${(e: Event) => { e.stopPropagation(); this._cancelPending(); }}
               >×</button>
             </span>
           ` : nothing}
           ${associations.length === 0 && !state.pendingSourceId ? html`
-            <span class="no-associations">Click a source item, then a target to create associations</span>
+            <span class="no-associations">${this.i18n.t('match.noAssociations')}</span>
           ` : nothing}
           ${associations.map(([sourceId, targetId]) => {
             const color = this._associationColors.get(sourceId) ?? '';
@@ -329,7 +332,7 @@ export class QtiMatchInteractionEdit extends Interaction {
                 <button
                   type="button"
                   class="association-chip-remove"
-                  aria-label="Remove"
+                  aria-label=${this.i18n.t('match.remove')}
                   @click=${(e: Event) => { e.stopPropagation(); this._removeAssociation(sourceId); }}
                 >×</button>
               </span>

@@ -10,6 +10,7 @@ import './qti-slash-menu.js';
 import { provide } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { LitElement, html, type PropertyValues } from 'lit';
+import { property } from 'lit/decorators.js';
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
 import {
   blockSelectExtension,
@@ -22,6 +23,7 @@ import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
 import { qtiFromNode } from '@qti-editor/prosekit-integration';
+import { notifyQtiI18nChanged } from '@qti-editor/interaction-shared';
 
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
@@ -44,6 +46,9 @@ function toXmlCompatibleFragment(html: string): string {
 }
 
 export class QtiEditorApp extends LitElement {
+  @property({ type: String, reflect: true })
+  override lang = 'en';
+
   private editor: Editor;
   private editorRef: Ref<HTMLDivElement>;
   private composerEventTarget = new EventTarget();
@@ -62,6 +67,7 @@ export class QtiEditorApp extends LitElement {
 
   @provide({ context: itemContext })
   itemContext: ItemContext = {
+    lang: 'en',
     variables: itemContextVariables
   };
 
@@ -115,6 +121,7 @@ export class QtiEditorApp extends LitElement {
       );
       this.itemContext = {
         ...this.itemContext,
+        lang: this.lang,
         itemBody: parsed,
       };
     });
@@ -126,6 +133,14 @@ export class QtiEditorApp extends LitElement {
 
   override updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
+
+    if (changedProperties.has('lang')) {
+      this.itemContext = {
+        ...this.itemContext,
+        lang: this.lang,
+      };
+      notifyQtiI18nChanged();
+    }
 
     if (this.editorRef.value) {
       this.editor.mount(this.editorRef.value);
@@ -149,6 +164,7 @@ export class QtiEditorApp extends LitElement {
     const safeFileName = fileName.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9._-]/g, '') || 'item';
     const xml = qtiFromNode(this.editor.view.state.doc, {
       identifier: this.itemContext.identifier,
+      lang: this.lang,
       title: this.itemContext.title,
     });
     const blob = new Blob([xml], { type: 'application/xml' });

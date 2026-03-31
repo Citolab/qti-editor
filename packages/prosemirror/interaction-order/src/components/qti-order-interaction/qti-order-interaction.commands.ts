@@ -1,10 +1,13 @@
 import { chainCommands, splitBlock } from 'prosemirror-commands';
 import { createInsertSiblingOnEnterCommand } from '@qti-editor/interaction-shared/commands/enter.js';
 import { createInsertBlockInteractionCommand } from '@qti-editor/interaction-shared/commands/insert.js';
+import { translateQti } from '@qti-editor/interaction-shared';
 
 import type { Command } from 'prosemirror-state';
+import type { EditorView } from 'prosekit/pm/view';
 
-export const insertOrderInteraction: Command = (state, dispatch) => {
+export const insertOrderInteraction: Command = (state, dispatch, view?: EditorView) => {
+  const target = view?.dom ?? null;
   return createInsertBlockInteractionCommand({
     createNode: currentState => {
       const { schema } = currentState;
@@ -21,13 +24,13 @@ export const insertOrderInteraction: Command = (state, dispatch) => {
       const responseIdentifier = `RESPONSE_${crypto.randomUUID()}`;
       const prompt = promptType.create(
         null,
-        promptParagraphType.create(null, schema.text('Arrange the items in the correct order.'))
+        promptParagraphType.create(null, schema.text(translateQti('prompt.order.default', { target })))
       );
 
       const choices = [
-        choiceType.create({ identifier: `CHOICE_${crypto.randomUUID()}` }, choiceParagraphType.create(null, schema.text('Item A'))),
-        choiceType.create({ identifier: `CHOICE_${crypto.randomUUID()}` }, choiceParagraphType.create(null, schema.text('Item B'))),
-        choiceType.create({ identifier: `CHOICE_${crypto.randomUUID()}` }, choiceParagraphType.create(null, schema.text('Item C'))),
+        choiceType.create({ identifier: `CHOICE_${crypto.randomUUID()}` }, choiceParagraphType.create(null, schema.text(translateQti('choice.itemA', { target })))),
+        choiceType.create({ identifier: `CHOICE_${crypto.randomUUID()}` }, choiceParagraphType.create(null, schema.text(translateQti('choice.itemB', { target })))),
+        choiceType.create({ identifier: `CHOICE_${crypto.randomUUID()}` }, choiceParagraphType.create(null, schema.text(translateQti('choice.itemC', { target })))),
       ];
 
       return interactionType.create({ responseIdentifier }, [prompt, ...choices]);

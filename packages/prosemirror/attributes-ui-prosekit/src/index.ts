@@ -1,5 +1,6 @@
 import { LitElement, css, html, nothing, type CSSResultGroup, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { QtiI18nController } from '@qti-editor/interaction-shared/i18n/index.js';
 import {
   updateNodeAttrs,
   type AttributesEventDetail,
@@ -92,6 +93,8 @@ export class ProsekitAttributesPanel extends LitElement {
    */
   @state()
   isInteracting = false;
+
+  private readonly i18n = new QtiI18nController(this);
 
   protected currentEventTarget: EventTarget | null = null;
 
@@ -296,8 +299,8 @@ export class ProsekitAttributesPanel extends LitElement {
     return html`
       <header class="flex items-start justify-between gap-3">
         <div>
-          <h3 class="text-base font-semibold">Attributes</h3>
-          <p class="text-xs text-base-content/70">${activeNode?.type ?? 'No selection'}</p>
+          <h3 class="text-base font-semibold">${this.i18n.t('attributes.heading')}</h3>
+          <p class="text-xs text-base-content/70">${activeNode?.type ?? this.i18n.t('attributes.noSelection')}</p>
         </div>
       </header>
     `;
@@ -378,7 +381,7 @@ export class ProsekitAttributesPanel extends LitElement {
           ?disabled=${disabled}
           @change=${(event: Event) => this.handleFieldChange(key, value, event)}
         >
-          <option value="">Select…</option>
+          <option value="">${this.i18n.t('attributes.select')}</option>
           ${(fieldMetadata.options ?? []).map(
             option => html`<option value=${option.value}>${option.label}</option>`,
           )}
@@ -403,7 +406,7 @@ export class ProsekitAttributesPanel extends LitElement {
   }
 
   protected renderEmptyState(): TemplateResult {
-    return html`<p class="text-sm text-base-content/70">Place the cursor on a node with schema attributes.</p>`;
+    return html`<p class="text-sm text-base-content/70">${this.i18n.t('attributes.placeCursor')}</p>`;
   }
 
   protected renderPanel(): TemplateResult {
@@ -421,12 +424,12 @@ export class ProsekitAttributesPanel extends LitElement {
                     ? editable.map(([key, value]) =>
                         this.renderField(key, value, this.getFieldMetadata(key, value)),
                       )
-                    : html`<p class="text-sm text-base-content/70">No editable attributes.</p>`}
+                    : html`<p class="text-sm text-base-content/70">${this.i18n.t('attributes.noEditable')}</p>`}
                   ${readOnly.length
                     ? html`
                         <details class="rounded-lg border border-base-300/50 bg-base-50 p-2">
                           <summary class="cursor-pointer text-sm font-medium">
-                            Read-only attributes (${readOnly.length})
+                            ${this.i18n.t('attributes.readOnlyCount', { count: readOnly.length })}
                           </summary>
                           <div class="mt-3 flex flex-col gap-3 opacity-80">
                             ${readOnly.map(([key, value]) =>

@@ -1,6 +1,7 @@
 import { consume } from '@lit/context';
 import { html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import { QtiI18nController } from '@qti-editor/interaction-shared/i18n/index.js';
 import { defineDocChangeHandler, defineMountHandler, union, type Editor } from 'prosekit/core';
 import { qtiFromNode } from '@qti-editor/prosekit-integration/save-qti';
 import { formatXml } from '@qti-editor/core/composer';
@@ -12,6 +13,8 @@ const DEBOUNCE_MS = 300;
 export class QtiComposer extends LitElement {
   @consume({ context: itemContext, subscribe: true })
   itemContext: ItemContext = {} as ItemContext;
+
+  private readonly i18n = new QtiI18nController(this);
 
   #liveComposeEnabled = false;
 
@@ -164,6 +167,7 @@ export class QtiComposer extends LitElement {
     const doc = this.#editor.state.doc;
     const xml = qtiFromNode(doc, {
       identifier: this.itemContext?.identifier,
+      lang: this.itemContext?.lang,
       title: this.itemContext?.title,
     });
     this.#xml = xml;
@@ -224,9 +228,9 @@ export class QtiComposer extends LitElement {
     return html`
       <section class="card border border-base-300/50 bg-base-100 p-4 space-y-3">
         <div class="flex items-center justify-between gap-3">
-          <h3 class="text-sm font-semibold">Composer XML</h3>
+          <h3 class="text-sm font-semibold">${this.i18n.t('composer.heading')}</h3>
           <label class="flex items-center gap-2 text-xs">
-            <span class="font-medium">Live XML compose</span>
+            <span class="font-medium">${this.i18n.t('composer.liveCompose')}</span>
             <input
               class="toggle toggle-sm toggle-primary"
               type="checkbox"
@@ -236,7 +240,7 @@ export class QtiComposer extends LitElement {
           </label>
         </div>
         ${!this.liveComposeEnabled
-          ? html`<p class="text-xs text-base-content/70">Live XML composing is off.</p>`
+          ? html`<p class="text-xs text-base-content/70">${this.i18n.t('composer.liveComposeOff')}</p>`
           : this.#composeError
             ? html`<p class="text-xs text-error">Compose failed: ${this.#composeError}</p>`
           : this.#xmlUrl
@@ -248,23 +252,23 @@ export class QtiComposer extends LitElement {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Open XML in new tab
+                    ${this.i18n.t('composer.openXml')}
                   </a>
                   <button class="btn btn-xs" type="button" @click=${this.#openInQtiPreview}>
-                    Open in qti.citolab.nl
+                    ${this.i18n.t('composer.openPreview')}
                   </button>
                   <button class="btn btn-xs" type="button" @click=${this.#copyXmlToClipboard}>
-                    Copy
+                    ${this.i18n.t('composer.copy')}
                   </button>
                   ${this.#copyStatus === 'success'
-                    ? html`<span class="text-xs text-success">Copied</span>`
+                    ? html`<span class="text-xs text-success">${this.i18n.t('composer.copied')}</span>`
                     : this.#copyStatus === 'error'
-                      ? html`<span class="text-xs text-error">Copy failed</span>`
+                      ? html`<span class="text-xs text-error">${this.i18n.t('composer.copyFailed')}</span>`
                       : null}
                 </div>
                 <pre class="m-0 max-h-80 overflow-auto rounded-lg border border-base-300/40 bg-base-200 p-3 text-xs text-base-content">${this.#formattedXml}</pre>
               `
-            : html`<p class="text-xs text-base-content/70">No XML available.</p>`}
+            : html`<p class="text-xs text-base-content/70">${this.i18n.t('composer.noXml')}</p>`}
       </section>
     `;
   }

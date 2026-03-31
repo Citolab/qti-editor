@@ -1,13 +1,16 @@
 import { chainCommands, splitBlock } from 'prosemirror-commands';
 import { createInsertSiblingOnEnterCommand } from '@qti-editor/interaction-shared/commands/enter.js';
 import { createInsertBlockInteractionCommand } from '@qti-editor/interaction-shared/commands/insert.js';
+import { translateQti } from '@qti-editor/interaction-shared';
 
 import type { Command } from 'prosemirror-state';
+import type { EditorView } from 'prosekit/pm/view';
 
 /**
  * Command to insert a choice interaction at the current selection
  */
-export const insertChoiceInteraction: Command = (state, dispatch) => {
+export const insertChoiceInteraction: Command = (state, dispatch, view?: EditorView) => {
+  const target = view?.dom ?? null;
   return createInsertBlockInteractionCommand({
     createNode: currentState => {
       const { schema } = currentState;
@@ -22,20 +25,23 @@ export const insertChoiceInteraction: Command = (state, dispatch) => {
       }
 
       const responseIdentifier = `RESPONSE_${crypto.randomUUID()}`;
-      const prompt = promptType.create(null, promptParagraphType.create(null, schema.text('Which option is correct?')));
+      const prompt = promptType.create(
+        null,
+        promptParagraphType.create(null, schema.text(translateQti('prompt.choice.default', { target }))),
+      );
 
       const choices = [
         choiceType.create(
           { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
-          choiceParagraphType.create(null, schema.text('Option A'))
+          choiceParagraphType.create(null, schema.text(translateQti('choice.optionA', { target })))
         ),
         choiceType.create(
           { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
-          choiceParagraphType.create(null, schema.text('Option B'))
+          choiceParagraphType.create(null, schema.text(translateQti('choice.optionB', { target })))
         ),
         choiceType.create(
           { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
-          choiceParagraphType.create(null, schema.text('Option C'))
+          choiceParagraphType.create(null, schema.text(translateQti('choice.optionC', { target })))
         )
       ];
 

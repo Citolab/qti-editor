@@ -7,13 +7,16 @@
 import { chainCommands, splitBlock } from 'prosemirror-commands';
 import { createInsertSiblingOnEnterCommand } from '@qti-editor/interaction-shared/commands/enter.js';
 import { createInsertBlockInteractionCommand } from '@qti-editor/interaction-shared/commands/insert.js';
+import { translateQti } from '@qti-editor/interaction-shared';
 
 import type { Command } from 'prosemirror-state';
+import type { EditorView } from 'prosekit/pm/view';
 
 /**
  * Command to insert a match interaction at the current selection
  */
-export const insertMatchInteraction: Command = (state, dispatch) => {
+export const insertMatchInteraction: Command = (state, dispatch, view?: EditorView) => {
+  const target = view?.dom ?? null;
   return createInsertBlockInteractionCommand({
     createNode: currentState => {
       const { schema } = currentState;
@@ -29,21 +32,24 @@ export const insertMatchInteraction: Command = (state, dispatch) => {
       }
 
       const responseIdentifier = `RESPONSE_${crypto.randomUUID()}`;
-      const prompt = promptType.create(null, promptParagraphType.create(null, schema.text('Match the items from the left column with the correct items on the right.')));
+      const prompt = promptType.create(
+        null,
+        promptParagraphType.create(null, schema.text(translateQti('prompt.match.default', { target }))),
+      );
 
       // Create first match set (source choices)
       const sourceChoices = [
         associableChoiceType.create(
           { identifier: `SOURCE_${crypto.randomUUID()}`, matchMax: 1 },
-          associableChoiceParagraphType.create(null, schema.text('Item A'))
+          associableChoiceParagraphType.create(null, schema.text(translateQti('choice.itemA', { target })))
         ),
         associableChoiceType.create(
           { identifier: `SOURCE_${crypto.randomUUID()}`, matchMax: 1 },
-          associableChoiceParagraphType.create(null, schema.text('Item B'))
+          associableChoiceParagraphType.create(null, schema.text(translateQti('choice.itemB', { target })))
         ),
         associableChoiceType.create(
           { identifier: `SOURCE_${crypto.randomUUID()}`, matchMax: 1 },
-          associableChoiceParagraphType.create(null, schema.text('Item C'))
+          associableChoiceParagraphType.create(null, schema.text(translateQti('choice.itemC', { target })))
         )
       ];
       const sourceMatchSet = matchSetType.create(null, sourceChoices);
@@ -52,15 +58,15 @@ export const insertMatchInteraction: Command = (state, dispatch) => {
       const targetChoices = [
         associableChoiceType.create(
           { identifier: `TARGET_${crypto.randomUUID()}`, matchMax: 3 },
-          associableChoiceParagraphType.create(null, schema.text('Option 1'))
+          associableChoiceParagraphType.create(null, schema.text(translateQti('choice.option1', { target })))
         ),
         associableChoiceType.create(
           { identifier: `TARGET_${crypto.randomUUID()}`, matchMax: 3 },
-          associableChoiceParagraphType.create(null, schema.text('Option 2'))
+          associableChoiceParagraphType.create(null, schema.text(translateQti('choice.option2', { target })))
         ),
         associableChoiceType.create(
           { identifier: `TARGET_${crypto.randomUUID()}`, matchMax: 3 },
-          associableChoiceParagraphType.create(null, schema.text('Option 3'))
+          associableChoiceParagraphType.create(null, schema.text(translateQti('choice.option3', { target })))
         )
       ];
       const targetMatchSet = matchSetType.create(null, targetChoices);

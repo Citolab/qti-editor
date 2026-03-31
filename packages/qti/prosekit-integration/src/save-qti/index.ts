@@ -14,12 +14,13 @@ import type { ProseMirrorNode } from 'prosekit/pm/model';
 /** Build a complete QTI 3.0 assessment item XML from a ProseMirror doc. */
 export function qtiFromNode(
   node: ProseMirrorNode,
-  context?: { identifier?: string; title?: string },
+  context?: { identifier?: string; lang?: string; title?: string },
 ): string {
   const xml = xmlFromNode(node);
   const itemBody = new DOMParser().parseFromString(xml, 'application/xml');
   const composerContext: ComposerItemContext = {
     identifier: context?.identifier,
+    lang: context?.lang,
     title: context?.title,
     itemBody,
   };

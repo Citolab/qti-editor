@@ -11,6 +11,8 @@
       "@qti-editor/core/interactions/composer": ["../qti/core/src/interactions/composer.ts"],
       "@qti-editor/interaction-choice": ["../prosemirror/interaction-choice/dist/index.d.ts"],
       "@qti-editor/interaction-extended-text": ["../prosemirror/interaction-extended-text/dist/index.d.ts"],
+      "@qti-editor/interaction-shared": ["../prosemirror/interaction-shared/dist/index.d.ts"],
+      "@qti-editor/interaction-shared/*": ["../prosemirror/interaction-shared/dist/*"],
       "@qti-editor/interaction-match": ["../prosemirror/interaction-match/dist/index.d.ts"],
       "@qti-editor/interaction-select-point": ["../prosemirror/interaction-select-point/dist/index.d.ts"],
       "@qti-editor/interaction-text-entry": ["../prosemirror/interaction-text-entry/dist/index.d.ts"],

@@ -41,7 +41,7 @@ export interface QtiStringMapping {
 
 export interface InteractionResponseDeclaration {
   identifier: string;
-  cardinality: 'single' | 'multiple';
+  cardinality: 'single' | 'multiple' | 'ordered';
   baseType: 'identifier' | 'point' | 'string';
   correctResponse?: string;
   areaMapping?: QtiAreaMapping;

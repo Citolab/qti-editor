@@ -11,13 +11,14 @@ import type { ResponseProcessingKind } from '@qti-editor/interfaces';
 
 export interface ComposerItemContext {
   identifier?: string;
+  lang?: string;
   title?: string;
   itemBody?: Document;
 }
 
 export interface ResponseDeclaration {
   identifier: string;
-  cardinality: 'single' | 'multiple';
+  cardinality: 'single' | 'multiple' | 'ordered';
   baseType: 'identifier' | 'point' | 'string';
   correctResponse?: string;
   stringMapping?: {
@@ -48,6 +49,32 @@ const SCHEMA_LOCATION =
 const MATCH_CORRECT_TEMPLATE =
   'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct';
 
+function parseCorrectResponseValues(
+  declaration: Pick<ResponseDeclaration, 'cardinality' | 'correctResponse'>,
+): string[] {
+  if (!declaration.correctResponse) return [];
+
+  if (declaration.cardinality === 'single') {
+    return [declaration.correctResponse];
+  }
+
+  if (declaration.cardinality === 'ordered') {
+    try {
+      const parsed = JSON.parse(declaration.correctResponse);
+      if (Array.isArray(parsed)) {
+        return parsed
+          .filter((value): value is string => typeof value === 'string')
+          .map(value => value.trim())
+          .filter(Boolean);
+      }
+    } catch {
+      // Fall back to comma-separated parsing for malformed or legacy values.
+    }
+  }
+
+  return declaration.correctResponse.split(',').map(v => v.trim()).filter(Boolean);
+}
+
 export function extractResponseDeclarations(itemBodyRoot?: Element | null): ResponseDeclaration[] {
   if (!itemBodyRoot) return [];
 
@@ -69,7 +96,7 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
   root.setAttribute('title', itemContext.title?.trim() || 'Untitled Item');
   root.setAttribute('adaptive', 'false');
   root.setAttribute('time-dependent', 'false');
-  root.setAttributeNS(XML_NS, 'xml:lang', 'en');
+  root.setAttributeNS(XML_NS, 'xml:lang', itemContext.lang?.trim() || 'en');
 
   const sourceBodyDoc = itemContext.itemBody;
   const sourceBodyRoot =
@@ -93,9 +120,7 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
 
     if (declaration.correctResponse) {
       const correctResponse = xmlDoc.createElementNS(QTI_NS, 'qti-correct-response');
-      const values = declaration.cardinality === 'multiple'
-        ? declaration.correctResponse.split(',').map(v => v.trim()).filter(Boolean)
-        : [declaration.correctResponse];
+      const values = parseCorrectResponseValues(declaration);
       values.forEach(v => {
         const value = xmlDoc.createElementNS(QTI_NS, 'qti-value');
         value.textContent = v;

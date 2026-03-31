@@ -1,6 +1,7 @@
 /* eslint-disable wc/no-self-class, lit/attribute-value-entities */
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { QtiI18nController, translateQti } from '@qti-editor/interaction-shared/i18n/index.js';
 import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { Selection } from 'prosekit/pm/state';
 import { PopoverContent, PopoverRoot, PopoverTrigger } from 'prosekit/lit/popover';
@@ -30,7 +31,7 @@ export interface ConvertMenuItem {
 function getConvertItems(view: EditorView): ConvertMenuItem[] {
   return [
     {
-      label: 'Flat List -> Choice Interaction',
+      label: translateQti('convert.flatListToChoice', { target: view.dom }),
       canRun: canConvertFlatListToChoiceInteraction(view),
       command: () => {
         convertFlatListToChoiceInteraction(view);
@@ -42,6 +43,8 @@ function getConvertItems(view: EditorView): ConvertMenuItem[] {
 
 @customElement('qti-convert-menu')
 export class QtiConvertMenu extends LitElement {
+  private readonly i18n = new QtiI18nController(this);
+
   @property({ attribute: false })
   editor: Editor | null = null;
 
@@ -139,7 +142,7 @@ export class QtiConvertMenu extends LitElement {
             @mousedown=${this.handleTriggerMouseDown}
           >
             <span class="i-lucide-arrow-right-left size-4 block" aria-hidden="true"></span>
-            <span>Convert</span>
+            <span>${this.i18n.t('convert.trigger')}</span>
           </button>
         </prosekit-popover-trigger>
         <prosekit-popover-content class="flex min-w-64 flex-col gap-1 rounded-lg border border-gray-200 bg-white p-2 text-sm shadow-lg dark:border-gray-800 dark:bg-gray-950 [&:not([data-state])]:hidden">

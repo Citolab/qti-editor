@@ -1,6 +1,7 @@
 /* eslint-disable wc/no-self-class, lit/attribute-value-entities */
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { translateQti, QtiI18nController } from '@qti-editor/interaction-shared/i18n/index.js';
 import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { Selection } from 'prosekit/pm/state';
 import { PopoverContent, PopoverRoot, PopoverTrigger } from 'prosekit/lit/popover';
@@ -52,10 +53,10 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
   ) {
     const nodeType = schema.nodes.qtiChoiceInteraction;
     items.push({
-      label: 'Choice Interaction',
+      label: translateQti('interactionInsert.choice', { target: view.dom }),
       canInsert: canInsert(view, nodeType),
       command: () => {
-        insertChoiceInteraction(view.state, view.dispatch);
+        insertChoiceInteraction(view.state, view.dispatch, view);
         view.focus();
       },
     });
@@ -64,7 +65,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
   if (schema.nodes.qtiTextEntryInteraction) {
     const nodeType = schema.nodes.qtiTextEntryInteraction;
     items.push({
-      label: 'Text Entry',
+      label: translateQti('interactionInsert.textEntry', { target: view.dom }),
       canInsert: canInsert(view, nodeType),
       command: () => {
         const node = nodeType.createAndFill({ responseIdentifier: `RESPONSE_${crypto.randomUUID()}` });
@@ -78,10 +79,10 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
   if (schema.nodes.qtiSelectPointInteraction) {
     const nodeType = schema.nodes.qtiSelectPointInteraction;
     items.push({
-      label: 'Select Point',
+      label: translateQti('interactionInsert.selectPoint', { target: view.dom }),
       canInsert: canInsert(view, nodeType),
       command: () => {
-        insertSelectPointInteraction(view.state, view.dispatch);
+        insertSelectPointInteraction(view.state, view.dispatch, view);
         view.focus();
       },
     });
@@ -90,10 +91,10 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
   if (schema.nodes.qtiInlineChoiceInteraction && schema.nodes.qtiInlineChoice) {
     const nodeType = schema.nodes.qtiInlineChoiceInteraction;
     items.push({
-      label: 'Inline Choice',
+      label: translateQti('interactionInsert.inlineChoice', { target: view.dom }),
       canInsert: canInsert(view, nodeType),
       command: () => {
-        insertInlineChoiceInteraction(view.state, view.dispatch);
+        insertInlineChoiceInteraction(view.state, view.dispatch, view);
         view.focus();
       },
     });
@@ -102,10 +103,10 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
   if (schema.nodes.qtiMatchInteraction && schema.nodes.qtiSimpleMatchSet && schema.nodes.qtiSimpleAssociableChoice) {
     const nodeType = schema.nodes.qtiMatchInteraction;
     items.push({
-      label: 'Match Interaction',
+      label: translateQti('interactionInsert.match', { target: view.dom }),
       canInsert: canInsert(view, nodeType),
       command: () => {
-        insertMatchInteraction(view.state, view.dispatch);
+        insertMatchInteraction(view.state, view.dispatch, view);
         view.focus();
       },
     });
@@ -114,10 +115,10 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
   if (schema.nodes.qtiExtendedTextInteraction) {
     const nodeType = schema.nodes.qtiExtendedTextInteraction;
     items.push({
-      label: 'Extended Text',
+      label: translateQti('interactionInsert.extendedText', { target: view.dom }),
       canInsert: canInsert(view, nodeType),
       command: () => {
-        insertExtendedTextInteraction(view.state, view.dispatch);
+        insertExtendedTextInteraction(view.state, view.dispatch, view);
         view.focus();
       },
     });
@@ -128,6 +129,8 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
 
 @customElement('qti-interaction-insert-menu')
 export class QtiInteractionInsertMenu extends LitElement {
+  private readonly i18n = new QtiI18nController(this);
+
   @property({ attribute: false })
   editor: Editor | null = null;
 
@@ -225,7 +228,7 @@ export class QtiInteractionInsertMenu extends LitElement {
             @mousedown=${this.handleTriggerMouseDown}
           >
             <span class="i-lucide-plus size-4 block" aria-hidden="true"></span>
-            <span>Interactions</span>
+            <span>${this.i18n.t('interactionInsert.trigger')}</span>
           </button>
         </prosekit-popover-trigger>
         <prosekit-popover-content class="flex min-w-56 flex-col gap-1 rounded-lg border border-gray-200 bg-white p-2 text-sm shadow-lg dark:border-gray-800 dark:bg-gray-950 [&:not([data-state])]:hidden">

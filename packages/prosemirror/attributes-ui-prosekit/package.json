@@ -17,6 +17,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@qti-editor/interaction-shared": "workspace:*",
     "@qti-editor/interfaces": "workspace:*",
     "@qti-editor/prosemirror-attributes": "workspace:*",
     "lit": "^3.3.2"

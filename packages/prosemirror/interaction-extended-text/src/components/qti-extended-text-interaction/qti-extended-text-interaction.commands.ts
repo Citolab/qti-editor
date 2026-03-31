@@ -5,13 +5,15 @@
  */
 
 import { createInsertBlockInteractionCommand } from '@qti-editor/interaction-shared/commands/insert.js';
+import { translateQti } from '@qti-editor/interaction-shared';
 
 import type { Command } from 'prosemirror-state';
+import type { EditorView } from 'prosekit/pm/view';
 
 /**
  * Command to insert an extended text interaction at the current selection
  */
-export const insertExtendedTextInteraction: Command = (state, dispatch) => {
+export const insertExtendedTextInteraction: Command = (state, dispatch, view?: EditorView) => {
   return createInsertBlockInteractionCommand({
     createNode: currentState => {
       const { schema } = currentState;
@@ -24,7 +26,10 @@ export const insertExtendedTextInteraction: Command = (state, dispatch) => {
       }
 
       const responseIdentifier = `RESPONSE_${crypto.randomUUID()}`;
-      const prompt = promptType.create(null, promptParagraphType.create(null, schema.text('Write your response below.')));
+      const prompt = promptType.create(
+        null,
+        promptParagraphType.create(null, schema.text(translateQti('prompt.extendedText.default', { target: view?.dom ?? null }))),
+      );
 
       return interactionType.create(
         {

@@ -22,6 +22,7 @@ export const EditorLayout = forwardRef<EditorLayoutHandle, EditorLayoutProps>(
       <qti-editor-app
         key={editorKey}
         ref={elRef}
+        lang={'nl'}
         style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}
       />
     );

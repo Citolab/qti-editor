@@ -1,4 +1,5 @@
 import type { Node as ProseMirrorNode } from 'prosemirror-model';
+import { translateQti } from '@qti-editor/interaction-shared';
 import type { EditorView } from 'prosekit/pm/view';
 
 type ConvertibleBlockKind = 'list' | 'paragraph';
@@ -184,12 +185,12 @@ export function convertFlatListToChoiceInteraction(view: EditorView): boolean {
 
   const prompt = promptType.create(
     null,
-    promptParagraphType.create(null, schema.text('Select one option'))
+    promptParagraphType.create(null, schema.text(translateQti('prompt.choice.selectOne', { target: view.dom })))
   );
 
   const choices = selectedBlocks.map(block => {
     const inlineContent = getChoiceInlineContent(block, schema);
-    const paragraphContent = inlineContent ?? schema.text(block.node.textContent.trim() || 'Option');
+    const paragraphContent = inlineContent ?? schema.text(block.node.textContent.trim() || translateQti('choice.option', { target: view.dom }));
 
     return choiceType.create(
       { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },

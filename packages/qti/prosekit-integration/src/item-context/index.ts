@@ -10,6 +10,7 @@ import type { VariableDeclaration } from '@qti-components/base';
 
 export interface ItemContext {
   identifier?: string;
+  lang?: string;
   title?: string;
   variables?: ReadonlyArray<VariableDeclaration<string | string[] | null>>;
   itemBody?: XMLDocument;

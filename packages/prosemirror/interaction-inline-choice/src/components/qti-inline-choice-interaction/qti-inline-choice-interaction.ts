@@ -1,6 +1,7 @@
 import { css, html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 import { Interaction } from '@qti-editor/interaction-shared/components/interaction.js';
+import { QtiI18nController } from '@qti-editor/interaction-shared';
 
 import styles from '@qti-components/inline-choice-interaction/styles';
 
@@ -27,6 +28,8 @@ export class QtiInlineChoiceInteraction extends Interaction {
   @state()
   _dropdownOpen = false;
 
+  private readonly i18n = new QtiI18nController(this);
+
   private readonly _menuId = `qti-inline-choice-menu-${inlineChoiceMenuCounter++}`;
 
   override render() {
@@ -40,12 +43,12 @@ export class QtiInlineChoiceInteraction extends Interaction {
         popovertarget="${this._menuId}"
         popovertargetaction="toggle"
       >
-        <span part="value">Klik om opties in te vullen</span>
+        <span part="value">${this.i18n.t('inlineChoice.placeholder')}</span>
         <span part="dropdown-icon" aria-hidden="true">▾</span>
       </button>
       <div id="${this._menuId}" part="menu" role="listbox" popover="auto">
         <button part="option" type="button" role="option">
-          <span part="option-content">vul hieronder de opties in</span>
+          <span part="option-content">${this.i18n.t('inlineChoice.emptyOption')}</span>
         </button>
         <slot @slotchange=${this.#onChoicesSlotChange}></slot>
       </div>

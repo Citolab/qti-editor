@@ -11,6 +11,8 @@
     "allowImportingTsExtensions": false,
     "moduleResolution": "bundler",
     "paths": {
+      "@qti-editor/interaction-shared": ["../interaction-shared/dist/index.d.ts"],
+      "@qti-editor/interaction-shared/*": ["../interaction-shared/dist/*"],
       "@qti-editor/prosemirror-attributes-ui-prosekit": ["./src/index.ts"]
     },
     "strict": false,
