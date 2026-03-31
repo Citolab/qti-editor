@@ -19,6 +19,7 @@ import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
 import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
 import { insertMatchInteraction } from '@qti-editor/interaction-match';
+import { insertOrderInteraction } from '@qti-editor/interaction-order';
 import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
 
 import type { EditorView } from 'prosekit/pm/view';
@@ -91,6 +92,11 @@ export class QtiSlashMenu extends LitElement {
           class="contents"
           label="Match Interaction"
           @select=${() => this.insertInteraction(insertMatchInteraction)}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Order Interaction"
+          @select=${() => this.insertInteraction(insertOrderInteraction)}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"

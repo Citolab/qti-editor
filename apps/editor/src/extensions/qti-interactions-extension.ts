@@ -13,6 +13,12 @@ import {
   defineMatchCorrectResponseExtension,
 } from '@qti-editor/interaction-match';
 import {
+  qtiOrderInteractionNodeSpec,
+  insertOrderChoiceOnEnter,
+  defineOrderCorrectResponseExtension,
+} from '@qti-editor/interaction-order';
+
+import {
   qtiSelectPointInteractionNodeSpec,
   imgSelectPointNodeSpec,
 } from '@qti-editor/interaction-select-point';
@@ -50,13 +56,16 @@ export function defineQtiInteractionsExtension() {
     defineNodeSpec({ name: 'qtiSimpleMatchSet', ...qtiSimpleMatchSetNodeSpec }),
     defineNodeSpec({ name: 'qtiSimpleAssociableChoice', ...qtiSimpleAssociableChoiceNodeSpec }),
     defineNodeSpec({ name: 'qtiSimpleAssociableChoiceParagraph', ...qtiSimpleAssociableChoiceParagraphNodeSpec }),
+    // Order interaction
+    defineNodeSpec({ name: 'qtiOrderInteraction', ...qtiOrderInteractionNodeSpec }),
     // Select point interaction
     defineNodeSpec({ name: 'qtiSelectPointInteraction', ...qtiSelectPointInteractionNodeSpec }),
     defineNodeSpec({ name: 'imgSelectPoint', ...imgSelectPointNodeSpec }),
     defineKeymap({
       Enter: (state, dispatch, view) =>
         insertSimpleChoiceOnEnter(state, dispatch, view) ||
-        insertSimpleAssociableChoiceOnEnter(state, dispatch, view),
+        insertSimpleAssociableChoiceOnEnter(state, dispatch, view) ||
+        insertOrderChoiceOnEnter(state, dispatch, view),
       // 'Mod-Shift-q': insertChoiceInteraction,
       // 'Mod-Shift-t': insertTextEntryInteraction,
       // 'Mod-Shift-e': insertExtendedTextInteraction,
@@ -65,6 +74,8 @@ export function defineQtiInteractionsExtension() {
     defineCorrectResponseClickExtension(),
     // Enable drag-and-drop for match interaction correct responses
     defineMatchCorrectResponseExtension(),
+    // Enable click-to-order for order interaction correct responses
+    defineOrderCorrectResponseExtension(),
   );
 }
 
