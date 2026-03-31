@@ -6,7 +6,7 @@ import '@qti-editor/ui/components/editor/ui/toolbar';
 
 import { AppHeader } from './components/layout/header.js';
 import { EditorLayout, type EditorLayoutHandle } from './components/layout/layout-editor.js';
-import { StatusBar } from './components/layout/StatusBar.js';
+import { StatusBar } from './components/layout/status-bar.js';
 import { UnsavedChangesDialog } from './components/file-management/unsaved-changes-dialog.js';
 import { LoginModal } from './components/auth/LoginModal.js';
 import { useFileOperations } from './hooks/use-file-operations.js';

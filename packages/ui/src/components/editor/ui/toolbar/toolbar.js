@@ -5,6 +5,7 @@ import '../../../blocks/convert-menu/index.ts'
 
 import { html, LitElement, nothing } from 'lit';
 import { defineUpdateHandler } from 'prosekit/core';
+import { subscribeQtiI18n, translateQti } from '@qti-editor/interaction-shared/i18n/index.js';
 
 function getToolbarItems(editor) {
   return {
@@ -158,6 +159,9 @@ class LitToolbar extends LitElement {
     uploader: {
       attribute: false
     },
+    labels: {
+      attribute: false
+    },
   };
 
   createRenderRoot() {
@@ -167,10 +171,13 @@ class LitToolbar extends LitElement {
   connectedCallback() {
     super.connectedCallback()
     this.classList.add('contents')
+    this.removeI18nListener = subscribeQtiI18n(() => this.requestUpdate())
     this.attachEditorListener()
   }
 
   disconnectedCallback() {
+    this.removeI18nListener?.()
+    this.removeI18nListener = undefined
     this.detachEditorListener()
     super.disconnectedCallback()
   }
@@ -196,6 +203,10 @@ class LitToolbar extends LitElement {
     this.removeUpdateExtension = undefined
   }
 
+  t(key, fallback) {
+    return this.labels?.[key] ?? translateQti(key, { target: this, fallback })
+  }
+
   render() {
     const editor = this.editor
     if (!editor) {
@@ -214,7 +225,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.undo.isActive}
                 .disabled=${!items.undo.canExec}
-                tooltip="Undo"
+                .tooltip=${this.t('toolbar.undo', 'Undo')}
                 icon="i-lucide-undo-2 size-5 block"
                 @click=${items.undo.command}
               ></lit-editor-button>
@@ -227,7 +238,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.redo.isActive}
                 .disabled=${!items.redo.canExec}
-                tooltip="Redo"
+                .tooltip=${this.t('toolbar.redo', 'Redo')}
                 icon="i-lucide-redo-2 size-5 block"
                 @click=${items.redo.command}
               ></lit-editor-button>
@@ -241,7 +252,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.bold.isActive}
                 .disabled=${!items.bold.canExec}
-                tooltip="Bold"
+                .tooltip=${this.t('toolbar.bold', 'Bold')}
                 icon="i-lucide-bold size-5 block"
                 @click=${items.bold.command}
               ></lit-editor-button>
@@ -254,7 +265,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.italic.isActive}
                 .disabled=${!items.italic.canExec}
-                tooltip="Italic"
+                .tooltip=${this.t('toolbar.italic', 'Italic')}
                 icon="i-lucide-italic size-5 block"
                 @click=${items.italic.command}
               ></lit-editor-button>
@@ -267,7 +278,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.underline.isActive}
                 .disabled=${!items.underline.canExec}
-                tooltip="Underline"
+                .tooltip=${this.t('toolbar.underline', 'Underline')}
                 icon="i-lucide-underline size-5 block"
                 @click=${items.underline.command}
               ></lit-editor-button>
@@ -280,7 +291,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.strike.isActive}
                 .disabled=${!items.strike.canExec}
-                tooltip="Strike"
+                .tooltip=${this.t('toolbar.strike', 'Strike')}
                 icon="i-lucide-strikethrough size-5 block"
                 @click=${items.strike.command}
               ></lit-editor-button>
@@ -293,7 +304,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.code.isActive}
                 .disabled=${!items.code.canExec}
-                tooltip="Code"
+                .tooltip=${this.t('toolbar.code', 'Code')}
                 icon="i-lucide-code size-5 block"
                 @click=${items.code.command}
               ></lit-editor-button>
@@ -306,7 +317,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.codeBlock.isActive}
                 .disabled=${!items.codeBlock.canExec}
-                tooltip="Code Block"
+                .tooltip=${this.t('toolbar.codeBlock', 'Code Block')}
                 icon="i-lucide-square-code size-5 block"
                 @click=${items.codeBlock.command}
               ></lit-editor-button>
@@ -319,7 +330,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.heading1.isActive}
                 .disabled=${!items.heading1.canExec}
-                tooltip="Heading 1"
+                .tooltip=${this.t('toolbar.heading1', 'Heading 1')}
                 icon="i-lucide-heading-1 size-5 block"
                 @click=${items.heading1.command}
               ></lit-editor-button>
@@ -332,7 +343,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.heading2.isActive}
                 .disabled=${!items.heading2.canExec}
-                tooltip="Heading 2"
+                .tooltip=${this.t('toolbar.heading2', 'Heading 2')}
                 icon="i-lucide-heading-2 size-5 block"
                 @click=${items.heading2.command}
               ></lit-editor-button>
@@ -345,7 +356,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.heading3.isActive}
                 .disabled=${!items.heading3.canExec}
-                tooltip="Heading 3"
+                .tooltip=${this.t('toolbar.heading3', 'Heading 3')}
                 icon="i-lucide-heading-3 size-5 block"
                 @click=${items.heading3.command}
               ></lit-editor-button>
@@ -358,7 +369,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.horizontalRule.isActive}
                 .disabled=${!items.horizontalRule.canExec}
-                tooltip="Divider"
+                .tooltip=${this.t('toolbar.divider', 'Divider')}
                 icon="i-lucide-minus size-5 block"
                 @click=${items.horizontalRule.command}
               ></lit-editor-button>
@@ -371,7 +382,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.blockquote.isActive}
                 .disabled=${!items.blockquote.canExec}
-                tooltip="Blockquote"
+                .tooltip=${this.t('toolbar.blockquote', 'Blockquote')}
                 icon="i-lucide-text-quote size-5 block"
                 @click=${items.blockquote.command}
               ></lit-editor-button>
@@ -384,7 +395,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.bulletList.isActive}
                 .disabled=${!items.bulletList.canExec}
-                tooltip="Bullet List"
+                .tooltip=${this.t('toolbar.bulletList', 'Bullet List')}
                 icon="i-lucide-list size-5 block"
                 @click=${items.bulletList.command}
               ></lit-editor-button>
@@ -397,7 +408,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.orderedList.isActive}
                 .disabled=${!items.orderedList.canExec}
-                tooltip="Ordered List"
+                .tooltip=${this.t('toolbar.orderedList', 'Ordered List')}
                 icon="i-lucide-list-ordered size-5 block"
                 @click=${items.orderedList.command}
               ></lit-editor-button>
@@ -410,7 +421,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.taskList.isActive}
                 .disabled=${!items.taskList.canExec}
-                tooltip="Task List"
+                .tooltip=${this.t('toolbar.taskList', 'Task List')}
                 icon="i-lucide-list-checks size-5 block"
                 @click=${items.taskList.command}
               ></lit-editor-button>
@@ -423,7 +434,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.toggleList.isActive}
                 .disabled=${!items.toggleList.canExec}
-                tooltip="Toggle List"
+                .tooltip=${this.t('toolbar.toggleList', 'Toggle List')}
                 icon="i-lucide-list-collapse size-5 block"
                 @click=${items.toggleList.command}
               ></lit-editor-button>
@@ -436,7 +447,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.indentList.isActive}
                 .disabled=${!items.indentList.canExec}
-                tooltip="Increase indentation"
+                .tooltip=${this.t('toolbar.indentIncrease', 'Increase indentation')}
                 icon="i-lucide-indent-increase size-5 block"
                 @click=${items.indentList.command}
               ></lit-editor-button>
@@ -449,7 +460,7 @@ class LitToolbar extends LitElement {
               <lit-editor-button
                 .pressed=${items.dedentList.isActive}
                 .disabled=${!items.dedentList.canExec}
-                tooltip="Decrease indentation"
+                .tooltip=${this.t('toolbar.indentDecrease', 'Decrease indentation')}
                 icon="i-lucide-indent-decrease size-5 block"
                 @click=${items.dedentList.command}
               ></lit-editor-button>
@@ -463,7 +474,8 @@ class LitToolbar extends LitElement {
                 .editor=${editor}
                 .uploader=${this.uploader}
                 .disabled=${!items.insertImage.canExec}
-                tooltip="Insert Image"
+                .tooltip=${this.t('toolbar.insertImage', 'Insert Image')}
+                .labels=${this.labels}
                 icon="i-lucide-image size-5 block"
               ></lit-editor-image-upload-popover>
             `
