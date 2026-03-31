@@ -9,12 +9,14 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
   static override styles = css`
     :host {
       display: flex;
-      user-select: none;
+      flex-direction: column;
     }
+
     slot {
       width: 100%;
       display: block;
     }
+
     slot[name='qti-simple-associable-choice'] {
       width: auto;
     }
@@ -39,8 +41,13 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
   fixed: boolean = false;
 
   override render() {
-    return html`<slot part="slot"></slot>
-      <slot part="dropslot" name="qti-simple-associable-choice"></slot> `;
+    return html`
+      <slot part="slot"></slot>
+      <slot
+        part="dropslot"
+        name="qti-simple-associable-choice"
+      ></slot>
+    `;
   }
 }
 if (!customElements.get('qti-simple-associable-choice')) {

@@ -83,11 +83,31 @@ export const insertSimpleAssociableChoiceOnEnter: Command = (state, dispatch) =>
   return createInsertSiblingOnEnterCommand({
     ancestorNodeName: 'qtiSimpleAssociableChoice',
     selectionOffset: 2,
-    createSiblingNode: () =>
-      choiceType.create(
-        { identifier: `CHOICE_${crypto.randomUUID()}`, matchMax: 1 },
+    createSiblingNode: (currentState) => {
+      const { selection } = currentState;
+      const matchSetType = currentState.schema.nodes.qtiSimpleMatchSet;
+      const interactionType = currentState.schema.nodes.qtiMatchInteraction;
+
+      let prefix = 'CHOICE';
+      if (matchSetType && interactionType) {
+        for (let depth = selection.$from.depth; depth >= 0; depth--) {
+          if (selection.$from.node(depth).type === matchSetType) {
+            // Find which index this match set is within its parent interaction
+            const parentDepth = depth - 1;
+            if (parentDepth >= 0 && selection.$from.node(parentDepth).type === interactionType) {
+              const matchSetIndex = selection.$from.index(parentDepth);
+              prefix = matchSetIndex === 0 ? 'SOURCE' : 'TARGET';
+            }
+            break;
+          }
+        }
+      }
+
+      return choiceType.create(
+        { identifier: `${prefix}_${crypto.randomUUID()}`, matchMax: 1 },
         paragraphType.create()
-      ),
+      );
+    },
   })(state, dispatch);
 };
 
