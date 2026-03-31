@@ -24,6 +24,7 @@
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
+    "prosekit:install-examples": "pnpx shadcn@latest add @prosekit/lit-example-toolbar && npx shadcn@latest add @prosekit/lit-example-slash-menu",
     "registry:transform": "node scripts/transform-imports.mjs",
     "registry:build": "node scripts/transform-imports.mjs && cd dist && npx shadcn@latest build ./registry.json --output ./public/r",
     "registry:serve": "npx serve dist/public -p 4100 --cors"
