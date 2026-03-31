@@ -2,14 +2,13 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDir": "src",
     "allowJs": true,
     "checkJs": false,
     "paths": {
       "@qti-editor/ui": ["./src/index.ts"],
       "@qti-editor/ui/*": ["./src/*"],
-      "@qti-editor/core/composer": ["../qti/core/dist/composer/index.d.ts"],
-      "@qti-editor/core/interactions/composer": ["../qti/core/dist/interactions/composer.d.ts"],
+      "@qti-editor/core/composer": ["../qti/core/src/composer/index.ts"],
+      "@qti-editor/core/interactions/composer": ["../qti/core/src/interactions/composer.ts"],
       "@qti-editor/interaction-choice": ["../prosemirror/interaction-choice/dist/index.d.ts"],
       "@qti-editor/interaction-extended-text": ["../prosemirror/interaction-extended-text/dist/index.d.ts"],
       "@qti-editor/interaction-match": ["../prosemirror/interaction-match/dist/index.d.ts"],

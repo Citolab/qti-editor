@@ -5,9 +5,11 @@
  * Uses save-xml for item-body serialization and the composer for full QTI assembly.
  */
 
-import type { ProseMirrorNode } from 'prosekit/pm/model';
 import { buildAssessmentItemXml, formatXml, type ComposerItemContext } from '@qti-editor/core/composer';
+
 import { xmlFromNode } from '../save-xml/index.js';
+
+import type { ProseMirrorNode } from 'prosekit/pm/model';
 
 /** Build a complete QTI 3.0 assessment item XML from a ProseMirror doc. */
 export function qtiFromNode(

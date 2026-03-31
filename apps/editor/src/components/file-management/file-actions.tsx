@@ -1,13 +1,14 @@
-import { IconFile, IconSave } from '../../lib/icons';
+import { IconFile, IconSave, IconDownload } from '../../lib/icons';
 import { ToolbarButton } from '../ui/toolbar-button';
 
 interface FileActionsProps {
   onNew: () => void;
   onSave: () => void;
+  onExport: () => void;
   isDirty: boolean;
 }
 
-export function FileActions({ onNew, onSave, isDirty }: FileActionsProps) {
+export function FileActions({ onNew, onSave, onExport, isDirty }: FileActionsProps) {
   return (
     <>
       <ToolbarButton onClick={onNew} title="New file">
@@ -17,6 +18,10 @@ export function FileActions({ onNew, onSave, isDirty }: FileActionsProps) {
       <ToolbarButton onClick={onSave} title="Save (Ctrl+S)" highlight={isDirty}>
         <IconSave />
         {isDirty ? 'Save *' : 'Save'}
+      </ToolbarButton>
+
+      <ToolbarButton onClick={onExport} title="Export as QTI XML">
+        <IconDownload /> Export QTI
       </ToolbarButton>
     </>
   );

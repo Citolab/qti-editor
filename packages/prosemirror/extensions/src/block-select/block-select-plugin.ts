@@ -301,7 +301,7 @@ export const blockSelectPlugin = new Plugin({
     }
   },
 
-  view() {
+  view(view) {
     const style = document.createElement('style');
     style.textContent = `
       .ProseMirror:has(.block-selected) .ProseMirror-selectednode.block-selected {
@@ -314,6 +314,33 @@ export const blockSelectPlugin = new Plugin({
       }
     `;
     document.head.appendChild(style);
-    return { destroy: () => style.remove() };
+
+    // Global mouseup handler to catch releases outside the editor
+    const handleGlobalMouseUp = () => {
+      const pluginState = blockSelectPlugin.getState(view.state);
+      if (pluginState?.startPos !== null) {
+        view.dispatch(view.state.tr.setMeta('block-select-drag', { dragging: false, startPos: null }));
+      }
+    };
+
+    // Also handle blur/visibility change to reset drag state
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        handleGlobalMouseUp();
+      }
+    };
+
+    document.addEventListener('mouseup', handleGlobalMouseUp);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleGlobalMouseUp);
+
+    return {
+      destroy: () => {
+        style.remove();
+        document.removeEventListener('mouseup', handleGlobalMouseUp);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('blur', handleGlobalMouseUp);
+      }
+    };
   }
 });

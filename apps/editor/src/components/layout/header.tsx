@@ -2,8 +2,10 @@ import { Divider } from '../ui/divider';
 import { FileActions } from '../file-management/file-actions';
 import { FileNameInput } from '../file-management/file-name-input';
 import { LoadMenu } from '../file-management/load-menu';
+import { AuthButton } from '../auth/AuthButton';
 
 import type { KeyboardEvent, MouseEvent } from 'react';
+import type { User } from 'firebase/auth';
 import type { SavedFile } from '../../lib/fileStore';
 
 type AutoSaveStatus = 'idle' | 'saving' | 'saved';
@@ -15,14 +17,19 @@ interface AppHeaderProps {
   files: SavedFile[];
   currentFileId?: string;
   loadMenuOpen: boolean;
+  user: User | null;
+  authLoading: boolean;
   onFileNameChange: (value: string) => void;
   onFileNameBlur: () => void;
   onFileNameKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
   onNew: () => void;
   onSave: () => void;
+  onExport: () => void;
   onLoadMenuToggle: () => void;
   onLoad: (id: string) => void;
   onDelete: (e: MouseEvent, id: string) => void;
+  onSignIn: () => void;
+  onSignOut: () => void;
 }
 
 export function AppHeader({
@@ -32,14 +39,19 @@ export function AppHeader({
   files,
   currentFileId,
   loadMenuOpen,
+  user,
+  authLoading,
   onFileNameChange,
   onFileNameBlur,
   onFileNameKeyDown,
   onNew,
   onSave,
+  onExport,
   onLoadMenuToggle,
   onLoad,
   onDelete,
+  onSignIn,
+  onSignOut,
 }: AppHeaderProps) {
   return (
     <header
@@ -47,7 +59,7 @@ export function AppHeader({
         display: 'flex',
         alignItems: 'center',
         gap: '4px',
-        padding: '0 12px',
+        padding: '0 16px',
         height: '44px',
         flexShrink: 0,
         background: '#fff',
@@ -70,7 +82,7 @@ export function AppHeader({
 
       <Divider />
 
-      <FileActions onNew={onNew} onSave={onSave} isDirty={isDirty} />
+      <FileActions onNew={onNew} onSave={onSave} onExport={onExport} isDirty={isDirty} />
 
       <LoadMenu
         files={files}
@@ -91,18 +103,25 @@ export function AppHeader({
         onKeyDown={onFileNameKeyDown}
       />
 
-      {autoSaveStatus !== 'idle' && (
-        <span
-          style={{
-            marginLeft: 'auto',
-            fontSize: '11px',
-            whiteSpace: 'nowrap',
-            color: autoSaveStatus === 'saving' ? '#9ca3af' : '#10b981',
-          }}
-        >
-          {autoSaveStatus === 'saving' ? 'Saving…' : 'Auto-saved'}
-        </span>
-      )}
+      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {autoSaveStatus !== 'idle' && (
+          <span
+            style={{
+              fontSize: '11px',
+              whiteSpace: 'nowrap',
+              color: autoSaveStatus === 'saving' ? '#9ca3af' : '#10b981',
+            }}
+          >
+            {autoSaveStatus === 'saving' ? 'Saving…' : 'Auto-saved'}
+          </span>
+        )}
+        <AuthButton
+          user={user}
+          loading={authLoading}
+          onSignIn={onSignIn}
+          onSignOut={onSignOut}
+        />
+      </div>
     </header>
   );
 }
