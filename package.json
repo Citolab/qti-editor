@@ -12,6 +12,8 @@
     "preview": "pnpm --filter @qti-editor/app preview",
     "firebase:serve": "pnpm deploy:build && firebase emulators:start --only hosting",
     "firebase:deploy": "pnpm deploy:build && firebase deploy --only hosting",
+    "firebase:deploy:editor": "pnpm build:packages && pnpm --filter @qti-editor/app build && node scripts/prepare-hosting-editor.mjs && firebase deploy --only hosting:editor",
+    "firebase:deploy:rules": "firebase deploy --only firestore:rules",
     "build:packages": "pnpm -r --filter \"./packages/**\" run build",
     "registry:build": "pnpm --filter @qti-editor/ui registry:build",
     "registry:serve": "pnpm --filter @qti-editor/ui registry:serve",

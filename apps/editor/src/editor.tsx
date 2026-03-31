@@ -1,28 +1,38 @@
-import { useCallback, useState } from 'react';
-import type { MouseEvent, KeyboardEvent } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 // Register the Lit web component (also registers lit-editor-toolbar)
 import './components/qti-editor-app.js';
 import '@qti-editor/ui/components/editor/ui/toolbar';
 
 import { AppHeader } from './components/layout/header.js';
-import { EditorLayout } from './components/layout/layout-editor.js';
+import { EditorLayout, type EditorLayoutHandle } from './components/layout/layout-editor.js';
+import { StatusBar } from './components/layout/StatusBar.js';
 import { UnsavedChangesDialog } from './components/file-management/unsaved-changes-dialog.js';
+import { LoginModal } from './components/auth/LoginModal.js';
 import { useFileOperations } from './hooks/use-file-operations.js';
 import { useEditorDirtyState } from './hooks/use-editor-dirty-state.js';
 import { useAutoSave } from './hooks/use-auto-save.js';
 import { useUnsavedChangesGuard } from './hooks/use-unsaved-changes-guard.js';
+import { useAuth } from './context/auth-context.js';
+
+import type { MouseEvent, KeyboardEvent } from 'react';
 
 
 export default function App() {
   const [editorKey, setEditorKey] = useState(0);
   const [loadMenuOpen, setLoadMenuOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const editorLayoutRef = useRef<EditorLayoutHandle>(null);
+
+  const { user, loading: authLoading, signOut } = useAuth();
 
   // File operations hook
   const {
     currentFile,
     fileName,
     files,
+    syncStatus,
+    lastSyncedAt,
     setFileName,
     commitSave,
     handleFileNameBlur,
@@ -110,6 +120,11 @@ export default function App() {
     [currentFile?.name, setFileName]
   );
 
+  // Handler: Export XML
+  const handleExportXml = useCallback(() => {
+    editorLayoutRef.current?.exportXml(fileName || 'item');
+  }, [fileName]);
+
   // Unsaved dialog: Save action
   const handleUnsavedSave = useCallback(() => {
     onUnsavedSave(() => {
@@ -134,17 +149,30 @@ export default function App() {
         files={files}
         currentFileId={currentFile?.id}
         loadMenuOpen={loadMenuOpen}
+        user={user}
+        authLoading={authLoading}
         onFileNameChange={setFileName}
         onFileNameBlur={handleFileNameBlur}
         onFileNameKeyDown={handleFileNameKeyDown}
         onNew={handleNewFile}
         onSave={handleSaveFile}
+        onExport={handleExportXml}
         onLoadMenuToggle={handleLoadMenuToggle}
         onLoad={handleLoadFile}
         onDelete={handleDeleteFile}
+        onSignIn={() => setLoginModalOpen(true)}
+        onSignOut={signOut}
       />
 
-      <EditorLayout editorKey={editorKey} />
+      <EditorLayout ref={editorLayoutRef} editorKey={editorKey} />
+
+      <StatusBar
+        user={user}
+        authLoading={authLoading}
+        syncStatus={syncStatus}
+        lastSyncedAt={lastSyncedAt}
+        onSignIn={() => setLoginModalOpen(true)}
+      />
 
       {unsavedDialog && (
         <UnsavedChangesDialog
@@ -152,6 +180,10 @@ export default function App() {
           onDiscard={onUnsavedDiscard}
           onCancel={onUnsavedCancel}
         />
+      )}
+
+      {loginModalOpen && (
+        <LoginModal onClose={() => setLoginModalOpen(false)} />
       )}
     </div>
   );

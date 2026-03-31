@@ -21,6 +21,7 @@ import {
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
+import { qtiFromNode } from '@qti-editor/prosekit-integration';
 
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
@@ -142,9 +143,24 @@ export class QtiEditorApp extends LitElement {
     }
   }
 
+  exportXml(fileName: string = 'item'): void {
+    const safeFileName = fileName.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9._-]/g, '') || 'item';
+    const xml = qtiFromNode(this.editor.view.state.doc, {
+      identifier: this.itemContext.identifier,
+      title: this.itemContext.title,
+    });
+    const blob = new Blob([xml], { type: 'application/xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${safeFileName}.xml`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   override render() {
     return html`
-      <lit-editor-toolbar .editor=${this.editor} class="block w-full shrink-0"></lit-editor-toolbar>
+      <lit-editor-toolbar .editor=${this.editor} class="block w-full shrink-0" style="padding-left: 1rem; padding-right: 1rem;"></lit-editor-toolbar>
       <div class="flex flex-1 min-h-0 gap-4 p-4 overflow-hidden">
         <div class="editor-card relative flex min-w-0 flex-1 flex-col rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden">
           <div ${ref(this.editorRef)} class="card flex-1 min-h-0 px-6 py-6 overflow-auto"></div>

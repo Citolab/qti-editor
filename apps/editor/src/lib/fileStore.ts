@@ -72,3 +72,22 @@ export function clearCurrentSession(): void {
   localStorage.removeItem(AUTO_SAVE_KEY);
   localStorage.removeItem(CURRENT_FILE_ID_KEY);
 }
+
+/**
+ * Merge incoming files into localStorage. Later savedAt wins on conflict.
+ * Used by the Firestore sync layer to pull remote files on login.
+ */
+export function importFiles(incoming: SavedFile[]): void {
+  const local = listFiles();
+  const byId = new Map(local.map(f => [f.id, f]));
+  for (const file of incoming) {
+    const existing = byId.get(file.id);
+    if (!existing || new Date(file.savedAt) > new Date(existing.savedAt)) {
+      byId.set(file.id, file);
+    }
+  }
+  const merged = Array.from(byId.values()).sort(
+    (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
+  );
+  localStorage.setItem(FILES_KEY, JSON.stringify(merged));
+}

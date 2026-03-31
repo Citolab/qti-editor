@@ -205,7 +205,7 @@ class LitToolbar extends LitElement {
     const items = getToolbarItems(editor)
 
     return html`
-      <div class="z-2 box-border border-gray-200 dark:border-gray-800 border-solid border-l-0 border-r-0 border-t-0 border-b flex flex-wrap gap-1 p-2 items-center">
+      <div class="z-2 box-border border-gray-200 dark:border-gray-800 border-solid border-l-0 border-r-0 border-t-0 border-b flex flex-wrap gap-1 p-2 px-4 items-center">
         <qti-interaction-insert-menu .editor=${editor}></qti-interaction-insert-menu>
         <qti-convert-menu .editor=${editor}></qti-convert-menu>
         ${
