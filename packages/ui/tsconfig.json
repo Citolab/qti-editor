@@ -4,6 +4,7 @@
     "baseUrl": ".",
     "allowJs": true,
     "checkJs": false,
+    "useDefineForClassFields": false,
     "paths": {
       "@qti-editor/ui": ["./src/index.ts"],
       "@qti-editor/ui/*": ["./src/*"],
