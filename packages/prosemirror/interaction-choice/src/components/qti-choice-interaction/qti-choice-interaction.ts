@@ -55,6 +55,24 @@ export class QtiChoiceInteractionEdit extends ChoiceInteractionBase {
     if (changedProperties.has('maxChoices')) {
       this.#updateChoices();
     }
+    if (changedProperties.has('correctResponse')) {
+      this.#syncSelectedChoices();
+    }
+  }
+
+  #syncSelectedChoices() {
+    const identifiers = new Set(
+      typeof this.correctResponse === 'string' && this.correctResponse
+        ? this.correctResponse.split(',')
+        : Array.isArray(this.correctResponse)
+          ? this.correctResponse
+          : [],
+    );
+    this.querySelectorAll<HTMLElement & { setSelected?: (v: boolean) => void; identifier?: string }>(
+      'qti-simple-choice',
+    ).forEach(choice => {
+      choice.setSelected?.(identifiers.has(choice.identifier ?? ''));
+    });
   }
 
   #updateChoices() {
