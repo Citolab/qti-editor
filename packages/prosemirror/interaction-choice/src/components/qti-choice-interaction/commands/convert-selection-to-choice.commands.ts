@@ -1,14 +1,18 @@
-import type { Node as ProseMirrorNode } from 'prosemirror-model';
 import { translateQti } from '@qti-editor/interaction-shared';
+
+import type { Fragment, Node as ProseMirrorNode } from 'prosemirror-model';
 import type { EditorView } from 'prosekit/pm/view';
 
-type ConvertibleBlockKind = 'list' | 'paragraph';
-
-type ConvertibleBlock = {
-  kind: ConvertibleBlockKind;
+type RootBlock = {
   pos: number;
   end: number;
   node: ProseMirrorNode;
+};
+
+type ConversionPlan = {
+  promptText: string | null;
+  blocksToReplace: RootBlock[];
+  listBlocks: RootBlock[];
 };
 
 function isFlatList(listNode: ProseMirrorNode, listType: any): boolean {
@@ -30,46 +34,42 @@ function hasOnlyTextInlineContent(node: ProseMirrorNode): boolean {
   return true;
 }
 
-function isConvertibleRootBlock(node: ProseMirrorNode, schema: any): ConvertibleBlockKind | null {
+function isPlainTextParagraph(node: ProseMirrorNode, schema: any): boolean {
   const paragraphType = schema.nodes.paragraph;
-  const listType = schema.nodes.list;
-  if (paragraphType && node.type === paragraphType) {
-    if (!hasOnlyTextInlineContent(node)) return null;
-    return 'paragraph';
-  }
-  if (listType && node.type === listType) {
-    const listKind = node.attrs?.kind;
-    if (!['bullet', 'ordered'].includes(listKind)) return null;
-    if (!isFlatList(node, listType)) return null;
-    // Reject list items whose paragraph content includes non-text nodes
-    let hasNonTextContent = false;
-    node.descendants(child => {
-      if (child.type === paragraphType && !hasOnlyTextInlineContent(child)) {
-        hasNonTextContent = true;
-        return false;
-      }
-      return !hasNonTextContent;
-    });
-    if (hasNonTextContent) return null;
-    return 'list';
-  }
-  return null;
+  return Boolean(paragraphType && node.type === paragraphType && hasOnlyTextInlineContent(node));
 }
 
-function getSelectedConvertibleBlocks(view: EditorView): ConvertibleBlock[] {
+function isConvertibleList(node: ProseMirrorNode, schema: any): boolean {
+  const paragraphType = schema.nodes.paragraph;
+  const listType = schema.nodes.list;
+  if (!paragraphType || !listType || node.type !== listType) {
+    return false;
+  }
+
+  const listKind = node.attrs?.kind;
+  if (!['bullet', 'ordered'].includes(listKind)) return false;
+  if (!isFlatList(node, listType)) return false;
+
+  for (let i = 0; i < node.childCount; i += 1) {
+    const child = node.child(i);
+    if (child.type !== paragraphType || !hasOnlyTextInlineContent(child)) {
+      return false;
+    }
+  }
+
+  return node.childCount > 0;
+}
+
+function getSelectedRootBlocks(view: EditorView): RootBlock[] {
   const { state } = view;
   const { selection } = state;
-  const schema: any = state.schema;
-  const blocks: ConvertibleBlock[] = [];
+  const blocks: RootBlock[] = [];
   const seenPositions = new Set<number>();
 
-  const addBlockIfConvertible = (node: ProseMirrorNode, start: number) => {
-    if (seenPositions.has(start)) return;
-    const kind = isConvertibleRootBlock(node, schema);
-    if (!kind) return;
+  const addBlock = (node: ProseMirrorNode, start: number) => {
+    if (seenPositions.has(start) || !node.isBlock) return;
     seenPositions.add(start);
     blocks.push({
-      kind,
       pos: start,
       end: start + node.nodeSize,
       node,
@@ -97,6 +97,7 @@ function getSelectedConvertibleBlocks(view: EditorView): ConvertibleBlock[] {
       }
       return null;
     }
+
     return {
       node: $pos.node(1),
       start: $pos.start(1) - 1,
@@ -105,19 +106,15 @@ function getSelectedConvertibleBlocks(view: EditorView): ConvertibleBlock[] {
 
   if (selection.empty) {
     const rootBlock = getRootBlockAt(selection.from);
-    if (!rootBlock) return blocks;
-    addBlockIfConvertible(rootBlock.node, rootBlock.start);
+    if (rootBlock) addBlock(rootBlock.node, rootBlock.start);
     return blocks;
   }
 
-  // Block-select plugin uses a custom "node-range" selection with explicit block ranges.
-  // Prefer those exact ranges to avoid text-range quirks across custom elements/shadow DOM.
   const selectionJSON = selection.toJSON() as { type?: string };
   if (selectionJSON.type === 'node-range' && Array.isArray(selection.ranges)) {
     for (const range of selection.ranges) {
       const rootBlock = getRootBlockAt(range.$from.pos);
-      if (!rootBlock) continue;
-      addBlockIfConvertible(rootBlock.node, rootBlock.start);
+      if (rootBlock) addBlock(rootBlock.node, rootBlock.start);
     }
     if (blocks.length > 0) return blocks;
   }
@@ -127,24 +124,61 @@ function getSelectedConvertibleBlocks(view: EditorView): ConvertibleBlock[] {
     const end = start + node.nodeSize;
     const intersectsSelection = end > selection.from && start < selection.to;
     if (!intersectsSelection) return;
-    addBlockIfConvertible(node, start);
+    addBlock(node, start);
   });
 
   return blocks;
 }
 
-function getChoiceInlineContent(block: ConvertibleBlock, schema: any) {
-  if (block.kind === 'paragraph') {
-    return block.node.content;
+function buildConversionPlan(blocks: RootBlock[], schema: any): ConversionPlan | null {
+  if (blocks.length === 0) return null;
+
+  const promptBlocks: RootBlock[] = [];
+  const listBlocks: RootBlock[] = [];
+  let sawList = false;
+
+  for (const block of blocks) {
+    if (isPlainTextParagraph(block.node, schema)) {
+      if (sawList) return null;
+      promptBlocks.push(block);
+      continue;
+    }
+
+    if (isConvertibleList(block.node, schema)) {
+      sawList = true;
+      listBlocks.push(block);
+      continue;
+    }
+
+    return null;
   }
 
+  if (listBlocks.length === 0) return null;
+
+  const promptText = promptBlocks
+    .map(block => block.node.textContent.trim())
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+
+  return {
+    promptText: promptText || null,
+    blocksToReplace: [...promptBlocks, ...listBlocks],
+    listBlocks,
+  };
+}
+
+function getChoiceContentsFromListBlock(block: RootBlock, schema: any): Array<Fragment | null> {
   const paragraphType = schema.nodes.paragraph;
-  if (!paragraphType) return null;
-  const firstChild = block.node.firstChild;
-  if (firstChild && firstChild.type === paragraphType) {
-    return firstChild.content;
+  if (!paragraphType) return [];
+
+  const choices: Array<Fragment | null> = [];
+  for (let i = 0; i < block.node.childCount; i += 1) {
+    const child = block.node.child(i);
+    if (child.type !== paragraphType) continue;
+    choices.push(child.content.size > 0 ? child.content : null);
   }
-  return null;
+  return choices;
 }
 
 export function canConvertFlatListToChoiceInteraction(view: EditorView): boolean {
@@ -160,12 +194,17 @@ export function canConvertFlatListToChoiceInteraction(view: EditorView): boolean
     return false;
   }
 
-  const selectedBlocks = getSelectedConvertibleBlocks(view);
-  if (selectedBlocks.length === 0) return false;
+  const plan = buildConversionPlan(getSelectedRootBlocks(view), schema);
+  if (!plan) return false;
 
-  const firstBlock = selectedBlocks[0];
-  const $pos = state.doc.resolve(firstBlock.pos);
-  return $pos.parent.canReplaceWith($pos.index(), $pos.index() + 1, interactionType);
+  const firstBlock = plan.blocksToReplace[0];
+  const lastBlock = plan.blocksToReplace[plan.blocksToReplace.length - 1];
+  const $from = state.doc.resolve(firstBlock.pos);
+  const $to = state.doc.resolve(lastBlock.end);
+
+  if ($from.parent !== $to.parent) return false;
+
+  return $from.parent.canReplaceWith($from.index(), $to.index(), interactionType);
 }
 
 export function convertFlatListToChoiceInteraction(view: EditorView): boolean {
@@ -180,38 +219,39 @@ export function convertFlatListToChoiceInteraction(view: EditorView): boolean {
     return false;
   }
 
-  const selectedBlocks = getSelectedConvertibleBlocks(view);
-  if (selectedBlocks.length === 0) return false;
+  const plan = buildConversionPlan(getSelectedRootBlocks(view), schema);
+  if (!plan) return false;
 
-  const prompt = promptType.create(
-    null,
-    promptParagraphType.create(null, schema.text(translateQti('prompt.choice.selectOne', { target: view.dom })))
+  const promptText = plan.promptText ?? translateQti('prompt.choice.selectOne', { target: view.dom });
+  const prompt = promptType.create(null, promptParagraphType.create(null, schema.text(promptText)));
+
+  const choices = plan.listBlocks.flatMap(block =>
+    getChoiceContentsFromListBlock(block, schema).map(content => {
+      const paragraphContent = content ?? schema.text(translateQti('choice.option', { target: view.dom }));
+
+      return choiceType.create(
+        { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
+        choiceParagraphType.create(null, paragraphContent)
+      );
+    })
   );
-
-  const choices = selectedBlocks.map(block => {
-    const inlineContent = getChoiceInlineContent(block, schema);
-    const paragraphContent = inlineContent ?? schema.text(block.node.textContent.trim() || translateQti('choice.option', { target: view.dom }));
-
-    return choiceType.create(
-      { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
-      choiceParagraphType.create(null, paragraphContent)
-    );
-  });
 
   const interaction = interactionType.create(
     { responseIdentifier: `RESPONSE_${crypto.randomUUID()}`, maxChoices: 1 },
     [prompt, ...choices]
   );
 
-  const firstBlock = selectedBlocks[0];
-  const $pos = state.doc.resolve(firstBlock.pos);
-  if (!$pos.parent.canReplaceWith($pos.index(), $pos.index() + 1, interactionType)) {
+  const firstBlock = plan.blocksToReplace[0];
+  const lastBlock = plan.blocksToReplace[plan.blocksToReplace.length - 1];
+  const $from = state.doc.resolve(firstBlock.pos);
+  const $to = state.doc.resolve(lastBlock.end);
+  if ($from.parent !== $to.parent || !$from.parent.canReplaceWith($from.index(), $to.index(), interactionType)) {
     return false;
   }
 
   const tr = state.tr;
-  for (let i = selectedBlocks.length - 1; i >= 0; i -= 1) {
-    const block = selectedBlocks[i];
+  for (let i = plan.blocksToReplace.length - 1; i >= 0; i -= 1) {
+    const block = plan.blocksToReplace[i];
     tr.delete(block.pos, block.end);
   }
   tr.insert(firstBlock.pos, interaction);
