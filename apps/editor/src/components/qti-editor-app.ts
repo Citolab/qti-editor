@@ -121,7 +121,7 @@ export class QtiEditorApp extends LitElement {
       );
       this.itemContext = {
         ...this.itemContext,
-        lang: this.lang,
+        lang: this.itemContext.lang,
         itemBody: parsed,
       };
     });
