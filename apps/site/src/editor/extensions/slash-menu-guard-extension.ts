@@ -13,18 +13,14 @@
  * - A `defineUpdateHandler` runs on every editor state change.
  * - It walks the selection anchor's ancestors looking for a node with
  *   `type.spec.placeholder`.
- * - When the cursor enters such a node, the `<prosekit-autocomplete-popover>`
- *   element's `.regex` property is set to `null`, which causes the popover
- *   to unregister its autocomplete rule (the menu cannot open).
- * - When the cursor leaves, the regex is restored so the slash menu works
- *   normally again.
+ * - When the cursor enters such a node, the `<qti-slash-menu>` element's
+ *   `disabled` property is set to true, which causes the popover to unregister
+ *   its autocomplete rule (the menu cannot open).
+ * - When the cursor leaves, disabled is set back to false so the slash menu
+ *   works normally again.
  */
 
-import { canUseRegexLookbehind, defineUpdateHandler } from 'prosekit/core';
-
-const slashMenuRegex = canUseRegexLookbehind()
-  ? /(?<!\S)\/(\S.*)?$/u
-  : /\/(\S.*)?$/u;
+import { defineUpdateHandler } from 'prosekit/core';
 
 export function defineSlashMenuGuardExtension() {
   let wasInside = false;
@@ -42,11 +38,9 @@ export function defineSlashMenuGuardExtension() {
     if (inside === wasInside) return;
     wasInside = inside;
 
-    queueMicrotask(() => {
-      const popover = document.querySelector('prosekit-autocomplete-popover');
-      if (popover) {
-        (popover as any).regex = inside ? null : slashMenuRegex;
-      }
-    });
+    const slashMenu = document.querySelector('qti-slash-menu') as (HTMLElement & { disabled?: boolean }) | null;
+    if (slashMenu) {
+      slashMenu.disabled = inside;
+    }
   });
 }

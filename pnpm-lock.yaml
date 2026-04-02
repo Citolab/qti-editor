@@ -321,6 +321,15 @@ importers:
       '@qti-editor/interaction-extended-text':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-extended-text
+      '@qti-editor/interaction-match':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-match
+      '@qti-editor/interaction-order':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-order
+      '@qti-editor/interaction-select-point':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-select-point
       '@qti-editor/interaction-shared':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-shared
