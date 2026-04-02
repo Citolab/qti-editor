@@ -137,6 +137,9 @@ export class QtiSelectPointInteractionEdit extends Interaction {
   areaMappings = '[]';
 
   @state()
+  private _cursorInside = false;
+
+  @state()
   drawMode: DrawMode = 'select';
 
   @state()
@@ -169,9 +172,23 @@ export class QtiSelectPointInteractionEdit extends Interaction {
   #shapeDrag: ShapeDragState | null = null;
   #fileInputRef = createRef<HTMLInputElement>();
 
+  private _onSelectionChange = () => {
+    const sel = document.getSelection();
+    const inside = sel ? this.contains(sel.anchorNode) : false;
+    if (inside !== this._cursorInside) {
+      this._cursorInside = inside;
+    }
+  };
+
   override connectedCallback(): void {
     super.connectedCallback();
     this.#syncAreaEntriesFromAttribute();
+    document.addEventListener('selectionchange', this._onSelectionChange);
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    document.removeEventListener('selectionchange', this._onSelectionChange);
   }
 
   override firstUpdated(): void {
@@ -382,6 +399,7 @@ export class QtiSelectPointInteractionEdit extends Interaction {
   }
 
   #onPointerDown(event: PointerEvent) {
+    this._cursorInside = true;
     if (!this.imageReady || !this.imageSrc) return;
     const point = this.#toOriginalCoords(event.clientX, event.clientY);
     if (!point) return;
@@ -695,41 +713,44 @@ export class QtiSelectPointInteractionEdit extends Interaction {
     return html`
       <slot name="prompt"></slot>
 
-      <div class="toolbar">
-        ${this.imageSrc
-          ? html`
-              <button
-                type="button"
-                aria-pressed=${this.drawMode === 'select'}
-                @click=${() => this.#setDrawMode('select')}
-              >
-                Select
-              </button>
-              <button
-                type="button"
-                aria-pressed=${this.drawMode === 'circle'}
-                @click=${() => this.#setDrawMode('circle')}
-              >
-                Circle
-              </button>
-              <button
-                type="button"
-                aria-pressed=${this.drawMode === 'rect'}
-                @click=${() => this.#setDrawMode('rect')}
-              >
-                Rect
-              </button>
-              <button type="button" class="danger" @click=${this.#clearMappings}>Clear mappings</button>
-              <button type="button" class="danger" @click=${this.#removeImage}>Remove image</button>
-            `
-          : html`
-              <button type="button" @click=${this.#pasteImageFromClipboard}>Paste URL</button>
-              <button type="button" @click=${this.#openFilePicker}>Upload image</button>
-              <input ${ref(this.#fileInputRef)} type="file" accept="image/*" @change=${this.#onFileChange} />
-            `}
-      </div>
+      ${this._cursorInside ? html`
+        <div class="toolbar" @mousedown=${(e: MouseEvent) => e.preventDefault()}>
+          ${this.imageSrc
+            ? html`
+                <button
+                  type="button"
+                  aria-pressed=${this.drawMode === 'select'}
+                  @click=${() => this.#setDrawMode('select')}
+                >
+                  Select
+                </button>
+                <button
+                  type="button"
+                  aria-pressed=${this.drawMode === 'circle'}
+                  @click=${() => this.#setDrawMode('circle')}
+                >
+                  Circle
+                </button>
+                <button
+                  type="button"
+                  aria-pressed=${this.drawMode === 'rect'}
+                  @click=${() => this.#setDrawMode('rect')}
+                >
+                  Rect
+                </button>
+                <button type="button" class="danger" @click=${this.#clearMappings}>Clear mappings</button>
+                <button type="button" class="danger" @click=${this.#removeImage}>Remove image</button>
+              `
+            : html`
+                <button type="button" @click=${this.#pasteImageFromClipboard}>Paste URL</button>
+                <button type="button" @click=${this.#openFilePicker}>Upload image</button>
+              `}
+        </div>
+        ${this.sourceError ? html`<p class="meta" style="color:#b91c1c; margin-top:0;">${this.sourceError}</p>` : nothing}
+        <div class="meta">Mappings: ${this.areaEntries.length} | mode: ${this.drawMode}</div>
+      ` : nothing}
 
-      ${this.sourceError ? html`<p class="meta" style="color:#b91c1c; margin-top:0;">${this.sourceError}</p>` : nothing}
+      <input ${ref(this.#fileInputRef)} type="file" accept="image/*" @change=${this.#onFileChange} />
 
       <div
         class="surface"
@@ -746,8 +767,6 @@ export class QtiSelectPointInteractionEdit extends Interaction {
             `
           : nothing}
       </div>
-
-      <div class="meta">Mappings: ${this.areaEntries.length} | mode: ${this.drawMode}</div>
     `;
   }
 }

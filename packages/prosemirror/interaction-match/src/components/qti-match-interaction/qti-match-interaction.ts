@@ -66,6 +66,9 @@ export class QtiMatchInteractionEdit extends Interaction {
   @state()
   private _renderTrigger = 0;
 
+  @state()
+  private _cursorInside = false;
+
   /** Track if setup is done */
   private _setupDone = false;
 
@@ -85,11 +88,19 @@ export class QtiMatchInteractionEdit extends Interaction {
     return getState(this._getInteractionKey());
   }
 
+  private _onSelectionChange = () => {
+    const sel = document.getSelection();
+    const inside = sel ? this.contains(sel.anchorNode) : false;
+    if (inside !== this._cursorInside) {
+      this._cursorInside = inside;
+    }
+  };
+
   override connectedCallback() {
     super.connectedCallback();
     this._injectLightDomStyles();
     this._parseCorrectResponse();
-    
+    document.addEventListener('selectionchange', this._onSelectionChange);
     requestAnimationFrame(() => {
       this._trySetup();
     });
@@ -97,6 +108,7 @@ export class QtiMatchInteractionEdit extends Interaction {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    document.removeEventListener('selectionchange', this._onSelectionChange);
     this.removeEventListener('click', this._onClick);
     document.removeEventListener('keydown', this._onKeyDown);
     this._observer?.disconnect();
@@ -376,7 +388,7 @@ export class QtiMatchInteractionEdit extends Interaction {
     return html`
       <slot name="prompt"></slot>
       <slot @slotchange=${this._onSlotChange}></slot>
-      ${this._setupDone ? this._renderAssociationsPanel() : nothing}
+      ${this._setupDone && this._cursorInside ? this._renderAssociationsPanel() : nothing}
     `;
   }
 }

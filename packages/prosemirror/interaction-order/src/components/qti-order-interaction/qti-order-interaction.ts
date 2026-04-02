@@ -29,21 +29,34 @@ export class QtiOrderInteractionEdit extends Interaction {
   @state()
   private _renderTrigger = 0;
 
+  @state()
+  private _cursorInside = false;
+
   private _order: string[] = [];
   private _labelCache = new Map<string, string>();
   private _setupDone = false;
   private _lightDomStyle: HTMLStyleElement | null = null;
   private _observer: MutationObserver | null = null;
 
+  private _onSelectionChange = () => {
+    const sel = document.getSelection();
+    const inside = sel ? this.contains(sel.anchorNode) : false;
+    if (inside !== this._cursorInside) {
+      this._cursorInside = inside;
+    }
+  };
+
   override connectedCallback() {
     super.connectedCallback();
     this._injectLightDomStyles();
     this._parseCorrectResponse();
     requestAnimationFrame(() => this._trySetup());
+    document.addEventListener('selectionchange', this._onSelectionChange);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    document.removeEventListener('selectionchange', this._onSelectionChange);
     this._observer?.disconnect();
     this._observer = null;
     this._lightDomStyle?.remove();
@@ -217,7 +230,7 @@ export class QtiOrderInteractionEdit extends Interaction {
     return html`
       <slot name="prompt"></slot>
       <slot @slotchange=${this._onSlotChange}></slot>
-      ${this._setupDone ? this._renderOrderPanel() : nothing}
+      ${this._setupDone && this._cursorInside ? this._renderOrderPanel() : nothing}
     `;
   }
 }

@@ -20,6 +20,8 @@ const styles: CSSResultGroup = [
     :host {
       display: block;
       white-space: normal;
+      position: relative;
+      overflow: visible;
     }
 
     slot[name='prompt'] {
@@ -32,11 +34,17 @@ const styles: CSSResultGroup = [
     }
 
     .order-panel {
-      margin-top: 12px;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 50;
+      min-width: 200px;
+      margin-top: 4px;
       padding: 8px 12px;
       background: white;
       border: 1px solid var(--qti-border, #e2e8f0);
       border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .order-panel-title {
