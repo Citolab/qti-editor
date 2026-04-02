@@ -10,7 +10,9 @@ declare module 'react' {
       'qti-editor-app': DetailedHTMLProps<
         HTMLAttributes<HTMLElement>,
         HTMLElement
-      >;
+      > & {
+        lang?: string;
+      };
       'lit-editor-toolbar': DetailedHTMLProps<
         HTMLAttributes<HTMLElement>,
         HTMLElement

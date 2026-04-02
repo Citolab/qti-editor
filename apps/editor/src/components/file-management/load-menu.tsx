@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { MouseEvent } from 'react';
 
 import { IconChevronDown, IconFolderOpen, IconTrash } from '../../lib/icons';
@@ -23,6 +24,7 @@ export function LoadMenu({
   onLoad,
   onDelete,
 }: LoadMenuProps) {
+  const { t } = useTranslation();
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,8 +42,8 @@ export function LoadMenu({
 
   return (
     <div ref={menuRef} style={{ position: 'relative' }}>
-      <ToolbarButton onClick={onToggle} title="Open a saved file">
-        <IconFolderOpen /> Load <IconChevronDown />
+      <ToolbarButton onClick={onToggle} title={t('fileLoadTitle')}>
+        <IconFolderOpen /> {t('fileLoad')} <IconChevronDown />
       </ToolbarButton>
 
       {isOpen && (
@@ -69,7 +71,7 @@ export function LoadMenu({
                 margin: 0,
               }}
             >
-              No saved files yet
+              {t('fileNoSaved')}
             </p>
           ) : (
             files.map((file) => (
@@ -118,7 +120,7 @@ export function LoadMenu({
                     padding: '2px',
                     flexShrink: 0,
                   }}
-                  title="Delete"
+                  title={t('fileDelete')}
                 >
                   <IconTrash />
                 </span>

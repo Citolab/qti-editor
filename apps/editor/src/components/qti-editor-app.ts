@@ -23,7 +23,7 @@ import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
 import { qtiFromNode } from '@qti-editor/prosekit-integration';
-import { notifyQtiI18nChanged } from '@qti-editor/interaction-shared';
+import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interaction-shared';
 
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
@@ -88,7 +88,7 @@ export class QtiEditorApp extends LitElement {
             const placeholder = $pos.node(d).type.spec.placeholder;
             if (placeholder) return placeholder;
           }
-          return 'Press / for commands...';
+          return translateQti('editor.placeholder', { target: this });
         }
       }),
       defineLocalStorageDocPersistenceExtension({ storageKey: EDITOR_DOC_STORAGE_KEY }),

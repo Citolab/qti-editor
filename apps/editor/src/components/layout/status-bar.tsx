@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { User } from 'firebase/auth';
 import type { SyncStatus } from '../../hooks/use-file-operations';
 
@@ -9,18 +10,18 @@ interface StatusBarProps {
   onSignIn: () => void;
 }
 
-function formatTime(date: Date): string {
-  return date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
+function formatTime(date: Date, language: string): string {
+  return date.toLocaleTimeString(language, { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
-const dot: Record<SyncStatus, { color: string; label: string }> = {
-  idle:    { color: '#9ca3af', label: 'Not synced' },
-  syncing: { color: '#f59e0b', label: 'Syncing…' },
-  synced:  { color: '#10b981', label: 'Synced' },
-  error:   { color: '#ef4444', label: 'Sync error' },
-};
-
 export function StatusBar({ user, authLoading, syncStatus, lastSyncedAt, onSignIn }: StatusBarProps) {
+  const { t, i18n } = useTranslation();
+  const dot: Record<SyncStatus, { color: string; label: string }> = {
+    idle:    { color: '#9ca3af', label: t('statusNotSynced') },
+    syncing: { color: '#f59e0b', label: t('statusSyncing') },
+    synced:  { color: '#10b981', label: t('statusSynced') },
+    error:   { color: '#ef4444', label: t('statusSyncError') },
+  };
   const sync = dot[syncStatus];
 
   return (
@@ -44,12 +45,12 @@ export function StatusBar({ user, authLoading, syncStatus, lastSyncedAt, onSignI
         {authLoading ? null : user ? (
           <>
             <span style={{ color: '#10b981' }}>●</span>
-            <span>Signed in as {user.email}</span>
+            <span>{t('statusSignedInAs', { email: user.email })}</span>
           </>
         ) : (
           <>
             <span style={{ color: '#6b7280' }}>○</span>
-            <span>Local only — sync unavailable.</span>
+            <span>{t('statusLocalOnly')}</span>
             <button
               onClick={onSignIn}
               style={{
@@ -62,9 +63,9 @@ export function StatusBar({ user, authLoading, syncStatus, lastSyncedAt, onSignI
                 textDecoration: 'underline',
               }}
             >
-              Sign in or create an account
+              {t('statusEnableSyncAction')}
             </button>
-            <span>to enable cross-device sync.</span>
+            <span>{t('statusEnableSyncSuffix')}</span>
           </>
         )}
       </div>
@@ -75,7 +76,9 @@ export function StatusBar({ user, authLoading, syncStatus, lastSyncedAt, onSignI
           <span style={{ color: sync.color }}>●</span>
           <span>{sync.label}</span>
           {syncStatus === 'synced' && lastSyncedAt && (
-            <span style={{ color: '#9ca3af' }}>at {formatTime(lastSyncedAt)}</span>
+            <span style={{ color: '#9ca3af' }}>
+              {t('statusAtTime', { time: formatTime(lastSyncedAt, i18n.language) })}
+            </span>
           )}
         </div>
       )}

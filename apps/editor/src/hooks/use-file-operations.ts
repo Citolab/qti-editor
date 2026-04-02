@@ -15,14 +15,14 @@ import { useAuth } from '../context/auth-context';
 
 export type SyncStatus = 'idle' | 'syncing' | 'synced' | 'error';
 
-export function useFileOperations() {
+export function useFileOperations(untitledLabel: string) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const userRef = useRef(user);
   useEffect(() => { userRef.current = user; }, [user]);
 
   const [currentFile, setCurrentFile] = useState<SavedFile | null>(() => getCurrentFile());
-  const [fileName, setFileName] = useState(() => getCurrentFile()?.name ?? 'Untitled');
+  const [fileName, setFileName] = useState(() => getCurrentFile()?.name ?? untitledLabel);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
 
@@ -79,7 +79,7 @@ export function useFileOperations() {
 
   const commitSave = useCallback(
     (name?: string) => {
-      const resolvedName = (name ?? fileName).trim() || 'Untitled';
+      const resolvedName = (name ?? fileName).trim() || untitledLabel;
       setFileName(resolvedName);
       saveMutation.mutate({ name: resolvedName, id: currentFile?.id });
     },
@@ -87,7 +87,7 @@ export function useFileOperations() {
   );
 
   const handleFileNameBlur = useCallback(() => {
-    const trimmed = fileName.trim() || 'Untitled';
+    const trimmed = fileName.trim() || untitledLabel;
     setFileName(trimmed);
     if (!currentFile || trimmed !== currentFile.name) {
       saveMutation.mutate({ name: trimmed, id: currentFile?.id });
@@ -97,8 +97,8 @@ export function useFileOperations() {
   const handleNew = useCallback(() => {
     clearCurrentSession();
     setCurrentFile(null);
-    setFileName('Untitled');
-  }, []);
+    setFileName(untitledLabel);
+  }, [untitledLabel]);
 
   const handleLoad = useCallback(
     (id: string): SavedFile | null => {
@@ -118,10 +118,10 @@ export function useFileOperations() {
       if (currentFile?.id === id) {
         clearCurrentSession();
         setCurrentFile(null);
-        setFileName('Untitled');
+        setFileName(untitledLabel);
       }
     },
-    [currentFile?.id, deleteMutation]
+    [currentFile?.id, deleteMutation, untitledLabel]
   );
 
   return {

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { IconFile, IconSave, IconDownload } from '../../lib/icons';
 import { ToolbarButton } from '../ui/toolbar-button';
 
@@ -9,19 +10,21 @@ interface FileActionsProps {
 }
 
 export function FileActions({ onNew, onSave, onExport, isDirty }: FileActionsProps) {
+  const { t } = useTranslation();
+
   return (
     <>
-      <ToolbarButton onClick={onNew} title="New file">
-        <IconFile /> New
+      <ToolbarButton onClick={onNew} title={t('fileNewTitle')}>
+        <IconFile /> {t('fileNew')}
       </ToolbarButton>
 
-      <ToolbarButton onClick={onSave} title="Save (Ctrl+S)" highlight={isDirty}>
+      <ToolbarButton onClick={onSave} title={t('fileSaveTitle')} highlight={isDirty}>
         <IconSave />
-        {isDirty ? 'Save *' : 'Save'}
+        {isDirty ? t('fileSaveDirty') : t('fileSave')}
       </ToolbarButton>
 
-      <ToolbarButton onClick={onExport} title="Export as QTI XML">
-        <IconDownload /> Export QTI
+      <ToolbarButton onClick={onExport} title={t('fileExportTitle')}>
+        <IconDownload /> {t('fileExport')}
       </ToolbarButton>
     </>
   );

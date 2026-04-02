@@ -8,10 +8,11 @@ export interface EditorLayoutHandle {
 
 interface EditorLayoutProps {
   editorKey: number;
+  language: string;
 }
 
 export const EditorLayout = forwardRef<EditorLayoutHandle, EditorLayoutProps>(
-  ({ editorKey }, ref) => {
+  ({ editorKey, language }, ref) => {
     const elRef = useRef<QtiEditorApp | null>(null);
 
     useImperativeHandle(ref, () => ({
@@ -22,7 +23,7 @@ export const EditorLayout = forwardRef<EditorLayoutHandle, EditorLayoutProps>(
       <qti-editor-app
         key={editorKey}
         ref={elRef}
-        lang={'nl'}
+        lang={language}
         style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}
       />
     );

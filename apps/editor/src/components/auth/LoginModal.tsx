@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/auth-context';
 
 interface LoginModalProps {
@@ -6,6 +7,7 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ onClose }: LoginModalProps) {
+  const { t } = useTranslation();
   const { signIn, signUp } = useAuth();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
@@ -25,7 +27,7 @@ export function LoginModal({ onClose }: LoginModalProps) {
       }
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Authentication failed');
+      setError(err instanceof Error ? err.message : t('authFailed'));
     } finally {
       setLoading(false);
     }
@@ -35,12 +37,12 @@ export function LoginModal({ onClose }: LoginModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-lg shadow-xl w-96 p-6">
         <h2 className="text-base font-semibold text-gray-900 mb-4">
-          {mode === 'signin' ? 'Sign in' : 'Create account'}
+          {mode === 'signin' ? t('authSignIn') : t('authCreateAccount')}
         </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t('authEmail')}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -48,7 +50,7 @@ export function LoginModal({ onClose }: LoginModalProps) {
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder={t('authPassword')}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -63,7 +65,7 @@ export function LoginModal({ onClose }: LoginModalProps) {
               onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); }}
               className="text-xs text-blue-600 hover:underline"
             >
-              {mode === 'signin' ? 'Create an account' : 'Already have an account?'}
+              {mode === 'signin' ? t('authCreateAccountAction') : t('authAlreadyHaveAccount')}
             </button>
             <div className="flex gap-2">
               <button
@@ -71,14 +73,14 @@ export function LoginModal({ onClose }: LoginModalProps) {
                 onClick={onClose}
                 className="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 type="submit"
                 disabled={loading}
                 className="px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
               >
-                {loading ? '…' : mode === 'signin' ? 'Sign in' : 'Sign up'}
+                {loading ? '…' : mode === 'signin' ? t('authSignIn') : t('authCreateAccount')}
               </button>
             </div>
           </div>

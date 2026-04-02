@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Divider } from '../ui/divider';
 import { FileActions } from '../file-management/file-actions';
 import { FileNameInput } from '../file-management/file-name-input';
@@ -19,6 +20,7 @@ interface AppHeaderProps {
   loadMenuOpen: boolean;
   user: User | null;
   authLoading: boolean;
+  language: string;
   onFileNameChange: (value: string) => void;
   onFileNameBlur: () => void;
   onFileNameKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
@@ -28,6 +30,7 @@ interface AppHeaderProps {
   onLoadMenuToggle: () => void;
   onLoad: (id: string) => void;
   onDelete: (e: MouseEvent, id: string) => void;
+  onLanguageChange: (language: string) => void;
   onSignIn: () => void;
   onSignOut: () => void;
 }
@@ -41,6 +44,7 @@ export function AppHeader({
   loadMenuOpen,
   user,
   authLoading,
+  language,
   onFileNameChange,
   onFileNameBlur,
   onFileNameKeyDown,
@@ -50,9 +54,12 @@ export function AppHeader({
   onLoadMenuToggle,
   onLoad,
   onDelete,
+  onLanguageChange,
   onSignIn,
   onSignOut,
 }: AppHeaderProps) {
+  const { t } = useTranslation();
+
   return (
     <header
       style={{
@@ -77,7 +84,7 @@ export function AppHeader({
           whiteSpace: 'nowrap',
         }}
       >
-        QTI Editor
+        {t('appTitle')}
       </span>
 
       <Divider />
@@ -104,6 +111,24 @@ export function AppHeader({
       />
 
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#6b7280' }}>
+          <span>{t('language')}</span>
+          <select
+            value={language}
+            onChange={(event) => onLanguageChange(event.currentTarget.value)}
+            style={{
+              fontSize: '11px',
+              border: '1px solid #d1d5db',
+              borderRadius: '4px',
+              background: 'white',
+              color: '#374151',
+              padding: '2px 6px',
+            }}
+          >
+            <option value="en">{t('languageEnglish')}</option>
+            <option value="nl">{t('languageDutch')}</option>
+          </select>
+        </label>
         {autoSaveStatus !== 'idle' && (
           <span
             style={{
@@ -112,7 +137,7 @@ export function AppHeader({
               color: autoSaveStatus === 'saving' ? '#9ca3af' : '#10b981',
             }}
           >
-            {autoSaveStatus === 'saving' ? 'Saving…' : 'Auto-saved'}
+            {autoSaveStatus === 'saving' ? t('autosaveSaving') : t('autosaveSaved')}
           </span>
         )}
         <AuthButton

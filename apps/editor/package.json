@@ -27,10 +27,12 @@
     "@qti-editor/ui": "workspace:*",
     "@tanstack/react-query": "^5.95.2",
     "firebase": "^12.11.0",
+    "i18next": "^23.16.8",
     "lit": "^3.3.2",
     "prosekit": "^0.18.4",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-i18next": "^15.1.2"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",

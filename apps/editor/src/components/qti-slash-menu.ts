@@ -16,6 +16,7 @@ import '@qti-editor/ui/components/editor/ui/slash-menu';
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
+import { translateQti } from '@qti-editor/interaction-shared';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
 import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
 import { insertMatchInteraction } from '@qti-editor/interaction-match';
@@ -39,10 +40,10 @@ export class QtiSlashMenu extends LitElement {
     return (this.editor as any)?.view ?? null;
   }
 
-  private insertInteraction(command: (state: any, dispatch: any) => boolean) {
+  private insertInteraction(command: (state: any, dispatch: any, view?: EditorView) => boolean) {
     const view = this.getView();
     if (!view) return;
-    command(view.state, view.dispatch);
+    command(view.state, view.dispatch, view);
     view.focus();
   }
 
@@ -71,36 +72,36 @@ export class QtiSlashMenu extends LitElement {
         <div
           class="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 select-none"
         >
-          Interactions
+          ${translateQti('slashMenu.interactions', { target: this })}
         </div>
         <lit-editor-slash-menu-item
           class="contents"
-          label="Choice Interaction"
+          label=${translateQti('interactionInsert.choice', { target: this })}
           @select=${() => this.insertInteraction(insertChoiceInteraction)}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
-          label="Extended Text"
+          label=${translateQti('interactionInsert.extendedText', { target: this })}
           @select=${() => this.insertInteraction(insertExtendedTextInteraction)}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
-          label="Text Entry"
+          label=${translateQti('interactionInsert.textEntry', { target: this })}
           @select=${() => this.insertTextEntry()}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
-          label="Match Interaction"
+          label=${translateQti('interactionInsert.match', { target: this })}
           @select=${() => this.insertInteraction(insertMatchInteraction)}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
-          label="Order Interaction"
+          label=${translateQti('interactionInsert.order', { target: this })}
           @select=${() => this.insertInteraction(insertOrderInteraction)}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
-          label="Select Point"
+          label=${translateQti('interactionInsert.selectPoint', { target: this })}
           @select=${() => this.insertInteraction(insertSelectPointInteraction)}
         ></lit-editor-slash-menu-item>
       </prosekit-autocomplete-list>

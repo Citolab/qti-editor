@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { KeyboardEvent } from 'react';
 import { IconPencil } from '../../lib/icons';
 
@@ -17,6 +18,7 @@ export function FileNameInput({
   onBlur,
   onKeyDown,
 }: FileNameInputProps) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -37,7 +39,7 @@ export function FileNameInput({
         onBlur={onBlur}
         onKeyDown={onKeyDown}
         onFocus={(e) => e.currentTarget.select()}
-        placeholder="Untitled"
+        placeholder={t('untitled')}
         style={{
           fontSize: '15px',
           fontWeight: 500,
@@ -63,7 +65,7 @@ export function FileNameInput({
       <button
         type="button"
         onClick={() => inputRef.current?.focus()}
-        title="Rename"
+        title={t('fileRename')}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -88,7 +90,7 @@ export function FileNameInput({
             background: '#3b82f6',
             flexShrink: 0,
           }}
-          title="Unsaved changes"
+          title={t('fileUnsavedChanges')}
         />
       )}
     </div>

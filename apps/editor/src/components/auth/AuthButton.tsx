@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { User } from 'firebase/auth';
 
 interface AuthButtonProps {
@@ -8,6 +9,7 @@ interface AuthButtonProps {
 }
 
 export function AuthButton({ user, loading, onSignIn, onSignOut }: AuthButtonProps) {
+  const { t } = useTranslation();
   if (loading) return null;
 
   if (user) {
@@ -38,7 +40,7 @@ export function AuthButton({ user, loading, onSignIn, onSignOut }: AuthButtonPro
             whiteSpace: 'nowrap',
           }}
         >
-          Sign out
+          {t('authSignOut')}
         </button>
       </div>
     );
@@ -58,7 +60,7 @@ export function AuthButton({ user, loading, onSignIn, onSignOut }: AuthButtonPro
         whiteSpace: 'nowrap',
       }}
     >
-      Sign in
+      {t('authSignIn')}
     </button>
   );
 }

@@ -21,6 +21,32 @@ const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/pro
 const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-inline-choice/src', import.meta.url));
 const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes/src', import.meta.url));
 const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes-ui-prosekit/src', import.meta.url));
+const appCustomElementRoots = [
+  fileURLToPath(new URL('./src/components/qti-editor-app.ts', import.meta.url)),
+  fileURLToPath(new URL('./src/components/qti-slash-menu.ts', import.meta.url)),
+];
+const fullReloadRoots = [
+  coreSrcRoot,
+  prosekitIntegrationSrcRoot,
+  interactionsSharedSrcRoot,
+  interactionsChoiceSrcRoot,
+  interactionsExtendedTextSrcRoot,
+  interactionsMatchSrcRoot,
+  interactionsOrderSrcRoot,
+  interactionsTextEntrySrcRoot,
+  interactionsSelectPointSrcRoot,
+  interactionsInlineChoiceSrcRoot,
+  prosemirrorAttributesSrcRoot,
+  prosemirrorAttributesUiProseKitSrcRoot,
+];
+
+function shouldForceFullReload(file: string): boolean {
+  if (appCustomElementRoots.includes(file)) {
+    return true;
+  }
+
+  return fullReloadRoots.some(root => file.startsWith(`${root}/`));
+}
 
 export default defineConfig({
   resolve: {
@@ -173,9 +199,11 @@ export default defineConfig({
         if (
           file.includes('node_modules/@qti-components/') ||
           file.includes('node_modules/@citolab/') ||
-          file.includes('node_modules/@qti-editor/')
+          file.includes('node_modules/@qti-editor/') ||
+          shouldForceFullReload(file)
         ) {
           server.ws.send({ type: 'full-reload' });
+          return [];
         }
       },
     },

@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Register the Lit web component (also registers lit-editor-toolbar)
 import './components/qti-editor-app.js';
@@ -19,6 +20,7 @@ import type { MouseEvent, KeyboardEvent } from 'react';
 
 
 export default function App() {
+  const { t, i18n } = useTranslation();
   const [editorKey, setEditorKey] = useState(0);
   const [loadMenuOpen, setLoadMenuOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -40,7 +42,7 @@ export default function App() {
     handleLoad,
     handleDelete,
     queryClient,
-  } = useFileOperations();
+  } = useFileOperations(t('untitled'));
 
   // Editor dirty state
   const { isDirty, resetDirty } = useEditorDirtyState(editorKey);
@@ -89,7 +91,7 @@ export default function App() {
   const handleDeleteFile = useCallback(
     (e: MouseEvent, id: string) => {
       e.stopPropagation();
-      if (confirm('Delete this file?')) {
+      if (confirm(t('confirmDeleteFile'))) {
         handleDelete(id);
         if (currentFile?.id === id) {
           setEditorKey((k) => k + 1);
@@ -113,11 +115,11 @@ export default function App() {
       if (e.key === 'Enter') {
         e.currentTarget.blur();
       } else if (e.key === 'Escape') {
-        setFileName(currentFile?.name ?? 'Untitled');
+        setFileName(currentFile?.name ?? t('untitled'));
         e.currentTarget.blur();
       }
     },
-    [currentFile?.name, setFileName]
+    [currentFile?.name, setFileName, t]
   );
 
   // Handler: Export XML
@@ -151,6 +153,7 @@ export default function App() {
         loadMenuOpen={loadMenuOpen}
         user={user}
         authLoading={authLoading}
+        language={i18n.language}
         onFileNameChange={setFileName}
         onFileNameBlur={handleFileNameBlur}
         onFileNameKeyDown={handleFileNameKeyDown}
@@ -160,11 +163,12 @@ export default function App() {
         onLoadMenuToggle={handleLoadMenuToggle}
         onLoad={handleLoadFile}
         onDelete={handleDeleteFile}
+        onLanguageChange={(language) => void i18n.changeLanguage(language)}
         onSignIn={() => setLoginModalOpen(true)}
         onSignOut={signOut}
       />
 
-      <EditorLayout ref={editorLayoutRef} editorKey={editorKey} />
+      <EditorLayout ref={editorLayoutRef} editorKey={editorKey} language={i18n.language} />
 
       <StatusBar
         user={user}
