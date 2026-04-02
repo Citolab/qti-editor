@@ -1,22 +1,21 @@
-name: "Manual: release and publish packages"
+name: Release Packages
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".changeset/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "packages/interfaces/**"
+      - "packages/qti/core/**"
+      - "packages/prosemirror/interaction-*/**"
+      - ".github/workflows/release.yml"
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to release from'
-        required: false
-        default: 'main'
-        type: string
-      dry_run:
-        description: 'Dry-run (no commits, tags, or publishes)'
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: write
-  issues: write
   pull-requests: write
   id-token: write
 
@@ -27,8 +26,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          token: ${{ secrets.RELEASE_BOT_TOKEN || secrets.GITHUB_TOKEN }}
-          ref: ${{ inputs.branch || 'main' }}
           fetch-depth: 0
 
       - name: Install pnpm
@@ -38,29 +35,32 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 24
-          cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org/'
-
-      - name: Upgrade npm for trusted publishing
-        run: npm install -g npm@latest
+          cache: pnpm
+          registry-url: https://registry.npmjs.org/
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run semantic-release on changed packages (dry-run)
-        if: ${{ inputs.dry_run }}
-        run: pnpm run ci:release:changed:dry
-        env:
-          GITHUB_TOKEN: ''
-          HUSKY: 0
+      - name: Build publishable packages
+        run: |
+          pnpm --filter @qti-editor/interfaces build
+          pnpm --filter @qti-editor/interaction-shared build
+          pnpm --filter @qti-editor/interaction-choice build
+          pnpm --filter @qti-editor/interaction-inline-choice build
+          pnpm --filter @qti-editor/interaction-match build
+          pnpm --filter @qti-editor/interaction-order build
+          pnpm --filter @qti-editor/interaction-select-point build
+          pnpm --filter @qti-editor/interaction-text-entry build
+          pnpm --filter @qti-editor/interaction-extended-text build
+          pnpm --filter @qti-editor/core build
 
-      - name: Run semantic-release on changed packages
-        if: ${{ !inputs.dry_run }}
-        run: pnpm run ci:release:changed
+      - name: Create release PR or publish
+        uses: changesets/action@v1
+        with:
+          version: pnpm changeset:version
+          publish: pnpm changeset:publish
+          commit: "chore: version packages"
+          title: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN || secrets.GITHUB_TOKEN }}
-          HUSKY: 0
-
-      - name: Push release tags
-        if: ${{ !inputs.dry_run }}
-        run: git push origin HEAD --tags
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

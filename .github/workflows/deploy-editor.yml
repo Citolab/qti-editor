@@ -1,0 +1,48 @@
+name: Deploy Editor
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/editor/**"
+      - "packages/interfaces/**"
+      - "packages/qti/**"
+      - "packages/prosemirror/**"
+      - "packages/ui/**"
+      - "firebase.json"
+      - ".firebaserc"
+      - "scripts/prepare-hosting-editor.mjs"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/deploy-editor.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-editor
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build editor hosting bundle
+        run: pnpm deploy:build:editor
+
+      - name: Deploy Firebase editor target
+        run: npx firebase-tools@latest deploy --only hosting:editor --token "${{ secrets.FIREBASE_TOKEN }}"
