@@ -1,21 +1,11 @@
 name: Deploy Editor
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "apps/editor/**"
-      - "packages/interfaces/**"
-      - "packages/qti/**"
-      - "packages/prosemirror/**"
-      - "packages/ui/**"
-      - "firebase.json"
-      - ".firebaserc"
-      - "scripts/prepare-hosting-editor.mjs"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - ".github/workflows/deploy-editor.yml"
+  workflow_run:
+    workflows:
+      - "CI: push-quality"
+    types:
+      - completed
   workflow_dispatch:
 
 concurrency:
@@ -23,11 +13,48 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.filter.outputs.should_deploy }}
+    steps:
+      - name: Checkout triggering commit
+        if: ${{ github.event_name == 'workflow_run' }}
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 2
+
+      - name: Detect editor-relevant changes
+        id: filter
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          changed_files="$(git diff --name-only HEAD^ HEAD)"
+          if echo "$changed_files" | grep -Eq '^(apps/editor/|packages/interfaces/|packages/qti/|packages/prosemirror/|packages/ui/|firebase\.json$|\.firebaserc$|scripts/prepare-hosting-editor\.mjs$|package\.json$|pnpm-lock\.yaml$|\.github/workflows/deploy-editor\.yml$)'; then
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
   deploy:
+    needs: changes
+    if: ${{ needs.changes.outputs.should_deploy == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4

@@ -1,7 +1,9 @@
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { KeyboardEvent } from 'react';
+
 import { IconPencil } from '../../lib/icons';
+
+import type { KeyboardEvent } from 'react';
 
 interface FileNameInputProps {
   fileName: string;

@@ -129,6 +129,9 @@
       "@qti-editor/interaction-match": [
         "packages/prosemirror/interaction-match/src/index.ts"
       ],
+      "@qti-editor/interaction-order": [
+        "packages/prosemirror/interaction-order/src/index.ts"
+      ],
       "@qti-editor/interaction-select-point": [
         "packages/prosemirror/interaction-select-point/src/index.ts"
       ],

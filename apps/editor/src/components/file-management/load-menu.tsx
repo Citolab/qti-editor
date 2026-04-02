@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { MouseEvent } from 'react';
+
 
 import { IconChevronDown, IconFolderOpen, IconTrash } from '../../lib/icons';
 import { ToolbarButton } from '../ui/toolbar-button';
 
+import type { MouseEvent } from 'react';
 import type { SavedFile } from '../../lib/fileStore';
 
 interface LoadMenuProps {

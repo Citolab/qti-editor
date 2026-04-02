@@ -17,7 +17,6 @@ import {
   insertOrderChoiceOnEnter,
   defineOrderCorrectResponseExtension,
 } from '@qti-editor/interaction-order';
-
 import {
   qtiSelectPointInteractionNodeSpec,
   imgSelectPointNodeSpec,

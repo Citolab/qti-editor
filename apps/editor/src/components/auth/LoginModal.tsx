@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { useAuth } from '../../context/auth-context';
 
 interface LoginModalProps {

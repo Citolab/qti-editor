@@ -8,6 +8,7 @@
 import { definePlugin, jsonFromNode, type Extension } from 'prosekit/core';
 import { ListDOMSerializer } from 'prosekit/extensions/list';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
+
 import { xmlFromNode } from '../save-xml/index.js';
 
 import type { EditorState } from 'prosekit/pm/state';

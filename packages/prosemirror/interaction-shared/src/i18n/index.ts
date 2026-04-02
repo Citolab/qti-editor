@@ -1,6 +1,6 @@
-import type { ReactiveController, ReactiveControllerHost } from 'lit';
 import { defaultQtiMessages } from './messages.js';
 
+import type { ReactiveController, ReactiveControllerHost } from 'lit';
 import type { QtiI18nMessages, QtiI18nParams } from '@qti-editor/interfaces';
 
 const DEFAULT_QTI_LANG = 'en';

@@ -15,6 +15,7 @@ const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prosemir
 const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-choice/src', import.meta.url));
 const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-extended-text/src', import.meta.url));
 const interactionsMatchSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-match/src', import.meta.url));
+const interactionsOrderSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-order/src', import.meta.url));
 const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-text-entry/src', import.meta.url));
 const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-select-point/src', import.meta.url));
 const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-inline-choice/src', import.meta.url));
@@ -113,6 +114,14 @@ export default defineConfig({
         {
           find: /^@qti-editor\/interaction-match$/,
           replacement: `${interactionsMatchSrcRoot}/index.ts`,
+        },
+        {
+          find: /^@qti-editor\/interaction-order\/(.*)\.js$/,
+          replacement: `${interactionsOrderSrcRoot}/$1.ts`,
+        },
+        {
+          find: /^@qti-editor\/interaction-order$/,
+          replacement: `${interactionsOrderSrcRoot}/index.ts`,
         },
         {
           find: /^@qti-editor\/interaction-text-entry\/(.*)\.js$/,
