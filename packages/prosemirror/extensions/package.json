@@ -1,5 +1,6 @@
 {
   "name": "@qti-editor/prosemirror",
+  "private": true,
   "version": "0.1.0",
   "description": "Pure ProseMirror plugins for QTI Editor - block selection and virtual cursor",
   "type": "module",

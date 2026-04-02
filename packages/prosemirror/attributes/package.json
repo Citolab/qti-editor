@@ -1,5 +1,6 @@
 {
   "name": "@qti-editor/prosemirror-attributes",
+  "private": true,
   "version": "0.1.0",
   "description": "Generic ProseMirror attributes inspection and update engine",
   "type": "module",

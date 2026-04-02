@@ -1,5 +1,6 @@
 {
   "name": "@qti-editor/prosemirror-attributes-ui-prosekit",
+  "private": true,
   "version": "0.1.0",
   "description": "ProseKit-oriented attributes panel UI built on the generic attributes engine",
   "type": "module",

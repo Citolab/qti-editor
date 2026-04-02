@@ -1,5 +1,6 @@
 {
   "name": "@qti-editor/prosekit-integration",
+  "private": true,
   "version": "0.1.0",
   "description": "ProseKit integration layer — plugins, contexts, and extension assembly for QTI editors",
   "type": "module",
