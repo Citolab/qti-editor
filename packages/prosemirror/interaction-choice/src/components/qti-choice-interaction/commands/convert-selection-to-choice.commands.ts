@@ -12,7 +12,7 @@ type RootBlock = {
 type ConversionPlan = {
   promptText: string | null;
   blocksToReplace: RootBlock[];
-  listBlocks: RootBlock[];
+  choiceContents: Array<Fragment | null>;
 };
 
 function isFlatList(listNode: ProseMirrorNode, listType: any): boolean {
@@ -133,6 +133,18 @@ function getSelectedRootBlocks(view: EditorView): RootBlock[] {
 function buildConversionPlan(blocks: RootBlock[], schema: any): ConversionPlan | null {
   if (blocks.length === 0) return null;
 
+  // All-paragraph mode: first paragraph → prompt, rest → choices
+  if (blocks.every(b => isPlainTextParagraph(b.node, schema))) {
+    if (blocks.length < 2) return null;
+    const [promptBlock, ...choiceBlocks] = blocks;
+    return {
+      promptText: promptBlock.node.textContent.trim() || null,
+      blocksToReplace: blocks,
+      choiceContents: choiceBlocks.map(b => b.node.content.size > 0 ? b.node.content : null),
+    };
+  }
+
+  // List mode: optional leading plain-text paragraphs as prompt, then list(s)
   const promptBlocks: RootBlock[] = [];
   const listBlocks: RootBlock[] = [];
   let sawList = false;
@@ -161,24 +173,22 @@ function buildConversionPlan(blocks: RootBlock[], schema: any): ConversionPlan |
     .join(' ')
     .trim();
 
+  const paragraphType = schema.nodes.paragraph;
+  const choiceContents = listBlocks.flatMap(block => {
+    const contents: Array<Fragment | null> = [];
+    for (let i = 0; i < block.node.childCount; i += 1) {
+      const child = block.node.child(i);
+      if (child.type !== paragraphType) continue;
+      contents.push(child.content.size > 0 ? child.content : null);
+    }
+    return contents;
+  });
+
   return {
     promptText: promptText || null,
     blocksToReplace: [...promptBlocks, ...listBlocks],
-    listBlocks,
+    choiceContents,
   };
-}
-
-function getChoiceContentsFromListBlock(block: RootBlock, schema: any): Array<Fragment | null> {
-  const paragraphType = schema.nodes.paragraph;
-  if (!paragraphType) return [];
-
-  const choices: Array<Fragment | null> = [];
-  for (let i = 0; i < block.node.childCount; i += 1) {
-    const child = block.node.child(i);
-    if (child.type !== paragraphType) continue;
-    choices.push(child.content.size > 0 ? child.content : null);
-  }
-  return choices;
 }
 
 export function canConvertFlatListToChoiceInteraction(view: EditorView): boolean {
@@ -225,16 +235,13 @@ export function convertFlatListToChoiceInteraction(view: EditorView): boolean {
   const promptText = plan.promptText ?? translateQti('prompt.choice.selectOne', { target: view.dom });
   const prompt = promptType.create(null, promptParagraphType.create(null, schema.text(promptText)));
 
-  const choices = plan.listBlocks.flatMap(block =>
-    getChoiceContentsFromListBlock(block, schema).map(content => {
-      const paragraphContent = content ?? schema.text(translateQti('choice.option', { target: view.dom }));
-
-      return choiceType.create(
-        { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
-        choiceParagraphType.create(null, paragraphContent)
-      );
-    })
-  );
+  const choices = plan.choiceContents.map(content => {
+    const paragraphContent = content ?? schema.text(translateQti('choice.option', { target: view.dom }));
+    return choiceType.create(
+      { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
+      choiceParagraphType.create(null, paragraphContent)
+    );
+  });
 
   const interaction = interactionType.create(
     { responseIdentifier: `RESPONSE_${crypto.randomUUID()}`, maxChoices: 1 },
