@@ -740,6 +740,9 @@ importers:
       '@qti-editor/interaction-match':
         specifier: workspace:*
         version: link:../prosemirror/interaction-match
+      '@qti-editor/interaction-order':
+        specifier: workspace:*
+        version: link:../prosemirror/interaction-order
       '@qti-editor/interaction-select-point':
         specifier: workspace:*
         version: link:../prosemirror/interaction-select-point

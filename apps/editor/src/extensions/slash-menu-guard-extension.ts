@@ -20,11 +20,7 @@
  *   normally again.
  */
 
-import { canUseRegexLookbehind, defineUpdateHandler } from 'prosekit/core';
-
-const slashMenuRegex = canUseRegexLookbehind()
-  ? /(?<!\S)\/(\S.*)?$/u
-  : /\/(\S.*)?$/u;
+import { defineUpdateHandler } from 'prosekit/core';
 
 export function defineSlashMenuGuardExtension() {
   let wasInside = false;
@@ -42,11 +38,9 @@ export function defineSlashMenuGuardExtension() {
     if (inside === wasInside) return;
     wasInside = inside;
 
-    queueMicrotask(() => {
-      const popover = document.querySelector('prosekit-autocomplete-popover');
-      if (popover) {
-        (popover as any).regex = inside ? null : slashMenuRegex;
-      }
-    });
+    const slashMenu = document.querySelector('qti-slash-menu') as (HTMLElement & { disabled?: boolean }) | null;
+    if (slashMenu) {
+      slashMenu.disabled = inside;
+    }
   });
 }

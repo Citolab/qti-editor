@@ -32,6 +32,9 @@ export class QtiSlashMenu extends LitElement {
   @property({ attribute: false })
   editor: Editor | null = null;
 
+  @property({ type: Boolean, reflect: true })
+  disabled = false;
+
   override createRenderRoot() {
     return this;
   }
@@ -64,7 +67,7 @@ export class QtiSlashMenu extends LitElement {
 
     return html`<prosekit-autocomplete-popover
       .editor=${editor}
-      .regex=${regex}
+      .regex=${this.disabled ? null : regex}
       class="dropdown-content relative block max-h-100 min-w-60 select-none overflow-auto whitespace-nowrap p-1 z-10 box-border rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-lg [&:not([data-state])]:hidden"
     >
       <prosekit-autocomplete-list .editor=${editor}>
