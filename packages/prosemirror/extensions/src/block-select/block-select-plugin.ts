@@ -262,6 +262,10 @@ export const blockSelectPlugin = new Plugin({
       mousemove(view, event) {
         const pluginState = blockSelectPlugin.getState(view.state);
         if (!pluginState || pluginState.startPos === null) return false;
+        if (event.buttons === 0) {
+          view.dispatch(view.state.tr.setMeta('block-select-drag', { dragging: false, startPos: null }));
+          return false;
+        }
 
         const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
         const currentBlock = pos ? findBlockAt(view.state.doc, pos.pos) : null;
@@ -302,6 +306,13 @@ export const blockSelectPlugin = new Plugin({
   },
 
   view(view) {
+    const resetDragState = () => {
+      const pluginState = blockSelectPlugin.getState(view.state);
+      if (pluginState?.startPos !== null) {
+        view.dispatch(view.state.tr.setMeta('block-select-drag', { dragging: false, startPos: null }));
+      }
+    };
+
     const style = document.createElement('style');
     style.textContent = `
       .ProseMirror:has(.block-selected) .ProseMirror-selectednode.block-selected {
@@ -316,30 +327,31 @@ export const blockSelectPlugin = new Plugin({
     document.head.appendChild(style);
 
     // Global mouseup handler to catch releases outside the editor
-    const handleGlobalMouseUp = () => {
-      const pluginState = blockSelectPlugin.getState(view.state);
-      if (pluginState?.startPos !== null) {
-        view.dispatch(view.state.tr.setMeta('block-select-drag', { dragging: false, startPos: null }));
-      }
-    };
+    const handleGlobalMouseUp = () => resetDragState();
+    const handleGlobalPointerUp = () => resetDragState();
+    const handleGlobalPointerCancel = () => resetDragState();
 
     // Also handle blur/visibility change to reset drag state
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        handleGlobalMouseUp();
+        resetDragState();
       }
     };
 
     document.addEventListener('mouseup', handleGlobalMouseUp);
+    document.addEventListener('pointerup', handleGlobalPointerUp);
+    document.addEventListener('pointercancel', handleGlobalPointerCancel);
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleGlobalMouseUp);
+    window.addEventListener('blur', resetDragState);
 
     return {
       destroy: () => {
         style.remove();
         document.removeEventListener('mouseup', handleGlobalMouseUp);
+        document.removeEventListener('pointerup', handleGlobalPointerUp);
+        document.removeEventListener('pointercancel', handleGlobalPointerCancel);
         document.removeEventListener('visibilitychange', handleVisibilityChange);
-        window.removeEventListener('blur', handleGlobalMouseUp);
+        window.removeEventListener('blur', resetDragState);
       }
     };
   }
