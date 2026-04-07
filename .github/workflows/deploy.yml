@@ -1,4 +1,4 @@
-name: Deploy Site
+name: Deploy Editor and Site
 
 on:
   workflow_run:
@@ -9,14 +9,15 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: deploy-site
+  group: deploy-editor-site
   cancel-in-progress: true
 
 jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      should_deploy: ${{ steps.result.outputs.should_deploy }}
+      editor: ${{ steps.filter.outputs.editor }}
+      site: ${{ steps.filter.outputs.site }}
     steps:
       - name: Checkout triggering commit
         if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' }}
@@ -30,10 +31,10 @@ jobs:
         if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' }}
         shell: bash
         run: |
-          base_sha="$(git rev-parse "${{ github.event.workflow_run.head_sha }}^" 2>/dev/null || true)"
+          base_sha="$(git rev-parse \"${{ github.event.workflow_run.head_sha }}^\" 2>/dev/null || true)"
           echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
 
-      - name: Detect site-relevant changes
+      - name: Detect relevant changes
         id: filter
         if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && steps.base.outputs.base_sha != '' }}
         uses: dorny/paths-filter@v3
@@ -41,7 +42,19 @@ jobs:
           base: ${{ steps.base.outputs.base_sha }}
           ref: ${{ github.event.workflow_run.head_sha }}
           filters: |
-            deploy:
+            editor:
+              - 'apps/editor/**'
+              - 'packages/interfaces/**'
+              - 'packages/qti/**'
+              - 'packages/prosemirror/**'
+              - 'packages/ui/**'
+              - 'firebase.json'
+              - '.firebaserc'
+              - 'scripts/prepare-hosting-editor.mjs'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - '.github/workflows/deploy-editor.yml'
+            site:
               - 'apps/site/**'
               - 'packages/interfaces/**'
               - 'packages/qti/**'
@@ -54,23 +67,43 @@ jobs:
               - 'pnpm-lock.yaml'
               - '.github/workflows/deploy-site.yml'
 
-      - name: Resolve deploy decision
-        id: result
-        shell: bash
+      - name: Always set outputs for workflow_dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event.workflow_run.conclusion }}" != "success" ] || [ "${{ github.event.workflow_run.event }}" != "push" ] || [ "${{ github.event.workflow_run.head_branch }}" != "main" ]; then
-            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
-          elif [ "${{ steps.base.outputs.base_sha }}" = "" ]; then
-            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "should_deploy=${{ steps.filter.outputs.deploy || 'false' }}" >> "$GITHUB_OUTPUT"
-          fi
+          echo "editor=true" >> $GITHUB_OUTPUT
+          echo "site=true" >> $GITHUB_OUTPUT
 
-  deploy:
+  deploy-editor:
     needs: changes
-    if: ${{ needs.changes.outputs.should_deploy == 'true' }}
+    if: ${{ needs.changes.outputs.editor == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build editor hosting bundle
+        run: pnpm deploy:build:editor
+
+      - name: Deploy Firebase editor target
+        run: npx firebase-tools@latest deploy --only hosting:editor --token "${{ secrets.FIREBASE_TOKEN }}"
+
+  deploy-site:
+    needs: changes
+    if: ${{ needs.changes.outputs.site == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
