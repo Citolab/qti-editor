@@ -36,42 +36,39 @@ jobs:
 
       - name: Detect relevant changes
         id: filter
-        if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && steps.base.outputs.base_sha != '' }}
-        uses: dorny/paths-filter@v3
-        with:
-          base: ${{ steps.base.outputs.base_sha }}
-          ref: ${{ github.event.workflow_run.head_sha }}
-          filters: |
-            editor:
-              - 'apps/editor/**'
-              - 'packages/interfaces/**'
-              - 'packages/qti/**'
-              - 'packages/prosemirror/**'
-              - 'packages/ui/**'
-              - 'firebase.json'
-              - '.firebaserc'
-              - 'scripts/prepare-hosting-editor.mjs'
-              - 'package.json'
-              - 'pnpm-lock.yaml'
-              - '.github/workflows/deploy-editor.yml'
-            site:
-              - 'apps/site/**'
-              - 'packages/interfaces/**'
-              - 'packages/qti/**'
-              - 'packages/prosemirror/**'
-              - 'packages/ui/**'
-              - 'firebase.json'
-              - '.firebaserc'
-              - 'scripts/prepare-hosting-site.mjs'
-              - 'package.json'
-              - 'pnpm-lock.yaml'
-              - '.github/workflows/deploy-site.yml'
-
-      - name: Always set outputs for workflow_dispatch
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
         run: |
-          echo "editor=true" >> $GITHUB_OUTPUT
-          echo "site=true" >> $GITHUB_OUTPUT
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "editor=true" >> "$GITHUB_OUTPUT"
+            echo "site=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          base_sha="${{ steps.base.outputs.base_sha }}"
+          head_sha="${{ github.event.workflow_run.head_sha }}"
+
+          if [[ -z "$base_sha" ]]; then
+            echo "editor=false" >> "$GITHUB_OUTPUT"
+            echo "site=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          changed=$(git diff --name-only "$base_sha" "$head_sha")
+
+          editor_re="^(apps/editor/|packages/interfaces/|packages/qti/|packages/prosemirror/|packages/ui/|firebase\.json|\.firebaserc|scripts/prepare-hosting-editor\.mjs|package\.json|pnpm-lock\.yaml|\.github/workflows/deploy-editor\.yml)"
+          site_re="^(apps/site/|packages/interfaces/|packages/qti/|packages/prosemirror/|packages/ui/|firebase\.json|\.firebaserc|scripts/prepare-hosting-site\.mjs|package\.json|pnpm-lock\.yaml|\.github/workflows/deploy-site\.yml)"
+
+          if echo "$changed" | grep -qE "$editor_re"; then
+            echo "editor=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "editor=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if echo "$changed" | grep -qE "$site_re"; then
+            echo "site=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "site=false" >> "$GITHUB_OUTPUT"
+          fi
 
   deploy-editor:
     needs: changes
