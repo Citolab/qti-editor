@@ -2,6 +2,7 @@ import { choiceInteractionDescriptor } from '@qti-editor/interaction-choice';
 import { extendedTextInteractionDescriptor } from '@qti-editor/interaction-extended-text';
 import { inlineChoiceInteractionDescriptor } from '@qti-editor/interaction-inline-choice';
 import { matchInteractionDescriptor } from '@qti-editor/interaction-match';
+import { orderInteractionDescriptor } from '@qti-editor/interaction-order';
 import { selectPointInteractionDescriptor } from '@qti-editor/interaction-select-point';
 import { textEntryInteractionDescriptor } from '@qti-editor/interaction-text-entry';
 
@@ -17,6 +18,7 @@ const registeredDescriptors: InteractionDescriptor[] = [
   extendedTextInteractionDescriptor,
   inlineChoiceInteractionDescriptor,
   matchInteractionDescriptor,
+  orderInteractionDescriptor,
   selectPointInteractionDescriptor,
   textEntryInteractionDescriptor,
 ];

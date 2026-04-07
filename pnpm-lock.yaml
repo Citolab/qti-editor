@@ -452,14 +452,14 @@ importers:
         specifier: ^1.4.2
         version: 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/choice-interaction':
-        specifier: ^1.1.3
-        version: 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/denise.broekman/Workspace/qti-editor/.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-choice-interaction-1.1.0.tgz
+        version: file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-choice-interaction-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions':
         specifier: ^1.10.1
         version: 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions-core':
-        specifier: ^1.1.3
-        version: 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/denise.broekman/Workspace/qti-editor/.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz
+        version: file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities':
         specifier: ^1.3.2
         version: 1.3.2(lit@3.3.2)
@@ -620,8 +620,8 @@ importers:
   packages/prosemirror/interaction-shared:
     dependencies:
       '@qti-components/interactions-core':
-        specifier: ^1.1.3
-        version: 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: file:/Users/denise.broekman/Workspace/qti-editor/.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz
+        version: file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interfaces':
         specifier: workspace:*
         version: link:../../interfaces
@@ -675,6 +675,9 @@ importers:
       '@qti-editor/interaction-match':
         specifier: workspace:*
         version: link:../../prosemirror/interaction-match
+      '@qti-editor/interaction-order':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-order
       '@qti-editor/interaction-select-point':
         specifier: workspace:*
         version: link:../../prosemirror/interaction-select-point
@@ -2307,8 +2310,9 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/choice-interaction@1.1.3':
-    resolution: {integrity: sha512-7x7j2vI4e6UBTBy7Qx0lVVHiJ7caVTtmkw213e5X6h6JtzNzHemuY6ucSzImvcQvsPNTzoZB9n5t5RZIdnVQRg==}
+  '@qti-components/choice-interaction@file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-choice-interaction-1.1.0.tgz':
+    resolution: {integrity: sha512-RacfgXhqrjtOWq80/fRf/oeSRT7dmVLBpGhBYw5Ay+OE6fN2BXeZoFe3u9gLGKC06k/XNnTvaiuD7u46ZCkepg==, tarball: file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-choice-interaction-1.1.0.tgz}
+    version: 1.1.0
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2385,8 +2389,9 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/interactions-core@1.1.3':
-    resolution: {integrity: sha512-TDhyNOqxXIk8rMLgZs5mLMZOUUmGd+Ee83AipUzpBNK2NSPia22Apk0iPYYRdYGpx9G5CfK/SNTNAksXWXofrQ==}
+  '@qti-components/interactions-core@file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz':
+    resolution: {integrity: sha512-DQ2HOyOCiuABg9C5PN+d1+7Xgn85qeePd6R8zmVdk3aj0Knk/jHrWhuVCwKJS5kPSW9iHxOCheK66UQARJjPbg==, tarball: file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz}
+    version: 1.1.0
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -9329,7 +9334,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9339,11 +9344,11 @@ snapshots:
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/choice-interaction@1.1.3(@lit/context@1.1.6)(lit@3.3.2)':
+  '@qti-components/choice-interaction@file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-choice-interaction-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9351,7 +9356,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9359,7 +9364,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9367,7 +9372,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9375,7 +9380,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9383,7 +9388,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9391,7 +9396,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9399,7 +9404,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9407,7 +9412,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9415,7 +9420,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9423,7 +9428,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9431,7 +9436,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9439,11 +9444,11 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/interactions-core@1.1.3(@lit/context@1.1.6)(lit@3.3.2)':
+  '@qti-components/interactions-core@file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
@@ -9455,7 +9460,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/associate-interaction': 1.1.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/choice-interaction': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/choice-interaction': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-choice-interaction-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/custom-interaction': 1.1.2(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/end-attempt-interaction': 1.1.2(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/extended-text-interaction': 1.1.2(@lit/context@1.1.6)(lit@3.3.2)
@@ -9466,7 +9471,7 @@ snapshots:
       '@qti-components/hotspot-interaction': 1.1.2(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/hottext-interaction': 1.1.2(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/inline-choice-interaction': 1.1.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/match-interaction': 1.1.2(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/media-interaction': 1.1.2(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/order-interaction': 1.1.2(@lit/context@1.1.6)(lit@3.3.2)
@@ -9482,7 +9487,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9490,7 +9495,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9498,7 +9503,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9506,7 +9511,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9514,7 +9519,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9522,7 +9527,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9530,7 +9535,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9538,7 +9543,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9546,7 +9551,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 
@@ -9556,7 +9561,7 @@ snapshots:
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': file:.qti-components-packs/648154ec0c5b3dac8a5118ab450df3d6c508c8a3/qti-components-interactions-core-1.1.0.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.2(lit@3.3.2)
       lit: 3.3.2
 

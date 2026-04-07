@@ -29,6 +29,7 @@
     "@qti-editor/interaction-extended-text": "workspace:*",
     "@qti-editor/interaction-inline-choice": "workspace:*",
     "@qti-editor/interaction-match": "workspace:*",
+    "@qti-editor/interaction-order": "workspace:*",
     "@qti-editor/interaction-select-point": "workspace:*",
     "@qti-editor/interaction-shared": "workspace:*",
     "@qti-editor/interaction-text-entry": "workspace:*"

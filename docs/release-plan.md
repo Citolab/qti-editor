@@ -35,7 +35,7 @@ Keep private for now:
 - The interaction packages already build to `dist`, declare public exports, and form the main reusable authoring API.
 - `@qti-editor/interfaces` is the contract package at the bottom of the dependency graph.
 - `@qti-editor/core` is the stable QTI semantics and composition surface above the interaction descriptors.
-- `@qti-editor/prosekit-integration` is not release-ready yet because it exports `src` paths rather than built artifacts and is still closely tied to app assembly.
+- `@qti-editor/prosekit-integration` is intentionally private because it is our in-house editor assembly layer; external consumers should compose directly from `prosekit` and the public `@qti-editor/*` packages.
 - The `@qti-editor/prosemirror*` utility packages are currently treated as internal implementation details for the first-party editors.
 - `@qti-editor/ui` is distributed through the registry and Firebase-hosted artifacts, not npm package releases.
 
@@ -64,7 +64,7 @@ Keep private for now:
 
 - Registry changes do not create npm releases.
 - Registry changes do trigger the site hosting workflow because the registry is served from the site target.
-- If `@qti-editor/prosekit-integration` becomes an external contract later, convert its exports to `dist/*` first and then remove it from the Changesets ignore/private list.
+- If `@qti-editor/prosekit-integration` ever becomes an external contract later, convert its exports to `dist/*` first and then deliberately change the docs and release policy together.
 - If the generic `@qti-editor/prosemirror*` packages become public later, promote them deliberately with their own API review instead of publishing them incidentally.
 
 ## Required secrets
