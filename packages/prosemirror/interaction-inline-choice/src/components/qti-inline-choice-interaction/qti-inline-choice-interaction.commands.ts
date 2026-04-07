@@ -2,6 +2,20 @@ import { createInsertSiblingOnEnterCommand } from '@qti-editor/interaction-share
 
 import type { Command } from 'prosemirror-state';
 
+function isSelectionInsideInlineChoiceInteraction(state: Parameters<Command>[0]): boolean {
+  const interactionType = state.schema.nodes.qtiInlineChoiceInteraction;
+  if (!interactionType) return false;
+
+  const { $from } = state.selection;
+  for (let depth = $from.depth; depth >= 0; depth -= 1) {
+    if ($from.node(depth).type === interactionType) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 /**
  * Command to insert an inline choice interaction at the current selection.
  */
@@ -12,6 +26,7 @@ export const insertInlineChoiceInteraction: Command = (state, dispatch) => {
   const inlineChoiceParagraphType = schema.nodes.qtiInlineChoiceParagraph;
 
   if (!interactionType || !inlineChoiceType || !inlineChoiceParagraphType) return false;
+  if (isSelectionInsideInlineChoiceInteraction(state)) return false;
 
   const interaction = interactionType.create(
     {

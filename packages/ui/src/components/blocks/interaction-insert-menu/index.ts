@@ -41,6 +41,16 @@ function canInsert(view: EditorView, nodeType: any): boolean {
   return false;
 }
 
+function isSelectionInsideNodeType(view: EditorView, nodeType: any): boolean {
+  const { $from } = view.state.selection;
+  for (let depth = $from.depth; depth >= 0; depth -= 1) {
+    if ($from.node(depth).type === nodeType) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
   const schema: any = view.state.schema;
   const items: InteractionInsertItem[] = [];
@@ -93,7 +103,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
     const nodeType = schema.nodes.qtiInlineChoiceInteraction;
     items.push({
       label: translateQti('interactionInsert.inlineChoice', { target: view.dom }),
-      canInsert: canInsert(view, nodeType),
+      canInsert: !isSelectionInsideNodeType(view, nodeType) && canInsert(view, nodeType),
       command: () => {
         insertInlineChoiceInteraction(view.state, view.dispatch, view);
         view.focus();
