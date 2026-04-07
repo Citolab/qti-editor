@@ -6,11 +6,13 @@ slug: docs/using-the-editor/qti-interactions
 
 QTI interactions are specialised block nodes that represent assessable elements. They are inserted from the **Interactions** toolbar button and each produces a fully-formed, schema-valid structure.
 
+For package-level details, installation, and an overview of all supported interactions, see the [QTI Interactions chapter](/docs/qti-interactions/).
+
 ## Inserting an interaction
 
 Click the **Interactions** button in the floating toolbar to open the insert menu. Only the interactions whose schema nodes are registered in your editor extension are listed. Each item is disabled when the cursor is in a position where that node cannot be inserted.
 
-Interactions can also be inserted programmatically using the command functions:
+Interactions can also be inserted programmatically using the command functions. These are standard [ProseMirror](https://prosemirror.net/) commands:
 
 ```ts
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
@@ -18,7 +20,7 @@ import { insertTextEntryInteraction } from '@qti-editor/interaction-text-entry';
 import { insertInlineChoiceInteraction } from '@qti-editor/interaction-inline-choice';
 import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
 
-// Call as a ProseMirror Command:
+// Call as a command:
 insertChoiceInteraction(view.state, view.dispatch, view);
 ```
 

@@ -1,0 +1,31 @@
+---
+title: QTI Composer
+description: Install and use the live QTI XML composer registry component.
+slug: docs/using-the-registry/qti-composer
+---
+
+`qti-composer` displays the composed QTI XML output for the current item. In the current Angular integration pattern, the simplest setup is to assign the live ProseKit editor instance directly.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-composer.json
+```
+
+**Dependencies:** `lit`, `@lit/context`, `@qti-editor/core`, `prosekit`
+
+## Usage
+
+Assign the editor instance after mount:
+
+```ts
+import '@/components/blocks/composer';
+
+const composer = document.querySelector('qti-composer');
+composer.editor = editor;
+composer.identifier = 'ITEM_1';
+composer.title = 'Untitled Item';
+composer.lang = 'en';
+```
+
+This component can live directly underneath the editor viewport to create the "editor on top, XML composer below" shell.

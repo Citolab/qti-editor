@@ -1,0 +1,34 @@
+---
+title: QTI Attributes Panel
+description: Install and use the schema-aware attributes panel registry component.
+slug: docs/using-the-registry/qti-attributes-panel
+---
+
+`qti-attributes-panel` displays and edits the schema attributes for the currently selected QTI node and its ancestors.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-attributes-panel.json
+```
+
+**Dependencies:** `lit`, `prosekit`, `@qti-editor/core`, `@qti-editor/prosemirror-attributes`, `@qti-editor/prosemirror-attributes-ui-prosekit`
+
+**Registry dependencies (auto-installed):** `qti-choice-attributes-editor`, `qti-text-entry-attributes-editor`
+
+## Usage
+
+```ts
+import '@/components/blocks/attributes-panel';
+import { qtiAttributesExtension } from '@qti-editor/prosemirror-attributes-ui-prosekit';
+
+const attributesEventTarget = new EventTarget();
+
+// Add to your editor extension union:
+qtiAttributesExtension({ eventTarget: attributesEventTarget });
+
+// Wire the element:
+const panel = document.querySelector('qti-attributes-panel');
+panel.eventTarget = attributesEventTarget;
+panel.editorView = editor.view;
+```

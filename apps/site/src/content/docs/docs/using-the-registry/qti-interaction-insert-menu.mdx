@@ -1,0 +1,24 @@
+---
+title: QTI Interaction Insert Menu
+description: Install and use the QTI interaction insertion dropdown registry component.
+slug: docs/using-the-registry/qti-interaction-insert-menu
+---
+
+`qti-interaction-insert-menu` is a dropdown button for inserting QTI interaction nodes such as choice, text-entry, inline-choice, and select-point into the editor.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-interaction-insert-menu.json
+```
+
+**Dependencies:** `lit`, `prosekit`, `@qti-editor/interaction-choice`, `@qti-editor/interaction-text-entry`, `@qti-editor/interaction-select-point`
+
+## Usage
+
+```ts
+import '@/components/blocks/interaction-insert-menu';
+
+const menu = document.querySelector('qti-interaction-insert-menu');
+menu.editor = editor;
+```

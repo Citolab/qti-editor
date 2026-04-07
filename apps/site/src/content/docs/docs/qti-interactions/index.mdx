@@ -1,0 +1,36 @@
+---
+title: QTI Interactions
+description: Overview of the QTI interaction packages shipped with QTI Editor.
+slug: docs/qti-interactions
+---
+
+QTI Editor ships its interactions as focused packages. Each `@qti-editor/interaction-*` package adds the schema, commands, serialization, and editor wiring for one QTI interaction type.
+
+These packages are closely coupled to our other open source library, [`qti-components`](https://github.com/Citolab/qti-components). In practice, QTI Editor is responsible for authoring behavior and document structure, while `qti-components` supplies the underlying QTI web components that render and encapsulate the interaction behavior itself. That split keeps the integration framework agnostic while letting each interaction package stay small and explicit.
+
+When you install an interaction package, its matching `@qti-components/*` dependency is pulled in automatically. You typically install only the interactions your product needs.
+
+## Available interactions
+
+| Interaction | What it does | Package |
+|---|---|---|
+| [Choice Interaction](/docs/qti-interactions/choice/) | Single- or multiple-choice questions with a prompt and selectable choices | `@qti-editor/interaction-choice` |
+| [Inline Choice Interaction](/docs/qti-interactions/inline-choice/) | Dropdown choices embedded directly in a sentence | `@qti-editor/interaction-inline-choice` |
+| [Text Entry Interaction](/docs/qti-interactions/text-entry/) | Short free-text answers entered inline | `@qti-editor/interaction-text-entry` |
+| [Extended Text Interaction](/docs/qti-interactions/extended-text/) | Longer free-text answers in a multi-line response area | `@qti-editor/interaction-extended-text` |
+| [Match Interaction](/docs/qti-interactions/match/) | Matching items across two sets | `@qti-editor/interaction-match` |
+| [Order Interaction](/docs/qti-interactions/order/) | Ordering a list of choices into the correct sequence | `@qti-editor/interaction-order` |
+| [Select Point Interaction](/docs/qti-interactions/select-point/) | Clicking a coordinate or hotspot on an image | `@qti-editor/interaction-select-point` |
+
+## Installing interactions
+
+Install only the packages you need, for example:
+
+```bash
+pnpm add \
+  @qti-editor/interaction-choice \
+  @qti-editor/interaction-inline-choice \
+  @qti-editor/interaction-text-entry
+```
+
+Each package exports [ProseMirror](https://prosemirror.net/) commands and schema pieces that you register into your editor setup. The [framework guides](/docs/frameworks/react/) and [framework guides](/docs/frameworks/angular/) show complete integration examples.

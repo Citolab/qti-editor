@@ -1,0 +1,24 @@
+---
+title: Lit Editor Slash Menu
+description: Install and use the slash command registry component.
+slug: docs/using-the-registry/lit-editor-slash-menu
+---
+
+`lit-editor-slash-menu` is a `/`-triggered slash command menu for inserting nodes.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/lit-editor-slash-menu.json
+```
+
+**Dependencies:** `lit`, `prosekit`
+
+## Usage
+
+```ts
+import '@/components/editor/ui/slash-menu';
+
+const menu = document.querySelector('lit-editor-slash-menu');
+menu.editor = editor;
+```

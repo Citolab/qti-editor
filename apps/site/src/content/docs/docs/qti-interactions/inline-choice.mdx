@@ -1,0 +1,21 @@
+---
+title: Inline Choice Interaction
+description: Install and use the inline choice interaction package.
+slug: docs/qti-interactions/inline-choice
+---
+
+Inline choice interactions place a dropdown selection directly inside surrounding text.
+
+## Install
+
+```bash
+pnpm add @qti-editor/interaction-inline-choice
+```
+
+This package integrates with `@qti-components/inline-choice-interaction`.
+
+## What it does
+
+- Inserts a `qti-inline-choice-interaction` inline node at the cursor position.
+- Lets authors create sentence-level fill-in-the-blank style questions with selectable options.
+- Keeps options and response-related attributes tied to the interaction node rather than loose HTML markup.

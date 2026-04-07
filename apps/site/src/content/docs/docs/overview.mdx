@@ -6,9 +6,14 @@ slug: docs/overview
 
 QTI Editor provides a modular way to embed a QTI-capable authoring environment into web applications.
 
+Under the hood, the editor is built on [ProseMirror](https://prosemirror.net/), which gives it a structured document model instead of treating content as loose HTML. QTI Editor layers QTI-specific schema nodes, commands, serializers, and web components on top of that foundation so applications can offer rich-text authoring while still producing valid QTI output. 
+
+The ProseMirror schema is what makes QTI interactions manageable: it defines which interaction nodes are allowed, where they can appear, what they can contain, and how they may be nested. That gives the editor built-in guards against invalid structures and adds safeguards around things like unsupported nesting or placing interactions in the wrong context. In practice, this means you can assemble an editor from focused packages, register only the interactions you need, and embed the result in your own application without tying yourself to a single frontend framework.
+
 ## What's next?
 
 - I'd like a basic [installation guide](/docs/getting-started/installation/).
-- I'd like to  install components from the [registry](/docs/getting-started/registry/).
+- I'd like to install components from the [registry](/docs/using-the-registry/).
+- I'd like to browse the available [QTI interactions](/docs/qti-interactions/).
 - I'd like to use the editor in [React](/docs/frameworks/react/).
 - I'd like to use the editor in [Angular](/docs/frameworks/angular/).

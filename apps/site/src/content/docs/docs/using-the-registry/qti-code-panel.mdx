@@ -1,0 +1,31 @@
+---
+title: QTI Code Panel
+description: Install and use the tabbed HTML, JSON, and XML panel registry component.
+slug: docs/using-the-registry/qti-code-panel
+---
+
+`qti-code-panel` displays the editor document as HTML, JSON, or QTI XML with a tab switcher. It is driven by `qti:content:change` events.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-code-panel.json
+```
+
+**Dependencies:** `lit`, `prosekit`, `@qti-editor/core`
+
+## Usage
+
+```ts
+import '@/components/blocks/code-panel';
+import { qtiCodePanelExtension } from '@/components/blocks/code-panel';
+
+const codeEventTarget = new EventTarget();
+
+// Add to your editor extension union:
+qtiCodePanelExtension({ eventTarget: codeEventTarget });
+
+// Wire the element:
+const panel = document.querySelector('qti-code-panel');
+panel.eventTarget = codeEventTarget;
+```

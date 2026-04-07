@@ -4,22 +4,26 @@ description: Add QTI Editor to your project from npm.
 slug: docs/getting-started/installation
 ---
 
-QTI Editor is split into focused packages so you only install what you need.
+QTI Editor is split into focused packages so you only install what you need. For framework apps, there are two delivery models:
+
+- published npm packages for the editor engine, interaction packages, and pure [ProseMirror](https://prosemirror.net/) helpers
+- registry-installed Lit UI components that are copied into your app source
 
 ## Minimal setup
 
-To embed an editor and receive content-change events, you need two packages:
+To embed an editor with the published package surface, start with:
 
 ```bash
-pnpm add prosekit @qti-editor/prosekit-integration
+pnpm add prosekit @qti-editor/core @qti-editor/prosemirror
 ```
 
 | Package | Purpose |
 |---|---|
-| `prosekit` | Core editor engine (ProseMirror wrapper) |
-| `@qti-editor/prosekit-integration` | Events, item context, and QTI extension helpers |
+| `prosekit` | Core editor engine ([ProseMirror](https://prosemirror.net/) wrapper) |
+| `@qti-editor/core` | QTI semantics, descriptor registry, XML export |
+| `@qti-editor/prosemirror` | Pure [ProseMirror](https://prosemirror.net/) / ProseKit-side editor helpers |
 
-That is enough to follow the [React](/docs/frameworks/react) and [Angular](/docs/frameworks/angular) integration guides.
+For Angular and other apps that are not using the framework-specific examples directly, you will usually vendor a small local integration layer on top of these packages.
 
 ## Adding QTI interactions
 
@@ -39,25 +43,35 @@ pnpm add @qti-editor/interaction-choice \
 | `@qti-editor/interaction-text-entry` | `<qti-text-entry-interaction>` |
 | `@qti-editor/interaction-select-point` | `<qti-select-point-interaction>` |
 
-Each package exports a ProseMirror `Command` function to insert the interaction node and a ProseKit extension to register the schema and web components.
+Each package exports a [ProseMirror](https://prosemirror.net/) `Command` function to insert the interaction node and a ProseKit extension to register the schema and web components.
 
 ## Adding the full UI
 
-For the built-in toolbar, attribute panel, and insert menus:
+For the built-in toolbar, attribute panel, slash menu, and insert menus, use the registry instead of an npm runtime import:
 
 ```bash
-pnpm add @qti-editor/ui lit
+npx shadcn@latest add https://qti-editor.citolab.nl/r/lit-editor-toolbar.json
 ```
 
-`@qti-editor/ui` ships Lit web components and requires `lit` as a peer dependency.
+Then add the other UI pieces you need, for example:
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/lit-editor-slash-menu.json
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-composer.json
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-composer-metadata-form.json
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-attributes-panel.json
+```
+
+The registry copies Lit source files into your project so you can modify them freely.
+
+For Angular, do the manual shadcn setup first (`components.json`, `@/*` path alias, `src/lib/utils.ts`) because the CLI does not auto-detect Angular projects.
 
 ## Package overview
 
 | Package | What it provides |
 |---|---|
 | `prosekit` | Editor engine |
-| `@qti-editor/prosekit-integration` | Events, item context, XML composer bridge |
 | `@qti-editor/core` | QTI semantics, composer registry, XML export |
-| `@qti-editor/prosemirror` | Pure ProseMirror plugins (block selection, node attr sync) |
-| `@qti-editor/ui` | Toolbar, attribute panel, insert menus (Lit web components) |
+| `@qti-editor/prosemirror` | Pure [ProseMirror](https://prosemirror.net/) plugins (block selection, node attr sync) |
+| Registry-installed Lit components | Toolbar, slash menu, attribute panel, insert menus |
 | `@qti-editor/interaction-*` | Individual QTI interaction nodes, schemas, and commands |

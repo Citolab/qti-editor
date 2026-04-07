@@ -1,0 +1,26 @@
+---
+title: Lit Editor Toolbar
+description: Install and use the ProseKit-compatible toolbar registry component.
+slug: docs/using-the-registry/lit-editor-toolbar
+---
+
+`lit-editor-toolbar` is a ProseKit-compatible Lit toolbar with bold, italic, heading, list, table, and image-upload buttons.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/lit-editor-toolbar.json
+```
+
+**Dependencies:** `lit`, `prosekit`
+
+## Usage
+
+```ts
+import '@/components/editor/ui/toolbar';
+
+// Assign the ProseKit editor instance via the .editor property:
+const toolbar = document.querySelector('lit-editor-toolbar');
+toolbar.editor = editor;
+toolbar.uploader = myUploadFn; // optional image upload handler
+```

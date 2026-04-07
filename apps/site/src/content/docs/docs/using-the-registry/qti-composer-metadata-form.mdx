@@ -1,0 +1,26 @@
+---
+title: QTI Composer Metadata Form
+description: Install and use the standalone metadata form registry component.
+slug: docs/using-the-registry/qti-composer-metadata-form
+---
+
+`qti-composer-metadata-form` is a standalone form for editing QTI item metadata such as the title and identifier. It does not require a live editor instance.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-composer-metadata-form.json
+```
+
+**Dependencies:** `lit`
+
+## Usage
+
+```html
+<qti-composer-metadata-form
+  title="My Item"
+  identifier="item-001"
+></qti-composer-metadata-form>
+```
+
+It emits a `metadata-change` `CustomEvent` with `{ title, identifier }` on input.

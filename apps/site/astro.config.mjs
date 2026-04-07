@@ -236,7 +236,33 @@ export default defineConfig({
           items: [
             { label: 'Overview', slug: 'docs/overview' },
             { label: 'Installation', slug: 'docs/getting-started/installation' },
-            { label: 'Using the Registry', slug: 'docs/getting-started/registry' },
+          ],
+        },
+        {
+          label: 'Using the Registry',
+          items: [
+            { label: 'Overview', slug: 'docs/using-the-registry' },
+            { label: 'QTI Composer Metadata Form', slug: 'docs/using-the-registry/qti-composer-metadata-form' },
+            { label: 'QTI Composer', slug: 'docs/using-the-registry/qti-composer' },
+            { label: 'QTI Code Panel', slug: 'docs/using-the-registry/qti-code-panel' },
+            { label: 'QTI Attributes Panel', slug: 'docs/using-the-registry/qti-attributes-panel' },
+            { label: 'Lit Editor Toolbar', slug: 'docs/using-the-registry/lit-editor-toolbar' },
+            { label: 'Lit Editor Slash Menu', slug: 'docs/using-the-registry/lit-editor-slash-menu' },
+            { label: 'QTI Interaction Insert Menu', slug: 'docs/using-the-registry/qti-interaction-insert-menu' },
+            { label: 'QTI Convert Menu', slug: 'docs/using-the-registry/qti-convert-menu' },
+          ],
+        },
+        {
+          label: 'QTI Interactions',
+          items: [
+            { label: 'Overview', slug: 'docs/qti-interactions' },
+            { label: 'Choice Interaction', slug: 'docs/qti-interactions/choice' },
+            { label: 'Inline Choice Interaction', slug: 'docs/qti-interactions/inline-choice' },
+            { label: 'Text Entry Interaction', slug: 'docs/qti-interactions/text-entry' },
+            { label: 'Extended Text Interaction', slug: 'docs/qti-interactions/extended-text' },
+            { label: 'Match Interaction', slug: 'docs/qti-interactions/match' },
+            { label: 'Order Interaction', slug: 'docs/qti-interactions/order' },
+            { label: 'Select Point Interaction', slug: 'docs/qti-interactions/select-point' },
           ],
         },
         {
