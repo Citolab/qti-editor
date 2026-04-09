@@ -1,3 +1,4 @@
+import { associateInteractionDescriptor } from '@qti-editor/interaction-associate';
 import { choiceInteractionDescriptor } from '@qti-editor/interaction-choice';
 import { extendedTextInteractionDescriptor } from '@qti-editor/interaction-extended-text';
 import { inlineChoiceInteractionDescriptor } from '@qti-editor/interaction-inline-choice';
@@ -14,6 +15,7 @@ import type {
 } from '@qti-editor/interfaces';
 
 const registeredDescriptors: InteractionDescriptor[] = [
+  associateInteractionDescriptor,
   choiceInteractionDescriptor,
   extendedTextInteractionDescriptor,
   inlineChoiceInteractionDescriptor,

@@ -28,7 +28,12 @@ qti-choice-interaction {
    @apply bg-slate-100 rounded p-2 my-1;
 }
 
-qti-simple-choice {
+qti-associate-interaction {
+   @apply bg-slate-100 rounded p-2 my-1;
+}
+
+qti-simple-choice,
+qti-simple-associable-choice {
    @apply bg-white rounded p-2;
 }
 

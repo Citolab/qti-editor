@@ -5,6 +5,7 @@ import { translateQti, QtiI18nController } from '@qti-editor/interaction-shared/
 import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { Selection } from 'prosekit/pm/state';
 import { PopoverContent, PopoverRoot, PopoverTrigger } from 'prosekit/lit/popover';
+import { insertAssociateInteraction } from '@qti-editor/interaction-associate';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
 import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
 import { insertMatchInteraction } from '@qti-editor/interaction-match';
@@ -106,6 +107,18 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
       canInsert: !isSelectionInsideNodeType(view, nodeType) && canInsert(view, nodeType),
       command: () => {
         insertInlineChoiceInteraction(view.state, view.dispatch, view);
+        view.focus();
+      },
+    });
+  }
+
+  if (schema.nodes.qtiAssociateInteraction && schema.nodes.qtiSimpleAssociableChoice) {
+    const nodeType = schema.nodes.qtiAssociateInteraction;
+    items.push({
+      label: translateQti('interactionInsert.associate', { target: view.dom }),
+      canInsert: canInsert(view, nodeType),
+      command: () => {
+        insertAssociateInteraction(view.state, view.dispatch, view);
         view.focus();
       },
     });

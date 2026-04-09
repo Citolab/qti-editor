@@ -15,6 +15,7 @@
     "@lit/context": "^1.1.6",
     "@qti-components/theme": "1.3.2",
     "@qti-editor/core": "workspace:*",
+    "@qti-editor/interaction-associate": "workspace:*",
     "@qti-editor/interaction-choice": "workspace:*",
     "@qti-editor/interaction-extended-text": "workspace:*",
     "@qti-editor/interaction-match": "workspace:*",

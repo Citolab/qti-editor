@@ -14,6 +14,7 @@ const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/qti/pro
 const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-shared/src', import.meta.url));
 const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-choice/src', import.meta.url));
 const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-extended-text/src', import.meta.url));
+const interactionsAssociateSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-associate/src', import.meta.url));
 const interactionsMatchSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-match/src', import.meta.url));
 const interactionsOrderSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-order/src', import.meta.url));
 const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-text-entry/src', import.meta.url));
@@ -108,6 +109,14 @@ export default defineConfig({
           replacement: `${interactionsExtendedTextSrcRoot}/index.ts`,
         },
         {
+          find: /^@qti-editor\/interaction-associate\/(.*)\.js$/,
+          replacement: `${interactionsAssociateSrcRoot}/$1.ts`,
+        },
+        {
+          find: /^@qti-editor\/interaction-associate$/,
+          replacement: `${interactionsAssociateSrcRoot}/index.ts`,
+        },
+        {
           find: /^@qti-editor\/interaction-match\/(.*)\.js$/,
           replacement: `${interactionsMatchSrcRoot}/$1.ts`,
         },
@@ -191,12 +200,14 @@ export default defineConfig({
     optimizeDeps: {
       include: ['lit', 'lit/decorators.js'],
       exclude: [
+        '@qti-components/associate-interaction',
         '@qti-components/base',
         '@qti-components/interactions',
         '@qti-editor/ui',
         '@qti-editor/interaction-shared',
         '@qti-editor/interaction-choice',
         '@qti-editor/interaction-extended-text',
+        '@qti-editor/interaction-associate',
         '@qti-editor/interaction-match',
         '@qti-editor/interaction-text-entry',
         '@qti-editor/interaction-select-point',

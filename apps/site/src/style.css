@@ -28,7 +28,8 @@ qti-editor-app qti-choice-interaction {
   @apply bg-slate-100 rounded p-2 my-1 dark:bg-slate-700;
 }
 
-qti-editor-app qti-simple-choice {
+qti-editor-app qti-simple-choice,
+qti-editor-app qti-associable-choice {
   @apply bg-white rounded p-2 dark:bg-slate-800 dark:text-slate-100;
 }
 

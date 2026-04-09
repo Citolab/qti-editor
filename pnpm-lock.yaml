@@ -142,6 +142,9 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../../packages/qti/core
+      '@qti-editor/interaction-associate':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-associate
       '@qti-editor/interaction-choice':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-choice
@@ -315,6 +318,9 @@ importers:
       '@qti-components/theme':
         specifier: 1.3.2
         version: 1.3.2
+      '@qti-editor/interaction-associate':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-associate
       '@qti-editor/interaction-choice':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-choice
@@ -445,6 +451,37 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
+
+  packages/prosemirror/interaction-associate:
+    dependencies:
+      '@qti-components/associate-interaction':
+        specifier: ^1.1.3
+        version: 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions':
+        specifier: 1.10.1
+        version: 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities':
+        specifier: 1.3.2
+        version: 1.3.2(lit@3.3.2)
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../interaction-shared
+      '@qti-editor/interfaces':
+        specifier: workspace:*
+        version: link:../../interfaces
+    devDependencies:
+      lit:
+        specifier: ^3.3.2
+        version: 3.3.2
+      prosemirror-commands:
+        specifier: ^1.7.1
+        version: 1.7.1
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
 
   packages/prosemirror/interaction-choice:
     dependencies:
@@ -663,6 +700,9 @@ importers:
 
   packages/qti/core:
     dependencies:
+      '@qti-editor/interaction-associate':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-associate
       '@qti-editor/interaction-choice':
         specifier: workspace:*
         version: link:../../prosemirror/interaction-choice
@@ -740,6 +780,9 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../qti/core
+      '@qti-editor/interaction-associate':
+        specifier: workspace:*
+        version: link:../prosemirror/interaction-associate
       '@qti-editor/interaction-choice':
         specifier: workspace:*
         version: link:../prosemirror/interaction-choice

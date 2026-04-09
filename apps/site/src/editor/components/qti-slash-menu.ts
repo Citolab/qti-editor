@@ -17,6 +17,7 @@ import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
 import { translateQti } from '@qti-editor/interaction-shared';
+import { insertAssociateInteraction } from '@qti-editor/interaction-associate';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
 import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
 import { insertMatchInteraction } from '@qti-editor/interaction-match';
@@ -91,6 +92,11 @@ export class QtiSlashMenu extends LitElement {
           class="contents"
           label=${translateQti('interactionInsert.textEntry', { target: this })}
           @select=${() => this.insertTextEntry()}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label=${translateQti('interactionInsert.associate', { target: this })}
+          @select=${() => this.insertInteraction(insertAssociateInteraction)}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"

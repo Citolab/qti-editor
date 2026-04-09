@@ -1,5 +1,10 @@
 
 import {
+  qtiAssociateInteractionNodeSpec,
+  insertAssociableChoiceOnEnter,
+  defineAssociateCorrectResponseExtension,
+} from '@qti-editor/interaction-associate';
+import {
   insertSimpleChoiceOnEnter,
   qtiChoiceInteractionNodeSpec,
   defineCorrectResponseClickExtension,
@@ -47,6 +52,8 @@ export function defineQtiInteractionsExtension() {
     defineNodeSpec({ name: 'qtiPrompt', ...qtiPromptNodeSpec }),
     defineNodeSpec({ name: 'qtiSimpleChoiceParagraph', ...qtiSimpleChoiceParagraphNodeSpec }),
     defineNodeSpec({ name: 'qtiSimpleChoice', ...qtiSimpleChoiceNodeSpec }),
+    // Associate interaction
+    defineNodeSpec({ name: 'qtiAssociateInteraction', ...qtiAssociateInteractionNodeSpec }),
     // Text interactions
     defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
     defineNodeSpec({ name: 'qtiExtendedTextInteraction', ...qtiExtendedTextInteractionNodeSpec }),
@@ -63,6 +70,7 @@ export function defineQtiInteractionsExtension() {
     defineKeymap({
       Enter: (state, dispatch, view) =>
         insertSimpleChoiceOnEnter(state, dispatch, view) ||
+        insertAssociableChoiceOnEnter(state, dispatch, view) ||
         insertSimpleAssociableChoiceOnEnter(state, dispatch, view) ||
         insertOrderChoiceOnEnter(state, dispatch, view),
       // 'Mod-Shift-q': insertChoiceInteraction,
@@ -71,11 +79,12 @@ export function defineQtiInteractionsExtension() {
     }),
     // Enable clicking on choice radio/checkbox to set correct responses
     defineCorrectResponseClickExtension(),
+    // Enable associate pair editing to persist correct responses
+    defineAssociateCorrectResponseExtension(),
     // Enable drag-and-drop for match interaction correct responses
     defineMatchCorrectResponseExtension(),
     // Enable click-to-order for order interaction correct responses
     defineOrderCorrectResponseExtension(),
   );
 }
-
 

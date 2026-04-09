@@ -34,6 +34,7 @@
     "@iconify-json/lucide": "^1.2.98",
     "@lit/context": "^1.1.6",
     "@qti-editor/core": "workspace:*",
+    "@qti-editor/interaction-associate": "workspace:*",
     "@qti-editor/interaction-choice": "workspace:*",
     "@qti-editor/interaction-extended-text": "workspace:*",
     "@qti-editor/interaction-inline-choice": "workspace:*",
