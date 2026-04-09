@@ -3,7 +3,7 @@ import { property, state } from 'lit/decorators.js';
 import { Interaction } from '@qti-editor/interaction-shared/components/interaction.js';
 import { QtiI18nController } from '@qti-editor/interaction-shared';
 
-import styles, { LIGHT_DOM_STYLES } from './qti-associate-interaction.styles.js';
+import styles from './qti-associate-interaction.styles.js';
 
 /** Association pair: [firstIdentifier, secondIdentifier] */
 export type AssociatePair = [string, string];
@@ -71,7 +71,6 @@ export class QtiAssociateInteractionEdit extends Interaction {
   private _setupDone = false;
   private _labelCache = new Map<string, string>();
   private _observer: MutationObserver | null = null;
-  private _lightDomStyle: HTMLStyleElement | null = null;
   private _lastEmittedResponse: string | null = null;
 
   private get _state(): AssociateState {
@@ -80,7 +79,6 @@ export class QtiAssociateInteractionEdit extends Interaction {
 
   override connectedCallback() {
     super.connectedCallback();
-    this._injectLightDomStyles();
     this._syncStateFromCorrectResponse();
     document.addEventListener('keydown', this._onKeyDown);
     requestAnimationFrame(() => this._trySetup());
@@ -92,16 +90,7 @@ export class QtiAssociateInteractionEdit extends Interaction {
     document.removeEventListener('keydown', this._onKeyDown);
     this._observer?.disconnect();
     this._observer = null;
-    this._lightDomStyle?.remove();
-    this._lightDomStyle = null;
     this._setupDone = false;
-  }
-
-  private _injectLightDomStyles() {
-    if (this._lightDomStyle) return;
-    this._lightDomStyle = document.createElement('style');
-    this._lightDomStyle.textContent = LIGHT_DOM_STYLES;
-    this.prepend(this._lightDomStyle);
   }
 
   override firstUpdated() {
@@ -129,7 +118,11 @@ export class QtiAssociateInteractionEdit extends Interaction {
       this._buildLabelCache();
       this.requestUpdate();
     });
-    this._observer.observe(this, { childList: true, subtree: true, characterData: true });
+    this._observeMutations();
+  }
+
+  private _observeMutations() {
+    this._observer?.observe(this, { childList: true, subtree: true, characterData: true });
   }
 
   private _parseCorrectResponse() {

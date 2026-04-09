@@ -4,8 +4,8 @@
  * ProseMirror commands for inserting and manipulating match interactions.
  */
 
+import { TextSelection } from 'prosemirror-state';
 import { chainCommands, splitBlock } from 'prosemirror-commands';
-import { createInsertSiblingOnEnterCommand } from '@qti-editor/interaction-shared/commands/enter.js';
 import { createInsertBlockInteractionCommand } from '@qti-editor/interaction-shared/commands/insert.js';
 import { translateQti } from '@qti-editor/interaction-shared';
 
@@ -80,41 +80,78 @@ export const insertMatchInteraction: Command = (state, dispatch, view?: EditorVi
 /**
  * Handles Enter inside qti-simple-associable-choice paragraphs by inserting a new empty
  * sibling qti-simple-associable-choice directly after the current one.
+ * When inserting in the source set (index 0), also appends a new choice to the target set.
  */
 export const insertSimpleAssociableChoiceOnEnter: Command = (state, dispatch) => {
   const choiceType = state.schema.nodes.qtiSimpleAssociableChoice;
   const paragraphType = state.schema.nodes.qtiSimpleAssociableChoiceParagraph;
+  const matchSetType = state.schema.nodes.qtiSimpleMatchSet;
+  const interactionType = state.schema.nodes.qtiMatchInteraction;
   if (!choiceType || !paragraphType) return false;
 
-  return createInsertSiblingOnEnterCommand({
-    ancestorNodeName: 'qtiSimpleAssociableChoice',
-    selectionOffset: 2,
-    createSiblingNode: (currentState) => {
-      const { selection } = currentState;
-      const matchSetType = currentState.schema.nodes.qtiSimpleMatchSet;
-      const interactionType = currentState.schema.nodes.qtiMatchInteraction;
+  const { selection } = state;
+  if (!selection.empty) return false;
 
-      let prefix = 'CHOICE';
-      if (matchSetType && interactionType) {
-        for (let depth = selection.$from.depth; depth >= 0; depth--) {
-          if (selection.$from.node(depth).type === matchSetType) {
-            // Find which index this match set is within its parent interaction
-            const parentDepth = depth - 1;
-            if (parentDepth >= 0 && selection.$from.node(parentDepth).type === interactionType) {
-              const matchSetIndex = selection.$from.index(parentDepth);
-              prefix = matchSetIndex === 0 ? 'SOURCE' : 'TARGET';
-            }
-            break;
+  // Find the enclosing qtiSimpleAssociableChoice
+  let choiceDepth = -1;
+  for (let depth = selection.$from.depth; depth >= 0; depth--) {
+    if (selection.$from.node(depth).type === choiceType) { choiceDepth = depth; break; }
+  }
+  if (choiceDepth < 0) return false;
+
+  // Determine source vs target set and locate the interaction node
+  let isSourceSet = false;
+  let interactionDepth = -1;
+  if (matchSetType && interactionType) {
+    for (let depth = selection.$from.depth; depth >= 0; depth--) {
+      if (selection.$from.node(depth).type === matchSetType) {
+        const parentDepth = depth - 1;
+        if (parentDepth >= 0 && selection.$from.node(parentDepth).type === interactionType) {
+          isSourceSet = selection.$from.index(parentDepth) === 0;
+          interactionDepth = parentDepth;
+        }
+        break;
+      }
+    }
+  }
+
+  if (!dispatch) return true;
+
+  const sourceInsertPos = selection.$from.after(choiceDepth);
+  const sourceSibling = choiceType.create(
+    { identifier: `${isSourceSet ? 'SOURCE' : 'TARGET'}_${crypto.randomUUID()}`, matchMax: 1 },
+    paragraphType.create()
+  );
+
+  const tr = state.tr.insert(sourceInsertPos, sourceSibling);
+  tr.setSelection(TextSelection.create(tr.doc, sourceInsertPos + 2)).scrollIntoView();
+
+  // When adding to source set, also append a matching target choice
+  if (isSourceSet && interactionDepth >= 0 && matchSetType) {
+    const originalInteractionPos = selection.$from.before(interactionDepth);
+    const mappedInteractionPos = tr.mapping.map(originalInteractionPos);
+    const interactionNodeNew = tr.doc.nodeAt(mappedInteractionPos);
+    if (interactionNodeNew) {
+      let setCount = 0;
+      interactionNodeNew.forEach((child, childOffset) => {
+        if (child.type === matchSetType) {
+          setCount++;
+          if (setCount === 2) {
+            const targetChoice = choiceType.create(
+              { identifier: `TARGET_${crypto.randomUUID()}`, matchMax: 3 },
+              paragraphType.create()
+            );
+            // Insert before the closing tag of the target set
+            const insertAt = mappedInteractionPos + 1 + childOffset + child.nodeSize - 1;
+            tr.insert(insertAt, targetChoice);
           }
         }
-      }
+      });
+    }
+  }
 
-      return choiceType.create(
-        { identifier: `${prefix}_${crypto.randomUUID()}`, matchMax: 1 },
-        paragraphType.create()
-      );
-    },
-  })(state, dispatch);
+  dispatch(tr);
+  return true;
 };
 
 /**

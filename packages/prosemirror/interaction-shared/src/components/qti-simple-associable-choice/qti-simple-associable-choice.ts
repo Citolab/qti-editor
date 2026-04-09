@@ -12,6 +12,15 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
       flex-direction: column;
     }
 
+    ::slotted(p) {
+      margin: 0;
+      width: 100%;
+    }
+
+    ::slotted(.ProseMirror-trailingBreak) {
+      display: inline;
+    }
+
     slot {
       width: 100%;
       display: block;

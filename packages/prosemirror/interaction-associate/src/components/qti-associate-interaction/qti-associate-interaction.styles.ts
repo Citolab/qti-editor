@@ -2,36 +2,36 @@ import { css, type CSSResultGroup } from 'lit';
 
 import externalStyles from '@qti-components/associate-interaction/styles';
 
-/** Light DOM styles injected as a <style> element (applies to slotted content) */
-export const LIGHT_DOM_STYLES = `
-  qti-simple-associable-choice {
-    display: inline-block;
-    cursor: pointer;
-    border-radius: 4px;
-    padding: 4px 8px;
-    margin-right: 8px;
-    border: 1px solid var(--qti-border, #cbd5e1);
-  }
-
-  qti-simple-associable-choice:hover {
-    background: var(--qti-bg-hover, #f1f5f9);
-  }
-
-  qti-simple-associable-choice p {
-    margin: 0;
-  }
-
-  qti-simple-associable-choice::part(dropslot) {
-    display: none;
-  }
-`;
-
 const styles: CSSResultGroup = [
   externalStyles,
   css`
     :host {
       display: block;
       white-space: normal;
+    }
+
+    slot:not([name]) {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    ::slotted(qti-simple-associable-choice) {
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 4px 8px;
+      border: 1px solid var(--qti-border, #cbd5e1);
+      min-height: 2rem;
+      min-width: 10rem;
+      box-sizing: border-box;
+      vertical-align: top;
+    }
+
+    ::slotted(qti-simple-associable-choice:hover) {
+      background: var(--qti-bg-hover, #f1f5f9);
     }
 
     .drop-container {
