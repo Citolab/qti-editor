@@ -10,7 +10,12 @@ export default {
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
     ['@semantic-release/changelog', { changelogFile: changelog }],
-    '@semantic-release/npm',
+    // npmPublish: false skips token verification — actual publish uses npm's native
+    // OIDC trusted publisher support via `npm publish --provenance` below.
+    ['@semantic-release/npm', { npmPublish: false }],
+    ['@semantic-release/exec', {
+      publishCmd: 'npm publish --provenance --access public',
+    }],
     ['@semantic-release/git', {
       assets: [changelog, 'package.json'],
       message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
