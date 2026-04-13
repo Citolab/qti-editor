@@ -1,7 +1,7 @@
 {
   "name": "@qti-editor/interaction-match",
   "description": "QTI match interaction schemas, components, commands, and composer",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",
@@ -29,8 +29,8 @@
     "@qti-components/interactions": "1.10.1",
     "@qti-components/match-interaction": "^1.1.3",
     "@qti-components/utilities": "1.3.2",
-    "@qti-editor/interaction-shared": "workspace:*",
-    "@qti-editor/interfaces": "workspace:*"
+    "@qti-editor/interaction-shared": "1.0.0",
+    "@qti-editor/interfaces": "1.0.0"
   },
   "peerDependencies": {
     "lit": "^3.3.1"
