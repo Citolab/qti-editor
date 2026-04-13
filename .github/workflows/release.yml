@@ -16,7 +16,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
   id-token: write
 
 jobs:
@@ -47,7 +46,7 @@ jobs:
           fi
 
           changed_files="$(git diff --name-only HEAD^ HEAD)"
-          if echo "$changed_files" | grep -Eq '^(\.changeset/|package\.json$|pnpm-lock\.yaml$|packages/interfaces/|packages/qti/core/|packages/prosemirror/interaction-[^/]+/|\.github/workflows/release\.yml$)'; then
+          if echo "$changed_files" | grep -Eq '^(package\.json$|pnpm-lock\.yaml$|packages/interfaces/|packages/qti/core/|packages/prosemirror/interaction-[^/]+/|\.github/workflows/release\.yml$)'; then
             echo "should_release=true" >> "$GITHUB_OUTPUT"
           else
             echo "should_release=false" >> "$GITHUB_OUTPUT"
@@ -92,12 +91,12 @@ jobs:
           pnpm --filter @qti-editor/interaction-hottext build
           pnpm --filter @qti-editor/core build
 
-      - name: Create release PR or publish
-        uses: changesets/action@v1
-        with:
-          version: pnpm changeset:version
-          publish: pnpm changeset:publish
-          commit: "chore: version packages"
-          title: "chore: version packages"
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Release
+        run: pnpm exec multi-semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN || secrets.GITHUB_TOKEN }}
