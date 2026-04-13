@@ -75,6 +75,7 @@ jobs:
         run: |
           pnpm --filter @qti-editor/interfaces build
           pnpm --filter @qti-editor/interaction-shared build
+          pnpm --filter @qti-editor/interaction-associate build
           pnpm --filter @qti-editor/interaction-choice build
           pnpm --filter @qti-editor/interaction-inline-choice build
           pnpm --filter @qti-editor/interaction-match build
@@ -82,6 +83,7 @@ jobs:
           pnpm --filter @qti-editor/interaction-select-point build
           pnpm --filter @qti-editor/interaction-text-entry build
           pnpm --filter @qti-editor/interaction-extended-text build
+          pnpm --filter @qti-editor/interaction-hottext build
           pnpm --filter @qti-editor/core build
 
       - name: Create release PR or publish
