@@ -1,7 +1,7 @@
 {
   "name": "@qti-editor/interaction-hottext",
   "description": "QTI hottext interaction schemas, components, commands, and composer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",

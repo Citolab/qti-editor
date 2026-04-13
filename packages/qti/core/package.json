@@ -1,6 +1,6 @@
 {
   "name": "@qti-editor/core",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "QTI semantics, composer registry, and XML export orchestration for QTI Editor",
   "repository": {
     "type": "git",
