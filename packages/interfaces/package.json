@@ -1,7 +1,7 @@
 {
   "name": "@qti-editor/interfaces",
   "description": "Contract types for the QTI editor — zero runtime dependencies",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
