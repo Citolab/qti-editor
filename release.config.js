@@ -10,11 +10,12 @@ export default {
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
     ['@semantic-release/changelog', { changelogFile: changelog }],
-    // npmPublish: false skips token verification — actual publish uses npm's native
-    // OIDC trusted publisher support via `npm publish --provenance` below.
-    ['@semantic-release/npm', { npmPublish: false }],
     ['@semantic-release/exec', {
-      publishCmd: 'npm publish --provenance --access public',
+      // Update package.json version without creating a git tag (git plugin handles that).
+      prepareCmd: 'npm version ${nextRelease.version} --no-git-tag-version --allow-same-version',
+      // pnpm publish rewrites workspace:* refs to real versions before publishing.
+      // --provenance uses the GitHub Actions OIDC token for npm trusted publisher auth.
+      publishCmd: 'pnpm publish --provenance --access public --no-git-checks',
     }],
     ['@semantic-release/git', {
       assets: [changelog, 'package.json'],
