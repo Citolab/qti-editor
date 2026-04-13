@@ -26,7 +26,7 @@
     "lint:check": "eslint .",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build --output-dir storybook-static",
-    "release": "multi-semantic-release",
+    "release": "multi-semantic-release --ignore-private-packages",
     "qti-components:update": "pnpm -r up --latest @qti-components/interactions-core @qti-components/base @qti-components/theme @qti-components/base @qti-components/utilities @qti-components/choice-interaction @qti-components/inline-choice-interaction @qti-components/extended-text-interaction @qti-components/hottext-interaction @qti-components/choice-interaction @qti-components/extended-text-interaction @qti-components/match-interaction",
     "qti-overrides:status": "node scripts/qti-local-overrides-sync.mjs status",
     "qti-overrides:sync": "node scripts/qti-local-overrides-sync.mjs sync",
