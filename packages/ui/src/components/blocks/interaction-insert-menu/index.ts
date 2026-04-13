@@ -8,6 +8,7 @@ import { PopoverContent, PopoverRoot, PopoverTrigger } from 'prosekit/lit/popove
 import { insertAssociateInteraction } from '@qti-editor/interaction-associate';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
 import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
+import { insertHottextInteraction } from '@qti-editor/interaction-hottext';
 import { insertMatchInteraction } from '@qti-editor/interaction-match';
 import { insertOrderInteraction } from '@qti-editor/interaction-order';
 import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
@@ -107,6 +108,18 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
       canInsert: !isSelectionInsideNodeType(view, nodeType) && canInsert(view, nodeType),
       command: () => {
         insertInlineChoiceInteraction(view.state, view.dispatch, view);
+        view.focus();
+      },
+    });
+  }
+
+  if (schema.nodes.qtiHottextInteraction && schema.nodes.qtiHottext) {
+    const nodeType = schema.nodes.qtiHottextInteraction;
+    items.push({
+      label: translateQti('interactionInsert.hottext', { target: view.dom }),
+      canInsert: canInsert(view, nodeType),
+      command: () => {
+        insertHottextInteraction(view.state, view.dispatch, view);
         view.focus();
       },
     });

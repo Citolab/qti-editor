@@ -17,6 +17,7 @@
     "@qti-editor/core": "workspace:*",
     "@qti-editor/interaction-choice": "workspace:*",
     "@qti-editor/interaction-extended-text": "workspace:*",
+    "@qti-editor/interaction-hottext": "workspace:*",
     "@qti-editor/interaction-match": "workspace:*",
     "@qti-editor/interaction-select-point": "workspace:*",
     "@qti-editor/prosekit-integration": "workspace:*",

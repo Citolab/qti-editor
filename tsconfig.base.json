@@ -123,6 +123,9 @@
       "@qti-editor/interaction-extended-text": [
         "packages/prosemirror/interaction-extended-text/src/index.ts"
       ],
+      "@qti-editor/interaction-hottext": [
+        "packages/prosemirror/interaction-hottext/src/index.ts"
+      ],
       "@qti-editor/interaction-inline-choice": [
         "packages/prosemirror/interaction-inline-choice/src/index.ts"
       ],

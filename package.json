@@ -31,7 +31,7 @@
     "changeset:status": "pnpm dlx @changesets/cli status --verbose",
     "changeset:version": "pnpm dlx @changesets/cli version",
     "changeset:publish": "pnpm dlx @changesets/cli publish",
-    "qti-components:update": "pnpm -r up --latest @qti-components/interactions-core @qti-components/base @qti-components/theme @qti-components/base @qti-components/utilities @qti-components/choice-interaction @qti-components/inline-choice-interaction @qti-components/extended-text-interaction @qti-components/choice-interaction @qti-components/extended-text-interaction @qti-components/match-interaction",
+    "qti-components:update": "pnpm -r up --latest @qti-components/interactions-core @qti-components/base @qti-components/theme @qti-components/base @qti-components/utilities @qti-components/choice-interaction @qti-components/inline-choice-interaction @qti-components/extended-text-interaction @qti-components/hottext-interaction @qti-components/choice-interaction @qti-components/extended-text-interaction @qti-components/match-interaction",
     "qti-overrides:status": "node scripts/qti-local-overrides-sync.mjs status",
     "qti-overrides:sync": "node scripts/qti-local-overrides-sync.mjs sync",
     "qti-overrides:install": "node scripts/qti-local-overrides-sync.mjs sync && pnpm install"

@@ -8,6 +8,11 @@ import {
   qtiExtendedTextInteractionNodeSpec,
 } from '@qti-editor/interaction-extended-text';
 import {
+  defineHottextWrapSelectionExtension,
+  qtiHottextInteractionNodeSpec,
+  qtiHottextNodeSpec,
+} from '@qti-editor/interaction-hottext';
+import {
   qtiTextEntryInteractionNodeSpec,
 } from '@qti-editor/interaction-text-entry';
 import {
@@ -50,6 +55,8 @@ export function defineQtiInteractionsExtension() {
     // Text interactions
     defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
     defineNodeSpec({ name: 'qtiExtendedTextInteraction', ...qtiExtendedTextInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiHottextInteraction', ...qtiHottextInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiHottext', ...qtiHottextNodeSpec }),
     // Match interaction
     defineNodeSpec({ name: 'qtiMatchInteraction', ...qtiMatchInteractionNodeSpec }),
     defineNodeSpec({ name: 'qtiSimpleMatchSet', ...qtiSimpleMatchSetNodeSpec }),
@@ -72,5 +79,6 @@ export function defineQtiInteractionsExtension() {
     defineMatchCorrectResponseExtension(),
     // Enable click-to-order for order interaction correct responses
     defineOrderCorrectResponseExtension(),
+    defineHottextWrapSelectionExtension(),
   );
 }

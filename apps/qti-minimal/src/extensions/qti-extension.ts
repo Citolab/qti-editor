@@ -7,6 +7,11 @@ import {
   qtiExtendedTextInteractionNodeSpec,
 } from '@qti-editor/interaction-extended-text';
 import {
+  defineHottextWrapSelectionExtension,
+  qtiHottextInteractionNodeSpec,
+  qtiHottextNodeSpec,
+} from '@qti-editor/interaction-hottext';
+import {
   qtiTextEntryInteractionNodeSpec,
 } from '@qti-editor/interaction-text-entry';
 import {
@@ -26,10 +31,13 @@ export function defineQtiInteractionsExtension() {
     defineNodeSpec({ name: 'qtiSimpleChoice', ...qtiSimpleChoiceNodeSpec }),
     defineNodeSpec({ name: 'qtiTextEntryInteraction', ...qtiTextEntryInteractionNodeSpec }),
     defineNodeSpec({ name: 'qtiExtendedTextInteraction', ...qtiExtendedTextInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiHottextInteraction', ...qtiHottextInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiHottext', ...qtiHottextNodeSpec }),
     defineKeymap({
       Enter: (state, dispatch, view) =>
         insertSimpleChoiceOnEnter(state, dispatch, view),
     }),
     defineCorrectResponseClickExtension(),
+    defineHottextWrapSelectionExtension(),
   );
 }

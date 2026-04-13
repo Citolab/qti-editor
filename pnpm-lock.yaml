@@ -151,6 +151,9 @@ importers:
       '@qti-editor/interaction-extended-text':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-extended-text
+      '@qti-editor/interaction-hottext':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-hottext
       '@qti-editor/interaction-match':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-match
@@ -257,6 +260,9 @@ importers:
       '@qti-editor/interaction-extended-text':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-extended-text
+      '@qti-editor/interaction-hottext':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-hottext
       '@qti-editor/interaction-match':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-match
@@ -327,6 +333,9 @@ importers:
       '@qti-editor/interaction-extended-text':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-extended-text
+      '@qti-editor/interaction-hottext':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-hottext
       '@qti-editor/interaction-match':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-match
@@ -551,6 +560,31 @@ importers:
         specifier: ^1.4.4
         version: 1.4.4
 
+  packages/prosemirror/interaction-hottext:
+    dependencies:
+      '@qti-components/hottext-interaction':
+        specifier: ^1.1.3
+        version: 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions':
+        specifier: 1.10.1
+        version: 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../interaction-shared
+      '@qti-editor/interfaces':
+        specifier: workspace:*
+        version: link:../../interfaces
+    devDependencies:
+      lit:
+        specifier: ^3.3.2
+        version: 3.3.2
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+
   packages/prosemirror/interaction-inline-choice:
     dependencies:
       '@qti-components/inline-choice-interaction':
@@ -709,6 +743,9 @@ importers:
       '@qti-editor/interaction-extended-text':
         specifier: workspace:*
         version: link:../../prosemirror/interaction-extended-text
+      '@qti-editor/interaction-hottext':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-hottext
       '@qti-editor/interaction-inline-choice':
         specifier: workspace:*
         version: link:../../prosemirror/interaction-inline-choice
@@ -789,6 +826,9 @@ importers:
       '@qti-editor/interaction-extended-text':
         specifier: workspace:*
         version: link:../prosemirror/interaction-extended-text
+      '@qti-editor/interaction-hottext':
+        specifier: workspace:*
+        version: link:../prosemirror/interaction-hottext
       '@qti-editor/interaction-inline-choice':
         specifier: workspace:*
         version: link:../prosemirror/interaction-inline-choice

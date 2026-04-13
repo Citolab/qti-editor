@@ -20,6 +20,7 @@ import { translateQti } from '@qti-editor/interaction-shared';
 import { insertAssociateInteraction } from '@qti-editor/interaction-associate';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
 import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
+import { insertHottextInteraction } from '@qti-editor/interaction-hottext';
 import { insertMatchInteraction } from '@qti-editor/interaction-match';
 import { insertOrderInteraction } from '@qti-editor/interaction-order';
 import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
@@ -92,6 +93,11 @@ export class QtiSlashMenu extends LitElement {
           class="contents"
           label=${translateQti('interactionInsert.textEntry', { target: this })}
           @select=${() => this.insertTextEntry()}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label=${translateQti('interactionInsert.hottext', { target: this })}
+          @select=${() => this.insertInteraction(insertHottextInteraction)}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
