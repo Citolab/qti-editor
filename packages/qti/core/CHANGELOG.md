@@ -1,0 +1,4 @@
+# @qti-editor/core
+
+## Changelog
+
