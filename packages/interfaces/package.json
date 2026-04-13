@@ -2,6 +2,11 @@
   "name": "@qti-editor/interfaces",
   "description": "Contract types for the QTI editor — zero runtime dependencies",
   "version": "0.2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Citolab/qti-editor",
+    "directory": "packages/interfaces"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

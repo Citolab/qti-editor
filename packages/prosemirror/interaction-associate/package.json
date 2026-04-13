@@ -2,6 +2,11 @@
   "name": "@qti-editor/interaction-associate",
   "description": "QTI associate interaction schemas, components, commands, and composer",
   "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Citolab/qti-editor",
+    "directory": "packages/prosemirror/interaction-associate"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

@@ -2,6 +2,11 @@
   "name": "@qti-editor/core",
   "version": "0.2.0",
   "description": "QTI semantics, composer registry, and XML export orchestration for QTI Editor",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Citolab/qti-editor",
+    "directory": "packages/qti/core"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
