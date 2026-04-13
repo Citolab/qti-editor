@@ -69,6 +69,6 @@ Keep private for now:
 
 ## Required secrets
 
-- `NPM_TOKEN` for npm publishing
+- No `NPM_TOKEN` is required for npm publishing when npm trusted publishing is configured for this repository and workflow.
 - `FIREBASE_TOKEN` for Firebase Hosting deploys
-- `RELEASE_BOT_TOKEN` is optional; `GITHUB_TOKEN` is used as a fallback for Changesets PRs
+- `RELEASE_BOT_TOKEN` is optional; `GITHUB_TOKEN` is used as a fallback for GitHub release metadata

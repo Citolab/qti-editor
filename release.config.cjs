@@ -3,8 +3,9 @@
 const rootDir = process.env.GITHUB_WORKSPACE ?? process.cwd();
 const changelog = `${rootDir}/CHANGELOG.md`;
 
-export default {
+module.exports = {
   branches: ['main'],
+  repositoryUrl: 'https://github.com/Citolab/qti-editor.git',
   tagFormat: '${name}@${version}',
   plugins: [
     '@semantic-release/commit-analyzer',
