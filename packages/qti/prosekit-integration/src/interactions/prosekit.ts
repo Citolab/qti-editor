@@ -3,9 +3,9 @@
  */
 
 import '@qti-components/theme/item.css';
-import { listInteractionDescriptors } from '@qti-editor/core/interactions/composer';
+import { listInteractionDescriptors, listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
 import { defineBasicExtension } from 'prosekit/basic';
-import { defineKeymap, defineNodeSpec, union, type Extension } from 'prosekit/core';
+import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
 
 import type { Command } from 'prosekit/pm/state';
 
@@ -42,7 +42,9 @@ export function defineQtiInteractionsExtension() {
     }
   }
 
-  return union(...nodeSpecExtensions, defineKeymap(keymap));
+  const pluginExtensions = listInteractionPluginFactories().map(pluginFactory => definePlugin(pluginFactory));
+
+  return union(...nodeSpecExtensions, defineKeymap(keymap), ...pluginExtensions);
 }
 
 export function defineQtiExtension() {

@@ -74,3 +74,9 @@ export function listInteractionComposerHandlers(): ReadonlyArray<InteractionComp
 export function listInteractionDescriptors(): ReadonlyArray<InteractionDescriptor> {
   return registeredDescriptors;
 }
+
+export function listInteractionPluginFactories(): ReadonlyArray<
+  NonNullable<InteractionDescriptor['pluginFactories']>[number]
+> {
+  return registeredDescriptors.flatMap(descriptor => descriptor.pluginFactories ?? []);
+}

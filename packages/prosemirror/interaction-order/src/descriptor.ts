@@ -9,6 +9,7 @@ import { insertOrderInteraction } from './components/qti-order-interaction/qti-o
 import { qtiOrderInteractionNodeSpec } from './components/qti-order-interaction/qti-order-interaction.schema.js';
 import { orderInteractionComposerMetadata, orderNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
 import { orderComposerHandler } from './composer/handler.js';
+import { createOrderCorrectResponsePlugin } from './extensions/correct-response.js';
 
 import type { InteractionDescriptor } from '@qti-editor/interfaces';
 
@@ -22,6 +23,7 @@ export const orderInteractionDescriptor = {
     { name: 'qtiSimpleChoice', spec: qtiSimpleChoiceNodeSpec },
     { name: 'qtiSimpleChoiceParagraph', spec: qtiSimpleChoiceParagraphNodeSpec },
   ],
+  pluginFactories: [createOrderCorrectResponsePlugin],
   insertCommand: insertOrderInteraction,
   keyboardShortcut: 'Mod-Shift-o',
   composerMetadata: orderInteractionComposerMetadata,

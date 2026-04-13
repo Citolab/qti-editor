@@ -16,6 +16,7 @@ Interactions can also be inserted programmatically using the command functions. 
 
 ```ts
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
+import { insertHottextInteraction } from '@qti-editor/interaction-hottext';
 import { insertTextEntryInteraction } from '@qti-editor/interaction-text-entry';
 import { insertInlineChoiceInteraction } from '@qti-editor/interaction-inline-choice';
 import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
@@ -38,6 +39,10 @@ Inserts a `qti-choice-interaction` with a prompt and three placeholder choices (
 ### Text Entry Interaction
 
 Inserts an inline `qti-text-entry-interaction` node at the cursor position. It renders as a short input field inside a sentence. Edit its attributes (expected length, case sensitivity, accepted answers) via the attributes panel.
+
+### Hottext Interaction
+
+Inserts a `qti-hottext-interaction` passage. Select text inside the passage and use the floating action to wrap the selection as a `qti-hottext` option.
 
 ### Inline Choice Interaction
 

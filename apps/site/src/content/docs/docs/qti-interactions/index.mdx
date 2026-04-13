@@ -4,7 +4,7 @@ description: Overview of the QTI interaction packages shipped with QTI Editor.
 slug: docs/qti-interactions
 ---
 
-QTI Editor ships its interactions as focused packages. Each `@qti-editor/interaction-*` package adds the schema, commands, serialization, and editor wiring for one QTI interaction type.
+QTI Editor ships its interactions as focused packages. Each `@qti-editor/interaction-*` package adds the schema, commands, serialization, web components, and any runtime ProseMirror plugins needed for one QTI interaction type.
 
 These packages are closely coupled to our other open source library, [`qti-components`](https://github.com/Citolab/qti-components). In practice, QTI Editor is responsible for authoring behavior and document structure, while `qti-components` supplies the underlying QTI web components that render and encapsulate the interaction behavior itself. That split keeps the integration framework agnostic while letting each interaction package stay small and explicit.
 
@@ -15,6 +15,7 @@ When you install an interaction package, its matching `@qti-components/*` depend
 | Interaction | What it does | Package |
 |---|---|---|
 | [Choice Interaction](/docs/qti-interactions/choice/) | Single- or multiple-choice questions with a prompt and selectable choices | `@qti-editor/interaction-choice` |
+| [Hottext Interaction](/docs/qti-interactions/hottext/) | Marking words or phrases inside a text passage as selectable response options | `@qti-editor/interaction-hottext` |
 | [Inline Choice Interaction](/docs/qti-interactions/inline-choice/) | Dropdown choices embedded directly in a sentence | `@qti-editor/interaction-inline-choice` |
 | [Text Entry Interaction](/docs/qti-interactions/text-entry/) | Short free-text answers entered inline | `@qti-editor/interaction-text-entry` |
 | [Extended Text Interaction](/docs/qti-interactions/extended-text/) | Longer free-text answers in a multi-line response area | `@qti-editor/interaction-extended-text` |
@@ -29,8 +30,15 @@ Install only the packages you need, for example:
 ```bash
 pnpm add \
   @qti-editor/interaction-choice \
+  @qti-editor/interaction-hottext \
   @qti-editor/interaction-inline-choice \
   @qti-editor/interaction-text-entry
 ```
 
-Each package exports [ProseMirror](https://prosemirror.net/) commands and schema pieces that you register into your editor setup. The [framework guides](/docs/frameworks/react/) and [framework guides](/docs/frameworks/angular/) show complete integration examples.
+Each interaction package exports [ProseMirror](https://prosemirror.net/) commands and schema pieces. Interactions that need extra runtime behavior, such as click-to-mark-correct-response or wrapping selected text as hottext, now ship their required ProseMirror plugins with the package as well.
+
+If you assemble your editor through the descriptor-driven registry (`@qti-editor/core` plus `@qti-editor/prosekit-integration`), those runtime plugins are installed automatically.
+
+If you assemble a plain ProseMirror editor yourself, use `listInteractionDescriptors()` for node specs and commands and `listInteractionPluginFactories()` for the runtime plugins to install on the editor state.
+
+The [framework guides](/docs/frameworks/react/) and [framework guides](/docs/frameworks/angular/) show complete integration examples.

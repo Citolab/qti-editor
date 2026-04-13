@@ -263,9 +263,9 @@ export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): 
 
 ```ts
 // src/lib/qti-editor/interactions.ts
-import { listInteractionDescriptors } from '@qti-editor/core/interactions/composer';
+import { listInteractionDescriptors, listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
 import { defineBasicExtension } from 'prosekit/basic';
-import { defineKeymap, defineNodeSpec, union, type Extension } from 'prosekit/core';
+import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
 
 import type { Command } from 'prosekit/pm/state';
 
@@ -298,13 +298,17 @@ export function defineQtiInteractionsExtension() {
     }
   }
 
-  return union(...nodeSpecExtensions, defineKeymap(keymap));
+  const pluginExtensions = listInteractionPluginFactories().map(pluginFactory => definePlugin(pluginFactory));
+
+  return union(...nodeSpecExtensions, defineKeymap(keymap), ...pluginExtensions);
 }
 
 export function defineQtiExtension() {
   return union(defineBasicExtension(), defineQtiInteractionsExtension());
 }
 ```
+
+The `listInteractionPluginFactories()` call is important. Some interactions ship runtime ProseMirror plugins for authoring behavior, such as correct-response updates or wrapping selected text as hottext. If you omit those plugins, the interaction may render but editing actions can appear to do nothing.
 
 ## 4. Mount the editor from an Angular host component
 

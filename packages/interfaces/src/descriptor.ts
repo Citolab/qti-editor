@@ -8,7 +8,7 @@
  */
 
 import type { NodeSpec } from 'prosemirror-model';
-import type { Command } from 'prosemirror-state';
+import type { Command, Plugin } from 'prosemirror-state';
 import type { InteractionComposerHandler, InteractionComposerMetadata } from './composer.js';
 import type { NodeAttributePanelMetadata } from './attributes.js';
 
@@ -37,6 +37,12 @@ export interface InteractionDescriptor {
    * Multiple interactions may provide this; they are tried in registration order.
    */
   enterCommand?: Command;
+  /**
+   * ProseMirror plugins required for this interaction's runtime behavior.
+   * Consumers can install these directly in plain ProseMirror setups or wrap
+   * them in framework-specific adapters such as ProseKit extensions.
+   */
+  pluginFactories?: Array<() => Plugin>;
   composerMetadata: InteractionComposerMetadata;
   /**
    * Handler that normalises the interaction element for QTI XML output.

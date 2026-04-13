@@ -42,50 +42,46 @@ function findInteractionNodePos(view: EditorView, interactionElement: HTMLElemen
  * 2. Updates the interaction node's correctResponse attribute
  */
 export function defineMatchCorrectResponseExtension(): Extension {
-  return definePlugin(
-    () =>
-      new Plugin({
-        key: matchCorrectResponsePluginKey,
-        view(view) {
-          const handleAssociationChange = (event: Event) => {
-            const customEvent = event as CustomEvent<MatchAssociationChangeDetail>;
-            const interactionElement = customEvent.target as HTMLElement;
-            
-            if (!interactionElement.matches('qti-match-interaction')) return;
-            
-            const { associations } = customEvent.detail;
-            
-            // Serialize associations to JSON string
-            const correctResponse = associations.length > 0 
-              ? JSON.stringify(associations)
-              : null;
-            
-            // Find the node position
-            const pos = findInteractionNodePos(view, interactionElement);
-            if (pos === null) return;
-            
-            // Update the node attributes
-            const { state, dispatch } = view;
-            const node = state.doc.nodeAt(pos);
-            if (!node) return;
-            
-            const nextAttrs = {
-              ...node.attrs,
-              correctResponse,
-            };
-            
-            dispatch(state.tr.setNodeMarkup(pos, undefined, nextAttrs));
-          };
-          
-          // Listen for association change events on the editor DOM
-          view.dom.addEventListener(MATCH_ASSOCIATION_CHANGE_EVENT, handleAssociationChange);
-          
-          return {
-            destroy() {
-              view.dom.removeEventListener(MATCH_ASSOCIATION_CHANGE_EVENT, handleAssociationChange);
-            },
-          };
+  return definePlugin(createMatchCorrectResponsePlugin);
+}
+
+export function createMatchCorrectResponsePlugin(): Plugin {
+  return new Plugin({
+    key: matchCorrectResponsePluginKey,
+    view(view) {
+      const handleAssociationChange = (event: Event) => {
+        const customEvent = event as CustomEvent<MatchAssociationChangeDetail>;
+        const interactionElement = customEvent.target as HTMLElement;
+        
+        if (!interactionElement.matches('qti-match-interaction')) return;
+        
+        const { associations } = customEvent.detail;
+        const correctResponse = associations.length > 0
+          ? JSON.stringify(associations)
+          : null;
+        
+        const pos = findInteractionNodePos(view, interactionElement);
+        if (pos === null) return;
+        
+        const { state, dispatch } = view;
+        const node = state.doc.nodeAt(pos);
+        if (!node) return;
+        
+        const nextAttrs = {
+          ...node.attrs,
+          correctResponse,
+        };
+        
+        dispatch(state.tr.setNodeMarkup(pos, undefined, nextAttrs));
+      };
+      
+      view.dom.addEventListener(MATCH_ASSOCIATION_CHANGE_EVENT, handleAssociationChange);
+      
+      return {
+        destroy() {
+          view.dom.removeEventListener(MATCH_ASSOCIATION_CHANGE_EVENT, handleAssociationChange);
         },
-      })
-  );
+      };
+    },
+  });
 }

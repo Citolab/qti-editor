@@ -84,54 +84,48 @@ function findInteractionNodePos(view: EditorView, interactionElement: HTMLElemen
  * 3. Updates the interaction node's attributes
  */
 export function defineCorrectResponseClickExtension(): Extension {
-  return definePlugin(
-    () =>
-      new Plugin({
-        key: correctResponseClickPluginKey,
-        view(view) {
-          const handleToggle = (event: Event) => {
-            const choiceElement = (event as CustomEvent<QtiCorrectResponseToggleDetail>).target as HTMLElement;
-            
-            // Find the parent interaction
-            const interactionElement = findParentInteraction(choiceElement);
-            if (!interactionElement) return;
-            
-            // Get all selected identifiers
-            const selectedIdentifiers = getSelectedIdentifiers(interactionElement);
-            
-            // Compute maxChoices and correctResponse
-            const maxChoices = selectedIdentifiers.length <= 1 ? 1 : 0;
-            const correctResponse = selectedIdentifiers.length > 0 
-              ? selectedIdentifiers.join(',') 
-              : null;
-            
-            // Find the node position
-            const pos = findInteractionNodePos(view, interactionElement);
-            if (pos === null) return;
-            
-            // Update the node attributes
-            const { state, dispatch } = view;
-            const node = state.doc.nodeAt(pos);
-            if (!node) return;
-            
-            const nextAttrs = {
-              ...node.attrs,
-              maxChoices,
-              correctResponse,
-            };
-            
-            dispatch(state.tr.setNodeMarkup(pos, undefined, nextAttrs));
-          };
-          
-          // Listen for toggle events on the editor DOM
-          view.dom.addEventListener(QTI_CORRECT_RESPONSE_TOGGLE_EVENT, handleToggle);
-          
-          return {
-            destroy() {
-              view.dom.removeEventListener(QTI_CORRECT_RESPONSE_TOGGLE_EVENT, handleToggle);
-            },
-          };
+  return definePlugin(createCorrectResponseClickPlugin);
+}
+
+export function createCorrectResponseClickPlugin(): Plugin {
+  return new Plugin({
+    key: correctResponseClickPluginKey,
+    view(view) {
+      const handleToggle = (event: Event) => {
+        const choiceElement = (event as CustomEvent<QtiCorrectResponseToggleDetail>).target as HTMLElement;
+        
+        const interactionElement = findParentInteraction(choiceElement);
+        if (!interactionElement) return;
+        
+        const selectedIdentifiers = getSelectedIdentifiers(interactionElement);
+        const maxChoices = selectedIdentifiers.length <= 1 ? 1 : 0;
+        const correctResponse = selectedIdentifiers.length > 0
+          ? selectedIdentifiers.join(',')
+          : null;
+        
+        const pos = findInteractionNodePos(view, interactionElement);
+        if (pos === null) return;
+        
+        const { state, dispatch } = view;
+        const node = state.doc.nodeAt(pos);
+        if (!node) return;
+        
+        const nextAttrs = {
+          ...node.attrs,
+          maxChoices,
+          correctResponse,
+        };
+        
+        dispatch(state.tr.setNodeMarkup(pos, undefined, nextAttrs));
+      };
+      
+      view.dom.addEventListener(QTI_CORRECT_RESPONSE_TOGGLE_EVENT, handleToggle);
+      
+      return {
+        destroy() {
+          view.dom.removeEventListener(QTI_CORRECT_RESPONSE_TOGGLE_EVENT, handleToggle);
         },
-      })
-  );
+      };
+    },
+  });
 }

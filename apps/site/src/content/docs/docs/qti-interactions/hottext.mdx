@@ -1,0 +1,29 @@
+---
+title: Hottext Interaction
+description: Install and use the hottext interaction package.
+slug: docs/qti-interactions/hottext
+---
+
+Hottext interactions let authors mark words or phrases inside a passage as selectable response options.
+
+## Install
+
+```bash
+pnpm add @qti-editor/interaction-hottext
+```
+
+This package integrates with `@qti-components/hottext-interaction`.
+
+## What it does
+
+- Inserts a `qti-hottext-interaction` containing inline `qti-hottext` nodes.
+- Lets authors select text inside the passage and wrap that selection as a hottext option.
+- Keeps hottext identifiers and response semantics attached to structured QTI nodes instead of loose inline markup.
+
+## Runtime behavior
+
+This package includes a runtime ProseMirror plugin for selection wrapping. The button shown when text is selected inside a hottext passage emits a custom DOM event, and the shipped plugin turns that event into a ProseMirror transaction.
+
+If you assemble your editor through `@qti-editor/prosekit-integration`, that plugin is installed automatically.
+
+If you assemble a plain ProseMirror editor yourself, install the plugin factories exported through `@qti-editor/core/interactions/composer` alongside the interaction node specs.

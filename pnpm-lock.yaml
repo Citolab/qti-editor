@@ -789,6 +789,9 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../core
+      '@qti-editor/interaction-hottext':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-hottext
       lit:
         specifier: ^3.3.2
         version: 3.3.2

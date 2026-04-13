@@ -41,38 +41,39 @@ function findInteractionNodePos(view: EditorView, interactionElement: HTMLElemen
  * interaction node's correctResponse attribute.
  */
 export function defineAssociateCorrectResponseExtension(): Extension {
-  return definePlugin(
-    () =>
-      new Plugin({
-        key: associateCorrectResponsePluginKey,
-        view(view) {
-          const handlePairChange = (event: Event) => {
-            const customEvent = event as CustomEvent<AssociatePairChangeDetail>;
-            const interactionElement = customEvent.target as HTMLElement;
+  return definePlugin(createAssociateCorrectResponsePlugin);
+}
 
-            if (!interactionElement.matches('qti-associate-interaction')) return;
+export function createAssociateCorrectResponsePlugin(): Plugin {
+  return new Plugin({
+    key: associateCorrectResponsePluginKey,
+    view(view) {
+      const handlePairChange = (event: Event) => {
+        const customEvent = event as CustomEvent<AssociatePairChangeDetail>;
+        const interactionElement = customEvent.target as HTMLElement;
 
-            const { pairs } = customEvent.detail;
-            const correctResponse = pairs.length > 0 ? JSON.stringify(pairs) : null;
+        if (!interactionElement.matches('qti-associate-interaction')) return;
 
-            const pos = findInteractionNodePos(view, interactionElement);
-            if (pos === null) return;
+        const { pairs } = customEvent.detail;
+        const correctResponse = pairs.length > 0 ? JSON.stringify(pairs) : null;
 
-            const { state, dispatch } = view;
-            const node = state.doc.nodeAt(pos);
-            if (!node) return;
+        const pos = findInteractionNodePos(view, interactionElement);
+        if (pos === null) return;
 
-            dispatch(state.tr.setNodeMarkup(pos, undefined, { ...node.attrs, correctResponse }));
-          };
+        const { state, dispatch } = view;
+        const node = state.doc.nodeAt(pos);
+        if (!node) return;
 
-          view.dom.addEventListener(ASSOCIATE_PAIR_CHANGE_EVENT, handlePairChange);
+        dispatch(state.tr.setNodeMarkup(pos, undefined, { ...node.attrs, correctResponse }));
+      };
 
-          return {
-            destroy() {
-              view.dom.removeEventListener(ASSOCIATE_PAIR_CHANGE_EVENT, handlePairChange);
-            },
-          };
+      view.dom.addEventListener(ASSOCIATE_PAIR_CHANGE_EVENT, handlePairChange);
+
+      return {
+        destroy() {
+          view.dom.removeEventListener(ASSOCIATE_PAIR_CHANGE_EVENT, handlePairChange);
         },
-      })
-  );
+      };
+    },
+  });
 }

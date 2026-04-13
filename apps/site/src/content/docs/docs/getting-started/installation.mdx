@@ -31,6 +31,7 @@ Install the interaction packages you need:
 
 ```bash
 pnpm add @qti-editor/interaction-choice \
+         @qti-editor/interaction-hottext \
          @qti-editor/interaction-inline-choice \
          @qti-editor/interaction-text-entry \
          @qti-editor/interaction-select-point
@@ -39,11 +40,19 @@ pnpm add @qti-editor/interaction-choice \
 | Package | Interaction type |
 |---|---|
 | `@qti-editor/interaction-choice` | `<qti-choice-interaction>` |
+| `@qti-editor/interaction-hottext` | `<qti-hottext-interaction>` |
 | `@qti-editor/interaction-inline-choice` | `<qti-inline-choice-interaction>` |
 | `@qti-editor/interaction-text-entry` | `<qti-text-entry-interaction>` |
 | `@qti-editor/interaction-select-point` | `<qti-select-point-interaction>` |
 
-Each package exports a [ProseMirror](https://prosemirror.net/) `Command` function to insert the interaction node and a ProseKit extension to register the schema and web components.
+Each interaction package exports [ProseMirror](https://prosemirror.net/) commands, schema pieces, web components, and any required runtime plugins for that interaction's editing behavior.
+
+If you use the descriptor-driven assembly surfaces, those runtime plugins are installed automatically:
+
+- `@qti-editor/prosekit-integration` consumes the interaction descriptors and installs the shipped runtime plugins for you.
+- Plain ProseMirror integrations can install the same plugins via `listInteractionPluginFactories()` from `@qti-editor/core/interactions/composer`.
+
+That means interactions such as choice, associate, match, order, and hottext do not require vague extra setup steps beyond including the interaction package in your editor assembly.
 
 ## Adding the full UI
 
@@ -74,4 +83,4 @@ For Angular, do the manual shadcn setup first (`components.json`, `@/*` path ali
 | `@qti-editor/core` | QTI semantics, composer registry, XML export |
 | `@qti-editor/prosemirror` | Pure [ProseMirror](https://prosemirror.net/) plugins (block selection, node attr sync) |
 | Registry-installed Lit components | Toolbar, slash menu, attribute panel, insert menus |
-| `@qti-editor/interaction-*` | Individual QTI interaction nodes, schemas, and commands |
+| `@qti-editor/interaction-*` | Individual QTI interaction nodes, schemas, commands, web components, and runtime plugins |

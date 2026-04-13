@@ -27,38 +27,39 @@ function findInteractionNodePos(view: EditorView, interactionElement: HTMLElemen
 }
 
 export function defineOrderCorrectResponseExtension(): Extension {
-  return definePlugin(
-    () =>
-      new Plugin({
-        key: orderCorrectResponsePluginKey,
-        view(view) {
-          const handleOrderChange = (event: Event) => {
-            const customEvent = event as CustomEvent<{ order: string[] }>;
-            const interactionElement = customEvent.target as HTMLElement;
+  return definePlugin(createOrderCorrectResponsePlugin);
+}
 
-            if (!interactionElement.matches('qti-order-interaction')) return;
+export function createOrderCorrectResponsePlugin(): Plugin {
+  return new Plugin({
+    key: orderCorrectResponsePluginKey,
+    view(view) {
+      const handleOrderChange = (event: Event) => {
+        const customEvent = event as CustomEvent<{ order: string[] }>;
+        const interactionElement = customEvent.target as HTMLElement;
 
-            const { order } = customEvent.detail;
-            const correctResponse = order.length > 0 ? JSON.stringify(order) : null;
+        if (!interactionElement.matches('qti-order-interaction')) return;
 
-            const pos = findInteractionNodePos(view, interactionElement);
-            if (pos === null) return;
+        const { order } = customEvent.detail;
+        const correctResponse = order.length > 0 ? JSON.stringify(order) : null;
 
-            const { state, dispatch } = view;
-            const node = state.doc.nodeAt(pos);
-            if (!node) return;
+        const pos = findInteractionNodePos(view, interactionElement);
+        if (pos === null) return;
 
-            dispatch(state.tr.setNodeMarkup(pos, undefined, { ...node.attrs, correctResponse }));
-          };
+        const { state, dispatch } = view;
+        const node = state.doc.nodeAt(pos);
+        if (!node) return;
 
-          view.dom.addEventListener(ORDER_RESPONSE_CHANGE_EVENT, handleOrderChange);
+        dispatch(state.tr.setNodeMarkup(pos, undefined, { ...node.attrs, correctResponse }));
+      };
 
-          return {
-            destroy() {
-              view.dom.removeEventListener(ORDER_RESPONSE_CHANGE_EVENT, handleOrderChange);
-            },
-          };
+      view.dom.addEventListener(ORDER_RESPONSE_CHANGE_EVENT, handleOrderChange);
+
+      return {
+        destroy() {
+          view.dom.removeEventListener(ORDER_RESPONSE_CHANGE_EVENT, handleOrderChange);
         },
-      })
-  );
+      };
+    },
+  });
 }

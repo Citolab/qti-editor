@@ -115,29 +115,30 @@ function wrapSelectedTextAsHottext(view: EditorView, interactionElement: HTMLEle
 }
 
 export function defineHottextWrapSelectionExtension(): Extension {
-  return definePlugin(
-    () =>
-      new Plugin({
-        key: hottextWrapSelectionPluginKey,
-        view(view) {
-          const handleWrapSelection = (event: Event) => {
-            const target = event.target;
-            if (!(target instanceof Element)) return;
+  return definePlugin(createHottextWrapSelectionPlugin);
+}
 
-            const interactionElement = target.closest('qti-hottext-interaction');
-            if (!(interactionElement instanceof HTMLElement)) return;
+export function createHottextWrapSelectionPlugin(): Plugin {
+  return new Plugin({
+    key: hottextWrapSelectionPluginKey,
+    view(view) {
+      const handleWrapSelection = (event: Event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
 
-            wrapSelectedTextAsHottext(view, interactionElement);
-          };
+        const interactionElement = target.closest('qti-hottext-interaction');
+        if (!(interactionElement instanceof HTMLElement)) return;
 
-          view.dom.addEventListener(HOTTEXT_WRAP_SELECTION_EVENT, handleWrapSelection);
+        wrapSelectedTextAsHottext(view, interactionElement);
+      };
 
-          return {
-            destroy() {
-              view.dom.removeEventListener(HOTTEXT_WRAP_SELECTION_EVENT, handleWrapSelection);
-            },
-          };
+      view.dom.addEventListener(HOTTEXT_WRAP_SELECTION_EVENT, handleWrapSelection);
+
+      return {
+        destroy() {
+          view.dom.removeEventListener(HOTTEXT_WRAP_SELECTION_EVENT, handleWrapSelection);
         },
-      }),
-  );
+      };
+    },
+  });
 }
