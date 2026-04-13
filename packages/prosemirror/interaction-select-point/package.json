@@ -1,7 +1,7 @@
 {
   "name": "@qti-editor/interaction-select-point",
   "description": "QTI select-point interaction schemas, components, commands, and composer",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",
@@ -27,8 +27,8 @@
   },
   "dependencies": {
     "@qti-components/select-point-interaction": "^1.0.1",
-    "@qti-editor/interaction-shared": "workspace:*",
-    "@qti-editor/interfaces": "workspace:*"
+    "@qti-editor/interaction-shared": "1.0.0",
+    "@qti-editor/interfaces": "1.0.0"
   },
   "peerDependencies": {
     "lit": "^3.3.1"
