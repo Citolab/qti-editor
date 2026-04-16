@@ -1,11 +1,11 @@
 {
-  "name": "@qti-editor/interaction-text-entry",
-  "description": "QTI text-entry interaction schemas, components, commands, and composer",
+  "name": "@qti-editor/interaction-gap-match",
+  "description": "QTI gap match interaction schemas, components, commands, and composer",
   "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",
-    "directory": "packages/prosemirror/interaction-text-entry"
+    "directory": "packages/prosemirror/interaction-gap-match"
   },
   "type": "module",
   "main": "./dist/index.js",
@@ -26,9 +26,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-components/interactions": "1.10.1",
-    "@qti-components/text-entry-interaction": "^1.0.0",
-    "@qti-editor/interaction-shared": "1.0.0",
+    "@qti-editor/interaction-shared": "workspace:*",
     "@qti-editor/interfaces": "workspace:*"
   },
   "peerDependencies": {
@@ -36,6 +34,7 @@
   },
   "devDependencies": {
     "lit": "^3.3.2",
+    "prosemirror-commands": "^1.7.1",
     "prosemirror-model": "^1.25.4",
     "prosemirror-state": "^1.4.4"
   },

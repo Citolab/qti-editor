@@ -15,6 +15,11 @@ export * from './components/qti-simple-associable-choice/qti-simple-associable-c
 export * from './components/qti-simple-match-set/qti-simple-match-set.js';
 export * from './components/qti-simple-match-set/qti-simple-match-set.schema.js';
 
+export * from './components/qti-gap/qti-gap.js';
+export * from './components/qti-gap/qti-gap.schema.js';
+export * from './components/qti-gap-text/qti-gap-text.js';
+export * from './components/qti-gap-text/qti-gap-text.schema.js';
+
 export * from './commands/enter.js';
 export * from './commands/insert.js';
 

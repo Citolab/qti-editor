@@ -18,6 +18,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
 import { translateQti } from '@qti-editor/interaction-shared';
 import { insertAssociateInteraction } from '@qti-editor/interaction-associate';
+import { insertGapMatchInteraction } from '@qti-editor/interaction-gap-match';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
 import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
 import { insertHottextInteraction } from '@qti-editor/interaction-hottext';
@@ -118,6 +119,11 @@ export class QtiSlashMenu extends LitElement {
           class="contents"
           label=${translateQti('interactionInsert.selectPoint', { target: this })}
           @select=${() => this.insertInteraction(insertSelectPointInteraction)}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label=${translateQti('interactionInsert.gapMatch', { target: this })}
+          @select=${() => this.insertInteraction(insertGapMatchInteraction)}
         ></lit-editor-slash-menu-item>
       </prosekit-autocomplete-list>
     </prosekit-autocomplete-popover>`;

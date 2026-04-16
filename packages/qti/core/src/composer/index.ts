@@ -19,7 +19,7 @@ export interface ComposerItemContext {
 export interface ResponseDeclaration {
   identifier: string;
   cardinality: 'single' | 'multiple' | 'ordered';
-  baseType: 'identifier' | 'point' | 'string';
+  baseType: 'identifier' | 'directedPair' | 'point' | 'string';
   correctResponse?: string;
   stringMapping?: {
     defaultValue: number;

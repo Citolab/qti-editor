@@ -5,6 +5,10 @@ import {
   defineAssociateCorrectResponseExtension,
 } from '@qti-editor/interaction-associate';
 import {
+  qtiGapMatchInteractionNodeSpec,
+  createGapMatchCorrectResponsePlugin,
+} from '@qti-editor/interaction-gap-match';
+import {
   insertSimpleChoiceOnEnter,
   qtiChoiceInteractionNodeSpec,
   defineCorrectResponseClickExtension,
@@ -42,8 +46,10 @@ import {
   qtiSimpleMatchSetNodeSpec,
   qtiSimpleAssociableChoiceNodeSpec,
   qtiSimpleAssociableChoiceParagraphNodeSpec,
+  qtiGapNodeSpec,
+  qtiGapTextNodeSpec,
 } from '@qti-editor/interaction-shared';
-import { defineKeymap, defineNodeSpec, union } from 'prosekit/core';
+import { defineKeymap, defineNodeSpec, definePlugin, union } from 'prosekit/core';
 
 /**
  * Define QTI interaction nodes only (no basic extension).
@@ -69,6 +75,11 @@ export function defineQtiInteractionsExtension() {
     defineNodeSpec({ name: 'qtiSimpleMatchSet', ...qtiSimpleMatchSetNodeSpec }),
     defineNodeSpec({ name: 'qtiSimpleAssociableChoice', ...qtiSimpleAssociableChoiceNodeSpec }),
     defineNodeSpec({ name: 'qtiSimpleAssociableChoiceParagraph', ...qtiSimpleAssociableChoiceParagraphNodeSpec }),
+    // Gap match interaction
+    defineNodeSpec({ name: 'qtiGapMatchInteraction', ...qtiGapMatchInteractionNodeSpec }),
+    defineNodeSpec({ name: 'qtiGapText', ...qtiGapTextNodeSpec }),
+    defineNodeSpec({ name: 'qtiGap', ...qtiGapNodeSpec }),
+    definePlugin(createGapMatchCorrectResponsePlugin),
     // Order interaction
     defineNodeSpec({ name: 'qtiOrderInteraction', ...qtiOrderInteractionNodeSpec }),
     // Select point interaction

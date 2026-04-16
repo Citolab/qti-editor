@@ -6,6 +6,7 @@ import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { Selection } from 'prosekit/pm/state';
 import { PopoverContent, PopoverRoot, PopoverTrigger } from 'prosekit/lit/popover';
 import { insertAssociateInteraction } from '@qti-editor/interaction-associate';
+import { insertGapMatchInteraction } from '@qti-editor/interaction-gap-match';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
 import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
 import { insertHottextInteraction } from '@qti-editor/interaction-hottext';
@@ -156,6 +157,18 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
       canInsert: canInsert(view, nodeType),
       command: () => {
         insertOrderInteraction(view.state, view.dispatch, view);
+        view.focus();
+      },
+    });
+  }
+
+  if (schema.nodes.qtiGapMatchInteraction && schema.nodes.qtiGapText && schema.nodes.qtiGap) {
+    const nodeType = schema.nodes.qtiGapMatchInteraction;
+    items.push({
+      label: translateQti('interactionInsert.gapMatch', { target: view.dom }),
+      canInsert: canInsert(view, nodeType),
+      command: () => {
+        insertGapMatchInteraction(view.state, view.dispatch, view);
         view.focus();
       },
     });

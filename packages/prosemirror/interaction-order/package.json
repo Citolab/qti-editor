@@ -28,7 +28,7 @@
   "dependencies": {
     "@qti-components/order-interaction": "^1.1.2",
     "@qti-editor/interaction-shared": "1.0.0",
-    "@qti-editor/interfaces": "1.0.0"
+    "@qti-editor/interfaces": "workspace:*"
   },
   "peerDependencies": {
     "lit": "^3.3.1"

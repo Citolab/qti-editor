@@ -20,6 +20,7 @@ const interactionsOrderSrcRoot = fileURLToPath(new URL('../../packages/prosemirr
 const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-text-entry/src', import.meta.url));
 const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-select-point/src', import.meta.url));
 const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-inline-choice/src', import.meta.url));
+const interactionsGapMatchSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-gap-match/src', import.meta.url));
 const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes/src', import.meta.url));
 const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes-ui-prosekit/src', import.meta.url));
 const appCustomElementRoots = [
@@ -38,6 +39,7 @@ const fullReloadRoots = [
   interactionsTextEntrySrcRoot,
   interactionsSelectPointSrcRoot,
   interactionsInlineChoiceSrcRoot,
+  interactionsGapMatchSrcRoot,
   prosemirrorAttributesSrcRoot,
   prosemirrorAttributesUiProseKitSrcRoot,
 ];
@@ -182,6 +184,14 @@ export default defineConfig({
         replacement: `${interactionsInlineChoiceSrcRoot}/index.ts`,
       },
       {
+        find: /^@qti-editor\/interaction-gap-match\/(.*)\.js$/,
+        replacement: `${interactionsGapMatchSrcRoot}/$1.ts`,
+      },
+      {
+        find: /^@qti-editor\/interaction-gap-match$/,
+        replacement: `${interactionsGapMatchSrcRoot}/index.ts`,
+      },
+      {
         find: /^@qti-editor\/prosemirror-attributes\/(.*)\.js$/,
         replacement: `${prosemirrorAttributesSrcRoot}/$1.ts`,
       },
@@ -232,6 +242,7 @@ export default defineConfig({
       '@qti-editor/interaction-text-entry',
       '@qti-editor/interaction-select-point',
       '@qti-editor/interaction-inline-choice',
+      '@qti-editor/interaction-gap-match',
       '@qti-editor/prosemirror-attributes',
       '@qti-editor/prosemirror-attributes-ui-prosekit',
       '@qti-components/theme',

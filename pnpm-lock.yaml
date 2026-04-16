@@ -157,6 +157,9 @@ importers:
       '@qti-editor/interaction-extended-text':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-extended-text
+      '@qti-editor/interaction-gap-match':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-gap-match
       '@qti-editor/interaction-hottext':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-hottext
@@ -339,6 +342,9 @@ importers:
       '@qti-editor/interaction-extended-text':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-extended-text
+      '@qti-editor/interaction-gap-match':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-gap-match
       '@qti-editor/interaction-hottext':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-hottext
@@ -479,8 +485,8 @@ importers:
         specifier: 1.3.2
         version: 1.3.2(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../interaction-shared
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interfaces':
         specifier: workspace:*
         version: link:../../interfaces
@@ -516,8 +522,8 @@ importers:
         specifier: ^1.3.2
         version: 1.3.2(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../interaction-shared
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interfaces':
         specifier: workspace:*
         version: link:../../interfaces
@@ -547,6 +553,28 @@ importers:
         specifier: 1.3.2
         version: 1.3.2(lit@3.3.2)
       '@qti-editor/interaction-shared':
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interfaces':
+        specifier: workspace:*
+        version: link:../../interfaces
+    devDependencies:
+      lit:
+        specifier: ^3.3.2
+        version: 3.3.2
+      prosemirror-commands:
+        specifier: ^1.7.1
+        version: 1.7.1
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+
+  packages/prosemirror/interaction-gap-match:
+    dependencies:
+      '@qti-editor/interaction-shared':
         specifier: workspace:*
         version: link:../interaction-shared
       '@qti-editor/interfaces':
@@ -575,8 +603,8 @@ importers:
         specifier: 1.10.1
         version: 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../interaction-shared
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interfaces':
         specifier: workspace:*
         version: link:../../interfaces
@@ -600,8 +628,8 @@ importers:
         specifier: 1.10.1
         version: 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../interaction-shared
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interfaces':
         specifier: workspace:*
         version: link:../../interfaces
@@ -628,8 +656,8 @@ importers:
         specifier: 1.3.2
         version: 1.3.2(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../interaction-shared
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interfaces':
         specifier: workspace:*
         version: link:../../interfaces
@@ -653,8 +681,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../interaction-shared
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interfaces':
         specifier: workspace:*
         version: link:../../interfaces
@@ -678,8 +706,8 @@ importers:
         specifier: ^1.0.1
         version: 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../interaction-shared
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interfaces':
         specifier: workspace:*
         version: link:../../interfaces
@@ -722,8 +750,8 @@ importers:
         specifier: ^1.0.0
         version: 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../interaction-shared
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interfaces':
         specifier: workspace:*
         version: link:../../interfaces
@@ -741,35 +769,35 @@ importers:
   packages/qti/core:
     dependencies:
       '@qti-editor/interaction-associate':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-associate
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-choice':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-choice
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-extended-text':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-extended-text
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-hottext':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-hottext
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-inline-choice':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-inline-choice
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-match':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-match
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-order':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-order
+        specifier: 0.4.0
+        version: 0.4.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-select-point':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-select-point
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-shared
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-text-entry':
-        specifier: workspace:*
-        version: link:../../prosemirror/interaction-text-entry
+        specifier: 1.0.0
+        version: 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interfaces':
         specifier: workspace:*
         version: link:../../interfaces
@@ -795,6 +823,12 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../core
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../../prosemirror/interaction-shared
+      '@qti-editor/prosemirror':
+        specifier: workspace:*
+        version: link:../../prosemirror/extensions
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -832,6 +866,9 @@ importers:
       '@qti-editor/interaction-extended-text':
         specifier: workspace:*
         version: link:../prosemirror/interaction-extended-text
+      '@qti-editor/interaction-gap-match':
+        specifier: workspace:*
+        version: link:../prosemirror/interaction-gap-match
       '@qti-editor/interaction-hottext':
         specifier: workspace:*
         version: link:../prosemirror/interaction-hottext
@@ -2543,6 +2580,59 @@ packages:
     resolution: {integrity: sha512-RL53GyqoAdxwfHESfzZliZMCt1eLWH3p1SGIm8HFGUOIXRctX9QcjVowZzD7GeSBRgCqwetY07ZQ/uc6uBNsXQ==}
     peerDependencies:
       lit: ^3.3.1
+
+  '@qti-editor/interaction-associate@1.0.0':
+    resolution: {integrity: sha512-hzrcMlfwvUfPxgHbEUvFDoC4MIroV0Nwxqn6kxBIPAc9JC7bU7XfLwNWC5BW8Xpm0z3fbCtIpvvKu76xD2MO2g==}
+    peerDependencies:
+      lit: ^3.3.1
+
+  '@qti-editor/interaction-choice@1.0.0':
+    resolution: {integrity: sha512-iCs0A1XIomAeuqR7YHSoF78WYaCV6osYxhIDMExW5wG8wAf3AcfKGapRWT5T7akrQ9P3L5c3omOSMvqKaBAKAw==}
+    peerDependencies:
+      lit: ^3.3.1
+
+  '@qti-editor/interaction-extended-text@1.0.0':
+    resolution: {integrity: sha512-y72eTw4GkdkRNAuqNXlj7SJCFtx7NGs2HMq0JKjnp3AiWyOKoPMuU7ab7CYLhplbmhUjEtB9Ohkr3Y4fEBRS/Q==}
+    peerDependencies:
+      lit: ^3.3.1
+
+  '@qti-editor/interaction-hottext@1.0.0':
+    resolution: {integrity: sha512-oq/HsNfGz7sXJwh+D8u1XKOvJ76Yk9haqxGJGdxoFvv/pkgLDkYFRqygJJora3DsJdEthlpj6ewVI2Bd8JwAhQ==}
+    peerDependencies:
+      lit: ^3.3.1
+
+  '@qti-editor/interaction-inline-choice@1.0.0':
+    resolution: {integrity: sha512-bFGX1T3n/h7QWtxdtp311GHpnsa6t2rptmbsdC4YF3hh+VO3pad4dh7mDfLAgNYrnJE8lnx01CaWDsH1i/3tqQ==}
+    peerDependencies:
+      lit: ^3.3.1
+
+  '@qti-editor/interaction-match@1.0.0':
+    resolution: {integrity: sha512-HKBh4RIJ+dnolx18qg1tVw7+3T76Yjhqr1USS9ZhXLDhnl/4bGVBHa2Ph/LFG8fGgH1Itk+bIB5ZzvEWcMgNMw==}
+    peerDependencies:
+      lit: ^3.3.1
+
+  '@qti-editor/interaction-order@0.4.0':
+    resolution: {integrity: sha512-RfV0HnWJhlNkO9Fm2nipDfeG6BgsiGmxTHjeP83XVcaCYZ3mnUEssPSmecpfGcH5qd3YD/ABGCtHDkp5l50NpA==}
+    peerDependencies:
+      lit: ^3.3.1
+
+  '@qti-editor/interaction-select-point@1.0.0':
+    resolution: {integrity: sha512-oxXESG1rUAPSGWrudEH4EWQBvc9wV/AOYuWIlFUrHz0gfIhKqibXg3WVM71dTIwOg+SXGtCYyBoGIzaSwvtwnQ==}
+    peerDependencies:
+      lit: ^3.3.1
+
+  '@qti-editor/interaction-shared@1.0.0':
+    resolution: {integrity: sha512-mjAUofq1k/MvtKD3NIAvLJ+XbeYqODqwIdFMLZHse05vu/YCerAo5M/CeAyXZPATVB6hcPuWUoeBJ5zAT0+cOw==}
+    peerDependencies:
+      lit: ^3.3.1
+
+  '@qti-editor/interaction-text-entry@1.0.0':
+    resolution: {integrity: sha512-aXzFv2FszScPaAhEqa7reaTmDkJKdAZ25HVj3il+xUxeeogeH6T1/Q8ubjL7qE2KWjOAAn0KPBKH4S8beEenxQ==}
+    peerDependencies:
+      lit: ^3.3.1
+
+  '@qti-editor/interfaces@1.0.0':
+    resolution: {integrity: sha512-y+v92UI0SJcW4Ox4KSrCwxdOiPC+/UvjcIt+MspoWpLIyVfDy9YK/0tzbQj0iplO0e8kBCS0L4yCBB+WsiRo2A==}
 
   '@rolldown/pluginutils@1.0.0-beta.27':
     resolution: {integrity: sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==}
@@ -9624,6 +9714,110 @@ snapshots:
   '@qti-components/utilities@1.3.2(lit@3.3.2)':
     dependencies:
       lit: 3.3.2
+
+  '@qti-editor/interaction-associate@1.0.0(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@qti-components/associate-interaction': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions': 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': 1.3.2(lit@3.3.2)
+      '@qti-editor/interaction-shared': 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interfaces': 1.0.0
+      lit: 3.3.2
+    transitivePeerDependencies:
+      - '@lit/context'
+
+  '@qti-editor/interaction-choice@1.0.0(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@qti-components/base': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/choice-interaction': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions': 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': 1.3.2(lit@3.3.2)
+      '@qti-editor/interaction-shared': 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interfaces': 1.0.0
+      lit: 3.3.2
+    transitivePeerDependencies:
+      - '@lit/context'
+
+  '@qti-editor/interaction-extended-text@1.0.0(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@qti-components/extended-text-interaction': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions': 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': 1.3.2(lit@3.3.2)
+      '@qti-editor/interaction-shared': 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interfaces': 1.0.0
+      lit: 3.3.2
+    transitivePeerDependencies:
+      - '@lit/context'
+
+  '@qti-editor/interaction-hottext@1.0.0(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@qti-components/hottext-interaction': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions': 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interaction-shared': 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interfaces': 1.0.0
+      lit: 3.3.2
+    transitivePeerDependencies:
+      - '@lit/context'
+
+  '@qti-editor/interaction-inline-choice@1.0.0(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@qti-components/inline-choice-interaction': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions': 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interaction-shared': 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interfaces': 1.0.0
+      lit: 3.3.2
+    transitivePeerDependencies:
+      - '@lit/context'
+
+  '@qti-editor/interaction-match@1.0.0(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@qti-components/interactions': 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/match-interaction': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': 1.3.2(lit@3.3.2)
+      '@qti-editor/interaction-shared': 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interfaces': 1.0.0
+      lit: 3.3.2
+    transitivePeerDependencies:
+      - '@lit/context'
+
+  '@qti-editor/interaction-order@0.4.0(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@qti-components/order-interaction': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interaction-shared': 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interfaces': 1.0.0
+      lit: 3.3.2
+    transitivePeerDependencies:
+      - '@lit/context'
+
+  '@qti-editor/interaction-select-point@1.0.0(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@qti-components/select-point-interaction': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interaction-shared': 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interfaces': 1.0.0
+      lit: 3.3.2
+    transitivePeerDependencies:
+      - '@lit/context'
+
+  '@qti-editor/interaction-shared@1.0.0(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@qti-components/interactions-core': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interfaces': 1.0.0
+      lit: 3.3.2
+    transitivePeerDependencies:
+      - '@lit/context'
+
+  '@qti-editor/interaction-text-entry@1.0.0(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@qti-components/interactions': 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/text-entry-interaction': 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interaction-shared': 1.0.0(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interfaces': 1.0.0
+      lit: 3.3.2
+    transitivePeerDependencies:
+      - '@lit/context'
+
+  '@qti-editor/interfaces@1.0.0': {}
 
   '@rolldown/pluginutils@1.0.0-beta.27': {}
 

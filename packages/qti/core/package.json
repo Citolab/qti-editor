@@ -29,7 +29,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-editor/interfaces": "1.0.0",
+    "@qti-editor/interfaces": "workspace:*",
     "@qti-editor/interaction-associate": "1.0.0",
     "@qti-editor/interaction-choice": "1.0.0",
     "@qti-editor/interaction-extended-text": "1.0.0",
