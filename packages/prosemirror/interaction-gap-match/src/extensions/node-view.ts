@@ -1,4 +1,5 @@
 import { Plugin, PluginKey } from 'prosekit/pm/state';
+
 import type { Node as PmNode } from 'prosekit/pm/model';
 
 const gapMatchNodeViewPluginKey = new PluginKey('gap-match-node-view');
