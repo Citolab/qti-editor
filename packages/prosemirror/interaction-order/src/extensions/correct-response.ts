@@ -1,4 +1,5 @@
 import { Plugin, PluginKey } from 'prosemirror-state';
+
 import type { EditorView } from 'prosemirror-view';
 
 const orderCorrectResponsePluginKey = new PluginKey('order-correct-response');

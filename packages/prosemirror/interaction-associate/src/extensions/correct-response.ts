@@ -1,6 +1,6 @@
 import { Plugin, PluginKey } from 'prosemirror-state';
-import type { EditorView } from 'prosemirror-view';
 
+import type { EditorView } from 'prosemirror-view';
 import type { AssociatePairChangeDetail } from '../components/qti-associate-interaction/qti-associate-interaction.js';
 
 const associateCorrectResponsePluginKey = new PluginKey('associate-correct-response');

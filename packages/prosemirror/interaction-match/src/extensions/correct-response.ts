@@ -1,6 +1,6 @@
 import { Plugin, PluginKey } from 'prosemirror-state';
-import type { EditorView } from 'prosemirror-view';
 
+import type { EditorView } from 'prosemirror-view';
 import type { MatchAssociationChangeDetail } from '../components/qti-match-interaction/qti-match-interaction.js';
 
 const matchCorrectResponsePluginKey = new PluginKey('match-correct-response-dnd');

@@ -1,6 +1,6 @@
 import { Plugin, PluginKey } from 'prosemirror-state';
-import type { EditorView } from 'prosemirror-view';
 
+import type { EditorView } from 'prosemirror-view';
 import type { GapAssociationChangeDetail } from '../components/qti-gap-match-interaction/qti-gap-match-interaction.js';
 
 const gapMatchCorrectResponsePluginKey = new PluginKey('gap-match-correct-response');

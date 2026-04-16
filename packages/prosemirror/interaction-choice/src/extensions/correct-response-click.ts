@@ -1,9 +1,10 @@
 import { Plugin, PluginKey } from 'prosemirror-state';
-import type { EditorView } from 'prosemirror-view';
 import {
   QTI_CORRECT_RESPONSE_TOGGLE_EVENT,
   type QtiCorrectResponseToggleDetail,
 } from '@qti-editor/interaction-shared';
+
+import type { EditorView } from 'prosemirror-view';
 
 const correctResponseClickPluginKey = new PluginKey('correct-response-click');
 

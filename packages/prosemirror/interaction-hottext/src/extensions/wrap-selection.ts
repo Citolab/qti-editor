@@ -1,4 +1,5 @@
 import { Plugin, PluginKey, TextSelection } from 'prosemirror-state';
+
 import type { EditorView } from 'prosemirror-view';
 import type { Fragment } from 'prosemirror-model';
 

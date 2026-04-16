@@ -4,6 +4,7 @@
  */
 
 import { definePlugin, type Extension } from 'prosekit/core';
+
 import { createAssociateCorrectResponsePlugin } from './correct-response.js';
 
 /**
