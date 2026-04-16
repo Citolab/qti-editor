@@ -5,7 +5,6 @@ import {
 } from './components/qti-inline-choice-interaction/qti-inline-choice-interaction.commands.js';
 import { qtiInlineChoiceInteractionNodeSpec } from './components/qti-inline-choice-interaction/qti-inline-choice-interaction.schema.js';
 import { qtiInlineChoiceNodeSpec } from './components/qti-inline-choice-interaction/qti-inline-choice.schema.js';
-import { qtiInlineChoiceParagraphNodeSpec } from './components/qti-inline-choice-interaction/qti-inline-choice-paragraph.schema.js';
 import {
   inlineChoiceInteractionComposerMetadata,
   inlineChoiceNodeAttributePanelMetadataByNodeTypeName,
@@ -20,7 +19,6 @@ export const inlineChoiceInteractionDescriptor = {
   nodeSpecs: [
     { name: 'qtiInlineChoiceInteraction', spec: qtiInlineChoiceInteractionNodeSpec },
     { name: 'qtiInlineChoice', spec: qtiInlineChoiceNodeSpec },
-    { name: 'qtiInlineChoiceParagraph', spec: qtiInlineChoiceParagraphNodeSpec },
   ],
   insertCommand: insertInlineChoiceInteraction,
   keyboardShortcut: 'Mod-Shift-l',

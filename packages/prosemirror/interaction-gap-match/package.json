@@ -1,6 +1,7 @@
 {
   "name": "@qti-editor/interaction-gap-match",
   "description": "QTI gap match interaction schemas, components, commands, and composer",
+  "private": true,
   "version": "1.0.1",
   "repository": {
     "type": "git",

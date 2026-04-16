@@ -2,12 +2,8 @@
 /**
  * QTI Slash Menu
  *
- * App-level slash menu that extends the default prosekit slash menu with
- * QTI interaction insert commands (Choice, Extended Text, Text Entry).
- *
- * This component reuses the `<prosekit-autocomplete-popover>`,
- * `<prosekit-autocomplete-list>`, and `<lit-editor-slash-menu-item>`
- * elements from prosekit, adding QTI-specific items in a separate group.
+ * App-level slash menu that dynamically loads QTI interactions from the descriptor registry.
+ * Uses the descriptor pattern to automatically populate the slash menu with all registered interactions.
  */
 
 import 'prosekit/lit/autocomplete';
@@ -17,18 +13,25 @@ import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
 import { translateQti } from '@qti-editor/interaction-shared';
-import { insertAssociateInteraction } from '@qti-editor/interaction-associate';
-import { insertGapMatchInteraction } from '@qti-editor/interaction-gap-match';
-import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
-import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
-import { insertHottextInteraction } from '@qti-editor/interaction-hottext';
-import { insertMatchInteraction } from '@qti-editor/interaction-match';
-import { insertOrderInteraction } from '@qti-editor/interaction-order';
-import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
+import { listInteractionDescriptors } from '@qti-editor/core/interactions/composer';
 
 import type { EditorView } from 'prosekit/pm/view';
 
 const regex = canUseRegexLookbehind() ? /(?<!\S)\/(\S.*)?$/u : /\/(\S.*)?$/u;
+
+// Map tag names to i18n keys
+const TAG_TO_I18N_KEY: Record<string, string> = {
+  'qti-choice-interaction': 'interactionInsert.choice',
+  'qti-extended-text-interaction': 'interactionInsert.extendedText',
+  'qti-text-entry-interaction': 'interactionInsert.textEntry',
+  'qti-inline-choice-interaction': 'interactionInsert.inlineChoice',
+  'qti-hottext-interaction': 'interactionInsert.hottext',
+  'qti-associate-interaction': 'interactionInsert.associate',
+  'qti-match-interaction': 'interactionInsert.match',
+  'qti-order-interaction': 'interactionInsert.order',
+  'qti-select-point-interaction': 'interactionInsert.selectPoint',
+  'qti-gap-match-interaction': 'interactionInsert.gapMatch',
+};
 
 @customElement('qti-slash-menu')
 export class QtiSlashMenu extends LitElement {
@@ -46,27 +49,19 @@ export class QtiSlashMenu extends LitElement {
     return (this.editor as any)?.view ?? null;
   }
 
-  private insertInteraction(command: (state: any, dispatch: any, view?: EditorView) => boolean) {
+  private insertInteraction(insertCommand: any) {
     const view = this.getView();
     if (!view) return;
-    command(view.state, view.dispatch, view);
-    view.focus();
-  }
-
-  private insertTextEntry() {
-    const view = this.getView();
-    if (!view) return;
-    const nodeType = view.state.schema.nodes.qtiTextEntryInteraction;
-    if (!nodeType) return;
-    const node = nodeType.createAndFill({ responseIdentifier: `RESPONSE_${crypto.randomUUID()}` });
-    if (!node) return;
-    view.dispatch(view.state.tr.replaceSelectionWith(node));
+    insertCommand(view.state, view.dispatch, view);
     view.focus();
   }
 
   override render() {
     const editor = this.editor;
     if (!editor) return html``;
+
+    // Get all registered interaction descriptors
+    const descriptors = listInteractionDescriptors();
 
     return html`<prosekit-autocomplete-popover
       .editor=${editor}
@@ -80,51 +75,19 @@ export class QtiSlashMenu extends LitElement {
         >
           ${translateQti('slashMenu.interactions', { target: this })}
         </div>
-        <lit-editor-slash-menu-item
-          class="contents"
-          label=${translateQti('interactionInsert.choice', { target: this })}
-          @select=${() => this.insertInteraction(insertChoiceInteraction)}
-        ></lit-editor-slash-menu-item>
-        <lit-editor-slash-menu-item
-          class="contents"
-          label=${translateQti('interactionInsert.extendedText', { target: this })}
-          @select=${() => this.insertInteraction(insertExtendedTextInteraction)}
-        ></lit-editor-slash-menu-item>
-        <lit-editor-slash-menu-item
-          class="contents"
-          label=${translateQti('interactionInsert.textEntry', { target: this })}
-          @select=${() => this.insertTextEntry()}
-        ></lit-editor-slash-menu-item>
-        <lit-editor-slash-menu-item
-          class="contents"
-          label=${translateQti('interactionInsert.hottext', { target: this })}
-          @select=${() => this.insertInteraction(insertHottextInteraction)}
-        ></lit-editor-slash-menu-item>
-        <lit-editor-slash-menu-item
-          class="contents"
-          label=${translateQti('interactionInsert.associate', { target: this })}
-          @select=${() => this.insertInteraction(insertAssociateInteraction)}
-        ></lit-editor-slash-menu-item>
-        <lit-editor-slash-menu-item
-          class="contents"
-          label=${translateQti('interactionInsert.match', { target: this })}
-          @select=${() => this.insertInteraction(insertMatchInteraction)}
-        ></lit-editor-slash-menu-item>
-        <lit-editor-slash-menu-item
-          class="contents"
-          label=${translateQti('interactionInsert.order', { target: this })}
-          @select=${() => this.insertInteraction(insertOrderInteraction)}
-        ></lit-editor-slash-menu-item>
-        <lit-editor-slash-menu-item
-          class="contents"
-          label=${translateQti('interactionInsert.selectPoint', { target: this })}
-          @select=${() => this.insertInteraction(insertSelectPointInteraction)}
-        ></lit-editor-slash-menu-item>
-        <lit-editor-slash-menu-item
-          class="contents"
-          label=${translateQti('interactionInsert.gapMatch', { target: this })}
-          @select=${() => this.insertInteraction(insertGapMatchInteraction)}
-        ></lit-editor-slash-menu-item>
+        ${descriptors
+          .filter(d => d.insertCommand && TAG_TO_I18N_KEY[d.tagName])
+          .map(descriptor => {
+            const i18nKey = TAG_TO_I18N_KEY[descriptor.tagName];
+            const label = translateQti(i18nKey, { target: this });
+            return html`
+              <lit-editor-slash-menu-item
+                class="contents"
+                label=${label}
+                @select=${() => this.insertInteraction(descriptor.insertCommand)}
+              ></lit-editor-slash-menu-item>
+            `;
+          })}
       </prosekit-autocomplete-list>
     </prosekit-autocomplete-popover>`;
   }

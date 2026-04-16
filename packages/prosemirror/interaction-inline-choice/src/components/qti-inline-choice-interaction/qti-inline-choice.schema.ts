@@ -5,8 +5,9 @@ export const qtiInlineChoiceNodeSpec: NodeSpec = {
   attrs: {
     identifier: { default: 'A' }
   },
-  content: 'qtiInlineChoiceParagraph | qtiMedia',
-  group: 'block',
+  content: 'text*',
+  inline: true,
+  group: 'inline',
   parseDOM: [
     {
       tag: 'qti-inline-choice',

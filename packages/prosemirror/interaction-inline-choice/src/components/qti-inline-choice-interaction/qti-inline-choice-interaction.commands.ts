@@ -23,9 +23,8 @@ export const insertInlineChoiceInteraction: Command = (state, dispatch) => {
   const { schema } = state;
   const interactionType = schema.nodes.qtiInlineChoiceInteraction;
   const inlineChoiceType = schema.nodes.qtiInlineChoice;
-  const inlineChoiceParagraphType = schema.nodes.qtiInlineChoiceParagraph;
 
-  if (!interactionType || !inlineChoiceType || !inlineChoiceParagraphType) return false;
+  if (!interactionType || !inlineChoiceType) return false;
   if (isSelectionInsideInlineChoiceInteraction(state)) return false;
 
   const interaction = interactionType.create(
@@ -36,15 +35,15 @@ export const insertInlineChoiceInteraction: Command = (state, dispatch) => {
     [
       inlineChoiceType.create(
         { identifier: `INLINE_CHOICE_${crypto.randomUUID()}` },
-        inlineChoiceParagraphType.create(null, schema.text('Gloucester'))
+        schema.text('Gloucester')
       ),
       inlineChoiceType.create(
         { identifier: `INLINE_CHOICE_${crypto.randomUUID()}` },
-        inlineChoiceParagraphType.create(null, schema.text('Lancaster'))
+        schema.text('Lancaster')
       ),
       inlineChoiceType.create(
         { identifier: `INLINE_CHOICE_${crypto.randomUUID()}` },
-        inlineChoiceParagraphType.create(null, schema.text('York'))
+        schema.text('York')
       )
     ]
   );
@@ -57,21 +56,19 @@ export const insertInlineChoiceInteraction: Command = (state, dispatch) => {
 };
 
 /**
- * Handles Enter inside qti-inline-choice paragraphs by inserting a new empty
+ * Handles Enter inside qti-inline-choice by inserting a new empty
  * sibling qti-inline-choice directly after the current one.
  */
 export const insertInlineChoiceOnEnter: Command = (state, dispatch) => {
   const inlineChoiceType = state.schema.nodes.qtiInlineChoice;
-  const paragraphType = state.schema.nodes.qtiInlineChoiceParagraph;
-  if (!inlineChoiceType || !paragraphType) return false;
+  if (!inlineChoiceType) return false;
 
   return createInsertSiblingOnEnterCommand({
     ancestorNodeName: 'qtiInlineChoice',
-    selectionOffset: 2,
+    selectionOffset: 1,
     createSiblingNode: () =>
       inlineChoiceType.create(
-        { identifier: `INLINE_CHOICE_${crypto.randomUUID()}` },
-        paragraphType.create()
+        { identifier: `INLINE_CHOICE_${crypto.randomUUID()}` }
       ),
   })(state, dispatch);
 };

@@ -44,6 +44,27 @@ function canInsert(view: EditorView, nodeType: any): boolean {
   return false;
 }
 
+function canInsertInline(view: EditorView, nodeType: any): boolean {
+  // For inline nodes, check all ancestor levels to see if we can insert
+  // This handles cases like: start of paragraph, middle of text, end of paragraph
+  const { $from } = view.state.selection;
+  
+  // First, check if we're directly in a block that accepts inline content
+  for (let depth = $from.depth; depth >= 0; depth -= 1) {
+    const node = $from.node(depth);
+    
+    if (node.type.inlineContent) {
+      // We're in a block that accepts inline content
+      const index = $from.index(depth);
+      if (node.canReplaceWith(index, index, nodeType)) {
+        return true;
+      }
+    }
+  }
+  
+  return false;
+}
+
 function isSelectionInsideNodeType(view: EditorView, nodeType: any): boolean {
   const { $from } = view.state.selection;
   for (let depth = $from.depth; depth >= 0; depth -= 1) {
@@ -80,7 +101,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
     const nodeType = schema.nodes.qtiTextEntryInteraction;
     items.push({
       label: translateQti('interactionInsert.textEntry', { target: view.dom }),
-      canInsert: canInsert(view, nodeType),
+      canInsert: canInsertInline(view, nodeType),
       command: () => {
         const node = nodeType.createAndFill({ responseIdentifier: `RESPONSE_${crypto.randomUUID()}` });
         if (!node) return;
@@ -106,7 +127,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
     const nodeType = schema.nodes.qtiInlineChoiceInteraction;
     items.push({
       label: translateQti('interactionInsert.inlineChoice', { target: view.dom }),
-      canInsert: !isSelectionInsideNodeType(view, nodeType) && canInsert(view, nodeType),
+      canInsert: !isSelectionInsideNodeType(view, nodeType) && canInsertInline(view, nodeType),
       command: () => {
         insertInlineChoiceInteraction(view.state, view.dispatch, view);
         view.focus();
