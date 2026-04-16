@@ -1,7 +1,7 @@
 {
   "name": "@qti-editor/interaction-order",
   "description": "QTI order interaction schemas, components, commands, and composer",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",
@@ -27,8 +27,8 @@
   },
   "dependencies": {
     "@qti-components/order-interaction": "^1.1.2",
-    "@qti-editor/interaction-shared": "workspace:*",
-    "@qti-editor/interfaces": "workspace:*",
+    "@qti-editor/interaction-shared": "1.1.0",
+    "@qti-editor/interfaces": "1.1.0",
     "prosemirror-commands": "^1.7.1",
     "prosemirror-model": "^1.25.4",
     "prosemirror-state": "^1.4.4",
