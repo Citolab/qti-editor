@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@qti-components/order-interaction": "^1.1.2",
-    "@qti-editor/interaction-shared": "1.0.0",
+    "@qti-editor/interaction-shared": "workspace:*",
     "@qti-editor/interfaces": "workspace:*",
     "prosemirror-commands": "^1.7.1",
     "prosemirror-model": "^1.25.4",
