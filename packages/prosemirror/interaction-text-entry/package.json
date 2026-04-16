@@ -1,7 +1,7 @@
 {
   "name": "@qti-editor/interaction-text-entry",
   "description": "QTI text-entry interaction schemas, components, commands, and composer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",
@@ -28,8 +28,8 @@
   "dependencies": {
     "@qti-components/interactions": "1.10.1",
     "@qti-components/text-entry-interaction": "^1.0.0",
-    "@qti-editor/interaction-shared": "1.0.0",
-    "@qti-editor/interfaces": "workspace:*"
+    "@qti-editor/interaction-shared": "1.1.0",
+    "@qti-editor/interfaces": "1.1.0"
   },
   "peerDependencies": {
     "lit": "^3.3.1"
