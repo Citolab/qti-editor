@@ -1,8 +1,7 @@
-import { definePlugin, type Extension } from 'prosekit/core';
-import { Plugin, PluginKey } from 'prosekit/pm/state';
+import { Plugin, PluginKey } from 'prosemirror-state';
+import type { EditorView } from 'prosemirror-view';
 
 import type { GapAssociationChangeDetail } from '../components/qti-gap-match-interaction/qti-gap-match-interaction.js';
-import type { EditorView } from 'prosekit/pm/view';
 
 const gapMatchCorrectResponsePluginKey = new PluginKey('gap-match-correct-response');
 
@@ -26,10 +25,6 @@ function findInteractionNodePos(view: EditorView, interactionElement: HTMLElemen
   });
 
   return foundPos;
-}
-
-export function defineGapMatchCorrectResponseExtension(): Extension {
-  return definePlugin(createGapMatchCorrectResponsePlugin);
 }
 
 export function createGapMatchCorrectResponsePlugin(): Plugin {

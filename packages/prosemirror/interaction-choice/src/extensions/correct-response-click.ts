@@ -1,11 +1,9 @@
-import { definePlugin, type Extension } from 'prosekit/core';
-import { Plugin, PluginKey } from 'prosekit/pm/state';
+import { Plugin, PluginKey } from 'prosemirror-state';
+import type { EditorView } from 'prosemirror-view';
 import {
   QTI_CORRECT_RESPONSE_TOGGLE_EVENT,
   type QtiCorrectResponseToggleDetail,
 } from '@qti-editor/interaction-shared';
-
-import type { EditorView } from 'prosekit/pm/view';
 
 const correctResponseClickPluginKey = new PluginKey('correct-response-click');
 
@@ -76,17 +74,13 @@ function findInteractionNodePos(view: EditorView, interactionElement: HTMLElemen
 }
 
 /**
- * Creates a ProseMirror extension that handles correct response clicks.
+ * Creates a ProseMirror plugin that handles correct response clicks.
  * 
- * When a qti-simple-choice is clicked (on part="ch"), this extension:
+ * When a qti-simple-choice is clicked (on part="ch"), this plugin:
  * 1. Aggregates all selected choices in the parent interaction
  * 2. Computes maxChoices (1 for single, 0 for multiple)
  * 3. Updates the interaction node's attributes
  */
-export function defineCorrectResponseClickExtension(): Extension {
-  return definePlugin(createCorrectResponseClickPlugin);
-}
-
 export function createCorrectResponseClickPlugin(): Plugin {
   return new Plugin({
     key: correctResponseClickPluginKey,

@@ -14,7 +14,7 @@ import {
 import { qtiChoiceInteractionNodeSpec } from '../qti-choice-interaction.schema';
 
 import type { Node as ProseMirrorNode, NodeSpec } from 'prosemirror-model';
-import type { EditorView } from 'prosekit/pm/view';
+import type { EditorView } from 'prosemirror-view';
 
 const baseNodes = {
   doc: { content: 'block+' },

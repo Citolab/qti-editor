@@ -4,16 +4,85 @@ description: Embed QTI Editor in an Angular application.
 slug: docs/frameworks/angular
 ---
 
-This guide shows the Angular integration shape that matches the public QTI Editor surface:
+This guide shows two Angular integration approaches:
 
-- install the `@qti-editor` QTI interaction and composition packages you need from npm
-- we offer some example Lit UI components, which you can copy into your app through the registry (more on that below)
-- we recommend using [ProseKit](https://prosekit.dev) for ready-made UI components. If desired, install `prosekit` directly from the vendor
-- when using ProseKit, keep a small local ProseKit helper layer in your Angular app for editor assembly and event wiring
+- **Pure ProseMirror** - Minimal dependencies with full control over editor behavior
+- **ProseKit** - Pre-built UI components and convenience wrappers for faster development
 
-We've provided a ready-made [Angular integration example](https://github.com/Citolab/qti-editor-angular) to serve as inspiration on how to wire things up.
+Both approaches use the same QTI interaction packages. We've provided a ready-made [Angular integration example](https://github.com/Citolab/qti-editor-angular) to serve as inspiration.
 
-## 1. Install packages
+## Approach 1: Pure ProseMirror
+
+### 1. Install packages
+
+```bash
+pnpm add prosemirror-state prosemirror-view prosemirror-model prosemirror-commands \
+  @qti-components/theme \
+  @qti-editor/core \
+  @qti-editor/interaction-choice \
+  @qti-editor/interaction-extended-text \
+  @qti-editor/interaction-inline-choice \
+  @qti-editor/interaction-match \
+  @qti-editor/interaction-order \
+  @qti-editor/interaction-select-point \
+  @qti-editor/interaction-shared \
+  @qti-editor/interaction-text-entry \
+  lit
+```
+
+### 2. Create ProseMirror editor service
+
+```typescript
+// src/app/services/qti-editor.service.ts
+import { Injectable } from '@angular/core';
+import { EditorState, Plugin } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
+import { Schema } from 'prosemirror-model';
+import { 
+  listInteractionDescriptors, 
+  listInteractionPluginFactories 
+} from '@qti-editor/core/interactions/composer';
+
+@Injectable({ providedIn: 'root' })
+export class QtiEditorService {
+  createEditor(element: HTMLElement): EditorView {
+    const descriptors = listInteractionDescriptors();
+    
+    // Build schema from descriptors
+    const nodes = {};
+    const seenSpecs = new Set<string>();
+    
+    for (const descriptor of descriptors) {
+      for (const { name, spec } of descriptor.nodeSpecs) {
+        if (!seenSpecs.has(name)) {
+          nodes[name] = spec;
+          seenSpecs.add(name);
+        }
+      }
+    }
+
+    const schema = new Schema({
+      nodes: {
+        doc: { content: 'block+' },
+        text: {},
+        paragraph: { content: 'inline*', group: 'block' },
+        ...nodes
+      },
+      marks: {},
+    });
+
+    // Get plugins from interaction packages
+    const plugins = listInteractionPluginFactories().map(factory => factory());
+
+    const state = EditorState.create({ schema, plugins });
+    return new EditorView(element, { state });
+  }
+}
+```
+
+## Approach 2: ProseKit (Recommended for Rapid Development)
+
+### 1. Install packages
 
 ```bash
 pnpm add prosekit \
@@ -27,19 +96,16 @@ pnpm add prosekit \
   @qti-editor/interaction-select-point \
   @qti-editor/interaction-shared \
   @qti-editor/interaction-text-entry \
-  @qti-editor/prosemirror \
-  @qti-editor/prosemirror-attributes \
-  @qti-editor/prosemirror-attributes-ui-prosekit \
   lit
 ```
 
-### Important
+### Notes on ProseKit Integration
 
-- `@qti-editor/ui` is registry source, not the recommended Angular runtime import path.
-- The editor assembly layer is owned by your Angular app. Usage of our prosekit integration package is discouraged.
-- The intended public model is: `prosekit` + `@qti-editor/interaction-*` + `@qti-editor/core` + copied registry UI.
+- `@qti-editor/ui` is registry source, not a runtime import path.
+- ProseKit integration is optional - interaction packages export pure ProseMirror plugins.
+- The intended public model is: `prosekit` (optional) + `@qti-editor/interaction-*` + `@qti-editor/core` + copied registry UI.
 
-## 2. Using the registry
+## Using the Registry (For Either Approach)
 
 Angular is not auto-detected by the shadcn CLI, so create the expected config files first.
 
@@ -134,9 +200,9 @@ pnpm add @egoist/tailwindcss-icons @iconify-json/lucide daisyui
 }
 ```
 
-## 3. Using ProseKit? Add a small local editor helper layer
+## ProseKit-Specific Setup (Only for Approach 2)
 
-These will live inside your Angular app as app-owned glue code.
+If you're using ProseKit (Approach 2), add this small local editor helper layer in your Angular app.
 
 ### Local editor events
 

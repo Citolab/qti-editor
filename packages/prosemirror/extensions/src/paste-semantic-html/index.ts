@@ -1,5 +1,5 @@
+import { Plugin, PluginKey } from 'prosemirror-state';
 import { definePlugin } from 'prosekit/core';
-import { Plugin, PluginKey } from 'prosekit/pm/state';
 
 type ListInfo = {
   type: 'ol' | 'ul';

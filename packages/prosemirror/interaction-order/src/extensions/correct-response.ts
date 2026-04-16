@@ -1,7 +1,5 @@
-import { definePlugin, type Extension } from 'prosekit/core';
-import { Plugin, PluginKey } from 'prosekit/pm/state';
-
-import type { EditorView } from 'prosekit/pm/view';
+import { Plugin, PluginKey } from 'prosemirror-state';
+import type { EditorView } from 'prosemirror-view';
 
 const orderCorrectResponsePluginKey = new PluginKey('order-correct-response');
 
@@ -24,10 +22,6 @@ function findInteractionNodePos(view: EditorView, interactionElement: HTMLElemen
   });
 
   return foundPos;
-}
-
-export function defineOrderCorrectResponseExtension(): Extension {
-  return definePlugin(createOrderCorrectResponsePlugin);
 }
 
 export function createOrderCorrectResponsePlugin(): Plugin {

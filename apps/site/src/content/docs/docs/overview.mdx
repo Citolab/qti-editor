@@ -6,9 +6,27 @@ slug: docs/overview
 
 QTI Editor provides a modular way to embed a QTI-capable authoring environment into web applications.
 
-Under the hood, the editor is built on [ProseMirror](https://prosemirror.net/), which gives it a structured document model instead of treating content as loose HTML. QTI Editor layers QTI-specific schema nodes, commands, serializers, and web components on top of that foundation so applications can offer rich-text authoring while still producing valid QTI output. 
+Under the hood, the editor is built on [ProseMirror](https://prosemirror.net/), which gives it a structured document model instead of treating content as loose HTML. QTI Editor layers QTI-specific schema nodes, commands, serializers, and web components on top of that foundation so applications can offer rich-text authoring while still producing valid QTI output.
 
-The ProseMirror schema is what makes QTI interactions manageable: it defines which interaction nodes are allowed, where they can appear, what they can contain, and how they may be nested. That gives the editor built-in guards against invalid structures and adds safeguards around things like unsupported nesting or placing interactions in the wrong context. In practice, this means you can assemble an editor from focused packages, register only the interactions you need, and embed the result in your own application without tying yourself to a single frontend framework.
+The ProseMirror schema is what makes QTI interactions manageable: it defines which interaction nodes are allowed, where they can appear, what they can contain, and how they may be nested. That gives the editor built-in guards against invalid structures and adds safeguards around things like unsupported nesting or placing interactions in the wrong context.
+
+## Architecture: Pure ProseMirror with Optional ProseKit
+
+QTI Editor interaction packages are built on **pure ProseMirror** with no framework dependencies. Each interaction package exports:
+
+- **ProseMirror plugins** - Pure ProseMirror Plugin factories that work in any ProseMirror setup
+- **Commands** - Standard ProseMirror commands for inserting and manipulating interactions
+- **Node specs** - ProseMirror schema definitions for interaction nodes
+- **Web components** - Lit-based custom elements for rendering interactions
+- **ProseKit wrappers** (optional) - Convenience extensions when using ProseKit
+
+This means you can:
+
+- **Use pure ProseMirror** - Build a barebones ProseMirror editor using only the core ProseMirror APIs
+- **Use ProseKit** - Leverage [ProseKit](https://prosekit.dev) for pre-built UI components and convenience wrappers
+- **Use any framework** - Embed the result in React, Angular, Vue, or plain JavaScript
+
+In practice, this means you can assemble an editor from focused packages, register only the interactions you need, and embed the result in your own application without tying yourself to a specific editor framework or UI library.
 
 ## What's next?
 

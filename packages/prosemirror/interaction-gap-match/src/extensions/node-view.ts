@@ -1,6 +1,6 @@
-import { Plugin, PluginKey } from 'prosekit/pm/state';
+import { Plugin, PluginKey } from 'prosemirror-state';
 
-import type { Node as PmNode } from 'prosekit/pm/model';
+import type { Node as PmNode } from 'prosemirror-model';
 
 const gapMatchNodeViewPluginKey = new PluginKey('gap-match-node-view');
 

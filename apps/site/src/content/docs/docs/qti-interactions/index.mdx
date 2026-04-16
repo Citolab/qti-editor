@@ -35,10 +35,35 @@ pnpm add \
   @qti-editor/interaction-text-entry
 ```
 
-Each interaction package exports [ProseMirror](https://prosemirror.net/) commands and schema pieces. Interactions that need extra runtime behavior, such as click-to-mark-correct-response or wrapping selected text as hottext, now ship their required ProseMirror plugins with the package as well.
+Each interaction package exports [ProseMirror](https://prosemirror.net/) commands, schema pieces, and web components. Interactions that need runtime behavior (like click-to-mark-correct-response or wrapping selected text as hottext) include their ProseMirror plugins in the package.
 
-If you assemble your editor through the descriptor-driven registry (`@qti-editor/core` plus `@qti-editor/prosekit-integration`), those runtime plugins are installed automatically.
+**Each interaction package provides:**
 
-If you assemble a plain ProseMirror editor yourself, use `listInteractionDescriptors()` for node specs and commands and `listInteractionPluginFactories()` for the runtime plugins to install on the editor state.
+- **Pure ProseMirror plugins** - Plugin factory functions that return standard ProseMirror `Plugin` objects
+- **ProseMirror commands** - Standard command functions for inserting and manipulating interactions
+- **Node specs** - ProseMirror schema definitions
+- **Web components** - Lit-based UI elements for rendering
+- **ProseKit wrappers** (optional) - Convenience `Extension` wrappers when using ProseKit
+
+**Pure ProseMirror setup:**
+
+Use `listInteractionDescriptors()` for node specs and commands, and `listInteractionPluginFactories()` for the runtime plugin factory functions:
+
+```typescript
+import { listInteractionDescriptors, listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
+
+const descriptors = listInteractionDescriptors();
+const plugins = listInteractionPluginFactories().map(factory => factory());
+```
+
+**ProseKit setup:**
+
+Use `@qti-editor/prosekit-integration` which automatically assembles descriptors and wraps plugins as ProseKit extensions:
+
+```typescript
+import { defineQtiInteractionsExtension } from '@qti-editor/prosekit-integration';
+
+const extension = defineQtiInteractionsExtension();
+```
 
 The [framework guides](/docs/frameworks/react/) and [framework guides](/docs/frameworks/angular/) show complete integration examples.

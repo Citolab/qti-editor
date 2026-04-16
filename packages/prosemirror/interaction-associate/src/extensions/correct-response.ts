@@ -1,8 +1,7 @@
-import { definePlugin, type Extension } from 'prosekit/core';
-import { Plugin, PluginKey } from 'prosekit/pm/state';
+import { Plugin, PluginKey } from 'prosemirror-state';
+import type { EditorView } from 'prosemirror-view';
 
 import type { AssociatePairChangeDetail } from '../components/qti-associate-interaction/qti-associate-interaction.js';
-import type { EditorView } from 'prosekit/pm/view';
 
 const associateCorrectResponsePluginKey = new PluginKey('associate-correct-response');
 
@@ -35,15 +34,11 @@ function findInteractionNodePos(view: EditorView, interactionElement: HTMLElemen
 }
 
 /**
- * Creates a ProseMirror extension that persists associate interaction correct responses.
+ * Creates a ProseMirror plugin that persists associate interaction correct responses.
  *
- * When pairs change, this extension serializes them to JSON and updates the
+ * When pairs change, this plugin serializes them to JSON and updates the
  * interaction node's correctResponse attribute.
  */
-export function defineAssociateCorrectResponseExtension(): Extension {
-  return definePlugin(createAssociateCorrectResponsePlugin);
-}
-
 export function createAssociateCorrectResponsePlugin(): Plugin {
   return new Plugin({
     key: associateCorrectResponsePluginKey,

@@ -4,13 +4,88 @@ description: Embed QTI Editor in a React application.
 slug: docs/frameworks/react
 ---
 
-This guide shows a public-package-only React setup:
+This guide shows two React integration approaches:
 
-- install `prosekit` directly
-- assemble the editor in your app
-- use a small local event extension instead of depending on our private in-house integration package
+- **Pure ProseMirror** - Minimal dependencies, full control
+- **ProseKit** - Pre-built UI components and convenience wrappers
 
-## 1. Install dependencies
+Both approaches use the same QTI interaction packages and produce the same valid QTI output.
+
+## Approach 1: Pure ProseMirror
+
+### 1. Install dependencies
+
+```bash
+pnpm add prosemirror-state prosemirror-view prosemirror-model prosemirror-commands
+```
+
+Add the QTI packages you need:
+
+```bash
+pnpm add \
+  @qti-editor/core \
+  @qti-editor/interaction-choice \
+  @qti-editor/interaction-extended-text \
+  @qti-editor/interaction-inline-choice \
+  @qti-editor/interaction-match \
+  @qti-editor/interaction-order \
+  @qti-editor/interaction-select-point \
+  @qti-editor/interaction-text-entry
+```
+
+### 2. Create editor with pure ProseMirror
+
+```tsx
+// QtiEditor.tsx
+import { useEffect, useRef } from 'react';
+import { EditorState } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
+import { Schema } from 'prosemirror-model';
+import { listInteractionDescriptors, listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
+
+export function QtiEditor() {
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!editorRef.current) return;
+
+    // Build schema from interaction descriptors
+    const descriptors = listInteractionDescriptors();
+    const nodes = {};
+    const seenSpecs = new Set<string>();
+    
+    for (const descriptor of descriptors) {
+      for (const { name, spec } of descriptor.nodeSpecs) {
+        if (!seenSpecs.has(name)) {
+          nodes[name] = spec;
+          seenSpecs.add(name);
+        }
+      }
+    }
+
+    const schema = new Schema({
+      nodes: { doc: { content: 'block+' }, text: {}, paragraph: { content: 'inline*', group: 'block' }, ...nodes },
+      marks: {},
+    });
+
+    // Get plugins from descriptors
+    const plugins = listInteractionPluginFactories().map(factory => factory());
+
+    const state = EditorState.create({ schema, plugins });
+    const view = new EditorView(editorRef.current, { state });
+
+    return () => view.destroy();
+  }, []);
+
+  return <div ref={editorRef} />;
+}
+```
+
+Events work with standard DOM events - no ProseKit required.
+
+## Approach 2: ProseKit (Recommended for Rapid Development)
+
+### 1. Install dependencies
 
 ```bash
 pnpm add prosekit

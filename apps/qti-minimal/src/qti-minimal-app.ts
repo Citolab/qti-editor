@@ -74,7 +74,9 @@ export class QtiMinimalApp extends LitElement {
 
     const extension = union(
       defineBasicExtension(),
-      defineQtiInteractionsExtension(),
+      defineQtiInteractionsExtension({
+        include: ['qti-choice-interaction', 'qti-extended-text-interaction']
+      }),
       blockSelectExtension,
       nodeAttrsSyncExtension,
     );
@@ -99,7 +101,6 @@ export class QtiMinimalApp extends LitElement {
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start">
         <div class="min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm">
           <div class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
-            <qti-interaction-insert-menu .editor=${this.editor} class="block"></qti-interaction-insert-menu>
             <lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>
           </div>
           <div ${ref(this.editorRef)} class="min-h-80 px-6 py-6"></div>

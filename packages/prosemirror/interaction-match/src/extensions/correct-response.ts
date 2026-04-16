@@ -1,8 +1,7 @@
-import { definePlugin, type Extension } from 'prosekit/core';
-import { Plugin, PluginKey } from 'prosekit/pm/state';
+import { Plugin, PluginKey } from 'prosemirror-state';
+import type { EditorView } from 'prosemirror-view';
 
 import type { MatchAssociationChangeDetail } from '../components/qti-match-interaction/qti-match-interaction.js';
-import type { EditorView } from 'prosekit/pm/view';
 
 const matchCorrectResponsePluginKey = new PluginKey('match-correct-response-dnd');
 
@@ -35,16 +34,12 @@ function findInteractionNodePos(view: EditorView, interactionElement: HTMLElemen
 }
 
 /**
- * Creates a ProseMirror extension that handles drag-and-drop for match interaction correct responses.
+ * Creates a ProseMirror plugin that handles drag-and-drop for match interaction correct responses.
  * 
- * When associations change via drag-and-drop, this extension:
+ * When associations change via drag-and-drop, this plugin:
  * 1. Serializes the associations to JSON
  * 2. Updates the interaction node's correctResponse attribute
  */
-export function defineMatchCorrectResponseExtension(): Extension {
-  return definePlugin(createMatchCorrectResponsePlugin);
-}
-
 export function createMatchCorrectResponsePlugin(): Plugin {
   return new Plugin({
     key: matchCorrectResponsePluginKey,

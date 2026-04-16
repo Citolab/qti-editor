@@ -8,7 +8,7 @@ import { createInsertBlockInteractionCommand } from '@qti-editor/interaction-sha
 import { translateQti } from '@qti-editor/interaction-shared';
 
 import type { Command } from 'prosemirror-state';
-import type { EditorView } from 'prosekit/pm/view';
+import type { EditorView } from 'prosemirror-view';
 
 /**
  * Command to insert an extended text interaction at the current selection

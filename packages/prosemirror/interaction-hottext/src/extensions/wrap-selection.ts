@@ -1,8 +1,6 @@
-import { definePlugin, type Extension } from 'prosekit/core';
-import { Plugin, PluginKey, TextSelection } from 'prosekit/pm/state';
-
+import { Plugin, PluginKey, TextSelection } from 'prosemirror-state';
+import type { EditorView } from 'prosemirror-view';
 import type { Fragment } from 'prosemirror-model';
-import type { EditorView } from 'prosekit/pm/view';
 
 export const HOTTEXT_WRAP_SELECTION_EVENT = 'qti:hottext:wrap-selection';
 
@@ -112,10 +110,6 @@ function wrapSelectedTextAsHottext(view: EditorView, interactionElement: HTMLEle
   ).scrollIntoView();
   dispatch(tr);
   return true;
-}
-
-export function defineHottextWrapSelectionExtension(): Extension {
-  return definePlugin(createHottextWrapSelectionPlugin);
 }
 
 export function createHottextWrapSelectionPlugin(): Plugin {

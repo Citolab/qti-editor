@@ -2,7 +2,7 @@ import { createInsertBlockInteractionCommand } from '@qti-editor/interaction-sha
 import { translateQti } from '@qti-editor/interaction-shared';
 
 import type { Command } from 'prosemirror-state';
-import type { EditorView } from 'prosekit/pm/view';
+import type { EditorView } from 'prosemirror-view';
 
 export const insertHottextInteraction: Command = (state, dispatch, view?: EditorView) => {
   const target = view?.dom ?? null;

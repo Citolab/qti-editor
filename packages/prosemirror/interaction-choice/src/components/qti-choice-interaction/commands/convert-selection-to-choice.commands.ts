@@ -1,7 +1,7 @@
 import { translateQti } from '@qti-editor/interaction-shared';
 
 import type { Fragment, Node as ProseMirrorNode } from 'prosemirror-model';
-import type { EditorView } from 'prosekit/pm/view';
+import type { EditorView } from 'prosemirror-view';
 
 type RootBlock = {
   pos: number;

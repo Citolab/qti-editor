@@ -9,21 +9,38 @@ QTI Editor is split into focused packages so you only install what you need. For
 - published npm packages for the editor engine, interaction packages, and pure [ProseMirror](https://prosemirror.net/) helpers
 - registry-installed Lit UI components that are copied into your app source
 
-## Minimal setup
+## Choose Your Editor Foundation
 
-To embed an editor with the published package surface, start with:
+QTI Editor supports two integration approaches:
+
+### Option 1: Pure ProseMirror (minimal dependencies)
+
+Use this for full control with minimal dependencies:
 
 ```bash
-pnpm add prosekit @qti-editor/core @qti-editor/prosemirror
+pnpm add prosemirror-state prosemirror-view prosemirror-model prosemirror-commands \
+         @qti-editor/core
 ```
 
 | Package | Purpose |
 |---|---|
-| `prosekit` | Core editor engine ([ProseMirror](https://prosemirror.net/) wrapper) |
+| `prosemirror-*` | Core ProseMirror packages (no framework) |
 | `@qti-editor/core` | QTI semantics, descriptor registry, XML export |
-| `@qti-editor/prosemirror` | Pure [ProseMirror](https://prosemirror.net/) / ProseKit-side editor helpers |
 
-For Angular and other apps that are not using the framework-specific examples directly, you will usually vendor a small local integration layer on top of these packages.
+### Option 2: ProseKit (recommended for rapid development)
+
+Use this for pre-built UI components and convenience wrappers:
+
+```bash
+pnpm add prosekit @qti-editor/core
+```
+
+| Package | Purpose |
+|---|---|
+| `prosekit` | ProseMirror wrapper with UI components and utilities |
+| `@qti-editor/core` | QTI semantics, descriptor registry, XML export |
+
+**Note:** ProseKit includes ProseMirror as a dependency, so you don't need to install ProseMirror packages separately.
 
 ## Adding QTI interactions
 
@@ -45,14 +62,44 @@ pnpm add @qti-editor/interaction-choice \
 | `@qti-editor/interaction-text-entry` | `<qti-text-entry-interaction>` |
 | `@qti-editor/interaction-select-point` | `<qti-select-point-interaction>` |
 
-Each interaction package exports [ProseMirror](https://prosemirror.net/) commands, schema pieces, web components, and any required runtime plugins for that interaction's editing behavior.
+Each interaction package exports:
 
-If you use the descriptor-driven assembly surfaces, those runtime plugins are installed automatically:
+- **Pure ProseMirror plugins** - Plugin factories that return standard ProseMirror `Plugin` objects
+- **ProseMirror commands** - Standard command functions for inserting and manipulating nodes
+- **Node specs** - ProseMirror schema definitions
+- **Web components** - Lit-based custom elements for rendering
+- **ProseKit wrappers** (optional) - Convenience `Extension` wrappers when using ProseKit
 
-- `@qti-editor/prosekit-integration` consumes the interaction descriptors and installs the shipped runtime plugins for you.
-- Plain ProseMirror integrations can install the same plugins via `listInteractionPluginFactories()` from `@qti-editor/core/interactions/composer`.
+### Using with Pure ProseMirror
 
-That means interactions such as choice, associate, match, order, and hottext do not require vague extra setup steps beyond including the interaction package in your editor assembly.
+Get plugin factories from the descriptor registry:
+
+```typescript
+import { listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
+
+const plugins = listInteractionPluginFactories().map(factory => factory());
+```
+
+Or use individual plugin factories from interaction packages:
+
+```typescript
+import { createCorrectResponseClickPlugin } from '@qti-editor/interaction-choice';
+
+const choicePlugin = createCorrectResponseClickPlugin();
+```
+
+### Using with ProseKit
+
+Import the optional ProseKit extension wrappers:
+
+```typescript
+import { defineCorrectResponseClickExtension } from '@qti-editor/interaction-choice';
+
+// Or use the bulk integration
+import { defineQtiInteractionsExtension } from '@qti-editor/prosekit-integration';
+```
+
+That means interactions such as choice, associate, match, order, and hottext work in both pure ProseMirror and ProseKit setups without extra configuration.
 
 ## Adding the full UI
 
@@ -79,8 +126,10 @@ For Angular, do the manual shadcn setup first (`components.json`, `@/*` path ali
 
 | Package | What it provides |
 |---|---|
-| `prosekit` | Editor engine |
+| `prosemirror-*` | Core ProseMirror packages (pure editor foundation) |
+| `prosekit` | Optional ProseMirror wrapper with UI components |
 | `@qti-editor/core` | QTI semantics, composer registry, XML export |
-| `@qti-editor/prosemirror` | Pure [ProseMirror](https://prosemirror.net/) plugins (block selection, node attr sync) |
+| `@qti-editor/prosemirror` | Pure ProseMirror plugins (block selection, node attr sync) |
+| `@qti-editor/prosekit-integration` | Optional ProseKit integration layer (convenience wrappers) |
 | Registry-installed Lit components | Toolbar, slash menu, attribute panel, insert menus |
-| `@qti-editor/interaction-*` | Individual QTI interaction nodes, schemas, commands, web components, and runtime plugins |
+| `@qti-editor/interaction-*` | Individual QTI interactions with pure ProseMirror plugins + optional ProseKit wrappers |

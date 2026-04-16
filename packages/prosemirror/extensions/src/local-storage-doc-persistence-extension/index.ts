@@ -1,5 +1,5 @@
 import { definePlugin, type NodeJSON } from 'prosekit/core';
-import { Plugin, PluginKey } from 'prosekit/pm/state';
+import { Plugin, PluginKey } from 'prosemirror-state';
 
 interface PersistedDocPayload {
   version: 1;

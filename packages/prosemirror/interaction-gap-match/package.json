@@ -26,17 +26,18 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-editor/interaction-shared": "1.1.0",
-    "@qti-editor/interfaces": "1.1.0"
+    "@qti-editor/interaction-shared": "workspace:*",
+    "@qti-editor/interfaces": "workspace:*",
+    "prosemirror-commands": "^1.7.1",
+    "prosemirror-model": "^1.25.4",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.31.0"
   },
   "peerDependencies": {
     "lit": "^3.3.1"
   },
   "devDependencies": {
-    "lit": "^3.3.2",
-    "prosemirror-commands": "^1.7.1",
-    "prosemirror-model": "^1.25.4",
-    "prosemirror-state": "^1.4.4"
+    "lit": "^3.3.2"
   },
   "files": [
     "dist"
