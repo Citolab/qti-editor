@@ -62,6 +62,21 @@ export class QtiSlashMenu extends LitElement {
 
     // Get all registered interaction descriptors
     const descriptors = listInteractionDescriptors();
+    
+    // Build menu items array before rendering
+    const menuItems = descriptors
+      .filter(d => d.insertCommand && TAG_TO_I18N_KEY[d.tagName])
+      .map(descriptor => {
+        const i18nKey = TAG_TO_I18N_KEY[descriptor.tagName];
+        const label = translateQti(i18nKey, { target: this });
+        return html`
+          <lit-editor-slash-menu-item
+            class="contents"
+            label=${label}
+            @select=${() => this.insertInteraction(descriptor.insertCommand)}
+          ></lit-editor-slash-menu-item>
+        `;
+      });
 
     return html`<prosekit-autocomplete-popover
       .editor=${editor}
@@ -75,19 +90,7 @@ export class QtiSlashMenu extends LitElement {
         >
           ${translateQti('slashMenu.interactions', { target: this })}
         </div>
-        ${descriptors
-          .filter(d => d.insertCommand && TAG_TO_I18N_KEY[d.tagName])
-          .map(descriptor => {
-            const i18nKey = TAG_TO_I18N_KEY[descriptor.tagName];
-            const label = translateQti(i18nKey, { target: this });
-            return html`
-              <lit-editor-slash-menu-item
-                class="contents"
-                label=${label}
-                @select=${() => this.insertInteraction(descriptor.insertCommand)}
-              ></lit-editor-slash-menu-item>
-            `;
-          })}
+        ${menuItems}
       </prosekit-autocomplete-list>
     </prosekit-autocomplete-popover>`;
   }
