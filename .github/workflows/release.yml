@@ -42,7 +42,7 @@ jobs:
           fi
 
           changed_files="$(git diff --name-only HEAD^ HEAD)"
-          if echo "$changed_files" | grep -Eq '^(package\.json$|pnpm-lock\.yaml$|packages/interfaces/|packages/qti/core/|packages/prosemirror/interaction-[^/]+/|\.github/workflows/release\.yml$)'; then
+          if echo "$changed_files" | grep -Eq '^(package\.json$|pnpm-lock\.yaml$|packages/interfaces/|packages/qti/core/|packages/prosemirror/(interaction-[^/]+|qti-item-divider)/|\.github/workflows/release\.yml$)'; then
             echo "should_release=true" >> "$GITHUB_OUTPUT"
           else
             echo "should_release=false" >> "$GITHUB_OUTPUT"
@@ -86,6 +86,7 @@ jobs:
           pnpm --filter @qti-editor/interaction-text-entry build
           pnpm --filter @qti-editor/interaction-extended-text build
           pnpm --filter @qti-editor/interaction-hottext build
+          pnpm --filter @qti-editor/qti-item-divider build
           pnpm --filter @qti-editor/core build
 
       - name: Configure git
