@@ -7,6 +7,7 @@ import { matchInteractionDescriptor } from '@qti-editor/interaction-match';
 import { orderInteractionDescriptor } from '@qti-editor/interaction-order';
 import { selectPointInteractionDescriptor } from '@qti-editor/interaction-select-point';
 import { textEntryInteractionDescriptor } from '@qti-editor/interaction-text-entry';
+import { qtiItemDividerDescriptor } from '@qti-editor/qti-item-divider';
 
 import type {
   InteractionComposerHandler,
@@ -25,6 +26,7 @@ const registeredDescriptors: InteractionDescriptor[] = [
   orderInteractionDescriptor,
   selectPointInteractionDescriptor,
   textEntryInteractionDescriptor,
+  qtiItemDividerDescriptor,
 ];
 
 const metadataByTagName = new Map<string, InteractionComposerMetadata>(

@@ -31,6 +31,7 @@ const TAG_TO_I18N_KEY: Record<string, string> = {
   'qti-order-interaction': 'interactionInsert.order',
   'qti-select-point-interaction': 'interactionInsert.selectPoint',
   'qti-gap-match-interaction': 'interactionInsert.gapMatch',
+  'qti-item-divider': 'interactionInsert.itemDivider',
 };
 
 @customElement('qti-slash-menu')

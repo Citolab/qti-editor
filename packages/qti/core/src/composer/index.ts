@@ -84,6 +84,58 @@ export function extractResponseDeclarations(itemBodyRoot?: Element | null): Resp
   return declarations;
 }
 
+/**
+ * Split an item body document at qti-item-divider elements.
+ * Returns an array of item body fragments, one for each item.
+ */
+function splitItemBodyAtDividers(itemBodyDoc: Document): Element[] {
+  const itemBodyRoot = 
+    itemBodyDoc.querySelector('qti-item-body') ??
+    (itemBodyDoc.documentElement?.tagName.toLowerCase() === 'qti-item-body'
+      ? itemBodyDoc.documentElement
+      : null);
+
+  if (!itemBodyRoot) return [];
+
+  // Find all dividers
+  const dividers = Array.from(itemBodyRoot.querySelectorAll('qti-item-divider'));
+  
+  // If no dividers, return the whole body as a single item
+  if (dividers.length === 0) {
+    return [itemBodyRoot];
+  }
+
+  const fragments: Element[] = [];
+  const children = Array.from(itemBodyRoot.childNodes);
+  let currentFragment: Node[] = [];
+
+  for (const child of children) {
+    // Check if this child is a divider
+    if (child.nodeType === Node.ELEMENT_NODE && 
+        (child as Element).tagName.toLowerCase() === 'qti-item-divider') {
+      // Save the current fragment if it has content
+      if (currentFragment.length > 0) {
+        const fragmentBody = itemBodyDoc.createElementNS(QTI_NS, 'qti-item-body');
+        currentFragment.forEach(node => fragmentBody.appendChild(node.cloneNode(true)));
+        fragments.push(fragmentBody);
+        currentFragment = [];
+      }
+      // Skip the divider itself - it doesn't go into any fragment
+    } else {
+      currentFragment.push(child);
+    }
+  }
+
+  // Add the last fragment if it has content
+  if (currentFragment.length > 0) {
+    const fragmentBody = itemBodyDoc.createElementNS(QTI_NS, 'qti-item-body');
+    currentFragment.forEach(node => fragmentBody.appendChild(node.cloneNode(true)));
+    fragments.push(fragmentBody);
+  }
+
+  return fragments;
+}
+
 export function buildAssessmentItemXml(itemContext?: ComposerItemContext): string {
   if (!itemContext) return '';
 
@@ -201,6 +253,51 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
   }
 
   return new XMLSerializer().serializeToString(xmlDoc);
+}
+
+/**
+ * Build multiple QTI assessment items from a single editor document.
+ * 
+ * Splits the item body at qti-item-divider elements and generates
+ * a separate <qti-assessment-item> for each segment.
+ * 
+ * @returns XML string containing multiple assessment items wrapped in a container,
+ *          or a single assessment item if no dividers are found.
+ */
+export function buildMultipleAssessmentItemsXml(itemContext?: ComposerItemContext): string {
+  if (!itemContext?.itemBody) return '';
+
+  const fragments = splitItemBodyAtDividers(itemContext.itemBody);
+  
+  // If only one fragment (no dividers), use the regular single-item builder
+  if (fragments.length <= 1) {
+    return buildAssessmentItemXml(itemContext);
+  }
+
+  // Build multiple items
+  const baseIdentifier = itemContext.identifier?.trim() || 'item';
+  const baseTitle = itemContext.title?.trim() || 'Untitled Item';
+  const lang = itemContext.lang?.trim() || 'en';
+
+  const itemXmls = fragments.map((fragmentBody, index) => {
+    const itemNumber = index + 1;
+    const fragmentDoc = document.implementation.createDocument(QTI_NS, 'qti-item-body', null);
+    const importedFragment = fragmentDoc.importNode(fragmentBody, true);
+    fragmentDoc.replaceChild(importedFragment, fragmentDoc.documentElement);
+
+    const fragmentContext: ComposerItemContext = {
+      identifier: `${baseIdentifier}-${itemNumber}`,
+      title: `${baseTitle} ${itemNumber}`,
+      lang,
+      itemBody: fragmentDoc,
+    };
+
+    return buildAssessmentItemXml(fragmentContext);
+  });
+
+  // Join multiple items with a comment separator for clarity
+  const separator = '\n\n<!-- Next Assessment Item -->\n\n';
+  return itemXmls.join(separator);
 }
 
 function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {

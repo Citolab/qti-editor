@@ -1,0 +1,22 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true,
+    "noEmit": false,
+    "useDefineForClassFields": false,
+    "allowImportingTsExtensions": false,
+    "moduleResolution": "bundler",
+    "paths": {
+      "@qti-editor/qti-item-divider": ["./src/index.ts"],
+      "@qti-editor/qti-item-divider/*": ["./src/*"]
+    },
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["src/**/*"]
+}
