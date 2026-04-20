@@ -1,7 +1,7 @@
 {
   "name": "@qti-editor/qti-item-divider",
   "description": "QTI item divider block element for marking item boundaries",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@qti-editor/interfaces": "1.1.0",
-    "@qti-editor/interaction-shared": "1.1.0",
+    "@qti-editor/interaction-shared": "1.2.0",
     "prosemirror-commands": "^1.7.1",
     "prosemirror-model": "^1.25.4",
     "prosemirror-state": "^1.4.4",
