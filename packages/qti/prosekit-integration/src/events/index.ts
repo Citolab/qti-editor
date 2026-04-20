@@ -65,7 +65,10 @@ export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): 
               timestamp: Date.now(),
             };
 
+            // Dispatch to configured eventTarget (for composer, etc)
             eventTarget.dispatchEvent(new CustomEvent(contentChangeEvent, { detail, bubbles: true }));
+            // Also dispatch on view.dom for components listening there
+            view.dom.dispatchEvent(new CustomEvent('qti:editor:change', { detail, bubbles: true }));
           }
 
           return {
@@ -90,7 +93,10 @@ export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): 
                     timestamp: Date.now(),
                   };
 
+                  // Dispatch to configured eventTarget (for composer, etc)
                   eventTarget.dispatchEvent(new CustomEvent(contentChangeEvent, { detail, bubbles: true }));
+                  // Also dispatch on view.dom for components listening there
+                  updatedView.dom.dispatchEvent(new CustomEvent('qti:editor:change', { detail, bubbles: true }));
                 }
               }
 
@@ -102,7 +108,10 @@ export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): 
                   timestamp: Date.now(),
                 };
 
+                // Dispatch to configured eventTarget
                 eventTarget.dispatchEvent(new CustomEvent(selectionChangeEvent, { detail, bubbles: true }));
+                // Also dispatch on view.dom for components listening there
+                updatedView.dom.dispatchEvent(new CustomEvent('qti:editor:selection', { detail, bubbles: true }));
               }
             },
           };

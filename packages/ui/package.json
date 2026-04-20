@@ -17,6 +17,8 @@
     "./components/blocks/composer": "./src/components/blocks/composer/index.ts",
     "./components/blocks/composer-metadata-form": "./src/components/blocks/composer-metadata-form/index.ts",
     "./components/blocks/interaction-insert-menu": "./src/components/blocks/interaction-insert-menu/index.ts",
+    "./components/blocks/items-navigator": "./src/components/blocks/items-navigator/index.ts",
+    "./components/blocks/items-gutter": "./src/components/blocks/items-gutter/index.ts",
     "./components/blocks/convert-menu": "./src/components/blocks/convert-menu/index.ts",
     "./components/blocks/choice-attributes-editor": "./src/components/blocks/choice-attributes-editor/index.ts",
     "./components/blocks/text-entry-attributes-editor": "./src/components/blocks/text-entry-attributes-editor/index.ts"
@@ -48,8 +50,10 @@
     "@qti-editor/prosekit-integration": "workspace:*",
     "@qti-editor/prosemirror-attributes": "workspace:*",
     "@qti-editor/prosemirror-attributes-ui-prosekit": "workspace:*",
+    "@qti-editor/qti-item-divider": "workspace:*",
     "lit": "^3.3.2",
-    "prosekit": "^0.18.4"
+    "prosekit": "^0.18.4",
+    "prosemirror-state": "^1.4.4"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

@@ -2,6 +2,26 @@ import 'prosekit/lit/autocomplete'
 
 import { html, LitElement } from 'lit';
 import { canUseRegexLookbehind } from 'prosekit/core'
+import { 
+  AutocompleteEmpty,
+  AutocompleteItem, 
+  AutocompleteList, 
+  AutocompletePopover 
+} from 'prosekit/lit/autocomplete';
+
+// Explicitly register ProseKit autocomplete custom elements
+if (!customElements.get('prosekit-autocomplete-popover')) {
+  customElements.define('prosekit-autocomplete-popover', AutocompletePopover);
+}
+if (!customElements.get('prosekit-autocomplete-list')) {
+  customElements.define('prosekit-autocomplete-list', AutocompleteList);
+}
+if (!customElements.get('prosekit-autocomplete-item')) {
+  customElements.define('prosekit-autocomplete-item', AutocompleteItem);
+}
+if (!customElements.get('prosekit-autocomplete-empty')) {
+  customElements.define('prosekit-autocomplete-empty', AutocompleteEmpty);
+}
 
 // Match inputs like "/", "/table", "/heading 1" etc. Do not match "/ heading".
 const regex = canUseRegexLookbehind() ? /(?<!\S)\/(\S.*)?$/u : /\/(\S.*)?$/u

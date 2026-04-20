@@ -20,19 +20,20 @@ export class QtiItemDivider extends LitElement {
       position: relative;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      justify-content: center;
       padding: 0.5rem 0;
     }
 
+    /* Full-width dotted line that extends into the gutter */
     .divider-line {
-      flex: 1;
+      position: absolute;
+      left: -4rem; /* Extend into gutter area */
+      right: 0;
+      top: 50%;
       height: 2px;
-      background: linear-gradient(
-        to right,
-        transparent,
-        hsl(var(--border, 220 13% 91%)),
-        transparent
-      );
+      background: var(--qti-border, #cbd5e1);
+      z-index: 0;
+      pointer-events: none;
     }
 
     .divider-label {
@@ -40,7 +41,7 @@ export class QtiItemDivider extends LitElement {
       align-items: center;
       gap: 0.5rem;
       padding: 0.25rem 1rem;
-      background: hsl(var(--muted, 220 13% 95%));
+      background: hsl(var(--background, 0 0% 100%));
       border: 1px solid hsl(var(--border, 220 13% 91%));
       border-radius: 0.375rem;
       font-size: 0.75rem;
@@ -48,6 +49,8 @@ export class QtiItemDivider extends LitElement {
       color: hsl(var(--muted-foreground, 220 9% 46%));
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      position: relative;
+      z-index: 1;
     }
 
     .divider-icon {
@@ -74,7 +77,6 @@ export class QtiItemDivider extends LitElement {
           </svg>
           <span>${translateQti('divider.itemBoundary', { target: this })}</span>
         </div>
-        <div class="divider-line"></div>
       </div>
     `;
   }

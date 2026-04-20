@@ -208,6 +208,44 @@
       ]
     },
     {
+      "name": "qti-items-navigator",
+      "type": "registry:ui",
+      "title": "QTI Items Navigator",
+      "description": "A sidebar component that displays a numbered list of QTI assessment items separated by dividers, with click-to-navigate functionality.",
+      "dependencies": [
+        "lit",
+        "prosekit",
+        "prosemirror-state"
+      ],
+      "files": [
+        {
+          "path": "components/blocks/items-navigator/index.ts",
+          "source": "src/components/blocks/items-navigator/index.ts",
+          "module": "@qti-editor/ui/components/blocks/items-navigator",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "qti-items-gutter",
+      "type": "registry:ui",
+      "title": "QTI Items Gutter",
+      "description": "A left gutter/sidebar that displays item numbers next to the editor content, similar to line numbers in VS Code.",
+      "dependencies": [
+        "lit",
+        "prosekit",
+        "prosemirror-state"
+      ],
+      "files": [
+        {
+          "path": "components/blocks/items-gutter/index.ts",
+          "source": "src/components/blocks/items-gutter/index.ts",
+          "module": "@qti-editor/ui/components/blocks/items-gutter",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "qti-convert-menu",
       "type": "registry:ui",
       "title": "QTI Convert Menu",

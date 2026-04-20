@@ -163,6 +163,9 @@ importers:
       '@qti-editor/interaction-hottext':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-hottext
+      '@qti-editor/interaction-inline-choice':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-inline-choice
       '@qti-editor/interaction-match':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-match
@@ -175,6 +178,9 @@ importers:
       '@qti-editor/interaction-shared':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-shared
+      '@qti-editor/interaction-text-entry':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/interaction-text-entry
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../packages/qti/prosekit-integration
@@ -184,6 +190,9 @@ importers:
       '@qti-editor/prosemirror-attributes-ui-prosekit':
         specifier: workspace:*
         version: link:../../packages/prosemirror/attributes-ui-prosekit
+      '@qti-editor/qti-item-divider':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/qti-item-divider
       '@qti-editor/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -202,6 +211,9 @@ importers:
       prosekit:
         specifier: ^0.18.4
         version: 0.18.4(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -972,12 +984,18 @@ importers:
       '@qti-editor/prosemirror-attributes-ui-prosekit':
         specifier: workspace:*
         version: link:../prosemirror/attributes-ui-prosekit
+      '@qti-editor/qti-item-divider':
+        specifier: workspace:*
+        version: link:../prosemirror/qti-item-divider
       lit:
         specifier: ^3.3.2
         version: 3.3.2
       prosekit:
         specifier: ^0.18.4
         version: 0.18.4(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
     devDependencies:
       '@types/node':
         specifier: ^20.0.0

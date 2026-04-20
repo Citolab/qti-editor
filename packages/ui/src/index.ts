@@ -21,5 +21,7 @@ export type {
 export { QtiComposer } from './components/blocks/composer/index.js';
 export { QtiComposerMetadataForm } from './components/blocks/composer-metadata-form/index.js';
 export { QtiInteractionInsertMenu } from './components/blocks/interaction-insert-menu/index.js';
+export { QtiItemsNavigator } from './components/blocks/items-navigator/index.js';
+export { QtiItemsGutter } from './components/blocks/items-gutter/index.js';
 export { QtiConvertMenu } from './components/blocks/convert-menu/index.js';
 export {} from './components/editor/ui/toolbar/index.js';

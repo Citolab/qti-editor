@@ -1,11 +1,13 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
-import '@qti-editor/ui/components/blocks/code-panel';
-import '@qti-editor/ui/components/blocks/composer';
-import '@qti-editor/ui/components/blocks/composer-metadata-form';
-import '@qti-editor/ui/components/blocks/attributes-panel';
-import '@qti-editor/ui/components/editor/ui/toolbar';
-import './qti-slash-menu.js';
+import './blocks/code-panel/index.js';
+import './blocks/composer/index.js';
+import './blocks/composer-metadata-form/index.js';
+import './blocks/attributes-panel/index.js';
+import './blocks/toolbar/index.js';
+import './blocks/items-gutter/index.js';
+import './blocks/slash-menu/index.js';
+import './blocks/items-navigator/index.js';
 
 import { provide } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
@@ -181,7 +183,8 @@ export class QtiEditorApp extends LitElement {
       <lit-editor-toolbar .editor=${this.editor} class="block w-full shrink-0" style="padding-left: 1rem; padding-right: 1rem;"></lit-editor-toolbar>
       <div class="flex flex-1 min-h-0 gap-4 p-4 overflow-hidden">
         <div class="editor-card relative flex min-w-0 flex-1 flex-col rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden">
-          <div ${ref(this.editorRef)} class="card flex-1 min-h-0 px-6 py-6 overflow-auto"></div>
+          <qti-items-gutter .editor=${this.editor}></qti-items-gutter>
+          <div ${ref(this.editorRef)} class="card flex-1 min-h-0 px-6 py-6 overflow-auto" style="padding-left: 4rem;"></div>
           <qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>
           <qti-composer .editor=${this.editor} class="block w-full shrink-0"></qti-composer>
         </div>
@@ -196,6 +199,10 @@ export class QtiEditorApp extends LitElement {
             .editor=${this.editor}
             class="block w-full sticky top-0 mt-5"
           ></qti-attributes-panel>
+          <qti-items-navigator
+            .editor=${this.editor}
+            class="block w-full mt-5"
+          ></qti-items-navigator>
         </div>
       </div>
     `;

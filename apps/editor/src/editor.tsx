@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 // Register the Lit web component (also registers lit-editor-toolbar)
 import './components/qti-editor-app.js';
-import '@qti-editor/ui/components/editor/ui/toolbar';
+import './components/blocks/toolbar/index.js';
 
 import { AppHeader } from './components/layout/header.js';
 import { EditorLayout, type EditorLayoutHandle } from './components/layout/layout-editor.js';
