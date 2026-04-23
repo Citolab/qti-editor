@@ -46,7 +46,7 @@ class SlashMenuElement extends LitElement {
     return html`<prosekit-autocomplete-popover
       .editor=${editor}
       .regex=${regex}
-      class="relative block max-h-100 min-w-60 select-none overflow-auto whitespace-nowrap p-1 z-10 box-border rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-lg [&:not([data-state])]:hidden"
+      class="relative block max-h-100 min-w-60 select-none overflow-auto whitespace-nowrap p-1 z-10 box-border rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-lg [&amp;:not([data-state])]:hidden"
     >
       <prosekit-autocomplete-list .editor=${editor}>
         <lit-editor-slash-menu-item
@@ -93,13 +93,13 @@ class SlashMenuElement extends LitElement {
         <lit-editor-slash-menu-item
           class="contents"
           label="Toggle list"
-          kbd=">>"
+          kbd="&gt;&gt;"
           @select=${() => editor.commands.wrapInList({ kind: 'toggle' })}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
           label="Quote"
-          kbd=">"
+          kbd="&gt;"
           @select=${() => editor.commands.setBlockquote()}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item

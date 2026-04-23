@@ -170,7 +170,6 @@ class LitToolbar extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.classList.add('contents')
     this.removeI18nListener = subscribeQtiI18n(() => this.requestUpdate())
     this.attachEditorListener()
   }
