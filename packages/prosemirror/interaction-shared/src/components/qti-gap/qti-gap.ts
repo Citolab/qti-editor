@@ -6,25 +6,30 @@ export class QtiGapEdit extends LitElement {
     :host {
       display: inline-flex;
       min-width: 5rem;
-      margin: 0 0.2rem;
-      padding: 0.15rem 0.45rem;
-      border: 1px dashed var(--qti-border, #94a3b8);
-      border-radius: 0.35rem;
-      background: var(--qti-bg, #fff);
+      margin: 0 0.2rem !important;
+      padding: 0.5rem !important;
+      border: 2px dashed #c6cad0 !important;
+      border-color: var(--qti-border, #c6cad0) !important;
+      border-radius: 0.3rem !important;
+      background: var(--qti-bg, #fff) !important;
       color: var(--qti-text-muted, #64748b);
       vertical-align: baseline;
       line-height: 1.4;
+      cursor: pointer !important;
+      box-sizing: border-box;
     }
 
     :host([data-pending]) {
-      border-color: var(--qti-border-active, #2563eb);
-      background: var(--qti-bg-hover, #eff6ff);
+      border-color: var(--qti-border-error, #f86d70);
+      background: var(--qti-bg-error-subtle, #ffecec);
     }
 
     :host([data-filled]) {
       border-style: solid;
+      border-color: var(--qti-border, #c6cad0);
       color: var(--qti-text, #0f172a);
-      background: var(--qti-bg-active, #e0f2fe);
+      background: var(--qti-bg, #fff);
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     }
 
     .label {
@@ -42,7 +47,7 @@ export class QtiGapEdit extends LitElement {
   assignedLabel: string | null = null;
 
   override render() {
-    return html`<span class="label">${this.assignedLabel ?? '_____'}</span>`;
+    return html`<span class="label">${this.assignedLabel ?? ''}</span>`;
   }
 }
 

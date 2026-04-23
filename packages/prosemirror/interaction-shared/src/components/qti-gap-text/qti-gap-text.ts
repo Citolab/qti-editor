@@ -6,17 +6,25 @@ export class QtiGapTextEdit extends LitElement {
     :host {
       display: inline-flex;
       align-items: center;
-      min-width: 4rem;
-      padding: 0.25rem 0.6rem;
-      border: 1px solid var(--qti-border, #cbd5e1);
-      border-radius: 999px;
-      background: var(--qti-bg, #fff);
-      cursor: pointer;
+      min-width: fit-content;
+      padding: 0.5rem !important;
+      border: 2px solid #c6cad0 !important;
+      border-color: var(--qti-border, #c6cad0) !important;
+      border-radius: 0.3rem !important;
+      background: var(--qti-bg, #fff) !important;
+      cursor: grab !important;
+      transition: box-shadow 200ms ease-out, transform 200ms ease-out;
+      box-sizing: border-box;
+    }
+
+    :host(:hover) {
+      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
     }
 
     :host([data-selected]) {
       border-color: var(--qti-border-active, #2563eb);
       background: var(--qti-bg-hover, #dbeafe);
+      box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
     }
 
     :host([data-linked]) {
@@ -25,10 +33,15 @@ export class QtiGapTextEdit extends LitElement {
 
     :host([data-disabled]) {
       opacity: 0.6;
+      cursor: not-allowed;
     }
 
     ::slotted(*) {
       margin: 0;
+    }
+
+    ::slotted(.ProseMirror-trailingBreak) {
+      display: inline;
     }
   `;
 

@@ -71,11 +71,70 @@ function formatXml(xml: string): string {
   return formatted.trim();
 }
 
+/**
+ * Remove empty xmlns attributes that can interfere with parsing.
+ * These occur when QTI exports have xmlns="" on child elements.
+ */
+function cleanEmptyNamespaces(html: string): string {
+  // Remove xmlns="" and xmlns:xsi declarations that interfere with parsing
+  return html
+    .replace(/\s+xmlns=""/g, '')
+    .replace(/\s+xmlns:xsi="[^"]*"/g, '')
+    .replace(/\s+xsi:schemaLocation="[^"]*"/g, '');
+}
+
 export function xmlToHTML(xml: string): string {
-  const doc = new DOMParser().parseFromString(xml, 'application/xml');
-  const itemBody = doc.querySelector('qti-item-body') ?? doc.documentElement;
+  // Check if we have multiple assessment items (invalid XML structure but common in QTI exports)
+  // Wrap in a temporary container to make it valid XML for parsing
+  let xmlToParse = xml.trim();
+  
+  // Detect multiple root elements by checking for multiple qti-assessment-item tags
+  const assessmentItemMatches = xml.match(/<qti-assessment-item[\s>]/g);
+  const hasMultipleItems = assessmentItemMatches && assessmentItemMatches.length > 1;
+  
+  if (hasMultipleItems) {
+    // Wrap multiple items in a temporary container
+    xmlToParse = `<items>${xml}</items>`;
+  }
+  
+  const doc = new DOMParser().parseFromString(xmlToParse, 'application/xml');
   const serializer = new XMLSerializer();
-  return Array.from(itemBody.childNodes)
-    .map(node => serializer.serializeToString(node))
-    .join('');
+  
+  // Check for parsing errors
+  const parseError = doc.querySelector('parsererror');
+  if (parseError) {
+    console.error('XML parsing error:', parseError.textContent);
+    throw new Error('Failed to parse XML: ' + parseError.textContent);
+  }
+  
+  if (hasMultipleItems) {
+    // Extract qti-item-body from each assessment item and join with dividers
+    const assessmentItems = doc.querySelectorAll('qti-assessment-item');
+    const htmlParts: string[] = [];
+    
+    assessmentItems.forEach((item, index) => {
+      const itemBody = item.querySelector('qti-item-body');
+      if (itemBody) {
+        // Add divider before each item except the first
+        if (index > 0) {
+          htmlParts.push('<qti-item-divider></qti-item-divider>');
+        }
+        
+        // Add the item body content
+        const content = Array.from(itemBody.childNodes)
+          .map(node => serializer.serializeToString(node))
+          .join('');
+        htmlParts.push(cleanEmptyNamespaces(content));
+      }
+    });
+    
+    return htmlParts.join('');
+  } else {
+    // Single item - use original logic
+    const itemBody = doc.querySelector('qti-item-body') ?? doc.documentElement;
+    const content = Array.from(itemBody.childNodes)
+      .map(node => serializer.serializeToString(node))
+      .join('');
+    return cleanEmptyNamespaces(content);
+  }
 }

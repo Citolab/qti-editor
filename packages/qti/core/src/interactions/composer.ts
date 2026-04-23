@@ -1,6 +1,7 @@
 import { associateInteractionDescriptor } from '@qti-editor/interaction-associate';
 import { choiceInteractionDescriptor } from '@qti-editor/interaction-choice';
 import { extendedTextInteractionDescriptor } from '@qti-editor/interaction-extended-text';
+import { gapMatchInteractionDescriptor } from '@qti-editor/interaction-gap-match';
 import { hottextInteractionDescriptor } from '@qti-editor/interaction-hottext';
 import { inlineChoiceInteractionDescriptor } from '@qti-editor/interaction-inline-choice';
 import { matchInteractionDescriptor } from '@qti-editor/interaction-match';
@@ -20,6 +21,7 @@ const registeredDescriptors: InteractionDescriptor[] = [
   associateInteractionDescriptor,
   choiceInteractionDescriptor,
   extendedTextInteractionDescriptor,
+  gapMatchInteractionDescriptor,
   hottextInteractionDescriptor,
   inlineChoiceInteractionDescriptor,
   matchInteractionDescriptor,

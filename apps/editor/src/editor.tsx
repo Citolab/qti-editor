@@ -1,9 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Register the Lit web component (also registers lit-editor-toolbar)
+// Register the Lit web component
 import './components/qti-editor-app.js';
-import './components/blocks/toolbar/index.js';
 
 import { AppHeader } from './components/layout/header.js';
 import { EditorLayout, type EditorLayoutHandle } from './components/layout/layout-editor.js';
@@ -127,6 +126,11 @@ export default function App() {
     editorLayoutRef.current?.exportXml(fileName || 'item');
   }, [fileName]);
 
+  // Handler: Import XML
+  const handleImportXml = useCallback(() => {
+    editorLayoutRef.current?.importXml();
+  }, []);
+
   // Unsaved dialog: Save action
   const handleUnsavedSave = useCallback(() => {
     onUnsavedSave(() => {
@@ -160,6 +164,7 @@ export default function App() {
         onNew={handleNewFile}
         onSave={handleSaveFile}
         onExport={handleExportXml}
+        onImport={handleImportXml}
         onLoadMenuToggle={handleLoadMenuToggle}
         onLoad={handleLoadFile}
         onDelete={handleDeleteFile}

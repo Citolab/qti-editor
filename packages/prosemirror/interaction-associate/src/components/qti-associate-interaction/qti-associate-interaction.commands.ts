@@ -4,7 +4,7 @@
  * ProseMirror commands for inserting and manipulating associate interactions.
  */
 
-import { chainCommands, splitBlock } from 'prosemirror-commands';
+import { chainCommands } from 'prosemirror-commands';
 import { createInsertSiblingOnEnterCommand } from '@qti-editor/interaction-shared/commands/enter.js';
 import { createInsertBlockInteractionCommand } from '@qti-editor/interaction-shared/commands/insert.js';
 import { translateQti } from '@qti-editor/interaction-shared';
@@ -94,8 +94,7 @@ export const insertAssociableChoiceOnEnter: Command = (state, dispatch) => {
 };
 
 /**
- * Enter command chain for associate interactions.
- * 1) Insert new associable choice when inside qti-associate-interaction.
- * 2) Fallback to regular block split behavior elsewhere.
+ * Enter command for associate interactions.
+ * Inserts new associable choice when inside qti-associate-interaction.
  */
-export const qtiAssociateEnterCommand: Command = chainCommands(insertAssociableChoiceOnEnter, splitBlock);
+export const qtiAssociateEnterCommand: Command = insertAssociableChoiceOnEnter;

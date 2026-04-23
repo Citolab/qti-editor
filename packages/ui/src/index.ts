@@ -3,25 +3,25 @@ export {
   qtiAttributesExtension,
   qtiSidePanelExtension,
   updateQtiNodeAttrs,
-} from './components/blocks/attributes-panel/index.js';
+} from './components/attributes-panel/index.js';
 export type {
   AttributesPanelExtensionOptions,
   ChoiceInteractionPanelPresentation,
-} from './components/blocks/attributes-panel/index.js';
-export { QtiChoiceAttributesEditor } from './components/blocks/choice-attributes-editor/index.js';
-export type { ChoiceInteractionPanelPresentation as ChoiceAttributesEditorPresentation } from './components/blocks/choice-attributes-editor/index.js';
-export { QtiTextEntryAttributesEditor } from './components/blocks/text-entry-attributes-editor/index.js';
+} from './components/attributes-panel/index.js';
+export { QtiChoiceAttributesEditor } from './components/choice-attributes-editor/index.js';
+export type { ChoiceInteractionPanelPresentation as ChoiceAttributesEditorPresentation } from './components/choice-attributes-editor/index.js';
+export { QtiTextEntryAttributesEditor } from './components/text-entry-attributes-editor/index.js';
 export {
   QtiCodePanel,
   qtiCodePanelExtension,
-} from './components/blocks/code-panel/index.js';
+} from './components/code-panel/index.js';
 export type {
   CodePanelExtensionOptions,
-} from './components/blocks/code-panel/index.js';
-export { QtiComposer } from './components/blocks/composer/index.js';
-export { QtiComposerMetadataForm } from './components/blocks/composer-metadata-form/index.js';
-export { QtiInteractionInsertMenu } from './components/blocks/interaction-insert-menu/index.js';
-export { QtiItemsNavigator } from './components/blocks/items-navigator/index.js';
-export { QtiItemsGutter } from './components/blocks/items-gutter/index.js';
-export { QtiConvertMenu } from './components/blocks/convert-menu/index.js';
-export {} from './components/editor/ui/toolbar/index.js';
+} from './components/code-panel/index.js';
+export { QtiComposer } from './components/composer/index.js';
+export { QtiComposerMetadataForm } from './components/composer-metadata-form/index.js';
+export { QtiInteractionInsertMenu } from './components/interaction-insert-menu/index.js';
+export { QtiItemsNavigator } from './components/items-navigator/index.js';
+export { QtiItemsGutter } from './components/items-gutter/index.js';
+export { QtiConvertMenu } from './components/convert-menu/index.js';
+export {} from './components/toolbar/index.js';

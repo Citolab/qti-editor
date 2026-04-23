@@ -1,9 +1,9 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
-import '@qti-editor/ui/components/blocks/composer';
-import '@qti-editor/ui/components/blocks/composer-metadata-form';
-import '@qti-editor/ui/components/blocks/attributes-panel';
-import '@qti-editor/ui/components/editor/ui/toolbar';
+import '@qti-editor/ui/components/composer';
+import '@qti-editor/ui/components/composer-metadata-form';
+import '@qti-editor/ui/components/attributes-panel';
+import '@qti-editor/ui/components/toolbar';
 import './components/qti-slash-menu';
 
 import { provide } from '@lit/context';
@@ -23,7 +23,7 @@ import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
 import { qtiFromNode } from '@qti-editor/prosekit-integration';
 import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interaction-shared';
-import { sampleUploader } from '@qti-editor/ui/components/editor/sample/sample-uploader';
+import { sampleUploader } from '@qti-editor/ui/components/sample/sample-uploader';
 
 import { defineBasicExtension } from './extensions/basic-extension';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension';

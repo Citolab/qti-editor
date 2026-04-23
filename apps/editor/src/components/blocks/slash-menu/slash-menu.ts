@@ -7,14 +7,15 @@
  */
 
 import 'prosekit/lit/autocomplete';
-import '../slash-menu-components/slash-menu-item.js';
-import '../slash-menu-components/slash-menu-empty.js';
+import '@qti-editor/ui/components/slash-menu/slash-menu-item.js';
+import '@qti-editor/ui/components/slash-menu/slash-menu-empty.js';
 
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
 import { translateQti } from '@qti-editor/interaction-shared';
 import { listInteractionDescriptors } from '@qti-editor/core/interactions/composer';
+import { insertGap } from '@qti-editor/interaction-gap-match';
 import { 
   AutocompleteEmpty,
   AutocompleteItem, 
@@ -100,6 +101,10 @@ export class QtiSlashMenu extends LitElement {
         `;
       });
 
+    // Check if gap insertion is available (only when inside gap-match interaction)
+    const view = this.getView();
+    const canInsertGap = view ? insertGap(view.state) : false;
+
     // Type assertion for commands - these exist at runtime from prosekit extensions
     const commands = (editor as any).commands;
 
@@ -116,6 +121,13 @@ export class QtiSlashMenu extends LitElement {
           ${translateQti('slashMenu.interactions', { target: this })}
         </div>
         ${menuItems}
+        ${canInsertGap ? html`
+          <lit-editor-slash-menu-item
+            class="contents"
+            label=${translateQti('interactionInsert.gap', { target: this })}
+            @select=${() => this.insertInteraction(insertGap)}
+          ></lit-editor-slash-menu-item>
+        ` : ''}
 
         <lit-editor-slash-menu-empty class="contents"></lit-editor-slash-menu-empty>
 

@@ -28,6 +28,10 @@ qti-choice-interaction {
    @apply bg-slate-100 rounded p-2 my-1;
 }
 
+qti-gap-match-interaction {
+   @apply bg-slate-100 rounded p-2 my-1;
+}
+
 qti-associate-interaction {
    @apply bg-slate-100 rounded p-2 my-1;
 }
@@ -67,4 +71,12 @@ qti-text-entry-interaction {
 
 qti-extended-text-interaction {
    @apply  bg-slate-100 rounded p-2;
+}
+
+/* Fix placeholder alignment in gap-text elements - override ProseKit defaults */
+qti-gap-text.prosekit-placeholder::before {
+  position: static !important;
+  height: auto !important;
+  line-height: 1.5;
+  vertical-align: baseline;
 }

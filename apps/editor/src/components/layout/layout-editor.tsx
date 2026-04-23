@@ -4,6 +4,7 @@ import type { QtiEditorApp } from '../qti-editor-app.js';
 
 export interface EditorLayoutHandle {
   exportXml: (fileName?: string) => void;
+  importXml: () => void;
 }
 
 interface EditorLayoutProps {
@@ -17,6 +18,7 @@ export const EditorLayout = forwardRef<EditorLayoutHandle, EditorLayoutProps>(
 
     useImperativeHandle(ref, () => ({
       exportXml: (fileName) => elRef.current?.exportXml(fileName),
+      importXml: () => elRef.current?.importXml(),
     }));
 
     return (

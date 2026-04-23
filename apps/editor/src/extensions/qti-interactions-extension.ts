@@ -7,6 +7,7 @@
 
 import { listInteractionDescriptors, listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
 import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
+import { splitBlock } from 'prosekit/pm/commands';
 
 import type { Command } from 'prosekit/pm/state';
 
@@ -54,8 +55,20 @@ export function defineQtiInteractionsExtension(options?: {
     .filter((cmd): cmd is Command => cmd != null);
 
   if (enterCommands.length > 0) {
-    keymap['Enter'] = (state, dispatch, view) =>
-      enterCommands.some(cmd => cmd(state, dispatch, view));
+    keymap['Enter'] = (state, dispatch, view) => {
+      // Try each interaction-specific enter command
+      for (let i = 0; i < enterCommands.length; i++) {
+        const cmd = enterCommands[i];
+        const result = cmd(state, dispatch, view);
+        
+        if (result) {
+          return true;
+        }
+      }
+      
+      // Fallback to splitBlock if no interaction handled it
+      return splitBlock(state, dispatch, view);
+    };
   }
 
   // Add keyboard shortcuts for insert commands

@@ -33,22 +33,22 @@
 - Make focused changes and avoid opportunistic refactors unless requested.
 
 ## Registry Pattern
-- **What it is**: A shadcn-style component registry in `packages/ui/` for distributing reusable UI components.
-- **Ownership model**: Components are meant to be **copied** to apps, not imported directly. Apps own their local copies.
-- **Why**: Apps can customize components without affecting the registry source. Registry provides distribution, not runtime dependency.
+- **What it is**: A shadcn-style component registry in `packages/ui/` for distributing reusable UI components to external consumers.
+- **Monorepo usage**: Within this monorepo, apps import directly from `@qti-editor/ui/components/*` as normal package imports. This avoids duplication and keeps development simple.
+- **External consumer usage**: External apps use the registry pattern - they copy components and own their local versions.
+- **Why separate patterns**:
+  - **Monorepo apps**: Import directly for easier maintenance, shared improvements, and reduced duplication
+  - **External apps**: Copy components for customization without affecting others or creating breaking changes
 - **Registry structure**:
-  - `packages/ui/registry.json` - Component metadata and file paths
+  - `packages/ui/registry.json` - Component metadata and file paths for registry distribution
   - `packages/ui/package.json` exports - Module paths for each component
   - `packages/ui/src/index.ts` - Named exports for type references
-- **App usage**:
-  - Apps maintain local copies in `apps/*/src/components/ui/`
-  - Import from UI package during development: `import '@qti-editor/ui/components/blocks/items-navigator'`
-  - Local copies can be customized independently of registry source
-- **When editing components**:
-  - Update the registry source in `packages/ui/src/components/` to improve the distribution
-  - If app has local copy, decide whether to sync changes or keep app customization
-  - Avoid "why is there a duplicate" - it's intentional for ownership
-- **Registry distribution**: Run `pnpm --filter @qti-editor/ui registry:build` to generate distribution files
+  - `packages/ui/src/components/` - Flattened component source (all components at top level)
+- **Monorepo app imports**:
+  - Import directly: `import '@qti-editor/ui/components/attributes-panel'`
+  - No local copies needed - apps share the canonical source
+  - Custom components (like custom slash menus) live in app-specific directories
+- **Registry distribution**: Run `pnpm --filter @qti-editor/ui registry:build` to generate distribution files for external consumers
 
 ## Component File Organization
 - **Folder-File matching pattern**: Component files must match their folder names for easy discoverability.
@@ -58,9 +58,8 @@
   - **Why import before export**: Ensures `@customElement` decorators are executed to register custom elements
   - Additional supporting files (like `patch-event.ts`) can exist alongside
 - **Applies to**:
-  - Registry: `packages/ui/src/components/blocks/*/`
-  - Registry: `packages/ui/src/components/editor/ui/*/`
-  - App copies: `apps/editor/src/components/blocks/*/`
+  - Registry: `packages/ui/src/components/*/`
+  - App custom components: `apps/*/src/components/blocks/*/` (for app-specific customizations)
 - **Why**: Makes it easy to find the main component file - it always matches the folder name. Index files provide convenient re-exports for consumers.
 
 ## Verification Defaults

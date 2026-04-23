@@ -1,4 +1,5 @@
 import { createInsertBlockInteractionCommand } from '@qti-editor/interaction-shared/commands/insert.js';
+import { createInsertSiblingOnEnterCommand } from '@qti-editor/interaction-shared/commands/enter.js';
 import { translateQti } from '@qti-editor/interaction-shared';
 
 import type { Command } from 'prosemirror-state';
@@ -62,4 +63,65 @@ export const insertGapMatchInteraction: Command = (state, dispatch, view?: Edito
     },
     selectionOffset: 2,
   })(state, dispatch);
+};
+
+/**
+ * Handles Enter inside qti-gap-text by inserting a new empty sibling gap-text.
+ */
+export const insertGapTextOnEnter: Command = (state, dispatch) => {
+  const gapTextType = state.schema.nodes.qtiGapText;
+  if (!gapTextType) {
+    return false;
+  }
+
+  const result = createInsertSiblingOnEnterCommand({
+    ancestorNodeName: 'qtiGapText',
+    selectionOffset: 1,
+    createSiblingNode: () =>
+      gapTextType.create(
+        { identifier: `GAP_TEXT_${crypto.randomUUID()}`, matchMax: 1 },
+      ),
+  })(state, dispatch);
+
+  return result;
+};
+
+/**
+ * Enter command for gap-match interaction.
+ * Inserts new gap-text when inside qti-gap-text.
+ */
+export const qtiGapMatchEnterCommand: Command = insertGapTextOnEnter;
+
+/**
+ * Insert a qti-gap inline element at the cursor position.
+ * Only works when inside a gap-match interaction.
+ */
+export const insertGap: Command = (state, dispatch) => {
+  const { selection, schema } = state;
+  const gapType = schema.nodes.qtiGap;
+  const gapMatchType = schema.nodes.qtiGapMatchInteraction;
+  
+  if (!gapType || !gapMatchType) return false;
+
+  // Check if we're inside a gap-match interaction
+  const { $from } = selection;
+  let insideGapMatch = false;
+  for (let depth = $from.depth; depth >= 0; depth -= 1) {
+    if ($from.node(depth).type === gapMatchType) {
+      insideGapMatch = true;
+      break;
+    }
+  }
+  
+  if (!insideGapMatch) return false;
+
+  // Check if we can insert an inline node here
+  if (!$from.parent.type.inlineContent) return false;
+
+  if (!dispatch) return true;
+
+  const gap = gapType.create({ identifier: `GAP_${crypto.randomUUID()}` });
+  const tr = state.tr.replaceSelectionWith(gap);
+  dispatch(tr);
+  return true;
 };

@@ -28,19 +28,31 @@ export function createInsertSiblingOnEnterCommand(options: InsertSiblingOnEnterO
 
   return (state, dispatch) => {
     const { selection } = state;
-    if (!selection.empty) return false;
+    
+    if (!selection.empty) {
+      return false;
+    }
 
     const ancestorDepth = findAncestorDepth(selection, ancestorNodeName);
-    if (ancestorDepth < 0) return false;
+    
+    if (ancestorDepth < 0) {
+      return false;
+    }
 
     const siblingNode = createSiblingNode(state);
-    if (!siblingNode) return false;
+    if (!siblingNode) {
+      return false;
+    }
 
     const insertPos = selection.$from.after(ancestorDepth);
-    if (!dispatch) return true;
+    
+    if (!dispatch) {
+      return true;
+    }
 
     const tr = state.tr.insert(insertPos, siblingNode);
-    tr.setSelection(TextSelection.create(tr.doc, insertPos + selectionOffset)).scrollIntoView();
+    const newCursorPos = insertPos + selectionOffset;
+    tr.setSelection(TextSelection.create(tr.doc, newCursorPos)).scrollIntoView();
     dispatch(tr);
     return true;
   };

@@ -46,14 +46,13 @@ export class QtiGapMatchInteractionEdit extends Interaction {
   override correctResponse: string | null = null;
 
   @state()
-  private renderTrigger = 0;
-
-  @state()
   private cursorInside = false;
 
   private labelCache = new Map<string, string>();
   private observer: MutationObserver | null = null;
   private lastEmittedResponse: string | null = null;
+  private isApplyingVisualState = false;
+  private isEmittingChange = false;
 
   private get interactionKey(): string {
     return this.responseIdentifier || this.getAttribute('response-identifier') || 'default';
@@ -78,11 +77,43 @@ export class QtiGapMatchInteractionEdit extends Interaction {
     this.applyVisualState();
     this.addEventListener('click', this.onClick);
     document.addEventListener('selectionchange', this.onSelectionChange);
-    this.observer = new MutationObserver(() => {
-      this.buildLabelCache();
-      this.applyVisualState();
-      this.forceRender();
+    
+    // Watch for text content changes in gap-text elements
+    this.observer = new MutationObserver((mutations) => {
+      if (this.isApplyingVisualState) return;
+      
+      // Check if any mutations affected gap-text content
+      const hasGapTextContentChange = mutations.some(mutation => {
+        // Text content changes (characterData)
+        if (mutation.type === 'characterData') {
+          let node: Node | null = mutation.target;
+          while (node && node !== this) {
+            if (node instanceof HTMLElement && node.tagName === 'QTI-GAP-TEXT') {
+              return true;
+            }
+            node = node.parentNode;
+          }
+        }
+        // Child nodes added/removed inside gap-text
+        if (mutation.type === 'childList') {
+          let node: Node | null = mutation.target;
+          while (node && node !== this) {
+            if (node instanceof HTMLElement && node.tagName === 'QTI-GAP-TEXT') {
+              return true;
+            }
+            node = node.parentNode;
+          }
+        }
+        return false;
+      });
+      
+      if (hasGapTextContentChange) {
+        this.buildLabelCache();
+        // Re-apply visual state to update labels in the UI
+        this.applyVisualState();
+      }
     });
+    
     this.observer.observe(this, {
       childList: true,
       subtree: true,
@@ -104,17 +135,16 @@ export class QtiGapMatchInteractionEdit extends Interaction {
       if (this.correctResponse !== this.lastEmittedResponse) {
         this.parseCorrectResponse();
         this.applyVisualState();
-        this.forceRender();
       }
     }
   }
 
   private getGapTexts(): HTMLElement[] {
-    return Array.from(this.querySelectorAll('qti-gap-text'));
+    return Array.from(this.querySelectorAll('qti-gap-text')) as HTMLElement[];
   }
 
   private getGaps(): HTMLElement[] {
-    return Array.from(this.querySelectorAll('qti-gap'));
+    return Array.from(this.querySelectorAll('qti-gap')) as HTMLElement[];
   }
 
   private buildLabelCache() {
@@ -149,19 +179,23 @@ export class QtiGapMatchInteractionEdit extends Interaction {
   }
 
   private emitChange() {
+    if (this.isEmittingChange) return;
+    
     const associations = Array.from(this.interactionState.associations.entries()).map(
       ([gapId, textId]) => [textId, gapId] as GapAssociation,
     );
     this.lastEmittedResponse = associations.length > 0 ? JSON.stringify(associations) : null;
-    this.dispatchEvent(new CustomEvent<GapAssociationChangeDetail>('gap-association-change', {
-      detail: { associations },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private forceRender() {
-    this.renderTrigger++;
+    
+    // Defer the event dispatch to avoid re-entrancy during click handling
+    this.isEmittingChange = true;
+    queueMicrotask(() => {
+      this.isEmittingChange = false;
+      this.dispatchEvent(new CustomEvent<GapAssociationChangeDetail>('gap-association-change', {
+        detail: { associations },
+        bubbles: true,
+        composed: true,
+      }));
+    });
   }
 
   private getTextMatchMax(textId: string): number {
@@ -211,7 +245,7 @@ export class QtiGapMatchInteractionEdit extends Interaction {
     const state = this.interactionState;
     state.pendingTextId = state.pendingTextId === textId ? null : textId;
     this.applyVisualState();
-    this.forceRender();
+    this.requestUpdate();
   }
 
   private handleGapClick(gapId: string) {
@@ -221,7 +255,7 @@ export class QtiGapMatchInteractionEdit extends Interaction {
         state.associations.delete(gapId);
         this.emitChange();
         this.applyVisualState();
-        this.forceRender();
+        this.requestUpdate();
       }
       return;
     }
@@ -233,7 +267,7 @@ export class QtiGapMatchInteractionEdit extends Interaction {
     } else if (this.countTextUsage(textId) >= limit && state.associations.get(gapId) !== textId) {
       state.pendingTextId = null;
       this.applyVisualState();
-      this.forceRender();
+      this.requestUpdate();
       return;
     }
 
@@ -241,32 +275,39 @@ export class QtiGapMatchInteractionEdit extends Interaction {
     state.pendingTextId = null;
     this.emitChange();
     this.applyVisualState();
-    this.forceRender();
+    this.requestUpdate();
   }
 
   private applyVisualState() {
-    const state = this.interactionState;
-    for (const gapText of this.getGapTexts()) {
-      const textId = gapText.getAttribute('identifier');
-      if (!textId) continue;
-      const usage = this.countTextUsage(textId);
-      const limit = this.getTextMatchMax(textId);
-      gapText.toggleAttribute('data-selected', state.pendingTextId === textId);
-      gapText.toggleAttribute('data-linked', usage > 0);
-      gapText.toggleAttribute('data-disabled', usage >= limit && state.pendingTextId !== textId);
-    }
-
-    for (const gap of this.getGaps()) {
-      const gapId = gap.getAttribute('identifier');
-      if (!gapId) continue;
-      const assignedTextId = state.associations.get(gapId);
-      if (assignedTextId) {
-        gap.setAttribute('data-assigned-label', this.getLabel(assignedTextId));
-      } else {
-        gap.removeAttribute('data-assigned-label');
+    if (this.isApplyingVisualState) return;
+    this.isApplyingVisualState = true;
+    
+    try {
+      const state = this.interactionState;
+      for (const gapText of this.getGapTexts()) {
+        const textId = gapText.getAttribute('identifier');
+        if (!textId) continue;
+        const usage = this.countTextUsage(textId);
+        const limit = this.getTextMatchMax(textId);
+        gapText.toggleAttribute('data-selected', state.pendingTextId === textId);
+        gapText.toggleAttribute('data-linked', usage > 0);
+        gapText.toggleAttribute('data-disabled', usage >= limit && state.pendingTextId !== textId);
       }
-      gap.toggleAttribute('data-filled', assignedTextId != null);
-      gap.toggleAttribute('data-pending', state.pendingTextId != null && assignedTextId == null);
+
+      for (const gap of this.getGaps()) {
+        const gapId = gap.getAttribute('identifier');
+        if (!gapId) continue;
+        const assignedTextId = state.associations.get(gapId);
+        if (assignedTextId) {
+          gap.setAttribute('data-assigned-label', this.getLabel(assignedTextId));
+        } else {
+          gap.removeAttribute('data-assigned-label');
+        }
+        gap.toggleAttribute('data-filled', assignedTextId != null);
+        gap.toggleAttribute('data-pending', state.pendingTextId != null && assignedTextId == null);
+      }
+    } finally {
+      this.isApplyingVisualState = false;
     }
   }
 
@@ -274,13 +315,13 @@ export class QtiGapMatchInteractionEdit extends Interaction {
     this.interactionState.associations.delete(gapId);
     this.emitChange();
     this.applyVisualState();
-    this.forceRender();
+    this.requestUpdate();
   }
 
   private cancelPending() {
     this.interactionState.pendingTextId = null;
     this.applyVisualState();
-    this.forceRender();
+    this.requestUpdate();
   }
 
   private renderAssociationsPanel() {
@@ -329,8 +370,6 @@ export class QtiGapMatchInteractionEdit extends Interaction {
   }
 
   override render() {
-    void this.renderTrigger;
-
     return html`
       <slot name="prompt"></slot>
       <div class="choices">

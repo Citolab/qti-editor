@@ -18,9 +18,9 @@
       "registryDependencies": ["qti-choice-attributes-editor", "qti-text-entry-attributes-editor"],
       "files": [
         {
-          "path": "components/blocks/attributes-panel/index.ts",
-          "source": "src/components/blocks/attributes-panel/index.ts",
-          "module": "@qti-editor/ui/components/blocks/attributes-panel",
+          "path": "components/attributes-panel/index.ts",
+          "source": "src/components/attributes-panel/index.ts",
+          "module": "@qti-editor/ui/components/attributes-panel",
           "type": "registry:component"
         }
       ]
@@ -33,14 +33,14 @@
       "dependencies": ["lit", "@qti-editor/interaction-choice"],
       "files": [
         {
-          "path": "components/blocks/choice-attributes-editor/index.ts",
-          "source": "src/components/blocks/choice-attributes-editor/index.ts",
-          "module": "@qti-editor/ui/components/blocks/choice-attributes-editor",
+          "path": "components/choice-attributes-editor/index.ts",
+          "source": "src/components/choice-attributes-editor/index.ts",
+          "module": "@qti-editor/ui/components/choice-attributes-editor",
           "type": "registry:component"
         },
         {
-          "path": "components/blocks/attributes-panel/patch-event.ts",
-          "source": "src/components/blocks/attributes-panel/patch-event.ts",
+          "path": "components/attributes-panel/patch-event.ts",
+          "source": "src/components/attributes-panel/patch-event.ts",
           "type": "registry:component"
         }
       ]
@@ -53,14 +53,14 @@
       "dependencies": ["lit", "@qti-editor/interaction-text-entry"],
       "files": [
         {
-          "path": "components/blocks/text-entry-attributes-editor/index.ts",
-          "source": "src/components/blocks/text-entry-attributes-editor/index.ts",
-          "module": "@qti-editor/ui/components/blocks/text-entry-attributes-editor",
+          "path": "components/text-entry-attributes-editor/index.ts",
+          "source": "src/components/text-entry-attributes-editor/index.ts",
+          "module": "@qti-editor/ui/components/text-entry-attributes-editor",
           "type": "registry:component"
         },
         {
-          "path": "components/blocks/attributes-panel/patch-event.ts",
-          "source": "src/components/blocks/attributes-panel/patch-event.ts",
+          "path": "components/attributes-panel/patch-event.ts",
+          "source": "src/components/attributes-panel/patch-event.ts",
           "type": "registry:component"
         }
       ]
@@ -73,9 +73,9 @@
       "dependencies": ["lit", "@lit/context", "@qti-editor/core", "@qti-editor/qti-editor-kit"],
       "files": [
         {
-          "path": "components/blocks/composer/index.ts",
-          "source": "src/components/blocks/composer/index.ts",
-          "module": "@qti-editor/ui/components/blocks/composer",
+          "path": "components/composer/index.ts",
+          "source": "src/components/composer/index.ts",
+          "module": "@qti-editor/ui/components/composer",
           "type": "registry:component"
         }
       ]
@@ -88,9 +88,9 @@
       "dependencies": ["lit"],
       "files": [
         {
-          "path": "components/blocks/composer-metadata-form/index.ts",
-          "source": "src/components/blocks/composer-metadata-form/index.ts",
-          "module": "@qti-editor/ui/components/blocks/composer-metadata-form",
+          "path": "components/composer-metadata-form/index.ts",
+          "source": "src/components/composer-metadata-form/index.ts",
+          "module": "@qti-editor/ui/components/composer-metadata-form",
           "type": "registry:component"
         }
       ]
@@ -103,9 +103,9 @@
       "dependencies": ["lit", "prosekit", "@qti-editor/qti-editor-kit"],
       "files": [
         {
-          "path": "components/blocks/code-panel/index.ts",
-          "source": "src/components/blocks/code-panel/index.ts",
-          "module": "@qti-editor/ui/components/blocks/code-panel",
+          "path": "components/code-panel/index.ts",
+          "source": "src/components/code-panel/index.ts",
+          "module": "@qti-editor/ui/components/code-panel",
           "type": "registry:component"
         }
       ]
@@ -121,33 +121,33 @@
       ],
       "files": [
         {
-          "path": "components/editor/ui/toolbar/index.js",
-          "source": "src/components/editor/ui/toolbar/index.js",
+          "path": "components/toolbar/index.js",
+          "source": "src/components/toolbar/index.js",
           "type": "registry:component"
         },
         {
-          "path": "components/editor/ui/toolbar/toolbar.js",
-          "source": "src/components/editor/ui/toolbar/toolbar.js",
+          "path": "components/toolbar/toolbar.js",
+          "source": "src/components/toolbar/toolbar.js",
           "type": "registry:component"
         },
         {
-          "path": "components/editor/ui/button/index.js",
-          "source": "src/components/editor/ui/button/index.js",
+          "path": "components/button/index.js",
+          "source": "src/components/button/index.js",
           "type": "registry:component"
         },
         {
-          "path": "components/editor/ui/button/button.js",
-          "source": "src/components/editor/ui/button/button.js",
+          "path": "components/button/button.js",
+          "source": "src/components/button/button.js",
           "type": "registry:component"
         },
         {
-          "path": "components/editor/ui/image-upload-popover/index.js",
-          "source": "src/components/editor/ui/image-upload-popover/index.js",
+          "path": "components/image-upload-popover/index.js",
+          "source": "src/components/image-upload-popover/index.js",
           "type": "registry:component"
         },
         {
-          "path": "components/editor/ui/image-upload-popover/image-upload-popover.js",
-          "source": "src/components/editor/ui/image-upload-popover/image-upload-popover.js",
+          "path": "components/image-upload-popover/image-upload-popover.js",
+          "source": "src/components/image-upload-popover/image-upload-popover.js",
           "type": "registry:component"
         }
       ]
@@ -163,23 +163,23 @@
       ],
       "files": [
         {
-          "path": "components/editor/ui/slash-menu/index.js",
-          "source": "src/components/editor/ui/slash-menu/index.js",
+          "path": "components/slash-menu/index.js",
+          "source": "src/components/slash-menu/index.js",
           "type": "registry:component"
         },
         {
-          "path": "components/editor/ui/slash-menu/slash-menu.js",
-          "source": "src/components/editor/ui/slash-menu/slash-menu.js",
+          "path": "components/slash-menu/slash-menu.js",
+          "source": "src/components/slash-menu/slash-menu.js",
           "type": "registry:component"
         },
         {
-          "path": "components/editor/ui/slash-menu/slash-menu-item.js",
-          "source": "src/components/editor/ui/slash-menu/slash-menu-item.js",
+          "path": "components/slash-menu/slash-menu-item.js",
+          "source": "src/components/slash-menu/slash-menu-item.js",
           "type": "registry:component"
         },
         {
-          "path": "components/editor/ui/slash-menu/slash-menu-empty.js",
-          "source": "src/components/editor/ui/slash-menu/slash-menu-empty.js",
+          "path": "components/slash-menu/slash-menu-empty.js",
+          "source": "src/components/slash-menu/slash-menu-empty.js",
           "type": "registry:component"
         }
       ]
@@ -200,9 +200,9 @@
       ],
       "files": [
         {
-          "path": "components/blocks/interaction-insert-menu/index.ts",
-          "source": "src/components/blocks/interaction-insert-menu/index.ts",
-          "module": "@qti-editor/ui/components/blocks/interaction-insert-menu",
+          "path": "components/interaction-insert-menu/index.ts",
+          "source": "src/components/interaction-insert-menu/index.ts",
+          "module": "@qti-editor/ui/components/interaction-insert-menu",
           "type": "registry:component"
         }
       ]
@@ -219,9 +219,9 @@
       ],
       "files": [
         {
-          "path": "components/blocks/items-navigator/index.ts",
-          "source": "src/components/blocks/items-navigator/index.ts",
-          "module": "@qti-editor/ui/components/blocks/items-navigator",
+          "path": "components/items-navigator/index.ts",
+          "source": "src/components/items-navigator/index.ts",
+          "module": "@qti-editor/ui/components/items-navigator",
           "type": "registry:component"
         }
       ]
@@ -238,9 +238,9 @@
       ],
       "files": [
         {
-          "path": "components/blocks/items-gutter/index.ts",
-          "source": "src/components/blocks/items-gutter/index.ts",
-          "module": "@qti-editor/ui/components/blocks/items-gutter",
+          "path": "components/items-gutter/index.ts",
+          "source": "src/components/items-gutter/index.ts",
+          "module": "@qti-editor/ui/components/items-gutter",
           "type": "registry:component"
         }
       ]
@@ -257,9 +257,9 @@
       ],
       "files": [
         {
-          "path": "components/blocks/convert-menu/index.ts",
-          "source": "src/components/blocks/convert-menu/index.ts",
-          "module": "@qti-editor/ui/components/blocks/convert-menu",
+          "path": "components/convert-menu/index.ts",
+          "source": "src/components/convert-menu/index.ts",
+          "module": "@qti-editor/ui/components/convert-menu",
           "type": "registry:component"
         }
       ]

@@ -5,8 +5,6 @@ const isInsideInteraction = (state: EditorState): boolean => {
   for (let depth = $from.depth; depth >= 0; depth -= 1) {
     const nodeTypeName = $from.node(depth).type.name;
 
-    console.log('Checking node type:', nodeTypeName);
-
     // Disallow inside any node whose type name ends with 'Interaction'
     if (nodeTypeName.endsWith('Interaction')) {
       return true;

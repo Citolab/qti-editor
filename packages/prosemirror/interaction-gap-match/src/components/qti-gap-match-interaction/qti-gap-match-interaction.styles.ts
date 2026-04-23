@@ -12,8 +12,9 @@ const styles: CSSResultGroup = css`
     flex-wrap: wrap;
     gap: 0.5rem;
     margin: 0.75rem 0;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
+    padding: 0.3rem;
+    border: 2px solid transparent;
+    border-radius: 0.3rem;
     background: var(--qti-bg-subtle, #f8fafc);
   }
 

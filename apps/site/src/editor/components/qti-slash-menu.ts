@@ -11,7 +11,7 @@
  */
 
 import 'prosekit/lit/autocomplete';
-import '@qti-editor/ui/components/editor/ui/slash-menu';
+import '@qti-editor/ui/components/slash-menu';
 
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';

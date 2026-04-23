@@ -1,9 +1,9 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
-import '@qti-editor/ui/components/editor/ui/toolbar';
-import '@qti-editor/ui/components/blocks/interaction-insert-menu';
-import '@qti-editor/ui/components/blocks/attributes-panel';
-import '@qti-editor/ui/components/blocks/composer-metadata-form';
+import '@qti-editor/ui/components/toolbar';
+import '@qti-editor/ui/components/interaction-insert-menu';
+import '@qti-editor/ui/components/attributes-panel';
+import '@qti-editor/ui/components/composer-metadata-form';
 
 import { ContextProvider } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
@@ -13,7 +13,7 @@ import { xmlFromNode, xmlToHTML } from '@qti-editor/prosekit-integration/save-xm
 import { qtiFromNode } from '@qti-editor/prosekit-integration/save-qti';
 import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror';
 import { createEditor, union, jsonFromHTML, type Editor } from 'prosekit/core';
-import { sampleUploader } from '@qti-editor/ui/components/editor/sample/sample-uploader';
+import { sampleUploader } from '@qti-editor/ui/components/sample/sample-uploader';
 
 import { defineBasicExtension } from './extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-extension.js';

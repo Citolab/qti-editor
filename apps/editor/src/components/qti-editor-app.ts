@@ -1,13 +1,14 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
-import './blocks/code-panel/index.js';
-import './blocks/composer/index.js';
-import './blocks/composer-metadata-form/index.js';
-import './blocks/attributes-panel/index.js';
-import './blocks/toolbar/index.js';
-import './blocks/items-gutter/index.js';
+import '@qti-editor/ui/components/code-panel';
+import '@qti-editor/ui/components/composer';
+import '@qti-editor/ui/components/composer-metadata-form';
+import '@qti-editor/ui/components/attributes-panel';
+import '@qti-editor/ui/components/toolbar';
+import '@qti-editor/ui/components/items-gutter';
+import '@qti-editor/ui/components/items-navigator';
+
 import './blocks/slash-menu/index.js';
-import './blocks/items-navigator/index.js';
 
 import { provide } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
@@ -24,12 +25,13 @@ import {
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
-import { qtiFromNode } from '@qti-editor/prosekit-integration';
 import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interaction-shared';
 
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
+import { exportXml } from '../lib/exportXml.js';
+import { openXmlFilePicker } from '../lib/importXml.js';
 
 const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
 const VOID_HTML_TAGS = [
@@ -163,19 +165,32 @@ export class QtiEditorApp extends LitElement {
   }
 
   exportXml(fileName: string = 'item'): void {
-    const safeFileName = fileName.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9._-]/g, '') || 'item';
-    const xml = qtiFromNode(this.editor.view.state.doc, {
+    exportXml({
+      node: this.editor.view.state.doc,
       identifier: this.itemContext.identifier,
       lang: this.lang,
       title: this.itemContext.title,
+      fileName,
     });
-    const blob = new Blob([xml], { type: 'application/xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${safeFileName}.xml`;
-    a.click();
-    URL.revokeObjectURL(url);
+  }
+
+  async importXml(): Promise<void> {
+    try {
+      const result = await openXmlFilePicker({ schema: this.editor.schema });
+      this.editor.setContent(result.json);
+      
+      // Update metadata if present
+      if (result.metadata) {
+        this.itemContext = {
+          ...this.itemContext,
+          ...(result.metadata.title && { title: result.metadata.title }),
+          ...(result.metadata.identifier && { identifier: result.metadata.identifier }),
+        };
+      }
+    } catch (error) {
+      console.error('Failed to import XML:', error);
+      alert('Failed to import XML file. Please check that the file contains valid QTI XML.');
+    }
   }
 
   override render() {
@@ -186,7 +201,7 @@ export class QtiEditorApp extends LitElement {
           <qti-items-gutter .editor=${this.editor}></qti-items-gutter>
           <div ${ref(this.editorRef)} class="card flex-1 min-h-0 px-6 py-6 overflow-auto" style="padding-left: 4rem;"></div>
           <qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>
-          <qti-composer .editor=${this.editor} class="block w-full shrink-0"></qti-composer>
+          <qti-composer .editor=${this.editor} class="block w-full shrink-0" style="position: relative; z-index: 10;"></qti-composer>
         </div>
         <div class="w-80 shrink-0 overflow-y-auto">
           <qti-composer-metadata-form

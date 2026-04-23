@@ -28,8 +28,8 @@
   "dependencies": {
     "@qti-components/interactions": "1.10.1",
     "@qti-components/text-entry-interaction": "^1.0.0",
-    "@qti-editor/interaction-shared": "1.2.0",
-    "@qti-editor/interfaces": "1.1.0",
+    "@qti-editor/interaction-shared": "workspace:*",
+    "@qti-editor/interfaces": "workspace:*",
     "prosemirror-model": "^1.25.4",
     "prosemirror-state": "^1.4.4",
     "prosemirror-view": "^1.31.0"

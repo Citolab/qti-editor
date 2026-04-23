@@ -1,4 +1,3 @@
-import { chainCommands, splitBlock } from 'prosemirror-commands';
 import { createInsertSiblingOnEnterCommand } from '@qti-editor/interaction-shared/commands/enter.js';
 import { createInsertBlockInteractionCommand } from '@qti-editor/interaction-shared/commands/insert.js';
 import { translateQti } from '@qti-editor/interaction-shared';
@@ -72,8 +71,7 @@ export const insertSimpleChoiceOnEnter: Command = (state, dispatch) => {
 };
 
 /**
- * Enter command chain for choice interactions.
- * 1) Insert new simple choice when inside qti-simple-choice.
- * 2) Fallback to regular block split behavior elsewhere.
+ * Enter command for choice interactions.
+ * Inserts new simple choice when inside qti-simple-choice.
  */
-export const qtiChoiceEnterCommand: Command = chainCommands(insertSimpleChoiceOnEnter, splitBlock);
+export const qtiChoiceEnterCommand: Command = insertSimpleChoiceOnEnter;
