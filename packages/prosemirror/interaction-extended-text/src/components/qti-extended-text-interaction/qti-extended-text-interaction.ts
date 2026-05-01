@@ -31,36 +31,60 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
           font-style: italic;
         }
 
-        /* Rubric block styling */
-        .rubric-block {
-          display: block;
+        /* Collapsible rubric block styling */
+        .rubric-details {
           margin-top: 0.5rem;
-          padding: 0.5rem 0.75rem;
+        }
+
+        .rubric-summary {
+          display: flex;
+          align-items: center;
+          gap: 0.375rem;
+          padding: 0.375rem 0.5rem;
           background-color: hsl(142 76% 94%);
           border: 1px solid hsl(142 76% 80%);
           border-radius: 0.25rem;
+          cursor: pointer;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: hsl(142 76% 30%);
+          list-style: none;
+          user-select: none;
+        }
+
+        .rubric-summary::-webkit-details-marker {
+          display: none;
+        }
+
+        .rubric-summary::before {
+          content: '▶';
+          font-size: 0.625rem;
+          transition: transform 0.15s ease;
+        }
+
+        .rubric-details[open] .rubric-summary::before {
+          transform: rotate(90deg);
+        }
+
+        .rubric-details[open] .rubric-summary {
+          border-bottom-left-radius: 0;
+          border-bottom-right-radius: 0;
+          border-bottom: none;
+        }
+
+        .rubric-content {
+          padding: 0.5rem 0.75rem;
+          background-color: hsl(142 76% 94%);
+          border: 1px solid hsl(142 76% 80%);
+          border-top: none;
+          border-bottom-left-radius: 0.25rem;
+          border-bottom-right-radius: 0.25rem;
           white-space: pre-wrap;
           word-wrap: break-word;
           font-family: inherit;
           font-size: 0.875rem;
           font-style: normal;
           color: hsl(142 76% 25%);
-        }
-
-        .rubric-label {
-          display: block;
-          font-size: 0.75rem;
-          font-weight: 600;
-          margin-bottom: 0.25rem;
-          color: hsl(142 76% 30%);
-          font-style: normal;
-        }
-
-        .rubric-text {
-          display: block;
-          margin: 0;
-          white-space: pre-wrap;
-          word-wrap: break-word;
         }
       `
     ];
@@ -109,7 +133,7 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
 
   override render() {
     return html`<slot name="prompt"></slot><div part="textarea">${this._getPlaceholderText()}</div>${this.correctResponse
-        ? html`<div class="rubric-block"><span class="rubric-label">Rubric / Model answer</span><span class="rubric-text">${this.correctResponse}</span></div>`
+        ? html`<details class="rubric-details"><summary class="rubric-summary">Rubric / Model answer</summary><div class="rubric-content">${this.correctResponse}</div></details>`
         : nothing}`;
   }
 }
