@@ -160,7 +160,7 @@ export const defaultQtiMessages: Record<string, QtiI18nMessages> = {
     'interactionInsert.gapMatch': 'Gap Match',
     'interactionInsert.gap': 'Gap Match Gap',
     'interactionInsert.itemDivider': 'Item-scheiding',
-    'divider.itemBoundary': 'QTI Item-scheiding',
+    'divider.itemBoundary': 'Item-scheiding',
     'interactionInsert.match': 'Match',
     'interactionInsert.order': 'Order',
     'interactionInsert.extendedText': 'Extended text',
