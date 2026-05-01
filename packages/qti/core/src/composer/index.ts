@@ -85,6 +85,34 @@ export function extractResponseDeclarations(itemBodyRoot?: Element | null): Resp
 }
 
 /**
+ * Convert qti-item-divider elements to <hr /> elements.
+ * Used when composing a single item that should preserve dividers as visual separators.
+ */
+function convertDividersToHr(itemBodyDoc: Document): Document {
+  const itemBodyRoot = 
+    itemBodyDoc.querySelector('qti-item-body') ??
+    (itemBodyDoc.documentElement?.tagName.toLowerCase() === 'qti-item-body'
+      ? itemBodyDoc.documentElement
+      : null);
+
+  if (!itemBodyRoot) return itemBodyDoc;
+
+  // Clone the document to avoid mutating the original
+  const clonedDoc = document.implementation.createDocument(QTI_NS, 'qti-item-body', null);
+  const clonedRoot = clonedDoc.importNode(itemBodyRoot, true) as Element;
+  clonedDoc.replaceChild(clonedRoot, clonedDoc.documentElement);
+
+  // Find and replace all dividers with <hr />
+  const dividers = Array.from(clonedRoot.querySelectorAll('qti-item-divider'));
+  for (const divider of dividers) {
+    const hr = clonedDoc.createElementNS(QTI_NS, 'hr');
+    divider.parentNode?.replaceChild(hr, divider);
+  }
+
+  return clonedDoc;
+}
+
+/**
  * Split an item body document at qti-item-divider elements.
  * Returns an array of item body fragments, one for each item.
  */
@@ -298,6 +326,81 @@ export function buildMultipleAssessmentItemsXml(itemContext?: ComposerItemContex
   // Join multiple items with a comment separator for clarity
   const separator = '\n\n<!-- Next Assessment Item -->\n\n';
   return itemXmls.join(separator);
+}
+
+/**
+ * Build a single QTI assessment item, converting any dividers to <hr /> elements.
+ * Use this when you want to export the entire editor content as one item.
+ */
+export function buildSingleAssessmentItemXml(itemContext?: ComposerItemContext): string {
+  if (!itemContext?.itemBody) return '';
+
+  // Convert dividers to <hr /> elements
+  const convertedDoc = convertDividersToHr(itemContext.itemBody);
+
+  return buildAssessmentItemXml({
+    ...itemContext,
+    itemBody: convertedDoc,
+  });
+}
+
+/**
+ * Count how many items would be generated from an item body document.
+ * Returns 1 if no dividers, or dividers.length + 1 otherwise.
+ */
+export function countItemFragments(itemContext?: ComposerItemContext): number {
+  if (!itemContext?.itemBody) return 0;
+
+  const fragments = splitItemBodyAtDividers(itemContext.itemBody);
+  return fragments.length;
+}
+
+/**
+ * Get an array of individual assessment item XMLs.
+ * Each item is generated from a segment between dividers.
+ * Returns an array with identifier and XML for each item.
+ */
+export function getItemFragmentXmls(itemContext?: ComposerItemContext): Array<{ identifier: string; title: string; xml: string }> {
+  if (!itemContext?.itemBody) return [];
+
+  const fragments = splitItemBodyAtDividers(itemContext.itemBody);
+  
+  // If only one fragment (no dividers), return single item
+  if (fragments.length <= 1) {
+    const xml = buildAssessmentItemXml(itemContext);
+    return [{
+      identifier: itemContext.identifier?.trim() || 'item-1',
+      title: itemContext.title?.trim() || 'Untitled Item',
+      xml,
+    }];
+  }
+
+  const baseIdentifier = itemContext.identifier?.trim() || 'item';
+  const baseTitle = itemContext.title?.trim() || 'Untitled Item';
+  const lang = itemContext.lang?.trim() || 'en';
+
+  return fragments.map((fragmentBody, index) => {
+    const itemNumber = index + 1;
+    const fragmentDoc = document.implementation.createDocument(QTI_NS, 'qti-item-body', null);
+    const importedFragment = fragmentDoc.importNode(fragmentBody, true);
+    fragmentDoc.replaceChild(importedFragment, fragmentDoc.documentElement);
+
+    const identifier = `${baseIdentifier}-${itemNumber}`;
+    const title = `${baseTitle} ${itemNumber}`;
+
+    const fragmentContext: ComposerItemContext = {
+      identifier,
+      title,
+      lang,
+      itemBody: fragmentDoc,
+    };
+
+    return {
+      identifier,
+      title,
+      xml: buildAssessmentItemXml(fragmentContext),
+    };
+  });
 }
 
 function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {

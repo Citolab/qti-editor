@@ -73,9 +73,9 @@ qti-extended-text-interaction {
    @apply  bg-slate-100 rounded p-2;
 }
 
-/* Smooth scrolling for editor content */
+/* Editor card scroll container */
 .editor-card > .overflow-auto {
-  scroll-behavior: smooth;
+  /* Removed smooth scrolling - using programmatic scroll instead */
 }
 
 /* Fix placeholder alignment in gap-text elements - override ProseKit defaults */

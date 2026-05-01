@@ -136,8 +136,8 @@ export class QtiItemsNavigator extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     
-    // Listen for scroll-based item changes from gutter on document
-    document.addEventListener('gutter:item-change', this.handleGutterItemChange as EventListener);
+    // Listen for native selection changes to track cursor position
+    document.addEventListener('selectionchange', this.handleNativeSelectionChange);
     
     // If editor is already set when we connect, check if it's mounted
     if (this.editor) {
@@ -165,7 +165,7 @@ export class QtiItemsNavigator extends LitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    document.removeEventListener('gutter:item-change', this.handleGutterItemChange as EventListener);
+    document.removeEventListener('selectionchange', this.handleNativeSelectionChange);
     this.removeEditorListeners();
   }
 
@@ -246,13 +246,23 @@ export class QtiItemsNavigator extends LitElement {
     this.updateCurrentItem();
   };
 
-  private handleGutterItemChange = (event: CustomEvent) => {
-    // Update current item when gutter detects scroll-based change
-    const newIndex = event.detail.itemIndex;
-    if (this.currentItemIndex !== newIndex) {
-      this.currentItemIndex = newIndex;
-      this.requestUpdate();
-    } 
+  private handleNativeSelectionChange = () => {
+    // Check if selection is within our editor
+    if (!this.editor) return;
+    const view = (this.editor as any).view;
+    if (!view?.dom) return;
+
+    // Check if the native selection is inside the editor
+    const nativeSelection = document.getSelection();
+    if (!nativeSelection || nativeSelection.rangeCount === 0) return;
+    
+    const range = nativeSelection.getRangeAt(0);
+    if (view.dom.contains(range.startContainer)) {
+      // Use requestAnimationFrame to ensure ProseMirror has synced its selection state
+      requestAnimationFrame(() => {
+        this.updateCurrentItem();
+      });
+    }
   };
 
   private scheduleDetection() {
@@ -312,11 +322,17 @@ export class QtiItemsNavigator extends LitElement {
     const cursorPos = view.state.selection.from;
 
     // Find which item the cursor is in
+    let newIndex = 0;
     for (let i = this.items.length - 1; i >= 0; i--) {
       if (cursorPos >= this.items[i].pos) {
-        this.currentItemIndex = i;
+        newIndex = i;
         break;
       }
+    }
+
+    if (this.currentItemIndex !== newIndex) {
+      this.currentItemIndex = newIndex;
+      this.requestUpdate();
     }
   }
 
@@ -339,26 +355,40 @@ export class QtiItemsNavigator extends LitElement {
     // Find the first valid selection position at or after the target position
     const $pos = state.doc.resolve(item.pos);
     let targetPos = item.pos;
+    let found = false;
     
     // If we're at a position that can't hold a text selection, find the next valid position
     if (!$pos.parent.inlineContent) {
       // Find next position with inline content (limit search to next 500 positions)
       const searchEnd = Math.min(item.pos + 500, state.doc.content.size);
       state.doc.nodesBetween(item.pos, searchEnd, (node: any, pos: number) => {
-        if (node.inlineContent && node.content.size > 0) {
+        if (found) return false;
+        // Accept any node with inline content (including empty paragraphs)
+        if (node.inlineContent) {
           targetPos = pos + 1; // Position inside the node
+          found = true;
           return false; // Stop searching
         }
       });
     }
 
-    // Set selection to the valid position
-    const selection = TextSelection.create(state.doc, targetPos);
-    tr.setSelection(selection);
-
-    view.dispatch(tr);
+    // Only create selection if we found a valid position
+    try {
+      const selection = TextSelection.create(state.doc, targetPos);
+      tr.setSelection(selection);
+      view.dispatch(tr);
+      
+      // Dispatch selection change event so other components (like gutter) can update
+      view.dom.dispatchEvent(new CustomEvent(this.selectionEventName, {
+        bubbles: true,
+        detail: { selection }
+      }));
+    } catch (e) {
+      // If selection fails, just scroll without cursor placement
+      console.warn('[ItemsNavigator] Could not place cursor at position', targetPos);
+    }
     
-    // Scroll to the divider position (item.pos) explicitly for consistent behavior
+    // Scroll to the item position explicitly for consistent behavior
     if (this.scrollContainer) {
       const dividerCoords = view.coordsAtPos(item.pos);
       const containerRect = this.scrollContainer.getBoundingClientRect();
@@ -366,12 +396,6 @@ export class QtiItemsNavigator extends LitElement {
       const scrollOffset = dividerCoords.top - containerRect.top - 100;
       this.scrollContainer.scrollTop += scrollOffset;
     }
-    
-    // Manually dispatch selection change event so other components (like gutter) can update
-    view.dom.dispatchEvent(new CustomEvent(this.selectionEventName, {
-      bubbles: true,
-      detail: { selection }
-    }));
     
     view.focus();
   }

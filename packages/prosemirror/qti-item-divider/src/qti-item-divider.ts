@@ -1,4 +1,5 @@
 import { css, html, LitElement } from 'lit';
+import { property } from 'lit/decorators.js';
 import { translateQti } from '@qti-editor/interaction-shared';
 
 /**
@@ -8,8 +9,8 @@ import { translateQti } from '@qti-editor/interaction-shared';
  * When editing multiple QTI items in one editor, this provides a clear
  * visual and structural separation point.
  * 
- * The item index badge is positioned into the gutter area using CSS.
- * Set `data-item-index` attribute to display the item number.
+ * The item index (0-based) is set via the `itemIndex` property or `data-item-index` attribute.
+ * The badge displays itemIndex + 1 (1-based for display).
  */
 export class QtiItemDivider extends LitElement {
   static override get styles() {
@@ -21,6 +22,13 @@ export class QtiItemDivider extends LitElement {
       `
     ];
   }
+
+  /**
+   * 0-based index of the item that starts after this divider.
+   * Display shows itemIndex + 1.
+   */
+  @property({ type: Number, attribute: 'data-item-index', reflect: true })
+  itemIndex: number | null = null;
   
   // Render to light DOM for easier CSS integration with gutter
   override createRenderRoot() {
@@ -28,8 +36,7 @@ export class QtiItemDivider extends LitElement {
   }
 
   override render() {
-    const itemIndex = this.getAttribute('data-item-index');
-    const displayIndex = itemIndex ? parseInt(itemIndex, 10) + 1 : null;
+    const displayIndex = this.itemIndex !== null ? this.itemIndex + 1 : null;
 
     return html`
       <div class="divider-container">

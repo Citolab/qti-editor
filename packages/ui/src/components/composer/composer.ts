@@ -1,9 +1,9 @@
 import { consume } from '@lit/context';
-import { html, LitElement } from 'lit';
+import { html, LitElement, nothing } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { QtiI18nController } from '@qti-editor/interaction-shared/i18n/index.js';
 import { defineDocChangeHandler, defineMountHandler, union, type Editor } from 'prosekit/core';
-import { qtiFromNode } from '@qti-editor/prosekit-integration/save-qti';
+import { qtiFromNode, countQtiItems, getQtiItems, type QtiItemFragment, type QtiComposeMode } from '@qti-editor/prosekit-integration/save-qti';
 import { formatXml } from '@qti-editor/core/composer';
 import { itemContext, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
 
@@ -28,6 +28,11 @@ export class QtiComposer extends LitElement {
     this.#liveComposeEnabled = value;
     this.requestUpdate('liveComposeEnabled', old);
   }
+
+  #composeMode: QtiComposeMode = 'single';
+  #selectedItemIndex = 0;
+  #itemCount = 1;
+  #itemFragments: QtiItemFragment[] = [];
 
   #xmlUrl = '';
   #xml = '';
@@ -156,6 +161,9 @@ export class QtiComposer extends LitElement {
     this.#xml = '';
     this.#formattedXml = '';
     this.#composeError = '';
+    this.#itemCount = 1;
+    this.#itemFragments = [];
+    this.#selectedItemIndex = 0;
   }
 
   #composeXml() {
@@ -165,15 +173,53 @@ export class QtiComposer extends LitElement {
     }
 
     const doc = this.#editor.state.doc;
-    const xml = qtiFromNode(doc, {
+    const context = {
       identifier: this.itemContext?.identifier,
       lang: this.itemContext?.lang,
       title: this.itemContext?.title,
-    });
-    this.#xml = xml;
-    this.#setXmlUrl(xml);
-    this.#formattedXml = formatXml(xml);
+    };
+
+    // Count items and get fragments
+    this.#itemCount = countQtiItems(doc);
+    this.#itemFragments = getQtiItems(doc, context);
+
+    // Reset selected index if out of bounds
+    if (this.#selectedItemIndex >= this.#itemFragments.length) {
+      this.#selectedItemIndex = 0;
+    }
+
+    // Get XML based on mode
+    if (this.#composeMode === 'single') {
+      const xml = qtiFromNode(doc, context, 'single');
+      this.#xml = xml;
+      this.#setXmlUrl(xml);
+      this.#formattedXml = formatXml(xml);
+    } else {
+      // Multiple mode - show selected item
+      const selectedFragment = this.#itemFragments[this.#selectedItemIndex];
+      if (selectedFragment) {
+        this.#xml = selectedFragment.xml;
+        this.#setXmlUrl(selectedFragment.xml);
+        this.#formattedXml = selectedFragment.formattedXml;
+      } else {
+        this.#clearXmlState();
+      }
+    }
   }
+
+  #onModeChange = (mode: QtiComposeMode) => {
+    if (this.#composeMode === mode) return;
+    this.#composeMode = mode;
+    this.#composeXml();
+    this.requestUpdate();
+  };
+
+  #onItemSelect = (event: Event) => {
+    const select = event.target as HTMLSelectElement;
+    this.#selectedItemIndex = parseInt(select.value, 10);
+    this.#composeXml();
+    this.requestUpdate();
+  };
 
   async #copyXmlToClipboard() {
     if (!this.#formattedXml.trim()) return;
@@ -224,6 +270,54 @@ export class QtiComposer extends LitElement {
     }
   };
 
+  #renderTabs() {
+    const hasDividers = this.#itemCount > 1;
+    
+    return html`
+      <div class="flex gap-1 text-xs border-b border-base-300/40 mb-3">
+        <button
+          type="button"
+          class="px-3 py-1.5 rounded-t ${this.#composeMode === 'single' 
+            ? 'bg-base-200 font-semibold border border-b-0 border-base-300/40' 
+            : 'hover:bg-base-100'}"
+          @click=${() => this.#onModeChange('single')}
+        >
+          ${this.i18n.t('composer.singleItem')}
+        </button>
+        <button
+          type="button"
+          class="px-3 py-1.5 rounded-t ${this.#composeMode === 'multiple' 
+            ? 'bg-base-200 font-semibold border border-b-0 border-base-300/40' 
+            : 'hover:bg-base-100'}"
+          @click=${() => this.#onModeChange('multiple')}
+        >
+          ${this.i18n.t('composer.multipleItems')}${hasDividers ? ` (${this.#itemCount})` : ''}
+        </button>
+      </div>
+    `;
+  }
+
+  #renderItemSelector() {
+    if (this.#composeMode !== 'multiple' || this.#itemFragments.length <= 1) {
+      return nothing;
+    }
+
+    return html`
+      <div class="flex items-center gap-2 mb-2">
+        <label class="text-xs font-medium">${this.i18n.t('composer.selectItem')}:</label>
+        <select
+          class="select select-xs select-bordered"
+          .value=${String(this.#selectedItemIndex)}
+          @change=${this.#onItemSelect}
+        >
+          ${this.#itemFragments.map((fragment, index) => html`
+            <option value=${index}>${fragment.title}</option>
+          `)}
+        </select>
+      </div>
+    `;
+  }
+
   override render() {
     return html`
       <section class="card border border-base-300/50 bg-base-100 p-4 space-y-3">
@@ -245,6 +339,8 @@ export class QtiComposer extends LitElement {
             ? html`<p class="text-xs text-error">Compose failed: ${this.#composeError}</p>`
           : this.#xmlUrl
             ? html`
+                ${this.#renderTabs()}
+                ${this.#renderItemSelector()}
                 <div class="flex items-center gap-3">
                   <a
                     class="inline-block text-xs link link-primary"
