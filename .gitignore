@@ -24,3 +24,5 @@ apps/editor/public/r
 .claude/claude.log
 .claude/claude-error.log
 .claude/claude-debug.log
+
+*.code-workspace
