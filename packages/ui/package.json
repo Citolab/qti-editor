@@ -21,7 +21,8 @@
     "./components/items-gutter": "./src/components/items-gutter/index.ts",
     "./components/convert-menu": "./src/components/convert-menu/index.ts",
     "./components/choice-attributes-editor": "./src/components/choice-attributes-editor/index.ts",
-    "./components/text-entry-attributes-editor": "./src/components/text-entry-attributes-editor/index.ts"
+    "./components/text-entry-attributes-editor": "./src/components/text-entry-attributes-editor/index.ts",
+    "./components/extended-text-attributes-editor": "./src/components/extended-text-attributes-editor/index.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",

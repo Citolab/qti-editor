@@ -429,6 +429,18 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
       const parent = element.parentNode;
       if (parent) {
         parent.replaceChild(composeResult.normalizedElement, element);
+        
+        // Insert any additional elements (like rubric blocks) after the interaction
+        if (composeResult.additionalElements?.length) {
+          const nextSibling = composeResult.normalizedElement.nextSibling;
+          for (const additionalElement of composeResult.additionalElements) {
+            if (nextSibling) {
+              parent.insertBefore(additionalElement, nextSibling);
+            } else {
+              parent.appendChild(additionalElement);
+            }
+          }
+        }
       }
 
       if (composeResult.responseDeclaration) {

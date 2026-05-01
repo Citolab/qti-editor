@@ -17,6 +17,7 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
     correctResponses: { default: [] },
     caseSensitive: { default: false },
     class: { default: null },
+    placeholderText: { default: null },
   },
   parseDOM: [
     {
@@ -43,6 +44,7 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
           class: serializeTextEntryClassState(
             parseTextEntryClassState(node.getAttribute('class')),
           ),
+          placeholderText: node.getAttribute('placeholder-text') || null,
         };
       },
     },
@@ -74,6 +76,10 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
 
     if (primaryCorrectResponse) {
       attrs['correct-response'] = primaryCorrectResponse;
+    }
+
+    if (node.attrs.placeholderText) {
+      attrs['placeholder-text'] = node.attrs.placeholderText;
     }
 
     return ['qti-text-entry-interaction', attrs];

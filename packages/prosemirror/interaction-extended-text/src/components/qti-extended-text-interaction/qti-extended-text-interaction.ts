@@ -13,6 +13,23 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
         :host {
           white-space: nowrap;
         }
+
+        /* QTI height classes for expectedLines support */
+        :host(.qti-height-lines-3) [part="textarea"] {
+          min-height: calc(3 * 1.5em + 1rem);
+        }
+        :host(.qti-height-lines-6) [part="textarea"] {
+          min-height: calc(6 * 1.5em + 1rem);
+        }
+        :host(.qti-height-lines-15) [part="textarea"] {
+          min-height: calc(15 * 1.5em + 1rem);
+        }
+
+        /* Lighten placeholder text */
+        [part="textarea"] {
+          color: hsl(var(--muted-foreground, 220 9% 56%));
+          font-style: italic;
+        }
       `
     ];
   }

@@ -15,7 +15,7 @@
         "@qti-editor/prosemirror-attributes",
         "@qti-editor/prosemirror-attributes-ui-prosekit"
       ],
-      "registryDependencies": ["qti-choice-attributes-editor", "qti-text-entry-attributes-editor"],
+      "registryDependencies": ["qti-choice-attributes-editor", "qti-text-entry-attributes-editor", "qti-extended-text-attributes-editor"],
       "files": [
         {
           "path": "components/attributes-panel/index.ts",
@@ -56,6 +56,26 @@
           "path": "components/text-entry-attributes-editor/index.ts",
           "source": "src/components/text-entry-attributes-editor/index.ts",
           "module": "@qti-editor/ui/components/text-entry-attributes-editor",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/attributes-panel/patch-event.ts",
+          "source": "src/components/attributes-panel/patch-event.ts",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "qti-extended-text-attributes-editor",
+      "type": "registry:ui",
+      "title": "QTI Extended Text Attributes Editor",
+      "description": "Standalone extended-text editor for height presets and rubric/model answer configuration.",
+      "dependencies": ["lit", "@qti-editor/interaction-extended-text"],
+      "files": [
+        {
+          "path": "components/extended-text-attributes-editor/index.ts",
+          "source": "src/components/extended-text-attributes-editor/index.ts",
+          "module": "@qti-editor/ui/components/extended-text-attributes-editor",
           "type": "registry:component"
         },
         {

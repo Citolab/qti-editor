@@ -56,6 +56,11 @@ export interface InteractionComposeResult {
   responseProcessingKind?: ResponseProcessingKind;
   editorOnlyAttributes: string[];
   warnings: ComposerWarning[];
+  /**
+   * Additional elements to insert after the interaction element.
+   * Useful for rubric blocks, feedback, etc.
+   */
+  additionalElements?: Element[];
 }
 
 export type ResponseProcessingKind = 'match_correct' | 'map_response' | 'map_response_point';

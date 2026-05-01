@@ -26,7 +26,7 @@ export const textEntryInteractionComposerMetadata = {
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
   editorOnlyAttributes: ['class', 'case-sensitive', 'correct-responses'],
-  userEditableAttributes: ['class', 'caseSensitive', 'correctResponses', 'correctResponse'],
+  userEditableAttributes: ['class', 'caseSensitive', 'correctResponses', 'correctResponse', 'placeholderText'],
 } satisfies InteractionComposerMetadata;
 
 export const textEntryNodeAttributePanelMetadataByNodeTypeName = {

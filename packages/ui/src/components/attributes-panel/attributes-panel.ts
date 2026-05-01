@@ -21,6 +21,7 @@ import {
 
 import '../choice-attributes-editor';
 import '../text-entry-attributes-editor';
+import '../extended-text-attributes-editor';
 import { type ChoiceInteractionPanelPresentation } from '../choice-attributes-editor';
 import { type QtiAttributesPatchDetail } from './patch-event';
 
@@ -147,6 +148,10 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
 
     if (editor.kind === 'textEntryAttributes') {
       return html`<qti-text-entry-attributes-editor .activeNode=${activeNode}></qti-text-entry-attributes-editor>`;
+    }
+
+    if (editor.kind === 'extendedTextAttributes') {
+      return html`<qti-extended-text-attributes-editor .activeNode=${activeNode}></qti-extended-text-attributes-editor>`;
     }
 
     return nothing;

@@ -2,6 +2,8 @@ import { extendedTextInteractionComposerMetadata } from '../../composer/metadata
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interaction-shared/composer/types.js';
 
+const QTI_NS = 'http://www.imsglobal.org/xsd/imsqtiasi_v3p0';
+
 function toFiniteNumber(value: string | null, fallback: number | null): number | null {
   if (value == null || value.trim().length === 0) return fallback;
   const parsed = Number(value);
@@ -14,15 +16,45 @@ function toNonEmptyString(value: string | null): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+function createRubricBlock(xmlDoc: Document, correctResponse: string, responseIdentifier: string): Element {
+  const rubricBlock = xmlDoc.createElementNS(QTI_NS, 'qti-rubric-block');
+  rubricBlock.setAttribute('view', 'scorer');
+  rubricBlock.setAttribute('use', 'instructions');
+  
+  const contentBlock = xmlDoc.createElementNS(QTI_NS, 'qti-content-body');
+  const div = xmlDoc.createElementNS(QTI_NS, 'div');
+  
+  const heading = xmlDoc.createElementNS(QTI_NS, 'p');
+  const strong = xmlDoc.createElementNS(QTI_NS, 'strong');
+  strong.textContent = `Model answer for ${responseIdentifier}:`;
+  heading.appendChild(strong);
+  div.appendChild(heading);
+  
+  // Split by newlines and create paragraphs
+  const lines = correctResponse.split('\n');
+  for (const line of lines) {
+    const p = xmlDoc.createElementNS(QTI_NS, 'p');
+    p.textContent = line || '\u00A0'; // Use non-breaking space for empty lines
+    div.appendChild(p);
+  }
+  
+  contentBlock.appendChild(div);
+  rubricBlock.appendChild(contentBlock);
+  
+  return rubricBlock;
+}
+
 export function composeExtendedTextInteractionElement(sourceElement: Element, xmlDoc: Document): InteractionComposeResult {
   const metadata = extendedTextInteractionComposerMetadata;
   const warnings: ComposerWarning[] = [];
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
+  const additionalElements: Element[] = [];
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
   const expectedLength = toFiniteNumber(sourceElement.getAttribute('expected-length'), null);
   const expectedLines = toFiniteNumber(sourceElement.getAttribute('expected-lines'), null);
   const format = toNonEmptyString(sourceElement.getAttribute('format')) || 'plain';
+  const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
 
   const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
   editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
@@ -38,6 +70,12 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
     normalizedElement.setAttribute('format', format);
   } else {
     normalizedElement.removeAttribute('format');
+  }
+
+  // Create rubric block if correctResponse is present
+  if (correctResponse && responseIdentifier) {
+    const rubricBlock = createRubricBlock(xmlDoc, correctResponse, responseIdentifier);
+    additionalElements.push(rubricBlock);
   }
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
@@ -63,5 +101,6 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
     responseProcessingKind: undefined,
     editorOnlyAttributes,
     warnings,
+    additionalElements: additionalElements.length > 0 ? additionalElements : undefined,
   };
 }

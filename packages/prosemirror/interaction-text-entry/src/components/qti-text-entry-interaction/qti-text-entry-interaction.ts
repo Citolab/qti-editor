@@ -13,6 +13,12 @@ export class QtiTextEntryInteractionEdit extends Interaction {
         :host {
           white-space: nowrap;
         }
+
+        /* Lighten placeholder text */
+        [part="input"] {
+          color: hsl(var(--muted-foreground, 220 9% 56%));
+          font-style: italic;
+        }
       `
     ];
   }
