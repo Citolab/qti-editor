@@ -89,7 +89,7 @@ qti-gap-text.prosekit-placeholder::before {
 /* QTI Item Divider - light DOM styles */
 qti-item-divider {
   display: block;
-  margin: 2rem 0;
+  white-space: nowrap;
   user-select: none;
   position: relative;
 }

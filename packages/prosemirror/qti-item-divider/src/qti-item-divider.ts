@@ -1,4 +1,4 @@
-import { html, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { translateQti } from '@qti-editor/interaction-shared';
 
 /**
@@ -12,6 +12,16 @@ import { translateQti } from '@qti-editor/interaction-shared';
  * Set `data-item-index` attribute to display the item number.
  */
 export class QtiItemDivider extends LitElement {
+  static override get styles() {
+    return [
+      css`
+        :host {
+          white-space: nowrap;
+        }
+      `
+    ];
+  }
+  
   // Render to light DOM for easier CSS integration with gutter
   override createRenderRoot() {
     return this;
