@@ -1,4 +1,4 @@
-import { css, html } from 'lit';
+import { css, html, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { Interaction } from '@qti-editor/interaction-shared/components/interaction.js';
 
@@ -11,7 +11,7 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
       styles,
       css`
         :host {
-          white-space: nowrap;
+          display: block;
         }
 
         /* QTI height classes for expectedLines support */
@@ -29,6 +29,38 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
         [part="textarea"] {
           color: hsl(var(--muted-foreground, 220 9% 56%));
           font-style: italic;
+        }
+
+        /* Rubric block styling */
+        .rubric-block {
+          display: block;
+          margin-top: 0.5rem;
+          padding: 0.5rem 0.75rem;
+          background-color: hsl(142 76% 94%);
+          border: 1px solid hsl(142 76% 80%);
+          border-radius: 0.25rem;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          font-family: inherit;
+          font-size: 0.875rem;
+          font-style: normal;
+          color: hsl(142 76% 25%);
+        }
+
+        .rubric-label {
+          display: block;
+          font-size: 0.75rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+          color: hsl(142 76% 30%);
+          font-style: normal;
+        }
+
+        .rubric-text {
+          display: block;
+          margin: 0;
+          white-space: pre-wrap;
+          word-wrap: break-word;
         }
       `
     ];
@@ -65,6 +97,9 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
   @property({ type: String, attribute: 'class' })
   classes: string | null = null;
 
+  @property({ type: String, attribute: 'correct-response' })
+  correctResponse: string | null = null;
+
   private _getPlaceholderText(): string {
     if (this.placeholderText) {
       return this.placeholderText;
@@ -73,12 +108,9 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
   }
 
   override render() {
-    return html`
-      <slot name="prompt"></slot>
-      <div part="textarea">
-        ${this._getPlaceholderText()}
-      </div>
-    `;
+    return html`<slot name="prompt"></slot><div part="textarea">${this._getPlaceholderText()}</div>${this.correctResponse
+        ? html`<div class="rubric-block"><span class="rubric-label">Rubric / Model answer</span><span class="rubric-text">${this.correctResponse}</span></div>`
+        : nothing}`;
   }
 }
 if (!customElements.get('qti-extended-text-interaction')) {
