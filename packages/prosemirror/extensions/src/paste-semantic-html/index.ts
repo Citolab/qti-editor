@@ -292,9 +292,49 @@ function walk(node: Node) {
   }
 }
 
+/**
+ * Strip out QTI web component internal DOM elements that get copied
+ * when selecting nodes. These are the rendered light DOM parts from
+ * custom elements (like choice/radio controls, labels, etc.)
+ */
+function stripQtiWebComponentInternals(root: ParentNode) {
+  // Remove all elements with a `part` attribute (these are web component internals)
+  // except for slot elements which we want to unwrap
+  root.querySelectorAll('[part]').forEach((el) => {
+    const part = el.getAttribute('part');
+    if (part === 'slot') {
+      // Unwrap slot elements - keep their children
+      const parent = el.parentNode;
+      if (parent) {
+        while (el.firstChild) {
+          parent.insertBefore(el.firstChild, el);
+        }
+        el.remove();
+      }
+    } else {
+      // Remove other part elements entirely (ch, cha, input, textarea, etc.)
+      el.remove();
+    }
+  });
+  
+  // Remove label divs with id="label" (choice markers)
+  root.querySelectorAll('div#label').forEach((el) => el.remove());
+  
+  // Remove any stray input/radio elements that might have been rendered
+  root.querySelectorAll('qti-simple-choice > input, qti-simple-choice > div:not([identifier])').forEach((el) => {
+    // Only remove if it's not a semantic content element
+    if (!el.querySelector('p') && !el.textContent?.trim()) {
+      el.remove();
+    }
+  });
+}
+
 export function makeHtmlSemantic(html: string): string {
   const parser = new window.DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
+
+  // Strip QTI web component internals first
+  stripQtiWebComponentInternals(doc.body);
 
   walk(doc.body);
   removeNbspFromTree(doc.body);
