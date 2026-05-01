@@ -4,23 +4,13 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { QtiI18nController, translateQti } from '@qti-editor/interaction-shared/i18n/index.js';
 import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { Selection } from 'prosekit/pm/state';
-import { PopoverContent, PopoverRoot, PopoverTrigger } from 'prosekit/lit/popover';
+import 'prosekit/lit/popover';
 import {
   canConvertFlatListToChoiceInteraction,
   convertFlatListToChoiceInteraction,
 } from '@qti-editor/interaction-choice';
 
 import type { EditorView } from 'prosekit/pm/view';
-
-if (!customElements.get('prosekit-popover-root')) {
-  customElements.define('prosekit-popover-root', PopoverRoot);
-}
-if (!customElements.get('prosekit-popover-trigger')) {
-  customElements.define('prosekit-popover-trigger', PopoverTrigger);
-}
-if (!customElements.get('prosekit-popover-content')) {
-  customElements.define('prosekit-popover-content', PopoverContent);
-}
 
 export interface ConvertMenuItem {
   label: string;
@@ -133,7 +123,7 @@ export class QtiConvertMenu extends LitElement {
     const canRunAny = items.some(item => item.canRun);
 
     return html`
-      <prosekit-popover-root .open=${this.open} @openChange=${this.handleOpenChange}>
+      <prosekit-popover-root .open=${this.open} @open-change=${this.handleOpenChange}>
         <prosekit-popover-trigger>
           <button
             type="button"
@@ -145,7 +135,8 @@ export class QtiConvertMenu extends LitElement {
             <span>${this.i18n.t('convert.trigger')}</span>
           </button>
         </prosekit-popover-trigger>
-        <prosekit-popover-content class="flex min-w-64 flex-col gap-1 rounded-lg border border-gray-200 bg-white p-2 text-sm shadow-lg dark:border-gray-800 dark:bg-gray-950 [&:not([data-state])]:hidden">
+        <prosekit-popover-positioner placement="bottom" class="z-10">
+          <prosekit-popover-popup class="flex min-w-64 flex-col gap-1 rounded-lg border border-gray-200 bg-white p-2 text-sm shadow-lg dark:border-gray-800 dark:bg-gray-950 [&:not([data-state])]:hidden">
           ${items.map(
             item => html`
               <button
@@ -159,7 +150,8 @@ export class QtiConvertMenu extends LitElement {
               </button>
             `,
           )}
-        </prosekit-popover-content>
+          </prosekit-popover-popup>
+        </prosekit-popover-positioner>
       </prosekit-popover-root>
     `;
   }

@@ -16,28 +16,8 @@ import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
 import { translateQti } from '@qti-editor/interaction-shared';
 import { listInteractionDescriptors } from '@qti-editor/core/interactions/composer';
 import { insertGap } from '@qti-editor/interaction-gap-match';
-import { 
-  AutocompleteEmpty,
-  AutocompleteItem, 
-  AutocompleteList, 
-  AutocompletePopover 
-} from 'prosekit/lit/autocomplete';
 
 import type { EditorView } from 'prosekit/pm/view';
-
-// Explicitly register ProseKit autocomplete custom elements to ensure they're available in production builds
-if (!customElements.get('prosekit-autocomplete-popover')) {
-  customElements.define('prosekit-autocomplete-popover', AutocompletePopover);
-}
-if (!customElements.get('prosekit-autocomplete-list')) {
-  customElements.define('prosekit-autocomplete-list', AutocompleteList);
-}
-if (!customElements.get('prosekit-autocomplete-item')) {
-  customElements.define('prosekit-autocomplete-item', AutocompleteItem);
-}
-if (!customElements.get('prosekit-autocomplete-empty')) {
-  customElements.define('prosekit-autocomplete-empty', AutocompleteEmpty);
-}
 
 const regex = canUseRegexLookbehind() ? /(?<!\S)\/(\S.*)?$/u : /\/(\S.*)?$/u;
 
@@ -108,12 +88,13 @@ export class QtiSlashMenu extends LitElement {
     // Type assertion for commands - these exist at runtime from prosekit extensions
     const commands = (editor as any).commands;
 
-    return html`<prosekit-autocomplete-popover
+    return html`<prosekit-autocomplete-root
       .editor=${editor}
       .regex=${this.disabled ? null : regex}
-      class="dropdown-content relative block max-h-100 min-w-60 select-none overflow-auto whitespace-nowrap p-1 z-10 box-border rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-lg [&:not([data-state])]:hidden"
     >
-      <prosekit-autocomplete-list .editor=${editor}>
+      <prosekit-autocomplete-positioner class="block overflow-visible w-min h-min z-50 ease-out transition-transform duration-100 motion-reduce:transition-none">
+        <prosekit-autocomplete-popup class="box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 duration-40 rounded-xl border border-gray-200 dark:border-gray-800 shadow-lg bg-[canvas] flex flex-col relative max-h-100 min-h-0 min-w-60 select-none overflow-hidden whitespace-nowrap">
+          <div class="flex flex-col flex-1 min-h-0 overflow-y-auto p-1 bg-[canvas] overscroll-contain">
         <!-- QTI Interactions -->
         <div
           class="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 select-none"
@@ -209,8 +190,10 @@ export class QtiSlashMenu extends LitElement {
         ></lit-editor-slash-menu-item>
         
         <lit-editor-slash-menu-empty class="contents"></lit-editor-slash-menu-empty>
-      </prosekit-autocomplete-list>
-    </prosekit-autocomplete-popover>`;
+          </div>
+        </prosekit-autocomplete-popup>
+      </prosekit-autocomplete-positioner>
+    </prosekit-autocomplete-root>`;
   }
 }
 

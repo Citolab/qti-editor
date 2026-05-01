@@ -4,7 +4,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { translateQti, QtiI18nController } from '@qti-editor/interaction-shared/i18n/index.js';
 import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { Selection } from 'prosekit/pm/state';
-import { PopoverContent, PopoverRoot, PopoverTrigger } from 'prosekit/lit/popover';
+import 'prosekit/lit/menu';
 import { insertAssociateInteraction } from '@qti-editor/interaction-associate';
 import { insertGapMatchInteraction, insertGap } from '@qti-editor/interaction-gap-match';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
@@ -17,16 +17,6 @@ import { insertInlineChoiceInteraction } from '@qti-editor/interaction-inline-ch
 import { insertItemDivider } from '@qti-editor/qti-item-divider';
 
 import type { EditorView } from 'prosekit/pm/view';
-
-if (!customElements.get('prosekit-popover-root')) {
-  customElements.define('prosekit-popover-root', PopoverRoot);
-}
-if (!customElements.get('prosekit-popover-trigger')) {
-  customElements.define('prosekit-popover-trigger', PopoverTrigger);
-}
-if (!customElements.get('prosekit-popover-content')) {
-  customElements.define('prosekit-popover-content', PopoverContent);
-}
 
 export interface InteractionInsertItem {
   label: string;
@@ -313,10 +303,11 @@ export class QtiInteractionInsertMenu extends LitElement {
     this.open = event.detail;
   };
 
-  private handleInsert(item: InteractionInsertItem) {
+  private handleItemSelect(item: InteractionInsertItem) {
+    // Restore selection and execute command
+    // Menu will auto-close via the @select event
     this.restoreSelection();
     item.command();
-    this.open = false;
   }
 
   override render() {
@@ -325,8 +316,8 @@ export class QtiInteractionInsertMenu extends LitElement {
     const canInsertAny = items.some(item => item.canInsert);
 
     return html`
-      <prosekit-popover-root .open=${this.open} @openChange=${this.handleOpenChange}>
-        <prosekit-popover-trigger>
+      <prosekit-menu-root @open-change=${this.handleOpenChange}>
+        <prosekit-menu-trigger>
           <button
             type="button"
             class="inline-flex h-9 items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-50 dark:hover:bg-gray-800"
@@ -336,23 +327,29 @@ export class QtiInteractionInsertMenu extends LitElement {
             <span class="i-lucide-plus size-4 block" aria-hidden="true"></span>
             <span>${this.i18n.t('interactionInsert.trigger')}</span>
           </button>
-        </prosekit-popover-trigger>
-        <prosekit-popover-content class="flex min-w-56 flex-col gap-1 rounded-lg border border-gray-200 bg-white p-2 text-sm shadow-lg dark:border-gray-800 dark:bg-gray-950 [&:not([data-state])]:hidden">
+        </prosekit-menu-trigger>
+        <prosekit-menu-positioner placement="bottom" class="block overflow-visible w-min h-min z-50 ease-out transition-transform duration-100 motion-reduce:transition-none">
+          <prosekit-menu-popup class="box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 duration-40 rounded-xl border border-gray-200 dark:border-gray-800 shadow-lg bg-[canvas] flex min-w-56 flex-col gap-1 p-2 text-sm">
           ${items.map(
-            item => html`
-              <button
-                type="button"
-                class="w-full rounded-md border-0 bg-transparent px-3 py-2 text-left text-sm font-medium text-gray-900 hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 dark:text-gray-50 dark:hover:bg-gray-800"
-                ?disabled=${!item.canInsert}
-                @mousedown=${(event: MouseEvent) => event.preventDefault()}
-                @click=${() => this.handleInsert(item)}
-              >
-                ${item.label}
-              </button>
-            `,
+            item => item.canInsert
+              ? html`
+                <prosekit-menu-item
+                  class="w-full rounded-md px-3 py-2 text-left text-sm font-medium text-gray-900 cursor-pointer outline-hidden data-highlighted:bg-gray-100 dark:text-gray-50 dark:data-highlighted:bg-gray-800"
+                  .closeOnSelect=${true}
+                  @select=${() => this.handleItemSelect(item)}
+                >
+                  ${item.label}
+                </prosekit-menu-item>
+              `
+              : html`
+                <div class="w-full rounded-md px-3 py-2 text-left text-sm font-medium text-gray-400 pointer-events-none opacity-50 dark:text-gray-500">
+                  ${item.label}
+                </div>
+              `,
           )}
-        </prosekit-popover-content>
-      </prosekit-popover-root>
+          </prosekit-menu-popup>
+        </prosekit-menu-positioner>
+      </prosekit-menu-root>
     `;
   }
 }

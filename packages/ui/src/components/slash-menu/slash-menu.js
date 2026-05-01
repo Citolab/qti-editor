@@ -2,26 +2,6 @@ import 'prosekit/lit/autocomplete'
 
 import { html, LitElement } from 'lit';
 import { canUseRegexLookbehind } from 'prosekit/core'
-import { 
-  AutocompleteEmpty,
-  AutocompleteItem, 
-  AutocompleteList, 
-  AutocompletePopover 
-} from 'prosekit/lit/autocomplete';
-
-// Explicitly register ProseKit autocomplete custom elements
-if (!customElements.get('prosekit-autocomplete-popover')) {
-  customElements.define('prosekit-autocomplete-popover', AutocompletePopover);
-}
-if (!customElements.get('prosekit-autocomplete-list')) {
-  customElements.define('prosekit-autocomplete-list', AutocompleteList);
-}
-if (!customElements.get('prosekit-autocomplete-item')) {
-  customElements.define('prosekit-autocomplete-item', AutocompleteItem);
-}
-if (!customElements.get('prosekit-autocomplete-empty')) {
-  customElements.define('prosekit-autocomplete-empty', AutocompleteEmpty);
-}
 
 // Match inputs like "/", "/table", "/heading 1" etc. Do not match "/ heading".
 const regex = canUseRegexLookbehind() ? /(?<!\S)\/(\S.*)?$/u : /\/(\S.*)?$/u
@@ -43,12 +23,10 @@ class SlashMenuElement extends LitElement {
       return html``;
     }
 
-    return html`<prosekit-autocomplete-popover
-      .editor=${editor}
-      .regex=${regex}
-      class="relative block max-h-100 min-w-60 select-none overflow-auto whitespace-nowrap p-1 z-10 box-border rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-lg [&amp;:not([data-state])]:hidden"
-    >
-      <prosekit-autocomplete-list .editor=${editor}>
+    return html`<prosekit-autocomplete-root .editor=${editor} .regex=${regex}>
+      <prosekit-autocomplete-positioner class="block overflow-visible w-min h-min z-50 ease-out transition-transform duration-100 motion-reduce:transition-none">
+        <prosekit-autocomplete-popup class="box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 duration-40 rounded-xl border border-gray-200 dark:border-gray-800 shadow-lg bg-[canvas] flex flex-col relative max-h-100 min-h-0 min-w-60 select-none overflow-hidden whitespace-nowrap">
+          <div class="flex flex-col flex-1 min-h-0 overflow-y-auto p-1 bg-[canvas] overscroll-contain">
         <lit-editor-slash-menu-item
           class="contents"
           label="Text"
@@ -120,8 +98,10 @@ class SlashMenuElement extends LitElement {
           @select=${() => editor.commands.setCodeBlock()}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-empty class="contents"></lit-editor-slash-menu-empty>
-      </prosekit-autocomplete-list>
-    </prosekit-autocomplete-popover>`;
+          </div>
+        </prosekit-autocomplete-popup>
+      </prosekit-autocomplete-positioner>
+    </prosekit-autocomplete-root>`;
   }
 }
 

@@ -27,10 +27,10 @@
     "@qti-editor/interaction-shared": "workspace:*",
     "@qti-editor/prosemirror": "workspace:*",
     "lit": "^3.3.2",
-    "prosekit": "^0.18.4"
+    "prosekit": "^0.20.0"
   },
   "peerDependencies": {
-    "prosekit": "^0.18.4"
+    "prosekit": "^0.20.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

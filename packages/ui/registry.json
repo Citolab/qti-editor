@@ -263,6 +263,62 @@
           "type": "registry:component"
         }
       ]
+    },
+    {
+      "name": "lit-editor-block-handle",
+      "type": "registry:ui",
+      "title": "Lit Editor Block Handle",
+      "description": "Vendored ProseKit Lit block-handle for drag-and-drop block reordering.",
+      "dependencies": [
+        "lit",
+        "@lit/context",
+        "prosekit"
+      ],
+      "files": [
+        {
+          "path": "components/block-handle/index.ts",
+          "source": "src/components/block-handle/index.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/block-handle/block-handle.ts",
+          "source": "src/components/block-handle/block-handle.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/editor-context.ts",
+          "source": "src/components/editor-context.ts",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "lit-editor-drop-indicator",
+      "type": "registry:ui",
+      "title": "Lit Editor Drop Indicator",
+      "description": "Vendored ProseKit Lit drop-indicator for visual feedback during drag operations.",
+      "dependencies": [
+        "lit",
+        "@lit/context",
+        "prosekit"
+      ],
+      "files": [
+        {
+          "path": "components/drop-indicator/index.ts",
+          "source": "src/components/drop-indicator/index.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/drop-indicator/drop-indicator.ts",
+          "source": "src/components/drop-indicator/drop-indicator.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/editor-context.ts",
+          "source": "src/components/editor-context.ts",
+          "type": "registry:component"
+        }
+      ]
     }
   ]
 }

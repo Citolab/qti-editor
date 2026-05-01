@@ -8,9 +8,13 @@ import '@qti-editor/ui/components/toolbar';
 import '@qti-editor/ui/components/items-gutter';
 import '@qti-editor/ui/components/items-navigator';
 
+import { registerLitEditorBlockHandle } from '@qti-editor/ui/components/block-handle';
+import { registerLitEditorDropIndicator } from '@qti-editor/ui/components/drop-indicator';
+import { editorContext } from '@qti-editor/ui/components/editor-context';
+
 import './blocks/slash-menu/index.js';
 
-import { provide } from '@lit/context';
+import { provide, ContextProvider } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { LitElement, html, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -116,6 +120,16 @@ export class QtiEditorApp extends LitElement {
     }
     this.editorRef = createRef<HTMLDivElement>();
 
+    // Provider for editor context - pass editor directly (ProseKit elements handle unmounted state)
+    new ContextProvider(this, {
+      context: editorContext,
+      initialValue: this.editor,
+    });
+
+    // Register block-handle components
+    registerLitEditorBlockHandle();
+    registerLitEditorDropIndicator();
+
     this.composerEventTarget.addEventListener('qti:content:change', event => {
       const detail = (event as CustomEvent<{ html?: string }>).detail;
       const xmlCompatibleHtml = toXmlCompatibleFragment(detail?.html ?? '');
@@ -146,21 +160,19 @@ export class QtiEditorApp extends LitElement {
       notifyQtiI18nChanged();
     }
 
-    if (this.editorRef.value) {
+    if (this.editorRef.value && !this._editorMounted) {
       this.editor.mount(this.editorRef.value);
-      if (!this._editorMounted) {
-        this._editorMounted = true;
-        this.requestUpdate(); // Re-render to pass editor.view to attributes panel
-        // Defer past React's useEffect registration window.
-        // updated() runs synchronously during React's DOM commit; useEffect
-        // listeners aren't attached until after that commit completes.
-        setTimeout(() => {
-          this.dispatchEvent(new CustomEvent('qti:editor:ready', {
-            detail: { editor: this.editor },
-            bubbles: true,
-          }));
-        }, 0);
-      }
+      this._editorMounted = true;
+      this.requestUpdate(); // Re-render to pass editor.view to attributes panel
+      // Defer past React's useEffect registration window.
+      // updated() runs synchronously during React's DOM commit; useEffect
+      // listeners aren't attached until after that commit completes.
+      setTimeout(() => {
+        this.dispatchEvent(new CustomEvent('qti:editor:ready', {
+          detail: { editor: this.editor },
+          bubbles: true,
+        }));
+      }, 0);
     }
   }
 
@@ -194,14 +206,23 @@ export class QtiEditorApp extends LitElement {
   }
 
   override render() {
-    return html`
+    // Only render components that need the editor after it's mounted
+    const editorComponents = this._editorMounted ? html`
       <lit-editor-toolbar .editor=${this.editor} class="block w-full shrink-0" style="padding-left: 1rem; padding-right: 1rem;"></lit-editor-toolbar>
+    ` : html`<div class="block w-full shrink-0" style="padding-left: 1rem; padding-right: 1rem; height: 40px;"></div>`;
+
+    return html`
+      ${editorComponents}
       <div class="flex flex-1 min-h-0 gap-4 p-4 overflow-hidden">
         <div class="editor-card relative flex min-w-0 flex-1 flex-col rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden">
-          <qti-items-gutter .editor=${this.editor}></qti-items-gutter>
-          <div ${ref(this.editorRef)} class="card flex-1 min-h-0 px-6 py-6 overflow-auto" style="padding-left: 4rem;"></div>
-          <qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>
-          <qti-composer .editor=${this.editor} class="block w-full shrink-0" style="position: relative; z-index: 10;"></qti-composer>
+          ${this._editorMounted ? html`<qti-items-gutter .editor=${this.editor}></qti-items-gutter>` : ''}
+          <div class="relative flex-1 min-h-0 overflow-auto" style="padding-left: 3rem;">
+            <div ${ref(this.editorRef)} class="card min-h-full px-6 py-6" style="padding-left: 1rem;"></div>
+            <lit-editor-block-handle></lit-editor-block-handle>
+            <lit-editor-drop-indicator></lit-editor-drop-indicator>
+          </div>
+          ${this._editorMounted ? html`<qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>` : ''}
+          ${this._editorMounted ? html`<qti-composer .editor=${this.editor} class="block w-full shrink-0" style="position: relative; z-index: 10;"></qti-composer>` : ''}
         </div>
         <div class="w-80 shrink-0 overflow-y-auto">
           <qti-composer-metadata-form
@@ -210,14 +231,14 @@ export class QtiEditorApp extends LitElement {
             .identifier=${this.itemContext.identifier ?? ''}
             @metadata-change=${this.onMetadataChange}
           ></qti-composer-metadata-form>
-          <qti-attributes-panel
+          ${this._editorMounted ? html`<qti-attributes-panel
             .editor=${this.editor}
             class="block w-full sticky top-0 mt-5"
-          ></qti-attributes-panel>
-          <qti-items-navigator
+          ></qti-attributes-panel>` : ''}
+          ${this._editorMounted ? html`<qti-items-navigator
             .editor=${this.editor}
             class="block w-full mt-5"
-          ></qti-items-navigator>
+          ></qti-items-navigator>` : ''}
         </div>
       </div>
     `;
