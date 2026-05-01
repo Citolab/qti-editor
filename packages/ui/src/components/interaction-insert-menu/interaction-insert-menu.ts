@@ -1,4 +1,4 @@
-/* eslint-disable wc/no-self-class, lit/attribute-value-entities */
+/* eslint-disable wc/no-self-class */
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { translateQti, QtiI18nController } from '@qti-editor/interaction-shared/i18n/index.js';
