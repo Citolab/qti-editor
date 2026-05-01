@@ -2,45 +2,84 @@
  * Slash Menu Guard Extension
  *
  * Prevents the slash menu (autocomplete popover) from appearing when the
- * cursor is inside a QTI interaction content node (e.g. qti-prompt,
- * qti-simple-choice, qti-inline-choice, qti-simple-associable-choice).
+ * cursor is inside any QTI interaction element.
  *
- * Detection is based on the `placeholder` property on the ProseMirror
- * NodeSpec. Any node whose spec defines a `placeholder` is considered an
- * interaction content node where the slash menu should be suppressed.
+ * Detection is based on the DOM element tag name: walks up from the cursor
+ * position checking if any ancestor element's tag name ends with "-interaction".
  *
  * How it works:
- * - A `defineUpdateHandler` runs on every editor state change.
- * - It walks the selection anchor's ancestors looking for a node with
- *   `type.spec.placeholder`.
- * - When the cursor enters such a node, the `<prosekit-autocomplete-popover>`
- *   element's `.regex` property is set to `null`, which causes the popover
- *   to unregister its autocomplete rule (the menu cannot open).
- * - When the cursor leaves, the regex is restored so the slash menu works
- *   normally again.
+ * - Uses `handleKeyDown` to intercept the "/" key before autocomplete triggers.
+ * - If inside an interaction, inserts "/" as plain text without triggering autocomplete.
+ * - Also uses `defineUpdateHandler` to set the autocomplete regex to null when
+ *   entering an interaction, as a fallback.
+ *
+ * This approach is future-proof: new interactions automatically work if they
+ * follow the tag naming convention (e.g. qti-choice-interaction, qti-hottext-interaction).
  */
 
-import { defineUpdateHandler } from 'prosekit/core';
+import { defineKeymap, defineUpdateHandler, canUseRegexLookbehind, union } from 'prosekit/core';
+
+import type { EditorView } from 'prosekit/pm/view';
+
+// Same regex as used in the slash menu
+const slashRegex = canUseRegexLookbehind() ? /(?<!\S)\/(\S.*)?$/u : /\/(\S.*)?$/u;
+
+function isInsideInteraction(view: EditorView): boolean {
+  const domAtPos = view.domAtPos(view.state.selection.anchor);
+  let node: Node | null = domAtPos.node;
+
+  // If we got a text node, start from its parent element
+  if (node.nodeType === Node.TEXT_NODE) {
+    node = node.parentElement;
+  }
+
+  // Walk up the DOM tree looking for an interaction element
+  while (node && node !== view.dom) {
+    if (node instanceof HTMLElement && node.tagName.toLowerCase().endsWith('-interaction')) {
+      return true;
+    }
+    node = node.parentNode;
+  }
+
+  return false;
+}
 
 export function defineSlashMenuGuardExtension() {
   let wasInside = false;
 
-  return defineUpdateHandler((view) => {
-    const $pos = view.state.selection.$anchor;
-    let inside = false;
-    for (let d = $pos.depth; d > 0; d--) {
-      if ($pos.node(d).type.spec.placeholder) {
-        inside = true;
-        break;
+  // Keymap to intercept "/" and insert it as plain text when inside an interaction
+  const keymap = defineKeymap({
+    '/': (state, dispatch, view) => {
+      if (!view || !isInsideInteraction(view)) {
+        return false; // Let normal autocomplete handle it
       }
-    }
+      // Insert "/" as plain text without triggering autocomplete
+      if (dispatch) {
+        dispatch(state.tr.insertText('/'));
+      }
+      return true; // Prevent default handling (autocomplete)
+    },
+  });
+
+  // Update handler to manage regex state when cursor moves
+  const updateHandler = defineUpdateHandler((view) => {
+    const inside = isInsideInteraction(view);
 
     if (inside === wasInside) return;
     wasInside = inside;
 
+    // Update the autocomplete-root's regex
+    const autocompleteRoot = document.querySelector('prosekit-autocomplete-root') as (HTMLElement & { regex?: RegExp | null }) | null;
+    if (autocompleteRoot) {
+      autocompleteRoot.regex = inside ? null : slashRegex;
+    }
+
+    // Also update the slash-menu's disabled state for consistency
     const slashMenu = document.querySelector('qti-slash-menu') as (HTMLElement & { disabled?: boolean }) | null;
     if (slashMenu) {
       slashMenu.disabled = inside;
     }
   });
+
+  return union(keymap, updateHandler);
 }
