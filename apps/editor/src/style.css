@@ -37,6 +37,10 @@ qti-extended-text-interaction {
    @apply bg-slate-100 rounded p-2 my-1;
 }
 
+qti-hottext-interaction > * {
+   @apply bg-white m-2
+}
+
 qti-simple-choice,
 qti-simple-associable-choice {
    @apply bg-white rounded p-2;
