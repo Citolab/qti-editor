@@ -99,3 +99,14 @@ jobs:
         run: pnpm exec multi-semantic-release --ignore-private-packages
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Restore workspace refs and sync lockfile
+        run: |
+          git pull --rebase
+          find packages -name "package.json" ! -path "*/node_modules/*" ! -path "*/dist/*" \
+            -exec sed -i -E 's/"(@qti-editor\/[^"]+)": "[0-9][^"]*"/"\1": "workspace:*"/g' {} +
+          pnpm install --no-frozen-lockfile
+          git add pnpm-lock.yaml
+          find packages -name "package.json" ! -path "*/node_modules/*" ! -path "*/dist/*" | xargs git add
+          git diff --staged --quiet || git commit -m "chore: restore workspace refs after release [skip ci]"
+          git push
