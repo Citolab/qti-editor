@@ -1,7 +1,7 @@
 {
   "name": "@qti-editor/interfaces",
   "description": "Contract types for the QTI editor — zero runtime dependencies",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",
