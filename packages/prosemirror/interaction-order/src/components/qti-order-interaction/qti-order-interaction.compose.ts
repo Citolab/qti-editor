@@ -15,6 +15,8 @@ export function composeOrderInteractionElement(sourceElement: Element, xmlDoc: D
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
   const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
+  const scoreAttr = sourceElement.getAttribute('score');
+  const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
   const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
   editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
@@ -33,6 +35,7 @@ export function composeOrderInteractionElement(sourceElement: Element, xmlDoc: D
       baseType: 'identifier',
       correctResponse: correctResponse ?? undefined,
       sourceTag: metadata.tagName,
+      score,
     };
   }
 

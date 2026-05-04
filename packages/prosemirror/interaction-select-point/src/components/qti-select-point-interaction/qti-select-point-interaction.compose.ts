@@ -101,6 +101,7 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
   const maxChoices = toFiniteNumber(sourceElement.getAttribute('max-choices'), 1);
   const minChoices = toFiniteNumber(sourceElement.getAttribute('min-choices'), 0);
+  const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
   const promptFromChild = sourceElement.querySelector('qti-prompt')?.textContent;
   const prompt = toNonEmptyString(promptFromChild ?? null);
@@ -165,6 +166,7 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
       correctResponse: correctResponse ?? undefined,
       areaMapping: areaMappingResult.areaMapping,
       sourceTag: metadata.tagName,
+      score,
     };
   }
 

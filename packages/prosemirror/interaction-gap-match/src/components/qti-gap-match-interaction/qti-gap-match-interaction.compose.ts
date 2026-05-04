@@ -23,6 +23,7 @@ export function composeGapMatchInteractionElement(sourceElement: Element, xmlDoc
   const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
   const maxAssociations = toFiniteNumber(sourceElement.getAttribute('max-associations'), 1);
   const minAssociations = toFiniteNumber(sourceElement.getAttribute('min-associations'), 0);
+  const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
   const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
   editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
@@ -48,6 +49,7 @@ export function composeGapMatchInteractionElement(sourceElement: Element, xmlDoc
       baseType: 'directedPair',
       correctResponse: correctResponse ?? undefined,
       sourceTag: metadata.tagName,
+      score,
     };
   }
 

@@ -39,6 +39,7 @@ export interface ResponseDeclaration {
     }>;
   };
   sourceTag: string;
+  score?: number;
 }
 
 const QTI_NS = 'http://www.imsglobal.org/xsd/imsqtiasi_v3p0';
@@ -444,7 +445,7 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
       }
 
       if (composeResult.responseDeclaration) {
-        maxScore += 1;
+        maxScore += composeResult.responseDeclaration.score ?? 1;
       }
 
       if (composeResult.responseDeclaration && !seenIdentifiers.has(composeResult.responseDeclaration.identifier)) {
@@ -474,6 +475,10 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
     interaction.removeAttribute('correct-response');
   });
 
+  itemBody.querySelectorAll('[score]').forEach(element => {
+    element.removeAttribute('score');
+  });
+
   normalizeResponseIdentifiers(itemBody, declarations);
 
   if (declarations.length === 1 && templateCandidates.size === 1) {
@@ -490,7 +495,7 @@ function buildMultiInteractionResponseProcessing(xmlDoc: Document, declarations:
     const kind = declaration.responseProcessingKind ?? 'match_correct';
 
     if (kind === 'match_correct') {
-      responseProcessing.appendChild(createMatchCorrectContribution(xmlDoc, declaration.identifier));
+      responseProcessing.appendChild(createMatchCorrectContribution(xmlDoc, declaration.identifier, declaration.score ?? 1));
       return;
     }
 
@@ -505,7 +510,7 @@ function buildMultiInteractionResponseProcessing(xmlDoc: Document, declarations:
   return responseProcessing;
 }
 
-function createMatchCorrectContribution(xmlDoc: Document, responseIdentifier: string): Element {
+function createMatchCorrectContribution(xmlDoc: Document, responseIdentifier: string, score = 1): Element {
   const responseCondition = xmlDoc.createElementNS(QTI_NS, 'qti-response-condition');
   const responseIf = xmlDoc.createElementNS(QTI_NS, 'qti-response-if');
   const match = xmlDoc.createElementNS(QTI_NS, 'qti-match');
@@ -521,7 +526,7 @@ function createMatchCorrectContribution(xmlDoc: Document, responseIdentifier: st
   responseIf.appendChild(match);
   const incrementValue = xmlDoc.createElementNS(QTI_NS, 'qti-base-value');
   incrementValue.setAttribute('base-type', 'float');
-  incrementValue.textContent = '1';
+  incrementValue.textContent = String(score);
   responseIf.appendChild(createScoreIncrement(xmlDoc, incrementValue));
 
   responseCondition.appendChild(responseIf);

@@ -9,6 +9,7 @@ export const qtiHottextInteractionNodeSpec: NodeSpec = {
     minChoices: { default: 0 },
     class: { default: null },
     correctResponse: { default: null },
+    score: { default: 1 },
   },
   parseDOM: [
     {
@@ -17,12 +18,14 @@ export const qtiHottextInteractionNodeSpec: NodeSpec = {
         if (!(node instanceof HTMLElement)) return {};
         const maxChoices = node.getAttribute('max-choices');
         const minChoices = node.getAttribute('min-choices');
+        const scoreAttr = node.getAttribute('score');
         return {
           responseIdentifier: node.getAttribute('response-identifier'),
           maxChoices: maxChoices ? parseInt(maxChoices, 10) : 1,
           minChoices: minChoices ? parseInt(minChoices, 10) : 0,
           class: node.getAttribute('class'),
           correctResponse: node.getAttribute('correct-response'),
+          score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
       },
     },
@@ -44,6 +47,7 @@ export const qtiHottextInteractionNodeSpec: NodeSpec = {
     if (node.attrs.correctResponse) {
       attrs['correct-response'] = node.attrs.correctResponse;
     }
+    attrs.score = String(node.attrs.score ?? 1);
 
     return ['qti-hottext-interaction', attrs, 0];
   },

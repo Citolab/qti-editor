@@ -47,6 +47,7 @@ export interface InteractionResponseDeclaration {
   areaMapping?: QtiAreaMapping;
   stringMapping?: QtiStringMapping;
   sourceTag: string;
+  score?: number;
 }
 
 export interface InteractionComposeResult {

@@ -5,7 +5,8 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
     responseIdentifier: { default: null },
     shuffle: { default: false },
     class: { default: null },
-    correctResponse: { default: null }
+    correctResponse: { default: null },
+    score: { default: 1 },
   },
   content: 'qtiInlineChoice+',
   inline: true,
@@ -15,11 +16,13 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
       tag: 'qti-inline-choice-interaction',
       getAttrs: (node: Node | string) => {
         if (!(node instanceof HTMLElement)) return {};
+        const scoreAttr = node.getAttribute('score');
         return {
           responseIdentifier: node.getAttribute('response-identifier'),
           shuffle: node.getAttribute('shuffle') === 'true',
           class: node.getAttribute('class') || null,
-          correctResponse: node.getAttribute('correct-response')
+          correctResponse: node.getAttribute('correct-response'),
+          score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
       }
     }
@@ -38,6 +41,7 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
     if (node.attrs.class) {
       attrs.class = node.attrs.class;
     }
+    attrs.score = String(node.attrs.score ?? 1);
 
     return ['qti-inline-choice-interaction', attrs, 0];
   },

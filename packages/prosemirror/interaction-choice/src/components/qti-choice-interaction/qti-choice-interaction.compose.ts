@@ -23,6 +23,7 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
   const maxChoices = toFiniteNumber(sourceElement.getAttribute('max-choices'), 1);
   const minChoices = toFiniteNumber(sourceElement.getAttribute('min-choices'), 0);
+  const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
   const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
   editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
@@ -51,6 +52,7 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
       baseType: 'identifier',
       correctResponse: correctResponse ?? undefined,
       sourceTag: metadata.tagName,
+      score,
     };
   }
 

@@ -33,16 +33,17 @@ export const choiceInteractionComposerMetadata = {
     internalKind: 'match_correct',
     internalSourceXml: MATCH_CORRECT_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['class'],
+  editorOnlyAttributes: ['class', 'score'],
   // maxChoices and correctResponse are set by clicking choices, not edited directly
-  userEditableAttributes: ['class'],
+  userEditableAttributes: ['class', 'score'],
 } satisfies InteractionComposerMetadata;
 
 export const choiceNodeAttributePanelMetadataByNodeTypeName = {
   [CHOICE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: CHOICE_INTERACTION_NODE_TYPE,
-    editableAttributes: choiceInteractionComposerMetadata.userEditableAttributes,
+    editableAttributes: ['score'],
     hiddenAttributes: ['class'],
     friendlyEditors: [choiceInteractionClassFriendlyEditor],
+    fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

@@ -55,6 +55,8 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
   const expectedLines = toFiniteNumber(sourceElement.getAttribute('expected-lines'), null);
   const format = toNonEmptyString(sourceElement.getAttribute('format')) || 'plain';
   const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
+  const scoreAttr = sourceElement.getAttribute('score');
+  const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
   const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
   editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
@@ -91,6 +93,7 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
       cardinality: 'single',
       baseType: 'string',
       sourceTag: metadata.tagName,
+      score,
     };
   }
 

@@ -32,13 +32,14 @@ export const gapMatchInteractionComposerMetadata = {
     internalKind: 'map_response',
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['class'],
-  userEditableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'correctResponse'],
+  editorOnlyAttributes: ['class', 'score'],
+  userEditableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'correctResponse', 'score'],
 } satisfies InteractionComposerMetadata;
 
 export const gapMatchNodeAttributePanelMetadataByNodeTypeName = {
   [GAP_MATCH_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: GAP_MATCH_INTERACTION_NODE_TYPE,
     editableAttributes: gapMatchInteractionComposerMetadata.userEditableAttributes,
+    fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

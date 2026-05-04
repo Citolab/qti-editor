@@ -9,6 +9,7 @@ type SelectPointWrapperAttrs = {
   class: string | null;
   areaMappings: string;
   correctResponse: string | null;
+  score: number;
 };
 
 function parseNumberAttribute(value: string | null): number | null {
@@ -29,6 +30,7 @@ function isElementLike(node: unknown): node is HTMLElement {
 }
 
 function parseWrapperAttrs(node: HTMLElement): SelectPointWrapperAttrs {
+  const scoreAttr = node.getAttribute('score');
   return {
     responseIdentifier: node.getAttribute('response-identifier'),
     maxChoices: parseNumberAttribute(node.getAttribute('max-choices')) ?? 0,
@@ -36,6 +38,7 @@ function parseWrapperAttrs(node: HTMLElement): SelectPointWrapperAttrs {
     class: node.getAttribute('class') || null,
     areaMappings: node.getAttribute('area-mappings') || '[]',
     correctResponse: node.getAttribute('correct-response') || null,
+    score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
   };
 }
 
@@ -81,6 +84,7 @@ export const qtiSelectPointInteractionNodeSpec: NodeSpec = {
     class: { default: null },
     areaMappings: { default: '[]' },
     correctResponse: { default: null },
+    score: { default: 1 },
   },
   parseDOM: [
     {
@@ -109,6 +113,7 @@ export const qtiSelectPointInteractionNodeSpec: NodeSpec = {
     if (node.attrs.class) attrs.class = String(node.attrs.class);
     if (node.attrs.areaMappings) attrs['area-mappings'] = String(node.attrs.areaMappings);
     if (node.attrs.correctResponse) attrs['correct-response'] = String(node.attrs.correctResponse);
+    attrs.score = String(node.attrs.score ?? 1);
 
     return ['qti-select-point-interaction', attrs, 0];
   },

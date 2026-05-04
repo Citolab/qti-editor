@@ -38,6 +38,8 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
   const caseSensitive = parseTextEntryCaseSensitiveAttribute(
     sourceElement.getAttribute('case-sensitive'),
   );
+  const scoreAttr = sourceElement.getAttribute('score');
+  const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
   const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
   editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
@@ -67,6 +69,7 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
             }
           : undefined,
       sourceTag: metadata.tagName,
+      score,
     };
   }
 

@@ -14,8 +14,8 @@ export const extendedTextInteractionComposerMetadata = {
     internalKind: undefined,
     internalSourceXml: '',
   },
-  editorOnlyAttributes: ['class', 'correctResponse'],
-  userEditableAttributes: ['expectedLength', 'expectedLines', 'placeholderText', 'format', 'correctResponse', 'class'],
+  editorOnlyAttributes: ['class', 'correctResponse', 'score'],
+  userEditableAttributes: ['expectedLength', 'expectedLines', 'placeholderText', 'format', 'correctResponse', 'class', 'score'],
 } satisfies InteractionComposerMetadata;
 
 export const extendedTextNodeAttributePanelMetadataByNodeTypeName = {
@@ -24,5 +24,6 @@ export const extendedTextNodeAttributePanelMetadataByNodeTypeName = {
     editableAttributes: extendedTextInteractionComposerMetadata.userEditableAttributes,
     hiddenAttributes: ['class', 'correctResponse'],
     friendlyEditors: [extendedTextAttributesFriendlyEditor],
+    fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

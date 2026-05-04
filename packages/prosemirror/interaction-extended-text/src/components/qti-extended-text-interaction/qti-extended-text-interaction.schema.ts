@@ -15,7 +15,8 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
     stringIdentifier: { default: null },
     maxStrings: { default: null },
     minStrings: { default: 0 },
-    class: { default: null }
+    class: { default: null },
+    score: { default: 1 },
   },
   parseDOM: [
     {
@@ -28,6 +29,7 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
         const maxStrings = node.getAttribute('max-strings');
         const minStrings = node.getAttribute('min-strings');
         const className = node.getAttribute('class');
+        const scoreAttr = node.getAttribute('score');
         return {
           responseIdentifier: node.getAttribute('response-identifier'),
           correctResponse: node.getAttribute('correct-response'),
@@ -40,7 +42,8 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
           stringIdentifier: node.getAttribute('string-identifier'),
           maxStrings: maxStrings ? parseInt(maxStrings, 10) : null,
           minStrings: minStrings ? parseInt(minStrings, 10) : 0,
-          class: className || null
+          class: className || null,
+          score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
       }
     }
@@ -81,6 +84,7 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
       attrs['min-strings'] = String(node.attrs.minStrings);
     }
     if (node.attrs.class) attrs.class = node.attrs.class;
+    attrs.score = String(node.attrs.score ?? 1);
     return ['qti-extended-text-interaction', attrs, 0];
   },
   defining: true,

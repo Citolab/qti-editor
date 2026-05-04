@@ -32,14 +32,15 @@ export const inlineChoiceInteractionComposerMetadata = {
     internalKind: 'match_correct',
     internalSourceXml: MATCH_CORRECT_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['correct-response'],
-  userEditableAttributes: ['shuffle'],
+  editorOnlyAttributes: ['correct-response', 'score'],
+  userEditableAttributes: ['shuffle', 'score'],
 } satisfies InteractionComposerMetadata;
 
 export const inlineChoiceNodeAttributePanelMetadataByNodeTypeName = {
   [INLINE_CHOICE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: INLINE_CHOICE_INTERACTION_NODE_TYPE,
     editableAttributes: inlineChoiceInteractionComposerMetadata.userEditableAttributes,
+    fields: { score: { label: 'Score', input: 'number' } },
   },
   [INLINE_CHOICE_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: INLINE_CHOICE_NODE_TYPE,

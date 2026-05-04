@@ -61,7 +61,7 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
 
       const fields: NodeAttributePanelMetadata['fields'] = {};
       for (const key of Object.keys(node.attrs ?? {})) {
-        fields[key] = { label: key };
+        fields[key] = metadata.fields?.[key] ?? { label: key };
       }
 
       const panelMetadata: NodeAttributePanelMetadata = {

@@ -10,6 +10,7 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
     class: { default: null },
     correctResponse: { default: null },
     responseIdentifier: { default: null },
+    score: { default: 1 },
   },
   parseDOM: [
     {
@@ -18,6 +19,7 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
         if (!(node instanceof HTMLElement)) return {};
         const maxAssociations = node.getAttribute('max-associations');
         const minAssociations = node.getAttribute('min-associations');
+        const scoreAttr = node.getAttribute('score');
         return {
           maxAssociations: maxAssociations ? parseInt(maxAssociations, 10) : 1,
           minAssociations: minAssociations ? parseInt(minAssociations, 10) : 0,
@@ -25,6 +27,7 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
           class: node.getAttribute('class'),
           correctResponse: node.getAttribute('correct-response'),
           responseIdentifier: node.getAttribute('response-identifier'),
+          score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
       },
     },
@@ -42,6 +45,7 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
     if (node.attrs.class) attrs.class = node.attrs.class;
     if (node.attrs.correctResponse) attrs['correct-response'] = node.attrs.correctResponse;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
+    attrs.score = String(node.attrs.score ?? 1);
     return ['qti-gap-match-interaction', attrs, 0];
   },
   defining: true,

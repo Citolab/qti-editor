@@ -25,8 +25,8 @@ export const textEntryInteractionComposerMetadata = {
     internalKind: 'map_response',
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['class', 'case-sensitive', 'correct-responses'],
-  userEditableAttributes: ['class', 'caseSensitive', 'correctResponses', 'correctResponse', 'placeholderText'],
+  editorOnlyAttributes: ['class', 'case-sensitive', 'correct-responses', 'score'],
+  userEditableAttributes: ['class', 'caseSensitive', 'correctResponses', 'correctResponse', 'placeholderText', 'score'],
 } satisfies InteractionComposerMetadata;
 
 export const textEntryNodeAttributePanelMetadataByNodeTypeName = {
@@ -35,5 +35,6 @@ export const textEntryNodeAttributePanelMetadataByNodeTypeName = {
     editableAttributes: textEntryInteractionComposerMetadata.userEditableAttributes,
     hiddenAttributes: ['class', 'caseSensitive', 'correctResponses', 'correctResponse'],
     friendlyEditors: [textEntryAttributesFriendlyEditor],
+    fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

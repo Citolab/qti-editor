@@ -32,13 +32,14 @@ export const associateInteractionComposerMetadata = {
     internalKind: 'map_response',
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['class'],
-  userEditableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'correctResponse'],
+  editorOnlyAttributes: ['class', 'score'],
+  userEditableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'correctResponse', 'score'],
 } satisfies InteractionComposerMetadata;
 
 export const associateNodeAttributePanelMetadataByNodeTypeName = {
   [ASSOCIATE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: ASSOCIATE_INTERACTION_NODE_TYPE,
     editableAttributes: associateInteractionComposerMetadata.userEditableAttributes,
+    fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;
