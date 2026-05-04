@@ -12,7 +12,7 @@
 - ProseMirror utility plugins: `packages/prosemirror-*`
 - UI component registry: `packages/ui/` (see Registry Pattern below)
 - Canonical architecture reference: `docs/architecture.md`
-- Skill catalog and definitions: `SKILLS.md`, `.codex/skills/`
+- Skill catalog and definitions: `SKILLS.md`
 
 ## Canonical Commands
 - Install dependencies: `pnpm install`

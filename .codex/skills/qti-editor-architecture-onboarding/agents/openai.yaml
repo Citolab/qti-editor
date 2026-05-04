@@ -1,7 +1,0 @@
-interface:
-  display_name: "QTI Architecture Onboarding"
-  short_description: "Map ownership and safe change paths"
-  default_prompt: "Use $qti-editor-architecture-onboarding to map impacted packages, contracts, and verification steps for this qti-editor change."
-
-policy:
-  allow_implicit_invocation: true
