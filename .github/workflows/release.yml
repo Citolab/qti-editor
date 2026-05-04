@@ -85,6 +85,7 @@ jobs:
           pnpm --filter @qti-editor/interaction-select-point build
           pnpm --filter @qti-editor/interaction-text-entry build
           pnpm --filter @qti-editor/interaction-extended-text build
+          pnpm --filter @qti-editor/interaction-gap-match build
           pnpm --filter @qti-editor/interaction-hottext build
           pnpm --filter @qti-editor/qti-item-divider build
           pnpm --filter @qti-editor/core build
