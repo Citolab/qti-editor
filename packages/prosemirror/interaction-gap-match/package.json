@@ -1,7 +1,7 @@
 {
   "name": "@qti-editor/interaction-gap-match",
   "description": "QTI gap match interaction schemas, components, commands, and composer",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",
@@ -26,8 +26,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-editor/interaction-shared": "workspace:*",
-    "@qti-editor/interfaces": "workspace:*",
+    "@qti-editor/interaction-shared": "1.3.0",
+    "@qti-editor/interfaces": "1.2.0",
     "prosemirror-commands": "^1.7.1",
     "prosemirror-model": "^1.25.4",
     "prosemirror-state": "^1.4.4",
