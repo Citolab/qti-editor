@@ -55,8 +55,10 @@ export class QtiHottextInteractionEdit extends Interaction {
     super.disconnectedCallback();
   }
 
-  override updated() {
-    this.#syncSelectedState();
+  override updated(changedProperties: Map<PropertyKey, unknown>) {
+    if (changedProperties.has('correctResponse')) {
+      this.#syncSelectedState();
+    }
   }
 
   override render() {
@@ -80,7 +82,6 @@ export class QtiHottextInteractionEdit extends Interaction {
 
   #handleSlotChange = () => {
     this.#syncSelectedState();
-    this.#syncSelectionState();
   };
 
   #handleClick = (event: Event) => {
@@ -174,7 +175,11 @@ export class QtiHottextInteractionEdit extends Interaction {
     const text = inside && !alreadyWrapped ? selection.toString().trim() : '';
     if (text) {
       const rect = range.getBoundingClientRect();
-      this._menuPos = { top: rect.bottom + 6, left: rect.left };
+      const top = rect.bottom + 6;
+      const left = rect.left;
+      if (top !== this._menuPos.top || left !== this._menuPos.left) {
+        this._menuPos = { top, left };
+      }
     }
     this._selectedText = text;
   }

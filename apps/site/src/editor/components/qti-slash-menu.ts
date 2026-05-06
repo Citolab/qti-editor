@@ -5,13 +5,13 @@
  * App-level slash menu that extends the default prosekit slash menu with
  * QTI interaction insert commands (Choice, Extended Text, Text Entry).
  *
- * This component reuses the `<prosekit-autocomplete-popover>`,
- * `<prosekit-autocomplete-list>`, and `<lit-editor-slash-menu-item>`
- * elements from prosekit, adding QTI-specific items in a separate group.
+ * This component uses ProseKit autocomplete primitives and adds
+ * QTI-specific items in a separate group.
  */
 
 import 'prosekit/lit/autocomplete';
-import '@qti-editor/ui/components/slash-menu';
+import '@qti-editor/ui/components/slash-menu/slash-menu-item.js';
+import '@qti-editor/ui/components/slash-menu/slash-menu-empty.js';
 
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
@@ -68,12 +68,15 @@ export class QtiSlashMenu extends LitElement {
     const editor = this.editor;
     if (!editor) return html``;
 
-    return html`<prosekit-autocomplete-popover
+    const commands = (editor as any).commands;
+
+    return html`<prosekit-autocomplete-root
       .editor=${editor}
       .regex=${this.disabled ? null : regex}
-      class="dropdown-content relative block max-h-100 min-w-60 select-none overflow-auto whitespace-nowrap p-1 z-10 box-border rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-lg [&:not([data-state])]:hidden"
     >
-      <prosekit-autocomplete-list .editor=${editor}>
+      <prosekit-autocomplete-positioner class="block overflow-visible w-min h-min z-50 ease-out transition-transform duration-100 motion-reduce:transition-none">
+        <prosekit-autocomplete-popup class="box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 duration-40 rounded-xl border border-gray-200 dark:border-gray-800 shadow-lg bg-[canvas] flex flex-col relative max-h-100 min-h-0 min-w-60 select-none overflow-hidden whitespace-nowrap">
+          <div class="flex flex-col flex-1 min-h-0 overflow-y-auto p-1 bg-[canvas] overscroll-contain">
         <!-- QTI Interactions -->
         <div
           class="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 select-none"
@@ -125,8 +128,89 @@ export class QtiSlashMenu extends LitElement {
           label=${translateQti('interactionInsert.gapMatch', { target: this })}
           @select=${() => this.insertInteraction(insertGapMatchInteraction)}
         ></lit-editor-slash-menu-item>
-      </prosekit-autocomplete-list>
-    </prosekit-autocomplete-popover>`;
+        <lit-editor-slash-menu-empty class="contents"></lit-editor-slash-menu-empty>
+
+        <div
+          class="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 select-none"
+        >
+          ${translateQti('slashMenu.formatting', { target: this })}
+        </div>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Text"
+          @select=${() => commands.setParagraph?.()}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Heading 1"
+          kbd="#"
+          @select=${() => commands.setHeading?.({ level: 1 })}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Heading 2"
+          kbd="##"
+          @select=${() => commands.setHeading?.({ level: 2 })}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Heading 3"
+          kbd="###"
+          @select=${() => commands.setHeading?.({ level: 3 })}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Bullet list"
+          kbd="-"
+          @select=${() => commands.wrapInList?.({ kind: 'bullet' })}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Ordered list"
+          kbd="1."
+          @select=${() => commands.wrapInList?.({ kind: 'ordered' })}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Task list"
+          kbd="[]"
+          @select=${() => commands.wrapInList?.({ kind: 'task' })}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Toggle list"
+          kbd=">>"
+          @select=${() => commands.wrapInList?.({ kind: 'toggle' })}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Quote"
+          kbd=">"
+          @select=${() => commands.setBlockquote?.()}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Table"
+          @select=${() => commands.insertTable?.({ row: 3, col: 3 })}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Divider"
+          kbd="---"
+          @select=${() => commands.insertHorizontalRule?.()}
+        ></lit-editor-slash-menu-item>
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Code"
+          kbd="\`\`\`"
+          @select=${() => commands.setCodeBlock?.()}
+        ></lit-editor-slash-menu-item>
+
+        <lit-editor-slash-menu-empty class="contents"></lit-editor-slash-menu-empty>
+          </div>
+        </prosekit-autocomplete-popup>
+      </prosekit-autocomplete-positioner>
+    </prosekit-autocomplete-root>`;
   }
 }
 
