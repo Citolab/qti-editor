@@ -1,6 +1,6 @@
 {
   "name": "@qti-editor/core",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "QTI semantics, composer registry, and XML export orchestration for QTI Editor",
   "repository": {
     "type": "git",
@@ -29,19 +29,19 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-editor/interfaces": "workspace:*",
-    "@qti-editor/interaction-associate": "workspace:*",
-    "@qti-editor/interaction-choice": "workspace:*",
-    "@qti-editor/interaction-extended-text": "workspace:*",
-    "@qti-editor/interaction-gap-match": "workspace:*",
-    "@qti-editor/interaction-hottext": "workspace:*",
-    "@qti-editor/interaction-inline-choice": "workspace:*",
-    "@qti-editor/interaction-match": "workspace:*",
-    "@qti-editor/interaction-order": "workspace:*",
-    "@qti-editor/interaction-select-point": "workspace:*",
-    "@qti-editor/interaction-shared": "workspace:*",
-    "@qti-editor/interaction-text-entry": "workspace:*",
-    "@qti-editor/qti-item-divider": "workspace:*"
+    "@qti-editor/interfaces": "1.2.0",
+    "@qti-editor/interaction-associate": "1.2.1",
+    "@qti-editor/interaction-choice": "1.2.1",
+    "@qti-editor/interaction-extended-text": "1.2.1",
+    "@qti-editor/interaction-gap-match": "1.1.0",
+    "@qti-editor/interaction-hottext": "1.2.2",
+    "@qti-editor/interaction-inline-choice": "1.2.1",
+    "@qti-editor/interaction-match": "1.2.0",
+    "@qti-editor/interaction-order": "0.6.0",
+    "@qti-editor/interaction-select-point": "1.2.0",
+    "@qti-editor/interaction-shared": "1.3.0",
+    "@qti-editor/interaction-text-entry": "1.2.0",
+    "@qti-editor/qti-item-divider": "1.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
