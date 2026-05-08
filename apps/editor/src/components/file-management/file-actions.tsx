@@ -7,11 +7,12 @@ interface FileActionsProps {
   onNew: () => void;
   onSave: () => void;
   onExport: () => void;
+  onExportPackage: () => void;
   onImport: () => void;
   isDirty: boolean;
 }
 
-export function FileActions({ onNew, onSave, onExport, onImport, isDirty }: FileActionsProps) {
+export function FileActions({ onNew, onSave, onExport, onExportPackage, onImport, isDirty }: FileActionsProps) {
   const { t } = useTranslation();
 
   return (
@@ -31,6 +32,10 @@ export function FileActions({ onNew, onSave, onExport, onImport, isDirty }: File
 
       <ToolbarButton onClick={onExport} title={t('fileExportTitle')}>
         <IconDownload /> {t('fileExport')}
+      </ToolbarButton>
+
+      <ToolbarButton onClick={onExportPackage} title={t('fileExportPackageTitle')}>
+        <IconDownload /> {t('fileExportPackage')}
       </ToolbarButton>
     </>
   );

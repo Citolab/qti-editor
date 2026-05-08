@@ -30,6 +30,12 @@
       "@qti-editor/core/interactions/composer": [
         "packages/qti/core/src/interactions/composer.ts"
       ],
+      "@qti-editor/qti-package-export": [
+        "packages/qti/package-export/src/index.ts"
+      ],
+      "@qti-editor/qti-package-export/*": [
+        "packages/qti/package-export/src/*"
+      ],
       "@qti-editor/prosekit-integration/save-qti": [
         "packages/qti/prosekit-integration/src/save-qti/index.ts"
       ],

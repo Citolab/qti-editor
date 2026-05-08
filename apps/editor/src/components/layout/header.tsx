@@ -28,6 +28,7 @@ interface AppHeaderProps {
   onNew: () => void;
   onSave: () => void;
   onExport: () => void;
+  onExportPackage: () => void;
   onImport: () => void;
   onLoadMenuToggle: () => void;
   onLoad: (id: string) => void;
@@ -53,6 +54,7 @@ export function AppHeader({
   onNew,
   onSave,
   onExport,
+  onExportPackage,
   onImport,
   onLoadMenuToggle,
   onLoad,
@@ -92,7 +94,14 @@ export function AppHeader({
 
       <Divider />
 
-      <FileActions onNew={onNew} onSave={onSave} onExport={onExport} onImport={onImport} isDirty={isDirty} />
+      <FileActions
+        onNew={onNew}
+        onSave={onSave}
+        onExport={onExport}
+        onExportPackage={onExportPackage}
+        onImport={onImport}
+        isDirty={isDirty}
+      />
 
       <LoadMenu
         files={files}

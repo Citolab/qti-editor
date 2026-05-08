@@ -1,4 +1,5 @@
 import { qtiFromNode } from '@qti-editor/prosekit-integration';
+import { createQtiPackageFromNode } from '@qti-editor/qti-package-export';
 
 import type { ProseMirrorNode } from 'prosekit/pm/model';
 
@@ -9,6 +10,8 @@ export interface ExportXmlOptions {
   title?: string;
   fileName?: string;
 }
+
+export interface ExportPackageOptions extends ExportXmlOptions {}
 
 /**
  * Export a ProseMirror document as QTI XML file
@@ -46,6 +49,28 @@ export function exportXml(options: ExportXmlOptions): void {
   const a = document.createElement('a');
   a.href = url;
   a.download = `${safeFileName}.xml`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+export async function exportPackage(options: ExportPackageOptions): Promise<void> {
+  const safeFileName = (options.fileName || 'item')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-zA-Z0-9._-]/g, '') || 'item';
+
+  const blob = await createQtiPackageFromNode(options.node, {
+    identifier: options.identifier,
+    lang: options.lang,
+    title: options.title,
+    packageIdentifier: safeFileName,
+    testTitle: options.title || safeFileName,
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${safeFileName}.zip`;
   a.click();
   URL.revokeObjectURL(url);
 }
