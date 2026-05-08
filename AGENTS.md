@@ -12,7 +12,7 @@
 - ProseMirror utility plugins: `packages/prosemirror-*`
 - UI component registry: `packages/ui/` (see Registry Pattern below)
 - Canonical architecture reference: `docs/architecture.md`
-- Skill catalog and definitions: `SKILLS.md`, `.codex/skills/`
+- Skill catalog and definitions: `SKILLS.md`
 
 ## Canonical Commands
 - Install dependencies: `pnpm install`
@@ -96,7 +96,7 @@ Memory injection starts on your second session in a project.
 
 `/learn-codebase` is available if the user wants to front-load the entire repo into memory in a single pass (~5 minutes on a typical repo, optional). Otherwise memory builds passively as work happens.
 
-Live activity: http://localhost:37701
+Live activity: http://localhost:37702
 How it works: `/how-it-works`
 
 This message disappears once the first observation lands.

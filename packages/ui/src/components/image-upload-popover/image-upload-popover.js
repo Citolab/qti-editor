@@ -126,7 +126,7 @@ class LitImageUploadPopover extends LitElement {
         </prosekit-popover-trigger>
 
         <prosekit-popover-positioner placement="bottom" class="z-10">
-          <prosekit-popover-popup class="flex flex-col gap-y-4 p-6 text-sm w-sm box-border rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-lg [&:not([data-state])]:hidden">
+          <prosekit-popover-popup class="flex flex-col gap-y-4 p-6 text-sm w-sm box-border rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-lg not-data-state:hidden">
           ${
             !this.file
               ? html`

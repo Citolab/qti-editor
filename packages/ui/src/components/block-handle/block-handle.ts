@@ -20,7 +20,7 @@ class LitBlockHandle extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback()
-    this.classList.add('contents')
+    this.style.display = 'contents'
   }
 
   override createRenderRoot() {

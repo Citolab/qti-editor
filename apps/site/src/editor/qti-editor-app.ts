@@ -140,18 +140,16 @@ export class QtiEditorApp extends LitElement {
       notifyQtiI18nChanged();
     }
 
-    if (this.editorRef.value) {
+    if (this.editorRef.value && !this._editorMounted) {
       this.editor.mount(this.editorRef.value);
-      if (!this._editorMounted) {
-        this._editorMounted = true;
-        this.requestUpdate();
-        setTimeout(() => {
-          this.dispatchEvent(new CustomEvent('qti:editor:ready', {
-            detail: { editor: this.editor },
-            bubbles: true,
-          }));
-        }, 0);
-      }
+      this._editorMounted = true;
+      this.requestUpdate();
+      setTimeout(() => {
+        this.dispatchEvent(new CustomEvent('qti:editor:ready', {
+          detail: { editor: this.editor },
+          bubbles: true,
+        }));
+      }, 0);
     }
   }
 
@@ -172,15 +170,19 @@ export class QtiEditorApp extends LitElement {
   }
 
   override render() {
+    const toolbar = this._editorMounted
+      ? html`<lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>`
+      : html`<div style="height: 40px;"></div>`;
+
     return html`
       <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div class="editor-card relative min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
           <div class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/90">
-            <lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>
+            ${toolbar}
           </div>
           <div ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col bg-white px-6 py-6 dark:bg-slate-900"></div>
-          <qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>
-          <qti-composer .editor=${this.editor} class="block w-full shrink-0"></qti-composer>
+          ${this._editorMounted ? html`<qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>` : ''}
+          ${this._editorMounted ? html`<qti-composer .editor=${this.editor} class="block w-full shrink-0"></qti-composer>` : ''}
         </div>
         <div class="w-full lg:w-80 lg:shrink-0 lg:max-h-[72vh] lg:overflow-y-auto">
           <qti-composer-metadata-form
@@ -189,10 +191,10 @@ export class QtiEditorApp extends LitElement {
             .identifier=${this.itemContext.identifier ?? ''}
             @metadata-change=${this.onMetadataChange}
           ></qti-composer-metadata-form>
-          <qti-attributes-panel
+          ${this._editorMounted ? html`<qti-attributes-panel
             .editor=${this.editor}
             class="block w-full sticky top-0 mt-5"
-          ></qti-attributes-panel>
+          ></qti-attributes-panel>` : ''}
         </div>
       </div>
     `;

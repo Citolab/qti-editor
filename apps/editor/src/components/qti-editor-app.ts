@@ -7,13 +7,10 @@ import '@qti-editor/ui/components/attributes-panel';
 import '@qti-editor/ui/components/toolbar';
 import '@qti-editor/ui/components/items-gutter';
 import '@qti-editor/ui/components/items-navigator';
-
 import { registerLitEditorBlockHandle } from '@qti-editor/ui/components/block-handle';
 import { registerLitEditorDropIndicator } from '@qti-editor/ui/components/drop-indicator';
 import { editorContext } from '@qti-editor/ui/components/editor-context';
-
 import './blocks/slash-menu/index.js';
-
 import { provide, ContextProvider } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { LitElement, html, type PropertyValues } from 'lit';

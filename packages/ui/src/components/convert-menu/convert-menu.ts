@@ -136,7 +136,7 @@ export class QtiConvertMenu extends LitElement {
           </button>
         </prosekit-popover-trigger>
         <prosekit-popover-positioner placement="bottom" class="z-10">
-          <prosekit-popover-popup class="flex min-w-64 flex-col gap-1 rounded-lg border border-gray-200 bg-white p-2 text-sm shadow-lg dark:border-gray-800 dark:bg-gray-950 [&:not([data-state])]:hidden">
+          <prosekit-popover-popup class="flex min-w-64 flex-col gap-1 rounded-lg border border-gray-200 bg-white p-2 text-sm shadow-lg dark:border-gray-800 dark:bg-gray-950 not-data-state:hidden">
           ${items.map(
             item => html`
               <button

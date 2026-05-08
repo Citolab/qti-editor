@@ -85,6 +85,7 @@ jobs:
           pnpm --filter @qti-editor/interaction-select-point build
           pnpm --filter @qti-editor/interaction-text-entry build
           pnpm --filter @qti-editor/interaction-extended-text build
+          pnpm --filter @qti-editor/interaction-gap-match build
           pnpm --filter @qti-editor/interaction-hottext build
           pnpm --filter @qti-editor/qti-item-divider build
           pnpm --filter @qti-editor/core build
@@ -98,3 +99,15 @@ jobs:
         run: pnpm exec multi-semantic-release --ignore-private-packages
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Restore workspace refs and sync lockfile
+        run: |
+          git fetch origin main
+          git rebase origin/main
+          find packages -name "package.json" ! -path "*/node_modules/*" ! -path "*/dist/*" \
+            -exec sed -i -E 's/"(@qti-editor\/[^"]+)": "[0-9][^"]*"/"\1": "workspace:*"/g' {} +
+          pnpm install --no-frozen-lockfile
+          git add pnpm-lock.yaml
+          find packages -name "package.json" ! -path "*/node_modules/*" ! -path "*/dist/*" | xargs git add
+          git diff --staged --quiet || git commit -m "chore: restore workspace refs after release [skip ci]"
+          git push origin HEAD:main
