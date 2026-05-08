@@ -12,6 +12,20 @@ const QTI_ASI_SCHEMA_LOCATION =
   'http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd';
 
 const IMAGE_REFERENCE_ATTRIBUTES = ['src', 'data', 'image'] as const;
+const TEXT_ENTRY_INTERACTION_TAG = 'qti-text-entry-interaction';
+const SELECT_POINT_INTERACTION_TAG = 'qti-select-point-interaction';
+const EDITOR_DATA_ATTRIBUTE_MAPPINGS = [
+  { source: 'correct-response', target: 'data-correct-response' },
+  { source: 'correctResponse', target: 'data-correct-response' },
+  { source: 'correctAnswer', target: 'data-correct-response' },
+  { source: 'score', target: 'data-score' },
+] as const;
+const TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS = [
+  { source: 'case-sensitive', target: 'data-case-sensitive' },
+] as const;
+const SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS = [
+  { source: 'area-mappings', target: 'data-area-mappings' },
+] as const;
 
 export interface QtiPackageContext extends QtiComposeContext {
   packageIdentifier?: string;
@@ -210,7 +224,7 @@ async function materializeImageReferences(
 ): Promise<{ xml: string; assetHrefs: string[] }> {
   const assetHrefs: string[] = [];
   const replacements = new Map<string, string>();
-  const cleanedXml = cleanXmlString(xml);
+  const cleanedXml = preserveEditorDataAttributes(cleanXmlString(xml));
   const attributePattern = new RegExp(`\\b(${IMAGE_REFERENCE_ATTRIBUTES.join('|')})="([^"]+)"`, 'gi');
   const matches = [...cleanedXml.matchAll(attributePattern)];
 
@@ -232,6 +246,45 @@ async function materializeImageReferences(
   });
 
   return { xml: rewrittenXml, assetHrefs };
+}
+
+function preserveEditorDataAttributes(xml: string): string {
+  return xml.replace(/<(?<tagName>qti-[a-z0-9-]+-interaction)\b(?<attributes>[^<>]*)>/gi, (match, tagName: string, attributes: string) => {
+    const isSelfClosing = match.endsWith('/>') || /\/\s*$/.test(attributes);
+    const baseAttributes = isSelfClosing ? attributes.replace(/\/\s*$/, '') : attributes;
+    const nextAttributes = preserveEditorDataAttributesInTag(tagName.toLowerCase(), baseAttributes);
+    return `<${tagName}${nextAttributes}${isSelfClosing ? ' />' : '>'}`;
+  });
+}
+
+function preserveEditorDataAttributesInTag(tagName: string, attributes: string): string {
+  const mappings = [
+    ...EDITOR_DATA_ATTRIBUTE_MAPPINGS,
+    ...(tagName === TEXT_ENTRY_INTERACTION_TAG ? TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS : []),
+    ...(tagName === SELECT_POINT_INTERACTION_TAG ? SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS : []),
+  ];
+
+  let nextAttributes = attributes;
+  mappings.forEach(({ source, target }) => {
+    const value = findAttributeValue(attributes, source);
+    if (value == null || value.length === 0 || hasAttribute(nextAttributes, target)) return;
+    nextAttributes += ` ${target}="${escapePreservedAttributeValue(value)}"`;
+  });
+
+  return nextAttributes;
+}
+
+function findAttributeValue(attributes: string, name: string): string | null {
+  const match = attributes.match(new RegExp(`(?:^|\\s)${escapeRegExp(name)}=(["'])(.*?)\\1`));
+  return match?.[2] ?? null;
+}
+
+function hasAttribute(attributes: string, name: string): boolean {
+  return new RegExp(`(?:^|\\s)${escapeRegExp(name)}=`).test(attributes);
+}
+
+function escapePreservedAttributeValue(value: string): string {
+  return value.replace(/"/g, '&quot;');
 }
 
 async function createAssetFromReference(
@@ -395,6 +448,10 @@ function hasImageExtension(path: string): boolean {
 
 function replaceAll(value: string, search: string, replacement: string): string {
   return value.split(search).join(replacement);
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function cleanXmlString(xmlString: string): string {

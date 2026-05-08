@@ -63,4 +63,33 @@ describe('createQtiPackageFromItems', () => {
     expect(manifest).toContain('type="associatedcontent/learning-application-resource"');
     expect(manifest).toContain('href="assets/image-item-image-1.png"');
   });
+
+  it('copies editor-only interaction attributes to data attributes', async () => {
+    const zip = await unzip(await createQtiPackageFromItems([
+      {
+        identifier: 'editor-data-item',
+        title: 'Editor Data Item',
+        xml: itemXml('editor-data-item', `
+          <qti-choice-interaction response-identifier="CHOICE" correct-response="choice-a" score="2">
+            <qti-simple-choice identifier="choice-a">A</qti-simple-choice>
+          </qti-choice-interaction>
+          <p>
+            <qti-text-entry-interaction
+              response-identifier="TEXT"
+              correct-response="alpha,beta"
+              score="3" />
+          </p>
+          <qti-extended-text-interaction response-identifier="EXTENDED" correct-response="Model answer" score="4" />
+        `),
+      },
+    ], { identifier: 'demo' }));
+
+    const item = await zip.file('items/editor-data-item.xml')?.async('string');
+
+    expect(item).toContain('data-correct-response="choice-a"');
+    expect(item).toContain('data-score="2"');
+    expect(item).toContain('data-correct-response="alpha,beta"');
+    expect(item).toContain('data-correct-response="Model answer"');
+    expect(item).toContain('data-score="4"');
+  });
 });

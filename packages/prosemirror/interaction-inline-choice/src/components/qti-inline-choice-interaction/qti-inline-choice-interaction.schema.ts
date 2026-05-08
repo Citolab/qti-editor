@@ -1,3 +1,5 @@
+import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
@@ -21,7 +23,7 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
           responseIdentifier: node.getAttribute('response-identifier'),
           shuffle: node.getAttribute('shuffle') === 'true',
           class: node.getAttribute('class') || null,
-          correctResponse: node.getAttribute('correct-response'),
+          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
       }
@@ -33,8 +35,9 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
     if (node.attrs.responseIdentifier) {
       attrs['response-identifier'] = node.attrs.responseIdentifier;
     }
-    if (node.attrs.correctResponse) {
-      attrs['correct-response'] = node.attrs.correctResponse;
+    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    if (cr) {
+      attrs['correct-response'] = cr;
     }
     attrs.shuffle = String(Boolean(node.attrs.shuffle));
 

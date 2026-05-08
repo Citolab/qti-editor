@@ -1,3 +1,8 @@
+import {
+  parseCorrectResponseAttribute,
+  serializeCorrectResponseAttribute,
+  type CorrectResponseValue,
+} from '@qti-editor/interaction-shared';
 import { Fragment } from 'prosemirror-model';
 
 import type { DOMOutputSpec, Node as ProseMirrorNode, NodeSpec, Schema } from 'prosemirror-model';
@@ -8,7 +13,7 @@ type SelectPointWrapperAttrs = {
   minChoices: number;
   class: string | null;
   areaMappings: string;
-  correctResponse: string | null;
+  correctResponse: CorrectResponseValue;
   score: number;
 };
 
@@ -37,7 +42,7 @@ function parseWrapperAttrs(node: HTMLElement): SelectPointWrapperAttrs {
     minChoices: parseNumberAttribute(node.getAttribute('min-choices')) ?? 0,
     class: node.getAttribute('class') || null,
     areaMappings: node.getAttribute('area-mappings') || '[]',
-    correctResponse: node.getAttribute('correct-response') || null,
+    correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
     score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
   };
 }
@@ -112,7 +117,8 @@ export const qtiSelectPointInteractionNodeSpec: NodeSpec = {
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = String(node.attrs.responseIdentifier);
     if (node.attrs.class) attrs.class = String(node.attrs.class);
     if (node.attrs.areaMappings) attrs['area-mappings'] = String(node.attrs.areaMappings);
-    if (node.attrs.correctResponse) attrs['correct-response'] = String(node.attrs.correctResponse);
+    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    if (cr) attrs['correct-response'] = cr;
     attrs.score = String(node.attrs.score ?? 1);
 
     return ['qti-select-point-interaction', attrs, 0];

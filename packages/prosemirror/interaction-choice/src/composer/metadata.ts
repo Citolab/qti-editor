@@ -1,6 +1,6 @@
-import { choiceInteractionClassFriendlyEditor } from '../attributes/choice-interaction-class-editor.js';
+import { type InteractionComposerMetadata, type NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
 
-import type { InteractionComposerMetadata, NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
+import { choiceInteractionClassFriendlyEditor } from '../attributes/choice-interaction-class-editor.js';
 
 export const MATCH_CORRECT_TEMPLATE = 'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct';
 
@@ -33,9 +33,10 @@ export const choiceInteractionComposerMetadata = {
     internalKind: 'match_correct',
     internalSourceXml: MATCH_CORRECT_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['class', 'score'],
+  editorOnlyAttributes: ['score'],
   // maxChoices and correctResponse are set by clicking choices, not edited directly
   userEditableAttributes: ['class', 'score'],
+
 } satisfies InteractionComposerMetadata;
 
 export const choiceNodeAttributePanelMetadataByNodeTypeName = {

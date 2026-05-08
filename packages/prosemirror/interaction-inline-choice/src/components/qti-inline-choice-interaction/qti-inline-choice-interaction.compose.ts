@@ -1,3 +1,5 @@
+import { parseCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+
 import { inlineChoiceInteractionComposerMetadata } from '../../composer/metadata.js';
 
 import type { InteractionComposeResult, InteractionResponseDeclaration, ComposerWarning } from '@qti-editor/interaction-shared/composer/types.js';
@@ -14,7 +16,7 @@ export function composeInlineChoiceInteractionElement(sourceElement: Element, xm
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
-  const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
+  const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 

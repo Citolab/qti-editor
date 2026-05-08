@@ -1,3 +1,5 @@
+import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiOrderInteractionNodeSpec: NodeSpec = {
@@ -21,7 +23,7 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
           shuffle: node.getAttribute('shuffle') === 'true',
           orientation: node.getAttribute('orientation') || 'vertical',
           class: node.getAttribute('class') || null,
-          correctResponse: node.getAttribute('correct-response') || null,
+          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier') || null,
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
@@ -34,7 +36,8 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
     if (node.attrs.shuffle) attrs['shuffle'] = 'true';
     if (node.attrs.orientation && node.attrs.orientation !== 'vertical') attrs['orientation'] = node.attrs.orientation;
     if (node.attrs.class) attrs['class'] = node.attrs.class;
-    if (node.attrs.correctResponse) attrs['correct-response'] = node.attrs.correctResponse;
+    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    if (cr) attrs['correct-response'] = cr;
     attrs.score = String(node.attrs.score ?? 1);
     return ['qti-order-interaction', attrs, 0];
   },

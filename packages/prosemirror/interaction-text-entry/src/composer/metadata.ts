@@ -1,6 +1,6 @@
-import { textEntryAttributesFriendlyEditor } from '../attributes/text-entry-attributes-editor.js';
+import { type InteractionComposerMetadata, type NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
 
-import type { InteractionComposerMetadata, NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
+import { textEntryAttributesFriendlyEditor } from '../attributes/text-entry-attributes-editor.js';
 
 export const MAP_RESPONSE_TEMPLATE = 'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/map_response';
 
@@ -25,15 +25,15 @@ export const textEntryInteractionComposerMetadata = {
     internalKind: 'map_response',
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['class', 'case-sensitive', 'correct-responses', 'score'],
-  userEditableAttributes: ['class', 'caseSensitive', 'correctResponses', 'correctResponse', 'placeholderText', 'score'],
+  editorOnlyAttributes: ['case-sensitive', 'score'],
+  userEditableAttributes: ['class', 'caseSensitive', 'correctResponse', 'placeholderText', 'score'],
 } satisfies InteractionComposerMetadata;
 
 export const textEntryNodeAttributePanelMetadataByNodeTypeName = {
   [TEXT_ENTRY_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: TEXT_ENTRY_INTERACTION_NODE_TYPE,
     editableAttributes: textEntryInteractionComposerMetadata.userEditableAttributes,
-    hiddenAttributes: ['class', 'caseSensitive', 'correctResponses', 'correctResponse'],
+    hiddenAttributes: ['class', 'caseSensitive', 'correctResponse'],
     friendlyEditors: [textEntryAttributesFriendlyEditor],
     fields: { score: { label: 'Score', input: 'number' } },
   },

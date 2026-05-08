@@ -1,4 +1,4 @@
-import type { InteractionComposerMetadata, NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
+import { type InteractionComposerMetadata, type NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
 
 const MAP_RESPONSE_TEMPLATE = 'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/map_response';
 
@@ -32,7 +32,7 @@ export const gapMatchInteractionComposerMetadata = {
     internalKind: 'map_response',
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['class', 'score'],
+  editorOnlyAttributes: ['score'],
   userEditableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'correctResponse', 'score'],
 } satisfies InteractionComposerMetadata;
 

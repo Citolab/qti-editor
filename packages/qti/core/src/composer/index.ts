@@ -20,7 +20,7 @@ export interface ResponseDeclaration {
   identifier: string;
   cardinality: 'single' | 'multiple' | 'ordered';
   baseType: 'identifier' | 'directedPair' | 'point' | 'string';
-  correctResponse?: string;
+  correctResponse?: string | string[];
   stringMapping?: {
     defaultValue: number;
     entries: Array<{
@@ -49,31 +49,60 @@ const SCHEMA_LOCATION =
   'http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd';
 const MATCH_CORRECT_TEMPLATE =
   'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct';
+const TEXT_ENTRY_INTERACTION_TAG = 'qti-text-entry-interaction';
+const SELECT_POINT_INTERACTION_TAG = 'qti-select-point-interaction';
+
+const EDITOR_DATA_ATTRIBUTE_MAPPINGS = [
+  { source: 'correct-response', target: 'data-correct-response' },
+  { source: 'correctResponse', target: 'data-correct-response' },
+  { source: 'correctAnswer', target: 'data-correct-response' },
+  { source: 'score', target: 'data-score' },
+] as const;
+
+const TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS = [
+  { source: 'case-sensitive', target: 'data-case-sensitive' },
+] as const;
+
+const SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS = [
+  { source: 'area-mappings', target: 'data-area-mappings' },
+] as const;
 
 function parseCorrectResponseValues(
   declaration: Pick<ResponseDeclaration, 'cardinality' | 'correctResponse'>,
 ): string[] {
-  if (!declaration.correctResponse) return [];
-
+  const value = declaration.correctResponse;
+  if (value == null) return [];
+  if (Array.isArray(value)) {
+    return value.map(v => v.trim()).filter(Boolean);
+  }
   if (declaration.cardinality === 'single') {
-    return [declaration.correctResponse];
+    return value.length > 0 ? [value] : [];
+  }
+  return value.split(',').map(v => v.trim()).filter(Boolean);
+}
+
+function copyEditorDataAttribute(sourceElement: Element, targetElement: Element, source: string, target: string): void {
+  const value = sourceElement.getAttribute(source);
+  if (value == null || value.length === 0 || targetElement.hasAttribute(target)) return;
+  targetElement.setAttribute(target, value);
+}
+
+function preserveEditorDataAttributes(sourceElement: Element, targetElement: Element, tagName: string): void {
+  EDITOR_DATA_ATTRIBUTE_MAPPINGS.forEach(({ source, target }) => {
+    copyEditorDataAttribute(sourceElement, targetElement, source, target);
+  });
+
+  if (tagName === TEXT_ENTRY_INTERACTION_TAG) {
+    TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS.forEach(({ source, target }) => {
+      copyEditorDataAttribute(sourceElement, targetElement, source, target);
+    });
   }
 
-  if (declaration.cardinality === 'ordered') {
-    try {
-      const parsed = JSON.parse(declaration.correctResponse);
-      if (Array.isArray(parsed)) {
-        return parsed
-          .filter((value): value is string => typeof value === 'string')
-          .map(value => value.trim())
-          .filter(Boolean);
-      }
-    } catch {
-      // Fall back to comma-separated parsing for malformed or legacy values.
-    }
+  if (tagName === SELECT_POINT_INTERACTION_TAG) {
+    SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS.forEach(({ source, target }) => {
+      copyEditorDataAttribute(sourceElement, targetElement, source, target);
+    });
   }
-
-  return declaration.correctResponse.split(',').map(v => v.trim()).filter(Boolean);
 }
 
 export function extractResponseDeclarations(itemBodyRoot?: Element | null): ResponseDeclaration[] {
@@ -422,6 +451,7 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
 
     if (handler) {
       const composeResult = handler.compose(element, xmlDoc);
+      preserveEditorDataAttributes(element, composeResult.normalizedElement, tagName);
 
       composeResult.warnings.forEach(warning => {
         console.warn(`[QTI Composer] ${warning.message}`);

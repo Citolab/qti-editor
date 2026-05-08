@@ -1,3 +1,5 @@
+import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiHottextInteractionNodeSpec: NodeSpec = {
@@ -24,7 +26,7 @@ export const qtiHottextInteractionNodeSpec: NodeSpec = {
           maxChoices: maxChoices ? parseInt(maxChoices, 10) : 1,
           minChoices: minChoices ? parseInt(minChoices, 10) : 0,
           class: node.getAttribute('class'),
-          correctResponse: node.getAttribute('correct-response'),
+          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
       },
@@ -44,8 +46,9 @@ export const qtiHottextInteractionNodeSpec: NodeSpec = {
     if (node.attrs.class) {
       attrs.class = node.attrs.class;
     }
-    if (node.attrs.correctResponse) {
-      attrs['correct-response'] = node.attrs.correctResponse;
+    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    if (cr) {
+      attrs['correct-response'] = cr;
     }
     attrs.score = String(node.attrs.score ?? 1);
 

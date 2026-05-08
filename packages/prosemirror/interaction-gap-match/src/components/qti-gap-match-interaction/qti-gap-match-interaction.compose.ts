@@ -1,3 +1,5 @@
+import { parseCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+
 import { gapMatchInteractionComposerMetadata } from '../../composer/metadata.js';
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interaction-shared/composer/types.js';
@@ -20,7 +22,7 @@ export function composeGapMatchInteractionElement(sourceElement: Element, xmlDoc
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
-  const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
+  const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
   const maxAssociations = toFiniteNumber(sourceElement.getAttribute('max-associations'), 1);
   const minAssociations = toFiniteNumber(sourceElement.getAttribute('min-associations'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);

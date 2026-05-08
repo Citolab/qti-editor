@@ -1,3 +1,5 @@
+import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
@@ -25,7 +27,7 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
           minAssociations: minAssociations ? parseInt(minAssociations, 10) : 0,
           shuffle: node.getAttribute('shuffle') === 'true',
           class: node.getAttribute('class'),
-          correctResponse: node.getAttribute('correct-response'),
+          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
@@ -43,7 +45,8 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
       attrs.shuffle = 'true';
     }
     if (node.attrs.class) attrs.class = node.attrs.class;
-    if (node.attrs.correctResponse) attrs['correct-response'] = node.attrs.correctResponse;
+    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    if (cr) attrs['correct-response'] = cr;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     attrs.score = String(node.attrs.score ?? 1);
     return ['qti-gap-match-interaction', attrs, 0];

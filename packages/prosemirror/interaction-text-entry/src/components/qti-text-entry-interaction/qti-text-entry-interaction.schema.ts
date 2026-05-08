@@ -1,11 +1,9 @@
+import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+
 import {
-  getPrimaryTextEntryCorrectResponse,
   parseTextEntryCaseSensitiveAttribute,
   parseTextEntryClassState,
-  parseTextEntryCorrectResponses,
-  parseTextEntryLegacyCorrectResponse,
   serializeTextEntryClassState,
-  serializeTextEntryCorrectResponsesAttribute,
 } from '../../attributes/text-entry-attributes-editor.js';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
@@ -14,7 +12,6 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
   attrs: {
     responseIdentifier: { default: null },
     correctResponse: { default: null },
-    correctResponses: { default: [] },
     caseSensitive: { default: false },
     class: { default: null },
     placeholderText: { default: null },
@@ -26,22 +23,10 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
       getAttrs: (node: Node | string) => {
         if (!(node instanceof HTMLElement)) return {};
 
-        const legacyCorrectResponse = parseTextEntryLegacyCorrectResponse(
-          node.getAttribute('correct-response'),
-        );
-        const parsedResponses = parseTextEntryCorrectResponses(node.getAttribute('correct-responses'));
-        const correctResponses =
-          parsedResponses.length > 0
-            ? parsedResponses
-            : legacyCorrectResponse
-              ? [legacyCorrectResponse]
-              : [];
-
         const scoreAttr = node.getAttribute('score');
         return {
           responseIdentifier: node.getAttribute('response-identifier'),
-          correctResponse: getPrimaryTextEntryCorrectResponse(correctResponses),
-          correctResponses,
+          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           caseSensitive: parseTextEntryCaseSensitiveAttribute(node.getAttribute('case-sensitive')),
           class: serializeTextEntryClassState(
             parseTextEntryClassState(node.getAttribute('class')),
@@ -54,10 +39,6 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
   ],
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {};
-    const correctResponses = parseTextEntryCorrectResponses(node.attrs.correctResponses);
-    const primaryCorrectResponse =
-      getPrimaryTextEntryCorrectResponse(correctResponses) ??
-      parseTextEntryLegacyCorrectResponse(node.attrs.correctResponse);
 
     if (node.attrs.responseIdentifier) {
       attrs['response-identifier'] = node.attrs.responseIdentifier;
@@ -72,13 +53,9 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
       attrs['case-sensitive'] = 'true';
     }
 
-    const serializedCorrectResponses = serializeTextEntryCorrectResponsesAttribute(correctResponses);
-    if (serializedCorrectResponses) {
-      attrs['correct-responses'] = serializedCorrectResponses;
-    }
-
-    if (primaryCorrectResponse) {
-      attrs['correct-response'] = primaryCorrectResponse;
+    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    if (cr) {
+      attrs['correct-response'] = cr;
     }
 
     if (node.attrs.placeholderText) {

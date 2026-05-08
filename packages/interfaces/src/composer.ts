@@ -43,7 +43,7 @@ export interface InteractionResponseDeclaration {
   identifier: string;
   cardinality: 'single' | 'multiple' | 'ordered';
   baseType: 'identifier' | 'directedPair' | 'point' | 'string';
-  correctResponse?: string;
+  correctResponse?: string | string[];
   areaMapping?: QtiAreaMapping;
   stringMapping?: QtiStringMapping;
   sourceTag: string;

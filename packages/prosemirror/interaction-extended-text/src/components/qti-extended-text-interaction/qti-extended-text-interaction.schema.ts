@@ -1,3 +1,5 @@
+import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
@@ -32,7 +34,7 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
         const scoreAttr = node.getAttribute('score');
         return {
           responseIdentifier: node.getAttribute('response-identifier'),
-          correctResponse: node.getAttribute('correct-response'),
+          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           expectedLength: expectedLength ? parseInt(expectedLength, 10) : null,
           expectedLines: expectedLines ? parseInt(expectedLines, 10) : null,
           placeholderText: node.getAttribute('placeholder-text'),
@@ -53,8 +55,9 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
     if (node.attrs.responseIdentifier) {
       attrs['response-identifier'] = node.attrs.responseIdentifier;
     }
-    if (node.attrs.correctResponse) {
-      attrs['correct-response'] = node.attrs.correctResponse;
+    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    if (cr) {
+      attrs['correct-response'] = cr;
     }
     if (node.attrs.expectedLength != null) {
       attrs['expected-length'] = String(node.attrs.expectedLength);

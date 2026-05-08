@@ -1,11 +1,8 @@
 import { html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import {
-  getPrimaryTextEntryCorrectResponse,
   parseTextEntryCaseSensitiveAttribute,
   parseTextEntryClassState,
-  parseTextEntryCorrectResponses,
-  parseTextEntryLegacyCorrectResponse,
   serializeTextEntryClassState,
   textEntryWidthClassOptions,
   type TextEntryWidthClassOption,
@@ -59,18 +56,10 @@ export class QtiTextEntryAttributesEditor extends LitElement {
   }
 
   private getCorrectResponses(activeNode: AttributesNodeDetail): string[] {
-    // Return raw array if already an array - preserve empty strings for editing
-    const responses = activeNode.attrs.correctResponses;
-    if (Array.isArray(responses)) {
-      return responses.map((r: unknown) => String(r ?? ''));
-    }
-
-    // Fall back to parsing for legacy/string values
-    const parsed = parseTextEntryCorrectResponses(responses);
-    if (parsed.length > 0) return parsed;
-
-    const legacy = parseTextEntryLegacyCorrectResponse(activeNode.attrs.correctResponse);
-    return legacy ? [legacy] : [];
+    const value = activeNode.attrs.correctResponse;
+    if (Array.isArray(value)) return value.map((entry: unknown) => String(entry ?? ''));
+    if (typeof value === 'string' && value.length > 0) return [value];
+    return [];
   }
 
   private updateWidth(widthClass: TextEntryWidthClassOption | null) {
@@ -90,14 +79,16 @@ export class QtiTextEntryAttributesEditor extends LitElement {
   }
 
   private updateResponses(nextResponses: string[]) {
-    // Don't normalize here - allow empty strings while editing
-    // Normalization happens when composing the QTI output
-    const primaryCorrectResponse = getPrimaryTextEntryCorrectResponse(nextResponses);
+    // The shared codec strips commas during serialization. Stripping here too
+    // so the user sees in the input field exactly what will be saved.
+    const sanitized = nextResponses.map(response => response.replace(/,/g, ''));
 
-    this.emitPatch({
-      correctResponses: nextResponses,
-      correctResponse: primaryCorrectResponse,
-    });
+    let nextValue: string | string[] | null;
+    if (sanitized.length === 0) nextValue = null;
+    else if (sanitized.length === 1) nextValue = sanitized[0];
+    else nextValue = sanitized;
+
+    this.emitPatch({ correctResponse: nextValue });
   }
 
   override render() {

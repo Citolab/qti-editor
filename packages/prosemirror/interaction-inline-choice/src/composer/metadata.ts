@@ -1,4 +1,4 @@
-import type { InteractionComposerMetadata, NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
+import { type InteractionComposerMetadata, type NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
 
 const MATCH_CORRECT_TEMPLATE = 'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct';
 

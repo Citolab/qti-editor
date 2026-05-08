@@ -1,3 +1,5 @@
+import { parseCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+
 import { extendedTextInteractionComposerMetadata } from '../../composer/metadata.js';
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interaction-shared/composer/types.js';
@@ -16,31 +18,30 @@ function toNonEmptyString(value: string | null): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
-function createRubricBlock(xmlDoc: Document, correctResponse: string, responseIdentifier: string): Element {
+function createRubricBlock(xmlDoc: Document, correctResponse: string | string[], responseIdentifier: string): Element {
   const rubricBlock = xmlDoc.createElementNS(QTI_NS, 'qti-rubric-block');
   rubricBlock.setAttribute('view', 'scorer');
   rubricBlock.setAttribute('use', 'instructions');
-  
+
   const contentBlock = xmlDoc.createElementNS(QTI_NS, 'qti-content-body');
   const div = xmlDoc.createElementNS(QTI_NS, 'div');
-  
+
   const heading = xmlDoc.createElementNS(QTI_NS, 'p');
   const strong = xmlDoc.createElementNS(QTI_NS, 'strong');
   strong.textContent = `Model answer for ${responseIdentifier}:`;
   heading.appendChild(strong);
   div.appendChild(heading);
-  
-  // Split by newlines and create paragraphs
-  const lines = correctResponse.split('\n');
+
+  const lines = Array.isArray(correctResponse) ? correctResponse : correctResponse.split('\n');
   for (const line of lines) {
     const p = xmlDoc.createElementNS(QTI_NS, 'p');
-    p.textContent = line || '\u00A0'; // Use non-breaking space for empty lines
+    p.textContent = line || '\u00A0';
     div.appendChild(p);
   }
-  
+
   contentBlock.appendChild(div);
   rubricBlock.appendChild(contentBlock);
-  
+
   return rubricBlock;
 }
 
@@ -54,7 +55,7 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
   const expectedLength = toFiniteNumber(sourceElement.getAttribute('expected-length'), null);
   const expectedLines = toFiniteNumber(sourceElement.getAttribute('expected-lines'), null);
   const format = toNonEmptyString(sourceElement.getAttribute('format')) || 'plain';
-  const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
+  const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 

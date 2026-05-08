@@ -1,3 +1,5 @@
+import { parseCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+
 import { choiceInteractionComposerMetadata } from '../../composer/metadata.js';
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interaction-shared/composer/types.js';
@@ -20,7 +22,7 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
-  const correctResponse = toNonEmptyString(sourceElement.getAttribute('correct-response'));
+  const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
   const maxChoices = toFiniteNumber(sourceElement.getAttribute('max-choices'), 1);
   const minChoices = toFiniteNumber(sourceElement.getAttribute('min-choices'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);

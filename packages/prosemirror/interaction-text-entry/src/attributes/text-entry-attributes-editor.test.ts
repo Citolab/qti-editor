@@ -1,16 +1,13 @@
 import {
-  getPrimaryTextEntryCorrectResponse,
   parseTextEntryCaseSensitiveAttribute,
   parseTextEntryClassState,
-  parseTextEntryCorrectResponses,
   serializeTextEntryClassState,
-  serializeTextEntryCorrectResponsesAttribute,
   textEntryAttributesFriendlyEditor,
 } from './text-entry-attributes-editor';
 
 describe('text entry attributes editor metadata', () => {
   it('declares the friendly editor kind', () => {
-    expect(textEntryAttributesFriendlyEditor.attribute).toBe('correctResponses');
+    expect(textEntryAttributesFriendlyEditor.attribute).toBe('correctResponse');
     expect(textEntryAttributesFriendlyEditor.kind).toBe('textEntryAttributes');
   });
 });
@@ -30,31 +27,6 @@ describe('text entry class helpers', () => {
     });
 
     expect(serialized).toBe('custom-a custom-b qti-input-width-20');
-  });
-});
-
-describe('text entry correct responses helpers', () => {
-  it('parses a json array and normalizes values', () => {
-    const parsed = parseTextEntryCorrectResponses('["  Paris  ", "Paris", "Lutetia"]');
-
-    expect(parsed).toEqual(['Paris', 'Lutetia']);
-  });
-
-  it('falls back to single value parsing when json parsing fails', () => {
-    const parsed = parseTextEntryCorrectResponses('Paris');
-
-    expect(parsed).toEqual(['Paris']);
-  });
-
-  it('serializes normalized responses to json', () => {
-    const serialized = serializeTextEntryCorrectResponsesAttribute(['Paris', 'Paris', 'Lutetia']);
-
-    expect(serialized).toBe('["Paris","Lutetia"]');
-  });
-
-  it('returns the first normalized response as primary', () => {
-    expect(getPrimaryTextEntryCorrectResponse(['Paris', 'Lutetia'])).toBe('Paris');
-    expect(getPrimaryTextEntryCorrectResponse([])).toBeNull();
   });
 });
 

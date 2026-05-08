@@ -1,4 +1,4 @@
-import type { InteractionComposerMetadata, NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
+import { type InteractionComposerMetadata, type NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
 
 export const MAP_RESPONSE_POINT_TEMPLATE =
   'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/map_response_point.xml';
@@ -24,7 +24,7 @@ export const selectPointInteractionComposerMetadata = {
     internalKind: 'map_response_point',
     internalSourceXml: MAP_RESPONSE_POINT_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['class', 'area-mappings', 'correct-response', 'score'],
+  editorOnlyAttributes: ['area-mappings', 'correct-response', 'score'],
   userEditableAttributes: ['maxChoices', 'minChoices', 'score'],
 } satisfies InteractionComposerMetadata;
 

@@ -1,3 +1,5 @@
+import { parseCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+
 import { selectPointInteractionComposerMetadata, SELECT_POINT_INTERACTION_TAG } from '../../composer/metadata.js';
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration, QtiAreaMapEntry } from '@qti-editor/interaction-shared/composer/types.js';
@@ -157,8 +159,7 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
       tagName: metadata.tagName,
     });
   } else {
-    const correctResponse =
-      toNonEmptyString(sourceElement.getAttribute('correct-response'));
+    const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
     responseDeclaration = {
       identifier: responseIdentifier,
       cardinality: maxChoices > 1 ? 'multiple' : 'single',

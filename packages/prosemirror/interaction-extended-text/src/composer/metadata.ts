@@ -1,6 +1,6 @@
-import { extendedTextAttributesFriendlyEditor } from '../attributes/extended-text-attributes-editor.js';
+import { type InteractionComposerMetadata, type NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
 
-import type { InteractionComposerMetadata, NodeAttributePanelMetadata } from '@qti-editor/interaction-shared/composer/types.js';
+import { extendedTextAttributesFriendlyEditor } from '../attributes/extended-text-attributes-editor.js';
 
 export const EXTENDED_TEXT_INTERACTION_TAG = 'qti-extended-text-interaction' as const;
 export const EXTENDED_TEXT_INTERACTION_NODE_TYPE = 'qtiExtendedTextInteraction' as const;
@@ -14,8 +14,9 @@ export const extendedTextInteractionComposerMetadata = {
     internalKind: undefined,
     internalSourceXml: '',
   },
-  editorOnlyAttributes: ['class', 'correctResponse', 'score'],
+  editorOnlyAttributes: ['correctResponse', 'score'],
   userEditableAttributes: ['expectedLength', 'expectedLines', 'placeholderText', 'format', 'correctResponse', 'class', 'score'],
+
 } satisfies InteractionComposerMetadata;
 
 export const extendedTextNodeAttributePanelMetadataByNodeTypeName = {

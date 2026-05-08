@@ -1,10 +1,6 @@
-import {
-  getPrimaryTextEntryCorrectResponse,
-  normalizeTextEntryCorrectResponses,
-  parseTextEntryCaseSensitiveAttribute,
-  parseTextEntryCorrectResponses,
-  parseTextEntryLegacyCorrectResponse,
-} from '../../attributes/text-entry-attributes-editor.js';
+import { parseCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+
+import { parseTextEntryCaseSensitiveAttribute } from '../../attributes/text-entry-attributes-editor.js';
 import { textEntryInteractionComposerMetadata } from '../../composer/metadata.js';
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interaction-shared/composer/types.js';
@@ -21,20 +17,11 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
-  const legacyCorrectResponse = parseTextEntryLegacyCorrectResponse(
-    sourceElement.getAttribute('correct-response'),
-  );
-  const parsedCorrectResponses = parseTextEntryCorrectResponses(
-    sourceElement.getAttribute('correct-responses'),
-  );
-  const correctResponses = normalizeTextEntryCorrectResponses(
-    parsedCorrectResponses.length > 0
-      ? parsedCorrectResponses
-      : legacyCorrectResponse
-        ? [legacyCorrectResponse]
-        : [],
-  );
-  const correctResponse = getPrimaryTextEntryCorrectResponse(correctResponses);
+  const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
+  const correctResponses = correctResponse == null
+    ? []
+    : Array.isArray(correctResponse) ? correctResponse : [correctResponse];
+  const primaryCorrectResponse = correctResponses[0] ?? undefined;
   const caseSensitive = parseTextEntryCaseSensitiveAttribute(
     sourceElement.getAttribute('case-sensitive'),
   );
@@ -56,7 +43,7 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
       identifier: responseIdentifier,
       cardinality: 'single',
       baseType: 'string',
-      correctResponse: correctResponse ?? undefined,
+      correctResponse: primaryCorrectResponse,
       stringMapping:
         correctResponses.length > 0
           ? {
