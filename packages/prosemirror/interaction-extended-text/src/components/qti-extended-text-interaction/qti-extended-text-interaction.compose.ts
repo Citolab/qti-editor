@@ -21,7 +21,7 @@ function toNonEmptyString(value: string | null): string | null {
 function createRubricBlock(xmlDoc: Document, correctResponse: string | string[]): Element {
   const rubricBlock = xmlDoc.createElementNS(QTI_NS, 'qti-rubric-block');
   rubricBlock.setAttribute('view', 'scorer');
-  rubricBlock.setAttribute('use', 'instructions');
+  rubricBlock.setAttribute('use', 'scoring');
 
   const contentBlock = xmlDoc.createElementNS(QTI_NS, 'qti-content-body');
   const div = xmlDoc.createElementNS(QTI_NS, 'div');
