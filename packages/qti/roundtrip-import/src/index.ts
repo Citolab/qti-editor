@@ -183,7 +183,95 @@ function stripIgnoredQtiSections(xml: string): string {
     .querySelectorAll('qti-response-declaration, responseDeclaration, qti-response-processing, responseProcessing')
     .forEach(node => node.parentNode?.removeChild(node));
 
+  stripGeneratedRubricBlocks(document);
+  collapseInsignificantWhitespace(document);
+
   return new XMLSerializer().serializeToString(document);
+}
+
+// Pretty-printed QTI XML carries indentation/newline text nodes that ProseMirror
+// renders as visible whitespace ("        Waarom..."). Collapse them the way an
+// HTML parser would: runs of whitespace become a single space, and whitespace
+// adjacent to block boundaries (between block elements or at the edges of one)
+// is dropped entirely. Preserve `<pre>` content verbatim.
+export function collapseInsignificantWhitespace(document: XMLDocument): void {
+  if (!document.documentElement) return;
+  collapseInsignificantWhitespaceIn(document.documentElement);
+}
+
+const INLINE_TAG_NAMES = new Set([
+  'a', 'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code', 'data', 'dfn', 'em',
+  'i', 'kbd', 'mark', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span',
+  'strong', 'sub', 'sup', 'time', 'u', 'var', 'wbr', 'img',
+]);
+
+function isInlineElement(element: Element): boolean {
+  return INLINE_TAG_NAMES.has(element.localName.toLowerCase());
+}
+
+function collapseInsignificantWhitespaceIn(element: Element): void {
+  const tag = element.localName.toLowerCase();
+  if (tag === 'pre') return;
+
+  const children = Array.from(element.childNodes);
+  const isBlockContainer = !isInlineElement(element);
+
+  children.forEach((child, index) => {
+    if (child.nodeType === child.ELEMENT_NODE) {
+      collapseInsignificantWhitespaceIn(child as Element);
+      return;
+    }
+    if (child.nodeType !== child.TEXT_NODE) return;
+
+    const original = child.nodeValue ?? '';
+    let collapsed = original.replace(/[\t\n\r\f ]+/g, ' ');
+    if (isBlockContainer) {
+      const prev = children[index - 1];
+      const next = children[index + 1];
+      const atBlockBoundaryStart = !prev || (prev.nodeType === prev.ELEMENT_NODE && !isInlineElement(prev as Element));
+      const atBlockBoundaryEnd = !next || (next.nodeType === next.ELEMENT_NODE && !isInlineElement(next as Element));
+      if (atBlockBoundaryStart) collapsed = collapsed.replace(/^ +/, '');
+      if (atBlockBoundaryEnd) collapsed = collapsed.replace(/ +$/, '');
+    }
+
+    if (collapsed.length === 0) {
+      child.parentNode?.removeChild(child);
+    } else if (collapsed !== original) {
+      child.nodeValue = collapsed;
+    }
+  });
+}
+
+// The paired export package emits a `qti-rubric-block` sibling after every
+// `qti-extended-text-interaction` whose `correct-response` is set, purely so
+// QTI consumers see the model answer. On re-import we already rehydrate the
+// authoring `correct-response` from `data-correct-response`, so leaving the
+// rubric block in would duplicate the model answer below the interaction.
+function stripGeneratedRubricBlocks(document: XMLDocument): void {
+  document.querySelectorAll('qti-extended-text-interaction').forEach(interaction => {
+    const correctResponse = interaction.getAttribute('data-correct-response');
+    if (!correctResponse) return;
+
+    const sibling = interaction.nextElementSibling;
+    if (!sibling) return;
+    if (sibling.localName !== 'qti-rubric-block') return;
+    if (sibling.getAttribute('view') !== 'scorer') return;
+    if (sibling.getAttribute('use') !== 'instructions') return;
+    if (!rubricMatchesCorrectResponse(sibling, correctResponse)) return;
+
+    sibling.parentNode?.removeChild(sibling);
+  });
+}
+
+function rubricMatchesCorrectResponse(rubricBlock: Element, correctResponse: string): boolean {
+  const paragraphTexts = Array.from(rubricBlock.getElementsByTagName('p'))
+    .map(p => (p.textContent ?? '').replace(/\u00A0/g, '').trim())
+    .filter(text => text.length > 0);
+  if (paragraphTexts.length === 0) return false;
+
+  const expected = correctResponse.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+  if (expected.length !== paragraphTexts.length) return false;
+  return expected.every((line, index) => line === paragraphTexts[index]);
 }
 
 function extractAssessmentItemRefs(xml: string): string[] {
