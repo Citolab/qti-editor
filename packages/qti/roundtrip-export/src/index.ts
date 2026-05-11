@@ -1,3 +1,18 @@
+/**
+ * LOSSLESS PROSEMIRROR→QTI ROUNDTRIP — NOT A GENERIC QTI 3.0 EXPORTER.
+ *
+ * Paired with `@qti-editor/qti-roundtrip-import`. Both halves must agree on the
+ * `data-*` attribute table in ROUNDTRIP.md.
+ *
+ * DO NOT:
+ *   - Stop writing the `data-*` mirrors. They are the only thing the import side
+ *     reads — `qti-response-declaration` / `qti-response-processing` are emitted
+ *     for QTI conformance but ignored on re-import on purpose.
+ *   - Add a `data-*` mapping here without adding its inverse in the import package.
+ *   - Generalize this for third-party QTI consumers. That belongs in a separate package.
+ *
+ * If you need to break these rules, stop and read ROUNDTRIP.md, then update it.
+ */
 import JSZip from 'jszip';
 import { getQtiItems, type QtiComposeContext, type QtiItemFragment } from '@qti-editor/prosekit-integration/save-qti';
 
@@ -14,16 +29,21 @@ const QTI_ASI_SCHEMA_LOCATION =
 const IMAGE_REFERENCE_ATTRIBUTES = ['src', 'data', 'image'] as const;
 const TEXT_ENTRY_INTERACTION_TAG = 'qti-text-entry-interaction';
 const SELECT_POINT_INTERACTION_TAG = 'qti-select-point-interaction';
-const EDITOR_DATA_ATTRIBUTE_MAPPINGS = [
+// PAIRED CONTRACT: every entry below must have an inverse in `DATA_ATTRIBUTE_MAPPINGS`
+// inside `@qti-editor/qti-roundtrip-import` (`packages/qti/roundtrip-import/src/index.ts`).
+// See ROUNDTRIP.md for the canonical table.
+export const EDITOR_DATA_ATTRIBUTE_MAPPINGS = [
   { source: 'correct-response', target: 'data-correct-response' },
   { source: 'correctResponse', target: 'data-correct-response' },
   { source: 'correctAnswer', target: 'data-correct-response' },
   { source: 'score', target: 'data-score' },
 ] as const;
-const TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS = [
+// PAIRED CONTRACT: see `DATA_ATTRIBUTE_MAPPINGS` in `@qti-editor/qti-roundtrip-import`.
+export const TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS = [
   { source: 'case-sensitive', target: 'data-case-sensitive' },
 ] as const;
-const SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS = [
+// PAIRED CONTRACT: see `DATA_ATTRIBUTE_MAPPINGS` in `@qti-editor/qti-roundtrip-import`.
+export const SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS = [
   { source: 'area-mappings', target: 'data-area-mappings' },
 ] as const;
 
@@ -248,6 +268,10 @@ async function materializeImageReferences(
   return { xml: rewrittenXml, assetHrefs };
 }
 
+// Mirrors ProseMirror authoring attributes onto QTI interaction tags as `data-*`
+// attributes. This is the *write* half of the lossless roundtrip — the import
+// package strips `qti-response-*` nodes and rehydrates schema attrs from these
+// mirrors. Do not remove without coordinating with the import side.
 function preserveEditorDataAttributes(xml: string): string {
   return xml.replace(/<(?<tagName>qti-[a-z0-9-]+-interaction)\b(?<attributes>[^<>]*)>/gi, (match, tagName: string, attributes: string) => {
     const isSelfClosing = match.endsWith('/>') || /\/\s*$/.test(attributes);

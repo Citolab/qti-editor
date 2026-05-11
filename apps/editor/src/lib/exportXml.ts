@@ -1,5 +1,5 @@
 import { qtiFromNode } from '@qti-editor/prosekit-integration';
-import { createQtiPackageFromNode } from '@qti-editor/qti-package-export';
+import { createQtiPackageFromNode } from '@qti-editor/qti-roundtrip-export';
 
 import type { ProseMirrorNode } from 'prosekit/pm/model';
 

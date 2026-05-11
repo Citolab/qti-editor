@@ -1,3 +1,21 @@
+/**
+ * LOSSLESS QTI→PROSEMIRROR ROUNDTRIP — NOT A GENERIC QTI 3.0 IMPORTER.
+ *
+ * Paired with `@qti-editor/qti-roundtrip-export`. This importer ONLY restores
+ * items the export package wrote, because it deliberately strips
+ * `qti-response-declaration` and `qti-response-processing` and rehydrates
+ * authoring attributes from the `data-*` mirrors instead. Third-party QTI 3.0
+ * packages will import with empty correct-response / scoring data — by design.
+ *
+ * DO NOT:
+ *   - Make this read `qti-response-declaration` / `qti-response-processing` as a
+ *     source of authoring state. They are intentionally ignored.
+ *   - Add a `data-*` mapping here without adding its sibling in the export package.
+ *   - Generalize this for third-party QTI input. That belongs in a separate package
+ *     (the names `@qti-editor/qti-export` / `qti-import` are reserved for it).
+ *
+ * If you need to break these rules, stop and read ROUNDTRIP.md, then update it.
+ */
 import JSZip from 'jszip';
 import { xmlToHTML } from '@qti-editor/prosekit-integration';
 import { jsonFromHTML } from 'prosekit/core';
@@ -8,7 +26,11 @@ const ITEM_RESOURCE_TYPE = 'imsqti_item_xmlv3p0';
 const ASSESSMENT_TEST_FILE = 'assessment-test.xml';
 const MANIFEST_FILE = 'imsmanifest.xml';
 
-const DATA_ATTRIBUTE_MAPPINGS = [
+// PAIRED CONTRACT: every entry below must have a forward mapping in
+// `EDITOR_DATA_ATTRIBUTE_MAPPINGS` (or its per-interaction siblings) inside
+// `@qti-editor/qti-roundtrip-export` (`packages/qti/roundtrip-export/src/index.ts`).
+// See ROUNDTRIP.md for the canonical table.
+export const DATA_ATTRIBUTE_MAPPINGS = [
   { source: 'data-correct-response', target: 'correct-response' },
   { source: 'data-score', target: 'score' },
   { source: 'data-case-sensitive', target: 'case-sensitive' },
@@ -149,6 +171,10 @@ function mergeItemJson(items: ProseMirrorJson[], schema: Schema): ProseMirrorJso
   return { ...(firstItem as object), content } as ProseMirrorJson;
 }
 
+// Intentional, not a bug: this importer does NOT use `qti-response-declaration`
+// or `qti-response-processing` as a source of authoring state. Authoring data is
+// rehydrated from `data-*` mirrors written by the paired export package. Removing
+// this strip would let response-processing nodes leak into ProseMirror.
 function stripIgnoredQtiSections(xml: string): string {
   const document = parseXmlDocument(xml);
   document

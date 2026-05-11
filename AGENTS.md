@@ -74,6 +74,15 @@
 - If unexpected modifications appear during work, stop and ask how to proceed.
 - Surface behavioral risks, compatibility concerns, and unverified assumptions in handoff.
 
+## Lossless QTI Roundtrip Packages
+- `@qti-editor/qti-roundtrip-export` and `@qti-editor/qti-roundtrip-import` (under `packages/qti/roundtrip-{export,import}/`) form a **paired, self-roundtrip** for the editor's own save/load — they are **NOT** a generic QTI 3.0 import/export.
+- Export writes ProseMirror authoring attributes (e.g. `correct-response`, `score`, `case-sensitive`, `area-mappings`) onto QTI interaction tags as `data-*` mirrors. Import strips `qti-response-declaration` and `qti-response-processing` and rehydrates ProseMirror attrs from those `data-*` mirrors.
+- **Rules:**
+  - Do not refactor the importer to read `qti-response-declaration` / `qti-response-processing` as a source of authoring state. They are intentionally ignored.
+  - Any new `data-*` mapping must be added to BOTH packages in the same commit, with a row in the contract table in `packages/qti/roundtrip-export/ROUNDTRIP.md` and a passing roundtrip test.
+  - Do not rename or repurpose these packages for third-party QTI import — the names `@qti-editor/qti-export` / `qti-import` are reserved for a separate future generic implementation.
+- See `packages/qti/roundtrip-export/ROUNDTRIP.md` for the full contract.
+
 ## Architecture Source Of Truth
 - Use `docs/architecture.md` as the canonical architecture reference.
 - Keep AGENTS and SKILLS guidance aligned with that document.

@@ -30,17 +30,17 @@
       "@qti-editor/core/interactions/composer": [
         "packages/qti/core/src/interactions/composer.ts"
       ],
-      "@qti-editor/qti-package-export": [
-        "packages/qti/package-export/src/index.ts"
+      "@qti-editor/qti-roundtrip-export": [
+        "packages/qti/roundtrip-export/src/index.ts"
       ],
-      "@qti-editor/qti-package-export/*": [
-        "packages/qti/package-export/src/*"
+      "@qti-editor/qti-roundtrip-export/*": [
+        "packages/qti/roundtrip-export/src/*"
       ],
-      "@qti-editor/qti-package-import": [
-        "packages/qti/package-import/src/index.ts"
+      "@qti-editor/qti-roundtrip-import": [
+        "packages/qti/roundtrip-import/src/index.ts"
       ],
-      "@qti-editor/qti-package-import/*": [
-        "packages/qti/package-import/src/*"
+      "@qti-editor/qti-roundtrip-import/*": [
+        "packages/qti/roundtrip-import/src/*"
       ],
       "@qti-editor/prosekit-integration/save-qti": [
         "packages/qti/prosekit-integration/src/save-qti/index.ts"

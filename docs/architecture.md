@@ -440,6 +440,17 @@ Typical commands:
 - `pnpm --filter @qti-editor/app build`
 - `pnpm -r --filter "./packages/**" run typecheck`
 
+## Lossless QTI Roundtrip Packages
+
+`packages/qti/roundtrip-export` and `packages/qti/roundtrip-import` are a **paired, self-roundtrip**: the editor exports its ProseMirror tree to QTI 3.0, then imports it back losslessly using `data-*` mirrors on QTI interaction tags. **They are not a generic QTI 3.0 import/export.**
+
+- Export emits standard `qti-response-declaration` / `qti-response-processing` for conformance, plus `data-*` mirrors of ProseMirror schema attrs.
+- Import strips the response-declaration / response-processing nodes and rehydrates schema attrs from the `data-*` mirrors only.
+- Third-party QTI packages imported through this path will have empty authoring attributes — by design.
+- The names `@qti-editor/qti-export` / `qti-import` (without `roundtrip-`) are reserved for a future generic implementation.
+
+Canonical contract: [`packages/qti/roundtrip-export/ROUNDTRIP.md`](../packages/qti/roundtrip-export/ROUNDTRIP.md). Do not modify the `data-*` mapping table in either package without updating both halves and the doc in lockstep.
+
 ## Migration Note
 
 Some current source paths still reflect the old structure. During migration:

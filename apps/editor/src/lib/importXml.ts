@@ -1,5 +1,5 @@
 import { xmlToHTML } from '@qti-editor/prosekit-integration';
-import { importQtiPackageFromBlob } from '@qti-editor/qti-package-import';
+import { importQtiPackageFromBlob } from '@qti-editor/qti-roundtrip-import';
 import { jsonFromHTML } from 'prosekit/core';
 
 import type { Schema } from 'prosekit/pm/model';
