@@ -1,6 +1,6 @@
 {
   "name": "@qti-editor/qti-package-export",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Reusable QTI 3.0 package ZIP export for QTI Editor",
   "type": "module",
   "main": "./dist/index.js",
