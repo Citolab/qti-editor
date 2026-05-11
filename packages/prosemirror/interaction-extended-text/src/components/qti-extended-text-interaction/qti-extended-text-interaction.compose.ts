@@ -18,19 +18,13 @@ function toNonEmptyString(value: string | null): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
-function createRubricBlock(xmlDoc: Document, correctResponse: string | string[], responseIdentifier: string): Element {
+function createRubricBlock(xmlDoc: Document, correctResponse: string | string[]): Element {
   const rubricBlock = xmlDoc.createElementNS(QTI_NS, 'qti-rubric-block');
   rubricBlock.setAttribute('view', 'scorer');
   rubricBlock.setAttribute('use', 'instructions');
 
   const contentBlock = xmlDoc.createElementNS(QTI_NS, 'qti-content-body');
   const div = xmlDoc.createElementNS(QTI_NS, 'div');
-
-  const heading = xmlDoc.createElementNS(QTI_NS, 'p');
-  const strong = xmlDoc.createElementNS(QTI_NS, 'strong');
-  strong.textContent = `Model answer for ${responseIdentifier}:`;
-  heading.appendChild(strong);
-  div.appendChild(heading);
 
   const lines = Array.isArray(correctResponse) ? correctResponse : correctResponse.split('\n');
   for (const line of lines) {
@@ -77,7 +71,7 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
 
   // Create rubric block if correctResponse is present
   if (correctResponse && responseIdentifier) {
-    const rubricBlock = createRubricBlock(xmlDoc, correctResponse, responseIdentifier);
+    const rubricBlock = createRubricBlock(xmlDoc, correctResponse);
     additionalElements.push(rubricBlock);
   }
 

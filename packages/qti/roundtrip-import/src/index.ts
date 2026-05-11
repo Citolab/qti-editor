@@ -25,6 +25,7 @@ import type { Schema } from 'prosekit/pm/model';
 const ITEM_RESOURCE_TYPE = 'imsqti_item_xmlv3p0';
 const ASSESSMENT_TEST_FILE = 'assessment-test.xml';
 const MANIFEST_FILE = 'imsmanifest.xml';
+const IMAGE_REFERENCE_ATTRIBUTES = ['src', 'data', 'image'] as const;
 
 // PAIRED CONTRACT: every entry below must have a forward mapping in
 // `EDITOR_DATA_ATTRIBUTE_MAPPINGS` (or its per-interaction siblings) inside
@@ -91,7 +92,8 @@ export async function importQtiPackageFromZip(
     const file = zip.file(href);
     if (!file) continue;
 
-    const xml = await file.async('string');
+    const rawXml = await file.async('string');
+    const xml = await inlineImageReferences(rawXml, href, zip);
     const metadata = extractItemMetadata(xml);
     const html = itemXmlToImportHtml(xml);
     itemJson.push(jsonFromHTML(html, { schema: options.schema }));
@@ -275,6 +277,42 @@ function normalizeZipPath(path: string): string {
 
 function unique(values: string[]): string[] {
   return Array.from(new Set(values));
+}
+
+async function inlineImageReferences(xml: string, itemHref: string, zip: JSZip): Promise<string> {
+  const attributePattern = new RegExp(`\\b(${IMAGE_REFERENCE_ATTRIBUTES.join('|')})="([^"]+)"`, 'gi');
+  const matches = [...xml.matchAll(attributePattern)];
+  const replacements = new Map<string, string>();
+
+  for (const match of matches) {
+    const originalValue = match[2];
+    if (replacements.has(originalValue)) continue;
+    if (originalValue.startsWith('data:')) continue;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(originalValue)) continue;
+
+    const assetPath = normalizeZipPath(resolveZipPath(itemHref, originalValue));
+    const file = zip.file(assetPath);
+    if (!file) continue;
+
+    const base64 = await file.async('base64');
+    const mimeType = mimeTypeFromPath(assetPath) || 'image/png';
+    replacements.set(originalValue, `data:${mimeType};base64,${base64}`);
+  }
+
+  let rewritten = xml;
+  replacements.forEach((replacement, originalValue) => {
+    rewritten = rewritten.split(`"${originalValue}"`).join(`"${replacement}"`);
+  });
+  return rewritten;
+}
+
+function mimeTypeFromPath(path: string): string {
+  const match = path.split('?')[0].match(/\.([a-zA-Z0-9]+)$/);
+  const extension = match?.[1]?.toLowerCase();
+  if (!extension) return '';
+  if (extension === 'svg') return 'image/svg+xml';
+  if (extension === 'jpg') return 'image/jpeg';
+  return `image/${extension}`;
 }
 
 function findXmlTags(xml: string, tagNames: string[]): string[] {
