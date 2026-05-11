@@ -285,7 +285,7 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
     root.appendChild(outcomeDeclaration);
 
     const maxScoreOutcomeDeclaration = xmlDoc.createElementNS(QTI_NS, 'qti-outcome-declaration');
-    maxScoreOutcomeDeclaration.setAttribute('identifier', 'MAX_SCORE');
+    maxScoreOutcomeDeclaration.setAttribute('identifier', 'MAXSCORE');
     maxScoreOutcomeDeclaration.setAttribute('cardinality', 'single');
     maxScoreOutcomeDeclaration.setAttribute('base-type', 'float');
 
