@@ -220,7 +220,7 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
       ? (xmlDoc.importNode(sourceBodyRoot, true) as Element)
       : xmlDoc.createElementNS(QTI_NS, 'qti-item-body');
 
-  const { declarations, responseTemplate, maxScore } = composeAndNormalizeItemBody(composedItemBody, xmlDoc);
+  const { declarations, responseTemplate, maxScore, hasAutomatedProcessing } = composeAndNormalizeItemBody(composedItemBody, xmlDoc);
 
   declarations.forEach(declaration => {
     const responseDeclaration = xmlDoc.createElementNS(QTI_NS, 'qti-response-declaration');
@@ -300,7 +300,7 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
 
   root.appendChild(composedItemBody);
 
-  if (maxScore > 0) {
+  if (maxScore > 0 && hasAutomatedProcessing) {
     if (declarations.length === 1) {
       const responseProcessing = xmlDoc.createElementNS(QTI_NS, 'qti-response-processing');
       responseProcessing.setAttribute('template', responseTemplate);
@@ -310,7 +310,7 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
     }
   }
 
-  return new XMLSerializer().serializeToString(xmlDoc);
+  return new XMLSerializer().serializeToString(xmlDoc).replace(/\s+xmlns=""/g, '');
 }
 
 /**
@@ -437,6 +437,7 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
   declarations: ResponseDeclaration[];
   responseTemplate: string;
   maxScore: number;
+  hasAutomatedProcessing: boolean;
 } {
   const declarations: ResponseDeclaration[] = [];
   const seenIdentifiers = new Set<string>();
@@ -512,17 +513,19 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
   normalizeResponseIdentifiers(itemBody, declarations);
 
   if (declarations.length === 1 && templateCandidates.size === 1) {
-    return { declarations, responseTemplate: Array.from(templateCandidates)[0], maxScore };
+    return { declarations, responseTemplate: Array.from(templateCandidates)[0], maxScore, hasAutomatedProcessing: true };
   }
 
-  return { declarations, responseTemplate: MATCH_CORRECT_TEMPLATE, maxScore };
+  return { declarations, responseTemplate: MATCH_CORRECT_TEMPLATE, maxScore, hasAutomatedProcessing: templateCandidates.size > 0 };
 }
 
 function buildMultiInteractionResponseProcessing(xmlDoc: Document, declarations: ResponseDeclaration[]): Element {
   const responseProcessing = xmlDoc.createElementNS(QTI_NS, 'qti-response-processing');
 
   declarations.forEach(declaration => {
-    const kind = declaration.responseProcessingKind ?? 'match_correct';
+    if (declaration.responseProcessingKind === undefined) return;
+
+    const kind = declaration.responseProcessingKind;
 
     if (kind === 'match_correct') {
       responseProcessing.appendChild(createMatchCorrectContribution(xmlDoc, declaration.identifier, declaration.score ?? 1));
