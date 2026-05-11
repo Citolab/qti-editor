@@ -4,7 +4,13 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { translateQti, QtiI18nController } from '@qti-editor/interaction-shared/i18n/index.js';
 import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { Selection } from 'prosekit/pm/state';
-import 'prosekit/lit/menu';
+import {
+  registerMenuItemElement,
+  registerMenuPopupElement,
+  registerMenuPositionerElement,
+  registerMenuRootElement,
+  registerMenuTriggerElement,
+} from 'prosekit/lit/menu';
 import { insertAssociateInteraction } from '@qti-editor/interaction-associate';
 import { insertGapMatchInteraction, insertGap } from '@qti-editor/interaction-gap-match';
 import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
@@ -17,6 +23,12 @@ import { insertInlineChoiceInteraction } from '@qti-editor/interaction-inline-ch
 import { insertItemDivider } from '@qti-editor/qti-item-divider';
 
 import type { EditorView } from 'prosekit/pm/view';
+
+registerMenuRootElement();
+registerMenuTriggerElement();
+registerMenuPositionerElement();
+registerMenuPopupElement();
+registerMenuItemElement();
 
 export interface InteractionInsertItem {
   label: string;
@@ -342,7 +354,7 @@ export class QtiInteractionInsertMenu extends LitElement {
           </button>
         </prosekit-menu-trigger>
         <prosekit-menu-positioner placement="bottom" class="block overflow-visible w-min h-min z-50 ease-out transition-transform duration-100 motion-reduce:transition-none">
-          <prosekit-menu-popup class="box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 duration-40 rounded-xl border border-gray-200 dark:border-gray-800 shadow-lg bg-[canvas] flex min-w-56 flex-col gap-1 p-2 text-sm">
+          <prosekit-menu-popup class="box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 duration-40 rounded-md border border-gray-200 dark:border-gray-800 shadow-lg bg-[canvas] flex min-w-56 flex-col gap-1 p-2 text-sm">
           ${items.map(
             item => item.canInsert
               ? html`

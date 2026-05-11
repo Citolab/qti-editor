@@ -1,6 +1,16 @@
-import 'prosekit/lit/tooltip'
-
 import { html, LitElement, nothing } from 'lit';
+import {
+  registerTooltipPopupElement,
+  registerTooltipPositionerElement,
+  registerTooltipRootElement,
+  registerTooltipTriggerElement,
+} from 'prosekit/lit/tooltip'
+
+
+registerTooltipRootElement()
+registerTooltipTriggerElement()
+registerTooltipPositionerElement()
+registerTooltipPopupElement()
 
 class LitButton extends LitElement {
   static properties = {

@@ -1,8 +1,18 @@
-import 'prosekit/lit/popover'
+import { html, LitElement, nothing } from 'lit';
+import {
+  registerPopoverPopupElement,
+  registerPopoverPositionerElement,
+  registerPopoverRootElement,
+  registerPopoverTriggerElement,
+} from 'prosekit/lit/popover'
+import { subscribeQtiI18n, translateQti } from '@qti-editor/interaction-shared/i18n/index.js';
 import '../button/index'
 
-import { html, LitElement, nothing } from 'lit';
-import { subscribeQtiI18n, translateQti } from '@qti-editor/interaction-shared/i18n/index.js';
+// needed for tree shaking
+registerPopoverRootElement()
+registerPopoverTriggerElement()
+registerPopoverPositionerElement()
+registerPopoverPopupElement()
 
 let imageUploadId = 0
 

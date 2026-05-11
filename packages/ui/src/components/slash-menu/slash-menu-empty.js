@@ -1,6 +1,7 @@
-import 'prosekit/lit/autocomplete'
-
+import { registerAutocompleteEmptyElement } from 'prosekit/lit/autocomplete'
 import { html, LitElement } from 'lit'
+
+registerAutocompleteEmptyElement()
 
 class SlashMenuEmptyElement extends LitElement {
   createRenderRoot() {

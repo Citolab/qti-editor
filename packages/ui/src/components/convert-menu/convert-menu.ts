@@ -4,13 +4,23 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { QtiI18nController, translateQti } from '@qti-editor/interaction-shared/i18n/index.js';
 import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { Selection } from 'prosekit/pm/state';
-import 'prosekit/lit/popover';
+import {
+  registerPopoverPopupElement,
+  registerPopoverPositionerElement,
+  registerPopoverRootElement,
+  registerPopoverTriggerElement,
+} from 'prosekit/lit/popover';
 import {
   canConvertFlatListToChoiceInteraction,
   convertFlatListToChoiceInteraction,
 } from '@qti-editor/interaction-choice';
 
 import type { EditorView } from 'prosekit/pm/view';
+
+registerPopoverRootElement();
+registerPopoverTriggerElement();
+registerPopoverPositionerElement();
+registerPopoverPopupElement();
 
 export interface ConvertMenuItem {
   label: string;

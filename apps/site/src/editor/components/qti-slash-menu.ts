@@ -9,13 +9,19 @@
  * QTI-specific items in a separate group.
  */
 
-import 'prosekit/lit/autocomplete';
 import '@qti-editor/ui/components/slash-menu/slash-menu-item.js';
 import '@qti-editor/ui/components/slash-menu/slash-menu-empty.js';
 
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
+import {
+  registerAutocompleteEmptyElement,
+  registerAutocompleteItemElement,
+  registerAutocompletePopupElement,
+  registerAutocompletePositionerElement,
+  registerAutocompleteRootElement,
+} from 'prosekit/lit/autocomplete';
 import { translateQti } from '@qti-editor/interaction-shared';
 import { insertAssociateInteraction } from '@qti-editor/interaction-associate';
 import { insertGapMatchInteraction } from '@qti-editor/interaction-gap-match';
@@ -27,6 +33,12 @@ import { insertOrderInteraction } from '@qti-editor/interaction-order';
 import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
 
 import type { EditorView } from 'prosekit/pm/view';
+
+registerAutocompleteRootElement();
+registerAutocompletePositionerElement();
+registerAutocompletePopupElement();
+registerAutocompleteItemElement();
+registerAutocompleteEmptyElement();
 
 const regex = canUseRegexLookbehind() ? /(?<!\S)\/(\S.*)?$/u : /\/(\S.*)?$/u;
 

@@ -1,7 +1,18 @@
-import 'prosekit/lit/autocomplete'
-
 import { html, LitElement } from 'lit';
 import { canUseRegexLookbehind } from 'prosekit/core'
+import {
+  registerAutocompleteEmptyElement,
+  registerAutocompleteItemElement,
+  registerAutocompletePopupElement,
+  registerAutocompletePositionerElement,
+  registerAutocompleteRootElement,
+} from 'prosekit/lit/autocomplete'
+
+registerAutocompleteRootElement()
+registerAutocompletePositionerElement()
+registerAutocompletePopupElement()
+registerAutocompleteItemElement()
+registerAutocompleteEmptyElement()
 
 // Match inputs like "/", "/table", "/heading 1" etc. Do not match "/ heading".
 const regex = canUseRegexLookbehind() ? /(?<!\S)\/(\S.*)?$/u : /\/(\S.*)?$/u

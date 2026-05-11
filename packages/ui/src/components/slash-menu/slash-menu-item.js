@@ -1,6 +1,7 @@
-import 'prosekit/lit/autocomplete'
-
+import { registerAutocompleteItemElement } from 'prosekit/lit/autocomplete'
 import { html, LitElement } from 'lit'
+
+registerAutocompleteItemElement()
 
 class SlashMenuItemElement extends LitElement {
   static properties = {
