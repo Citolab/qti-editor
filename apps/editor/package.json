@@ -30,6 +30,7 @@
     "@qti-editor/prosemirror": "workspace:*",
     "@qti-editor/prosemirror-attributes-ui-prosekit": "workspace:*",
     "@qti-editor/qti-package-export": "workspace:*",
+    "@qti-editor/qti-package-import": "workspace:*",
     "@qti-editor/qti-item-divider": "workspace:*",
     "@qti-editor/ui": "workspace:*",
     "@tanstack/react-query": "^5.95.2",

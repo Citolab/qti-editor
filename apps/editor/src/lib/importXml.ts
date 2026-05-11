@@ -1,4 +1,5 @@
 import { xmlToHTML } from '@qti-editor/prosekit-integration';
+import { importQtiPackageFromBlob } from '@qti-editor/qti-package-import';
 import { jsonFromHTML } from 'prosekit/core';
 
 import type { Schema } from 'prosekit/pm/model';
@@ -73,6 +74,10 @@ export function importXmlFromText(xmlText: string, options: ImportXmlOptions): I
  * Import QTI XML from a File object
  */
 export async function importXmlFromFile(file: File, options: ImportXmlOptions): Promise<ImportXmlResult> {
+  if (isQtiPackageFile(file)) {
+    return importQtiPackageFromBlob(file, options);
+  }
+
   const xmlText = await file.text();
   return importXmlFromText(xmlText, options);
 }
@@ -84,7 +89,7 @@ export function openXmlFilePicker(options: ImportXmlOptions): Promise<ImportXmlR
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.xml,application/xml,text/xml';
+    input.accept = '.xml,.zip,application/xml,text/xml,application/zip,application/x-zip-compressed';
     
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
@@ -104,4 +109,9 @@ export function openXmlFilePicker(options: ImportXmlOptions): Promise<ImportXmlR
     
     input.click();
   });
+}
+
+function isQtiPackageFile(file: File): boolean {
+  const name = file.name.toLowerCase();
+  return name.endsWith('.zip') || file.type === 'application/zip' || file.type === 'application/x-zip-compressed';
 }
