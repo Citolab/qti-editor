@@ -1,0 +1,264 @@
+import JSZip from 'jszip';
+import { xmlToHTML } from '@qti-editor/prosekit-integration';
+import { jsonFromHTML } from 'prosekit/core';
+
+import type { Schema } from 'prosekit/pm/model';
+
+const ITEM_RESOURCE_TYPE = 'imsqti_item_xmlv3p0';
+const ASSESSMENT_TEST_FILE = 'assessment-test.xml';
+const MANIFEST_FILE = 'imsmanifest.xml';
+
+const DATA_ATTRIBUTE_MAPPINGS = [
+  { source: 'data-correct-response', target: 'correct-response' },
+  { source: 'data-score', target: 'score' },
+  { source: 'data-case-sensitive', target: 'case-sensitive' },
+  { source: 'data-area-mappings', target: 'area-mappings' },
+] as const;
+
+type ProseMirrorJson = ReturnType<typeof jsonFromHTML>;
+
+export interface QtiPackageImportOptions {
+  schema: Schema;
+}
+
+export interface QtiPackageImportItemMetadata {
+  identifier?: string;
+  title?: string;
+  href: string;
+}
+
+export interface QtiPackageImportMetadata {
+  identifier?: string;
+  title?: string;
+  items: QtiPackageImportItemMetadata[];
+}
+
+export interface QtiPackageImportResult {
+  json: ProseMirrorJson;
+  metadata: QtiPackageImportMetadata;
+}
+
+export async function importQtiPackageFromBlob(
+  blob: Blob,
+  options: QtiPackageImportOptions,
+): Promise<QtiPackageImportResult> {
+  return importQtiPackageFromArrayBuffer(await blob.arrayBuffer(), options);
+}
+
+export async function importQtiPackageFromArrayBuffer(
+  buffer: ArrayBuffer | Uint8Array,
+  options: QtiPackageImportOptions,
+): Promise<QtiPackageImportResult> {
+  const zip = await JSZip.loadAsync(buffer);
+  return importQtiPackageFromZip(zip, options);
+}
+
+export async function importQtiPackageFromZip(
+  zip: JSZip,
+  options: QtiPackageImportOptions,
+): Promise<QtiPackageImportResult> {
+  const itemHrefs = await getOrderedItemHrefs(zip);
+  if (itemHrefs.length === 0) {
+    throw new Error('QTI package does not contain any item XML resources.');
+  }
+
+  const itemJson: ProseMirrorJson[] = [];
+  const itemMetadata: QtiPackageImportItemMetadata[] = [];
+
+  for (const href of itemHrefs) {
+    const file = zip.file(href);
+    if (!file) continue;
+
+    const xml = await file.async('string');
+    const metadata = extractItemMetadata(xml);
+    const html = itemXmlToImportHtml(xml);
+    itemJson.push(jsonFromHTML(html, { schema: options.schema }));
+    itemMetadata.push({ ...metadata, href });
+  }
+
+  if (itemJson.length === 0) {
+    throw new Error('QTI package item resources could not be read.');
+  }
+
+  return {
+    json: mergeItemJson(itemJson, options.schema),
+    metadata: {
+      ...await extractPackageMetadata(zip),
+      items: itemMetadata,
+    },
+  };
+}
+
+export async function getOrderedItemHrefs(zip: JSZip): Promise<string[]> {
+  const assessmentTest = await zip.file(ASSESSMENT_TEST_FILE)?.async('string');
+  const manifest = await zip.file(MANIFEST_FILE)?.async('string');
+  const manifestItemHrefs = manifest ? extractManifestItemHrefs(manifest) : [];
+  const manifestHrefSet = new Set(manifestItemHrefs);
+
+  if (assessmentTest) {
+    const refs = extractAssessmentItemRefs(assessmentTest)
+      .map(href => normalizeZipPath(resolveZipPath(ASSESSMENT_TEST_FILE, href)))
+      .filter(href => zip.file(href) && (manifestHrefSet.size === 0 || manifestHrefSet.has(href)));
+
+    if (refs.length > 0) return unique(refs);
+  }
+
+  if (manifestItemHrefs.length > 0) {
+    return unique(manifestItemHrefs.filter(href => Boolean(zip.file(href))));
+  }
+
+  return zip.file(/\.xml$/i)
+    .map(file => normalizeZipPath(file.name))
+    .filter(name => name !== MANIFEST_FILE && name !== ASSESSMENT_TEST_FILE)
+    .sort();
+}
+
+export function itemXmlToImportHtml(xml: string): string {
+  return applyDataAttributes(xmlToHTML(stripIgnoredQtiSections(cleanXmlText(xml))));
+}
+
+export function applyDataAttributes(html: string): string {
+  const document = new DOMParser().parseFromString(html, 'text/html');
+  Array.from(document.querySelectorAll('*')).forEach(element => {
+    DATA_ATTRIBUTE_MAPPINGS.forEach(({ source, target }) => {
+      const value = element.getAttribute(source);
+      if (value == null) return;
+      element.setAttribute(target, value);
+    });
+  });
+
+  return document.body.innerHTML;
+}
+
+function mergeItemJson(items: ProseMirrorJson[], schema: Schema): ProseMirrorJson {
+  const [firstItem] = items;
+  if (!firstItem || items.length === 1) return firstItem;
+
+  const content: unknown[] = [];
+  items.forEach((item, index) => {
+    if (index > 0 && schema.nodes.qtiItemDivider) {
+      content.push({ type: 'qtiItemDivider' });
+    }
+
+    const itemContent = Array.isArray((item as { content?: unknown }).content)
+      ? (item as { content: unknown[] }).content
+      : [];
+    content.push(...itemContent);
+  });
+
+  return { ...(firstItem as object), content } as ProseMirrorJson;
+}
+
+function stripIgnoredQtiSections(xml: string): string {
+  const document = parseXmlDocument(xml);
+  document
+    .querySelectorAll('qti-response-declaration, responseDeclaration, qti-response-processing, responseProcessing')
+    .forEach(node => node.parentNode?.removeChild(node));
+
+  return new XMLSerializer().serializeToString(document);
+}
+
+function extractAssessmentItemRefs(xml: string): string[] {
+  return findXmlTags(xml, ['qti-assessment-item-ref', 'assessmentItemRef'])
+    .map(tag => readXmlAttribute(tag, 'href'))
+    .filter((href): href is string => Boolean(href));
+}
+
+function extractManifestItemHrefs(xml: string): string[] {
+  return findXmlTags(xml, ['resource'])
+    .filter(tag => readXmlAttribute(tag, 'type') === ITEM_RESOURCE_TYPE)
+    .map(tag => readXmlAttribute(tag, 'href'))
+    .filter((href): href is string => Boolean(href))
+    .map(href => normalizeZipPath(href));
+}
+
+async function extractPackageMetadata(zip: JSZip): Promise<{ identifier?: string; title?: string }> {
+  const assessmentTest = await zip.file(ASSESSMENT_TEST_FILE)?.async('string');
+  if (assessmentTest) {
+    const document = parseXmlDocument(assessmentTest);
+    const test = document.querySelector('qti-assessment-test, assessmentTest');
+    if (test) {
+      return {
+        identifier: test.getAttribute('identifier') || undefined,
+        title: test.getAttribute('title') || undefined,
+      };
+    }
+  }
+
+  const manifest = await zip.file(MANIFEST_FILE)?.async('string');
+  if (!manifest) return {};
+  const document = parseXmlDocument(manifest);
+  return {
+    identifier: document.documentElement?.getAttribute('identifier') || undefined,
+  };
+}
+
+function extractItemMetadata(xml: string): { identifier?: string; title?: string } {
+  const document = parseXmlDocument(cleanXmlText(xml));
+  const item = document.querySelector('qti-assessment-item, assessmentItem');
+  if (!item) return {};
+
+  return {
+    identifier: item.getAttribute('identifier') || undefined,
+    title: item.getAttribute('title') || undefined,
+  };
+}
+
+function parseXmlDocument(xml: string): XMLDocument {
+  const document = new DOMParser().parseFromString(xml, 'application/xml');
+  const parseError = document.querySelector('parsererror');
+  if (parseError) {
+    throw new Error(`Failed to parse QTI XML: ${parseError.textContent || 'unknown parser error'}`);
+  }
+  return document;
+}
+
+function cleanXmlText(xml: string): string {
+  let cleaned = xml
+    .replace(/^\uFEFF/, '')
+    .replace(/^\u200B/, '')
+    .replace(/^\u00A0/, '')
+    .trim();
+
+  const firstLtIndex = cleaned.indexOf('<');
+  if (firstLtIndex > 0) cleaned = cleaned.substring(firstLtIndex);
+  return cleaned;
+}
+
+function resolveZipPath(basePath: string, href: string): string {
+  if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith('/')) return href;
+
+  const baseParts = basePath.split('/');
+  baseParts.pop();
+
+  href.split('/').forEach(part => {
+    if (!part || part === '.') return;
+    if (part === '..') {
+      baseParts.pop();
+      return;
+    }
+    baseParts.push(part);
+  });
+
+  return baseParts.join('/');
+}
+
+function normalizeZipPath(path: string): string {
+  return path.replace(/\\/g, '/').replace(/^\/+/, '').split(/[?#]/)[0] || path;
+}
+
+function unique(values: string[]): string[] {
+  return Array.from(new Set(values));
+}
+
+function findXmlTags(xml: string, tagNames: string[]): string[] {
+  return tagNames.flatMap(tagName => {
+    const pattern = new RegExp(`<${tagName}\\b[^>]*>`, 'gi');
+    return xml.match(pattern) ?? [];
+  });
+}
+
+function readXmlAttribute(tag: string, attributeName: string): string | null {
+  const match = tag.match(new RegExp(`\\s${attributeName}=(["'])(.*?)\\1`, 'i'));
+  return match?.[2] ?? null;
+}
