@@ -1,0 +1,195 @@
+---
+title: Vue Integration
+description: Embed QTI Editor in a Vue 3 application.
+slug: docs/frameworks/vue
+---
+
+Two approaches for Vue 3 (Composition API):
+
+- **Pure ProseMirror** — minimal dependencies
+- **ProseKit** — composable pattern with reactive state
+
+Both use the same QTI interaction packages and can use the same registry UI components.
+
+## Approach 1: Pure ProseMirror
+
+### 1. Install
+
+```bash
+pnpm add prosemirror-state prosemirror-view prosemirror-model \
+  @qti-editor/core \
+  @qti-editor/interaction-choice \
+  @qti-editor/interaction-text-entry
+```
+
+### 2. Editor component
+
+```vue
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
+import { EditorState } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
+import { Schema } from 'prosemirror-model';
+import {
+  listInteractionDescriptors,
+  listInteractionPluginFactories,
+} from '@qti-editor/core/interactions/composer';
+
+const mountEl = ref<HTMLDivElement>();
+const latestJson = ref('');
+let view: EditorView | null = null;
+
+onMounted(() => {
+  const descriptors = listInteractionDescriptors();
+  const nodes: Record<string, unknown> = {
+    doc: { content: 'block+' },
+    text: {},
+    paragraph: { content: 'inline*', group: 'block' },
+  };
+  const seen = new Set<string>();
+  for (const descriptor of descriptors) {
+    for (const { name, spec } of descriptor.nodeSpecs) {
+      if (!seen.has(name)) { nodes[name] = spec; seen.add(name); }
+    }
+  }
+
+  const schema = new Schema({ nodes, marks: {} });
+  const plugins = listInteractionPluginFactories().map(f => f());
+
+  view = new EditorView(mountEl.value!, {
+    state: EditorState.create({ schema, plugins }),
+    dispatchTransaction(tr) {
+      const next = view!.state.apply(tr);
+      view!.updateState(next);
+      if (tr.docChanged) {
+        latestJson.value = JSON.stringify(next.doc.toJSON());
+      }
+    },
+  });
+});
+
+onUnmounted(() => view?.destroy());
+</script>
+
+<template>
+  <div ref="mountEl" />
+</template>
+```
+
+## Approach 2: ProseKit
+
+### 1. Install
+
+```bash
+pnpm add prosekit @qti-editor/core \
+  @qti-editor/interaction-choice \
+  @qti-editor/interaction-text-entry
+```
+
+### 2. Add the local helpers
+
+Copy both helpers from the [React Integration](/docs/frameworks/react/) guide into your project:
+
+- `qti-interactions.ts` — assembles node specs, keyboard shortcuts, and runtime plugins (`defineQtiInteractionsExtension`)
+- `qti-editor-events.ts` — emits `qti:content:change` and `qti:selection:change` on a configurable `EventTarget` (`qtiEditorEventsExtension`)
+
+### 3. Composable
+
+```ts
+// composables/useQtiEditor.ts
+import { ref, onUnmounted } from 'vue';
+import { createEditor, union } from 'prosekit/core';
+import { defineBasicExtension } from 'prosekit/basic';
+import { defineQtiInteractionsExtension } from '../lib/qti-interactions';
+import { qtiEditorEventsExtension } from '../lib/qti-editor-events';
+
+export function useQtiEditor() {
+  const html = ref('');
+  const selection = ref<{ from: number; to: number; empty: boolean } | null>(null);
+
+  const eventTarget = new EventTarget();
+
+  const editor = createEditor({
+    extension: union(
+      defineBasicExtension(),
+      defineQtiInteractionsExtension(),
+      qtiEditorEventsExtension({ eventTarget }),
+    ),
+  });
+
+  eventTarget.addEventListener('qti:content:change', (e) => {
+    html.value = (e as CustomEvent<{ html: string }>).detail.html;
+  });
+
+  eventTarget.addEventListener('qti:selection:change', (e) => {
+    selection.value = (e as CustomEvent).detail;
+  });
+
+  function mount(el: HTMLElement) {
+    editor.mount(el);
+  }
+
+  onUnmounted(() => (editor as any).view?.destroy());
+
+  return { html, selection, mount, editor };
+}
+```
+
+### 4. Component
+
+```vue
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useQtiEditor } from '../composables/useQtiEditor';
+
+const mountEl = ref<HTMLDivElement>();
+const { html, mount, editor } = useQtiEditor();
+
+onMounted(() => {
+  if (mountEl.value) mount(mountEl.value);
+});
+</script>
+
+<template>
+  <div>
+    <div ref="mountEl" style="min-height: 200px; border: 1px solid #ccc; padding: 16px;" />
+    <details v-if="html">
+      <summary>Saved content</summary>
+      <pre style="font-size: 12px;">{{ html }}</pre>
+    </details>
+  </div>
+</template>
+```
+
+## Registry UI
+
+Registry components are Lit web components. Pass the `editor` instance returned from the composable to each component's ref after the editor mounts:
+
+```vue
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useQtiEditor } from '../composables/useQtiEditor';
+import '../components/toolbar';
+
+const mountEl = ref<HTMLDivElement>();
+const toolbarRef = ref<HTMLElement & { editor: unknown }>();
+const { mount, editor } = useQtiEditor();
+
+onMounted(() => {
+  if (mountEl.value) mount(mountEl.value);
+  if (toolbarRef.value) toolbarRef.value.editor = editor;
+});
+</script>
+
+<template>
+  <lit-editor-toolbar ref="toolbarRef" />
+  <div ref="mountEl" />
+</template>
+```
+
+See the [registry guides](/docs/using-the-registry/) for available components and their install commands.
+
+## Notes
+
+- Call `useQtiEditor()` at the top level of `<script setup>` so Vue can register the `onUnmounted` hook correctly.
+- Use a private `EventTarget` — not `document` — when mounting multiple editor instances on the same page.

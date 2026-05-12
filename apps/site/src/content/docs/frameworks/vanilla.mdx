@@ -1,0 +1,131 @@
+---
+title: Vanilla JS / TypeScript
+description: Embed QTI Editor in a plain JavaScript or TypeScript project without a component framework.
+slug: docs/frameworks/vanilla
+---
+
+This guide shows two approaches for integrating QTI Editor without a component framework.
+
+- **Pure ProseMirror** — minimal dependencies, direct DOM control
+- **ProseKit** — declarative extension assembly with a private event bus
+
+Both use the same QTI interaction packages and can use the same registry UI components.
+
+## Approach 1: Pure ProseMirror
+
+### 1. Install
+
+```bash
+pnpm add prosemirror-state prosemirror-view prosemirror-model \
+  @qti-editor/core \
+  @qti-editor/interaction-choice \
+  @qti-editor/interaction-text-entry
+```
+
+### 2. Create and mount
+
+```ts
+import { EditorState } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
+import { Schema } from 'prosemirror-model';
+import {
+  listInteractionDescriptors,
+  listInteractionPluginFactories,
+} from '@qti-editor/core/interactions/composer';
+
+const descriptors = listInteractionDescriptors();
+const nodes: Record<string, unknown> = {
+  doc: { content: 'block+' },
+  text: {},
+  paragraph: { content: 'inline*', group: 'block' },
+};
+const seen = new Set<string>();
+for (const descriptor of descriptors) {
+  for (const { name, spec } of descriptor.nodeSpecs) {
+    if (!seen.has(name)) { nodes[name] = spec; seen.add(name); }
+  }
+}
+
+const schema = new Schema({ nodes, marks: {} });
+const plugins = listInteractionPluginFactories().map(f => f());
+
+let latestJson = '';
+
+const view = new EditorView(document.getElementById('editor')!, {
+  state: EditorState.create({ schema, plugins }),
+  dispatchTransaction(tr) {
+    const next = view.state.apply(tr);
+    view.updateState(next);
+    if (tr.docChanged) {
+      latestJson = JSON.stringify(next.doc.toJSON());
+    }
+  },
+});
+
+// Cleanup
+window.addEventListener('unload', () => view.destroy());
+```
+
+## Approach 2: ProseKit
+
+### 1. Install
+
+```bash
+pnpm add prosekit @qti-editor/core \
+  @qti-editor/interaction-choice \
+  @qti-editor/interaction-text-entry
+```
+
+### 2. Add the local helpers
+
+Copy both helpers from the [React Integration](/docs/frameworks/react/) guide into your project:
+
+- `qti-interactions.ts` — assembles node specs, keyboard shortcuts, and runtime plugins from the descriptor registry (`defineQtiInteractionsExtension`)
+- `qti-editor-events.ts` — emits `qti:content:change` and `qti:selection:change` CustomEvents on a configurable `EventTarget` (`qtiEditorEventsExtension`)
+
+### 3. Create and mount
+
+```ts
+import { createEditor, union } from 'prosekit/core';
+import { defineBasicExtension } from 'prosekit/basic';
+import { defineQtiInteractionsExtension } from './qti-interactions';
+import { qtiEditorEventsExtension } from './qti-editor-events';
+
+// One private EventTarget per editor instance
+const eventTarget = new EventTarget();
+
+const editor = createEditor({
+  extension: union(
+    defineBasicExtension(),
+    defineQtiInteractionsExtension(),
+    qtiEditorEventsExtension({ eventTarget }),
+  ),
+});
+
+editor.mount(document.getElementById('editor')!);
+
+eventTarget.addEventListener('qti:content:change', (e) => {
+  const { html, json } = (e as CustomEvent).detail;
+  console.log(html);
+});
+
+eventTarget.addEventListener('qti:selection:change', (e) => {
+  const { from, to, empty } = (e as CustomEvent).detail;
+});
+
+// Cleanup
+window.addEventListener('unload', () => (editor as any).view?.destroy());
+```
+
+## Registry UI
+
+Registry components are Lit web components and work the same way in vanilla projects as in framework apps. Mount the editor, then assign the `editor` instance to the component:
+
+```ts
+import './components/toolbar';
+
+const toolbar = document.querySelector('lit-editor-toolbar')!;
+toolbar.editor = editor;
+```
+
+See the [registry guides](/docs/using-the-registry/) for available components and their install commands.

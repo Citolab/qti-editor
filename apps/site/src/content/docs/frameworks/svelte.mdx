@@ -1,0 +1,177 @@
+---
+title: Svelte Integration
+description: Embed QTI Editor in a Svelte 5 application.
+slug: docs/frameworks/svelte
+---
+
+Two approaches for Svelte 5:
+
+- **Pure ProseMirror** — minimal dependencies
+- **ProseKit** — runes-based reactive state
+
+Both use the same QTI interaction packages and can use the same registry UI components.
+
+## Approach 1: Pure ProseMirror
+
+### 1. Install
+
+```bash
+pnpm add prosemirror-state prosemirror-view prosemirror-model \
+  @qti-editor/core \
+  @qti-editor/interaction-choice \
+  @qti-editor/interaction-text-entry
+```
+
+### 2. Editor component
+
+```svelte
+<script lang="ts">
+import { onMount, onDestroy } from 'svelte';
+import { EditorState } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
+import { Schema } from 'prosemirror-model';
+import {
+  listInteractionDescriptors,
+  listInteractionPluginFactories,
+} from '@qti-editor/core/interactions/composer';
+
+let mountEl: HTMLDivElement;
+let latestJson = $state('');
+let view: EditorView | null = null;
+
+onMount(() => {
+  const descriptors = listInteractionDescriptors();
+  const nodes: Record<string, unknown> = {
+    doc: { content: 'block+' },
+    text: {},
+    paragraph: { content: 'inline*', group: 'block' },
+  };
+  const seen = new Set<string>();
+  for (const descriptor of descriptors) {
+    for (const { name, spec } of descriptor.nodeSpecs) {
+      if (!seen.has(name)) { nodes[name] = spec; seen.add(name); }
+    }
+  }
+
+  const schema = new Schema({ nodes, marks: {} });
+  const plugins = listInteractionPluginFactories().map(f => f());
+
+  view = new EditorView(mountEl, {
+    state: EditorState.create({ schema, plugins }),
+    dispatchTransaction(tr) {
+      const next = view!.state.apply(tr);
+      view!.updateState(next);
+      if (tr.docChanged) {
+        latestJson = JSON.stringify(next.doc.toJSON());
+      }
+    },
+  });
+});
+
+onDestroy(() => view?.destroy());
+</script>
+
+<div bind:this={mountEl}></div>
+```
+
+## Approach 2: ProseKit
+
+### 1. Install
+
+```bash
+pnpm add prosekit @qti-editor/core \
+  @qti-editor/interaction-choice \
+  @qti-editor/interaction-text-entry
+```
+
+### 2. Add the local helpers
+
+Copy both helpers from the [React Integration](/docs/frameworks/react/) guide into your project:
+
+- `qti-interactions.ts` — assembles node specs, keyboard shortcuts, and runtime plugins (`defineQtiInteractionsExtension`)
+- `qti-editor-events.ts` — emits `qti:content:change` and `qti:selection:change` on a configurable `EventTarget` (`qtiEditorEventsExtension`)
+
+### 3. Editor component
+
+```svelte
+<script lang="ts">
+import { onMount, onDestroy } from 'svelte';
+import { createEditor, union } from 'prosekit/core';
+import { defineBasicExtension } from 'prosekit/basic';
+import { defineQtiInteractionsExtension } from '$lib/qti-interactions';
+import { qtiEditorEventsExtension } from '$lib/qti-editor-events';
+
+let mountEl: HTMLDivElement;
+let html = $state('');
+let selection = $state<{ from: number; to: number; empty: boolean } | null>(null);
+
+const eventTarget = new EventTarget();
+
+const editor = createEditor({
+  extension: union(
+    defineBasicExtension(),
+    defineQtiInteractionsExtension(),
+    qtiEditorEventsExtension({ eventTarget }),
+  ),
+});
+
+eventTarget.addEventListener('qti:content:change', (e) => {
+  html = (e as CustomEvent<{ html: string }>).detail.html;
+});
+
+eventTarget.addEventListener('qti:selection:change', (e) => {
+  selection = (e as CustomEvent).detail;
+});
+
+onMount(() => editor.mount(mountEl));
+onDestroy(() => (editor as any).view?.destroy());
+</script>
+
+<div bind:this={mountEl} style="min-height: 200px; border: 1px solid #ccc; padding: 16px;"></div>
+
+{#if html}
+<details>
+  <summary>Saved content</summary>
+  <pre style="font-size: 12px;">{html}</pre>
+</details>
+{/if}
+```
+
+## Registry UI
+
+Registry components are Lit web components. Bind the `editor` instance to the component's property after mount:
+
+```svelte
+<script lang="ts">
+import { onMount, onDestroy } from 'svelte';
+import { createEditor, union } from 'prosekit/core';
+import { defineBasicExtension } from 'prosekit/basic';
+import { defineQtiInteractionsExtension } from '$lib/qti-interactions';
+import '$lib/components/toolbar';
+
+let mountEl: HTMLDivElement;
+let toolbarEl: HTMLElement & { editor: unknown };
+
+const editor = createEditor({
+  extension: union(defineBasicExtension(), defineQtiInteractionsExtension()),
+});
+
+onMount(() => {
+  editor.mount(mountEl);
+  toolbarEl.editor = editor;
+});
+
+onDestroy(() => (editor as any).view?.destroy());
+</script>
+
+<lit-editor-toolbar bind:this={toolbarEl}></lit-editor-toolbar>
+<div bind:this={mountEl}></div>
+```
+
+See the [registry guides](/docs/using-the-registry/) for available components and their install commands.
+
+## Notes
+
+- The `editor` and `eventTarget` can be created at module scope (outside `onMount`) in Svelte — the editor will not attempt DOM access until `editor.mount()` is called.
+- Use a private `EventTarget` — not `document` — when mounting multiple editor instances on the same page.
+- `$state` is a Svelte 5 rune. For Svelte 4, replace `let html = $state('')` with `let html = ''` and use `$: html` for derived reactive values.
