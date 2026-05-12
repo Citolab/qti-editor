@@ -187,7 +187,15 @@ export class QtiEditorApp extends LitElement {
     try {
       const result = await openXmlFilePicker({ schema: this.editor.schema });
       this.editor.setContent(result.json);
-      
+
+      // Write the imported doc to localStorage immediately so saveFile() reads
+      // the correct content without waiting for the persistence plugin's debounce.
+      const doc = this.editor.view.state.doc.toJSON();
+      localStorage.setItem(EDITOR_DOC_STORAGE_KEY, JSON.stringify({ version: 1, doc }));
+
+      // Notify the React layer (dirty state, auto-save status) that content changed.
+      document.dispatchEvent(new CustomEvent('qti:content:change', { bubbles: true }));
+
       // Update metadata if present
       if (result.metadata) {
         this.itemContext = {
