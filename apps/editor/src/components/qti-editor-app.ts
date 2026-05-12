@@ -1,7 +1,16 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
-
+import '@qti-editor/ui/components/code-panel';
+import '@qti-editor/ui/components/composer';
+import '@qti-editor/ui/components/composer-metadata-form';
+import '@qti-editor/ui/components/attributes-panel';
+import '@qti-editor/ui/components/toolbar';
+import '@qti-editor/ui/components/items-gutter';
+import '@qti-editor/ui/components/items-navigator';
+import { registerLitEditorBlockHandle } from '@qti-editor/ui/components/block-handle';
+import { registerLitEditorDropIndicator } from '@qti-editor/ui/components/drop-indicator';
 import { editorContext } from '@qti-editor/ui/components/editor-context';
+import './blocks/slash-menu/index.js';
 import { provide, ContextProvider } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { LitElement, html, type PropertyValues } from 'lit';
@@ -16,24 +25,13 @@ import {
 } from '@qti-editor/prosemirror';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
-import { registerLitEditorBlockHandle } from '@qti-editor/ui/components/block-handle';
-import { registerLitEditorDropIndicator } from '@qti-editor/ui/components/drop-indicator';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
 import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interaction-shared';
-import '@qti-editor/ui/components/code-panel';
-import '@qti-editor/ui/components/composer';
-import '@qti-editor/ui/components/composer-metadata-form';
-import '@qti-editor/ui/components/attributes-panel';
-import '@qti-editor/ui/components/toolbar';
-import '@qti-editor/ui/components/items-gutter';
-import '@qti-editor/ui/components/items-navigator';
-
-import './blocks/slash-menu/index.js';
 
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
-import { exportPackage, exportXml } from '../lib/exportXml.js';
+import { exportXml } from '../lib/exportXml.js';
 import { openXmlFilePicker } from '../lib/importXml.js';
 
 const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
@@ -185,16 +183,6 @@ export class QtiEditorApp extends LitElement {
     });
   }
 
-  async exportPackage(fileName: string = 'item'): Promise<void> {
-    await exportPackage({
-      node: this.editor.view.state.doc,
-      identifier: this.itemContext.identifier,
-      lang: this.lang,
-      title: this.itemContext.title,
-      fileName,
-    });
-  }
-
   async importXml(): Promise<void> {
     try {
       const result = await openXmlFilePicker({ schema: this.editor.schema });
@@ -217,8 +205,8 @@ export class QtiEditorApp extends LitElement {
   override render() {
     // Only render components that need the editor after it's mounted
     const editorComponents = this._editorMounted ? html`
-      <lit-editor-toolbar .editor=${this.editor} class="block w-full shrink-0"></lit-editor-toolbar>
-    ` : html`<div class="block w-full shrink-0" style="height: 40px;"></div>`;
+      <lit-editor-toolbar .editor=${this.editor} class="block w-full shrink-0" style="padding-left: 1rem; padding-right: 1rem;"></lit-editor-toolbar>
+    ` : html`<div class="block w-full shrink-0" style="padding-left: 1rem; padding-right: 1rem; height: 40px;"></div>`;
 
     return html`
       ${editorComponents}
