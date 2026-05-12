@@ -266,10 +266,6 @@ export default defineConfig({
           label: 'Using the Registry',
           items: [
             { label: 'Overview', slug: 'docs/using-the-registry' },
-            { label: 'ProseKit Editor Block Handle', slug: 'docs/using-the-registry/lit-editor-block-handle' },
-            { label: 'ProseKit Editor Drop Indicator', slug: 'docs/using-the-registry/lit-editor-drop-indicator' },
-            { label: 'ProseKit Editor Slash Menu', slug: 'docs/using-the-registry/lit-editor-slash-menu' },
-            { label: 'ProseKit Editor Toolbar', slug: 'docs/using-the-registry/lit-editor-toolbar' },
             { label: 'QTI Attributes Panel', slug: 'docs/using-the-registry/qti-attributes-panel' },
             { label: 'QTI Choice Attributes Editor', slug: 'docs/using-the-registry/qti-choice-attributes-editor' },
             { label: 'QTI Code Panel', slug: 'docs/using-the-registry/qti-code-panel' },
