@@ -1,0 +1,203 @@
+---
+title: Angular Custom UI
+description: Build Angular-native controls and plugins on top of the core ProseMirror instance without using the registry web components.
+slug: docs/frameworks/angular/custom-ui
+---
+
+This guide is for teams that want QTI authoring behavior but prefer Angular components for their own toolbar, inspector, or side-panel experience.
+
+The pattern is the same as in React:
+
+- keep the editor instance inside Angular-owned services or component state
+- subscribe to content and selection events
+- read and write through the underlying `EditorView`
+- register your own ProseMirror plugins alongside the QTI interaction plugins
+
+## When to use this approach
+
+Use this when:
+
+- your app already has Angular form controls and layout components
+- you want a custom Angular sidebar or toolbar instead of copied registry elements
+- you need product-specific ProseMirror plugins
+- you want to keep UI ownership entirely inside Angular
+
+## 1. Keep access to the core editor view
+
+If you use ProseKit as the host, you still have access to the underlying ProseMirror view through `editor.view`.
+
+```ts
+import { createEditor, union } from 'prosekit/core';
+
+const editor = createEditor({
+  extension: union(
+    defineBasicExtension(),
+    defineQtiInteractionsExtension(),
+    qtiEditorEventsExtension({ eventTarget }),
+  ),
+});
+
+editor.mount(mountElement);
+
+const view = editor.view;
+const state = editor.view.state;
+```
+
+If you use plain ProseMirror, you work directly with `EditorView` from the start.
+
+## 2. Bridge editor events into Angular state
+
+Keep the event bridge local to your app and use it to update Angular signals, RxJS streams, or component fields.
+
+```ts
+// qti-editor-state.service.ts
+import { Injectable, signal } from '@angular/core';
+
+@Injectable({ providedIn: 'root' })
+export class QtiEditorStateService {
+  readonly html = signal('');
+  readonly json = signal<unknown>(null);
+  readonly selection = signal<{ from: number; to: number; empty: boolean } | null>(null);
+
+  connect(eventTarget: EventTarget): () => void {
+    const onContent = (event: Event) => {
+      const detail = (event as CustomEvent<{ html: string; json: unknown }>).detail;
+      this.html.set(detail.html);
+      this.json.set(detail.json);
+    };
+
+    const onSelection = (event: Event) => {
+      const detail = (event as CustomEvent<{ from: number; to: number; empty: boolean }>).detail;
+      this.selection.set(detail);
+    };
+
+    eventTarget.addEventListener('qti:content:change', onContent);
+    eventTarget.addEventListener('qti:selection:change', onSelection);
+
+    return () => {
+      eventTarget.removeEventListener('qti:content:change', onContent);
+      eventTarget.removeEventListener('qti:selection:change', onSelection);
+    };
+  }
+}
+```
+
+That lets Angular templates react to editor state without any dependency on the registry UI.
+
+## 3. Build Angular-native controls against `EditorView`
+
+Use the underlying `EditorView` for custom buttons, validation panels, or node inspectors.
+
+```ts
+// app.component.ts
+import { Component, signal } from '@angular/core';
+import { TextSelection } from 'prosemirror-state';
+import type { Editor } from 'prosekit/core';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <aside *ngIf="editor() as currentEditor">
+      <p>Selection: {{ currentEditor.view.state.selection.from }} - {{ currentEditor.view.state.selection.to }}</p>
+      <button type="button" (click)="jumpToStart(currentEditor)">Jump to start</button>
+    </aside>
+  `,
+})
+export class AppComponent {
+  readonly editor = signal<Editor | null>(null);
+
+  jumpToStart(editor: Editor) {
+    const tr = editor.view.state.tr.setSelection(
+      TextSelection.create(editor.view.state.doc, 1),
+    );
+    editor.view.dispatch(tr);
+    editor.view.focus();
+  }
+}
+```
+
+You can use the same pattern to build Angular forms for node attributes, correctness rules, metadata, or publishing checks.
+
+## 4. Add your own ProseMirror plugins
+
+App-specific ProseMirror plugins fit naturally into the same extension or plugin assembly you already use for QTI interactions.
+
+```ts
+// custom-word-count.ts
+import { definePlugin } from 'prosekit/core';
+import { Plugin } from 'prosekit/pm/state';
+
+export function customWordCountExtension(eventTarget: EventTarget) {
+  return definePlugin(
+    () =>
+      new Plugin({
+        view(view) {
+          const emit = () => {
+            const text = view.state.doc.textContent;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+
+            eventTarget.dispatchEvent(
+              new CustomEvent('app:word-count', {
+                detail: { words },
+                bubbles: true,
+              }),
+            );
+          };
+
+          emit();
+
+          return {
+            update(updatedView, prevState) {
+              if (!prevState.doc.eq(updatedView.state.doc)) emit();
+            },
+          };
+        },
+      }),
+  );
+}
+```
+
+Then include it with the rest of your editor assembly:
+
+```ts
+const editor = createEditor({
+  extension: union(
+    defineBasicExtension(),
+    defineQtiInteractionsExtension(),
+    qtiEditorEventsExtension({ eventTarget }),
+    customWordCountExtension(eventTarget),
+  ),
+});
+```
+
+## 5. Export valid QTI from Angular-owned UI
+
+Export can live entirely in your Angular layer as long as you have the ProseMirror document node.
+
+```ts
+import { createQtiPackageFromNode } from '@qti-editor/qti-roundtrip-export';
+
+async function exportCurrentItem(editor: Editor, metadata: {
+  identifier?: string;
+  title?: string;
+  lang?: string;
+}) {
+  const blob = await createQtiPackageFromNode(editor.view.state.doc, {
+    identifier: metadata.identifier ?? 'item-1',
+    title: metadata.title ?? 'Untitled',
+    lang: metadata.lang ?? 'en',
+    packageIdentifier: metadata.identifier ?? 'package-1',
+    testTitle: metadata.title ?? 'Assessment',
+  });
+  // download or send blob to your backend
+}
+```
+
+As with the React version, if you are following the external-app model, keep this helper local to your own app layer.
+
+## Notes
+
+- The registry web components are optional; Angular can own all presentation concerns itself.
+- `qti:content:change` and `qti:selection:change` are the easiest bridge from ProseMirror updates into Angular state.
+- `qti:editor:change` and `qti:editor:selection` are also dispatched on `view.dom` for DOM-oriented integrations.
+- App-specific plugins should stay local to your Angular app unless they are intended to become shared editor behavior.

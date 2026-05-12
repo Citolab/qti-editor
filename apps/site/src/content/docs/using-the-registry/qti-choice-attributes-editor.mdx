@@ -1,0 +1,32 @@
+---
+title: QTI Choice Attributes Editor
+description: Install and use the standalone choice-attributes registry component.
+slug: docs/using-the-registry/qti-choice-attributes-editor
+---
+
+`qti-choice-attributes-editor` is the standalone choice-layout editor used by `qti-attributes-panel`.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-choice-attributes-editor.json
+```
+
+The registry command installs the component source and its package dependencies into your app.
+
+## Usage
+
+This component is usually installed indirectly through `qti-attributes-panel`, but you can also host it yourself.
+
+```ts
+import '@/components/choice-attributes-editor';
+
+const editor = document.querySelector('qti-choice-attributes-editor');
+editor.activeNode = activeNodeDetail;
+editor.addEventListener('qti:attributes:patch', event => {
+  const detail = (event as CustomEvent).detail;
+  console.log(detail.pos, detail.attrs);
+});
+```
+
+It expects an `activeNode` compatible with `AttributesNodeDetail` from `@qti-editor/prosemirror-attributes-ui-prosekit` and emits `qti:attributes:patch` events when the author changes the choice layout classes.

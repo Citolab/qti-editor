@@ -1,0 +1,32 @@
+---
+title: QTI Extended Text Attributes Editor
+description: Install and use the standalone extended-text attributes registry component.
+slug: docs/using-the-registry/qti-extended-text-attributes-editor
+---
+
+`qti-extended-text-attributes-editor` is the standalone extended-text editor used by `qti-attributes-panel`.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-extended-text-attributes-editor.json
+```
+
+The registry command installs the component source and its package dependencies into your app.
+
+## Usage
+
+This component is usually installed indirectly through `qti-attributes-panel`, but you can also host it yourself.
+
+```ts
+import '@/components/extended-text-attributes-editor';
+
+const editor = document.querySelector('qti-extended-text-attributes-editor');
+editor.activeNode = activeNodeDetail;
+editor.addEventListener('qti:attributes:patch', event => {
+  const detail = (event as CustomEvent).detail;
+  console.log(detail.pos, detail.attrs);
+});
+```
+
+It emits `qti:attributes:patch` events for height presets and rubric/model-answer updates.

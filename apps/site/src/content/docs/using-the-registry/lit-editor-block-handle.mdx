@@ -1,0 +1,38 @@
+---
+title: Lit Editor Block Handle
+description: Install and use the vendored ProseKit block-handle registry component.
+slug: docs/using-the-registry/lit-editor-block-handle
+---
+
+`lit-editor-block-handle` renders the draggable block handle UI used for block-level drag and insert affordances.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/lit-editor-block-handle.json
+```
+
+The registry command installs the component source and its package dependencies into your app.
+
+## Usage
+
+```ts
+import { registerLitEditorBlockHandle } from '@/components/block-handle';
+import { ContextProvider } from '@lit/context';
+import { editorContext } from '@/components/editor-context';
+
+registerLitEditorBlockHandle();
+new ContextProvider(hostElement, {
+  context: editorContext,
+  initialValue: editor,
+});
+```
+
+```html
+<lit-editor-block-handle></lit-editor-block-handle>
+```
+
+## Notes
+
+- This component reads the editor instance from Lit context rather than from an `.editor` property.
+- It is an editor-chrome utility intended for custom Lit hosts, not a drop-in React or Angular element by itself.

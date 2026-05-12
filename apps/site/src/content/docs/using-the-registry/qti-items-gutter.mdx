@@ -1,0 +1,29 @@
+---
+title: QTI Items Gutter
+description: Install and use the registry gutter component that labels item-divider-separated assessment items.
+slug: docs/using-the-registry/qti-items-gutter
+---
+
+`qti-items-gutter` adds a left gutter next to the editor and annotates `qti-item-divider` elements with item numbers.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-items-gutter.json
+```
+
+The registry command installs the component source and its package dependencies into your app.
+
+## Usage
+
+```ts
+import '@/components/items-gutter';
+
+const gutter = document.querySelector('qti-items-gutter');
+gutter.editor = editor;
+```
+
+## Notes
+
+- Position the gutter alongside your editor viewport; the demo app uses an absolutely positioned left rail.
+- The component listens for `qti:editor:change` and updates divider numbering automatically.

@@ -1,0 +1,60 @@
+---
+title: Framework Integration
+description: How QTI Editor integrates with different frameworks and libraries.
+slug: docs/frameworks/overview
+---
+
+QTI Editor is a composable authoring kit built on [ProseMirror](https://prosemirror.net/). It ships as a set of focused packages that add QTI interaction types, commands, and serialization on top of a standard ProseMirror instance. There is no proprietary editor core to embed — your framework owns the DOM and lifecycle, the QTI packages slot in as plugins, node specs, and commands.
+
+## The layer model
+
+| Layer | What it is | Required |
+|---|---|---|
+| ProseMirror | Document model, view, and transaction system | Yes |
+| `@qti-editor/core` | Descriptor registry, interaction composers, base utilities | Yes |
+| `@qti-editor/interaction-*` | One package per QTI interaction type — schema, commands, plugins | Yes (pick what you need) |
+| ProseKit (`prosekit`) | Thin wrapper that simplifies extension assembly | Optional |
+| Registry UI | Toolbar, slash menu, attributes panel, composer — copy-owned Lit web components | Optional |
+
+Because ProseMirror and the QTI packages are plain JavaScript with no framework opinions, this integration works with React, Angular, Vue, Svelte, or no framework at all.
+
+## Integration paths
+
+### Pure ProseMirror
+
+Build the schema, state, and plugins yourself using the interaction descriptor registry. Call `listInteractionDescriptors()` to get node specs and insert commands, and `listInteractionPluginFactories()` to get runtime plugins. This is the minimum viable integration surface and the most portable.
+
+Best for: apps that already use ProseMirror, teams that prefer explicit setup, or cases where bundle size or dependency footprint matters.
+
+### ProseKit
+
+Wrap the descriptor registry in a small local extension helper that lives in your app. ProseKit handles extension composition, keyboard mapping, and plugin registration in a more declarative style. The helper is a one-time copy — you own it and can extend it freely.
+
+Best for: faster setup, cleaner separation between editor configuration and component code, or when you want ProseKit's extension primitives.
+
+Both paths produce identical QTI output and can use the same registry UI components.
+
+## UI via the registry
+
+Toolbar, slash menu, attributes panel, interaction insert menu, and convert menu are all available as copy-owned components through the [registry](/docs/getting-started/registry/). Running `npx shadcn@latest add <url>` copies the source into your app. You own the component from that point — there is no runtime dependency on a QTI Editor UI package, and you can modify the component freely.
+
+Registry components are [Lit](https://lit.dev/) web components. They receive an `editor` reference and handle the rest themselves, which means they integrate with any host framework the same way.
+
+If you prefer to build the toolbar and side panels entirely inside your framework (React components, Angular components), the custom UI guides show that path.
+
+## Events
+
+The editor communicates changes via `qti:content:change` and `qti:selection:change` CustomEvents, dispatched on a configurable `EventTarget`. Pass a private `new EventTarget()` to scope events to a single editor instance; the default target is `document`.
+
+This means you can wire the editor into any reactive system — React state, Angular signals, RxJS observables — by listening on the `EventTarget` and updating your state from the event detail.
+
+## qti-components
+
+QTI Editor packages depend on [`@qti-components/*`](https://github.com/Citolab/qti-components) for the underlying QTI web components that render and encapsulate interaction behavior at runtime. Each `@qti-editor/interaction-*` package pulls in its matching `@qti-components/*` dependency automatically. You do not need to install or configure these separately.
+
+## Framework guides
+
+- [React Integration](/docs/frameworks/react/) — hooks and component patterns
+- [React Custom UI](/docs/frameworks/react/custom-ui/) — own the toolbar and panels in React
+- [Angular Integration](/docs/frameworks/angular/) — service and lifecycle patterns
+- [Angular Custom UI](/docs/frameworks/angular/custom-ui/) — own the toolbar and panels in Angular

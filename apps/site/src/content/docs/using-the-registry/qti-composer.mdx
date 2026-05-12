@@ -1,0 +1,29 @@
+---
+title: QTI Composer
+description: Install and use the live QTI XML composer registry component.
+slug: docs/using-the-registry/qti-composer
+---
+
+`qti-composer` displays the composed QTI XML output for the current item. The component reads metadata from the shared item context and recomposes from the live ProseKit editor instance.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-composer.json
+```
+
+The registry command installs the component source and its package dependencies into your app.
+
+## Usage
+
+Assign the editor instance after mount:
+
+```ts
+import '@/components/composer';
+
+const composer = document.querySelector('qti-composer');
+composer.editor = editor;
+composer.liveComposeEnabled = true;
+```
+
+In a full editor shell, pair this with `qti-composer-metadata-form` and provide item metadata through the shared item context, as the demo app does.

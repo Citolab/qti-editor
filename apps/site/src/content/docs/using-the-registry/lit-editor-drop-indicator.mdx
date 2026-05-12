@@ -1,0 +1,38 @@
+---
+title: Lit Editor Drop Indicator
+description: Install and use the vendored ProseKit drop-indicator registry component.
+slug: docs/using-the-registry/lit-editor-drop-indicator
+---
+
+`lit-editor-drop-indicator` renders the visual drop target indicator used during drag operations.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/lit-editor-drop-indicator.json
+```
+
+The registry command installs the component source and its package dependencies into your app.
+
+## Usage
+
+```ts
+import { registerLitEditorDropIndicator } from '@/components/drop-indicator';
+import { ContextProvider } from '@lit/context';
+import { editorContext } from '@/components/editor-context';
+
+registerLitEditorDropIndicator();
+new ContextProvider(hostElement, {
+  context: editorContext,
+  initialValue: editor,
+});
+```
+
+```html
+<lit-editor-drop-indicator></lit-editor-drop-indicator>
+```
+
+## Notes
+
+- This component also reads the editor instance from Lit context rather than from an `.editor` property.
+- Use it with a Lit host that already provides `editorContext`, such as a custom editor shell.

@@ -1,0 +1,88 @@
+---
+title: QTI Roundtrip Export Package
+description: Reference for the lossless editor-specific QTI package exporter.
+slug: docs/packages/qti-roundtrip-export
+---
+
+`@qti-editor/qti-roundtrip-export` exports the editor's ProseMirror document to a QTI 3.0 package **for lossless re-import by this editor**.
+
+## Scope
+
+This package is **not** a generic QTI 3.0 exporter.
+
+Its purpose is narrower:
+
+- write valid QTI 3.0 package files
+- preserve editor authoring state through `data-*` mirrors on QTI interaction tags
+- stay paired with `@qti-editor/qti-roundtrip-import`
+
+If you need the full contract, read [ROUNDTRIP.md](../../../../packages/qti/roundtrip-export/ROUNDTRIP.md).
+
+## Main exports
+
+```ts
+import {
+  createQtiPackageFromNode,
+  createQtiPackageFromProseMirrorJson,
+  createQtiPackageFromItems,
+} from '@qti-editor/qti-roundtrip-export';
+```
+
+## Typical usage
+
+Export directly from the current editor document:
+
+```ts
+import { createQtiPackageFromNode } from '@qti-editor/qti-roundtrip-export';
+
+const blob = await createQtiPackageFromNode(editor.view.state.doc, {
+  identifier: 'item-1',
+  title: 'Sample Item',
+  lang: 'en',
+  packageIdentifier: 'sample-package',
+  testTitle: 'Sample Test',
+});
+```
+
+You can then download the returned `Blob` or upload it to your own backend.
+
+## Package contents
+
+The generated ZIP contains:
+
+- `imsmanifest.xml`
+- `assessment-test.xml`
+- one or more item XML files under `items/`
+- referenced image assets, when present
+
+Multiple items are supported. The exporter uses the same item-fragment logic as the QTI composer and can package several assessment items into one assessment test.
+
+## Metadata context
+
+The context object supports both item-level and package-level metadata:
+
+- `identifier`
+- `title`
+- `lang`
+- `packageIdentifier`
+- `testIdentifier`
+- `testTitle`
+- `sectionIdentifier`
+- `sectionTitle`
+
+## "Roundtrip"?
+
+This package writes editor-specific authoring attributes onto interaction elements as `data-*` attributes. The paired import package reads those `data-*` mirrors back into the ProseMirror schema.
+
+That is why this package can preserve authoring state such as:
+
+- correct responses
+- scores
+- text-entry case sensitivity
+- select-point area mappings
+
+Those mirrors are the authoritative roundtrip contract. The standard QTI response declarations and response processing are emitted for QTI conformance, but the import side intentionally does not use them as the source of authoring truth.
+
+## Important constraint
+
+Do not document or present this package as a third-party QTI exporter. It is designed to roundtrip this editor's own data model, not to be a general-purpose interchange layer.

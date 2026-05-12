@@ -1,0 +1,27 @@
+---
+title: Gap Match Interaction
+description: Install and use the gap match interaction package.
+slug: docs/qti-interactions/gap-match
+---
+
+Gap match interactions let candidates drag or place predefined gap texts into matching gaps inside a prompt or passage.
+
+## Install
+
+```bash
+pnpm add @qti-editor/interaction-gap-match
+```
+
+This package integrates with `@qti-components/gap-match-interaction`.
+
+## What it does
+
+- Inserts a `qti-gap-match-interaction` with editable gap texts.
+- Supports inserting `qti-gap` placeholders inside the interaction body where responses can be placed.
+- Keeps gap definitions, gap placements, and QTI response semantics tied to structured interaction nodes.
+
+## Runtime behavior
+
+This package includes runtime ProseMirror behavior for keeping authoring state in sync while editing gap matches.
+
+If you assemble your editor through the descriptor registry, include the plugin factories returned by `listInteractionPluginFactories()` alongside the interaction node specs.

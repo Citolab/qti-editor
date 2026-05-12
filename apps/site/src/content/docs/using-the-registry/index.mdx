@@ -1,0 +1,69 @@
+---
+title: Using the Registry
+description: Install individual QTI Editor UI components into your project via the shadcn-compatible registry.
+slug: docs/using-the-registry
+---
+
+The QTI Editor registry is a [shadcn/ui-compatible](https://ui.shadcn.com) component registry. It gives you ready-made UI components that you can copy into your own codebase and adapt without lock-in or template indirection.
+
+You can view this registry as a UI starter. Build the editor itself from `prosekit` and the public `@qti-editor/*` packages, then copy the components you need to cover common editor UI patterns.
+
+Registry base URL: `https://qti-editor.citolab.nl/r`
+
+## Prerequisites
+
+These components are Lit web components styled with Tailwind CSS and DaisyUI. Your project needs:
+
+```bash
+pnpm add lit tailwindcss daisyui
+```
+
+If your framework is not auto-detected by the shadcn CLI, add some manual config first:
+
+- `components.json`
+- a `@/*` path alias in `tsconfig.json`
+- a minimal `src/lib/utils.ts`
+
+This is required for Angular projects.
+
+## Installing a component
+
+Use the shadcn CLI with the full component URL:
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/<component-name>.json
+```
+
+This copies the component source into your project and installs its npm dependencies. You can then modify the file freely.
+
+After installation, import the copied files from your own app source tree. The exact path depends on where your registry config writes components, so the examples in this chapter use placeholder paths such as `@/components/...`.
+
+## Component catalogue
+
+- [Lit Editor Block Handle](/docs/using-the-registry/lit-editor-block-handle/): vendored ProseKit block drag handle
+- [Lit Editor Drop Indicator](/docs/using-the-registry/lit-editor-drop-indicator/): vendored ProseKit drag drop indicator
+- [Lit Editor Slash Menu](/docs/using-the-registry/lit-editor-slash-menu/): `/`-driven node insertion menu
+- [Lit Editor Toolbar](/docs/using-the-registry/lit-editor-toolbar/): toolbar for common rich-text editing actions
+- [QTI Attributes Panel](/docs/using-the-registry/qti-attributes-panel/): schema-aware attribute editor for the current node selection
+- [QTI Choice Attributes Editor](/docs/using-the-registry/qti-choice-attributes-editor/): standalone editor for choice layout classes
+- [QTI Code Panel](/docs/using-the-registry/qti-code-panel/): HTML, JSON, and QTI XML tabs driven by content-change events
+- [QTI Composer](/docs/using-the-registry/qti-composer/): live QTI XML output panel driven by the current editor state
+- [QTI Composer Metadata Form](/docs/using-the-registry/qti-composer-metadata-form/): standalone metadata form for title and identifier editing
+- [QTI Convert Menu](/docs/using-the-registry/qti-convert-menu/): selection conversion menu for turning text into QTI structures
+- [QTI Extended Text Attributes Editor](/docs/using-the-registry/qti-extended-text-attributes-editor/): standalone editor for extended-text height and rubric/model answer
+- [QTI Interaction Insert Menu](/docs/using-the-registry/qti-interaction-insert-menu/): dropdown for inserting supported QTI interactions
+- [QTI Items Gutter](/docs/using-the-registry/qti-items-gutter/): gutter labels for divider-separated assessment items
+- [QTI Items Navigator](/docs/using-the-registry/qti-items-navigator/): sidebar navigator for documents split into multiple QTI items
+- [QTI Text Entry Attributes Editor](/docs/using-the-registry/qti-text-entry-attributes-editor/): standalone editor for text-entry width, case sensitivity, and accepted answers
+
+## Notes
+
+- Each component is a Lit custom element, which makes the registry framework-agnostic and usable in any HTML context.
+- In framework hosts such as Angular or React, assign object values such as the editor instance or `eventTarget` through refs rather than HTML attributes.
+- Angular is not auto-detected by the shadcn CLI. Follow the manual setup described in the [Angular guide](/docs/frameworks/angular/) first, then run `shadcn add`.
+- When the shadcn CLI installs a component, it rewrites `@qti-editor/ui/...` imports to `@/...` using your project's path aliases. Make sure `@/` resolves to your project's `src/` directory.
+- Components with `registryDependencies`, such as `qti-attributes-panel`, will automatically pull in their sub-components in a single CLI command.
+- Some registry items are app-shell utilities rather than end-user panels. `lit-editor-block-handle` and `lit-editor-drop-indicator` expect a Lit `editorContext` provider instead of a direct `.editor` assignment.
+- In Angular, import the registry files for side effects and add `CUSTOM_ELEMENTS_SCHEMA` to the host component that renders them.
+- The copied registry components are optional. The stable integration surface is the public package API plus your own app-level ProseKit assembly.
+- `@qti-editor/ui` is the canonical source for the registry, not the primary runtime import path for external apps.

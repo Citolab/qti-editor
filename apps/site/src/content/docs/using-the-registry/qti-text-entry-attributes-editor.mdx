@@ -1,0 +1,32 @@
+---
+title: QTI Text Entry Attributes Editor
+description: Install and use the standalone text-entry attributes registry component.
+slug: docs/using-the-registry/qti-text-entry-attributes-editor
+---
+
+`qti-text-entry-attributes-editor` is the standalone text-entry editor used by `qti-attributes-panel`.
+
+## Install
+
+```bash
+npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-text-entry-attributes-editor.json
+```
+
+The registry command installs the component source and its package dependencies into your app.
+
+## Usage
+
+This component is usually installed indirectly through `qti-attributes-panel`, but you can also host it yourself.
+
+```ts
+import '@/components/text-entry-attributes-editor';
+
+const editor = document.querySelector('qti-text-entry-attributes-editor');
+editor.activeNode = activeNodeDetail;
+editor.addEventListener('qti:attributes:patch', event => {
+  const detail = (event as CustomEvent).detail;
+  console.log(detail.pos, detail.attrs);
+});
+```
+
+It emits `qti:attributes:patch` events for width presets, case sensitivity, and accepted-answer updates.

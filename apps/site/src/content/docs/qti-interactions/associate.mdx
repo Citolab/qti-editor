@@ -1,0 +1,27 @@
+---
+title: Associate Interaction
+description: Install and use the associate interaction package.
+slug: docs/qti-interactions/associate
+---
+
+Associate interactions let candidates create associations between options from the same set, up to the interaction's configured match limits.
+
+## Install
+
+```bash
+pnpm add @qti-editor/interaction-associate
+```
+
+This package integrates with `@qti-components/associate-interaction`.
+
+## What it does
+
+- Inserts a `qti-associate-interaction` with editable associable choices.
+- Supports authoring the choice content directly in the editor.
+- Keeps association rules and QTI response semantics attached to the structured interaction node.
+
+## Runtime behavior
+
+This package includes runtime ProseMirror behavior for maintaining correct-response state during authoring.
+
+If you assemble your editor through the descriptor registry, include the plugin factories returned by `listInteractionPluginFactories()` alongside the interaction node specs.

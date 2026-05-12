@@ -1,0 +1,77 @@
+---
+title: QTI Roundtrip Import Package
+description: Reference for the lossless editor-specific QTI package importer.
+slug: docs/packages/qti-roundtrip-import
+---
+
+`@qti-editor/qti-roundtrip-import` restores a ProseMirror document from a QTI 3.0 package **previously written by** `@qti-editor/qti-roundtrip-export`.
+
+## Scope
+
+This package is **not** a generic QTI 3.0 importer.
+
+It is intentionally designed to:
+
+- read the editor's own roundtrip package format
+- rebuild ProseMirror JSON with authoring attributes restored
+- merge multi-item packages with `qtiItemDivider` nodes between items
+
+It is not intended to infer editor authoring state from third-party QTI response declarations or response processing.
+
+## Main exports
+
+```ts
+import {
+  importQtiPackageFromBlob,
+  importQtiPackageFromArrayBuffer,
+  importQtiPackageFromZip,
+} from '@qti-editor/qti-roundtrip-import';
+```
+
+## Typical usage
+
+The importer needs the editor schema because it rebuilds ProseMirror JSON:
+
+```ts
+import { importQtiPackageFromBlob } from '@qti-editor/qti-roundtrip-import';
+
+const result = await importQtiPackageFromBlob(fileBlob, {
+  schema: editor.view.state.schema,
+});
+
+console.log(result.json);
+console.log(result.metadata);
+```
+
+The returned object contains:
+
+- `json`: ProseMirror JSON ready for `schema.nodeFromJSON(...)` or app-level loading
+- `metadata`: package and item metadata such as identifiers, titles, and item hrefs
+
+## How it restores authoring state
+
+The importer deliberately strips:
+
+- `qti-response-declaration`
+- `qti-response-processing`
+
+Then it restores authoring attributes from `data-*` mirrors written by the paired export package.
+
+That is why it can rehydrate attributes such as:
+
+- `correct-response`
+- `score`
+- `case-sensitive`
+- `area-mappings`
+
+Without those `data-*` mirrors, the package cannot recover the original editor authoring state.
+
+## Multi-item behavior
+
+If a package contains several assessment items, the importer merges them into a single ProseMirror document and inserts `qtiItemDivider` nodes between item fragments.
+
+That matches the editor's own multi-item workflow and keeps save/load behavior symmetric with the roundtrip export package.
+
+## Important constraint
+
+Do not present this package as a general QTI import solution. For third-party QTI, many authoring attributes will come back empty by design because this importer only trusts the paired roundtrip contract.
