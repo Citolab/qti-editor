@@ -267,16 +267,13 @@ export default defineConfig({
           items: [
             { label: 'Overview', slug: 'docs/using-the-registry' },
             { label: 'QTI Attributes Panel', slug: 'docs/using-the-registry/qti-attributes-panel' },
-            { label: 'QTI Choice Attributes Editor', slug: 'docs/using-the-registry/qti-choice-attributes-editor' },
             { label: 'QTI Code Panel', slug: 'docs/using-the-registry/qti-code-panel' },
             { label: 'QTI Composer', slug: 'docs/using-the-registry/qti-composer' },
             { label: 'QTI Composer Metadata Form', slug: 'docs/using-the-registry/qti-composer-metadata-form' },
             { label: 'QTI Convert Menu', slug: 'docs/using-the-registry/qti-convert-menu' },
-            { label: 'QTI Extended Text Attributes Editor', slug: 'docs/using-the-registry/qti-extended-text-attributes-editor' },
             { label: 'QTI Interaction Insert Menu', slug: 'docs/using-the-registry/qti-interaction-insert-menu' },
             { label: 'QTI Items Gutter', slug: 'docs/using-the-registry/qti-items-gutter' },
             { label: 'QTI Items Navigator', slug: 'docs/using-the-registry/qti-items-navigator' },
-            { label: 'QTI Text Entry Attributes Editor', slug: 'docs/using-the-registry/qti-text-entry-attributes-editor' },
           ],
         },
         {
