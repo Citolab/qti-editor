@@ -6,6 +6,8 @@ slug: docs/using-the-registry
 
 The QTI Editor registry is a [shadcn/ui-compatible](https://ui.shadcn.com) component registry. It gives you ready-made UI components that you can copy into your own codebase and adapt without lock-in or template indirection.
 
+QTI Editor has no dependency on shadcn/ui or its component library. The shadcn registry format is used purely as a delivery mechanism: its CLI is a convenient, well-established way to copy individual source files directly into a project. Each `npx shadcn@latest add` command downloads the component source into your codebase, installs any npm dependencies it needs, and leaves you with plain files you own and can modify freely. There is no runtime shadcn dependency and no abstraction layer introduced.
+
 You can view this registry as a UI starter. Build the editor itself from `prosekit` and the public `@qti-editor/*` packages, then copy the components you need to cover common editor UI patterns.
 
 Registry base URL: `https://qti-editor.citolab.nl/r`
