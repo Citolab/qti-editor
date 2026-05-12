@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { createEditor, jsonFromHTML, union } from 'prosekit/core';
+
 import { defineBasicExtension } from '../../../../apps/editor/src/extensions/basic-extension';
 import { defineQtiInteractionsExtension } from '../../../../apps/editor/src/extensions/qti-interactions-extension';
-
 import { itemXmlToImportHtml } from './index';
 
 const SAMPLE_XML = `<?xml version="1.0" encoding="UTF-8"?>

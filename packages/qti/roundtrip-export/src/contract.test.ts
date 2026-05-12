@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-
 import { DATA_ATTRIBUTE_MAPPINGS } from '@qti-editor/qti-roundtrip-import';
+
 import {
   EDITOR_DATA_ATTRIBUTE_MAPPINGS,
   SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS,

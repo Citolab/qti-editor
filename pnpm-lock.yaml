@@ -942,6 +942,9 @@ importers:
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../prosekit-integration
+      '@qti-editor/qti-roundtrip-import':
+        specifier: workspace:*
+        version: link:../roundtrip-import
       jszip:
         specifier: ^3.10.1
         version: 3.10.1

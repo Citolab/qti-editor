@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@qti-editor/prosekit-integration": "workspace:*",
+    "@qti-editor/qti-roundtrip-import": "workspace:*",
     "jszip": "^3.10.1"
   },
   "peerDependencies": {
