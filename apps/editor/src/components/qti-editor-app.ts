@@ -224,7 +224,7 @@ export class QtiEditorApp extends LitElement {
   override render() {
     // Only render components that need the editor after it's mounted
     const editorComponents = this._editorMounted ? html`
-      <lit-editor-toolbar .editor=${this.editor} class="block w-full shrink-0" style="padding-left: 1rem; padding-right: 1rem;"></lit-editor-toolbar>
+      <lit-editor-toolbar .editor=${this.editor} class="block w-full shrink-0"></lit-editor-toolbar>
     ` : html`<div class="block w-full shrink-0" style="padding-left: 1rem; padding-right: 1rem; height: 40px;"></div>`;
 
     return html`
