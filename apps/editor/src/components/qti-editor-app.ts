@@ -31,7 +31,7 @@ import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interaction-shar
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
-import { exportXml } from '../lib/exportXml.js';
+import { exportPackage, exportXml } from '../lib/exportXml.js';
 import { openXmlFilePicker } from '../lib/importXml.js';
 
 const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
@@ -182,6 +182,17 @@ export class QtiEditorApp extends LitElement {
       fileName,
     });
   }
+
+  async exportPackage(fileName: string = 'item'): Promise<void> {
+    await exportPackage({
+      node: this.editor.view.state.doc,
+      identifier: this.itemContext.identifier,
+      lang: this.lang,
+      title: this.itemContext.title,
+      fileName,
+    });
+  }
+
 
   async importXml(): Promise<void> {
     try {
