@@ -22,7 +22,7 @@ import {
   defineSemanticPasteExtension,
   nodeAttrsSyncExtension,
   readPersistedStateFromLocalStorage
-} from '@qti-editor/prosemirror';
+} from '@qti-editor/prosemirror-plugins';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';

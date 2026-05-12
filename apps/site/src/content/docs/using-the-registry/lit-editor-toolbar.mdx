@@ -24,3 +24,24 @@ const toolbar = document.querySelector('lit-editor-toolbar');
 toolbar.editor = editor;
 toolbar.uploader = myUploadFn; // optional image upload handler
 ```
+
+## How it works
+
+The toolbar observes the ProseKit editor state and reflects the current selection — bold and italic buttons activate when the cursor is inside a mark, heading buttons activate at the matching heading level. Each button dispatches a ProseKit command when clicked; commands that cannot apply at the current position are rendered as disabled.
+
+The image upload button opens a file picker. If you supply an `uploader` function, it is called with the selected `File` and should return a `Promise<string>` resolving to the URL to insert. Without an uploader the button is omitted.
+
+## Buttons
+
+| Button | What it does |
+|---|---|
+| Bold | Toggles `strong` mark |
+| Italic | Toggles `em` mark |
+| Strikethrough | Toggles `s` mark |
+| H1 / H2 / H3 | Sets heading level |
+| Bullet list | Wraps selection in an unordered list |
+| Ordered list | Wraps selection in an ordered list |
+| Blockquote | Wraps selection in a blockquote |
+| Table | Inserts a 2×2 table |
+| Image | Opens file picker and calls `uploader` |
+| Divider | Inserts a horizontal rule |

@@ -9,7 +9,7 @@ import {
 
 import { QTI_ATTRIBUTES_PATCH_EVENT, type QtiAttributesPatchDetail } from '../attributes-panel/patch-event.js';
 
-import type { AttributesNodeDetail } from '@qti-editor/prosemirror-attributes-ui-prosekit';
+import type { AttributesNodeDetail } from '@qti-editor/prosemirror-attributes-ui';
 
 const EXTENDED_TEXT_NODE_TYPE = 'qtiextendedtextinteraction';
 

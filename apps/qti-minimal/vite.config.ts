@@ -132,11 +132,11 @@ export default defineConfig({
         replacement: `${prosemirrorAttributesSrcRoot}/index.ts`,
       },
       {
-        find: /^@qti-editor\/prosemirror-attributes-ui-prosekit\/(.*)\.js$/,
+        find: /^@qti-editor\/prosemirror-attributes-ui\/(.*)\.js$/,
         replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/$1.ts`,
       },
       {
-        find: /^@qti-editor\/prosemirror-attributes-ui-prosekit$/,
+        find: /^@qti-editor\/prosemirror-attributes-ui$/,
         replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/index.ts`,
       },
     ],
@@ -157,7 +157,7 @@ export default defineConfig({
       '@qti-editor/interaction-select-point',
       '@qti-editor/interaction-inline-choice',
       '@qti-editor/prosemirror-attributes',
-      '@qti-editor/prosemirror-attributes-ui-prosekit',
+      '@qti-editor/prosemirror-attributes-ui',
       '@qti-components/theme',
       '@qti-components/utilities',
     ],

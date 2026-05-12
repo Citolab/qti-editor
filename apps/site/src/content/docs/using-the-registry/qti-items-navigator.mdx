@@ -23,7 +23,14 @@ const navigator = document.querySelector('qti-items-navigator');
 navigator.editor = editor;
 ```
 
+## How it works
+
+The navigator reads `qti-item-divider` nodes from the document and renders a numbered list of items in a sidebar panel. Clicking an item scrolls the editor to that divider and moves the cursor to the start of that item's content.
+
+As the author moves the cursor through the document, the navigator tracks the current cursor position and highlights the active item — the item whose divider precedes the cursor. This keeps the sidebar in sync without any explicit selection step.
+
 ## Notes
 
 - The navigator treats the document start as item 1 and every `qti-item-divider` as the start of the next item.
-- It listens for editor change and selection events to keep the active item in sync with the current cursor position.
+- It listens for both content-change and selection-change events to keep the active item highlight in sync with the cursor.
+- Pair with `qti-items-gutter` when you want both a left-rail item counter and a sidebar navigator.

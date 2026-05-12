@@ -32,7 +32,17 @@ new ContextProvider(hostElement, {
 <lit-editor-block-handle></lit-editor-block-handle>
 ```
 
+## How it works
+
+The handle floats to the left of the currently hovered block. It provides two affordances:
+
+- **Drag** — dragging the handle icon initiates a ProseMirror node drag, allowing the block to be repositioned within the document. The `lit-editor-drop-indicator` shows where the block will land.
+- **Insert** — a `+` button above the handle inserts a new empty paragraph above the current block.
+
+Because these components need ongoing access to the editor view (not just a one-time assignment), they read the editor instance from a Lit `ContextProvider` rather than from a `.editor` property.
+
 ## Notes
 
 - This component reads the editor instance from Lit context rather than from an `.editor` property.
 - It is an editor-chrome utility intended for custom Lit hosts, not a drop-in React or Angular element by itself.
+- Use alongside `lit-editor-drop-indicator`, which must share the same `ContextProvider`.

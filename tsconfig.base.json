@@ -75,14 +75,14 @@
       "@qti-editor/plugin-side-panel": [
         "packages/plugin-side-panel/index.ts"
       ],
-      "@qti-editor/prosemirror": [
+      "@qti-editor/prosemirror-plugins": [
         "packages/prosemirror/extensions/src/index.ts"
       ],
       "@qti-editor/prosemirror-attributes": [
         "packages/prosemirror/attributes/src/index.ts"
       ],
-      "@qti-editor/prosemirror-attributes-ui-prosekit": [
-        "packages/prosemirror/attributes-ui-prosekit/src/index.ts"
+      "@qti-editor/prosemirror-attributes-ui": [
+        "packages/prosemirror/attributes-ui/src/index.ts"
       ],
       "@qti-editor/ui": [
         "packages/ui/src/index.ts"
@@ -114,21 +114,19 @@
       "@qti-editor/prosekit-integration/*": [
         "packages/qti/prosekit-integration/src/*"
       ],
-      "@qti-editor/prosemirror/block-select": [
+      "@qti-editor/prosemirror-plugins/block-select": [
         "packages/prosemirror/extensions/src/block-select/index.ts"
       ],
-      "@qti-editor/prosemirror/virtual-cursor": [
+      "@qti-editor/prosemirror-plugins/virtual-cursor": [
         "packages/prosemirror/extensions/src/virtual-cursor/index.ts"
       ],
-      "@qti-editor/prosemirror/node-attrs-sync": [
+      "@qti-editor/prosemirror-plugins/node-attrs-sync": [
         "packages/prosemirror/extensions/src/node-attrs-sync/index.ts"
       ],
-      "@qti-editor/prosemirror/paste-semantic-html": [
+      "@qti-editor/prosemirror-plugins/paste-semantic-html": [
         "packages/prosemirror/extensions/src/paste-semantic-html/index.ts"
       ],
-      "@qti-editor/prosemirror/local-storage-doc-persistence-extension": [
-        "packages/prosemirror/extensions/src/local-storage-doc-persistence-extension/index.ts"
-      ],
+      
       "@qti-editor/interaction-choice": [
         "packages/prosemirror/interaction-choice/src/index.ts"
       ],

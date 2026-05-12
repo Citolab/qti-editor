@@ -25,3 +25,18 @@ panel.editor = editor;
 ```
 
 The current registry component manages its own attribute event wiring once you assign the ProseKit editor instance.
+
+## How it works
+
+Once the editor is assigned, the panel subscribes to selection changes. When the cursor moves into a QTI interaction node, the panel reads the schema-defined attributes for that node and its ancestors and renders the appropriate sub-editor. Changes made in the panel are applied as ProseMirror attribute transactions immediately — there is no save step.
+
+The panel dispatches sub-editors based on the active node type:
+
+| Node type | Sub-editor used |
+|---|---|
+| `qti-choice-interaction` | `qti-choice-attributes-editor` |
+| `qti-text-entry-interaction` | `qti-text-entry-attributes-editor` |
+| `qti-extended-text-interaction` | `qti-extended-text-attributes-editor` |
+| All others | Generic key/value attribute rows |
+
+The three sub-editors are pulled in automatically as registry dependencies when you install `qti-attributes-panel`.

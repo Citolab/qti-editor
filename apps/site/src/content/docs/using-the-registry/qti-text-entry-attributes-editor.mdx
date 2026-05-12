@@ -30,3 +30,22 @@ editor.addEventListener('qti:attributes:patch', event => {
 ```
 
 It emits `qti:attributes:patch` events for width presets, case sensitivity, and accepted-answer updates.
+
+## How it works
+
+The editor exposes three authoring controls for `qti-text-entry-interaction`:
+
+| Control | QTI attribute |
+|---|---|
+| Width preset | `expectedLength` (character count hint) |
+| Case sensitivity toggle | `caseSensitive` |
+| Accepted answers list | Stored in the response variable mapping |
+
+Each change emits a `qti:attributes:patch` event. The event detail includes the node position (`pos`) and an `attrs` object with only the changed attribute, so the parent can apply a minimal ProseMirror attribute transaction:
+
+```ts
+editor.addEventListener('qti:attributes:patch', (e) => {
+  const { pos, attrs } = (e as CustomEvent).detail;
+  // apply attrs at pos as a ProseMirror transaction
+});
+```

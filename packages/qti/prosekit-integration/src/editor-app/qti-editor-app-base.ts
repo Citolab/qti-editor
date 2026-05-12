@@ -10,7 +10,7 @@ import {
   defineSemanticPasteExtension,
   nodeAttrsSyncExtension,
   readPersistedStateFromLocalStorage,
-} from '@qti-editor/prosemirror';
+} from '@qti-editor/prosemirror-plugins';
 import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interaction-shared';
 
 import { qtiEditorEventsExtension } from '../events/index.js';

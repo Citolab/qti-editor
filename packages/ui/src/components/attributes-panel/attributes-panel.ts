@@ -17,7 +17,7 @@ import {
   type AttributeFriendlyEditorDefinition,
   type AttributesNodeDetail,
   type NodeAttributePanelMetadata,
-} from '@qti-editor/prosemirror-attributes-ui-prosekit';
+} from '@qti-editor/prosemirror-attributes-ui';
 
 import '../choice-attributes-editor';
 import '../text-entry-attributes-editor';

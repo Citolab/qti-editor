@@ -27,3 +27,22 @@ composer.liveComposeEnabled = true;
 ```
 
 In a full editor shell, pair this with `qti-composer-metadata-form` and provide item metadata through the shared item context, as the demo app does.
+
+## How it works
+
+When `liveComposeEnabled` is `true`, the composer subscribes to content-change events from the editor and recomposes the full QTI `<assessmentItem>` XML on every document change. The composed output is shown in a read-only code view.
+
+The composition combines:
+- the current editor document (serialized to QTI item-body XML)
+- item metadata — `identifier`, `title`, and `lang` — read from the item context or set directly on the element
+
+The result is a valid QTI 3.0 `<assessmentItem>` structure. This is the same output that `@qti-editor/qti-roundtrip-export` packages into a ZIP — the composer just surfaces it live for inspection.
+
+## Disabling live compose
+
+Set `liveComposeEnabled = false` to pause recomposition. This is useful when the editor is in a loading or import state and you want to suppress intermediate output until the document is stable.
+
+```ts
+composer.liveComposeEnabled = false; // pause during import
+await loadDocument(composer.editor);
+composer.liveComposeEnabled = true;  // resume

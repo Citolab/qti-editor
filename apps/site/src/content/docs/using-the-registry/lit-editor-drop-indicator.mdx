@@ -32,7 +32,14 @@ new ContextProvider(hostElement, {
 <lit-editor-drop-indicator></lit-editor-drop-indicator>
 ```
 
+## How it works
+
+During a drag operation initiated by `lit-editor-block-handle`, the drop indicator reads the current drag target position from the ProseKit drag state and renders a horizontal line between blocks to show where the dragged node will be inserted. The indicator is hidden when no drag is in progress.
+
+Like the block handle, it consumes the editor instance from a Lit `ContextProvider` rather than from a `.editor` property so it can track the view's drag state reactively.
+
 ## Notes
 
 - This component also reads the editor instance from Lit context rather than from an `.editor` property.
 - Use it with a Lit host that already provides `editorContext`, such as a custom editor shell.
+- Deploy alongside `lit-editor-block-handle` — the two components share the same `ContextProvider` and work as a pair.

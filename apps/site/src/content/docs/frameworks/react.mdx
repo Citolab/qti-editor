@@ -16,7 +16,7 @@ Both approaches use the same QTI interaction packages and can produce the same v
 For external React apps, treat these as the stable integration surfaces:
 
 - `@qti-editor/core`
-- `@qti-editor/prosemirror`
+- `@qti-editor/prosemirror-plugins`
 - `@qti-editor/interaction-*`
 - copied registry components from `/docs/using-the-registry/`
 
@@ -101,7 +101,7 @@ Events work with standard DOM events - no ProseKit required.
 ### 1. Install dependencies
 
 ```bash
-pnpm add prosekit @qti-editor/core @qti-editor/prosemirror
+pnpm add prosekit @qti-editor/core @qti-editor/prosemirror-plugins
 ```
 
 Add the QTI packages you actually want to support on top of that. A typical setup includes:
@@ -299,7 +299,7 @@ import {
   blockSelectExtension,
   defineSemanticPasteExtension,
   nodeAttrsSyncExtension,
-} from '@qti-editor/prosemirror';
+} from '@qti-editor/prosemirror-plugins';
 import { defineBasicExtension } from 'prosekit/basic';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import {

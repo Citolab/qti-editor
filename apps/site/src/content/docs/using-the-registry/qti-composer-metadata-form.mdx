@@ -24,3 +24,31 @@ The registry command installs the component source and its package dependencies 
 ```
 
 It emits a `metadata-change` `CustomEvent` with `{ title, identifier }` on input.
+
+## How it works
+
+The form renders two inputs — **Title** and **Identifier**. Both are bound to the element's `title` and `identifier` properties. On every keystroke, the element dispatches a `metadata-change` CustomEvent with the current values:
+
+```ts
+form.addEventListener('metadata-change', (e) => {
+  const { title, identifier } = (e as CustomEvent<{ title: string; identifier: string }>).detail;
+  // forward to composer or item context
+});
+```
+
+The form does not write to the editor document directly. The host is responsible for forwarding the values to wherever they are needed — typically the `qti-composer` element or a shared item context.
+
+## Pairing with the composer
+
+```ts
+import '@/components/composer';
+import '@/components/composer-metadata-form';
+
+const form = document.querySelector('qti-composer-metadata-form');
+const composer = document.querySelector('qti-composer');
+
+form.addEventListener('metadata-change', (e) => {
+  const { title, identifier } = (e as CustomEvent).detail;
+  // update composer metadata via item context or direct assignment
+});
+```

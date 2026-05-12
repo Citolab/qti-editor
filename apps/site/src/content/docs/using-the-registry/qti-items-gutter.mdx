@@ -23,7 +23,22 @@ const gutter = document.querySelector('qti-items-gutter');
 gutter.editor = editor;
 ```
 
+## How it works
+
+The gutter scans the editor document for `qti-item-divider` nodes on every content change. It renders a numbered label in a fixed-width left rail for each item — the document start counts as item 1, and each divider increments the count. Labels are vertically aligned to their corresponding divider element using position tracking against the editor's DOM.
+
+## Layout
+
+Position the gutter as a direct sibling of the editor mount so it shares the same scroll container:
+
+```html
+<div class="editor-stage" style="display: flex;">
+  <qti-items-gutter></qti-items-gutter>
+  <div id="editor-mount" style="flex: 1;"></div>
+</div>
+```
+
 ## Notes
 
 - Position the gutter alongside your editor viewport; the demo app uses an absolutely positioned left rail.
-- The component listens for `qti:editor:change` and updates divider numbering automatically.
+- The component listens for content-change events and updates divider numbering automatically.

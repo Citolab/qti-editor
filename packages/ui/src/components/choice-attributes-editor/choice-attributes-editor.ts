@@ -10,7 +10,7 @@ import {
 
 import { QTI_ATTRIBUTES_PATCH_EVENT, type QtiAttributesPatchDetail } from '../attributes-panel/patch-event';
 
-import type { AttributesNodeDetail } from '@qti-editor/prosemirror-attributes-ui-prosekit';
+import type { AttributesNodeDetail } from '@qti-editor/prosemirror-attributes-ui';
 
 type ChoiceInteractionOptionPresentation = {
   label?: string;

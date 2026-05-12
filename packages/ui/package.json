@@ -49,7 +49,7 @@
     "@qti-editor/interaction-text-entry": "workspace:*",
     "@qti-editor/prosekit-integration": "workspace:*",
     "@qti-editor/prosemirror-attributes": "workspace:*",
-    "@qti-editor/prosemirror-attributes-ui-prosekit": "workspace:*",
+    "@qti-editor/prosemirror-attributes-ui": "workspace:*",
     "@qti-editor/qti-item-divider": "workspace:*",
     "lit": "^3.3.2",
     "prosekit": "^0.20.0",

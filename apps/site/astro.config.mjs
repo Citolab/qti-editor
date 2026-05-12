@@ -174,11 +174,11 @@ export default defineConfig({
           replacement: `${prosemirrorAttributesSrcRoot}/index.ts`,
         },
         {
-          find: /^@qti-editor\/prosemirror-attributes-ui-prosekit\/(.*)\.js$/,
+          find: /^@qti-editor\/prosemirror-attributes-ui\/(.*)\.js$/,
           replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/$1.ts`,
         },
         {
-          find: /^@qti-editor\/prosemirror-attributes-ui-prosekit$/,
+          find: /^@qti-editor\/prosemirror-attributes-ui$/,
           replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/index.ts`,
         },
         {
@@ -223,7 +223,7 @@ export default defineConfig({
         '@qti-editor/interaction-inline-choice',
         '@qti-editor/interaction-gap-match',
         '@qti-editor/prosemirror-attributes',
-        '@qti-editor/prosemirror-attributes-ui-prosekit',
+        '@qti-editor/prosemirror-attributes-ui',
         '@qti-components/theme',
         '@qti-components/utilities',
       ],
@@ -286,6 +286,7 @@ export default defineConfig({
         {
           label: 'Package Reference',
           items: [
+            { label: 'Prosemirror Plugins', slug: 'docs/packages/prosemirror-plugins' },
             { label: 'QTI Roundtrip Export Package', slug: 'docs/packages/qti-roundtrip-export' },
             { label: 'QTI Roundtrip Import Package', slug: 'docs/packages/qti-roundtrip-import' },
           ],

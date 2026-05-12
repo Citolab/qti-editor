@@ -184,12 +184,12 @@ importers:
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../packages/qti/prosekit-integration
-      '@qti-editor/prosemirror':
+      '@qti-editor/prosemirror-attributes-ui':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/attributes-ui
+      '@qti-editor/prosemirror-plugins':
         specifier: workspace:*
         version: link:../../packages/prosemirror/extensions
-      '@qti-editor/prosemirror-attributes-ui-prosekit':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/attributes-ui-prosekit
       '@qti-editor/qti-item-divider':
         specifier: workspace:*
         version: link:../../packages/prosemirror/qti-item-divider
@@ -299,12 +299,12 @@ importers:
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../packages/qti/prosekit-integration
-      '@qti-editor/prosemirror':
+      '@qti-editor/prosemirror-attributes-ui':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/attributes-ui
+      '@qti-editor/prosemirror-plugins':
         specifier: workspace:*
         version: link:../../packages/prosemirror/extensions
-      '@qti-editor/prosemirror-attributes-ui-prosekit':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/attributes-ui-prosekit
       '@qti-editor/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -384,7 +384,7 @@ importers:
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../packages/qti/prosekit-integration
-      '@qti-editor/prosemirror':
+      '@qti-editor/prosemirror-plugins':
         specifier: workspace:*
         version: link:../../packages/prosemirror/extensions
       '@qti-editor/ui':
@@ -441,7 +441,7 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  packages/prosemirror/attributes-ui-prosekit:
+  packages/prosemirror/attributes-ui:
     dependencies:
       '@qti-editor/interaction-shared':
         specifier: workspace:*
@@ -920,7 +920,7 @@ importers:
       '@qti-editor/interaction-shared':
         specifier: workspace:*
         version: link:../../prosemirror/interaction-shared
-      '@qti-editor/prosemirror':
+      '@qti-editor/prosemirror-plugins':
         specifier: workspace:*
         version: link:../../prosemirror/extensions
       lit:
@@ -1031,9 +1031,9 @@ importers:
       '@qti-editor/prosemirror-attributes':
         specifier: workspace:*
         version: link:../prosemirror/attributes
-      '@qti-editor/prosemirror-attributes-ui-prosekit':
+      '@qti-editor/prosemirror-attributes-ui':
         specifier: workspace:*
-        version: link:../prosemirror/attributes-ui-prosekit
+        version: link:../prosemirror/attributes-ui
       '@qti-editor/qti-item-divider':
         specifier: workspace:*
         version: link:../prosemirror/qti-item-divider

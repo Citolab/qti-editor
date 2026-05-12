@@ -18,7 +18,7 @@
       "@qti-editor/interaction-select-point": ["../prosemirror/interaction-select-point/dist/index.d.ts"],
       "@qti-editor/interaction-text-entry": ["../prosemirror/interaction-text-entry/dist/index.d.ts"],
       "@qti-editor/prosemirror-attributes": ["../prosemirror/attributes/dist/index.d.ts"],
-      "@qti-editor/prosemirror-attributes-ui-prosekit": ["../prosemirror/attributes-ui-prosekit/dist/index.d.ts"],
+      "@qti-editor/prosemirror-attributes-ui": ["../prosemirror/attributes-ui/dist/index.d.ts"],
     }
   },
   "include": ["src/**/*.ts", "src/**/*.js"]

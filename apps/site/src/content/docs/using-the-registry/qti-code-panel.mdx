@@ -29,3 +29,22 @@ qtiCodePanelExtension({ eventTarget: codeEventTarget });
 const panel = document.querySelector('qti-code-panel');
 panel.eventTarget = codeEventTarget;
 ```
+
+## How it works
+
+`qtiCodePanelExtension` adds a ProseMirror plugin to the editor that emits a `qti:content:change` CustomEvent on the provided `eventTarget` whenever the document changes. The event detail includes three representations of the current document:
+
+- **`html`** — the document serialized as HTML
+- **`json`** — the ProseMirror document as a JSON object
+- **`xml`** — the document serialized as QTI item-body XML
+
+The panel listens for these events and updates its three tabs. Tab switching is client-side only — no re-serialization happens on tab change.
+
+Using a private `EventTarget` instead of `document` means a page with multiple editor instances can have independent code panels without event bleed.
+
+```ts
+// The extension and element use the same private EventTarget:
+const codeEventTarget = new EventTarget();
+qtiCodePanelExtension({ eventTarget: codeEventTarget });
+panel.eventTarget = codeEventTarget;
+```

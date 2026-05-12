@@ -1,0 +1,38 @@
+---
+title: ProseMirror Plugins
+sidebar_label: ProseMirror Plugins
+slug: docs/packages/prosemirror-plugins
+---
+
+This package provides pure ProseMirror plugins for the QTI Editor. These plugins are not UI components, but core editor logic that can be used to extend ProseMirror-based editors.
+
+## Available Plugins
+
+- **block-select**: Block node selection logic for ProseMirror.
+- **virtual-cursor**: Virtual cursor that improves navigation and selection around formatting marks (like bold or italic).
+- **node-attrs-sync**: Synchronizes node attributes between the editor state and the DOM.
+- **paste-semantic-html**: Normalizes pasted HTML for semantic structure.
+
+## Usage
+
+Install the package:
+
+```sh
+npm install @qti-editor/prosemirror-plugins
+```
+
+Import and use the plugins in your ProseMirror setup:
+
+```ts
+import { blockSelectPlugin } from '@qti-editor/prosemirror-plugins/block-select';
+import { virtualCursorPlugin } from '@qti-editor/prosemirror-plugins/virtual-cursor';
+// ...etc
+```
+
+## When to Use
+
+Use these plugins when you need to extend ProseMirror with QTI-specific behaviors, but do not require UI components. For UI panels or editors, see the [UI registry documentation](/docs/using-the-registry/).
+
+---
+
+For more details, see the source in [packages/prosemirror/extensions/src/](https://github.com/citolab/qti-editor/tree/main/packages/prosemirror/extensions/src/).

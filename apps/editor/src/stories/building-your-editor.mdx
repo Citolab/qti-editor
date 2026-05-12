@@ -30,7 +30,7 @@ The editor is split into three layers:
 | Package | Purpose |
 |---|---|
 | `@qti-editor/core` | QTI XML composer — turns editor state into valid QTI 3.0 XML |
-| `@qti-editor/prosemirror` | Pure ProseMirror plugins: block select, virtual cursor, node-attrs sync, semantic paste, local-storage persistence |
+| `@qti-editor/prosemirror-plugins` | Pure ProseMirror plugins: block select, virtual cursor, node-attrs sync, semantic paste, local-storage persistence |
 | `@qti-editor/prosekit-integration` | ProseKit wrappers for events, item context, and interaction helpers |
 | `@qti-editor/interaction-choice` | Choice interaction (multiple choice / multiple response) |
 | `@qti-editor/interaction-text-entry` | Inline text entry (fill-in-the-blank) |
@@ -59,7 +59,7 @@ npm install lit prosekit @lit/context
 Install the QTI Editor packages you need:
 
 ```bash
-npm install @qti-editor/core @qti-editor/prosemirror @qti-editor/prosekit-integration
+npm install @qti-editor/core @qti-editor/prosemirror-plugins @qti-editor/prosekit-integration
 npm install @qti-editor/interaction-choice @qti-editor/interaction-shared
 ```
 

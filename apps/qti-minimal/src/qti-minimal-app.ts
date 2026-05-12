@@ -11,7 +11,7 @@ import { LitElement, html, type PropertyValues } from 'lit';
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
 import { xmlFromNode, xmlToHTML } from '@qti-editor/prosekit-integration/save-xml';
 import { qtiFromNode } from '@qti-editor/prosekit-integration/save-qti';
-import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror';
+import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror-plugins';
 import { createEditor, union, jsonFromHTML, type Editor } from 'prosekit/core';
 import { sampleUploader } from '@qti-editor/ui/components/sample/sample-uploader';
 

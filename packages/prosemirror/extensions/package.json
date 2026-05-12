@@ -1,9 +1,7 @@
 {
-  "name": "@qti-editor/prosemirror",
-  "private": true,
-  "private": true,
+  "name": "@qti-editor/prosemirror-plugins",
   "version": "0.1.0",
-  "description": "Pure ProseMirror plugins for QTI Editor - block selection and virtual cursor",
+  "description": "Pure ProseMirror plugins for QTI Editor",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -27,10 +25,6 @@
     "./paste-semantic-html": {
       "types": "./dist/paste-semantic-html/index.d.ts",
       "default": "./dist/paste-semantic-html/index.js"
-    },
-    "./local-storage-doc-persistence-extension": {
-      "types": "./dist/local-storage-doc-persistence-extension/index.d.ts",
-      "default": "./dist/local-storage-doc-persistence-extension/index.js"
     }
   },
   "scripts": {

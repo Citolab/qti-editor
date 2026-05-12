@@ -21,7 +21,7 @@ import {
   defineSemanticPasteExtension,
   defineLocalStorageDocPersistenceExtension,
   readPersistedStateFromLocalStorage,
-} from '@qti-editor/prosemirror';
+} from '@qti-editor/prosemirror-plugins';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
 import { qtiAttributesExtension } from '@qti-editor/ui/components/blocks/attributes-panel';
 
@@ -219,7 +219,7 @@ import '@qti-editor/ui/components/blocks/attributes-panel';
 import '@qti-editor/ui/components/blocks/interaction-insert-menu';
 
 import { createEditor, union } from 'prosekit/core';
-import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror';
+import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror-plugins';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
 import { qtiAttributesExtension } from '@qti-editor/ui/components/blocks/attributes-panel';
 import { defineBasicExtension } from './basic-extension';

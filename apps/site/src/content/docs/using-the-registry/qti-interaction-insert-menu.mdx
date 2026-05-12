@@ -22,3 +22,11 @@ import '@/components/interaction-insert-menu';
 const menu = document.querySelector('qti-interaction-insert-menu');
 menu.editor = editor;
 ```
+
+## How it works
+
+The menu queries the editor's registered interaction descriptors to build its item list. Only interactions whose packages are installed and whose schema nodes are registered in the editor extension appear in the menu. Items are disabled when the cursor is in a position where that interaction cannot be inserted — for example, inline interactions are disabled when the cursor is inside an existing inline context that does not permit nesting.
+
+Clicking an item runs the interaction's insert command, which places a fully-formed interaction node (with placeholder content) at the current cursor position.
+
+This is the toolbar counterpart to the slash menu: both insert interactions, but the toolbar button provides a persistent dropdown while the slash menu is keyboard-triggered inline.
