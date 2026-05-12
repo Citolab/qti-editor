@@ -148,6 +148,13 @@ function getToolbarItems(editor) {
           canExec: editor.commands.insertImage.canExec(),
         }
       : undefined,
+    insertTable: editor.commands.insertTable
+      ? {
+          isActive: false,
+          canExec: editor.commands.insertTable.canExec({ row: 3, col: 3 }),
+          command: () => editor.commands.insertTable({ row: 3, col: 3 }),
+        }
+      : undefined,
   };
 }
 
@@ -477,6 +484,19 @@ class LitToolbar extends LitElement {
                 .labels=${this.labels}
                 icon="i-lucide-image size-5 block"
               ></lit-editor-image-upload-popover>
+            `
+            : nothing
+        }
+        ${
+          items.insertTable
+            ? html`
+              <lit-editor-button
+                .pressed=${items.insertTable.isActive}
+                .disabled=${!items.insertTable.canExec}
+                .tooltip=${this.t('toolbar.insertTable', 'Insert Table')}
+                icon="i-lucide-table size-5 block"
+                @click=${items.insertTable.command}
+              ></lit-editor-button>
             `
             : nothing
         }
