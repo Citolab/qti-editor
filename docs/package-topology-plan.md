@@ -10,7 +10,7 @@ packages/
 
   prosemirror/
     attributes
-    attributes-ui-prosekit
+    attributes-ui
     extensions
     interaction-shared
     interaction-choice
@@ -63,7 +63,7 @@ Each interaction package (`interaction-choice`, `interaction-text-entry`, etc.) 
 
 `attributes` owns the generic ProseMirror attributes engine (plugin, transactions, events).
 
-`attributes-ui-prosekit` owns the ProseKit-oriented attributes panel UI component, built on `@qti-editor/interfaces` types.
+`attributes-ui` owns the ProseKit-oriented attributes panel UI component, built on `@qti-editor/interfaces` types.
 
 `interaction-shared` owns shared schemas, commands, and helpers used across multiple interaction packages.
 
@@ -155,7 +155,7 @@ Adding a new interaction means: write the interaction package, export a descript
 apps/editor                     (depends on ui, prosekit-integration)
 ```
 
-`@qti-editor/prosemirror-attributes` and `@qti-editor/prosemirror-attributes-ui-prosekit` sit alongside the interaction packages in the `prosemirror` layer and depend on `interfaces`.
+`@qti-editor/prosemirror-attributes` and `@qti-editor/prosemirror-attributes-ui` sit alongside the interaction packages in the `prosemirror` layer and depend on `interfaces`.
 
 ## Registry Build/Hosting
 

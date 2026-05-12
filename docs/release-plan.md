@@ -26,7 +26,7 @@ Keep private for now:
 - `@qti-editor/prosekit-integration`
 - `@qti-editor/prosemirror`
 - `@qti-editor/prosemirror-attributes`
-- `@qti-editor/prosemirror-attributes-ui-prosekit`
+- `@qti-editor/prosemirror-attributes-ui`
 - `@qti-editor/ui`
 - `apps/*`
 

@@ -30,7 +30,7 @@ packages/
   prosemirror/
     extensions
     attributes
-    attributes-ui-prosekit
+    attributes-ui
     interaction-shared
     interaction-choice
     interaction-inline-choice
@@ -82,7 +82,7 @@ Owns:
 - node views and authoring behavior
 - generic attributes engine
 - framework-agnostic or ProseMirror-first editor behavior
-- ProseKit-oriented attributes panel UI (`attributes-ui-prosekit`)
+- ProseKit-oriented attributes panel UI (`attributes-ui`)
 
 Does not own:
 

@@ -16,3 +16,4 @@ export * from './block-select/index.js';
 export * from './virtual-cursor/index.js';
 export * from './node-attrs-sync/index.js';
 export * from './paste-semantic-html/index.js';
+export * from './local-storage-doc-persistence-extension/index.js';

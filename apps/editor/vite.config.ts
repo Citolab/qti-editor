@@ -22,7 +22,7 @@ const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/pro
 const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-inline-choice/src', import.meta.url));
 const interactionsGapMatchSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-gap-match/src', import.meta.url));
 const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes/src', import.meta.url));
-const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes-ui-prosekit/src', import.meta.url));
+const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes-ui/src', import.meta.url));
 const appCustomElementRoots = [
   fileURLToPath(new URL('./src/components/qti-editor-app.ts', import.meta.url)),
   fileURLToPath(new URL('./src/components/qti-slash-menu.ts', import.meta.url)),
