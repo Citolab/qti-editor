@@ -64,6 +64,30 @@ export class QtiInlineChoiceInteraction extends Interaction {
     super.disconnectedCallback();
   }
 
+  override updated(changedProperties: Map<string, unknown>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('correctResponse')) {
+      this.#syncSelectedChoices();
+    }
+  }
+
+  #syncSelectedChoices() {
+    const identifiers = new Set(
+      typeof this.correctResponse === 'string' && this.correctResponse
+        ? this.correctResponse.includes(',')
+          ? this.correctResponse.split(',')
+          : [this.correctResponse]
+        : Array.isArray(this.correctResponse)
+          ? this.correctResponse
+          : [],
+    );
+    this.querySelectorAll<HTMLElement & { setSelected?: (v: boolean) => void; identifier?: string }>(
+      'qti-inline-choice',
+    ).forEach(choice => {
+      choice.setSelected?.(identifiers.has(choice.identifier ?? ''));
+    });
+  }
+
   #estimateOptimalWidth() {
     // const trigger = this.renderRoot.querySelector<HTMLElement>('button[part="trigger"]');
     // let widthPx = 0;
@@ -78,6 +102,7 @@ export class QtiInlineChoiceInteraction extends Interaction {
 
   #onChoicesSlotChange = () => {
     this.#estimateOptimalWidth();
+    this.#syncSelectedChoices();
   };
 }
 
