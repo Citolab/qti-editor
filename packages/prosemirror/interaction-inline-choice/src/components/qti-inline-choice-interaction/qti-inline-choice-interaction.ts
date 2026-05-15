@@ -21,12 +21,19 @@ export class QtiInlineChoiceInteraction extends Interaction {
         :host {
           white-space: nowrap;
         }
+        [part='value'].is-correct {
+          color: #16a34a;
+          font-weight: 500;
+        }
       `
     ];
   }
 
   @state()
   _dropdownOpen = false;
+
+  @state()
+  private _correctChoiceText: string | null = null;
 
   private readonly i18n = new QtiI18nController(this);
 
@@ -43,7 +50,10 @@ export class QtiInlineChoiceInteraction extends Interaction {
         popovertarget="${this._menuId}"
         popovertargetaction="toggle"
       >
-        <span part="value">${this.i18n.t('inlineChoice.placeholder')}</span>
+        <span
+          part="value"
+          class=${this._correctChoiceText ? 'is-correct' : ''}
+        >${this._correctChoiceText ?? this.i18n.t('inlineChoice.placeholder')}</span>
         <span part="dropdown-icon" aria-hidden="true">▾</span>
       </button>
       <div id="${this._menuId}" part="menu" role="listbox" popover="auto">
@@ -81,11 +91,17 @@ export class QtiInlineChoiceInteraction extends Interaction {
           ? this.correctResponse
           : [],
     );
+    let correctText: string | null = null;
     this.querySelectorAll<HTMLElement & { setSelected?: (v: boolean) => void; identifier?: string }>(
       'qti-inline-choice',
     ).forEach(choice => {
-      choice.setSelected?.(identifiers.has(choice.identifier ?? ''));
+      const isSelected = identifiers.has(choice.identifier ?? '');
+      choice.setSelected?.(isSelected);
+      if (isSelected && correctText === null) {
+        correctText = (choice.textContent ?? '').trim() || null;
+      }
     });
+    this._correctChoiceText = correctText;
   }
 
   #estimateOptimalWidth() {
