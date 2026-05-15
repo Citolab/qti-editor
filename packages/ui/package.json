@@ -52,7 +52,7 @@
     "@qti-editor/prosemirror-attributes-ui": "workspace:*",
     "@qti-editor/qti-item-divider": "workspace:*",
     "lit": "^3.3.2",
-    "prosekit": "^0.20.0",
+    "prosekit": "^0.20.2",
     "prosemirror-state": "^1.4.4"
   },
   "devDependencies": {

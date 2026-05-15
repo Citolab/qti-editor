@@ -9,6 +9,7 @@ import '@qti-editor/ui/components/items-gutter';
 import '@qti-editor/ui/components/items-navigator';
 import { registerLitEditorBlockHandle } from '@qti-editor/ui/components/block-handle';
 import { registerLitEditorDropIndicator } from '@qti-editor/ui/components/drop-indicator';
+import { registerLitEditorTableHandle } from '@qti-editor/ui/components/table-handle';
 import { editorContext } from '@qti-editor/ui/components/editor-context';
 import './blocks/slash-menu/index.js';
 import { provide, ContextProvider } from '@lit/context';
@@ -33,6 +34,7 @@ import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-e
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
 import { exportPackage, exportXml } from '../lib/exportXml.js';
 import { openXmlFilePicker } from '../lib/importXml.js';
+
 
 const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
 const VOID_HTML_TAGS = [
@@ -126,6 +128,7 @@ export class QtiEditorApp extends LitElement {
     // Register block-handle components
     registerLitEditorBlockHandle();
     registerLitEditorDropIndicator();
+    registerLitEditorTableHandle()
 
     this.composerEventTarget.addEventListener('qti:content:change', event => {
       const detail = (event as CustomEvent<{ html?: string }>).detail;
@@ -236,6 +239,7 @@ export class QtiEditorApp extends LitElement {
             <div ${ref(this.editorRef)} class="card min-h-full px-6 py-6" style="padding-left: 1rem;"></div>
             <lit-editor-block-handle></lit-editor-block-handle>
             <lit-editor-drop-indicator></lit-editor-drop-indicator>
+            <lit-editor-table-handle></lit-editor-table-handle>
           </div>
           ${this._editorMounted ? html`<qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>` : ''}
           ${this._editorMounted ? html`<qti-composer .editor=${this.editor} class="block w-full shrink-0" style="position: relative; z-index: 10;"></qti-composer>` : ''}
