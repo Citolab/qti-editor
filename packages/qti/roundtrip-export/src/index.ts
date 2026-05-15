@@ -74,6 +74,17 @@ interface PackageItemResource {
   href: string;
   xml: string;
   dependencies: string[];
+  isInformational: boolean;
+}
+
+function itemHasQtiElementsInBody(itemXml: string): boolean {
+  const doc = new DOMParser().parseFromString(itemXml, 'application/xml');
+  const body = doc.querySelector('qti-item-body');
+  if (!body) return true;
+  for (const el of body.querySelectorAll('*')) {
+    if (el.localName.toLowerCase().startsWith('qti-')) return true;
+  }
+  return false;
 }
 
 interface AssetResource {
@@ -144,6 +155,7 @@ export async function createQtiPackageFromItems(
       href: `items/${itemFileBase}.xml`,
       xml: materialized.xml,
       dependencies: materialized.assetHrefs,
+      isInformational: !itemHasQtiElementsInBody(materialized.xml),
     };
   }));
 
@@ -222,9 +234,10 @@ function renderAssessmentTest(options: {
   sectionTitle: string;
   itemResources: PackageItemResource[];
 }): string {
-  const refs = options.itemResources.map(item =>
-    `      <qti-assessment-item-ref identifier="${escapeXml(item.identifier)}" href="${escapeXml(item.href)}"/>`,
-  ).join('\n');
+  const refs = options.itemResources.map(item => {
+    const categoryAttr = item.isInformational ? ' category="dep-informational"' : '';
+    return `      <qti-assessment-item-ref identifier="${escapeXml(item.identifier)}" href="${escapeXml(item.href)}"${categoryAttr}/>`;
+  }).join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <qti-assessment-test xmlns="${QTI_ASI_NS}" xmlns:xsi="${XSI_NS}" xsi:schemaLocation="${QTI_ASI_SCHEMA_LOCATION}" identifier="${escapeXml(options.testIdentifier)}" title="${options.testTitle}">
