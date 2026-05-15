@@ -99,7 +99,19 @@ class LitTableHandle extends LitElement {
     const editor = this.editorConsumer.value
     if (!editor) return
 
-    this.removeUpdateExtension = editor.use(defineUpdateHandler(() => this.requestUpdate()))
+    // Only call requestUpdate when the dropdown menu inside the column/row
+    // handle is actually open. The `*-popup[data-state="open"]` selector used
+    // previously matched whenever the grip handle was merely visible (i.e. on
+    // hover near any table cell), which caused the editor canvas to jump on
+    // every selection change.
+    this.removeUpdateExtension = editor.use(defineUpdateHandler(() => {
+      const menuOpen = this.querySelector(
+        'prosekit-table-handle-column-menu-root prosekit-menu-popup[data-state="open"], prosekit-table-handle-row-menu-root prosekit-menu-popup[data-state="open"]'
+      );
+      if (menuOpen) {
+        this.requestUpdate();
+      }
+    }))
   }
 
   detachEditorListener() {
