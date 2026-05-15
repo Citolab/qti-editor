@@ -247,31 +247,13 @@ function collapseInsignificantWhitespaceIn(element: Element): void {
 // QTI consumers see the model answer. On re-import we already rehydrate the
 // authoring `correct-response` from `data-correct-response`, so leaving the
 // rubric block in would duplicate the model answer below the interaction.
+
 function stripGeneratedRubricBlocks(document: XMLDocument): void {
-  document.querySelectorAll('qti-extended-text-interaction').forEach(interaction => {
-    const correctResponse = interaction.getAttribute('data-correct-response');
-    if (!correctResponse) return;
-
-    const sibling = interaction.nextElementSibling;
-    if (!sibling) return;
-    if (sibling.localName !== 'qti-rubric-block') return;
-    if (sibling.getAttribute('view') !== 'scorer') return;
-    if (sibling.getAttribute('use') !== 'instructions') return;
-    if (!rubricMatchesCorrectResponse(sibling, correctResponse)) return;
-
-    sibling.parentNode?.removeChild(sibling);
+  document.querySelectorAll('qti-rubric-block').forEach(block => {
+    if (block.getAttribute('view') === 'scorer' && block.getAttribute('use') === 'scoring') {
+      block.parentNode?.removeChild(block);
+    }
   });
-}
-
-function rubricMatchesCorrectResponse(rubricBlock: Element, correctResponse: string): boolean {
-  const paragraphTexts = Array.from(rubricBlock.getElementsByTagName('p'))
-    .map(p => (p.textContent ?? '').replace(/\u00A0/g, '').trim())
-    .filter(text => text.length > 0);
-  if (paragraphTexts.length === 0) return false;
-
-  const expected = correctResponse.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-  if (expected.length !== paragraphTexts.length) return false;
-  return expected.every((line, index) => line === paragraphTexts[index]);
 }
 
 function extractAssessmentItemRefs(xml: string): string[] {
