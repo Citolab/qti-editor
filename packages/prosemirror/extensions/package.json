@@ -2,6 +2,11 @@
   "name": "@qti-editor/prosemirror-plugins",
   "version": "0.1.0",
   "description": "Pure ProseMirror plugins for QTI Editor",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Citolab/qti-editor",
+    "directory": "packages/prosemirror/extensions"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
