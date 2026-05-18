@@ -79,7 +79,7 @@ class LitTableHandle extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.classList.add('contents')
+    this.style.display = 'contents'
     this.attachEditorListener()
   }
 
