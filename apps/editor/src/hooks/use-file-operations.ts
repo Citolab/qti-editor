@@ -5,6 +5,7 @@ import {
   clearCurrentSession,
   deleteFile,
   getCurrentFile,
+  getStorageScopeForUser,
   listFiles,
   loadFile,
   saveFile,
@@ -18,11 +19,12 @@ export type SyncStatus = 'idle' | 'syncing' | 'synced' | 'error';
 export function useFileOperations(untitledLabel: string) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const storageScope = getStorageScopeForUser(user?.uid);
   const userRef = useRef(user);
   useEffect(() => { userRef.current = user; }, [user]);
 
-  const [currentFile, setCurrentFile] = useState<SavedFile | null>(() => getCurrentFile());
-  const [fileName, setFileName] = useState(() => getCurrentFile()?.name ?? untitledLabel);
+  const [currentFile, setCurrentFile] = useState<SavedFile | null>(() => getCurrentFile(storageScope));
+  const [fileName, setFileName] = useState(() => getCurrentFile(storageScope)?.name ?? untitledLabel);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
 
@@ -38,28 +40,36 @@ export function useFileOperations(untitledLabel: string) {
     }
   }, []);
 
+  useEffect(() => {
+    const scopedCurrentFile = getCurrentFile(storageScope);
+    setCurrentFile(scopedCurrentFile);
+    setFileName(scopedCurrentFile?.name ?? untitledLabel);
+    setSyncStatus('idle');
+    setLastSyncedAt(null);
+  }, [storageScope, untitledLabel]);
+
   // Pull remote files from Firestore when the user logs in
   useEffect(() => {
     if (!user) return;
     runSync(() =>
       pullRemoteFiles(user.uid).then(() =>
-        queryClient.invalidateQueries({ queryKey: ['files'] })
+        queryClient.invalidateQueries({ queryKey: ['files', storageScope] })
       )
     );
-  }, [user?.uid, queryClient, runSync]);
+  }, [user?.uid, queryClient, runSync, storageScope]);
 
   const { data: files = [] } = useQuery({
-    queryKey: ['files'],
-    queryFn: listFiles,
+    queryKey: ['files', storageScope],
+    queryFn: () => listFiles(storageScope),
   });
 
   const saveMutation = useMutation({
     mutationFn: ({ name, id }: { name: string; id?: string }) =>
-      Promise.resolve(saveFile(name, id)),
+      Promise.resolve(saveFile(storageScope, name, id)),
     onSuccess: (file) => {
       setCurrentFile(file);
       setFileName(file.name);
-      queryClient.invalidateQueries({ queryKey: ['files'] });
+      queryClient.invalidateQueries({ queryKey: ['files', storageScope] });
       const u = userRef.current;
       if (u) runSync(() => syncSaveFile(u.uid, file));
     },
@@ -67,11 +77,11 @@ export function useFileOperations(untitledLabel: string) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => {
-      deleteFile(id);
+      deleteFile(storageScope, id);
       return Promise.resolve();
     },
     onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: ['files'] });
+      queryClient.invalidateQueries({ queryKey: ['files', storageScope] });
       const u = userRef.current;
       if (u) runSync(() => syncDeleteFile(u.uid, id));
     },
@@ -95,33 +105,33 @@ export function useFileOperations(untitledLabel: string) {
   }, [fileName, currentFile, saveMutation]);
 
   const handleNew = useCallback(() => {
-    clearCurrentSession();
+    clearCurrentSession(storageScope);
     setCurrentFile(null);
     setFileName(untitledLabel);
-  }, [untitledLabel]);
+  }, [storageScope, untitledLabel]);
 
   const handleLoad = useCallback(
     (id: string): SavedFile | null => {
-      const file = loadFile(id);
+      const file = loadFile(storageScope, id);
       if (!file) return null;
       setCurrentFile(file);
       setFileName(file.name);
-      queryClient.invalidateQueries({ queryKey: ['files'] });
+      queryClient.invalidateQueries({ queryKey: ['files', storageScope] });
       return file;
     },
-    [queryClient]
+    [queryClient, storageScope]
   );
 
   const handleDelete = useCallback(
     (id: string) => {
       deleteMutation.mutate(id);
       if (currentFile?.id === id) {
-        clearCurrentSession();
+        clearCurrentSession(storageScope);
         setCurrentFile(null);
         setFileName(untitledLabel);
       }
     },
-    [currentFile?.id, deleteMutation, untitledLabel]
+    [currentFile?.id, deleteMutation, storageScope, untitledLabel]
   );
 
   return {

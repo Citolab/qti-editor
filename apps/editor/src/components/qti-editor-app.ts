@@ -33,10 +33,8 @@ import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
 import { exportPackage, exportXml } from '../lib/exportXml.js';
+import { getAutoSaveKey } from '../lib/fileStore.js';
 import { openXmlFilePicker } from '../lib/importXml.js';
-
-
-const EDITOR_DOC_STORAGE_KEY = 'qti-editor:prosemirror-doc:v1';
 
 function slugifyTitle(title: string): string {
   return title.trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -162,6 +160,7 @@ export class QtiEditorApp extends LitElement {
 
   constructor() {
     super();
+    const editorDocStorageKey = getAutoSaveKey();
 
     const extension = union(
       defineBasicExtension(),
@@ -180,7 +179,7 @@ export class QtiEditorApp extends LitElement {
           return translateQti('editor.placeholder', { target: this });
         }
       }),
-      defineLocalStorageDocPersistenceExtension({ storageKey: EDITOR_DOC_STORAGE_KEY }),
+      defineLocalStorageDocPersistenceExtension({ storageKey: editorDocStorageKey }),
       blockSelectExtension,
       nodeAttrsSyncExtension,
       qtiEditorEventsExtension({
@@ -189,14 +188,14 @@ export class QtiEditorApp extends LitElement {
       }),
     );
 
-    const restoredState = readPersistedStateFromLocalStorage(EDITOR_DOC_STORAGE_KEY);
+    const restoredState = readPersistedStateFromLocalStorage(editorDocStorageKey);
     try {
       this.editor = createEditor({
         extension,
         defaultContent: restoredState.doc
       });
     } catch {
-      window.localStorage.removeItem(EDITOR_DOC_STORAGE_KEY);
+      window.localStorage.removeItem(editorDocStorageKey);
       this.editor = createEditor({ extension });
     }
     this.editorRef = createRef<HTMLDivElement>();
@@ -291,7 +290,7 @@ export class QtiEditorApp extends LitElement {
       // Write the imported doc to localStorage immediately so saveFile() reads
       // the correct content without waiting for the persistence plugin's debounce.
       const doc = this.editor.view.state.doc.toJSON();
-      localStorage.setItem(EDITOR_DOC_STORAGE_KEY, JSON.stringify({ version: 1, doc }));
+      localStorage.setItem(getAutoSaveKey(), JSON.stringify({ version: 1, doc }));
 
       // Notify the React layer (dirty state, auto-save status) that content changed.
       document.dispatchEvent(new CustomEvent('qti:content:change', { bubbles: true }));

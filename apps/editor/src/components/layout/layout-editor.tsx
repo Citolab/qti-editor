@@ -11,10 +11,11 @@ export interface EditorLayoutHandle {
 interface EditorLayoutProps {
   editorKey: number;
   language: string;
+  storageScope: string;
 }
 
 export const EditorLayout = forwardRef<EditorLayoutHandle, EditorLayoutProps>(
-  ({ editorKey, language }, ref) => {
+  ({ editorKey, language, storageScope }, ref) => {
     const elRef = useRef<QtiEditorApp | null>(null);
 
     useImperativeHandle(ref, () => ({
@@ -25,7 +26,7 @@ export const EditorLayout = forwardRef<EditorLayoutHandle, EditorLayoutProps>(
 
     return (
       <qti-editor-app
-        key={editorKey}
+        key={`${storageScope}:${editorKey}`}
         ref={elRef}
         lang={language}
         style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}

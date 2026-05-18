@@ -14,6 +14,7 @@ import { useEditorDirtyState } from './hooks/use-editor-dirty-state.js';
 import { useAutoSave } from './hooks/use-auto-save.js';
 import { useUnsavedChangesGuard } from './hooks/use-unsaved-changes-guard.js';
 import { useAuth } from './context/auth-context.js';
+import { getStorageScopeForUser, setActiveStorageScope } from './lib/fileStore.js';
 
 import type { MouseEvent, KeyboardEvent } from 'react';
 
@@ -26,6 +27,8 @@ export default function App() {
   const editorLayoutRef = useRef<EditorLayoutHandle>(null);
 
   const { user, loading: authLoading, signOut } = useAuth();
+  const storageScope = getStorageScopeForUser(user?.uid);
+  setActiveStorageScope(storageScope);
 
   // File operations hook
   const {
@@ -179,7 +182,12 @@ export default function App() {
         onSignOut={signOut}
       />
 
-      <EditorLayout ref={editorLayoutRef} editorKey={editorKey} language={i18n.language} />
+      <EditorLayout
+        ref={editorLayoutRef}
+        editorKey={editorKey}
+        language={i18n.language}
+        storageScope={storageScope}
+      />
 
       <StatusBar
         user={user}
