@@ -20,7 +20,7 @@ import type { InteractionDescriptor } from '@qti-editor/interfaces';
  * Example:
  * - Editor: [content A] [divider] [content B] [divider] [content C]
  * - XML Output: Three separate <qti-assessment-item> elements with
- *   identifiers item-1, item-2, item-3
+ *   automatically generated unique identifiers
  * 
  * Note: Since this is a structural element and not a QTI interaction,
  * it doesn't have composer metadata or handler - it won't appear in

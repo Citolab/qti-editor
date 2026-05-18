@@ -68,6 +68,39 @@ const SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS = [
   { source: 'area-mappings', target: 'data-area-mappings' },
 ] as const;
 
+function sanitizeIdentifier(value: string | undefined, fallback: string): string {
+  const sanitized = value?.trim().replace(/[^A-Za-z0-9_.-]+/g, '-').replace(/^-+|-+$/g, '');
+  return sanitized || fallback;
+}
+
+function hashIdentifierSeed(value: string): string {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < value.length; i += 1) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(36);
+}
+
+function createAutoIdentifier(options: {
+  title?: string;
+  baseIdentifier?: string;
+  itemNumber?: number;
+  body?: Element | Document | null;
+}): string {
+  const titleBase = sanitizeIdentifier(options.title, '');
+  const base = titleBase || sanitizeIdentifier(options.baseIdentifier, 'item');
+  const serializedBody =
+    options.body == null
+      ? ''
+      : new XMLSerializer().serializeToString(
+          options.body instanceof Document ? options.body.documentElement : options.body
+        );
+  const seed = [base, options.itemNumber ?? 1, serializedBody].join('|');
+  const suffix = hashIdentifierSeed(seed).slice(0, 8);
+  return `${base}-${suffix}`;
+}
+
 function parseCorrectResponseValues(
   declaration: Pick<ResponseDeclaration, 'cardinality' | 'correctResponse'>,
 ): string[] {
@@ -203,7 +236,17 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
 
   root.setAttribute('xmlns', QTI_NS);
   root.setAttributeNS(XSI_NS, 'xsi:schemaLocation', SCHEMA_LOCATION);
-  root.setAttribute('identifier', itemContext.identifier?.trim() || 'item-1');
+  root.setAttribute(
+    'identifier',
+    sanitizeIdentifier(
+      itemContext.identifier,
+      createAutoIdentifier({
+        title: itemContext.title,
+        baseIdentifier: itemContext.identifier,
+        body: itemContext.itemBody,
+      })
+    )
+  );
   root.setAttribute('title', itemContext.title?.trim() || 'Untitled Item');
   root.setAttribute('adaptive', 'false');
   root.setAttribute('time-dependent', 'false');
@@ -338,9 +381,10 @@ export function buildMultipleAssessmentItemsXml(itemContext?: ComposerItemContex
   }
 
   // Build multiple items
-  const baseIdentifier = itemContext.identifier?.trim() || 'item';
+  const baseIdentifier = sanitizeIdentifier(itemContext.identifier, 'item');
   const baseTitle = itemContext.title?.trim() || 'Untitled Item';
   const lang = itemContext.lang?.trim() || 'en';
+  const usedIdentifiers = new Set<string>();
 
   const itemXmls = fragments.map((fragmentBody, index) => {
     const itemNumber = index + 1;
@@ -348,9 +392,26 @@ export function buildMultipleAssessmentItemsXml(itemContext?: ComposerItemContex
     const fragmentDoc = document.implementation.createDocument(QTI_NS, 'qti-item-body', null);
     const importedFragment = fragmentDoc.importNode(fragmentBody, true);
     fragmentDoc.replaceChild(importedFragment, fragmentDoc.documentElement);
+    let identifier = perItem?.identifier?.trim();
+    if (!identifier) {
+      identifier = createAutoIdentifier({
+        title: perItem?.title || `${baseTitle} ${itemNumber}`,
+        baseIdentifier: `${baseIdentifier}-${itemNumber}`,
+        itemNumber,
+        body: fragmentDoc,
+      });
+    }
+    identifier = sanitizeIdentifier(identifier, `${baseIdentifier}-${itemNumber}`);
+    let uniqueIdentifier = identifier;
+    let duplicateIndex = 2;
+    while (usedIdentifiers.has(uniqueIdentifier)) {
+      uniqueIdentifier = `${identifier}-${duplicateIndex}`;
+      duplicateIndex += 1;
+    }
+    usedIdentifiers.add(uniqueIdentifier);
 
     const fragmentContext: ComposerItemContext = {
-      identifier: perItem?.identifier?.trim() || `${baseIdentifier}-${itemNumber}`,
+      identifier: uniqueIdentifier,
       title: perItem?.title?.trim() || `${baseTitle} ${itemNumber}`,
       lang,
       itemBody: fragmentDoc,
@@ -404,29 +465,54 @@ export function getItemFragmentXmls(itemContext?: ComposerItemContext): Array<{ 
   // If only one fragment (no dividers), return single item
   if (fragments.length <= 1) {
     const perItem = itemContext.items?.[0];
-    const identifier = perItem?.identifier?.trim() || itemContext.identifier?.trim() || 'item-1';
+    const identifier = sanitizeIdentifier(
+      perItem?.identifier || itemContext.identifier,
+      createAutoIdentifier({
+        title: perItem?.title || itemContext.title,
+        baseIdentifier: itemContext.identifier,
+        itemNumber: 1,
+        body: itemContext.itemBody,
+      })
+    );
     const title = perItem?.title?.trim() || itemContext.title?.trim() || 'Untitled Item';
     const xml = buildAssessmentItemXml({ ...itemContext, identifier, title });
     return [{ identifier, title, xml }];
   }
 
-  const baseIdentifier = itemContext.identifier?.trim() || 'item';
+  const baseIdentifier = sanitizeIdentifier(itemContext.identifier, 'item');
   const baseTitle = itemContext.title?.trim() || 'Untitled Item';
   const lang = itemContext.lang?.trim() || 'en';
+  const usedIdentifiers = new Set<string>();
 
   return fragments.map((fragmentBody, index) => {
     const itemNumber = index + 1;
     const perItem = itemContext.items?.[index];
-    const identifier = perItem?.identifier?.trim() || `${baseIdentifier}-${itemNumber}`;
     const title = perItem?.title?.trim() || `${baseTitle} ${itemNumber}`;
     const fragmentDoc = document.implementation.createDocument(QTI_NS, 'qti-item-body', null);
     const importedFragment = fragmentDoc.importNode(fragmentBody, true);
     fragmentDoc.replaceChild(importedFragment, fragmentDoc.documentElement);
+    let identifier = perItem?.identifier?.trim();
+    if (!identifier) {
+      identifier = createAutoIdentifier({
+        title,
+        baseIdentifier: `${baseIdentifier}-${itemNumber}`,
+        itemNumber,
+        body: fragmentDoc,
+      });
+    }
+    identifier = sanitizeIdentifier(identifier, `${baseIdentifier}-${itemNumber}`);
+    let uniqueIdentifier = identifier;
+    let duplicateIndex = 2;
+    while (usedIdentifiers.has(uniqueIdentifier)) {
+      uniqueIdentifier = `${identifier}-${duplicateIndex}`;
+      duplicateIndex += 1;
+    }
+    usedIdentifiers.add(uniqueIdentifier);
 
     return {
-      identifier,
+      identifier: uniqueIdentifier,
       title,
-      xml: buildAssessmentItemXml({ identifier, title, lang, itemBody: fragmentDoc }),
+      xml: buildAssessmentItemXml({ identifier: uniqueIdentifier, title, lang, itemBody: fragmentDoc }),
     };
   });
 }
