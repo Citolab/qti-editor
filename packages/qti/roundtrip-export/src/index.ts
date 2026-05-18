@@ -53,6 +53,7 @@ export interface QtiPackageContext extends QtiComposeContext {
   testTitle?: string;
   sectionIdentifier?: string;
   sectionTitle?: string;
+  informationalItems?: boolean[];
 }
 
 export interface QtiPackageOptions {
@@ -74,17 +75,7 @@ interface PackageItemResource {
   href: string;
   xml: string;
   dependencies: string[];
-  isInformational: boolean;
-}
-
-function itemHasQtiElementsInBody(itemXml: string): boolean {
-  const doc = new DOMParser().parseFromString(itemXml, 'application/xml');
-  const body = doc.querySelector('qti-item-body');
-  if (!body) return true;
-  for (const el of body.querySelectorAll('*')) {
-    if (el.localName.toLowerCase().startsWith('qti-')) return true;
-  }
-  return false;
+  informational?: boolean;
 }
 
 interface AssetResource {
@@ -138,9 +129,14 @@ export async function createQtiPackageFromItems(
   const sectionTitle = escapeXml(context.sectionTitle || 'Section 1');
   const materializeState: MaterializeState = { assetIndex: 0, assets: [] };
   const usedItemHrefs = new Set<string>();
+  const usedItemIdentifiers = new Set<string>();
 
-  const itemResources = await Promise.all(items.map(async item => {
-    const identifier = sanitizeIdentifier(item.identifier, 'item');
+  const itemResources: PackageItemResource[] = [];
+  for (const [index, item] of items.entries()) {
+    const sanitized = sanitizeIdentifier(item.identifier, 'item');
+    const identifier = uniqueIdentifier(sanitized, usedItemIdentifiers);
+    usedItemIdentifiers.add(identifier);
+
     const itemFileBase = uniqueFileBase(identifier, usedItemHrefs);
     const materialized = await materializeImageReferences(
       item.xml,
@@ -149,15 +145,15 @@ export async function createQtiPackageFromItems(
       options,
     );
 
-    return {
+    itemResources.push({
       identifier,
       title: item.title || identifier,
       href: `items/${itemFileBase}.xml`,
       xml: materialized.xml,
       dependencies: materialized.assetHrefs,
-      isInformational: !itemHasQtiElementsInBody(materialized.xml),
-    };
-  }));
+      informational: context.informationalItems?.[index] ?? false,
+    });
+  }
 
   const zip = new JSZip();
   zip.file('imsmanifest.xml', renderManifest({
@@ -172,6 +168,7 @@ export async function createQtiPackageFromItems(
     sectionIdentifier,
     sectionTitle,
     itemResources,
+    informationalItems: context.informationalItems,
   }));
 
   itemResources.forEach(item => {
@@ -233,10 +230,12 @@ function renderAssessmentTest(options: {
   sectionIdentifier: string;
   sectionTitle: string;
   itemResources: PackageItemResource[];
+  informationalItems?: boolean[];
 }): string {
-  const refs = options.itemResources.map(item => {
-    const categoryAttr = item.isInformational ? ' category="dep-informational"' : '';
-    return `      <qti-assessment-item-ref identifier="${escapeXml(item.identifier)}" href="${escapeXml(item.href)}"${categoryAttr}/>`;
+  const refs = options.itemResources.map((item, index) => {
+    const isInformational = item.informational ?? options.informationalItems?.[index] ?? false;
+    const category = isInformational ? ` category="dep-informational"` : '';
+    return `      <qti-assessment-item-ref identifier="${escapeXml(item.identifier)}" href="${escapeXml(item.href)}"${category}/>`;
   }).join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -411,6 +410,13 @@ async function defaultFetchResource(reference: string): Promise<Blob | null> {
 function nextAssetHref(itemFileBase: string, state: MaterializeState, extension: string): string {
   state.assetIndex += 1;
   return `assets/${itemFileBase}-image-${state.assetIndex}.${extension}`;
+}
+
+function uniqueIdentifier(identifier: string, used: Set<string>): string {
+  if (!used.has(identifier)) return identifier;
+  let n = 2;
+  while (used.has(`${identifier}-${n}`)) n++;
+  return `${identifier}-${n}`;
 }
 
 function uniqueFileBase(identifier: string, used: Set<string>): string {

@@ -2,6 +2,7 @@ import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { defineMountHandler, union, type Editor, type Extension } from 'prosekit/core';
 import { getNodeAttributePanelMetadataByNodeTypeName } from '@qti-editor/core/interactions/composer';
+import { translateQti } from '@qti-editor/interaction-shared';
 import {
   qtiAttributesExtension,
   qtiSidePanelExtension,
@@ -157,6 +158,21 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
     return nothing;
   }
 
+  private renderMissingCorrectResponseWarning(activeNode: AttributesNodeDetail | null): TemplateResult | typeof nothing {
+    if (!activeNode) return nothing;
+    const attrs = activeNode.attrs ?? {};
+    if (!('correctResponse' in attrs)) return nothing;
+    const cr = attrs.correctResponse;
+    const isEmpty = cr == null || (Array.isArray(cr) ? cr.length === 0 : String(cr).trim().length === 0);
+    if (!isEmpty) return nothing;
+    return html`
+      <div class="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning-content">
+        <span class="i-lucide-triangle-alert mt-0.5 size-3.5 shrink-0 text-warning"></span>
+        <span>${translateQti('attributes.correctResponseMissing', { target: this })}</span>
+      </div>
+    `;
+  }
+
   protected override renderPanel(): TemplateResult {
     const activeNode = this.activeNode;
     const panelMetadata = this.getPanelMetadata(activeNode);
@@ -172,6 +188,7 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
         <div class="card-body gap-3 p-4">
           ${this.renderHeader(activeNode)} ${this.renderNodeSwitcher()}
           <div class="flex flex-col gap-3">
+            ${this.renderMissingCorrectResponseWarning(activeNode)}
             ${friendlyEditors.map(editor => this.renderFriendlyEditor(editor, activeNode))}
             ${activeNode
               ? html`

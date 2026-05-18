@@ -5,9 +5,8 @@ import type { ProseMirrorNode } from 'prosekit/pm/model';
 
 export interface ExportXmlOptions {
   node: ProseMirrorNode;
-  identifier?: string;
   lang?: string;
-  title?: string;
+  items?: Array<{ identifier?: string; title?: string; informational?: boolean }>;
   fileName?: string;
 }
 
@@ -23,9 +22,10 @@ export function exportXml(options: ExportXmlOptions): void {
     .replace(/[^a-zA-Z0-9._-]/g, '') || 'item';
 
   let xml = qtiFromNode(options.node, {
-    identifier: options.identifier,
+    identifier: options.items?.[0]?.identifier,
     lang: options.lang,
-    title: options.title,
+    title: options.items?.[0]?.title,
+    items: options.items,
   });
 
   // Clean XML: remove any BOM, zero-width spaces, or other invisible characters
@@ -58,13 +58,14 @@ export async function exportPackage(options: ExportPackageOptions): Promise<void
     .trim()
     .replace(/\s+/g, '-')
     .replace(/[^a-zA-Z0-9._-]/g, '') || 'item';
+  const item0 = options.items?.[0];
 
   const blob = await createQtiPackageFromNode(options.node, {
-    identifier: options.identifier,
     lang: options.lang,
-    title: options.title,
+    items: options.items,
     packageIdentifier: safeFileName,
-    testTitle: options.title || safeFileName,
+    testTitle: item0?.title || safeFileName,
+    informationalItems: (options.items ?? []).map(item => item.informational ?? false),
   });
 
   const url = URL.createObjectURL(blob);

@@ -8,7 +8,8 @@ export type ComposerWarningCode =
   | 'MISSING_INTERACTION_COMPOSER_HANDLER'
   | 'INVALID_AREA_MAPPINGS_JSON'
   | 'INVALID_AREA_MAPPING_ENTRY'
-  | 'MISSING_RESPONSE_IDENTIFIER';
+  | 'MISSING_RESPONSE_IDENTIFIER'
+  | 'MISSING_CORRECT_RESPONSE';
 
 export interface ComposerWarning {
   code: ComposerWarningCode;

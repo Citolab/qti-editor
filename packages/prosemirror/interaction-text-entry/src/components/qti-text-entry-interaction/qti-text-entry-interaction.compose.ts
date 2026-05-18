@@ -50,7 +50,7 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
               defaultValue: 0,
               entries: correctResponses.map(mapKey => ({
                 mapKey,
-                mappedValue: 1,
+                mappedValue: score,
                 caseSensitive,
               })),
             }

@@ -27,6 +27,7 @@ export interface QtiComposeContext {
   identifier?: string;
   lang?: string;
   title?: string;
+  items?: Array<{ identifier?: string; title?: string }>;
 }
 
 export interface QtiItemFragment {
@@ -52,13 +53,14 @@ export function qtiFromNode(
     identifier: context?.identifier,
     lang: context?.lang,
     title: context?.title,
+    items: context?.items,
     itemBody,
   };
-  
+
   if (mode === 'single') {
     return formatXml(buildSingleAssessmentItemXml(composerContext));
   }
-  
+
   return formatXml(buildMultipleAssessmentItemsXml(composerContext));
 }
 
@@ -86,9 +88,10 @@ export function getQtiItems(
     identifier: context?.identifier,
     lang: context?.lang,
     title: context?.title,
+    items: context?.items,
     itemBody,
   };
-  
+
   return getItemFragmentXmls(composerContext).map(fragment => ({
     ...fragment,
     formattedXml: formatXml(fragment.xml),

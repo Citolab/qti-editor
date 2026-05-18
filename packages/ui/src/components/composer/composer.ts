@@ -174,9 +174,10 @@ export class QtiComposer extends LitElement {
 
     const doc = this.#editor.state.doc;
     const context = {
-      identifier: this.itemContext?.identifier,
+      identifier: this.itemContext?.items?.[0]?.identifier ?? this.itemContext?.identifier,
       lang: this.itemContext?.lang,
-      title: this.itemContext?.title,
+      title: this.itemContext?.items?.[0]?.title ?? this.itemContext?.title,
+      items: this.itemContext?.items,
     };
 
     // Count items and get fragments

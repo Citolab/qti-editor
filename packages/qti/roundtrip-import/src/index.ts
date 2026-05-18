@@ -143,6 +143,9 @@ export function itemXmlToImportHtml(xml: string): string {
 
 export function applyDataAttributes(html: string): string {
   const document = new DOMParser().parseFromString(html, 'text/html');
+
+  deduplicateResponseIdentifiers(document);
+
   Array.from(document.querySelectorAll('*')).forEach(element => {
     DATA_ATTRIBUTE_MAPPINGS.forEach(({ source, target }) => {
       const value = element.getAttribute(source);
@@ -152,6 +155,19 @@ export function applyDataAttributes(html: string): string {
   });
 
   return document.body.innerHTML;
+}
+
+function deduplicateResponseIdentifiers(document: Document): void {
+  const seen = new Set<string>();
+  Array.from(document.querySelectorAll('[response-identifier]')).forEach(element => {
+    const id = element.getAttribute('response-identifier');
+    if (!id) return;
+    if (seen.has(id)) {
+      element.setAttribute('response-identifier', `RESPONSE_${crypto.randomUUID()}`);
+    } else {
+      seen.add(id);
+    }
+  });
 }
 
 function mergeItemJson(items: ProseMirrorJson[], schema: Schema): ProseMirrorJson {

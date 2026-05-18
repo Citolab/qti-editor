@@ -1,5 +1,6 @@
 import { html, LitElement, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { translateQti } from '@qti-editor/interaction-shared';
 import {
   choiceInteractionClassGroups,
   parseChoiceInteractionClasses,
@@ -145,7 +146,7 @@ export class QtiChoiceAttributesEditor extends LitElement {
         <div class="mb-3">
           <div class="text-sm font-semibold">Choice layout</div>
           <div class="text-xs text-base-content/70">
-            Configure the interaction class string with grouped controls.
+            ${translateQti('choiceAttributes.description', { target: this })}
           </div>
         </div>
         <div class="flex flex-col gap-4">

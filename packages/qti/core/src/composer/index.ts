@@ -14,6 +14,7 @@ export interface ComposerItemContext {
   lang?: string;
   title?: string;
   itemBody?: Document;
+  items?: Array<{ identifier?: string; title?: string }>;
 }
 
 export interface ResponseDeclaration {
@@ -301,11 +302,15 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
   root.appendChild(composedItemBody);
 
   if (maxScore > 0 && hasAutomatedProcessing) {
-    if (declarations.length === 1) {
+    const single = declarations.length === 1 ? declarations[0] : null;
+    const canUseTemplate = single !== null &&
+      !(single.responseProcessingKind === 'match_correct' && (single.score ?? 1) !== 1);
+
+    if (canUseTemplate) {
       const responseProcessing = xmlDoc.createElementNS(QTI_NS, 'qti-response-processing');
       responseProcessing.setAttribute('template', responseTemplate);
       root.appendChild(responseProcessing);
-    } else if (declarations.length > 1) {
+    } else {
       root.appendChild(buildMultiInteractionResponseProcessing(xmlDoc, declarations));
     }
   }
@@ -339,13 +344,14 @@ export function buildMultipleAssessmentItemsXml(itemContext?: ComposerItemContex
 
   const itemXmls = fragments.map((fragmentBody, index) => {
     const itemNumber = index + 1;
+    const perItem = itemContext.items?.[index];
     const fragmentDoc = document.implementation.createDocument(QTI_NS, 'qti-item-body', null);
     const importedFragment = fragmentDoc.importNode(fragmentBody, true);
     fragmentDoc.replaceChild(importedFragment, fragmentDoc.documentElement);
 
     const fragmentContext: ComposerItemContext = {
-      identifier: `${baseIdentifier}-${itemNumber}`,
-      title: `${baseTitle} ${itemNumber}`,
+      identifier: perItem?.identifier?.trim() || `${baseIdentifier}-${itemNumber}`,
+      title: perItem?.title?.trim() || `${baseTitle} ${itemNumber}`,
       lang,
       itemBody: fragmentDoc,
     };
@@ -397,12 +403,11 @@ export function getItemFragmentXmls(itemContext?: ComposerItemContext): Array<{ 
   
   // If only one fragment (no dividers), return single item
   if (fragments.length <= 1) {
-    const xml = buildAssessmentItemXml(itemContext);
-    return [{
-      identifier: itemContext.identifier?.trim() || 'item-1',
-      title: itemContext.title?.trim() || 'Untitled Item',
-      xml,
-    }];
+    const perItem = itemContext.items?.[0];
+    const identifier = perItem?.identifier?.trim() || itemContext.identifier?.trim() || 'item-1';
+    const title = perItem?.title?.trim() || itemContext.title?.trim() || 'Untitled Item';
+    const xml = buildAssessmentItemXml({ ...itemContext, identifier, title });
+    return [{ identifier, title, xml }];
   }
 
   const baseIdentifier = itemContext.identifier?.trim() || 'item';
@@ -411,24 +416,17 @@ export function getItemFragmentXmls(itemContext?: ComposerItemContext): Array<{ 
 
   return fragments.map((fragmentBody, index) => {
     const itemNumber = index + 1;
+    const perItem = itemContext.items?.[index];
+    const identifier = perItem?.identifier?.trim() || `${baseIdentifier}-${itemNumber}`;
+    const title = perItem?.title?.trim() || `${baseTitle} ${itemNumber}`;
     const fragmentDoc = document.implementation.createDocument(QTI_NS, 'qti-item-body', null);
     const importedFragment = fragmentDoc.importNode(fragmentBody, true);
     fragmentDoc.replaceChild(importedFragment, fragmentDoc.documentElement);
 
-    const identifier = `${baseIdentifier}-${itemNumber}`;
-    const title = `${baseTitle} ${itemNumber}`;
-
-    const fragmentContext: ComposerItemContext = {
-      identifier,
-      title,
-      lang,
-      itemBody: fragmentDoc,
-    };
-
     return {
       identifier,
       title,
-      xml: buildAssessmentItemXml(fragmentContext),
+      xml: buildAssessmentItemXml({ identifier, title, lang, itemBody: fragmentDoc }),
     };
   });
 }
@@ -479,14 +477,17 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
         maxScore += composeResult.responseDeclaration.score ?? 1;
       }
 
-      if (composeResult.responseDeclaration && !seenIdentifiers.has(composeResult.responseDeclaration.identifier)) {
+      if (composeResult.responseDeclaration) {
+        const declaration = composeResult.responseDeclaration;
+        if (seenIdentifiers.has(declaration.identifier)) {
+          const freshId = `RESPONSE_${crypto.randomUUID()}`;
+          composeResult.normalizedElement.setAttribute('response-identifier', freshId);
+          declaration.identifier = freshId;
+        }
         const responseProcessingKind = (composeResult as { responseProcessingKind?: ResponseProcessingKind })
           .responseProcessingKind;
-        declarations.push({
-          ...composeResult.responseDeclaration,
-          responseProcessingKind,
-        });
-        seenIdentifiers.add(composeResult.responseDeclaration.identifier);
+        declarations.push({ ...declaration, responseProcessingKind });
+        seenIdentifiers.add(declaration.identifier);
       }
 
       if (composeResult.responseProcessingTemplate && composeResult.responseDeclaration) {
@@ -509,8 +510,6 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
   itemBody.querySelectorAll('[score]').forEach(element => {
     element.removeAttribute('score');
   });
-
-  normalizeResponseIdentifiers(itemBody, declarations);
 
   if (declarations.length === 1 && templateCandidates.size === 1) {
     return { declarations, responseTemplate: Array.from(templateCandidates)[0], maxScore, hasAutomatedProcessing: true };
@@ -568,17 +567,13 @@ function createMatchCorrectContribution(xmlDoc: Document, responseIdentifier: st
 
 function createMapResponseContribution(xmlDoc: Document, responseIdentifier: string): Element {
   const mapResponse = xmlDoc.createElementNS(QTI_NS, 'qti-map-response');
-  const variable = xmlDoc.createElementNS(QTI_NS, 'qti-variable');
-  variable.setAttribute('identifier', responseIdentifier);
-  mapResponse.appendChild(variable);
+  mapResponse.setAttribute('identifier', responseIdentifier);
   return createScoreIncrement(xmlDoc, mapResponse);
 }
 
 function createMapResponsePointContribution(xmlDoc: Document, responseIdentifier: string): Element {
   const mapResponsePoint = xmlDoc.createElementNS(QTI_NS, 'qti-map-response-point');
-  const variable = xmlDoc.createElementNS(QTI_NS, 'qti-variable');
-  variable.setAttribute('identifier', responseIdentifier);
-  mapResponsePoint.appendChild(variable);
+  mapResponsePoint.setAttribute('identifier', responseIdentifier);
   return createScoreIncrement(xmlDoc, mapResponsePoint);
 }
 
@@ -597,35 +592,6 @@ function createScoreIncrement(xmlDoc: Document, contribution: Element): Element 
   return setOutcomeValue;
 }
 
-function normalizeResponseIdentifiers(itemBody: Element, declarations: ResponseDeclaration[]): void {
-  if (declarations.length === 0) return;
-
-  const identifierMap = new Map<string, string>();
-  if (declarations.length === 1) {
-    identifierMap.set(declarations[0].identifier, 'RESPONSE');
-  } else {
-    declarations.forEach((declaration, index) => {
-      identifierMap.set(declaration.identifier, `RESPONSE${index + 1}`);
-    });
-  }
-
-  itemBody.querySelectorAll('[response-identifier]').forEach(interaction => {
-    const currentIdentifier = interaction.getAttribute('response-identifier')?.trim();
-    if (!currentIdentifier) return;
-
-    const mappedIdentifier = identifierMap.get(currentIdentifier);
-    if (mappedIdentifier) {
-      interaction.setAttribute('response-identifier', mappedIdentifier);
-    }
-  });
-
-  declarations.forEach(declaration => {
-    const mappedIdentifier = identifierMap.get(declaration.identifier);
-    if (mappedIdentifier) {
-      declaration.identifier = mappedIdentifier;
-    }
-  });
-}
 
 export function formatXml(xml: string): string {
   const PADDING = '  ';
