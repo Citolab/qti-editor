@@ -36,6 +36,16 @@ export function defineQtiInteractionsExtension() {
       enterCommands.some(cmd => cmd(state, dispatch, view));
   }
 
+  // Backspace commands: tried in registration order, first match wins
+  const backspaceCommands = descriptors
+    .map(d => d.backspaceCommand)
+    .filter((cmd): cmd is Command => cmd != null);
+
+  if (backspaceCommands.length > 0) {
+    keymap['Backspace'] = (state, dispatch, view) =>
+      backspaceCommands.some(cmd => cmd(state, dispatch, view));
+  }
+
   for (const descriptor of descriptors) {
     if (descriptor.insertCommand && descriptor.keyboardShortcut) {
       keymap[descriptor.keyboardShortcut] = descriptor.insertCommand;

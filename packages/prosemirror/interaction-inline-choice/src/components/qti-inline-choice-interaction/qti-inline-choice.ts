@@ -4,9 +4,6 @@ import { CorrectResponseClickMixin } from '@qti-editor/interaction-shared';
 
 import type { CSSResultGroup } from 'lit';
 
-/**
- * Base class with internals for the mixin
- */
 class QtiInlineChoiceBase extends LitElement {
   public internals: ElementInternals;
 
@@ -16,10 +13,12 @@ class QtiInlineChoiceBase extends LitElement {
   }
 }
 
-/**
- * Edit mode version of qti-inline-choice that allows:
- * - Clicking the radio control to set correct responses
- */
+export const QTI_INLINE_CHOICE_FOCUS_EVENT = 'qti-inline-choice-focus';
+
+export interface QtiInlineChoiceFocusDetail {
+  identifier: string;
+}
+
 export class QtiInlineChoice extends CorrectResponseClickMixin(QtiInlineChoiceBase) {
   static override styles: CSSResultGroup = css`
     :host {
@@ -29,6 +28,7 @@ export class QtiInlineChoice extends CorrectResponseClickMixin(QtiInlineChoiceBa
     }
     [part='ch'] {
       cursor: pointer;
+      flex-shrink: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -47,22 +47,24 @@ export class QtiInlineChoice extends CorrectResponseClickMixin(QtiInlineChoiceBa
     :host(:state(--checked)) [part='cha'] {
       background: currentColor;
     }
+    [part='label'] {
+      flex: 1;
+      min-width: 0;
+      cursor: text;
+    }
   `;
 
   @property({ type: String })
   override identifier = 'A';
 
-  override handleControlClick(event: MouseEvent) {
+  protected handleLabelMousedown(event: MouseEvent) {
+    // Prevent ProseMirror's default posAtCoords cursor placement (it checks
+    // event.defaultPrevented before handling mousedown). The plugin will set
+    // the cursor precisely at the end of this choice's text content instead.
     event.preventDefault();
-    event.stopPropagation();
-    const nextCorrectResponse = this.selected ? null : this.identifier;
     this.dispatchEvent(
-      new CustomEvent('qti-prosemirror-node-attrs-change', {
-        detail: {
-          nodeType: 'qtiInlineChoiceInteraction',
-          tagName: 'qti-inline-choice-interaction',
-          attrs: { correctResponse: nextCorrectResponse },
-        },
+      new CustomEvent<QtiInlineChoiceFocusDetail>(QTI_INLINE_CHOICE_FOCUS_EVENT, {
+        detail: { identifier: this.identifier },
         bubbles: true,
         composed: true,
       }),
@@ -70,10 +72,14 @@ export class QtiInlineChoice extends CorrectResponseClickMixin(QtiInlineChoiceBa
   }
 
   override render() {
-    return html`<div part="ch" @click=${this.handleControlClick}>
+    return html`
+      <div part="ch" @mousedown=${(e: MouseEvent) => e.preventDefault()} @click=${this.handleControlClick}>
         <div part="cha"></div>
       </div>
-      <slot part="slot"></slot>`;
+      <div part="label" @mousedown=${this.handleLabelMousedown}>
+        <slot part="slot"></slot>
+      </div>
+    `;
   }
 }
 

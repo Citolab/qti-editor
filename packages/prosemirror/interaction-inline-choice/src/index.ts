@@ -5,6 +5,8 @@ export * from './components/qti-inline-choice-interaction/qti-inline-choice.js';
 export * from './components/qti-inline-choice-interaction/qti-inline-choice.schema.js';
 export * from './components/qti-inline-choice-interaction/qti-inline-choice-paragraph.schema.js';
 
+export * from './extensions/correct-response-click.js';
+
 export * from './composer/metadata.js';
 export * from './composer/handler.js';
 export * from './descriptor.js';

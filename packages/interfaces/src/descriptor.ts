@@ -38,6 +38,11 @@ export interface InteractionDescriptor {
    */
   enterCommand?: Command;
   /**
+   * Command run on Backspace within this interaction.
+   * Multiple interactions may provide this; they are tried in registration order.
+   */
+  backspaceCommand?: Command;
+  /**
    * ProseMirror plugins required for this interaction's runtime behavior.
    * Consumers can install these directly in plain ProseMirror setups or wrap
    * them in framework-specific adapters such as ProseKit extensions.

@@ -681,6 +681,9 @@ importers:
       prosemirror-state:
         specifier: ^1.4.4
         version: 1.4.4
+      prosemirror-view:
+        specifier: ^1.31.0
+        version: 1.41.8
     devDependencies:
       lit:
         specifier: ^3.3.2

@@ -2,6 +2,7 @@
 import {
   insertInlineChoiceInteraction,
   insertInlineChoiceOnEnter,
+  deleteInlineChoiceOnBackspace,
 } from './components/qti-inline-choice-interaction/qti-inline-choice-interaction.commands.js';
 import { qtiInlineChoiceInteractionNodeSpec } from './components/qti-inline-choice-interaction/qti-inline-choice-interaction.schema.js';
 import { qtiInlineChoiceNodeSpec } from './components/qti-inline-choice-interaction/qti-inline-choice.schema.js';
@@ -10,6 +11,7 @@ import {
   inlineChoiceNodeAttributePanelMetadataByNodeTypeName,
 } from './composer/metadata.js';
 import { inlineChoiceComposerHandler } from './composer/handler.js';
+import { createInlineChoiceCorrectResponseClickPlugin } from './extensions/correct-response-click.js';
 
 import type { InteractionDescriptor } from '@qti-editor/interfaces';
 
@@ -20,9 +22,11 @@ export const inlineChoiceInteractionDescriptor = {
     { name: 'qtiInlineChoiceInteraction', spec: qtiInlineChoiceInteractionNodeSpec },
     { name: 'qtiInlineChoice', spec: qtiInlineChoiceNodeSpec },
   ],
+  pluginFactories: [createInlineChoiceCorrectResponseClickPlugin],
   insertCommand: insertInlineChoiceInteraction,
   keyboardShortcut: 'Mod-Shift-l',
   enterCommand: insertInlineChoiceOnEnter,
+  backspaceCommand: deleteInlineChoiceOnBackspace,
   composerMetadata: inlineChoiceInteractionComposerMetadata,
   composerHandler: inlineChoiceComposerHandler,
   attributePanelMetadata: inlineChoiceNodeAttributePanelMetadataByNodeTypeName,
