@@ -598,6 +598,13 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
   });
 
   if (declarations.length === 1 && templateCandidates.size === 1) {
+    // Normalize to the QTI reserved keyword "RESPONSE" — templates reference this well-known identifier
+    const declaration = declarations[0];
+    if (declaration.identifier !== 'RESPONSE') {
+      const element = itemBody.querySelector(`[response-identifier="${declaration.identifier}"]`);
+      element?.setAttribute('response-identifier', 'RESPONSE');
+      declaration.identifier = 'RESPONSE';
+    }
     return { declarations, responseTemplate: Array.from(templateCandidates)[0], maxScore, hasAutomatedProcessing: true };
   }
 
