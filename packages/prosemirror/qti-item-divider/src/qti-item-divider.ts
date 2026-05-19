@@ -29,7 +29,13 @@ export class QtiItemDivider extends LitElement {
    */
   @property({ type: Number, attribute: 'data-item-index', reflect: true })
   itemIndex: number | null = null;
-  
+
+  @property({ type: String, attribute: 'title', reflect: true })
+  override title: string = '';
+
+  @property({ type: String, attribute: 'identifier', reflect: true })
+  identifier: string = '';
+
   // Render to light DOM for easier CSS integration with gutter
   override createRenderRoot() {
     return this;
@@ -48,7 +54,8 @@ export class QtiItemDivider extends LitElement {
           <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 12h18M3 6h18M3 18h18" />
           </svg>
-          <span>${translateQti('divider.itemBoundary', { target: this })}</span>
+          <span>${this.title || translateQti('divider.itemBoundary', { target: this })}</span>
+          ${this.identifier ? html`<span class="divider-identifier">${this.identifier}</span>` : null}
         </div>
       </div>
     `;

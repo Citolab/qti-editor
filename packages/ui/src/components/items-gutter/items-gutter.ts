@@ -99,11 +99,7 @@ export class QtiItemsGutter extends LitElement {
 
     const dividers = view.dom.querySelectorAll('qti-item-divider');
     dividers.forEach((divider: Element, index: number) => {
-      // itemIndex is 0-based, but dividers mark the start of item 2, 3, etc.
-      // So divider at index 0 starts item 2 (itemIndex = 1)
-      const itemIndex = index + 1;
-      // Setting the attribute triggers Lit's reactive property update
-      divider.setAttribute('data-item-index', String(itemIndex));
+      divider.setAttribute('data-item-index', String(index));
     });
   }
 

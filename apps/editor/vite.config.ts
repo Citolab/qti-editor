@@ -23,6 +23,7 @@ const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/pr
 const interactionsGapMatchSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-gap-match/src', import.meta.url));
 const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes/src', import.meta.url));
 const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes-ui/src', import.meta.url));
+const qtiItemDividerSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/qti-item-divider/src', import.meta.url));
 const appCustomElementRoots = [
   fileURLToPath(new URL('./src/components/qti-editor-app.ts', import.meta.url)),
   fileURLToPath(new URL('./src/components/qti-slash-menu.ts', import.meta.url)),
@@ -42,6 +43,7 @@ const fullReloadRoots = [
   interactionsGapMatchSrcRoot,
   prosemirrorAttributesSrcRoot,
   prosemirrorAttributesUiProseKitSrcRoot,
+  qtiItemDividerSrcRoot,
 ];
 
 function shouldForceFullReload(file: string): boolean {
@@ -192,6 +194,14 @@ export default defineConfig({
         replacement: `${interactionsGapMatchSrcRoot}/index.ts`,
       },
       {
+        find: /^@qti-editor\/qti-item-divider\/(.*)\.js$/,
+        replacement: `${qtiItemDividerSrcRoot}/$1.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-item-divider$/,
+        replacement: `${qtiItemDividerSrcRoot}/index.ts`,
+      },
+      {
         find: /^@qti-editor\/prosemirror-attributes\/(.*)\.js$/,
         replacement: `${prosemirrorAttributesSrcRoot}/$1.ts`,
       },
@@ -243,6 +253,7 @@ export default defineConfig({
       '@qti-editor/interaction-select-point',
       '@qti-editor/interaction-inline-choice',
       '@qti-editor/interaction-gap-match',
+      '@qti-editor/qti-item-divider',
       '@qti-editor/prosemirror-attributes',
       '@qti-editor/prosemirror-attributes-ui',
       '@qti-components/theme',

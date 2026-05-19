@@ -11,17 +11,26 @@ export const qtiItemDividerNodeSpec: NodeSpec = {
   group: 'block',
   atom: true,
   selectable: true,
+  attrs: {
+    title: { default: '' },
+    identifier: { default: '' },
+  },
   parseDOM: [
-    { 
+    {
       tag: 'qti-item-divider',
-      // Preserve any data attributes
       getAttrs: (dom) => {
         if (!(dom instanceof HTMLElement)) return false;
-        return null;
-      }
-    }
+        return {
+          title: dom.getAttribute('title') ?? '',
+          identifier: dom.getAttribute('identifier') ?? '',
+        };
+      },
+    },
   ],
-  toDOM(): DOMOutputSpec {
-    return ['qti-item-divider', { class: 'qti-item-divider' }];
+  toDOM(node): DOMOutputSpec {
+    const attrs: Record<string, string> = { class: 'qti-item-divider' };
+    if (node.attrs['title']) attrs['title'] = node.attrs['title'] as string;
+    if (node.attrs['identifier']) attrs['identifier'] = node.attrs['identifier'] as string;
+    return ['qti-item-divider', attrs];
   },
 };

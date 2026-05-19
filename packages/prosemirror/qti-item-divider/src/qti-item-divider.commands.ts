@@ -24,8 +24,7 @@ export function insertItemDivider(state: EditorState, dispatch?: (tr: Transactio
   const insertPos = $from.after();
 
   if (dispatch) {
-    // Insert the divider node
-    const divider = dividerType.create();
+    const divider = dividerType.create({ identifier: `item-${crypto.randomUUID()}`, title: '' });
     
     // Create a new paragraph after the divider to allow continued editing
     const paragraph = schema.nodes.paragraph?.create();

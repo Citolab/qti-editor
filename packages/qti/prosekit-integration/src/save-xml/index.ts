@@ -75,6 +75,10 @@ function formatXml(xml: string): string {
  * Remove empty xmlns attributes that can interfere with parsing.
  * These occur when QTI exports have xmlns="" on child elements.
  */
+function escapeAttr(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 function cleanEmptyNamespaces(html: string): string {
   // Remove xmlns="" and xmlns:xsi declarations that interfere with parsing
   return html
@@ -108,26 +112,26 @@ export function xmlToHTML(xml: string): string {
   }
   
   if (hasMultipleItems) {
-    // Extract qti-item-body from each assessment item and join with dividers
+    // Extract qti-item-body from each assessment item with a leading divider per item
     const assessmentItems = doc.querySelectorAll('qti-assessment-item');
     const htmlParts: string[] = [];
-    
-    assessmentItems.forEach((item, index) => {
+
+    assessmentItems.forEach((item) => {
       const itemBody = item.querySelector('qti-item-body');
       if (itemBody) {
-        // Add divider before each item except the first
-        if (index > 0) {
-          htmlParts.push('<qti-item-divider></qti-item-divider>');
-        }
-        
-        // Add the item body content
+        const title = item.getAttribute('title') ?? '';
+        const identifier = item.getAttribute('identifier') ?? '';
+        const titleAttr = title ? ` title="${escapeAttr(title)}"` : '';
+        const identifierAttr = identifier ? ` identifier="${escapeAttr(identifier)}"` : '';
+        htmlParts.push(`<qti-item-divider${titleAttr}${identifierAttr}></qti-item-divider>`);
+
         const content = Array.from(itemBody.childNodes)
           .map(node => serializer.serializeToString(node))
           .join('');
         htmlParts.push(cleanEmptyNamespaces(content));
       }
     });
-    
+
     return htmlParts.join('');
   } else {
     // Single item - use original logic

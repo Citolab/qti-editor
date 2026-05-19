@@ -105,7 +105,7 @@ export async function importQtiPackageFromZip(
   }
 
   return {
-    json: mergeItemJson(itemJson, options.schema),
+    json: mergeItemJson(itemJson, options.schema, itemMetadata),
     metadata: {
       ...await extractPackageMetadata(zip),
       items: itemMetadata,
@@ -170,14 +170,25 @@ function deduplicateResponseIdentifiers(document: Document): void {
   });
 }
 
-function mergeItemJson(items: ProseMirrorJson[], schema: Schema): ProseMirrorJson {
+function mergeItemJson(
+  items: ProseMirrorJson[],
+  schema: Schema,
+  metadata?: QtiPackageImportItemMetadata[],
+): ProseMirrorJson {
   const [firstItem] = items;
-  if (!firstItem || items.length === 1) return firstItem;
+  if (!firstItem) return firstItem;
 
   const content: unknown[] = [];
   items.forEach((item, index) => {
-    if (index > 0 && schema.nodes.qtiItemDivider) {
-      content.push({ type: 'qtiItemDivider' });
+    if (schema.nodes.qtiItemDivider) {
+      const meta = metadata?.[index];
+      content.push({
+        type: 'qtiItemDivider',
+        attrs: {
+          title: meta?.title ?? '',
+          identifier: meta?.identifier ?? `item-${crypto.randomUUID()}`,
+        },
+      });
     }
 
     const itemContent = Array.isArray((item as { content?: unknown }).content)

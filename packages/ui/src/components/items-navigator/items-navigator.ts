@@ -7,6 +7,9 @@ import type { Editor } from 'prosekit/core';
 interface ItemInfo {
   index: number;
   pos: number;
+  dividerPos: number;
+  title: string;
+  identifier: string;
 }
 
 /**
@@ -285,31 +288,32 @@ export class QtiItemsNavigator extends LitElement {
     const itemPositions: ItemInfo[] = [];
     let itemIndex = 0;
 
-    // First item always starts at the beginning
-    itemPositions.push({
-      index: itemIndex++,
-      pos: 1,
-    });
-
-    // Find all dividers
+    // Each leading divider marks the start of an item
     doc.descendants((node: any, pos: number) => {
       if (node.type.name === this.itemDividerNodeType) {
-        // New item starts after the divider
         itemPositions.push({
           index: itemIndex++,
+          dividerPos: pos,
           pos: pos + node.nodeSize,
+          title: (node.attrs?.title as string) ?? '',
+          identifier: (node.attrs?.identifier as string) ?? '',
         });
       }
     });
 
+    // Fallback: no dividers, treat whole doc as one item
+    if (itemPositions.length === 0) {
+      itemPositions.push({ index: 0, dividerPos: 0, pos: 1, title: '', identifier: '' });
+    }
+
     // Only update if items changed
-    const itemsChanged = 
+    const itemsChanged =
       this.items.length !== itemPositions.length ||
-      this.items.some((item, i) => item.pos !== itemPositions[i]?.pos);
-    
+      this.items.some((item, i) => item.pos !== itemPositions[i]?.pos || item.title !== itemPositions[i]?.title);
+
     if (itemsChanged) {
       this.items = itemPositions;
-      this.requestUpdate(); // Force re-render
+      this.requestUpdate();
     }
   }
 
@@ -388,11 +392,11 @@ export class QtiItemsNavigator extends LitElement {
       console.warn('[ItemsNavigator] Could not place cursor at position', targetPos);
     }
     
-    // Scroll to the item position explicitly for consistent behavior
+    // Scroll to the divider position so the item header is visible
     if (this.scrollContainer) {
-      const dividerCoords = view.coordsAtPos(item.pos);
+      const scrollToPos = item.dividerPos > 0 ? item.dividerPos : item.pos;
+      const dividerCoords = view.coordsAtPos(scrollToPos);
       const containerRect = this.scrollContainer.getBoundingClientRect();
-      // Scroll so the item is near the top (with some padding)
       const scrollOffset = dividerCoords.top - containerRect.top - 100;
       this.scrollContainer.scrollTop += scrollOffset;
     }
@@ -438,7 +442,7 @@ export class QtiItemsNavigator extends LitElement {
                   class="item-button ${this.currentItemIndex === item.index ? 'active' : ''}"
                   @click=${() => this.navigateToItem(item.index)}
                 >
-                  <span class="item-label">Item ${item.index + 1}</span>
+                  <span class="item-label">${item.title || `Item ${item.index + 1}`}</span>
                   ${this.currentItemIndex === item.index
                     ? html`
                         <svg class="active-indicator" fill="none" viewBox="0 0 24 24" stroke="currentColor">
