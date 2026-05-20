@@ -1,5 +1,3 @@
-import { parseCorrectResponseAttribute } from '@qti-editor/interaction-shared';
-
 import { matchInteractionComposerMetadata } from '../../composer/metadata.js';
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interaction-shared/composer/types.js';
@@ -22,7 +20,9 @@ export function composeMatchInteractionElement(sourceElement: Element, xmlDoc: D
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
-  const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
+  // correctResponse is stored as raw JSON ('[["A","1"],["B","2"]]'), not comma-separated identifiers.
+  const correctResponseRaw = sourceElement.getAttribute('correct-response');
+  const correctResponse = correctResponseRaw || null;
   const maxAssociations = toFiniteNumber(sourceElement.getAttribute('max-associations'), 1);
   const minAssociations = toFiniteNumber(sourceElement.getAttribute('min-associations'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
