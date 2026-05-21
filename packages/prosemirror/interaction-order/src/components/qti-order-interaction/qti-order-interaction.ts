@@ -5,6 +5,8 @@ import { QtiI18nController } from '@qti-editor/interaction-shared';
 
 import styles, { LIGHT_DOM_STYLES } from './qti-order-interaction.styles.js';
 
+const openPanels = new Map<string, boolean>();
+
 /**
  * Editor component for qti-order-interaction.
  * All choices are shown in the correct-order panel; use up/down arrows to reorder.
@@ -30,7 +32,7 @@ export class QtiOrderInteractionEdit extends Interaction {
   private _renderTrigger = 0;
 
   @state()
-  private _cursorInside = false;
+  private _open = false;
 
   private _order: string[] = [];
   private _labelCache = new Map<string, string>();
@@ -38,25 +40,57 @@ export class QtiOrderInteractionEdit extends Interaction {
   private _lightDomStyle: HTMLStyleElement | null = null;
   private _observer: MutationObserver | null = null;
 
-  private _onSelectionChange = () => {
-    const sel = document.getSelection();
-    const inside = sel ? this.contains(sel.anchorNode) : false;
-    if (inside !== this._cursorInside) {
-      this._cursorInside = inside;
+  private get _interactionKey(): string {
+    return this.responseIdentifier || this.getAttribute('response-identifier') || 'default';
+  }
+
+  private _setOpen(open: boolean) {
+    if (this._open === open) return;
+    this._open = open;
+    openPanels.set(this._interactionKey, open);
+  }
+
+  private _openPanel = () => this._setOpen(true);
+
+  private _handleSelectionChange = () => {
+    const selection = document.getSelection();
+    if (selection?.anchorNode && this.contains(selection.anchorNode)) {
+      this._openPanel();
+    }
+  };
+
+  private _handleDocumentPointerDown = (event: PointerEvent) => {
+    if (!this._open) return;
+    if (event.composedPath().includes(this)) return;
+    this._setOpen(false);
+  };
+
+  private _handleDocumentKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && this._open) {
+      this._setOpen(false);
     }
   };
 
   override connectedCallback() {
     super.connectedCallback();
+    this._open = openPanels.get(this._interactionKey) ?? false;
     this._injectLightDomStyles();
     this._parseCorrectResponse();
     requestAnimationFrame(() => this._trySetup());
-    document.addEventListener('selectionchange', this._onSelectionChange);
+    this.addEventListener('pointerdown', this._openPanel);
+    this.addEventListener('focusin', this._openPanel);
+    document.addEventListener('selectionchange', this._handleSelectionChange);
+    document.addEventListener('pointerdown', this._handleDocumentPointerDown);
+    document.addEventListener('keydown', this._handleDocumentKeyDown);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    document.removeEventListener('selectionchange', this._onSelectionChange);
+    this.removeEventListener('pointerdown', this._openPanel);
+    this.removeEventListener('focusin', this._openPanel);
+    document.removeEventListener('selectionchange', this._handleSelectionChange);
+    document.removeEventListener('pointerdown', this._handleDocumentPointerDown);
+    document.removeEventListener('keydown', this._handleDocumentKeyDown);
     this._observer?.disconnect();
     this._observer = null;
     this._lightDomStyle?.remove();
@@ -118,14 +152,10 @@ export class QtiOrderInteractionEdit extends Interaction {
       this._order = [];
       return;
     }
-    try {
-      const parsed = JSON.parse(this.correctResponse);
-      if (Array.isArray(parsed)) {
-        this._order = parsed.filter((v): v is string => typeof v === 'string');
-      }
-    } catch {
-      this._order = [];
-    }
+    this._order = this.correctResponse
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
   }
 
   /** Ensure _order contains exactly the current choices, preserving existing order. */
@@ -195,7 +225,7 @@ export class QtiOrderInteractionEdit extends Interaction {
 
   private _renderOrderPanel() {
     return html`
-      <div class="order-panel">
+      <div class="order-panel" @mousedown=${(event: MouseEvent) => event.preventDefault()}>
         <div class="order-panel-title">${this.i18n.t('order.correctResponse')}</div>
         <div class="order-list">
           ${this._order.map((id, i) => html`
@@ -208,6 +238,7 @@ export class QtiOrderInteractionEdit extends Interaction {
                   class="order-arrow-btn"
                   aria-label=${this.i18n.t('order.moveUp')}
                   ?disabled=${i === 0}
+                  @mousedown=${(e: Event) => e.preventDefault()}
                   @click=${(e: Event) => { e.stopPropagation(); this._moveUp(i); }}
                 >▲</button>
                 <button
@@ -215,6 +246,7 @@ export class QtiOrderInteractionEdit extends Interaction {
                   class="order-arrow-btn"
                   aria-label=${this.i18n.t('order.moveDown')}
                   ?disabled=${i === this._order.length - 1}
+                  @mousedown=${(e: Event) => e.preventDefault()}
                   @click=${(e: Event) => { e.stopPropagation(); this._moveDown(i); }}
                 >▼</button>
               </div>
@@ -230,7 +262,7 @@ export class QtiOrderInteractionEdit extends Interaction {
     return html`
       <slot name="prompt"></slot>
       <slot @slotchange=${this._onSlotChange}></slot>
-      ${this._setupDone && this._cursorInside ? this._renderOrderPanel() : nothing}
+      ${this._setupDone && this._open ? this._renderOrderPanel() : nothing}
     `;
   }
 }

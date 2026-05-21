@@ -36,7 +36,7 @@ export function createOrderCorrectResponsePlugin(): Plugin {
         if (!interactionElement.matches('qti-order-interaction')) return;
 
         const { order } = customEvent.detail;
-        const correctResponse = order.length > 0 ? JSON.stringify(order) : null;
+        const correctResponse = order.length > 0 ? order : null;
 
         const pos = findInteractionNodePos(view, interactionElement);
         if (pos === null) return;
