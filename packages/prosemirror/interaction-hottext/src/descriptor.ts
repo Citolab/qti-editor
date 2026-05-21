@@ -2,6 +2,7 @@ import { insertHottextInteraction } from './components/qti-hottext-interaction/q
 import { qtiHottextInteractionNodeSpec } from './components/qti-hottext-interaction/qti-hottext-interaction.schema.js';
 import { qtiHottextNodeSpec } from './components/qti-hottext/qti-hottext.schema.js';
 import { hottextComposerHandler } from './composer/handler.js';
+import { createHottextSelectedDecorationsPlugin } from './extensions/selected-decorations.js';
 import { createHottextWrapSelectionPlugin } from './extensions/wrap-selection.js';
 import {
   hottextInteractionComposerMetadata,
@@ -17,7 +18,7 @@ export const hottextInteractionDescriptor = {
     { name: 'qtiHottextInteraction', spec: qtiHottextInteractionNodeSpec },
     { name: 'qtiHottext', spec: qtiHottextNodeSpec },
   ],
-  pluginFactories: [createHottextWrapSelectionPlugin],
+  pluginFactories: [createHottextWrapSelectionPlugin, createHottextSelectedDecorationsPlugin],
   insertCommand: insertHottextInteraction,
   keyboardShortcut: 'Mod-Shift-h',
   composerMetadata: hottextInteractionComposerMetadata,

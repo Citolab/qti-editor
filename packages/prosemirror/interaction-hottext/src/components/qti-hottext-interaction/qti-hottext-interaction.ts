@@ -4,6 +4,10 @@ import { Interaction } from '@qti-editor/interaction-shared/components/interacti
 import { translateQti } from '@qti-editor/interaction-shared';
 
 import { HOTTEXT_WRAP_SELECTION_EVENT } from '../../extensions/wrap-selection.js';
+import {
+  HOTTEXT_RADIO_CLICK_EVENT,
+  type HottextRadioClickDetail,
+} from '../qti-hottext/qti-hottext.js';
 import styles from './qti-hottext-interaction.styles.js';
 
 function parseCorrectResponse(value: string | string[] | null): string[] {
@@ -43,22 +47,16 @@ export class QtiHottextInteractionEdit extends Interaction {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addEventListener('click', this.#handleClick);
+    this.addEventListener(HOTTEXT_RADIO_CLICK_EVENT, this.#handleClick);
     document.addEventListener('mouseup', this.#handleMouseUp);
     document.addEventListener('keyup', this.#handleKeyUp);
   }
 
   override disconnectedCallback() {
-    this.removeEventListener('click', this.#handleClick);
+    this.removeEventListener(HOTTEXT_RADIO_CLICK_EVENT, this.#handleClick);
     document.removeEventListener('mouseup', this.#handleMouseUp);
     document.removeEventListener('keyup', this.#handleKeyUp);
     super.disconnectedCallback();
-  }
-
-  override updated(changedProperties: Map<PropertyKey, unknown>) {
-    if (changedProperties.has('correctResponse')) {
-      this.#syncSelectedState();
-    }
   }
 
   override render() {
@@ -76,24 +74,13 @@ export class QtiHottextInteractionEdit extends Interaction {
             </div>
           `
         : null}
-      <slot @slotchange=${this.#handleSlotChange}></slot>
+      <slot></slot>
     `;
   }
 
-  #handleSlotChange = () => {
-    this.#syncSelectedState();
-  };
-
   #handleClick = (event: Event) => {
-    const hottext = (event.target as Element | null)?.closest('qti-hottext');
-    if (!(hottext instanceof HTMLElement) || !this.contains(hottext)) {
-      return;
-    }
-
-    const identifier = hottext.getAttribute('identifier');
-    if (!identifier) {
-      return;
-    }
+    const { identifier } = (event as CustomEvent<HottextRadioClickDetail>).detail;
+    if (!identifier) return;
 
     const selectedIdentifiers = parseCorrectResponse(this.correctResponse);
     const isSelected = selectedIdentifiers.includes(identifier);
@@ -111,7 +98,6 @@ export class QtiHottextInteractionEdit extends Interaction {
 
     const correctResponse = nextIdentifiers.length > 0 ? nextIdentifiers.join(',') : null;
     this.correctResponse = correctResponse;
-    this.#syncSelectedState();
     this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
       bubbles: true,
       composed: true,
@@ -182,16 +168,6 @@ export class QtiHottextInteractionEdit extends Interaction {
       }
     }
     this._selectedText = text;
-  }
-
-  #syncSelectedState() {
-    const selected = new Set(parseCorrectResponse(this.correctResponse));
-    for (const hottext of this.querySelectorAll('qti-hottext')) {
-      const identifier = hottext.getAttribute('identifier');
-      const isSelected = Boolean(identifier && selected.has(identifier));
-      hottext.toggleAttribute('selected', isSelected);
-      hottext.setAttribute('aria-pressed', String(isSelected));
-    }
   }
 }
 

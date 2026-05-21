@@ -14,10 +14,14 @@ const styles: CSSResultGroup = [
 
     qti-hottext {
       border-radius: var(--qti-border-radius);
-      padding: var(--qti-padding-vertical) var(--qti-padding-horizontal);
       background: var(--qti-bg);
       border: var(--qti-border-thickness) var(--qti-border-style) var(--qti-border-color);
       outline: none;
+    }
+
+    qti-hottext[selected] {
+      background: color-mix(in srgb, #16a34a 10%, var(--qti-bg));
+      border-color: #16a34a;
     }
 
     [part='selection-menu'] {
