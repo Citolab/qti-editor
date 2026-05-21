@@ -9,19 +9,7 @@ import {
   type HottextRadioClickDetail,
 } from '../qti-hottext/qti-hottext.js';
 import styles from './qti-hottext-interaction.styles.js';
-
-function parseCorrectResponse(value: string | string[] | null): string[] {
-  if (Array.isArray(value)) {
-    return value.map(entry => String(entry).trim()).filter(Boolean);
-  }
-  if (!value) {
-    return [];
-  }
-  return value
-    .split(',')
-    .map(entry => entry.trim())
-    .filter(Boolean);
-}
+import { parseCorrectResponse } from '../../utils/parse-correct-response.js';
 
 export class QtiHottextInteractionEdit extends Interaction {
   static override shadowRootOptions = {

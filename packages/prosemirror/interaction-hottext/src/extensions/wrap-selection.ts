@@ -1,6 +1,7 @@
 import { Plugin, PluginKey, TextSelection } from 'prosemirror-state';
 
 import { HOTTEXT_REMOVE_EVENT } from '../components/qti-hottext/qti-hottext.js';
+import { parseCorrectResponse } from '../utils/parse-correct-response.js';
 
 import type { Fragment } from 'prosemirror-model';
 import type { EditorView } from 'prosemirror-view';
@@ -113,19 +114,6 @@ function wrapSelectedTextAsHottext(view: EditorView, interactionElement: HTMLEle
   ).scrollIntoView();
   dispatch(tr);
   return true;
-}
-
-function parseCorrectResponse(value: string | string[] | null): string[] {
-  if (Array.isArray(value)) {
-    return value.map(entry => String(entry).trim()).filter(Boolean);
-  }
-  if (!value) {
-    return [];
-  }
-  return value
-    .split(',')
-    .map(entry => entry.trim())
-    .filter(Boolean);
 }
 
 function findHottextNodePos(view: EditorView, hottextElement: HTMLElement): number | null {

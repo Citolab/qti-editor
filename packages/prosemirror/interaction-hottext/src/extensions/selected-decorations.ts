@@ -1,22 +1,11 @@
 import { Plugin, PluginKey } from 'prosemirror-state';
 import { Decoration, DecorationSet } from 'prosemirror-view';
 
+import { parseCorrectResponse } from '../utils/parse-correct-response.js';
+
 import type { Node as ProsemirrorNode } from 'prosemirror-model';
 
 const hottextSelectedDecorationsPluginKey = new PluginKey('hottext-selected-decorations');
-
-function parseCorrectResponse(value: string | string[] | null): string[] {
-  if (Array.isArray(value)) {
-    return value.map(entry => String(entry).trim()).filter(Boolean);
-  }
-  if (!value) {
-    return [];
-  }
-  return value
-    .split(',')
-    .map(entry => entry.trim())
-    .filter(Boolean);
-}
 
 function buildDecorations(doc: ProsemirrorNode): DecorationSet {
   const decorations: Decoration[] = [];
