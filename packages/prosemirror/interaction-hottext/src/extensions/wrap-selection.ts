@@ -1,8 +1,8 @@
 import { Plugin, PluginKey, TextSelection } from 'prosemirror-state';
-import { Fragment } from 'prosemirror-model';
 
 import { HOTTEXT_REMOVE_EVENT } from '../components/qti-hottext/qti-hottext.js';
 
+import type { Fragment } from 'prosemirror-model';
 import type { EditorView } from 'prosemirror-view';
 
 export const HOTTEXT_WRAP_SELECTION_EVENT = 'qti:hottext:wrap-selection';
