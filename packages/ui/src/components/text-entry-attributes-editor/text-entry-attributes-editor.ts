@@ -79,14 +79,10 @@ export class QtiTextEntryAttributesEditor extends LitElement {
   }
 
   private updateResponses(nextResponses: string[]) {
-    // The shared codec strips commas during serialization. Stripping here too
-    // so the user sees in the input field exactly what will be saved.
-    const sanitized = nextResponses.map(response => response.replace(/,/g, ''));
-
     let nextValue: string | string[] | null;
-    if (sanitized.length === 0) nextValue = null;
-    else if (sanitized.length === 1) nextValue = sanitized[0];
-    else nextValue = sanitized;
+    if (nextResponses.length === 0) nextValue = null;
+    else if (nextResponses.length === 1) nextValue = nextResponses[0];
+    else nextValue = nextResponses;
 
     this.emitPatch({ correctResponse: nextValue });
   }

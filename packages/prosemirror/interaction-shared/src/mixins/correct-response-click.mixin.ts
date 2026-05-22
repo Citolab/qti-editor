@@ -79,14 +79,15 @@ export const CorrectResponseClickMixin = <T extends Constructor<LitElement & { i
      * This runs inside the shadow DOM so ProseMirror won't intercept it.
      */
     public handleControlClick(event: MouseEvent) {
-      // Prevent default and stop propagation to avoid interfering with ProseMirror
       event.preventDefault();
       event.stopPropagation();
-      
-      // Toggle selection
+
       this.selected = !this.selected;
-      
-      // Dispatch event for parent to aggregate
+      // Reflect the CSS state synchronously: Lit's updated() pass can be
+      // cancelled when the parent's #syncSelectedChoices() re-asserts the same
+      // selected value before the microtask flushes.
+      this._updateCheckedState();
+
       this._dispatchToggleEvent();
     }
 
@@ -126,6 +127,7 @@ export const CorrectResponseClickMixin = <T extends Constructor<LitElement & { i
      */
     public setSelected(selected: boolean) {
       this.selected = selected;
+      this._updateCheckedState();
     }
   }
 
