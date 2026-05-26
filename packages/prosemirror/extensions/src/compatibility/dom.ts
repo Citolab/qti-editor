@@ -1,8 +1,10 @@
 import { createMigrationRegistry } from './index.js';
+import { HTML_MIGRATION_STEPS } from './migrations.js';
 
-import type { CompatibilityChange, MigrationResult } from '@qti-editor/interfaces';
+import type { MigrationResult } from '@qti-editor/interfaces';
 
-export const CURRENT_HTML_DOCUMENT_VERSION = 2;
+/** Derived from the last entry in HTML_MIGRATION_STEPS — do not edit manually. */
+export const CURRENT_HTML_DOCUMENT_VERSION = HTML_MIGRATION_STEPS[HTML_MIGRATION_STEPS.length - 1].toVersion;
 
 /** Attributes and element tags to snapshot into the preservation sidecar before ProseMirror parses. */
 export interface HtmlCompatibilityPreservationOptions {
@@ -19,29 +21,6 @@ export interface MigrateHtmlFragmentOptions {
   /** Content to preserve in the sidecar even after migration, for post-parse inspection. */
   preserve?: HtmlCompatibilityPreservationOptions;
 }
-
-const LEGACY_HTML_ATTRIBUTE_RENAMES: Readonly<Record<string, string>> = {
-  responseIdentifier: 'response-identifier',
-  responseidentifier: 'response-identifier',
-  correctResponse: 'correct-response',
-  correctresponse: 'correct-response',
-  correctAnswer: 'correct-response',
-  correctanswer: 'correct-response',
-  caseSensitive: 'case-sensitive',
-  casesensitive: 'case-sensitive',
-  areaMappings: 'area-mappings',
-  areamappings: 'area-mappings',
-  matchMax: 'match-max',
-  matchmax: 'match-max',
-  maxChoices: 'max-choices',
-  maxchoices: 'max-choices',
-  minChoices: 'min-choices',
-  minchoices: 'min-choices',
-  expectedLength: 'expected-length',
-  expectedlength: 'expected-length',
-  expectedLines: 'expected-lines',
-  expectedlines: 'expected-lines',
-};
 
 /**
  * HTML/XML/QTI VERSION METADATA DESIGN
@@ -68,17 +47,7 @@ const htmlMigrationRegistry = createMigrationRegistry<string>({
     if (typeof options?.metadata?.documentVersion === 'number') return options.metadata.documentVersion;
     return null;
   },
-  steps: [
-    {
-      id: 'html-v1-to-v2-normalize-legacy-attrs',
-      fromVersion: 1,
-      toVersion: 2,
-      description: 'Normalize legacy camelCase HTML attrs to canonical hyphenated attrs.',
-      migrate(document, context) {
-        return renameLegacyHtmlAttributes(document, context.addChange.bind(context));
-      },
-    },
-  ],
+  steps: HTML_MIGRATION_STEPS,
 });
 
 /**
@@ -110,51 +79,6 @@ export function migrateHtmlFragment(
   }
 
   return preserveHtmlFragments(result, options.preserve);
-}
-
-function renameLegacyHtmlAttributes(
-  html: string,
-  addChange: (change: CompatibilityChange) => void,
-): string {
-  const document = new DOMParser().parseFromString(html, 'text/html');
-
-  Array.from(document.querySelectorAll('*')).forEach((element, elementIndex) => {
-    Array.from(element.getAttributeNames()).forEach(attributeName => {
-      const canonicalName = LEGACY_HTML_ATTRIBUTE_RENAMES[attributeName];
-      if (!canonicalName) return;
-
-      const value = element.getAttribute(attributeName);
-      if (value == null) return;
-
-      const path = `${element.tagName.toLowerCase()}[${elementIndex}]`;
-      if (!element.hasAttribute(canonicalName)) {
-        element.setAttribute(canonicalName, value);
-        addChange({
-          code: 'RENAME_ATTRIBUTE',
-          severity: 'info',
-          message: `Renamed legacy HTML attribute "${attributeName}" to "${canonicalName}".`,
-          path,
-          nodeType: element.tagName.toLowerCase(),
-          attributeName: canonicalName,
-          data: { previousAttributeName: attributeName },
-        });
-      } else {
-        addChange({
-          code: 'ATTRIBUTE_REMOVED',
-          severity: 'warning',
-          message: `Dropped legacy HTML attribute "${attributeName}" because canonical attribute "${canonicalName}" already existed.`,
-          path,
-          nodeType: element.tagName.toLowerCase(),
-          attributeName: attributeName,
-          data: { keptAttributeName: canonicalName },
-        });
-      }
-
-      element.removeAttribute(attributeName);
-    });
-  });
-
-  return document.body.innerHTML;
 }
 
 function preserveHtmlFragments(

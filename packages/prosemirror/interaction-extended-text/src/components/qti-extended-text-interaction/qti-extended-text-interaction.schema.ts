@@ -7,7 +7,7 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
   content: 'qtiPrompt?',
   attrs: {
     responseIdentifier: { default: null },
-    correctResponse: { default: null },
+    rubricScoringBlock: { default: null },
     expectedLength: { default: null },
     expectedLines: { default: null },
     placeholderText: { default: null },
@@ -34,7 +34,7 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
         const scoreAttr = node.getAttribute('score');
         return {
           responseIdentifier: node.getAttribute('response-identifier'),
-          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
+          rubricScoringBlock: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           expectedLength: expectedLength ? parseInt(expectedLength, 10) : null,
           expectedLines: expectedLines ? parseInt(expectedLines, 10) : null,
           placeholderText: node.getAttribute('placeholder-text'),
@@ -55,7 +55,7 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
     if (node.attrs.responseIdentifier) {
       attrs['response-identifier'] = node.attrs.responseIdentifier;
     }
-    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    const cr = serializeCorrectResponseAttribute(node.attrs.rubricScoringBlock);
     if (cr) {
       attrs['correct-response'] = cr;
     }

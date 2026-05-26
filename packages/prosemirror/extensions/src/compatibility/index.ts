@@ -116,6 +116,7 @@ export function createMigrationRegistry<TDocument>(
 }
 
 export * from './helpers.js';
+export * from './migrations.js';
 export * from './json.js';
 export * from './dom.js';
 export * from './diff.js';

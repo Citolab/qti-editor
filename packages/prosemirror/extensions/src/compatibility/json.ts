@@ -1,9 +1,11 @@
 import { createMigrationRegistry } from './index.js';
+import { JSON_MIGRATION_STEPS } from './migrations.js';
 
-import type { CompatibilityChange, MigrationResult } from '@qti-editor/interfaces';
+import type { MigrationResult } from '@qti-editor/interfaces';
 import type { NodeJSON } from 'prosekit/core';
 
-export const CURRENT_JSON_DOCUMENT_VERSION = 2;
+/** Derived from the last entry in JSON_MIGRATION_STEPS — do not edit manually. */
+export const CURRENT_JSON_DOCUMENT_VERSION = JSON_MIGRATION_STEPS[JSON_MIGRATION_STEPS.length - 1].toVersion;
 export const CURRENT_PERSISTED_STATE_VERSION = 2;
 
 /**
@@ -12,7 +14,7 @@ export const CURRENT_PERSISTED_STATE_VERSION = 2;
  * All persisted documents are wrapped in this envelope before writing to
  * storage (localStorage, Firestore, etc.):
  *
- *   { "version": 2, "schemaVersion": 2, "doc": { ...NodeJSON } }
+ *   { "version": 2, "schemaVersion": 3, "doc": { ...NodeJSON } }
  *
  * - `version`       — envelope format version (bumped if the wrapper shape changes)
  * - `schemaVersion` — document schema version at the time the doc was saved;
@@ -42,23 +44,6 @@ export interface ReadPersistedDocStateResult {
   compatibility?: MigrationResult<NodeJSON>;
 }
 
-type JsonNode = NodeJSON & {
-  attrs?: Record<string, unknown>;
-  content?: JsonNode[];
-};
-
-const LEGACY_ATTRIBUTE_RENAMES: Readonly<Record<string, string>> = {
-  'response-identifier': 'responseIdentifier',
-  'correct-response': 'correctResponse',
-  'case-sensitive': 'caseSensitive',
-  'area-mappings': 'areaMappings',
-  'match-max': 'matchMax',
-  'max-choices': 'maxChoices',
-  'min-choices': 'minChoices',
-  'expected-length': 'expectedLength',
-  'expected-lines': 'expectedLines',
-};
-
 const jsonDocumentMigrationRegistry = createMigrationRegistry<NodeJSON>({
   targetVersion: CURRENT_JSON_DOCUMENT_VERSION,
   detectVersion(document, options) {
@@ -67,17 +52,7 @@ const jsonDocumentMigrationRegistry = createMigrationRegistry<NodeJSON>({
     const candidate = document as { schemaVersion?: unknown };
     return typeof candidate.schemaVersion === 'number' ? candidate.schemaVersion : null;
   },
-  steps: [
-    {
-      id: 'json-v1-to-v2-normalize-legacy-attrs',
-      fromVersion: 1,
-      toVersion: 2,
-      description: 'Normalize legacy hyphenated snapshot attribute names to canonical JSON attrs.',
-      migrate(document, context) {
-        return renameLegacyAttributes(document, context.addChange.bind(context));
-      },
-    },
-  ],
+  steps: JSON_MIGRATION_STEPS,
 });
 
 /**
@@ -164,81 +139,6 @@ export function readPersistedDocStateEnvelope(value: unknown): ReadPersistedDocS
     schemaVersion,
     compatibility,
   };
-}
-
-function renameLegacyAttributes(
-  document: NodeJSON,
-  addChange: (change: CompatibilityChange) => void,
-): NodeJSON {
-  return visitJsonNode(document as JsonNode, '$', addChange);
-}
-
-function visitJsonNode(
-  node: JsonNode,
-  path: string,
-  addChange: (change: CompatibilityChange) => void,
-): JsonNode {
-  const nextAttrs = node.attrs ? renameNodeAttributes(node.attrs, path, node.type, addChange) : node.attrs;
-  const nextContent = Array.isArray(node.content)
-    ? node.content.map((child, index) => visitJsonNode(child, `${path}.content[${index}]`, addChange))
-    : node.content;
-
-  if (nextAttrs === node.attrs && nextContent === node.content) return node;
-
-  return {
-    ...node,
-    ...(nextAttrs ? { attrs: nextAttrs } : {}),
-    ...(nextContent ? { content: nextContent } : {}),
-  };
-}
-
-function renameNodeAttributes(
-  attrs: Record<string, unknown>,
-  path: string,
-  nodeType: string,
-  addChange: (change: CompatibilityChange) => void,
-): Record<string, unknown> {
-  let changed = false;
-  const nextAttrs: Record<string, unknown> = {};
-
-  for (const [key, value] of Object.entries(attrs)) {
-    const canonicalKey = LEGACY_ATTRIBUTE_RENAMES[key] ?? key;
-    if (canonicalKey !== key) {
-      changed = true;
-      addChange({
-        code: 'RENAME_ATTRIBUTE',
-        severity: 'info',
-        message: `Renamed legacy attribute "${key}" to "${canonicalKey}".`,
-        path,
-        nodeType,
-        attributeName: canonicalKey,
-        data: { previousAttributeName: key },
-      });
-    }
-
-    if (!(canonicalKey in nextAttrs)) {
-      nextAttrs[canonicalKey] = value;
-      continue;
-    }
-
-    if (canonicalKey !== key) {
-      addChange({
-        code: 'ATTRIBUTE_REMOVED',
-        severity: 'warning',
-        message: `Dropped legacy attribute "${key}" because canonical attribute "${canonicalKey}" already existed.`,
-        path,
-        nodeType,
-        attributeName: key,
-        data: { keptAttributeName: canonicalKey },
-      });
-      changed = true;
-      continue;
-    }
-
-    nextAttrs[key] = value;
-  }
-
-  return changed ? nextAttrs : attrs;
 }
 
 function isNodeJson(value: unknown): value is NodeJSON {

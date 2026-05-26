@@ -183,3 +183,88 @@ describe('no silent data loss — v1 JSON snapshot regression', () => {
     expect(result.compatibility?.appliedStepIds).toHaveLength(0);
   });
 });
+
+// ── v2 → v3: correctResponse renamed to rubricScoringBlock on qtiExtendedTextInteraction ──
+
+describe('v2 → v3: correctResponse → rubricScoringBlock on qtiExtendedTextInteraction', () => {
+  it('renames correctResponse to rubricScoringBlock on extended text nodes', () => {
+    const v2Doc: NodeJSON = {
+      type: 'doc',
+      content: [
+        {
+          type: 'qtiExtendedTextInteraction',
+          attrs: { responseIdentifier: 'RESPONSE_1', correctResponse: 'model answer\n', expectedLines: 6 },
+        },
+      ],
+    };
+
+    const result = migrateJsonDocument(v2Doc, { sourceVersion: 2 });
+
+    expect(result.document.content?.[0]?.attrs?.rubricScoringBlock).toBe('model answer\n');
+    expect(result.document.content?.[0]?.attrs?.correctResponse).toBeUndefined();
+    expect(result.changes.some(c => c.code === 'RENAME_ATTRIBUTE' && c.attributeName === 'rubricScoringBlock')).toBe(true);
+  });
+
+  it('does not rename correctResponse on other interaction types', () => {
+    const v2Doc: NodeJSON = {
+      type: 'doc',
+      content: [
+        {
+          type: 'qtiInlineChoiceInteraction',
+          attrs: { responseIdentifier: 'RESPONSE_2', correctResponse: 'choice-a' },
+        },
+      ],
+    };
+
+    const result = migrateJsonDocument(v2Doc, { sourceVersion: 2 });
+
+    expect(result.document.content?.[0]?.attrs?.correctResponse).toBe('choice-a');
+    expect(result.document.content?.[0]?.attrs?.rubricScoringBlock).toBeUndefined();
+  });
+
+  it('reads a v2 envelope end-to-end and produces rubricScoringBlock', () => {
+    const v2Envelope = {
+      version: 2,
+      schemaVersion: 2,
+      doc: {
+        type: 'doc',
+        content: [
+          {
+            type: 'qtiExtendedTextInteraction',
+            attrs: { responseIdentifier: 'R1', correctResponse: 'antwoord', expectedLines: 3 },
+          },
+        ],
+      },
+    };
+
+    const result = readPersistedDocStateEnvelope(v2Envelope);
+
+    expect(result.doc?.content?.[0]?.attrs?.rubricScoringBlock).toBe('antwoord');
+    expect(result.doc?.content?.[0]?.attrs?.correctResponse).toBeUndefined();
+    expect(result.compatibility?.sourceVersion).toBe(2);
+    expect(result.compatibility?.targetVersion).toBe(CURRENT_JSON_DOCUMENT_VERSION);
+  });
+
+  it('also runs the v1→v2 step when loading a v1 doc with extended text', () => {
+    const v1Doc: NodeJSON = {
+      type: 'doc',
+      content: [
+        {
+          type: 'qtiExtendedTextInteraction',
+          attrs: { 'response-identifier': 'R1', 'correct-response': 'oud antwoord' },
+        },
+      ],
+    };
+
+    const result = migrateJsonDocument(v1Doc, { sourceVersion: 1 });
+
+    // v1→v2 renamed hyphenated attrs, v2→v3 renamed correctResponse→rubricScoringBlock
+    expect(result.document.content?.[0]?.attrs?.responseIdentifier).toBe('R1');
+    expect(result.document.content?.[0]?.attrs?.rubricScoringBlock).toBe('oud antwoord');
+    expect(result.document.content?.[0]?.attrs?.correctResponse).toBeUndefined();
+    expect(result.appliedStepIds).toEqual([
+      'json-v1-to-v2-normalize-legacy-attrs',
+      'json-v2-to-v3-extended-text-correctResponse-to-rubricScoringBlock',
+    ]);
+  });
+});
