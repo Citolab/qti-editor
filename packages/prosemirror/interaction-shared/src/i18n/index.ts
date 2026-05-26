@@ -50,7 +50,7 @@ export function subscribeQtiI18n(listener: () => void): () => void {
 
 export function resolveQtiLang(target?: Element | null, fallbackLang?: string | null): string {
   if (fallbackLang?.trim()) return normalizeLang(fallbackLang);
-  if (target instanceof HTMLElement) {
+  if (typeof HTMLElement !== 'undefined' && target instanceof HTMLElement) {
     if (target.lang.trim()) return normalizeLang(target.lang);
     const closestWithLang = target.closest<HTMLElement>('[lang]');
     if (closestWithLang?.lang.trim()) return normalizeLang(closestWithLang.lang);

@@ -2,6 +2,12 @@ import { definePlugin } from 'prosekit/core';
 import { type NodeJSON } from 'prosekit/core';
 import { Plugin, PluginKey } from 'prosemirror-state';
 
+import {
+  readPersistedDocStateEnvelope,
+  writePersistedDocStateEnvelope,
+  type ReadPersistedDocStateResult,
+} from '../compatibility/json.js';
+
 export interface LocalStorageDocPersistenceOptions {
   storageKey: string;
   debounceMs?: number;
@@ -9,14 +15,8 @@ export interface LocalStorageDocPersistenceOptions {
 
 const localStorageDocPersistencePluginKey = new PluginKey('local-storage-doc-persistence');
 
-function isNodeJson(value: unknown): value is NodeJSON {
-  if (!value || typeof value !== 'object') return false;
-  const candidate = value as Record<string, unknown>;
-  return typeof candidate.type === 'string';
-}
-
 function writePersistedState(storageKey: string, doc: NodeJSON): void {
-  const payload = { version: 1, doc };
+  const payload = writePersistedDocStateEnvelope(doc);
   localStorage.setItem(storageKey, JSON.stringify(payload));
 }
 
@@ -24,17 +24,12 @@ export function readPersistedDocFromLocalStorage(storageKey: string): NodeJSON |
   return readPersistedStateFromLocalStorage(storageKey).doc;
 }
 
-export function readPersistedStateFromLocalStorage(storageKey: string): { doc?: NodeJSON } {
+export function readPersistedStateFromLocalStorage(storageKey: string): ReadPersistedDocStateResult {
   if (typeof window === 'undefined') return {};
   try {
     const raw = window.localStorage.getItem(storageKey);
     if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    if (isNodeJson(parsed)) return { doc: parsed };
-    if (!parsed || typeof parsed !== 'object') return {};
-    const payload = parsed as Record<string, unknown>;
-    if (!isNodeJson(payload.doc)) return {};
-    return { doc: payload.doc };
+    return readPersistedDocStateEnvelope(JSON.parse(raw));
   } catch {
     return {};
   }

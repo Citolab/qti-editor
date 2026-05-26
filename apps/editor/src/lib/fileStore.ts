@@ -1,3 +1,10 @@
+import {
+  readPersistedDocStateEnvelope,
+  writePersistedDocStateEnvelope,
+  type PersistedDocStateEnvelope,
+} from '@qti-editor/prosemirror-plugins';
+import type { MigrationResult } from '@qti-editor/interfaces';
+
 /**
  * File management backed by localStorage.
  * Designed so the storage layer can later be swapped for Firestore
@@ -48,6 +55,7 @@ export interface SavedFile {
   name: string;
   savedAt: string; // ISO 8601
   doc: unknown;    // ProseMirror JSON doc
+  schemaVersion?: number;
 }
 
 export function listFiles(scope: StorageScope = activeStorageScope): SavedFile[] {
@@ -65,9 +73,12 @@ export function saveFile(
   existingId?: string
 ): SavedFile {
   let doc: unknown = null;
+  let schemaVersion: number | undefined;
   try {
     const raw = localStorage.getItem(getAutoSaveKey(scope));
-    doc = raw ? (JSON.parse(raw) as { doc: unknown }).doc : null;
+    const parsed = raw ? (JSON.parse(raw) as PersistedDocStateEnvelope) : null;
+    doc = parsed?.doc ?? null;
+    schemaVersion = parsed?.schemaVersion;
   } catch { /* ignore corrupt state */ }
 
   const file: SavedFile = {
@@ -75,6 +86,7 @@ export function saveFile(
     name,
     savedAt: new Date().toISOString(),
     doc,
+    ...(typeof schemaVersion === 'number' ? { schemaVersion } : {}),
   };
 
   const files = listFiles(scope).filter(f => f.id !== file.id);
@@ -84,13 +96,39 @@ export function saveFile(
   return file;
 }
 
-export function loadFile(scope: StorageScope = activeStorageScope, id: string): SavedFile | null {
+export interface LoadFileResult {
+  file: SavedFile;
+  /** Present when migration actually ran (sourceVersion < targetVersion). */
+  compatibility?: MigrationResult<unknown>;
+}
+
+export function loadFile(scope: StorageScope = activeStorageScope, id: string): LoadFileResult | null {
   const file = listFiles(scope).find(f => f.id === id);
   if (!file) return null;
-  // Write to the auto-save key so the editor picks it up on remount
-  localStorage.setItem(getAutoSaveKey(scope), JSON.stringify({ version: 1, doc: file.doc }));
+
+  // Run migration eagerly using the file's original schemaVersion so any
+  // legacy attrs are normalised before the editor sees them, and so the
+  // migration report is available to the caller.
+  const originalVersion = file.schemaVersion ?? 1;
+  const envelope = readPersistedDocStateEnvelope({
+    version: originalVersion,
+    schemaVersion: originalVersion,
+    doc: file.doc,
+  });
+
+  // Write the migrated content stamped at the current version so the
+  // editor skips re-migration when it reads from localStorage.
+  localStorage.setItem(
+    getAutoSaveKey(scope),
+    JSON.stringify(writePersistedDocStateEnvelope(envelope.doc ?? (file.doc as any))),
+  );
   localStorage.setItem(getCurrentFileIdKey(scope), id);
-  return file;
+
+  const migrationRan =
+    envelope.compatibility != null &&
+    envelope.compatibility.sourceVersion < envelope.compatibility.targetVersion;
+
+  return { file, compatibility: migrationRan ? envelope.compatibility : undefined };
 }
 
 export function deleteFile(scope: StorageScope = activeStorageScope, id: string): void {

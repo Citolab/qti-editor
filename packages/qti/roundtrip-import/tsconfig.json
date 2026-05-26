@@ -7,7 +7,12 @@
     "declaration": true,
     "declarationMap": true,
     "noEmit": false,
-    "allowImportingTsExtensions": false
+    "allowImportingTsExtensions": false,
+    "moduleResolution": "bundler",
+    "paths": {
+      "@qti-editor/interfaces": ["../../interfaces/dist/index.d.ts"],
+      "@qti-editor/prosemirror-plugins": ["../../prosemirror/extensions/dist/index.d.ts"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "src/**/*.browser.test.ts"]

@@ -1,7 +1,9 @@
 import { xmlToHTML } from '@qti-editor/prosekit-integration';
+import { buildCompatibilityReport, migrateHtmlFragment } from '@qti-editor/prosemirror-plugins';
 import { importQtiPackageFromBlob } from '@qti-editor/qti-roundtrip-import';
 import { jsonFromHTML } from 'prosekit/core';
 
+import type { CompatibilityReport, MigrationResult } from '@qti-editor/interfaces';
 import type { Schema } from 'prosekit/pm/model';
 
 export interface ImportXmlResult {
@@ -9,6 +11,14 @@ export interface ImportXmlResult {
   metadata?: {
     title?: string;
     identifier?: string;
+  };
+  compatibility?: {
+    html?: MigrationResult<string>;
+    items?: Array<{
+      href: string;
+      html: MigrationResult<string>;
+    }>;
+    report?: CompatibilityReport;
   };
 }
 
@@ -59,15 +69,36 @@ export function importXmlFromText(xmlText: string, options: ImportXmlOptions): I
   }
 
   // Convert XML to HTML
-  const html = xmlToHTML(cleanedXml);
+  const compatibility = migrateHtmlFragment(xmlToHTML(cleanedXml), {
+    metadata: {
+      importPath: 'apps/editor/importXmlFromText',
+    },
+    preserve: {
+      attributeNames: ['rubric-text'],
+      elementTags: ['qti-rubric-block'],
+    },
+  });
 
   // Convert HTML to ProseMirror JSON
-  const json = jsonFromHTML(html, { schema: options.schema });
+  const json = jsonFromHTML(compatibility.document, { schema: options.schema });
 
   // Extract metadata
   const metadata = extractMetadata(cleanedXml);
 
-  return { json, metadata };
+  return {
+    json,
+    metadata,
+    compatibility: {
+      html: compatibility,
+      report: buildCompatibilityReport([
+        {
+          id: 'xml-import',
+          label: metadata.identifier ?? metadata.title ?? 'Imported XML',
+          result: compatibility,
+        },
+      ]),
+    },
+  };
 }
 
 /**

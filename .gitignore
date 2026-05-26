@@ -14,12 +14,15 @@ coverage
 pnpm-local-overrides.json
 .qti-components-packs
 .pnpm-store
+.vitest-attachments
+**/__screenshots__/
 
 *storybook.log
 storybook-static
 hosting/*
 apps/editor/public/r
 
+.claude
 .claude/settings.json
 .claude/claude.log
 .claude/claude-error.log

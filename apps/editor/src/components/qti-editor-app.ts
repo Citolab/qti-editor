@@ -19,11 +19,14 @@ import { property } from 'lit/decorators.js';
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
 import {
   blockSelectExtension,
+  buildCompatibilityReport,
   defineLocalStorageDocPersistenceExtension,
   defineSemanticPasteExtension,
   nodeAttrsSyncExtension,
-  readPersistedStateFromLocalStorage
+  readPersistedStateFromLocalStorage,
+  writePersistedDocStateEnvelope,
 } from '@qti-editor/prosemirror-plugins';
+import type { CompatibilityReport } from '@qti-editor/interfaces';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
@@ -63,6 +66,7 @@ export class QtiEditorApp extends LitElement {
   private editor: Editor;
   private editorRef: Ref<HTMLDivElement>;
   private composerEventTarget = new EventTarget();
+  private _pendingCompatibilityReport: CompatibilityReport | undefined;
 
   // ── Toolbar handoff ─────────────────────────────────────────────────────
   private _editorMounted = false;
@@ -196,6 +200,14 @@ export class QtiEditorApp extends LitElement {
         extension,
         defaultContent: restoredState.doc
       });
+      const compat = restoredState.compatibility;
+      if (compat && compat.sourceVersion < compat.targetVersion) {
+        this._pendingCompatibilityReport = buildCompatibilityReport([{
+          id: 'startup-load',
+          label: 'Loaded document',
+          result: compat,
+        }]);
+      }
     } catch {
       window.localStorage.removeItem(editorDocStorageKey);
       this.editor = createEditor({ extension });
@@ -256,11 +268,19 @@ export class QtiEditorApp extends LitElement {
       // Defer past React's useEffect registration window.
       // updated() runs synchronously during React's DOM commit; useEffect
       // listeners aren't attached until after that commit completes.
+      const pendingReport = this._pendingCompatibilityReport;
+      this._pendingCompatibilityReport = undefined;
       setTimeout(() => {
         this.dispatchEvent(new CustomEvent('qti:editor:ready', {
           detail: { editor: this.editor },
           bubbles: true,
         }));
+        if (pendingReport) {
+          document.dispatchEvent(new CustomEvent('qti:compatibility:report', {
+            detail: pendingReport,
+            bubbles: true,
+          }));
+        }
       }, 0);
     }
   }
@@ -292,10 +312,16 @@ export class QtiEditorApp extends LitElement {
       // Write the imported doc to localStorage immediately so saveFile() reads
       // the correct content without waiting for the persistence plugin's debounce.
       const doc = this.editor.view.state.doc.toJSON();
-      localStorage.setItem(getAutoSaveKey(), JSON.stringify({ version: 1, doc }));
+      localStorage.setItem(getAutoSaveKey(), JSON.stringify(writePersistedDocStateEnvelope(doc)));
 
       // Notify the React layer (dirty state, auto-save status) that content changed.
       document.dispatchEvent(new CustomEvent('qti:content:change', { bubbles: true }));
+      if (result.compatibility?.report) {
+        document.dispatchEvent(new CustomEvent('qti:compatibility:report', {
+          detail: result.compatibility.report,
+          bubbles: true,
+        }));
+      }
 
       // Update metadata if present
       if (result.metadata) {

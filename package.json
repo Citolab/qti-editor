@@ -21,6 +21,7 @@
     "registry:build": "pnpm --filter @qti-editor/ui registry:build",
     "registry:serve": "pnpm --filter @qti-editor/ui registry:serve",
     "test": "vitest run --project unit",
+    "test:browser": "vitest run --project browser",
     "test:watch": "vitest --project unit",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
