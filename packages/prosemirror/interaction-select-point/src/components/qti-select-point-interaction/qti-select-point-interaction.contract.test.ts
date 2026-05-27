@@ -74,7 +74,7 @@ describe('qtiSelectPointInteractionNodeSpec', () => {
       maxChoices: 2,
       minChoices: 1,
       class: 'review-mode',
-      areaMappings: '[{\"shape\":\"circle\"}]',
+      areaMappings: '[{"shape":"circle"}]',
       correctResponse: '10 20',
       score: 3,
     }, [prompt, image]);
@@ -86,7 +86,7 @@ describe('qtiSelectPointInteractionNodeSpec', () => {
         'min-choices': '1',
         'response-identifier': 'RESPONSE',
         class: 'review-mode',
-        'area-mappings': '[{\"shape\":\"circle\"}]',
+        'area-mappings': '[{"shape":"circle"}]',
         'correct-response': '10 20',
         score: '3',
       },
