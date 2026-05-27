@@ -26,7 +26,6 @@ import {
   readPersistedStateFromLocalStorage,
   writePersistedDocStateEnvelope,
 } from '@qti-editor/prosemirror-plugins';
-import type { CompatibilityReport } from '@qti-editor/interfaces';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
@@ -39,6 +38,7 @@ import { exportPackage, exportXml } from '../lib/exportXml.js';
 import { getAutoSaveKey } from '../lib/fileStore.js';
 import { openXmlFilePicker } from '../lib/importXml.js';
 
+import type { CompatibilityReport } from '@qti-editor/interfaces';
 import type { CompatibilityReport } from '@qti-editor/interfaces';
 
 function slugifyTitle(title: string): string {

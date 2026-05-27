@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { buildCompatibilityReport } from '@qti-editor/prosemirror-plugins';
 
 import {
   clearCurrentSession,
@@ -11,7 +12,6 @@ import {
   saveFile,
   type SavedFile,
 } from '../lib/fileStore';
-import { buildCompatibilityReport } from '@qti-editor/prosemirror-plugins';
 import { syncSaveFile, syncDeleteFile, pullRemoteFiles } from '../lib/firestoreSync';
 import { useAuth } from '../context/auth-context';
 
