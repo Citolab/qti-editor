@@ -17,6 +17,9 @@ import type { InteractionDescriptor } from '@qti-editor/interfaces';
 export const associateInteractionDescriptor = {
   tagName: 'qti-associate-interaction',
   nodeTypeName: 'qtiAssociateInteraction',
+  baseSchemaDependencies: {
+    nodeGroups: ['qtiMedia'],
+  },
   nodeSpecs: [
     { name: 'qtiAssociateInteraction', spec: qtiAssociateInteractionNodeSpec },
     { name: 'qtiPrompt', spec: qtiPromptNodeSpec },

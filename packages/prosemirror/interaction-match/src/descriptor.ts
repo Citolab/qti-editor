@@ -18,6 +18,9 @@ import type { InteractionDescriptor } from '@qti-editor/interfaces';
 export const matchInteractionDescriptor = {
   tagName: 'qti-match-interaction',
   nodeTypeName: 'qtiMatchInteraction',
+  baseSchemaDependencies: {
+    nodeGroups: ['qtiMedia'],
+  },
   nodeSpecs: [
     { name: 'qtiMatchInteraction', spec: qtiMatchInteractionNodeSpec },
     { name: 'qtiPrompt', spec: qtiPromptNodeSpec },

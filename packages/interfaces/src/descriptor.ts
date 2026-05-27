@@ -17,6 +17,17 @@ export interface InteractionNodeSpecEntry {
   spec: NodeSpec;
 }
 
+export interface InteractionBaseSchemaDependencies {
+  /**
+   * Editor-wide node groups this interaction expects to exist but does not
+   * contribute through `nodeSpecs`.
+   *
+   * Example: `qtiMedia` is currently provided by the host editor schema rather
+   * than by each interaction that can contain media.
+   */
+  nodeGroups?: string[];
+}
+
 export interface InteractionDescriptor {
   /** HTML tag name, e.g. `'qti-choice-interaction'` */
   tagName: string;
@@ -28,6 +39,11 @@ export interface InteractionDescriptor {
    * appear in multiple descriptors without error.
    */
   nodeSpecs: InteractionNodeSpecEntry[];
+  /**
+   * Explicit dependencies on editor-wide schema primitives that are not owned
+   * by this interaction descriptor.
+   */
+  baseSchemaDependencies?: InteractionBaseSchemaDependencies;
   /** Command to insert this interaction at the current selection. */
   insertCommand?: Command;
   /** Keyboard shortcut bound to `insertCommand`, e.g. `'Mod-Shift-q'`. */

@@ -36,6 +36,8 @@ import { exportPackage, exportXml } from '../lib/exportXml.js';
 import { getAutoSaveKey } from '../lib/fileStore.js';
 import { openXmlFilePicker } from '../lib/importXml.js';
 
+import type { CompatibilityReport } from '@qti-editor/interfaces';
+
 function slugifyTitle(title: string): string {
   return title.trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }

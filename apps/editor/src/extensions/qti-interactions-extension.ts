@@ -5,7 +5,11 @@
  * assemble all interaction node specs, commands, and plugins.
  */
 
-import { listInteractionDescriptors, listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
+import {
+  listInteractionDescriptors,
+  listSelectedInteractionPluginFactories,
+  listInteractionSchemaNodeSpecs,
+} from '@qti-editor/core/interactions/composer';
 import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
 import { splitBlock } from 'prosekit/pm/commands';
 
@@ -34,17 +38,9 @@ export function defineQtiInteractionsExtension(options?: {
     ? allDescriptors.filter(d => options.include!.includes(d.tagName))
     : allDescriptors;
 
-  // Collect node specs, deduplicating by name (shared specs appear in multiple descriptors)
-  const seenSpecs = new Set<string>();
-  const nodeSpecExtensions: Extension[] = [];
-  
-  for (const descriptor of descriptors) {
-    for (const { name, spec } of descriptor.nodeSpecs) {
-      if (seenSpecs.has(name)) continue;
-      seenSpecs.add(name);
-      nodeSpecExtensions.push(defineNodeSpec({ name, ...spec }));
-    }
-  }
+  const nodeSpecExtensions: Extension[] = listInteractionSchemaNodeSpecs(options).map(({ name, spec }) =>
+    defineNodeSpec({ name, ...spec }),
+  );
 
   // Build keymap from descriptors
   const keymap: Record<string, Command> = {};
@@ -78,19 +74,7 @@ export function defineQtiInteractionsExtension(options?: {
     }
   }
 
-  // Get plugins from interaction packages, filtered to match included descriptors
-  const includedNodeTypeNames = new Set(descriptors.map(d => d.nodeTypeName));
-  const allPluginFactories = listInteractionPluginFactories();
-  
-  // Filter plugin factories to only those from included interactions
-  // Plugin factories are returned in same order as descriptors, so we can match by index
-  const allDescriptorsList = listInteractionDescriptors();
-  const pluginFactories = allPluginFactories.filter((_, index) => {
-    const descriptor = allDescriptorsList[index];
-    return descriptor && includedNodeTypeNames.has(descriptor.nodeTypeName);
-  });
-  
-  const pluginExtensions = pluginFactories.map(pluginFactory => 
+  const pluginExtensions = listSelectedInteractionPluginFactories(options).map(pluginFactory => 
     definePlugin(pluginFactory)
   );
 

@@ -1,4 +1,9 @@
 
+import {
+  qtiPromptNodeSpec,
+  qtiPromptParagraphNodeSpec,
+} from '@qti-editor/interaction-shared';
+
 import { insertSelectPointInteraction } from './components/qti-select-point-interaction/qti-select-point-interaction.commands.js';
 import { qtiSelectPointInteractionNodeSpec } from './components/qti-select-point-interaction/qti-select-point-interaction.schema.js';
 import { imgSelectPointNodeSpec } from './components/qti-select-point-interaction/img-select-point.schema.js';
@@ -12,6 +17,8 @@ export const selectPointInteractionDescriptor = {
   nodeTypeName: 'qtiSelectPointInteraction',
   nodeSpecs: [
     { name: 'qtiSelectPointInteraction', spec: qtiSelectPointInteractionNodeSpec },
+    { name: 'qtiPrompt', spec: qtiPromptNodeSpec },
+    { name: 'qtiPromptParagraph', spec: qtiPromptParagraphNodeSpec },
     { name: 'imgSelectPoint', spec: imgSelectPointNodeSpec },
   ],
   insertCommand: insertSelectPointInteraction,
