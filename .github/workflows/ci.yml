@@ -44,7 +44,9 @@ jobs:
         run: pnpm lint:check
 
       - name: Run unit tests
-        run: pnpm test
+        run: |
+          echo "## Unit Tests" >> $GITHUB_STEP_SUMMARY
+          pnpm test
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -58,7 +60,9 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run browser tests
-        run: pnpm test:browser
+        run: |
+          echo "## Browser Tests (Chromium)" >> $GITHUB_STEP_SUMMARY
+          pnpm test:browser
 
       - name: Build Storybook
         run: pnpm build-storybook
