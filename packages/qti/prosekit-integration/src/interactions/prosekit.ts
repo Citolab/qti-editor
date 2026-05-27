@@ -2,7 +2,6 @@
  * ProseKit adapter for the supported QTI editor-kit interaction surface.
  */
 
-// @ts-expect-error Side-effect CSS import is resolved by the bundler.
 import '@qti-components/theme/item.css';
 import {
   listInteractionDescriptors,
