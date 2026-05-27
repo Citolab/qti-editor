@@ -20,14 +20,14 @@ const SAMPLE_XML = `<?xml version="1.0" encoding="UTF-8"?>
 
 describe('roundtrip-import qti-prompt parsing', () => {
   it('keeps the prompt paragraph inside qti-prompt', () => {
-    const html = itemXmlToImportHtml(SAMPLE_XML);
-    console.log('IMPORT HTML:', html);
+    const result = itemXmlToImportHtml(SAMPLE_XML);
+    console.log('IMPORT HTML:', result);
 
     const editor = createEditor({
       extension: union(defineBasicExtension(), defineQtiInteractionsExtension()),
     });
     const schema = editor.schema;
-    const json = jsonFromHTML(html, { schema });
+    const json = jsonFromHTML(result.document, { schema });
     console.log('IMPORT JSON:', JSON.stringify(json, null, 2));
 
     const mount = document.createElement('div');
@@ -52,7 +52,7 @@ describe('roundtrip-import qti-prompt parsing', () => {
   });
 
   it('collapses indentation whitespace inside paragraphs', () => {
-    const html = itemXmlToImportHtml(SAMPLE_XML);
+    const { document: html } = itemXmlToImportHtml(SAMPLE_XML);
     // The exporter pretty-prints with newlines + spaces inside <p>; importer
     // must collapse those so ProseMirror does not render leading whitespace.
     expect(html).not.toMatch(/<p>\s*\n\s+Waarom/);
