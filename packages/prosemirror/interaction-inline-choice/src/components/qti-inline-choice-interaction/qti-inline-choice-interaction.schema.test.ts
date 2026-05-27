@@ -1,4 +1,5 @@
 import { createSchemaFromNodeSpecs } from '@qti-editor/interaction-shared/test-support/schema.js';
+
 import { inlineChoiceInteractionDescriptor } from '../../descriptor.js';
 import { qtiInlineChoiceInteractionNodeSpec } from './qti-inline-choice-interaction.schema.js';
 
