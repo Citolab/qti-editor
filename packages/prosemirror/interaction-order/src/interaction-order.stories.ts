@@ -24,7 +24,7 @@ export const AuthoringFixture = {
   render: () => renderFixture(html`
     <qti-order-interaction
       response-identifier="RESPONSE_ORDER"
-      correct-response="choice-b,choice-c,choice-a"
+      correct-response='["choice-b","choice-c","choice-a"]'
       score="2"
     >
       <qti-prompt>The following F1 drivers finished on the podium in the first ever Grand Prix of Bahrain. Can you rearrange them into the correct finishing order?</qti-prompt>
@@ -53,7 +53,7 @@ export const AuthoringFixture = {
 
     expect(interaction!.shadowRoot?.querySelector('.associations-panel-title')?.textContent?.trim()).toBe('Correct Response');
     
-    // The correct-response is "choice-b,choice-c,choice-a" so we should see 3 chips
+    // The correct-response is JSON array ["choice-b","choice-c","choice-a"] so we should see 3 chips
     expect(getChips().length).toBe(3);
 
     const chips = Array.from(getChips());
