@@ -74,6 +74,24 @@ export const AuthoringFixture = {
     // Select choice-a (Rubens)
     await userEvent.click(choices[0]);
 
+    // Open panel to see pending indicator
+    await userEvent.click(interaction!);
+
+    await waitFor(() => {
+      expect(interaction?.shadowRoot?.querySelector('.associations-panel')).not.toBeNull();
+    });
+
+    // Should show pending indicator for Rubens
+    const pendingIndicator = interaction?.shadowRoot?.querySelector('.pending-indicator');
+    expect(pendingIndicator).not.toBeNull();
+    expect(pendingIndicator?.textContent).toContain('Rubens');
+
+    await userEvent.click(canvasElement.ownerDocument.body);
+
+    await waitFor(() => {
+      expect(interaction?.shadowRoot?.querySelector('.associations-panel')).toBeNull();
+    });
+
     // Click first slot to place it
     await userEvent.click(slots![0]);
 
@@ -135,6 +153,54 @@ export const MultipleChoices = {
     expect(chipTexts.some(text => text?.includes('1') && text?.includes('Rubens'))).toBe(true);
     expect(chipTexts.some(text => text?.includes('2') && text?.includes('Velázquez'))).toBe(true);
     expect(chipTexts.some(text => text?.includes('3') && text?.includes('Rembrandt'))).toBe(true);
+
+    // Test pending indicator and cancel - close panel first
+    await userEvent.click(canvasElement.ownerDocument.body);
+
+    await waitFor(() => {
+      expect(interaction?.shadowRoot?.querySelector('.associations-panel')).toBeNull();
+    });
+
+    // Select a choice
+    const choices = interaction!.querySelectorAll('qti-simple-choice');
+    await userEvent.click(choices[1]); // Velázquez
+
+    // Re-open panel
+    await userEvent.click(interaction!);
+
+    await waitFor(() => {
+      expect(interaction?.shadowRoot?.querySelector('.associations-panel')).not.toBeNull();
+    });
+
+    // Should show pending indicator
+    let pendingIndicator = interaction?.shadowRoot?.querySelector('.pending-indicator');
+    expect(pendingIndicator).not.toBeNull();
+    expect(pendingIndicator?.textContent).toContain('Velázquez');
+
+    // Click cancel button
+    const cancelButton = pendingIndicator?.querySelector('.association-chip-remove');
+    await userEvent.click(cancelButton!);
+
+    await waitFor(() => {
+      expect(interaction?.shadowRoot?.querySelector('.pending-indicator')).toBeNull();
+    });
+
+    // Select again and test Escape key
+    await userEvent.click(canvasElement.ownerDocument.body);
+    await userEvent.click(choices[1]); // Velázquez
+    await userEvent.click(interaction!);
+
+    await waitFor(() => {
+      pendingIndicator = interaction?.shadowRoot?.querySelector('.pending-indicator');
+      expect(pendingIndicator).not.toBeNull();
+    });
+
+    // Press Escape
+    await userEvent.keyboard('{Escape}');
+
+    await waitFor(() => {
+      expect(interaction?.shadowRoot?.querySelector('.pending-indicator')).toBeNull();
+    });
 
     await userEvent.click(canvasElement.ownerDocument.body);
 

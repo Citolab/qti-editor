@@ -29,18 +29,20 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
   private _setupDone = false;
   private _lightDomStyle: HTMLStyleElement | null = null;
   private _observer: MutationObserver | null = null;
-  private _selectedChoiceId: string | null = null;
+  private _pendingChoiceId: string | null = null;
 
   override connectedCallback() {
     super.connectedCallback();
     this._injectLightDomStyles();
     this._parseCorrectResponse();
     this.addEventListener('click', this._onClick);
+    this.addEventListener('keydown', this._onKeyDown);
     requestAnimationFrame(() => this._trySetup());
   }
 
   override disconnectedCallback() {
     this.removeEventListener('click', this._onClick);
+    this.removeEventListener('keydown', this._onKeyDown);
     this._observer?.disconnect();
     this._observer = null;
     this._lightDomStyle?.remove();
@@ -104,7 +106,7 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
   private _parseCorrectResponse() {
     if (!this.correctResponse) {
       this._order = [];
-      this._selectedChoiceId = null;
+      this._pendingChoiceId = null;
       return;
     }
 
@@ -131,8 +133,8 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
       return true;
     });
 
-    if (this._selectedChoiceId && !validIds.has(this._selectedChoiceId)) {
-      this._selectedChoiceId = null;
+    if (this._pendingChoiceId && !validIds.has(this._pendingChoiceId)) {
+      this._pendingChoiceId = null;
     }
   }
 
@@ -181,26 +183,31 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
   }
 
   private _toggleChoiceSelection(choiceId: string) {
-    this._selectedChoiceId = this._selectedChoiceId === choiceId ? null : choiceId;
+    this._pendingChoiceId = this._pendingChoiceId === choiceId ? null : choiceId;
+    this._triggerRender();
+  }
+
+  private _cancelPending() {
+    this._pendingChoiceId = null;
     this._triggerRender();
   }
 
   private _handleSlotClick(slotIndex: number) {
-    if (this._selectedChoiceId) {
+    if (this._pendingChoiceId) {
       this._placeSelectedChoice(slotIndex);
     }
   }
 
   private _placeSelectedChoice(slotIndex: number) {
-    if (!this._selectedChoiceId) return;
+    if (!this._pendingChoiceId) return;
 
-    const choiceId = this._selectedChoiceId;
+    const choiceId = this._pendingChoiceId;
     const nextOrder = this._order.filter(id => id !== choiceId);
     const insertAt = Math.max(0, Math.min(slotIndex, nextOrder.length));
     nextOrder.splice(insertAt, 0, choiceId);
 
     this._order = nextOrder;
-    this._selectedChoiceId = null;
+    this._pendingChoiceId = null;
     this._emitChange();
     this._triggerRender();
   }
@@ -226,8 +233,15 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
     this._toggleChoiceSelection(identifier);
   };
 
+  private _onKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && this._pendingChoiceId) {
+      event.preventDefault();
+      this._cancelPending();
+    }
+  };
+
   private _renderSlots() {
-    const pendingTarget = this._selectedChoiceId !== null;
+    const pendingTarget = this._pendingChoiceId !== null;
     return html`
       ${this._getSlots().map((choiceId, index) => {
         return html`
@@ -252,7 +266,18 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
       <div class="associations-panel">
         <div class="associations-panel-title">${this.i18n.t('order.correctResponse')}</div>
         <div class="association-list">
-          ${filled.length === 0 ? html`
+          ${this._pendingChoiceId ? html`
+            <span class="pending-indicator">
+              ${this.i18n.t('order.selectPositionFor', { label: this._getLabel(this._pendingChoiceId) })}
+              <button
+                type="button"
+                class="association-chip-remove"
+                aria-label=${this.i18n.t('order.cancel')}
+                @click=${(e: Event) => { e.stopPropagation(); this._cancelPending(); }}
+              >×</button>
+            </span>
+          ` : nothing}
+          ${filled.length === 0 && !this._pendingChoiceId ? html`
             <span class="no-associations">${this.i18n.t('order.noAssignments')}</span>
           ` : nothing}
           ${filled.map(({ position, choiceId }) => html`
