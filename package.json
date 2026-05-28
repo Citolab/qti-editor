@@ -26,6 +26,7 @@
     "test:storybook": "vitest run --project storybook",
     "test:all": "vitest run",
     "test:watch": "vitest --project unit",
+    "postinstall": "playwright install chromium --with-deps",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
     "storybook": "storybook dev -p 6006",
