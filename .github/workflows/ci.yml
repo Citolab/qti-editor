@@ -46,7 +46,7 @@ jobs:
       - name: Run unit tests
         run: |
           echo "## Unit Tests" >> $GITHUB_STEP_SUMMARY
-          pnpm test
+          pnpm test:unit
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -63,6 +63,11 @@ jobs:
         run: |
           echo "## Browser Tests (Chromium)" >> $GITHUB_STEP_SUMMARY
           pnpm test:browser
+
+      - name: Run Storybook tests
+        run: |
+          echo "## Storybook Interaction Tests" >> $GITHUB_STEP_SUMMARY
+          pnpm test:storybook
 
       - name: Build Storybook
         run: pnpm build-storybook
