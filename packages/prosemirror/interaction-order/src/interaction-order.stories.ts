@@ -98,3 +98,48 @@ export const AuthoringFixture = {
     });
   },
 };
+
+export const MultipleChoices = {
+  render: () => renderFixture(html`
+    <qti-order-interaction
+      response-identifier="RESPONSE_MULTI"
+      correct-response='["CHOICE_3aaa9ae7-1ad9-474f-b191-9c9fc2b0bc6c","CHOICE_734eb96f-be85-4405-b1fb-b565360c0973","CHOICE_42549122-c98d-43d6-a6ca-2cacc686b737"]'
+      score="2"
+    >
+      <qti-prompt>Order these painters by birth year:</qti-prompt>
+      <qti-simple-choice identifier="CHOICE_3aaa9ae7-1ad9-474f-b191-9c9fc2b0bc6c">Rubens (1577)</qti-simple-choice>
+      <qti-simple-choice identifier="CHOICE_734eb96f-be85-4405-b1fb-b565360c0973">Velázquez (1599)</qti-simple-choice>
+      <qti-simple-choice identifier="CHOICE_42549122-c98d-43d6-a6ca-2cacc686b737">Rembrandt (1606)</qti-simple-choice>
+    </qti-order-interaction>
+  `, 'multiple choices with JSON array correct-response'),
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const interaction = canvasElement.querySelector('qti-order-interaction');
+    expect(interaction).not.toBeNull();
+
+    // Open the order panel
+    await userEvent.click(interaction!);
+
+    await waitFor(() => {
+      expect(interaction?.shadowRoot?.querySelector('.associations-panel')).not.toBeNull();
+    });
+
+    const getChips = () => interaction!.shadowRoot?.querySelectorAll('.association-chip') ?? [];
+
+    // Should show 3 ordered chips
+    expect(getChips().length).toBe(3);
+
+    const chips = Array.from(getChips());
+    const chipTexts = chips.map(chip => chip.textContent?.replace(/×/g, '').trim());
+    
+    // Verify the order is preserved from the JSON array
+    expect(chipTexts.some(text => text?.includes('1') && text?.includes('Rubens'))).toBe(true);
+    expect(chipTexts.some(text => text?.includes('2') && text?.includes('Velázquez'))).toBe(true);
+    expect(chipTexts.some(text => text?.includes('3') && text?.includes('Rembrandt'))).toBe(true);
+
+    await userEvent.click(canvasElement.ownerDocument.body);
+
+    await waitFor(() => {
+      expect(interaction?.shadowRoot?.querySelector('.associations-panel')).toBeNull();
+    });
+  },
+};

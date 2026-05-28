@@ -108,10 +108,16 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
       return;
     }
 
-    this._order = this.correctResponse
-      .split(',')
-      .map(value => value.trim())
-      .filter(Boolean);
+    // correctResponse is a JSON array of identifiers: ["id1", "id2", "id3"]
+    try {
+      const parsed = JSON.parse(this.correctResponse);
+      if (Array.isArray(parsed)) {
+        this._order = parsed.filter(Boolean);
+      }
+    } catch {
+      // Invalid JSON, ignore
+      this._order = [];
+    }
   }
 
   private _syncOrderWithChoices() {
@@ -165,8 +171,10 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
   }
 
   private _emitChange() {
+    // Emit as JSON array string to match storage format
+    const jsonOrder = JSON.stringify(this._order);
     this.dispatchEvent(new CustomEvent('order-response-change', {
-      detail: { order: [...this._order] },
+      detail: { order: this._order, correctResponse: jsonOrder },
       bubbles: true,
       composed: true,
     }));
@@ -285,7 +293,7 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
 
 declare global {
   interface HTMLElementEventMap {
-    'order-response-change': CustomEvent<{ order: string[] }>;
+    'order-response-change': CustomEvent<{ order: string[]; correctResponse: string }>;
   }
 }
 
