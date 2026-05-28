@@ -21,7 +21,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-editor/prosemirror-plugins": "1.1.0",
+    "@qti-editor/prosemirror-plugins": "workspace:*",
     "@qti-editor/prosekit-integration": "workspace:*",
     "jszip": "^3.10.1"
   },
