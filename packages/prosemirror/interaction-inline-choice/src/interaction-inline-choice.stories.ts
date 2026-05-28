@@ -1,6 +1,7 @@
 import '@qti-components/theme/item.css';
 import '@qti-editor/interaction-inline-choice';
 import { html } from 'lit';
+import { expect, userEvent, waitFor } from 'storybook/test';
 
 export default {
   title: 'Interactions/Inline Choice',
@@ -34,4 +35,34 @@ export const AuthoringFixture = {
       when legacy content is upgraded.
     </p>
   `, 'inline dropdown fixture embedded in surrounding text'),
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const interaction = canvasElement.querySelector('qti-inline-choice-interaction');
+    expect(interaction).not.toBeNull();
+
+    const trigger = interaction!.shadowRoot?.querySelector<HTMLButtonElement>('button[part="trigger"]');
+    const menu = interaction!.shadowRoot?.querySelector<HTMLElement>('[part="menu"]');
+    const choices = interaction!.querySelectorAll<HTMLElement & { selected?: boolean }>('qti-inline-choice');
+
+    expect(trigger?.textContent).toContain('authoring intent');
+    expect(choices).toHaveLength(3);
+    expect(choices[0].selected).toBe(false);
+    expect(choices[1].selected).toBe(true);
+    expect(choices[2].selected).toBe(false);
+    expect(menu).toBeNull();
+    expect(trigger?.getAttribute('aria-expanded')).toBe('false');
+
+    await userEvent.click(trigger!);
+
+    await waitFor(() => {
+      expect(interaction!.shadowRoot?.querySelector<HTMLElement>('[part="menu"]')).not.toBeNull();
+      expect(trigger?.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    await userEvent.click(trigger!);
+
+    await waitFor(() => {
+      expect(interaction!.shadowRoot?.querySelector<HTMLElement>('[part="menu"]')).toBeNull();
+      expect(trigger?.getAttribute('aria-expanded')).toBe('false');
+    });
+  },
 };

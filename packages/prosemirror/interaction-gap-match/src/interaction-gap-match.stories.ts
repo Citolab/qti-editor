@@ -2,6 +2,7 @@ import '@qti-components/theme/item.css';
 import '@qti-editor/interaction-gap-match';
 import '@qti-editor/interaction-shared';
 import { html } from 'lit';
+import { expect, userEvent, waitFor } from 'storybook/test';
 
 export default {
   title: 'Interactions/Gap Match',
@@ -38,4 +39,47 @@ export const AuthoringFixture = {
       </p>
     </qti-gap-match-interaction>
   `, 'drag-and-place fixture with two gap texts and two gaps'),
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const interaction = canvasElement.querySelector('qti-gap-match-interaction');
+    expect(interaction).not.toBeNull();
+
+    await userEvent.click(interaction!);
+
+    await waitFor(() => {
+      expect(interaction?.shadowRoot?.querySelector('.associations-panel')).not.toBeNull();
+    });
+
+    const getChips = () => interaction!.shadowRoot?.querySelectorAll('.association-chip') ?? [];
+    const gap = interaction!.querySelector<HTMLElement>('qti-gap[identifier="gap-a"]');
+    const gapText = interaction!.querySelector<HTMLElement>('qti-gap-text[identifier="gap-text-a"]');
+
+    expect(getChips().length).toBe(2);
+    expect(gap?.getAttribute('data-assigned-label')).toBe('descriptor');
+
+    await userEvent.click(gap!);
+
+    await waitFor(() => {
+      expect(getChips().length).toBe(1);
+      expect(gap?.hasAttribute('data-assigned-label')).toBe(false);
+    });
+
+    await userEvent.click(gapText!);
+
+    await waitFor(() => {
+      expect(interaction!.shadowRoot?.querySelector('.pending-indicator')?.textContent).toContain('descriptor');
+    });
+
+    await userEvent.click(gap!);
+
+    await waitFor(() => {
+      expect(getChips().length).toBe(2);
+      expect(gap?.getAttribute('data-assigned-label')).toBe('descriptor');
+    });
+
+    await userEvent.click(canvasElement.ownerDocument.body);
+
+    await waitFor(() => {
+      expect(interaction?.shadowRoot?.querySelector('.associations-panel')).toBeNull();
+    });
+  },
 };

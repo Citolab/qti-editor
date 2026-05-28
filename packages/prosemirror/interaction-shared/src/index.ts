@@ -29,3 +29,4 @@ export * from './correct-response/codec.js';
 export * from './i18n/index.js';
 
 export * from './mixins/index.js';
+export * from './styles/panel.js';

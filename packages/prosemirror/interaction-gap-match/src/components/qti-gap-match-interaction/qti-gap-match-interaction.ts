@@ -1,7 +1,6 @@
 import { html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { Interaction } from '@qti-editor/interaction-shared/components/interaction.js';
-import { QtiI18nController } from '@qti-editor/interaction-shared';
+import { InteractionPanel, QtiI18nController } from '@qti-editor/interaction-shared';
 
 import styles from './qti-gap-match-interaction.styles.js';
 
@@ -11,21 +10,7 @@ export interface GapAssociationChangeDetail {
   associations: GapAssociation[];
 }
 
-interface GapMatchState {
-  pendingTextId: string | null;
-  associations: Map<string, string>;
-}
-
-const gapMatchStates = new Map<string, GapMatchState>();
-
-function getState(key: string): GapMatchState {
-  if (!gapMatchStates.has(key)) {
-    gapMatchStates.set(key, { pendingTextId: null, associations: new Map() });
-  }
-  return gapMatchStates.get(key)!;
-}
-
-export class QtiGapMatchInteractionEdit extends Interaction {
+export class QtiGapMatchInteractionEdit extends InteractionPanel {
   static override styles = styles;
 
   private readonly i18n = new QtiI18nController(this);
@@ -45,30 +30,13 @@ export class QtiGapMatchInteractionEdit extends Interaction {
   @property({ type: String, attribute: 'correct-response' })
   override correctResponse: string | null = null;
 
-  @state()
-  private cursorInside = false;
-
   private labelCache = new Map<string, string>();
   private observer: MutationObserver | null = null;
   private lastEmittedResponse: string | null = null;
   private isApplyingVisualState = false;
   private isEmittingChange = false;
-
-  private get interactionKey(): string {
-    return this.responseIdentifier || this.getAttribute('response-identifier') || 'default';
-  }
-
-  private get interactionState(): GapMatchState {
-    return getState(this.interactionKey);
-  }
-
-  private onSelectionChange = () => {
-    const sel = document.getSelection();
-    const inside = sel ? this.contains(sel.anchorNode) : false;
-    if (inside !== this.cursorInside) {
-      this.cursorInside = inside;
-    }
-  };
+  private pendingTextId: string | null = null;
+  private associations = new Map<string, string>();
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -76,7 +44,6 @@ export class QtiGapMatchInteractionEdit extends Interaction {
     this.buildLabelCache();
     this.applyVisualState();
     this.addEventListener('click', this.onClick);
-    document.addEventListener('selectionchange', this.onSelectionChange);
     
     // Watch for text content changes in gap-text elements
     this.observer = new MutationObserver((mutations) => {
@@ -123,7 +90,6 @@ export class QtiGapMatchInteractionEdit extends Interaction {
 
   override disconnectedCallback(): void {
     this.removeEventListener('click', this.onClick);
-    document.removeEventListener('selectionchange', this.onSelectionChange);
     this.observer?.disconnect();
     this.observer = null;
     super.disconnectedCallback();
@@ -161,8 +127,8 @@ export class QtiGapMatchInteractionEdit extends Interaction {
   }
 
   private parseCorrectResponse() {
-    const state = this.interactionState;
-    state.associations.clear();
+    this.associations.clear();
+    this.pendingTextId = null;
     if (!this.correctResponse) return;
 
     try {
@@ -171,7 +137,7 @@ export class QtiGapMatchInteractionEdit extends Interaction {
       for (const entry of parsed) {
         if (!Array.isArray(entry) || entry.length !== 2) continue;
         const [textId, gapId] = entry;
-        if (textId && gapId) state.associations.set(gapId, textId);
+        if (textId && gapId) this.associations.set(gapId, textId);
       }
     } catch {
       // Ignore invalid persisted values and keep the editor interactive.
@@ -181,7 +147,7 @@ export class QtiGapMatchInteractionEdit extends Interaction {
   private emitChange() {
     if (this.isEmittingChange) return;
     
-    const associations = Array.from(this.interactionState.associations.entries()).map(
+    const associations = Array.from(this.associations.entries()).map(
       ([gapId, textId]) => [textId, gapId] as GapAssociation,
     );
     this.lastEmittedResponse = associations.length > 0 ? JSON.stringify(associations) : null;
@@ -207,16 +173,16 @@ export class QtiGapMatchInteractionEdit extends Interaction {
 
   private countTextUsage(textId: string): number {
     let count = 0;
-    for (const assignedTextId of this.interactionState.associations.values()) {
+    for (const assignedTextId of this.associations.values()) {
       if (assignedTextId === textId) count++;
     }
     return count;
   }
 
   private clearTextAssignments(textId: string) {
-    for (const [gapId, assignedTextId] of Array.from(this.interactionState.associations.entries())) {
+    for (const [gapId, assignedTextId] of Array.from(this.associations.entries())) {
       if (assignedTextId === textId) {
-        this.interactionState.associations.delete(gapId);
+        this.associations.delete(gapId);
       }
     }
   }
@@ -242,17 +208,15 @@ export class QtiGapMatchInteractionEdit extends Interaction {
   };
 
   private handleGapTextClick(textId: string) {
-    const state = this.interactionState;
-    state.pendingTextId = state.pendingTextId === textId ? null : textId;
+    this.pendingTextId = this.pendingTextId === textId ? null : textId;
     this.applyVisualState();
     this.requestUpdate();
   }
 
   private handleGapClick(gapId: string) {
-    const state = this.interactionState;
-    if (!state.pendingTextId) {
-      if (state.associations.has(gapId)) {
-        state.associations.delete(gapId);
+    if (!this.pendingTextId) {
+      if (this.associations.has(gapId)) {
+        this.associations.delete(gapId);
         this.emitChange();
         this.applyVisualState();
         this.requestUpdate();
@@ -260,19 +224,19 @@ export class QtiGapMatchInteractionEdit extends Interaction {
       return;
     }
 
-    const textId = state.pendingTextId;
+    const textId = this.pendingTextId;
     const limit = this.getTextMatchMax(textId);
     if (limit <= 1) {
       this.clearTextAssignments(textId);
-    } else if (this.countTextUsage(textId) >= limit && state.associations.get(gapId) !== textId) {
-      state.pendingTextId = null;
+    } else if (this.countTextUsage(textId) >= limit && this.associations.get(gapId) !== textId) {
+      this.pendingTextId = null;
       this.applyVisualState();
       this.requestUpdate();
       return;
     }
 
-    state.associations.set(gapId, textId);
-    state.pendingTextId = null;
+    this.associations.set(gapId, textId);
+    this.pendingTextId = null;
     this.emitChange();
     this.applyVisualState();
     this.requestUpdate();
@@ -283,28 +247,27 @@ export class QtiGapMatchInteractionEdit extends Interaction {
     this.isApplyingVisualState = true;
     
     try {
-      const state = this.interactionState;
       for (const gapText of this.getGapTexts()) {
         const textId = gapText.getAttribute('identifier');
         if (!textId) continue;
         const usage = this.countTextUsage(textId);
         const limit = this.getTextMatchMax(textId);
-        gapText.toggleAttribute('data-selected', state.pendingTextId === textId);
+        gapText.toggleAttribute('data-selected', this.pendingTextId === textId);
         gapText.toggleAttribute('data-linked', usage > 0);
-        gapText.toggleAttribute('data-disabled', usage >= limit && state.pendingTextId !== textId);
+        gapText.toggleAttribute('data-disabled', usage >= limit && this.pendingTextId !== textId);
       }
 
       for (const gap of this.getGaps()) {
         const gapId = gap.getAttribute('identifier');
         if (!gapId) continue;
-        const assignedTextId = state.associations.get(gapId);
+        const assignedTextId = this.associations.get(gapId);
         if (assignedTextId) {
           gap.setAttribute('data-assigned-label', this.getLabel(assignedTextId));
         } else {
           gap.removeAttribute('data-assigned-label');
         }
         gap.toggleAttribute('data-filled', assignedTextId != null);
-        gap.toggleAttribute('data-pending', state.pendingTextId != null && assignedTextId == null);
+        gap.toggleAttribute('data-pending', this.pendingTextId != null && assignedTextId == null);
       }
     } finally {
       this.isApplyingVisualState = false;
@@ -312,28 +275,28 @@ export class QtiGapMatchInteractionEdit extends Interaction {
   }
 
   private removeAssociation(gapId: string) {
-    this.interactionState.associations.delete(gapId);
+    this.associations.delete(gapId);
     this.emitChange();
     this.applyVisualState();
     this.requestUpdate();
   }
 
   private cancelPending() {
-    this.interactionState.pendingTextId = null;
+    this.pendingTextId = null;
     this.applyVisualState();
     this.requestUpdate();
   }
 
   private renderAssociationsPanel() {
-    const associations = Array.from(this.interactionState.associations.entries());
+    const associations = Array.from(this.associations.entries());
 
     return html`
       <div class="associations-panel">
         <div class="associations-panel-title">${this.i18n.t('gapMatch.correctResponse')}</div>
         <div class="association-list">
-          ${this.interactionState.pendingTextId ? html`
+          ${this.pendingTextId ? html`
             <span class="pending-indicator">
-              ${this.i18n.t('gapMatch.selectGapFor', { label: this.getLabel(this.interactionState.pendingTextId) })}
+              ${this.i18n.t('gapMatch.selectGapFor', { label: this.getLabel(this.pendingTextId) })}
               <button
                 type="button"
                 class="association-chip-remove"
@@ -345,7 +308,7 @@ export class QtiGapMatchInteractionEdit extends Interaction {
               >×</button>
             </span>
           ` : nothing}
-          ${associations.length === 0 && !this.interactionState.pendingTextId ? html`
+          ${associations.length === 0 && !this.pendingTextId ? html`
             <span class="no-associations">${this.i18n.t('gapMatch.noAssociations')}</span>
           ` : nothing}
           ${associations.map(([gapId, textId]) => html`
@@ -378,7 +341,7 @@ export class QtiGapMatchInteractionEdit extends Interaction {
       <div class="body">
         <slot></slot>
       </div>
-      ${this.cursorInside ? this.renderAssociationsPanel() : nothing}
+      ${this._panelOpen ? this.renderAssociationsPanel() : nothing}
     `;
   }
 }

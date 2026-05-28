@@ -1,4 +1,5 @@
 import { css, type CSSResultGroup } from 'lit';
+import { associationPanelStyles } from '@qti-editor/interaction-shared';
 
 import externalStyles from '@qti-components/order-interaction/styles';
 
@@ -11,6 +12,11 @@ export const LIGHT_DOM_STYLES = `
     display: flex;
     align-items: center;
     gap: 8px;
+    cursor: pointer;
+  }
+
+  qti-simple-choice:hover {
+    background: var(--qti-bg-hover, #f1f5f9);
   }
 `;
 
@@ -30,99 +36,64 @@ const styles: CSSResultGroup = [
     }
 
     slot:not([name]) {
-      display: block;
-    }
-
-    .order-panel {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      z-index: 50;
-      min-width: 200px;
-      margin-top: 4px;
-      padding: 8px 12px;
-      background: white;
-      border: 1px solid var(--qti-border, #e2e8f0);
-      border-radius: 6px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .order-panel-title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--qti-text-muted, #64748b);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 8px;
-    }
-
-    .order-list {
       display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .order-row {
-      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
       align-items: center;
-      gap: 8px;
-      padding: 4px 8px;
-      background: white;
-      border: 1px solid var(--qti-border, #e2e8f0);
-      border-radius: 4px;
-      font-size: 0.85em;
     }
 
-    .order-row-number {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--qti-primary, #3b82f6);
-      color: white;
-      font-size: 0.75rem;
-      font-weight: 600;
-      flex-shrink: 0;
+    .interaction-preview {
+      align-items: flex-start;
     }
 
-    .order-row-label {
-      flex: 1;
+    .preview-drags {
+      min-width: 0;
     }
 
-    .order-row-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .preview-drops {
+      min-width: min(18rem, 100%);
+      gap: 0.5rem;
+      align-content: start;
     }
 
-    .order-arrow-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px;
-      height: 18px;
-      padding: 0;
-      border: 1px solid var(--qti-border, #cbd5e1);
-      background: white;
+    /* Drop slot — simple clickable area, no inner content */
+    .order-slot {
+      min-height: 3rem;
+      border: 2px dashed #f59e0b;
+      border-radius: 0.5rem;
+      background: #fffbeb;
       cursor: pointer;
-      border-radius: 3px;
-      font-size: 10px;
-      line-height: 1;
-      color: var(--qti-text-muted, #64748b);
+      transition: border-color 0.15s, background 0.15s;
     }
 
-    .order-arrow-btn:hover:not(:disabled) {
-      background: var(--qti-bg-hover, #f1f5f9);
-      color: var(--qti-text, #1e293b);
+    .order-slot:hover {
+      border-color: #d97706;
+      background: #fef3c7;
     }
 
-    .order-arrow-btn:disabled {
-      opacity: 0.3;
-      cursor: default;
+    .order-slot[data-filled] {
+      border-style: solid;
+      border-color: #22c55e;
+      background: #f0fdf4;
     }
-  `
+
+    .order-slot[data-filled]:hover {
+      border-color: #16a34a;
+      background: #dcfce7;
+    }
+
+    .order-slot[data-pending-target]:not([data-filled]) {
+      border-color: #3b82f6;
+      border-style: dashed;
+      background: #eff6ff;
+    }
+
+    .order-slot[data-pending-target]:not([data-filled]):hover {
+      border-color: #2563eb;
+      background: #dbeafe;
+    }
+  `,
+  associationPanelStyles
 ];
 
 export default styles;

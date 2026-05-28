@@ -1,17 +1,10 @@
 import { html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { Interaction } from '@qti-editor/interaction-shared/components/interaction.js';
-import { QtiI18nController } from '@qti-editor/interaction-shared';
+import { InteractionPanel, QtiI18nController } from '@qti-editor/interaction-shared';
 
 import styles, { LIGHT_DOM_STYLES } from './qti-order-interaction.styles.js';
 
-const openPanels = new Map<string, boolean>();
-
-/**
- * Editor component for qti-order-interaction.
- * All choices are shown in the correct-order panel; use up/down arrows to reorder.
- */
-export class QtiOrderInteractionEdit extends Interaction {
+export class QtiOrderInteractionEdit extends InteractionPanel {
   static override styles = styles;
 
   private readonly i18n = new QtiI18nController(this);
@@ -31,71 +24,29 @@ export class QtiOrderInteractionEdit extends Interaction {
   @state()
   private _renderTrigger = 0;
 
-  @state()
-  private _open = false;
-
   private _order: string[] = [];
   private _labelCache = new Map<string, string>();
   private _setupDone = false;
   private _lightDomStyle: HTMLStyleElement | null = null;
   private _observer: MutationObserver | null = null;
-
-  private get _interactionKey(): string {
-    return this.responseIdentifier || this.getAttribute('response-identifier') || 'default';
-  }
-
-  private _setOpen(open: boolean) {
-    if (this._open === open) return;
-    this._open = open;
-    openPanels.set(this._interactionKey, open);
-  }
-
-  private _openPanel = () => this._setOpen(true);
-
-  private _handleSelectionChange = () => {
-    const selection = document.getSelection();
-    if (selection?.anchorNode && this.contains(selection.anchorNode)) {
-      this._openPanel();
-    }
-  };
-
-  private _handleDocumentPointerDown = (event: PointerEvent) => {
-    if (!this._open) return;
-    if (event.composedPath().includes(this)) return;
-    this._setOpen(false);
-  };
-
-  private _handleDocumentKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && this._open) {
-      this._setOpen(false);
-    }
-  };
+  private _selectedChoiceId: string | null = null;
 
   override connectedCallback() {
     super.connectedCallback();
-    this._open = openPanels.get(this._interactionKey) ?? false;
     this._injectLightDomStyles();
     this._parseCorrectResponse();
+    this.addEventListener('click', this._onClick);
     requestAnimationFrame(() => this._trySetup());
-    this.addEventListener('pointerdown', this._openPanel);
-    this.addEventListener('focusin', this._openPanel);
-    document.addEventListener('selectionchange', this._handleSelectionChange);
-    document.addEventListener('pointerdown', this._handleDocumentPointerDown);
-    document.addEventListener('keydown', this._handleDocumentKeyDown);
   }
 
   override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.removeEventListener('pointerdown', this._openPanel);
-    this.removeEventListener('focusin', this._openPanel);
-    document.removeEventListener('selectionchange', this._handleSelectionChange);
-    document.removeEventListener('pointerdown', this._handleDocumentPointerDown);
-    document.removeEventListener('keydown', this._handleDocumentKeyDown);
+    this.removeEventListener('click', this._onClick);
     this._observer?.disconnect();
     this._observer = null;
     this._lightDomStyle?.remove();
     this._lightDomStyle = null;
     this._setupDone = false;
+    super.disconnectedCallback();
   }
 
   private _injectLightDomStyles() {
@@ -133,6 +84,7 @@ export class QtiOrderInteractionEdit extends Interaction {
   private _setupMutationObserver() {
     this._observer = new MutationObserver(() => {
       this._buildLabelCache();
+      this._syncOrderWithChoices();
       this._triggerRender();
     });
     this._observer.observe(this, { childList: true, subtree: true, characterData: true });
@@ -142,7 +94,9 @@ export class QtiOrderInteractionEdit extends Interaction {
     super.updated(changedProperties);
     if (changedProperties.has('correctResponse')) {
       this._parseCorrectResponse();
-      if (this._setupDone) this._syncOrderWithChoices();
+      if (this._setupDone) {
+        this._syncOrderWithChoices();
+      }
       this._triggerRender();
     }
   }
@@ -150,27 +104,29 @@ export class QtiOrderInteractionEdit extends Interaction {
   private _parseCorrectResponse() {
     if (!this.correctResponse) {
       this._order = [];
+      this._selectedChoiceId = null;
       return;
     }
+
     this._order = this.correctResponse
       .split(',')
-      .map(s => s.trim())
+      .map(value => value.trim())
       .filter(Boolean);
   }
 
-  /** Ensure _order contains exactly the current choices, preserving existing order. */
   private _syncOrderWithChoices() {
-    const allIds = this._getChoices()
-      .map(c => c.getAttribute('identifier'))
-      .filter((id): id is string => !!id);
+    const choiceIds = this._getChoiceIds();
+    const validIds = new Set(choiceIds);
+    const seen = new Set<string>();
 
-    // Remove stale ids
-    this._order = this._order.filter(id => allIds.includes(id));
+    this._order = this._order.filter(id => {
+      if (!validIds.has(id) || seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
 
-    // Append any new ids not yet in _order
-    const existing = new Set(this._order);
-    for (const id of allIds) {
-      if (!existing.has(id)) this._order.push(id);
+    if (this._selectedChoiceId && !validIds.has(this._selectedChoiceId)) {
+      this._selectedChoiceId = null;
     }
   }
 
@@ -189,8 +145,19 @@ export class QtiOrderInteractionEdit extends Interaction {
     return Array.from(this.querySelectorAll('qti-simple-choice'));
   }
 
+  private _getChoiceIds(): string[] {
+    return this._getChoices()
+      .map(choice => choice.getAttribute('identifier'))
+      .filter((id): id is string => Boolean(id));
+  }
+
   private _getLabel(id: string): string {
     return this._labelCache.get(id) || id;
+  }
+
+  private _getSlots(): Array<string | null> {
+    const slotCount = this._getChoiceIds().length;
+    return Array.from({ length: slotCount }, (_, index) => this._order[index] ?? null);
   }
 
   private _triggerRender() {
@@ -205,52 +172,93 @@ export class QtiOrderInteractionEdit extends Interaction {
     }));
   }
 
-  // ─── Reorder ─────────────────────────────────────────────────────────────
+  private _toggleChoiceSelection(choiceId: string) {
+    this._selectedChoiceId = this._selectedChoiceId === choiceId ? null : choiceId;
+    this._triggerRender();
+  }
 
-  private _moveUp(i: number) {
-    if (i === 0) return;
-    [this._order[i - 1], this._order[i]] = [this._order[i], this._order[i - 1]];
+  private _handleSlotClick(slotIndex: number) {
+    if (this._selectedChoiceId) {
+      this._placeSelectedChoice(slotIndex);
+    }
+  }
+
+  private _placeSelectedChoice(slotIndex: number) {
+    if (!this._selectedChoiceId) return;
+
+    const choiceId = this._selectedChoiceId;
+    const nextOrder = this._order.filter(id => id !== choiceId);
+    const insertAt = Math.max(0, Math.min(slotIndex, nextOrder.length));
+    nextOrder.splice(insertAt, 0, choiceId);
+
+    this._order = nextOrder;
+    this._selectedChoiceId = null;
     this._emitChange();
     this._triggerRender();
   }
 
-  private _moveDown(i: number) {
-    if (i === this._order.length - 1) return;
-    [this._order[i + 1], this._order[i]] = [this._order[i], this._order[i + 1]];
+  private _clearSlot(slotIndex: number) {
+    if (slotIndex >= this._order.length) return;
+    this._order = this._order.filter((_, index) => index !== slotIndex);
     this._emitChange();
     this._triggerRender();
   }
 
-  // ─── Render ──────────────────────────────────────────────────────────────
+  private _onClick = (event: MouseEvent) => {
+    const choice = event.composedPath().find(item =>
+      item instanceof HTMLElement && item.tagName === 'QTI-SIMPLE-CHOICE',
+    ) as HTMLElement | undefined;
+
+    if (!choice || !this.contains(choice)) return;
+
+    const identifier = choice.getAttribute('identifier');
+    if (!identifier) return;
+
+    event.stopPropagation();
+    this._toggleChoiceSelection(identifier);
+  };
+
+  private _renderSlots() {
+    const pendingTarget = this._selectedChoiceId !== null;
+    return html`
+      ${this._getSlots().map((choiceId, index) => {
+        return html`
+          <div
+            class="order-slot"
+            part="drop-list"
+            ?data-filled=${choiceId !== null}
+            ?data-pending-target=${pendingTarget}
+            @click=${(e: Event) => { e.stopPropagation(); this._handleSlotClick(index); }}
+          ></div>
+        `;
+      })}
+    `;
+  }
 
   private _renderOrderPanel() {
+    const filled = this._getSlots()
+      .map((choiceId, index) => ({ position: index + 1, choiceId }))
+      .filter((s): s is { position: number; choiceId: string } => s.choiceId !== null);
+
     return html`
-      <div class="order-panel" @mousedown=${(event: MouseEvent) => event.preventDefault()}>
-        <div class="order-panel-title">${this.i18n.t('order.correctResponse')}</div>
-        <div class="order-list">
-          ${this._order.map((id, i) => html`
-            <div class="order-row">
-              <span class="order-row-number">${i + 1}</span>
-              <span class="order-row-label">${this._getLabel(id)}</span>
-              <div class="order-row-buttons">
-                <button
-                  type="button"
-                  class="order-arrow-btn"
-                  aria-label=${this.i18n.t('order.moveUp')}
-                  ?disabled=${i === 0}
-                  @mousedown=${(e: Event) => e.preventDefault()}
-                  @click=${(e: Event) => { e.stopPropagation(); this._moveUp(i); }}
-                >▲</button>
-                <button
-                  type="button"
-                  class="order-arrow-btn"
-                  aria-label=${this.i18n.t('order.moveDown')}
-                  ?disabled=${i === this._order.length - 1}
-                  @mousedown=${(e: Event) => e.preventDefault()}
-                  @click=${(e: Event) => { e.stopPropagation(); this._moveDown(i); }}
-                >▼</button>
-              </div>
-            </div>
+      <div class="associations-panel">
+        <div class="associations-panel-title">${this.i18n.t('order.correctResponse')}</div>
+        <div class="association-list">
+          ${filled.length === 0 ? html`
+            <span class="no-associations">${this.i18n.t('order.noAssignments')}</span>
+          ` : nothing}
+          ${filled.map(({ position, choiceId }) => html`
+            <span class="association-chip">
+              <span>${position}</span>
+              <span class="association-chip-arrow">→</span>
+              <span>${this._getLabel(choiceId)}</span>
+              <button
+                type="button"
+                class="association-chip-remove"
+                aria-label=${this.i18n.t('order.remove')}
+                @click=${(e: Event) => { e.stopPropagation(); this._clearSlot(position - 1); }}
+              >×</button>
+            </span>
           `)}
         </div>
       </div>
@@ -259,10 +267,18 @@ export class QtiOrderInteractionEdit extends Interaction {
 
   override render() {
     void this._renderTrigger;
+
     return html`
       <slot name="prompt"></slot>
-      <slot @slotchange=${this._onSlotChange}></slot>
-      ${this._setupDone && this._open ? this._renderOrderPanel() : nothing}
+      <div part="container" class="interaction-preview">
+        <div part="drags" class="preview-drags">
+          <slot @slotchange=${this._onSlotChange}></slot>
+        </div>
+        <div part="drops" class="preview-drops">
+          ${this._renderSlots()}
+        </div>
+      </div>
+      ${this._setupDone && this._panelOpen ? this._renderOrderPanel() : nothing}
     `;
   }
 }
