@@ -19,9 +19,11 @@
 import JSZip from 'jszip';
 import { buildCompatibilityReport, migrateHtmlFragment } from '@qti-editor/prosemirror-plugins';
 import { xmlToHTML } from '@qti-editor/prosekit-integration';
+import { getAllMirrorTargets } from '@qti-editor/core/composer';
+import { listInteractionDescriptors } from '@qti-editor/core/interactions/composer';
 import { jsonFromHTML } from 'prosekit/core';
 
-import type { CompatibilityReport, MigrationResult } from '@qti-editor/interfaces';
+import type { CompatibilityReport, MigrationResult, InteractionComposerMetadata } from '@qti-editor/interfaces';
 import type { Schema } from 'prosekit/pm/model';
 
 const ITEM_RESOURCE_TYPE = 'imsqti_item_xmlv3p0';
@@ -29,16 +31,29 @@ const ASSESSMENT_TEST_FILE = 'assessment-test.xml';
 const MANIFEST_FILE = 'imsmanifest.xml';
 const IMAGE_REFERENCE_ATTRIBUTES = ['src', 'data', 'image'] as const;
 
-// PAIRED CONTRACT: every entry below must have a forward mapping in
-// `EDITOR_DATA_ATTRIBUTE_MAPPINGS` (or its per-interaction siblings) inside
-// `@qti-editor/qti-roundtrip-export` (`packages/qti/roundtrip-export/src/index.ts`).
-// See ROUNDTRIP.md for the canonical table.
-export const DATA_ATTRIBUTE_MAPPINGS = [
-  { source: 'data-correct-response', target: 'correct-response' },
-  { source: 'data-score', target: 'score' },
-  { source: 'data-case-sensitive', target: 'case-sensitive' },
-  { source: 'data-area-mappings', target: 'area-mappings' },
-] as const;
+// PAIRED CONTRACT: derived from the per-interaction `nonQtiAttributes` registry.
+// Inverse of the forward mirror tuples emitted by `@qti-editor/qti-roundtrip-export`.
+// Adding a non-QTI attribute is done by editing the interaction's `composer/metadata.ts`;
+// this table updates automatically. See ROUNDTRIP.md for the canonical table.
+const FORWARD_REGISTRY: ReadonlyMap<string, InteractionComposerMetadata> = new Map(
+  listInteractionDescriptors().map(d => [d.composerMetadata.tagName, d.composerMetadata]),
+);
+// `getAllMirrorTargets` dedupes by `(source, target)` tuple, but aliases collapse to
+// the same `data-*` target — flipping yields multiple inverse entries with the same
+// `source` (the data-* attr). Dedupe by that flipped source so each data-* attr only
+// maps to one canonical editor attribute.
+const _seenInverseSources = new Set<string>();
+export const DATA_ATTRIBUTE_MAPPINGS: ReadonlyArray<{ source: string; target: string }> =
+  getAllMirrorTargets(FORWARD_REGISTRY)
+    .filter(({ target }) => {
+      if (_seenInverseSources.has(target)) return false;
+      _seenInverseSources.add(target);
+      return true;
+    })
+    .map(({ source, target }) => ({
+      source: target, // data-* attr on the DOM
+      target: source, // canonical editor attr name
+    }));
 
 type ProseMirrorJson = ReturnType<typeof jsonFromHTML>;
 

@@ -1001,6 +1001,9 @@ importers:
 
   packages/qti/roundtrip-import:
     dependencies:
+      '@qti-editor/core':
+        specifier: workspace:*
+        version: link:../core
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../prosekit-integration
