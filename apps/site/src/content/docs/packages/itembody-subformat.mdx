@@ -52,7 +52,7 @@ To extend the subformat with a new attribute on an interaction:
 4. Add the inverse mapping to `DATA_ATTRIBUTE_MAPPINGS` in `packages/qti/roundtrip-import/src/index.ts`.
 5. Document the new row in the table above and in `packages/qti/roundtrip-export/ROUNDTRIP.md`.
 
-The metadata list and the hardcoded mapping tables are intentionally separate today; if/when they are unified, this guide should be updated.
+**Status:** unification of the metadata list and the hardcoded mapping tables is planned — see `plans/unify-non-qti-attribute-metadata.md` for the design and migration phases. Once that lands, the 5-step "Adding a new non-QTI attribute" guide above collapses to 2 steps (edit the interaction metadata; read it in compose).
 
 ## Related
 
