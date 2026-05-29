@@ -6,7 +6,7 @@ export interface ExtendedTextAttributesFriendlyEditorDefinition
 }
 
 export const extendedTextAttributesFriendlyEditor = {
-  attribute: 'correctResponse',
+  attribute: 'rubricScoringBlock',
   kind: 'extendedTextAttributes',
 } as const satisfies ExtendedTextAttributesFriendlyEditorDefinition;
 

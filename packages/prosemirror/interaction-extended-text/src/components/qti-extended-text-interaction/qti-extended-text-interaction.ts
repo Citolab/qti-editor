@@ -122,7 +122,7 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
   classes: string | null = null;
 
   @property({ type: String, attribute: 'correct-response' })
-  correctResponse: string | null = null;
+  rubricScoringBlock: string | null = null;
 
   private _getPlaceholderText(): string {
     if (this.placeholderText) {
@@ -132,8 +132,8 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
   }
 
   override render() {
-    return html`<slot name="prompt"></slot><div part="textarea">${this._getPlaceholderText()}</div>${this.correctResponse
-        ? html`<details class="rubric-details"><summary class="rubric-summary">Rubric / Model answer</summary><div class="rubric-content">${this.correctResponse}</div></details>`
+    return html`<slot name="prompt"></slot><div part="textarea">${this._getPlaceholderText()}</div>${this.rubricScoringBlock
+        ? html`<details class="rubric-details"><summary class="rubric-summary">Rubric / Model answer</summary><div class="rubric-content">${this.rubricScoringBlock}</div></details>`
         : nothing}`;
   }
 }

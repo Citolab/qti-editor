@@ -4,3 +4,4 @@ export {
   type CorrectResponseClickInterface,
   type QtiCorrectResponseToggleDetail,
 } from './correct-response-click.mixin.js';
+export { InteractionPanel } from './interaction-panel.js';

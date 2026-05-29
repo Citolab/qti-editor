@@ -31,6 +31,8 @@
 - Preserve event contracts (event names + payload shape) unless a deliberate breaking change is requested.
 - Keep app integration decisions in `apps/editor/src/main.ts`; keep domain logic in package modules.
 - Make focused changes and avoid opportunistic refactors unless requested.
+- Keep the base interaction rendering as close as possible to the actual runtime interaction.
+- Put editor-only affordances in popovers or similar edit-mode UI that appears only while the interaction is being edited.
 
 ## Registry Pattern
 - **What it is**: A shadcn-style component registry in `packages/ui/` for distributing reusable UI components to external consumers.

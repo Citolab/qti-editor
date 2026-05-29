@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { buildCompatibilityReport } from '@qti-editor/prosemirror-plugins';
 
 import {
   clearCurrentSession,
@@ -112,11 +113,23 @@ export function useFileOperations(untitledLabel: string) {
 
   const handleLoad = useCallback(
     (id: string): SavedFile | null => {
-      const file = loadFile(storageScope, id);
-      if (!file) return null;
+      const result = loadFile(storageScope, id);
+      if (!result) return null;
+      const { file, compatibility } = result;
       setCurrentFile(file);
       setFileName(file.name);
       queryClient.invalidateQueries({ queryKey: ['files', storageScope] });
+      if (compatibility) {
+        const report = buildCompatibilityReport([{
+          id: file.id,
+          label: file.name,
+          result: compatibility,
+        }]);
+        document.dispatchEvent(new CustomEvent('qti:compatibility:report', {
+          detail: report,
+          bubbles: true,
+        }));
+      }
       return file;
     },
     [queryClient, storageScope]

@@ -22,6 +22,7 @@ export default defineConfig({
           name: 'unit',
           globals: true,
           include: ['packages/**/src/**/*.test.ts'],
+          exclude: ['packages/**/src/**/*.browser.test.ts'],
           server: {
             deps: {
               inline: [/@qti-components\//],

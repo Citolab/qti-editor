@@ -17,9 +17,11 @@
  * If you need to break these rules, stop and read ROUNDTRIP.md, then update it.
  */
 import JSZip from 'jszip';
+import { buildCompatibilityReport, migrateHtmlFragment } from '@qti-editor/prosemirror-plugins';
 import { xmlToHTML } from '@qti-editor/prosekit-integration';
 import { jsonFromHTML } from 'prosekit/core';
 
+import type { CompatibilityReport, MigrationResult } from '@qti-editor/interfaces';
 import type { Schema } from 'prosekit/pm/model';
 
 const ITEM_RESOURCE_TYPE = 'imsqti_item_xmlv3p0';
@@ -59,6 +61,13 @@ export interface QtiPackageImportMetadata {
 export interface QtiPackageImportResult {
   json: ProseMirrorJson;
   metadata: QtiPackageImportMetadata;
+  compatibility?: {
+    items: Array<{
+      href: string;
+      html: MigrationResult<string>;
+    }>;
+    report: CompatibilityReport;
+  };
 }
 
 export async function importQtiPackageFromBlob(
@@ -87,6 +96,7 @@ export async function importQtiPackageFromZip(
 
   const itemJson: ProseMirrorJson[] = [];
   const itemMetadata: QtiPackageImportItemMetadata[] = [];
+  const compatibilityItems: Array<{ href: string; html: MigrationResult<string> }> = [];
 
   for (const href of itemHrefs) {
     const file = zip.file(href);
@@ -95,9 +105,10 @@ export async function importQtiPackageFromZip(
     const rawXml = await file.async('string');
     const xml = await inlineImageReferences(rawXml, href, zip);
     const metadata = extractItemMetadata(xml);
-    const html = itemXmlToImportHtml(xml);
-    itemJson.push(jsonFromHTML(html, { schema: options.schema }));
+    const htmlCompatibility = itemXmlToImportHtml(xml);
+    itemJson.push(jsonFromHTML(htmlCompatibility.document, { schema: options.schema }));
     itemMetadata.push({ ...metadata, href });
+    compatibilityItems.push({ href, html: htmlCompatibility });
   }
 
   if (itemJson.length === 0) {
@@ -109,6 +120,16 @@ export async function importQtiPackageFromZip(
     metadata: {
       ...await extractPackageMetadata(zip),
       items: itemMetadata,
+    },
+    compatibility: {
+      items: compatibilityItems,
+      report: buildCompatibilityReport(
+        compatibilityItems.map(item => ({
+          id: item.href,
+          label: item.href,
+          result: item.html,
+        })),
+      ),
     },
   };
 }
@@ -137,8 +158,19 @@ export async function getOrderedItemHrefs(zip: JSZip): Promise<string[]> {
     .sort();
 }
 
-export function itemXmlToImportHtml(xml: string): string {
-  return applyDataAttributes(xmlToHTML(stripIgnoredQtiSections(cleanXmlText(xml))));
+export function itemXmlToImportHtml(xml: string): MigrationResult<string> {
+  return migrateHtmlFragment(
+    applyDataAttributes(xmlToHTML(stripIgnoredQtiSections(cleanXmlText(xml)))),
+    {
+      metadata: {
+        importPath: 'packages/qti/roundtrip-import/itemXmlToImportHtml',
+      },
+      preserve: {
+        attributeNames: ['rubric-text'],
+        elementTags: ['qti-rubric-block'],
+      },
+    },
+  );
 }
 
 export function applyDataAttributes(html: string): string {

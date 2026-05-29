@@ -465,6 +465,9 @@ importers:
 
   packages/prosemirror/extensions:
     dependencies:
+      '@qti-editor/interfaces':
+        specifier: workspace:*
+        version: link:../../interfaces
       prosekit:
         specifier: ^0.20.0
         version: 0.20.0(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -967,6 +970,9 @@ importers:
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../prosekit-integration
+      '@qti-editor/prosemirror-plugins':
+        specifier: workspace:*
+        version: link:../../prosemirror/extensions
       jszip:
         specifier: ^3.10.1
         version: 3.10.1

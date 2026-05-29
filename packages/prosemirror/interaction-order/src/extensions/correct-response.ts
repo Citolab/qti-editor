@@ -30,13 +30,12 @@ export function createOrderCorrectResponsePlugin(): Plugin {
     key: orderCorrectResponsePluginKey,
     view(view) {
       const handleOrderChange = (event: Event) => {
-        const customEvent = event as CustomEvent<{ order: string[] }>;
+        const customEvent = event as CustomEvent<{ order: string[]; correctResponse: string }>;
         const interactionElement = customEvent.target as HTMLElement;
 
         if (!interactionElement.matches('qti-order-interaction')) return;
 
-        const { order } = customEvent.detail;
-        const correctResponse = order.length > 0 ? order : null;
+        const { correctResponse } = customEvent.detail;
 
         const pos = findInteractionNodePos(view, interactionElement);
         if (pos === null) return;

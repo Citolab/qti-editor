@@ -1,14 +1,10 @@
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, nothing } from 'lit';
 import { state } from 'lit/decorators.js';
-import { Interaction } from '@qti-editor/interaction-shared/components/interaction.js';
-import { QtiI18nController } from '@qti-editor/interaction-shared';
+import { InteractionPanel, QtiI18nController } from '@qti-editor/interaction-shared';
 
 import styles from '@qti-components/inline-choice-interaction/styles';
 
-
-let inlineChoiceMenuCounter = 0;
-
-export class QtiInlineChoiceInteraction extends Interaction {
+export class QtiInlineChoiceInteraction extends InteractionPanel {
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
     delegatesFocus: true,
@@ -30,14 +26,21 @@ export class QtiInlineChoiceInteraction extends Interaction {
   }
 
   @state()
-  _dropdownOpen = false;
-
-  @state()
   private _correctChoiceText: string | null = null;
 
   private readonly i18n = new QtiI18nController(this);
 
-  private readonly _menuId = `qti-inline-choice-menu-${inlineChoiceMenuCounter++}`;
+  protected override shouldOpenPanelOnPointerDown(): boolean {
+    return false;
+  }
+
+  protected override shouldOpenPanelOnFocusIn(): boolean {
+    return false;
+  }
+
+  protected override shouldOpenPanelOnSelectionChange(): boolean {
+    return false;
+  }
 
   override render() {
     return html`
@@ -45,10 +48,8 @@ export class QtiInlineChoiceInteraction extends Interaction {
         part="trigger"
         type="button"
         aria-haspopup="listbox"
-        aria-expanded="${this._dropdownOpen ? 'true' : 'false'}"
-        aria-controls="${this._menuId}"
-        popovertarget="${this._menuId}"
-        popovertargetaction="toggle"
+        aria-expanded="${this._panelOpen ? 'true' : 'false'}"
+        @click=${this.togglePanel}
       >
         <span
           part="value"
@@ -56,12 +57,17 @@ export class QtiInlineChoiceInteraction extends Interaction {
         >${this._correctChoiceText ?? this.i18n.t('inlineChoice.placeholder')}</span>
         <span part="dropdown-icon" aria-hidden="true">▾</span>
       </button>
-      <div id="${this._menuId}" part="menu" role="listbox" popover="auto">
-        <button part="option" type="button" role="option">
-          <span part="option-content">${this.i18n.t('inlineChoice.emptyOption')}</span>
-        </button>
-        <slot @slotchange=${this.#onChoicesSlotChange}></slot>
-      </div>
+      ${this._panelOpen ? html`
+        <div part="menu" role="listbox">
+          <button part="option" type="button" role="option">
+            <span part="option-content">${this.i18n.t('inlineChoice.emptyOption')}</span>
+          </button>
+          <slot @slotchange=${this.#onChoicesSlotChange}></slot>
+        </div>
+      ` : html`
+        ${nothing}
+        <slot @slotchange=${this.#onChoicesSlotChange} hidden></slot>
+      `}
     `;
   }
 

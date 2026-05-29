@@ -1,4 +1,9 @@
 
+import {
+  qtiPromptNodeSpec,
+  qtiPromptParagraphNodeSpec,
+} from '@qti-editor/interaction-shared';
+
 import { insertExtendedTextInteraction } from './components/qti-extended-text-interaction/qti-extended-text-interaction.commands.js';
 import { qtiExtendedTextInteractionNodeSpec } from './components/qti-extended-text-interaction/qti-extended-text-interaction.schema.js';
 import { extendedTextInteractionComposerMetadata, extendedTextNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
@@ -11,6 +16,8 @@ export const extendedTextInteractionDescriptor = {
   nodeTypeName: 'qtiExtendedTextInteraction',
   nodeSpecs: [
     { name: 'qtiExtendedTextInteraction', spec: qtiExtendedTextInteractionNodeSpec },
+    { name: 'qtiPrompt', spec: qtiPromptNodeSpec },
+    { name: 'qtiPromptParagraph', spec: qtiPromptParagraphNodeSpec },
   ],
   insertCommand: insertExtendedTextInteraction,
   keyboardShortcut: 'Mod-Shift-e',

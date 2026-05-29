@@ -64,7 +64,7 @@ export class QtiExtendedTextAttributesEditor extends LitElement {
   }
 
   private updateCorrectResponse(value: string) {
-    this.emitPatch({ correctResponse: value || null });
+    this.emitPatch({ rubricScoringBlock: value || null });
   }
 
   override render() {
@@ -72,7 +72,7 @@ export class QtiExtendedTextAttributesEditor extends LitElement {
     if (!activeNode) return nothing;
 
     const classState = parseExtendedTextClassState(String(activeNode.attrs.class ?? ''));
-    const correctResponse = String(activeNode.attrs.correctResponse ?? '');
+    const correctResponse = String(activeNode.attrs.rubricScoringBlock ?? '');
 
     return html`
       <section class="rounded-xl border border-base-300/60 bg-base-100/80 p-3">
