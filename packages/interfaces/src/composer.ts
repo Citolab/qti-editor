@@ -67,6 +67,37 @@ export interface InteractionComposeResult {
 
 export type ResponseProcessingKind = 'match_correct' | 'map_response' | 'map_response_point';
 
+/**
+ * Declaration of a non-QTI attribute on an interaction source element.
+ *
+ * - A bare `string` is shorthand for `{ source, mirror: \`data-${source}\` }`.
+ * - The object form supports two special cases:
+ *   - `mirror: false` — strip the attribute on compose but do NOT mirror it to
+ *     any `data-*` attribute on the normalized element (e.g. `rubricScoringBlock`,
+ *     whose content is preserved via a synthesized `<qti-rubric-block>` instead).
+ *   - `aliases` — additional source attribute names that mirror to the same
+ *     target. Defensive net for raw-XML callers that bypass upstream renames
+ *     (e.g. camelCase `correctResponse` / `correctAnswer` → `data-correct-response`).
+ */
+export type NonQtiAttribute =
+  | string
+  | {
+      /** The canonical attribute name on the source element. */
+      source: string;
+      /**
+       * The data-* attribute to mirror to.
+       * - Omit to derive as `data-${source}`.
+       * - Set to `false` to strip without mirroring (e.g. `rubricScoringBlock`).
+       */
+      mirror?: string | false;
+      /**
+       * Additional source attribute names that mirror to the same target.
+       * Defensive net for raw-XML callers that bypass upstream renames
+       * (e.g. camelCase `correctResponse` / `correctAnswer` → `data-correct-response`).
+       */
+      aliases?: readonly string[];
+    };
+
 export interface InteractionComposerMetadata {
   tagName: string;
   nodeTypeName: string;
@@ -76,7 +107,7 @@ export interface InteractionComposerMetadata {
     internalKind?: ResponseProcessingKind;
     internalSourceXml: string;
   };
-  nonQtiAttributes: readonly string[];
+  nonQtiAttributes: readonly NonQtiAttribute[];
   userEditableAttributes: readonly string[];
 }
 

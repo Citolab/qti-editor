@@ -9,6 +9,15 @@ import { getInteractionComposerHandler } from '../interactions/composer.js';
 
 import type { ResponseProcessingKind } from '@qti-editor/interfaces';
 
+export {
+  collectMirrorMappings,
+  copyMirrorsToTarget,
+  getAllMirrorTargets,
+  normalizeNonQtiAttribute,
+  stripNonQtiAttributesFromElement,
+} from './non-qti-attributes.js';
+export type { NonQtiAttributeEntry } from './non-qti-attributes.js';
+
 export interface ComposerItemContext {
   identifier?: string;
   lang?: string;
