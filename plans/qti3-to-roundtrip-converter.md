@@ -392,7 +392,7 @@ Add an end-to-end integration test that exercises the full `qtiTransform → imp
 
 When real-world need arises, add as separate small plans:
 
-- `roundtripExtendedText()` — hoist rubric content from sibling `qti-rubric-block`. Needs prior decision on `correct-response` vs `rubric-block` DOM attr name (see "extended-text rename" note below).
+- `roundtripExtendedText()` — hoist rubric content from sibling `qti-rubric-block` element onto the interaction as `rubric-block="..."`. Cleanest if [plans/rubric-block-attribute.md](plans/rubric-block-attribute.md) ships first so the editor reads `rubric-block` directly (no `correct-response` overload to navigate).
 - `roundtripScore()` — detect score from response-processing template URI (`match_correct` → 1; custom → parse `qti-base-value`).
 - `roundtripCaseSensitive()` — detect `case-sensitive="true"` on `qti-string-match` and hoist as `data-case-sensitive`.
 - `roundtripAreaMappings()` — for select-point, parse response-processing → emit `data-area-mappings` JSON.
@@ -407,6 +407,7 @@ Each is a clean additive transform — adding one is a copy of `roundtrip-choice
 ## See also
 
 - [plans/unify-non-qti-attribute-metadata.md](plans/unify-non-qti-attribute-metadata.md) — run first. Establishes the unified non-QTI attribute registry inside QTI-Editor. Once it lands, a v2 of this package can derive its target attribute set from the registry instead of hardcoding selector lists.
+- [plans/rubric-block-attribute.md](plans/rubric-block-attribute.md) — run after unification, before adding `roundtripExtendedText()` here. Renames the rubric DOM attribute on extended-text so this package can map `<qti-rubric-block>` → `rubric-block="..."` without overload.
 - [apps/site/src/content/docs/packages/itembody-subformat.mdx](apps/site/src/content/docs/packages/itembody-subformat.mdx) — the conceptual format overview that this package writes into.
 
 ## Estimate
