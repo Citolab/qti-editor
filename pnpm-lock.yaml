@@ -921,6 +921,25 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  packages/qti/package-export:
+    dependencies:
+      '@qti-editor/prosekit-integration':
+        specifier: workspace:*
+        version: link:../prosekit-integration
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
+      prosekit:
+        specifier: ^0.20.0
+        version: 0.20.2(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.39
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   packages/qti/prosekit-integration:
     dependencies:
       '@lit/context':
@@ -957,6 +976,9 @@ importers:
 
   packages/qti/roundtrip-export:
     dependencies:
+      '@qti-editor/core':
+        specifier: workspace:*
+        version: link:../core
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../prosekit-integration

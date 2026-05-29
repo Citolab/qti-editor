@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DATA_ATTRIBUTE_MAPPINGS } from '@qti-editor/qti-roundtrip-import';
-
-import {
-  EDITOR_DATA_ATTRIBUTE_MAPPINGS,
-  SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS,
-  TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS,
-} from './index';
+import { collectMirrorMappings } from '@qti-editor/core/composer';
+import { listInteractionDescriptors } from '@qti-editor/core/interactions/composer';
 
 /**
  * Executable form of the paired-contract guard described in ROUNDTRIP.md.
@@ -15,11 +11,11 @@ import {
  * other. Update both packages and the ROUNDTRIP.md contract table.
  */
 describe('roundtrip data-* contract (export ↔ import)', () => {
-  const exportTargets = new Set<string>([
-    ...EDITOR_DATA_ATTRIBUTE_MAPPINGS.map(m => m.target),
-    ...TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS.map(m => m.target),
-    ...SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS.map(m => m.target),
-  ]);
+  const exportTargets = new Set<string>(
+    listInteractionDescriptors().flatMap(descriptor =>
+      collectMirrorMappings(descriptor.composerMetadata).map(m => m.target),
+    ),
+  );
   const importSources = new Set<string>(DATA_ATTRIBUTE_MAPPINGS.map(m => m.source));
 
   it('every data-* attribute written by export is read by import', () => {

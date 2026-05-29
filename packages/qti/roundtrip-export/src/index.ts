@@ -15,6 +15,8 @@
  */
 import JSZip from 'jszip';
 import { getQtiItems, type QtiComposeContext, type QtiItemFragment } from '@qti-editor/prosekit-integration/save-qti';
+import { collectMirrorMappings } from '@qti-editor/core/composer';
+import { getInteractionComposerMetadata } from '@qti-editor/core/interactions/composer';
 
 import type { ProseMirrorNode, Schema } from 'prosekit/pm/model';
 
@@ -27,25 +29,6 @@ const QTI_ASI_SCHEMA_LOCATION =
   'http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd';
 
 const IMAGE_REFERENCE_ATTRIBUTES = ['src', 'data', 'image'] as const;
-const TEXT_ENTRY_INTERACTION_TAG = 'qti-text-entry-interaction';
-const SELECT_POINT_INTERACTION_TAG = 'qti-select-point-interaction';
-// PAIRED CONTRACT: every entry below must have an inverse in `DATA_ATTRIBUTE_MAPPINGS`
-// inside `@qti-editor/qti-roundtrip-import` (`packages/qti/roundtrip-import/src/index.ts`).
-// See ROUNDTRIP.md for the canonical table.
-export const EDITOR_DATA_ATTRIBUTE_MAPPINGS = [
-  { source: 'correct-response', target: 'data-correct-response' },
-  { source: 'correctResponse', target: 'data-correct-response' },
-  { source: 'correctAnswer', target: 'data-correct-response' },
-  { source: 'score', target: 'data-score' },
-] as const;
-// PAIRED CONTRACT: see `DATA_ATTRIBUTE_MAPPINGS` in `@qti-editor/qti-roundtrip-import`.
-export const TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS = [
-  { source: 'case-sensitive', target: 'data-case-sensitive' },
-] as const;
-// PAIRED CONTRACT: see `DATA_ATTRIBUTE_MAPPINGS` in `@qti-editor/qti-roundtrip-import`.
-export const SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS = [
-  { source: 'area-mappings', target: 'data-area-mappings' },
-] as const;
 
 export interface QtiPackageContext extends QtiComposeContext {
   packageIdentifier?: string;
@@ -294,11 +277,8 @@ function preserveEditorDataAttributes(xml: string): string {
 }
 
 function preserveEditorDataAttributesInTag(tagName: string, attributes: string): string {
-  const mappings = [
-    ...EDITOR_DATA_ATTRIBUTE_MAPPINGS,
-    ...(tagName === TEXT_ENTRY_INTERACTION_TAG ? TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS : []),
-    ...(tagName === SELECT_POINT_INTERACTION_TAG ? SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS : []),
-  ];
+  const metadata = getInteractionComposerMetadata(tagName);
+  const mappings = metadata ? collectMirrorMappings(metadata) : [];
 
   let nextAttributes = attributes;
   mappings.forEach(({ source, target }) => {
