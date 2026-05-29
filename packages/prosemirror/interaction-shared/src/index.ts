@@ -25,6 +25,7 @@ export * from './commands/insert.js';
 
 export * from './composer/types.js';
 export * from './composer/metadata.js';
+export * from './composer/non-qti-attributes.js';
 export * from './correct-response/codec.js';
 export * from './i18n/index.js';
 

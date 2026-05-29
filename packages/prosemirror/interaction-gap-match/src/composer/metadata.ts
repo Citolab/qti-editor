@@ -32,7 +32,7 @@ export const gapMatchInteractionComposerMetadata = {
     internalKind: 'map_response',
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
-  nonQtiAttributes: ['correct-response', 'score'],
+  nonQtiAttributes: [{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }, 'score'],
   userEditableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'correctResponse', 'score'],
 } satisfies InteractionComposerMetadata;
 

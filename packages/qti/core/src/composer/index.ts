@@ -5,7 +5,9 @@
  * No Lit/UI dependencies - these can be used in any environment.
  */
 
-import { getInteractionComposerHandler } from '../interactions/composer.js';
+import { getInteractionComposerHandler, getInteractionComposerMetadata } from '../interactions/composer.js';
+
+import { copyMirrorsToTarget } from './non-qti-attributes.js';
 
 import type { ResponseProcessingKind } from '@qti-editor/interfaces';
 
@@ -59,24 +61,6 @@ const SCHEMA_LOCATION =
   'http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd';
 const MATCH_CORRECT_TEMPLATE =
   'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct';
-const TEXT_ENTRY_INTERACTION_TAG = 'qti-text-entry-interaction';
-const SELECT_POINT_INTERACTION_TAG = 'qti-select-point-interaction';
-
-const EDITOR_DATA_ATTRIBUTE_MAPPINGS = [
-  { source: 'correct-response', target: 'data-correct-response' },
-  { source: 'correctResponse', target: 'data-correct-response' },
-  { source: 'correctAnswer', target: 'data-correct-response' },
-  { source: 'score', target: 'data-score' },
-] as const;
-
-const TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS = [
-  { source: 'case-sensitive', target: 'data-case-sensitive' },
-] as const;
-
-const SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS = [
-  { source: 'area-mappings', target: 'data-area-mappings' },
-] as const;
-
 function sanitizeIdentifier(value: string | undefined, fallback: string): string {
   const sanitized = value?.trim().replace(/[^A-Za-z0-9_.-]+/g, '-').replace(/^-+|-+$/g, '');
   return sanitized || fallback;
@@ -122,30 +106,6 @@ function parseCorrectResponseValues(
     return value.length > 0 ? [value] : [];
   }
   return value.split(',').map(v => v.trim()).filter(Boolean);
-}
-
-function copyEditorDataAttribute(sourceElement: Element, targetElement: Element, source: string, target: string): void {
-  const value = sourceElement.getAttribute(source);
-  if (value == null || value.length === 0 || targetElement.hasAttribute(target)) return;
-  targetElement.setAttribute(target, value);
-}
-
-function preserveEditorDataAttributes(sourceElement: Element, targetElement: Element, tagName: string): void {
-  EDITOR_DATA_ATTRIBUTE_MAPPINGS.forEach(({ source, target }) => {
-    copyEditorDataAttribute(sourceElement, targetElement, source, target);
-  });
-
-  if (tagName === TEXT_ENTRY_INTERACTION_TAG) {
-    TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS.forEach(({ source, target }) => {
-      copyEditorDataAttribute(sourceElement, targetElement, source, target);
-    });
-  }
-
-  if (tagName === SELECT_POINT_INTERACTION_TAG) {
-    SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS.forEach(({ source, target }) => {
-      copyEditorDataAttribute(sourceElement, targetElement, source, target);
-    });
-  }
 }
 
 export function extractResponseDeclarations(itemBodyRoot?: Element | null): ResponseDeclaration[] {
@@ -545,7 +505,10 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
 
     if (handler) {
       const composeResult = handler.compose(element, xmlDoc);
-      preserveEditorDataAttributes(element, composeResult.normalizedElement, tagName);
+      const metadata = getInteractionComposerMetadata(tagName);
+      if (metadata) {
+        copyMirrorsToTarget(element, composeResult.normalizedElement, metadata);
+      }
 
       composeResult.warnings.forEach(warning => {
         console.warn(`[QTI Composer] ${warning.message}`);

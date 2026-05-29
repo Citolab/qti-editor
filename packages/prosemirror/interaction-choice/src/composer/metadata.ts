@@ -33,7 +33,7 @@ export const choiceInteractionComposerMetadata = {
     internalKind: 'match_correct',
     internalSourceXml: MATCH_CORRECT_INTERNAL_TEMPLATE,
   },
-  nonQtiAttributes: ['correct-response', 'score'],
+  nonQtiAttributes: [{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }, 'score'],
   // maxChoices and correctResponse are set by clicking choices, not edited directly
   userEditableAttributes: ['class', 'score'],
 

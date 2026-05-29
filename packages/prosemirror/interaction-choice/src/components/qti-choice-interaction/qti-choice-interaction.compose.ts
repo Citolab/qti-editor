@@ -1,4 +1,4 @@
-import { parseCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+import { collectMirrorMappings, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { choiceInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -27,8 +27,8 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   const minChoices = toFiniteNumber(sourceElement.getAttribute('min-choices'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
-  const nonQtiAttributes = [...metadata.nonQtiAttributes];
-  nonQtiAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
+  stripNonQtiAttributesFromElement(normalizedElement, metadata);
+  const nonQtiAttributes = collectMirrorMappings(metadata).map(m => m.source);
 
   normalizedElement.setAttribute('max-choices', String(maxChoices));
   if (minChoices > 0) {

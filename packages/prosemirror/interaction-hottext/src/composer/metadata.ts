@@ -31,7 +31,7 @@ export const hottextInteractionComposerMetadata = {
     internalKind: 'match_correct',
     internalSourceXml: MATCH_CORRECT_INTERNAL_TEMPLATE,
   },
-  nonQtiAttributes: ['correct-response', 'score'],
+  nonQtiAttributes: [{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }, 'score'],
   userEditableAttributes: ['maxChoices', 'minChoices', 'correctResponse', 'score'],
 } satisfies InteractionComposerMetadata;
 

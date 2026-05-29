@@ -1,4 +1,4 @@
-import { parseCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+import { collectMirrorMappings, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { orderInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -20,8 +20,8 @@ export function composeOrderInteractionElement(sourceElement: Element, xmlDoc: D
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
-  const nonQtiAttributes = [...metadata.nonQtiAttributes];
-  nonQtiAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
+  stripNonQtiAttributesFromElement(normalizedElement, metadata);
+  const nonQtiAttributes = collectMirrorMappings(metadata).map(m => m.source);
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
   if (!responseIdentifier) {

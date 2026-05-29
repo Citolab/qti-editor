@@ -14,7 +14,7 @@ export const extendedTextInteractionComposerMetadata = {
     internalKind: undefined,
     internalSourceXml: '',
   },
-  nonQtiAttributes: ['correct-response', 'rubricScoringBlock', 'score'],
+  nonQtiAttributes: [{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }, { source: 'rubricScoringBlock', mirror: false }, 'score'],
   userEditableAttributes: ['expectedLength', 'expectedLines', 'placeholderText', 'format', 'rubricScoringBlock', 'class', 'score'],
 
 } satisfies InteractionComposerMetadata;

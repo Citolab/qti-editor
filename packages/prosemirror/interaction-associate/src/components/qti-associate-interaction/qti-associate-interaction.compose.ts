@@ -1,4 +1,4 @@
-import { parseCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+import { collectMirrorMappings, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { associateInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -27,8 +27,8 @@ export function composeAssociateInteractionElement(sourceElement: Element, xmlDo
   const minAssociations = toFiniteNumber(sourceElement.getAttribute('min-associations'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
-  const nonQtiAttributes = [...metadata.nonQtiAttributes];
-  nonQtiAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
+  stripNonQtiAttributesFromElement(normalizedElement, metadata);
+  const nonQtiAttributes = collectMirrorMappings(metadata).map(m => m.source);
 
   normalizedElement.setAttribute('max-associations', String(maxAssociations > 0 ? maxAssociations : 1));
   if (minAssociations > 0) {

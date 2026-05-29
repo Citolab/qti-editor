@@ -24,7 +24,7 @@ export const selectPointInteractionComposerMetadata = {
     internalKind: 'map_response_point',
     internalSourceXml: MAP_RESPONSE_POINT_INTERNAL_TEMPLATE,
   },
-  nonQtiAttributes: ['area-mappings', 'correct-response', 'score'],
+  nonQtiAttributes: [{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }, 'score', 'area-mappings'],
   userEditableAttributes: ['maxChoices', 'minChoices', 'score'],
 } satisfies InteractionComposerMetadata;
 

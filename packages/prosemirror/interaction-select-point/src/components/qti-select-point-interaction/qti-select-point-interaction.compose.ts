@@ -1,4 +1,4 @@
-import { parseCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+import { collectMirrorMappings, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { selectPointInteractionComposerMetadata, SELECT_POINT_INTERACTION_TAG } from '../../composer/metadata.js';
 
@@ -116,9 +116,8 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
 
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
-  const nonQtiAttributes = [...metadata.nonQtiAttributes];
-
-  nonQtiAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
+  stripNonQtiAttributesFromElement(normalizedElement, metadata);
+  const nonQtiAttributes = collectMirrorMappings(metadata).map(m => m.source);
 
   normalizedElement.setAttribute('max-choices', String(maxChoices > 0 ? maxChoices : 1));
   if (minChoices > 0) {

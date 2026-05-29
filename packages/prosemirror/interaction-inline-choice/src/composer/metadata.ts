@@ -32,7 +32,7 @@ export const inlineChoiceInteractionComposerMetadata = {
     internalKind: 'match_correct',
     internalSourceXml: MATCH_CORRECT_INTERNAL_TEMPLATE,
   },
-  nonQtiAttributes: ['correct-response', 'score'],
+  nonQtiAttributes: [{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }, 'score'],
   userEditableAttributes: ['shuffle', 'score'],
 } satisfies InteractionComposerMetadata;
 

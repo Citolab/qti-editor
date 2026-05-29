@@ -1,4 +1,4 @@
-import { parseCorrectResponseAttribute } from '@qti-editor/interaction-shared';
+import { collectMirrorMappings, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { extendedTextInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -53,8 +53,8 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
-  const nonQtiAttributes = [...metadata.nonQtiAttributes];
-  nonQtiAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
+  stripNonQtiAttributesFromElement(normalizedElement, metadata);
+  const nonQtiAttributes = collectMirrorMappings(metadata).map(m => m.source);
 
   // Set normalized attributes
   if (expectedLength != null) {
