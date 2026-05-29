@@ -279,6 +279,7 @@ export default defineConfig({
         {
           label: 'Package Reference',
           items: [
+            { label: 'Itembody-only QTI Subformat', slug: 'docs/packages/itembody-subformat' },
             { label: 'Prosemirror Plugins', slug: 'docs/packages/prosemirror-plugins' },
             { label: 'QTI Roundtrip Export Package', slug: 'docs/packages/qti-roundtrip-export' },
             { label: 'QTI Roundtrip Import Package', slug: 'docs/packages/qti-roundtrip-import' },

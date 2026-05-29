@@ -1,0 +1,60 @@
+---
+title: Itembody-only QTI Subformat
+description: How QTI-Editor stores authoring state in the itembody using non-QTI attributes mirrored as data-* on export.
+slug: docs/packages/itembody-subformat
+---
+
+QTI-Editor stores authoring state in the QTI itembody itself, so the itembody is the **single source of truth** for an item — including state that QTI 3.0 does not define an attribute for (e.g. an authoring `correct-response`, per-interaction `score`, per-choice scoring).
+
+This document explains the subformat: what extra attributes the editor reads, how they are kept valid-QTI on export, and how to declare a new one.
+
+## The contract
+
+1. While editing, the QTI element may carry **non-QTI attributes** (e.g. `correct-response`, `score`, `case-sensitive`, `area-mappings`).
+2. On compose / export, each non-QTI attribute is **stripped** from the QTI element and **mirrored** as a `data-*` attribute on the same element (e.g. `correct-response` → `data-correct-response`).
+3. The exported XML is therefore **valid QTI 3.0**: every non-standard piece of authoring state lives behind the `data-*` prefix, which QTI permits on any element.
+4. On re-import, the `data-*` attributes are converted back to their editor-facing names, restoring the authoring state losslessly.
+
+## Where non-QTI attributes are declared
+
+Each interaction declares its non-QTI attributes in its composer metadata:
+
+`packages/prosemirror/interaction-<name>/src/composer/metadata.ts`
+
+```ts
+export const choiceInteractionComposerMetadata = {
+  // ...
+  nonQtiAttributes: ['correct-response', 'score'],
+  // ...
+} satisfies InteractionComposerMetadata;
+```
+
+The compose handler reads these from the source element to populate the response declaration, then removes them from the normalized element so the output is clean QTI.
+
+## Current non-QTI attribute set
+
+| Attribute | Interactions | data-* mirror |
+|---|---|---|
+| `correct-response` | choice, extended-text, associate, hottext, text-entry, match, gap-match, order, inline-choice, select-point | `data-correct-response` |
+| `score` | all interactions above | `data-score` |
+| `case-sensitive` | text-entry | `data-case-sensitive` |
+| `area-mappings` | select-point | `data-area-mappings` |
+
+The hardcoded `data-*` mapping tables live in `packages/qti/core/src/composer/index.ts` and `packages/qti/roundtrip-export/src/index.ts`. The detailed per-tag table is in [ROUNDTRIP.md](../../../../../packages/qti/roundtrip-export/ROUNDTRIP.md).
+
+## Adding a new non-QTI attribute
+
+To extend the subformat with a new attribute on an interaction:
+
+1. Add the attribute name to `nonQtiAttributes` in that interaction's `composer/metadata.ts`.
+2. Read it in the interaction's `.compose.ts` from the source element and propagate it to whatever needs it (response declaration, UI state, etc.).
+3. Add the editor → `data-*` mapping to `EDITOR_DATA_ATTRIBUTE_MAPPINGS` (or the interaction-specific mapping table) in `packages/qti/core/src/composer/index.ts` AND `packages/qti/roundtrip-export/src/index.ts`.
+4. Add the inverse mapping to `DATA_ATTRIBUTE_MAPPINGS` in `packages/qti/roundtrip-import/src/index.ts`.
+5. Document the new row in the table above and in `packages/qti/roundtrip-export/ROUNDTRIP.md`.
+
+The metadata list and the hardcoded mapping tables are intentionally separate today; if/when they are unified, this guide should be updated.
+
+## Related
+
+- [QTI Roundtrip Export Package](./qti-roundtrip-export)
+- [QTI Roundtrip Import Package](./qti-roundtrip-import)

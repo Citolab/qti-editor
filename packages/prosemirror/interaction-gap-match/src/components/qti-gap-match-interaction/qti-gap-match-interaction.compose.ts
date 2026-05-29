@@ -27,8 +27,8 @@ export function composeGapMatchInteractionElement(sourceElement: Element, xmlDoc
   const minAssociations = toFiniteNumber(sourceElement.getAttribute('min-associations'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
-  const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
-  editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
+  const nonQtiAttributes = [...metadata.nonQtiAttributes];
+  nonQtiAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
 
   normalizedElement.setAttribute('max-associations', String(maxAssociations > 0 ? maxAssociations : 1));
   if (minAssociations > 0) {
@@ -60,7 +60,7 @@ export function composeGapMatchInteractionElement(sourceElement: Element, xmlDoc
     responseDeclaration,
     responseProcessingTemplate: metadata.responseProcessingTemplate,
     responseProcessingKind: metadata.responseProcessing.internalKind,
-    editorOnlyAttributes,
+    nonQtiAttributes,
     warnings,
   };
 }

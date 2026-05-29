@@ -116,9 +116,9 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
 
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
-  const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
+  const nonQtiAttributes = [...metadata.nonQtiAttributes];
 
-  editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
+  nonQtiAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
 
   normalizedElement.setAttribute('max-choices', String(maxChoices > 0 ? maxChoices : 1));
   if (minChoices > 0) {
@@ -176,7 +176,7 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
     responseDeclaration,
     responseProcessingTemplate: metadata.responseProcessingTemplate,
     responseProcessingKind: metadata.responseProcessing.internalKind,
-    editorOnlyAttributes,
+    nonQtiAttributes,
     warnings,
   };
 }

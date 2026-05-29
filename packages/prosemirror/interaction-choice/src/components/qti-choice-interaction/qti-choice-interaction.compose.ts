@@ -27,8 +27,8 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   const minChoices = toFiniteNumber(sourceElement.getAttribute('min-choices'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
-  const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
-  editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
+  const nonQtiAttributes = [...metadata.nonQtiAttributes];
+  nonQtiAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
 
   normalizedElement.setAttribute('max-choices', String(maxChoices));
   if (minChoices > 0) {
@@ -63,7 +63,7 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
     responseDeclaration,
     responseProcessingTemplate: metadata.responseProcessingTemplate,
     responseProcessingKind: metadata.responseProcessing.internalKind,
-    editorOnlyAttributes,
+    nonQtiAttributes,
     warnings,
   };
 }

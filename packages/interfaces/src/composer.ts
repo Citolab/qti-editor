@@ -56,7 +56,7 @@ export interface InteractionComposeResult {
   responseDeclaration?: InteractionResponseDeclaration;
   responseProcessingTemplate?: string;
   responseProcessingKind?: ResponseProcessingKind;
-  editorOnlyAttributes: string[];
+  nonQtiAttributes: string[];
   warnings: ComposerWarning[];
   /**
    * Additional elements to insert after the interaction element.
@@ -76,7 +76,7 @@ export interface InteractionComposerMetadata {
     internalKind?: ResponseProcessingKind;
     internalSourceXml: string;
   };
-  editorOnlyAttributes: readonly string[];
+  nonQtiAttributes: readonly string[];
   userEditableAttributes: readonly string[];
 }
 

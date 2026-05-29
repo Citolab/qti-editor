@@ -1,5 +1,7 @@
 # Lossless ProseMirror ↔ QTI Roundtrip
 
+> See [Itembody-only QTI subformat](../../../apps/site/src/content/docs/packages/itembody-subformat.mdx) for the conceptual overview (also published on the docs site under Package Reference). This file documents the per-tag mapping table.
+
 > **This package and its sibling `@qti-editor/qti-roundtrip-import` are NOT a generic QTI 3.0 importer/exporter.** They exist solely to let the editor save and restore its own authoring state through QTI 3.0 packages without losing information. Importing QTI 3.0 produced by another vendor will silently drop correct-response and scoring data, because the importer ignores `qti-response-declaration` and `qti-response-processing`.
 
 ## What this is

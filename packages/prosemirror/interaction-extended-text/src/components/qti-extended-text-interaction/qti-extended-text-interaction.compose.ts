@@ -53,8 +53,8 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
-  const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
-  editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
+  const nonQtiAttributes = [...metadata.nonQtiAttributes];
+  nonQtiAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
 
   // Set normalized attributes
   if (expectedLength != null) {
@@ -97,7 +97,7 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
     responseDeclaration,
     responseProcessingTemplate: undefined, // Extended text typically requires manual scoring
     responseProcessingKind: undefined,
-    editorOnlyAttributes,
+    nonQtiAttributes,
     warnings,
     additionalElements: additionalElements.length > 0 ? additionalElements : undefined,
   };

@@ -20,8 +20,8 @@ export function composeOrderInteractionElement(sourceElement: Element, xmlDoc: D
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
-  const editorOnlyAttributes = [...metadata.editorOnlyAttributes];
-  editorOnlyAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
+  const nonQtiAttributes = [...metadata.nonQtiAttributes];
+  nonQtiAttributes.forEach(attr => normalizedElement.removeAttribute(attr));
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
   if (!responseIdentifier) {
@@ -46,7 +46,7 @@ export function composeOrderInteractionElement(sourceElement: Element, xmlDoc: D
     responseDeclaration,
     responseProcessingTemplate: metadata.responseProcessingTemplate,
     responseProcessingKind: metadata.responseProcessing.internalKind,
-    editorOnlyAttributes,
+    nonQtiAttributes,
     warnings,
   };
 }

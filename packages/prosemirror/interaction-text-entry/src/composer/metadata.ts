@@ -25,7 +25,7 @@ export const textEntryInteractionComposerMetadata = {
     internalKind: 'map_response',
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['case-sensitive', 'score'],
+  nonQtiAttributes: ['case-sensitive', 'correct-response', 'score'],
   userEditableAttributes: ['class', 'caseSensitive', 'correctResponse', 'placeholderText', 'score'],
 } satisfies InteractionComposerMetadata;
 

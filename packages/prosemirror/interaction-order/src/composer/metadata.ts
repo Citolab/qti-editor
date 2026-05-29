@@ -33,7 +33,7 @@ export const orderInteractionComposerMetadata = {
     internalKind: 'match_correct',
     internalSourceXml: MATCH_CORRECT_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['score'],
+  nonQtiAttributes: ['correct-response', 'score'],
   userEditableAttributes: ['shuffle', 'correctResponse', 'score'],
 } satisfies InteractionComposerMetadata;
 

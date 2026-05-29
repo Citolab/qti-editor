@@ -451,6 +451,8 @@ Typical commands:
 
 Canonical contract: [`packages/qti/roundtrip-export/ROUNDTRIP.md`](../packages/qti/roundtrip-export/ROUNDTRIP.md). Do not modify the `data-*` mapping table in either package without updating both halves and the doc in lockstep.
 
+For the conceptual overview of the itembody-as-source-of-truth subformat — what non-QTI attributes the editor stores on interaction elements and how they are mirrored as `data-*` for QTI 3.0 conformance — see [Itembody-only QTI subformat](../apps/site/src/content/docs/packages/itembody-subformat.mdx) (published on the docs site under Package Reference).
+
 ## Migration Note
 
 Some current source paths still reflect the old structure. During migration:

@@ -14,3 +14,8 @@ pnpm dev
 ```
 
 This starts the main editor app and watches packages for changes. The editor runs at `http://localhost:5173` by default.
+
+## Documentation
+
+- [docs/architecture.md](./docs/architecture.md) — package topology and ownership rules
+- [Itembody-only QTI subformat](./apps/site/src/content/docs/packages/itembody-subformat.mdx) — the itembody-only QTI subformat the editor reads and writes (also published on the docs site under Package Reference)

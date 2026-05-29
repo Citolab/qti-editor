@@ -32,7 +32,7 @@ export const matchInteractionComposerMetadata = {
     internalKind: 'map_response',
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
-  editorOnlyAttributes: ['score'],
+  nonQtiAttributes: ['correct-response', 'score'],
   userEditableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'correctResponse', 'score'],
 } satisfies InteractionComposerMetadata;
 
