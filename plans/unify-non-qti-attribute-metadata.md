@@ -29,11 +29,11 @@ Make the per-interaction metadata the **single declarative source** that drives 
 - **Touches the lossless round-trip contract.** The wire format is the contract — `data-correct-response`, `data-score`, etc. Any change that alters which `data-*` attributes are produced or how they round-trip is a wire-format break. Mitigation: snapshot test on a fixture corpus before any code change and assert byte-equal output after each migration step.
 - **Cross-package coupling.** Today the interaction metadata is owned by `@qti-editor/interaction-*` packages; the `data-*` mapping is owned by `@qti-editor/qti-core` and `@qti-editor/qti-roundtrip-{export,import}`. The unification requires the core/roundtrip packages to read interaction metadata. Mitigation: route via the existing interaction registry already exposed by `@qti-editor/qti-core/interactions/composer` (which currently has compile errors in `prosekit-integration` but is otherwise the canonical registry).
 - **`rubricScoringBlock` is special.** It is listed in `extended-text`'s `nonQtiAttributes` but is **not** in any `data-*` mapping table — i.e. today it is stripped on compose but **not mirrored on export**. After unification this needs an explicit "strip only, do not mirror" opt-out, or it silently starts producing `data-rubricscoringblock` on export (a *new* wire-format addition and very likely a bug if anything in re-import is non-roundtrip-aware). Mitigation: support an explicit `{ source, mirror: false }` shape, and apply it to `rubricScoringBlock`.
-- **`correctResponse` / `correctAnswer` aliases are dead code.** The forward mapping today has three sources mapping to the same target (`correct-response`, `correctResponse`, `correctAnswer` → `data-correct-response`). Investigation showed the two camelCase entries cannot fire: [`renameLegacyHtmlAttributes`](packages/prosemirror/extensions/src/compatibility/migrations.ts#L164) rewrites both to `correct-response` before any compose path runs, and a dedicated test ([`dom.browser.test.ts:101-114`](packages/prosemirror/extensions/src/compatibility/dom.browser.test.ts#L101-L114)) asserts the camelCase names are gone from migrated output. The unification deletes those dead entries (Phase 4); the unified type does not need an `aliases` field.
+- **`correctResponse` / `correctAnswer` aliases are a defensive net, not dead code.** The forward mapping has three sources mapping to the same target (`correct-response`, `correctResponse`, `correctAnswer` → `data-correct-response`). Initial investigation suggested the camelCase entries were dead code (because [`renameLegacyHtmlAttributes`](packages/prosemirror/extensions/src/compatibility/migrations.ts#L164) rewrites them upstream). The Phase 1 snapshot proved otherwise: when raw XML is fed directly to `buildAssessmentItemXml`, the upstream rename does not run, and the alias entries fire to mirror camelCase to the canonical `data-*` target. The unification therefore **keeps** the aliases, encoded in the unified shape via the `aliases?: readonly string[]` field. Snapshot stays byte-identical across Phases 3-5.
 - **Ordering / determinism.** Today the mappings are static `as const` arrays in a fixed order. If the unified registry is built by iterating a `Record<tagName, metadata>` the iteration order could differ across runtimes. Most `setAttribute` calls are idempotent so order doesn't matter functionally, but the existing contract test and roundtrip snapshot tests may compare serialized output. Mitigation: when collecting the registry, sort entries by `target` (or by `tagName, source`) so output is stable.
 - **Performance.** The static `as const` tables are tiny and the forEach loops trivial. A derived registry built once at module load is equivalent. Building the registry per call would be wasteful — make it lazy/memoized.
 - **Coverage gap surfacing.** Once unified, the regex-based pass in `roundtrip-export/src/index.ts:287-311` (which operates on a serialized XML *string* via a tag-name regex) needs the same registry. That regex pass exists because the post-`cleanXmlString` step deletes attrs and the pass re-adds the mirrors from the pre-clean version. We'll keep that pipeline structure but call the unified helper from inside it.
-- **Shape choice: `string[]` vs discriminated `string | { source, mirror? }[]`.** A bare `string[]` with auto-derived `data-<source>` covers every current mirrored entry (`correct-response`, `score`, `case-sensitive`, `area-mappings`). The ONE genuine special case is `rubricScoringBlock`, which must be stripped without being mirrored. The discriminated shape lets that single entry opt out via `{ source: 'rubricScoringBlock', mirror: false }` while every other entry stays a plain string. **Recommendation: discriminated shape, but used in only one place.**
+- **Shape choice: `string[]` vs discriminated `string | { source, mirror?, aliases? }[]`.** A bare `string[]` works for entries with no special needs (`score`, `case-sensitive`, `area-mappings`). Two cases need the object form: `rubricScoringBlock` (strip-only via `mirror: false`) and `correct-response` (alias support for camelCase variants via `aliases`). **Recommendation: discriminated shape, used in two places per interaction.**
 
 ### Net judgment
 
@@ -53,14 +53,21 @@ In `packages/interfaces/src/composer.ts`:
 export type NonQtiAttribute =
   | string
   | {
-      /** The attribute name on the source element. */
+      /** The canonical attribute name on the source element. */
       source: string;
       /**
        * The data-* attribute to mirror to.
-       * - Omit to derive as `data-${source}` (lowercased if mixed case).
+       * - Omit to derive as `data-${source}`.
        * - Set to `false` to strip without mirroring (e.g. `rubricScoringBlock`).
        */
       mirror?: string | false;
+      /**
+       * Additional source attribute names that should also mirror to the same target.
+       * Used for casing variants (e.g. `correctResponse`, `correctAnswer` → `data-correct-response`).
+       * These act as a defensive net for raw-XML callers that bypass the upstream
+       * `renameLegacyHtmlAttributes` migration.
+       */
+      aliases?: readonly string[];
     };
 
 export interface InteractionComposerMetadata {
@@ -76,8 +83,9 @@ A new module `packages/qti/core/src/composer/non-qti-attributes.ts`:
 
 ```ts
 export interface NonQtiAttributeEntry {
-  source: string;          // attribute on the source element
-  mirror: string | null;   // data-* target, or null for strip-only
+  source: string;            // canonical attribute on the source element
+  mirror: string | null;     // data-* target, or null for strip-only
+  aliases: readonly string[]; // additional source names that map to the same target
 }
 
 export function normalizeNonQtiAttribute(entry: NonQtiAttribute): NonQtiAttributeEntry { ... }
@@ -109,24 +117,33 @@ The importer in `roundtrip-import` consumes `getAllMirrorTargets(registry)` to d
 ### Per-interaction declarations after unification
 
 ```ts
-// interaction-choice/.../metadata.ts          — unchanged shape; all plain strings
-nonQtiAttributes: ['correct-response', 'score'],
+// Shared constant to avoid repeating the alias list in every interaction.
+// Defined once in @qti-editor/interaction-shared and imported below.
+const CORRECT_RESPONSE: NonQtiAttribute = {
+  source: 'correct-response',
+  aliases: ['correctResponse', 'correctAnswer'],
+};
+
+// interaction-choice/.../metadata.ts
+nonQtiAttributes: [CORRECT_RESPONSE, 'score'],
 
 // interaction-text-entry/.../metadata.ts
-nonQtiAttributes: ['case-sensitive', 'correct-response', 'score'],
+nonQtiAttributes: ['case-sensitive', CORRECT_RESPONSE, 'score'],
 
 // interaction-select-point/.../metadata.ts
-nonQtiAttributes: ['area-mappings', 'correct-response', 'score'],
+nonQtiAttributes: ['area-mappings', CORRECT_RESPONSE, 'score'],
 
-// interaction-extended-text/.../metadata.ts   — one object form for strip-only
+// interaction-extended-text/.../metadata.ts   — strip-only special case
 nonQtiAttributes: [
-  'correct-response',
+  CORRECT_RESPONSE,
   { source: 'rubricScoringBlock', mirror: false },  // strip only, do not mirror
   'score',
 ],
 ```
 
-Almost every entry stays as a plain string. The object form is reserved for the genuine special case: `rubricScoringBlock` in extended-text, which must be stripped but NOT mirrored to preserve current export behavior. No interaction needs the camelCase `correctResponse` / `correctAnswer` aliases — those legacy names are migrated to `correct-response` by [`migrateHtmlFragment`](packages/prosemirror/extensions/src/compatibility/migrations.ts#L141-L162) before the compose pipeline ever sees the element.
+Most entries stay as plain strings. The object form covers two special cases:
+- **Aliases** (the universal `correct-response` entry): the source element may arrive with camelCase `correctResponse` or `correctAnswer` if it bypassed the upstream [`renameLegacyHtmlAttributes`](packages/prosemirror/extensions/src/compatibility/migrations.ts#L164) migration (e.g. raw XML fed directly to `buildAssessmentItemXml`). Aliases preserve the existing defensive-net behavior captured in the Phase 1 snapshot.
+- **Strip-only** (`rubricScoringBlock`): stripped but NOT mirrored, because the rubric content is preserved via a synthesized `<qti-rubric-block>` element instead of a `data-*` attribute.
 
 ---
 
@@ -176,7 +193,7 @@ case-sensitive     →  data-case-sensitive     (text-entry only)
 area-mappings      →  data-area-mappings      (select-point only)
 ```
 
-**Dead-code aliases to delete:** `correctResponse` and `correctAnswer` exist in the forward mapping table today as aliases for `correct-response`, but they are dead code. The compatibility migration [`renameLegacyHtmlAttributes`](packages/prosemirror/extensions/src/compatibility/migrations.ts#L164) runs before compose and rewrites both camelCase variants to `correct-response`, so they cannot reach the mirror step. The unification removes those entries from the mapping table (Phase 4). Equivalent legacy-name handling for the other attrs (`caseSensitive`, `areaMappings`) is similarly upstream of compose; the table never needed alias entries for them.
+**Aliases preserved:** `correctResponse` and `correctAnswer` exist in the forward mapping today as aliases for `correct-response`. Initial analysis claimed they were dead code (because [`renameLegacyHtmlAttributes`](packages/prosemirror/extensions/src/compatibility/migrations.ts#L164) rewrites them upstream), but the Phase 1 DOM-compose snapshot proved they DO fire when raw XML bypasses that upstream rename. The unification preserves them by encoding them in the unified shape via `aliases: [...]` on the canonical `correct-response` entry. The other camelCase legacy names (`caseSensitive`, `areaMappings`, etc.) do NOT have alias entries today and the snapshot does not exercise them — no change needed for those.
 
 `rubricScoringBlock` — stripped from extended-text on compose, NOT mirrored to any `data-*` today. (Whether that is intentional or a bug is out of scope for this plan; **the migration MUST preserve current behavior**: stripped, not mirrored.)
 
@@ -193,7 +210,7 @@ Before any code change, lock in the current `data-*` output as a snapshot fixtur
 1. Identify a representative item corpus. Use existing test fixtures under `packages/qti/roundtrip-export/src/**` and `packages/qti/roundtrip-import/src/**` (read these to enumerate what fixtures already exist). Add 1-2 fresh fixtures covering:
    - one item per interaction type (all 10)
    - one extended-text with `rubricScoringBlock` set to confirm it is stripped, not mirrored
-   - (no fixture needed for the camelCase `correctResponse`/`correctAnswer` aliases — those are upstream-migrated and never reach compose. The existing [`dom.browser.test.ts`](packages/prosemirror/extensions/src/compatibility/dom.browser.test.ts) already asserts that.)
+   - one item authoring legacy camelCase `correctResponse="..."` on a `qti-choice-interaction` source element. This locks the alias-mirror behavior (the alias fires when the upstream rename did not run). The unification must keep this snapshot byte-identical.
 2. Create `packages/qti/roundtrip-export/src/non-qti-mirror.snapshot.test.ts` that:
    - takes each fixture HTML/ProseMirror input
    - runs the existing export path end-to-end
@@ -222,15 +239,19 @@ Add the type and the helper module. NO existing call sites change yet. The new m
 ### Files to create / edit
 
 1. **Edit** `packages/interfaces/src/composer.ts` — add the `NonQtiAttribute` type (union of string | object) as specified in "Proposed unified API → Shape". Change `InteractionComposerMetadata.nonQtiAttributes` from `readonly string[]` to `readonly NonQtiAttribute[]`. Because every current entry is a string, this is backwards-compatible at the data level — existing arrays satisfy the new type unchanged.
-2. **Create** `packages/qti/core/src/composer/non-qti-attributes.ts` — implement `normalizeNonQtiAttribute`, `collectMirrorMappings`, `stripNonQtiAttributesFromElement`, `copyMirrorsToTarget`, `getAllMirrorTargets`. Pure functions, no side effects. The `mirror` derivation rule when `mirror` is omitted: `data-${source}` (no case folding — all current sources are already lowercase-hyphenated, e.g. `correct-response` → `data-correct-response`). For the object form with `mirror: false`, the entry contributes to the strip set but not the mirror set.
-3. **Export** the new helpers from `@qti-editor/qti-core/composer` (extend the index barrel if needed).
-4. **Add unit tests** at `packages/qti/core/src/composer/non-qti-attributes.test.ts`:
-   - `normalizeNonQtiAttribute('score')` → `{ source: 'score', mirror: 'data-score' }`
-   - `normalizeNonQtiAttribute({ source: 'rubricScoringBlock', mirror: false })` → `{ source: 'rubricScoringBlock', mirror: null }`
-   - `normalizeNonQtiAttribute({ source: 'correct-response' })` (object form, no explicit mirror) → `{ source: 'correct-response', mirror: 'data-correct-response' }`
-   - `collectMirrorMappings` for a sample metadata returns the expected flat `{source, target}` list excluding strip-only entries.
-   - `stripNonQtiAttributesFromElement` removes the source attribute from the element for every entry (strip-only entries included).
-   - `copyMirrorsToTarget` copies the value when present, skips when absent, and never sets the mirror for strip-only entries.
+2. **Create** `packages/qti/core/src/composer/non-qti-attributes.ts` — implement `normalizeNonQtiAttribute`, `collectMirrorMappings`, `stripNonQtiAttributesFromElement`, `copyMirrorsToTarget`, `getAllMirrorTargets`. Pure functions, no side effects.
+   - The `mirror` derivation rule when `mirror` is omitted: `data-${source}` (no case folding — all current canonical sources are already lowercase-hyphenated, e.g. `correct-response` → `data-correct-response`).
+   - For the object form with `mirror: false`, the entry contributes to the strip set but not the mirror set.
+   - For an entry with `aliases: [...]`, `collectMirrorMappings` emits one tuple per source name (canonical + each alias) all targeting the same mirror. Example: `{source: 'correct-response', aliases: ['correctResponse', 'correctAnswer']}` produces three mirror tuples — `('correct-response', 'data-correct-response')`, `('correctResponse', 'data-correct-response')`, `('correctAnswer', 'data-correct-response')`. `stripNonQtiAttributesFromElement` strips the canonical name only (matching today's behavior where camelCase aliases survive on the output element).
+3. **Define `CORRECT_RESPONSE`** as a shared constant in `packages/prosemirror/interaction-shared/src/composer/non-qti-attributes.ts` (or wherever common interaction-shared metadata lives). Export it so each interaction metadata file can import it instead of repeating the alias list.
+4. **Export** the new helpers from `@qti-editor/qti-core/composer` (extend the index barrel if needed).
+5. **Add unit tests** at `packages/qti/core/src/composer/non-qti-attributes.test.ts`:
+   - `normalizeNonQtiAttribute('score')` → `{ source: 'score', mirror: 'data-score', aliases: [] }`
+   - `normalizeNonQtiAttribute({ source: 'rubricScoringBlock', mirror: false })` → `{ source: 'rubricScoringBlock', mirror: null, aliases: [] }`
+   - `normalizeNonQtiAttribute({ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] })` → `{ source: 'correct-response', mirror: 'data-correct-response', aliases: ['correctResponse', 'correctAnswer'] }`
+   - `collectMirrorMappings` for a sample metadata returns the expected flat `{source, target}` list including alias expansions and excluding strip-only entries.
+   - `stripNonQtiAttributesFromElement` removes the canonical source attribute from the element for every entry (strip-only entries included). Aliases are NOT stripped (matching today's behavior in the Phase 1 snapshot).
+   - `copyMirrorsToTarget` copies the value if present under canonical source OR any alias, prefers the canonical source if multiple are present, and never sets the mirror for strip-only entries.
 
 ### Verification
 
@@ -277,7 +298,7 @@ Replace the per-interaction strip loops in each `.compose.ts` AND the `preserveE
 ### Anti-patterns
 
 - Don't delete the tables in `roundtrip-export/src/index.ts` yet — Phase 4 owns that.
-- Don't change attribute ordering in the output. If `collectMirrorMappings` iteration order differs from the old static array order, the snapshot will diff. Note: removing the dead-code `correctResponse`/`correctAnswer` alias entries (Phase 4) will NOT change snapshot output, because those entries never fired in the first place — but if they somehow did appear in a snapshot fixture, that fixture is stale and should be regenerated as part of this work. If ordering still diverges, sort `collectMirrorMappings` output by `target` to stabilize.
+- Don't change attribute ordering in the output. If `collectMirrorMappings` iteration order differs from the old static array order, the snapshot will diff. If diverged, sort `collectMirrorMappings` output by `target` (or match the original order: canonical source first, then aliases, then any per-tag extras like `case-sensitive` / `area-mappings`).
 - Don't add new attributes to any interaction's `nonQtiAttributes` list in this phase — it's a code refactor, not a feature change.
 
 ---
@@ -293,7 +314,7 @@ Replace the per-interaction strip loops in each `.compose.ts` AND the `preserveE
 1. In `packages/qti/roundtrip-export/src/index.ts`:
    - Replace the bodies of `preserveEditorDataAttributesInTag` (lines 296-311) and `preserveEditorDataAttributes` (lines 287-294) so the mapping list comes from `collectMirrorMappings(tagName, registry)` where `registry` is the same interaction registry exposed by `@qti-editor/qti-core`.
    - Delete the three exported `as const` tables (lines 35-48), `TEXT_ENTRY_INTERACTION_TAG`, `SELECT_POINT_INTERACTION_TAG`. This is a breaking removal of public exports. Search the workspace first: any consumer of those exports (especially `contract.test.ts`) must be updated in the same commit.
-   - **Also delete the dead `correctResponse` and `correctAnswer` entries.** They were in the old `EDITOR_DATA_ATTRIBUTE_MAPPINGS` but are never reachable in practice (upstream-migrated by `renameLegacyHtmlAttributes`). The derived list from `collectMirrorMappings` will not include them, since no interaction declares them in `nonQtiAttributes`. Verify by snapshot test: removing these entries must produce byte-identical output. Update [ROUNDTRIP.md:29](packages/qti/roundtrip-export/ROUNDTRIP.md#L29) to drop the `/ correctResponse / correctAnswer` aliases column note.
+   - **Aliases are preserved**, not deleted: the `correctResponse` and `correctAnswer` entries from the old `EDITOR_DATA_ATTRIBUTE_MAPPINGS` re-emerge in the derived list because the shared `CORRECT_RESPONSE` constant (Phase 2) declares them in `aliases`. The two snapshot tests (DOM compose + regex pipeline) must both stay byte-identical after this switch — particularly the camelCase fixture in the DOM-compose snapshot, which proves the alias path still fires.
 2. Update `packages/qti/roundtrip-export/src/contract.test.ts` (it currently imports `EDITOR_DATA_ATTRIBUTE_MAPPINGS`, `TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS`, `SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS`) to derive the same forward-target set from `getAllMirrorTargets(registry)` (or `collectMirrorMappings` aggregated across all registered tags).
 
 ### Verification
@@ -324,7 +345,7 @@ Replace the per-interaction strip loops in each `.compose.ts` AND the `preserveE
      ({ source, target }) => ({ source: target, target: source })
    );
    ```
-   (Names: the export-side has `source → target` where target is `data-*`. The import-side `DATA_ATTRIBUTE_MAPPINGS` has `source = data-*, target = canonical-name`. Compute accordingly. With aliases gone, the forward and inverse lists are now one-to-one — no dedupe needed.)
+   (Names: the export-side has `source → target` where target is `data-*`. The import-side `DATA_ATTRIBUTE_MAPPINGS` has `source = data-*, target = canonical-name`. Compute accordingly. Dedupe by `source`: aliases all collapse to one inverse entry since `data-correct-response` only needs to round-trip back to one canonical name — pick `correct-response` (the canonical source on the forward entry, not an alias).)
 2. The consumer at line 182 (`DATA_ATTRIBUTE_MAPPINGS.forEach(...)`) needs no change since the shape is preserved.
 
 ### Verification
@@ -357,10 +378,14 @@ Update the subformat doc and architecture doc to reflect the new single source o
 
      The `data-*` mirror behavior is derived automatically from each interaction's
      `nonQtiAttributes` declaration. For a plain `string` entry like `'score'`, the
-     mirror is `data-score`. The object form is reserved for the strip-only case:
+     mirror is `data-score`. The object form covers two cases:
 
      ```ts
+     // Strip-only — no data-* mirror, value is preserved elsewhere
      { source: 'rubricScoringBlock', mirror: false }
+
+     // Aliases — multiple source-name casings collapse to one data-* target
+     { source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }
      ```
 
      The helper `collectMirrorMappings(tagName, metadata)` in
@@ -435,7 +460,7 @@ Update the subformat doc and architecture doc to reflect the new single source o
 
 - **Never delete a mapping table without running the Phase 1 snapshot test first.** If the snapshot diffs, revert and investigate.
 - **Never change the wire format byte order or attribute spelling.** If you must reorder, sort `collectMirrorMappings` output to match the historical order.
-- **The dead-code `correctResponse` / `correctAnswer` mappings get deleted in Phase 4, not before.** The snapshot test (Phase 1) is taken with them still in place. After Phase 4 deletes them, re-run the snapshot test — it must pass byte-identically, confirming those entries truly were unreachable. If the snapshot diffs, the upstream migration assumption is wrong and the entries must be reinstated (now as proper `nonQtiAttributes` entries, not as alias dead code).
+- **The `correctResponse` / `correctAnswer` aliases are preserved through the migration.** The Phase 1 snapshot includes a camelCase fixture proving they fire today (when raw XML bypasses upstream rename). Phase 2-5 must keep that snapshot byte-identical. If the snapshot diffs on the camelCase fixture, the unified registry's alias handling is wrong — fix the helper, do not delete the fixture.
 - **Pre-existing unrelated failures stay unrelated.** `prosekit-integration` and `roundtrip-import` (the `buildCompatibilityReport`/`migrateHtmlFragment` issue) were broken before this work; don't try to fix them here.
 
 ---
