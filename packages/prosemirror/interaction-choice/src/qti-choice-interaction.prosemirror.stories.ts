@@ -17,7 +17,7 @@ import { EditorView } from 'prosemirror-view';
 import { nodes, marks } from 'prosemirror-schema-basic';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
-
+import { history, undo, redo } from 'prosemirror-history';
 
 import { blockSelectPlugin } from '../../extensions/src/block-select/block-select-plugin';
 import { choiceInteractionDescriptor } from './descriptor';
@@ -48,6 +48,8 @@ const schema = new Schema({
 
 // Enter binding must precede baseKeymap
 const plugins: Plugin[] = [
+  history(),
+  keymap({ 'Mod-z': undo, 'Mod-y': redo, 'Mod-Shift-z': redo }),
   keymap({ Enter: choiceInteractionDescriptor.enterCommand }),
   keymap({ [choiceInteractionDescriptor.keyboardShortcut]: choiceInteractionDescriptor.insertCommand }),
   keymap(baseKeymap),
