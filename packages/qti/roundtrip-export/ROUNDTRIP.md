@@ -20,16 +20,22 @@ The result: **export-then-import preserves authoring state byte-for-byte at the 
 - ❌ A generic QTI 3.0 writer. Although the export does produce QTI-3.0-conformant XML, its job is to preserve roundtrip, not to be a reference implementation of the standard.
 - ❌ A migration tool. If you need to import a foreign QTI package, that belongs in a **separate** future package (the names `@qti-editor/qti-export` / `@qti-editor/qti-import` are reserved for that).
 
-## The contract table (source of truth)
+## The contract table (human-readable per-tag view)
 
-If you change any row here, you MUST change both packages in the same commit.
+The forward source of truth for these mappings is each interaction's `nonQtiAttributes` declaration in `packages/prosemirror/interaction-*/src/composer/metadata.ts`. At runtime, [`collectMirrorMappings`](../../prosemirror/interaction-shared/src/composer/non-qti-attributes.ts) in `@qti-editor/interaction-shared/composer/non-qti-attributes` walks those declarations to produce the `{ source, target: 'data-<source>' }` pairs used by:
 
-| ProseMirror schema attribute | QTI tag(s) where written | `data-*` attribute on QTI tag | Export site | Import site |
-| --- | --- | --- | --- | --- |
-| `correct-response` / `correctResponse` / `correctAnswer` | all `qti-*-interaction` | `data-correct-response` | [`EDITOR_DATA_ATTRIBUTE_MAPPINGS`](src/index.ts) in `roundtrip-export/src/index.ts` | [`DATA_ATTRIBUTE_MAPPINGS`](../roundtrip-import/src/index.ts) in `roundtrip-import/src/index.ts` |
-| `score` | all `qti-*-interaction` | `data-score` | `EDITOR_DATA_ATTRIBUTE_MAPPINGS` | `DATA_ATTRIBUTE_MAPPINGS` |
-| `case-sensitive` | `qti-text-entry-interaction` | `data-case-sensitive` | `TEXT_ENTRY_DATA_ATTRIBUTE_MAPPINGS` | `DATA_ATTRIBUTE_MAPPINGS` |
-| `area-mappings` | `qti-select-point-interaction` | `data-area-mappings` | `SELECT_POINT_DATA_ATTRIBUTE_MAPPINGS` | `DATA_ATTRIBUTE_MAPPINGS` |
+- the compose pipeline (`@qti-editor/qti-core`)
+- the export regex pass in this package
+- the inverse `data-*` → schema-attr mapping in `@qti-editor/qti-roundtrip-import` (derived from the same registry)
+
+The table below is the human-readable per-tag view of the resulting wire format. The wire format itself is unchanged by the unification — only the source of the mapping moved.
+
+| ProseMirror schema attribute | QTI tag(s) where written | `data-*` attribute on QTI tag |
+| --- | --- | --- |
+| `correct-response` / `correctResponse` / `correctAnswer` | all `qti-*-interaction` | `data-correct-response` |
+| `score` | all `qti-*-interaction` | `data-score` |
+| `case-sensitive` | `qti-text-entry-interaction` | `data-case-sensitive` |
+| `area-mappings` | `qti-select-point-interaction` | `data-area-mappings` |
 
 The QTI standard nodes (`qti-response-declaration`, `qti-response-processing`) are **written** by export (for conformance) and **discarded** by import (`stripIgnoredQtiSections`). They are not part of the contract.
 
@@ -71,16 +77,15 @@ Third-party QTI lacks the `data-*` mirrors. Run it through this importer and the
 ## Adding a new roundtripped attribute
 
 1. Add the attribute to the ProseMirror schema for the relevant interaction (under `packages/prosemirror/interaction-*/`).
-2. In `packages/qti/roundtrip-export/src/index.ts`, add `{ source: '<schema-attr>', target: 'data-<schema-attr>' }` to the appropriate mapping list (`EDITOR_DATA_ATTRIBUTE_MAPPINGS` for shared, or the per-interaction list).
-3. In `packages/qti/roundtrip-import/src/index.ts`, add the inverse `{ source: 'data-<schema-attr>', target: '<schema-attr>' }` to `DATA_ATTRIBUTE_MAPPINGS`.
-4. Extend the roundtrip integration test in `packages/qti/roundtrip-export/src/index.roundtrip.test.ts` so a ProseMirror document with the attribute set survives export→import unchanged.
-5. Add a row to the contract table above.
+2. Add it to `nonQtiAttributes` in that interaction's `composer/metadata.ts` (plain string, or object form for `mirror: false` / `aliases`). The export's regex pass and the import's inverse mapping are derived from this declaration automatically.
+3. Extend the roundtrip integration test in `packages/qti/roundtrip-export/src/index.roundtrip.test.ts` so a ProseMirror document with the attribute set survives export→import unchanged.
+4. Add a row to the contract table above.
 
-**All five steps in one commit.** Half-updates are exactly what this package's design is meant to prevent.
+No parallel mapping tables to keep in sync — `collectMirrorMappings` does the derivation.
 
 ## What NOT to change
 
 - Do not make the importer read `qti-response-declaration` / `qti-response-processing` as a source of authoring state. They exist for external QTI readers; treating them as input here would partially un-do the design.
-- Do not add a `data-*` mapping in one package without its mirror in the other.
+- Do not reintroduce parallel hardcoded mapping tables in the roundtrip packages — they must continue to derive from `nonQtiAttributes` via `collectMirrorMappings`.
 - Do not "generalize" these packages to handle third-party QTI input. Reserve that for a separate package.
 - Do not rename the `data-*` keys without bumping both packages' major versions and migrating any persisted QTI packages.

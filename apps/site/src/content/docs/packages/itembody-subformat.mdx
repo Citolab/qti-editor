@@ -24,12 +24,32 @@ Each interaction declares its non-QTI attributes in its composer metadata:
 ```ts
 export const choiceInteractionComposerMetadata = {
   // ...
-  nonQtiAttributes: ['correct-response', 'score'],
+  nonQtiAttributes: [
+    'score',
+    // Object form: alias support for legacy source-name casings
+    { source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] },
+  ],
   // ...
 } satisfies InteractionComposerMetadata;
 ```
 
+Entries can be:
+
+- A **plain string** (e.g. `'score'`) — the attribute is read from the source element, stripped, and mirrored to `data-<name>` (e.g. `data-score`).
+- An **object** with `{ source, mirror: false }` — the attribute is stripped but NOT mirrored as `data-*` (used when the value is preserved elsewhere, e.g. as a synthesized QTI element).
+- An **object** with `{ source, aliases: [...] }` — additional legacy attribute names that should also be accepted on the source element and normalized to `source`.
+
+```ts
+// Strip-only — preserved elsewhere (e.g. as a synthesized QTI element)
+{ source: 'rubricScoringBlock', mirror: false }
+
+// With legacy alias defensive net
+{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }
+```
+
 The compose handler reads these from the source element to populate the response declaration, then removes them from the normalized element so the output is clean QTI.
+
+As of the unification work (see `plans/unify-non-qti-attribute-metadata.md`), all `data-*` mirror behavior is derived from the per-interaction `nonQtiAttributes` declaration. The helper `collectMirrorMappings(metadata)` is the single source of truth; the compose pipeline (`@qti-editor/qti-core`), the export regex pass (`@qti-editor/qti-roundtrip-export`), and the import inverse mapping (`@qti-editor/qti-roundtrip-import`) all read from it.
 
 ## Current non-QTI attribute set
 
@@ -40,19 +60,24 @@ The compose handler reads these from the source element to populate the response
 | `case-sensitive` | text-entry | `data-case-sensitive` |
 | `area-mappings` | select-point | `data-area-mappings` |
 
-The hardcoded `data-*` mapping tables live in `packages/qti/core/src/composer/index.ts` and `packages/qti/roundtrip-export/src/index.ts`. The detailed per-tag table is in [ROUNDTRIP.md](../../../../../packages/qti/roundtrip-export/ROUNDTRIP.md).
+## Where the `data-*` mirrors come from
+
+The per-interaction `nonQtiAttributes` declaration **is** the source of truth. The helper `collectMirrorMappings(metadata)` in `packages/prosemirror/interaction-shared/src/composer/non-qti-attributes.ts` (re-exported from `@qti-editor/qti-core/composer`) walks each entry and produces the `{ source, target: 'data-<source>' }` pairs that drive:
+
+- the compose pipeline strip + mirror step (`@qti-editor/qti-core`)
+- the export regex pass (`@qti-editor/qti-roundtrip-export`)
+- the import inverse mapping (`@qti-editor/qti-roundtrip-import`)
+
+The detailed per-tag table — useful as a human-readable reference of the resulting wire format — is in [ROUNDTRIP.md](../../../../../packages/qti/roundtrip-export/ROUNDTRIP.md).
 
 ## Adding a new non-QTI attribute
 
 To extend the subformat with a new attribute on an interaction:
 
-1. Add the attribute name to `nonQtiAttributes` in that interaction's `composer/metadata.ts`.
-2. Read it in the interaction's `.compose.ts` from the source element and propagate it to whatever needs it (response declaration, UI state, etc.).
-3. Add the editor → `data-*` mapping to `EDITOR_DATA_ATTRIBUTE_MAPPINGS` (or the interaction-specific mapping table) in `packages/qti/core/src/composer/index.ts` AND `packages/qti/roundtrip-export/src/index.ts`.
-4. Add the inverse mapping to `DATA_ATTRIBUTE_MAPPINGS` in `packages/qti/roundtrip-import/src/index.ts`.
-5. Document the new row in the table above and in `packages/qti/roundtrip-export/ROUNDTRIP.md`.
+1. Add the attribute to `nonQtiAttributes` in the interaction's `composer/metadata.ts`. Use a **plain string** for the simple case (mirror is auto-derived as `data-<name>`); the **object form** `{ source, mirror: false }` for strip-only attributes (preserved elsewhere); the **object form** `{ source, aliases: [...] }` to also accept legacy source-name casings on input.
+2. Read the attribute in the interaction's `.compose.ts` from the source element and use it for whatever the interaction needs (response declaration, UI state, additional element synthesis like extended-text's rubric block).
 
-**Status:** unification of the metadata list and the hardcoded mapping tables is planned — see `plans/unify-non-qti-attribute-metadata.md` for the design and migration phases. Once that lands, the 5-step "Adding a new non-QTI attribute" guide above collapses to 2 steps (edit the interaction metadata; read it in compose).
+No other code changes are needed. The strip step, the `data-*` mirror, the export's regex pass, and the import's inverse mapping all derive automatically from `collectMirrorMappings`.
 
 ## Related
 
