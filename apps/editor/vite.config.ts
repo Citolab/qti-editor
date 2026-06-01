@@ -11,6 +11,7 @@ const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const litReactiveElementRoot = dirname(require.resolve('@lit/reactive-element'));
 const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
 const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/qti/prosekit-integration/src', import.meta.url));
+const roundtripExportSrcRoot = fileURLToPath(new URL('../../packages/qti/roundtrip-export/src', import.meta.url));
 const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-shared/src', import.meta.url));
 const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-choice/src', import.meta.url));
 const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-extended-text/src', import.meta.url));
@@ -32,6 +33,7 @@ const appCustomElementRoots = [
 const fullReloadRoots = [
   coreSrcRoot,
   prosekitIntegrationSrcRoot,
+  roundtripExportSrcRoot,
   interactionsSharedSrcRoot,
   interactionsChoiceSrcRoot,
   interactionsExtendedTextSrcRoot,
@@ -118,6 +120,18 @@ export default defineConfig({
       {
         find: /^@qti-editor\/prosekit-integration$/,
         replacement: `${prosekitIntegrationSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-roundtrip-export\/pm-xml$/,
+        replacement: `${roundtripExportSrcRoot}/pm-xml.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-roundtrip-export\/pm-qti$/,
+        replacement: `${roundtripExportSrcRoot}/pm-qti.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-roundtrip-export$/,
+        replacement: `${roundtripExportSrcRoot}/index.ts`,
       },
       {
         find: /^@qti-editor\/interaction-shared$/,
@@ -254,6 +268,7 @@ export default defineConfig({
       '@qti-components/base',
       '@qti-components/interactions',
       '@qti-editor/interaction-shared',
+      '@qti-editor/qti-roundtrip-export',
       '@qti-editor/interaction-choice',
       '@qti-editor/interaction-extended-text',
       '@qti-editor/interaction-associate',
