@@ -1,6 +1,7 @@
 import { Plugin, PluginKey } from 'prosemirror-state';
 
 import type { Node as PmNode } from 'prosemirror-model';
+import type { ViewMutationRecord } from 'prosemirror-view';
 
 const gapMatchNodeViewPluginKey = new PluginKey('gap-match-node-view');
 
@@ -56,7 +57,7 @@ export function createGapMatchNodeViewPlugin(): Plugin {
               applyAttrs(dom, newNode.attrs);
               return true;
             },
-            ignoreMutation(record: MutationRecord): boolean {
+            ignoreMutation(record: ViewMutationRecord): boolean {
               // Ignore attribute mutations on the interaction element itself.
               // These come from applyVisualState() (data-* attrs on children propagate
               // up via nearestDesc) or from our own applyAttrs() call in update().

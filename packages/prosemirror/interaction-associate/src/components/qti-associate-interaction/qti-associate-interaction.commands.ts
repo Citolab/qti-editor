@@ -4,7 +4,6 @@
  * ProseMirror commands for inserting and manipulating associate interactions.
  */
 
-import { chainCommands } from 'prosemirror-commands';
 import { createInsertSiblingOnEnterCommand } from '@qti-editor/interaction-shared/commands/enter.js';
 import { createInsertBlockInteractionCommand } from '@qti-editor/interaction-shared/commands/insert.js';
 import { translateQti } from '@qti-editor/interaction-shared';

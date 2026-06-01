@@ -1,5 +1,5 @@
 import { html, nothing } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 import { InteractionPanel, QtiI18nController } from '@qti-editor/interaction-shared';
 
 import styles from './qti-gap-match-interaction.styles.js';
