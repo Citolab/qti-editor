@@ -10,8 +10,12 @@
     "allowImportingTsExtensions": false,
     "moduleResolution": "bundler",
     "paths": {
+      "@qti-editor/core": ["../../qti/core/dist/index.d.ts"],
+      "@qti-editor/core/composer": ["../../qti/core/dist/composer/index.d.ts"],
+      "@qti-editor/core/interactions/composer": ["../../qti/core/dist/interactions/composer.d.ts"],
       "@qti-editor/interfaces": ["../../interfaces/dist/index.d.ts"],
-      "@qti-editor/prosemirror-plugins": ["../../prosemirror/extensions/dist/index.d.ts"]
+      "@qti-editor/prosemirror-plugins": ["../../prosemirror/extensions/dist/index.d.ts"],
+      "@qti-editor/prosekit-integration": ["../../qti/prosekit-integration/dist/index.d.ts"]
     }
   },
   "include": ["src/**/*.ts"],

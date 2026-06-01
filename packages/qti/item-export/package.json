@@ -24,12 +24,12 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "pnpm --filter @qti-editor/core build && tsc",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-editor/core": "workspace:*",
+    "@qti-editor/core": "1.7.0",
     "prosemirror-model": "^1.25.4"
   },
   "devDependencies": {
