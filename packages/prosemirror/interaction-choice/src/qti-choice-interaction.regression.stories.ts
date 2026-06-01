@@ -67,7 +67,9 @@ export const RoundtripItem001: Story = {
     let currentView: EditorView | null = null;
 
     const init = async (container: HTMLElement) => {
-      const loaded = (await qtiTransformItem().load('/qti/kennisnet/ITEM001.xml')).path('/qti/kennisnet');
+
+
+      const loaded = (await qtiTransformItem().load('/qti/kennisnet/ITEM001.xml', { shuffle: false })).path('/qti/kennisnet');
       const sourceXml = loaded.xml();
 
       const roundtripXml = qtiTransformItem()
@@ -77,11 +79,16 @@ export const RoundtripItem001: Story = {
       
       // roundtripQtiItem(sourceXml);
 
+      
       const itemDoc = new window.DOMParser().parseFromString(roundtripXml, 'application/xml');
       const body = itemDoc.querySelector('qti-item-body');
       const tempEl = document.createElement('div');
       tempEl.innerHTML = body ? body.innerHTML : roundtripXml;
+      
+      console.log(`%c ${roundtripXml}`, 'color: red');
       const pmDoc = DOMParser.fromSchema(schema).parse(tempEl);
+      console.log(`%c ${JSON.stringify(pmDoc.toJSON(), null, 2)}`, 'color: green');
+
 
       if (currentView) currentView.destroy();
       currentView = new EditorView(container, {

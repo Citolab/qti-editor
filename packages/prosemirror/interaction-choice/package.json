@@ -26,11 +26,11 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-components/base": "^1.4.2",
-    "@qti-components/choice-interaction": "^1.1.3",
-    "@qti-components/interactions": "^1.10.1",
-    "@qti-components/interactions-core": "^1.1.3",
-    "@qti-components/utilities": "^1.3.2",
+    "@qti-components/base": "^1.4.3",
+    "@qti-components/choice-interaction": "^1.1.4",
+    "@qti-components/interactions": "^1.10.3",
+    "@qti-components/interactions-core": "^1.1.4",
+    "@qti-components/utilities": "^1.3.3",
     "@qti-editor/interaction-shared": "workspace:*",
     "@qti-editor/interfaces": "workspace:*",
     "prosemirror-commands": "^1.7.1",
@@ -43,7 +43,7 @@
     "prosekit": "^0.20.0"
   },
   "devDependencies": {
-    "@qti-components/transformers": "^1.6.4",
+    "@qti-components/transformers": "^1.7.0",
     "@qti-editor/qti3-item-import": "workspace:*",
     "@qti-editor/prosekit-integration": "workspace:*",
     "lit": "^3.3.2",
