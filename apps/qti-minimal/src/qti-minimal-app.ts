@@ -10,7 +10,7 @@ import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { LitElement, html, type PropertyValues } from 'lit';
 import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
 import { xmlFromNode, xmlToHTML } from '@qti-editor/prosekit-integration/save-xml';
-import { qtiFromNode } from '@qti-editor/prosekit-integration/save-qti';
+import { qtiTestFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-test';
 import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror-plugins';
 import { createEditor, union, jsonFromHTML, type Editor } from 'prosekit/core';
 import { sampleUploader } from '@qti-editor/ui/components/sample/sample-uploader';
@@ -47,7 +47,7 @@ export class QtiMinimalApp extends LitElement {
   }
 
   private saveQti() {
-    this.xmlOutput = qtiFromNode(this.editor.view.state.doc, {
+    this.xmlOutput = qtiTestFromProsemirror(this.editor.view.state.doc, {
       identifier: this.itemContext.identifier,
       title: this.itemContext.title,
     });

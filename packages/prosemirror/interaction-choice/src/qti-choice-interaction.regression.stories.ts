@@ -5,7 +5,7 @@
  *     → qtiTransformItem().load  (load XML)
  *     → roundtripQtiItem         (hoist correct-response/score onto interactions)
  *     → DOMParser.fromSchema     (import item-body into the PM doc)
- *     → qtiFromNode              (export PM doc back to QTI XML — console.log)
+ *     → qtiItemFromProsemirror   (export PM doc back to QTI XML — console.log)
  *
  * No ProseKit imports.
  */
@@ -20,7 +20,7 @@ import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 import { roundtripChoice, roundtripQtiItem } from '@qti-editor/qti3-item-import';
-import { qtiFromNode } from '@qti-editor/qti-roundtrip-export/pm-qti';
+import { qtiItemFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-item';
 
 import { qtiTransformItem } from '@qti-components/transformers';
 
@@ -97,10 +97,9 @@ export const RoundtripItem001: Story = {
 
     const logExport = () => {
       if (!currentView) return;
-      const xml = qtiFromNode(
+      const xml = qtiItemFromProsemirror(
         currentView.state.doc,
         { identifier: 'ITEM001', title: 'ITEM001 roundtrip' },
-        'single',
       );
       console.log('[Roundtrip Export]\n' + xml);
     };

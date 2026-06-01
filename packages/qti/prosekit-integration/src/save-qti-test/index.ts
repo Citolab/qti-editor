@@ -1,31 +1,29 @@
 /**
- * Save QTI — prosekit wrapper
- *
- * Thin wrapper around @qti-editor/qti-roundtrip-export/pm-qti that injects
- * prosekit's ListDOMSerializer for list-aware serialization.
+ * Save QTI test — prosekit wrapper.
+ * Injects ListDOMSerializer for list-aware serialization.
  */
-
 import { ListDOMSerializer } from 'prosekit/extensions/list';
 import {
-  qtiFromNode as qtiFromNodePure,
+  qtiTestFromProsemirror as qtiTestFromProsemirrorPure,
   countQtiItems as countQtiItemsPure,
   getQtiItems as getQtiItemsPure,
-  type QtiComposeContext,
-  type QtiComposeMode,
   type QtiItemFragment,
-} from '@qti-editor/qti-roundtrip-export/pm-qti';
+} from '@qti-editor/qti-test-export/pm-qti-test';
+import { type QtiComposeContext } from '@qti-editor/qti-item-export/pm-qti-item';
 
 import type { ProseMirrorNode } from 'prosekit/pm/model';
 
+export type { QtiComposeContext, QtiItemFragment };
 
-export type { QtiComposeContext, QtiComposeMode, QtiItemFragment };
-
-export function qtiFromNode(
+export function qtiTestFromProsemirror(
   node: ProseMirrorNode,
   context?: QtiComposeContext,
-  mode: QtiComposeMode = 'multiple',
 ): string {
-  return qtiFromNodePure(node, context, mode, ListDOMSerializer.fromSchema(node.type.schema));
+  return qtiTestFromProsemirrorPure(
+    node,
+    context,
+    ListDOMSerializer.fromSchema(node.type.schema),
+  );
 }
 
 export function countQtiItems(node: ProseMirrorNode): number {

@@ -3,7 +3,8 @@ import { html, LitElement, nothing } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { QtiI18nController } from '@qti-editor/interaction-shared/i18n/index.js';
 import { defineDocChangeHandler, defineMountHandler, union, type Editor } from 'prosekit/core';
-import { qtiFromNode, countQtiItems, getQtiItems, type QtiItemFragment, type QtiComposeMode } from '@qti-editor/prosekit-integration/save-qti';
+import { qtiItemFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-item';
+import { countQtiItems, getQtiItems, type QtiItemFragment } from '@qti-editor/prosekit-integration/save-qti-test';
 import { formatXml } from '@qti-editor/core/composer';
 import { itemContext, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
 
@@ -29,7 +30,7 @@ export class QtiComposer extends LitElement {
     this.requestUpdate('liveComposeEnabled', old);
   }
 
-  #composeMode: QtiComposeMode = 'single';
+  #composeMode: 'single' | 'multiple' = 'single';
   #selectedItemIndex = 0;
   #itemCount = 1;
   #itemFragments: QtiItemFragment[] = [];
@@ -191,7 +192,7 @@ export class QtiComposer extends LitElement {
 
     // Get XML based on mode
     if (this.#composeMode === 'single') {
-      const xml = qtiFromNode(doc, context, 'single');
+      const xml = qtiItemFromProsemirror(doc, context);
       this.#xml = xml;
       this.#setXmlUrl(xml);
       this.#formattedXml = formatXml(xml);
@@ -208,7 +209,7 @@ export class QtiComposer extends LitElement {
     }
   }
 
-  #onModeChange = (mode: QtiComposeMode) => {
+  #onModeChange = (mode: 'single' | 'multiple') => {
     if (this.#composeMode === mode) return;
     this.#composeMode = mode;
     this.#composeXml();

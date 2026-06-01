@@ -2,7 +2,7 @@
  * Phase 1 snapshot fixture — REGEX PIPELINE BASELINE
  *
  * Locks the CURRENT byte-for-byte output of the regex-based
- * `preserveEditorDataAttributes` pass in `packages/qti/roundtrip-export/src/index.ts`,
+ * `preserveEditorDataAttributes` pass in `packages/qti/package/src/index.ts`,
  * driven via `createQtiPackageFromItems`. This pipeline operates on raw XML strings
  * (no DOM) and only mirrors the small EDITOR_DATA_ATTRIBUTE_MAPPINGS set.
  *

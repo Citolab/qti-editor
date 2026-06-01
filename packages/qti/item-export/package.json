@@ -1,11 +1,11 @@
 {
-  "name": "@qti-editor/qti-roundtrip-import",
-  "version": "1.1.0",
-  "description": "Lossless QTI 3.0→ProseMirror roundtrip import. ONLY restores items previously written by @qti-editor/qti-package. NOT a generic QTI 3.0 importer. See ROUNDTRIP.md.",
+  "name": "@qti-editor/qti-item-export",
+  "version": "0.1.0",
+  "description": "ProseMirror → QTI 3.0 single assessment item export.",
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",
-    "directory": "packages/qti/roundtrip-import"
+    "directory": "packages/qti/item-export"
   },
   "type": "module",
   "main": "./dist/index.js",
@@ -13,6 +13,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./pm-qti-item": {
+      "types": "./dist/pm-qti-item.d.ts",
+      "default": "./dist/pm-qti-item.js"
+    },
+    "./pm-xml": {
+      "types": "./dist/pm-xml.d.ts",
+      "default": "./dist/pm-xml.js"
     }
   },
   "scripts": {
@@ -22,12 +30,7 @@
   },
   "dependencies": {
     "@qti-editor/core": "workspace:*",
-    "@qti-editor/prosemirror-plugins": "workspace:*",
-    "@qti-editor/prosekit-integration": "workspace:*",
-    "jszip": "^3.10.1"
-  },
-  "peerDependencies": {
-    "prosekit": "^0.20.0"
+    "prosemirror-model": "^1.25.4"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

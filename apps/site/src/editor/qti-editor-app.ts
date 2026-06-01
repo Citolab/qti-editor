@@ -21,7 +21,7 @@ import {
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
-import { qtiFromNode } from '@qti-editor/prosekit-integration';
+import { qtiTestFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-test';
 import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interaction-shared';
 import { sampleUploader } from '@qti-editor/ui/components/sample/sample-uploader';
 
@@ -155,7 +155,7 @@ export class QtiEditorApp extends LitElement {
 
   exportXml(fileName: string = 'item'): void {
     const safeFileName = fileName.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9._-]/g, '') || 'item';
-    const xml = qtiFromNode(this.editor.view.state.doc, {
+    const xml = qtiTestFromProsemirror(this.editor.view.state.doc, {
       identifier: this.itemContext.identifier,
       lang: this.lang,
       title: this.itemContext.title,

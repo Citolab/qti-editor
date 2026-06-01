@@ -45,7 +45,7 @@
   "devDependencies": {
     "@qti-components/transformers": "^1.6.4",
     "@qti-editor/qti3-item-import": "workspace:*",
-    "@qti-editor/qti-roundtrip-export": "workspace:*",
+    "@qti-editor/prosekit-integration": "workspace:*",
     "lit": "^3.3.2",
     "prosemirror-schema-basic": "^1.2.4",
     "prosemirror-gapcursor": "^1.4.1",

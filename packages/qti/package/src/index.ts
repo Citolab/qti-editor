@@ -1,8 +1,14 @@
 /**
- * LOSSLESS PROSEMIRROR→QTI ROUNDTRIP — NOT A GENERIC QTI 3.0 EXPORTER.
+ * QTI 3.0 CONTENT PACKAGE (.zip) BUILDER.
  *
- * Paired with `@qti-editor/qti-roundtrip-import`. Both halves must agree on the
- * `data-*` attribute table in ROUNDTRIP.md.
+ * Assembles a QTI 3.0 IMS content package: `imsmanifest.xml`, `assessment-test.xml`,
+ * per-item XML under `items/`, and materialized image assets under `assets/`. Items
+ * are produced by `@qti-editor/qti-test-export` (`getQtiItems`).
+ *
+ * Paired with `@qti-editor/qti-roundtrip-import` for the lossless authoring
+ * roundtrip: this builder writes `data-*` mirror attributes onto interaction tags
+ * (via `preserveEditorDataAttributes`) that the import side rehydrates. Both halves
+ * must agree on the `data-*` attribute table in ROUNDTRIP.md.
  *
  * DO NOT:
  *   - Stop writing the `data-*` mirrors. They are the only thing the import side
@@ -17,7 +23,7 @@ import JSZip from 'jszip';
 import { collectMirrorMappings } from '@qti-editor/core/composer';
 import { getInteractionComposerMetadata } from '@qti-editor/core/interactions/composer';
 
-import { getQtiItems, type QtiComposeContext, type QtiItemFragment } from './pm-qti.js';
+import { getQtiItems, type QtiComposeContext, type QtiItemFragment } from '@qti-editor/qti-test-export';
 
 import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
 

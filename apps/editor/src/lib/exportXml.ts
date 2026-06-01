@@ -1,5 +1,5 @@
-import { qtiFromNode } from '@qti-editor/prosekit-integration';
-import { createQtiPackageFromNode } from '@qti-editor/qti-roundtrip-export';
+import { qtiTestFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-test';
+import { createQtiPackageFromNode } from '@qti-editor/qti-package';
 
 import type { ProseMirrorNode } from 'prosekit/pm/model';
 
@@ -21,7 +21,7 @@ export function exportXml(options: ExportXmlOptions): void {
     .replace(/\s+/g, '-')
     .replace(/[^a-zA-Z0-9._-]/g, '') || 'item';
 
-  let xml = qtiFromNode(options.node, {
+  let xml = qtiTestFromProsemirror(options.node, {
     identifier: options.items?.[0]?.identifier,
     lang: options.lang,
     title: options.items?.[0]?.title,

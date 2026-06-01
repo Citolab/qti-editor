@@ -1,7 +1,7 @@
 /**
  * LOSSLESS QTI→PROSEMIRROR ROUNDTRIP — NOT A GENERIC QTI 3.0 IMPORTER.
  *
- * Paired with `@qti-editor/qti-roundtrip-export`. This importer ONLY restores
+ * Paired with `@qti-editor/qti-package`. This importer ONLY restores
  * items the export package wrote, because it deliberately strips
  * `qti-response-declaration` and `qti-response-processing` and rehydrates
  * authoring attributes from the `data-*` mirrors instead. Third-party QTI 3.0
@@ -32,7 +32,7 @@ const MANIFEST_FILE = 'imsmanifest.xml';
 const IMAGE_REFERENCE_ATTRIBUTES = ['src', 'data', 'image'] as const;
 
 // PAIRED CONTRACT: derived from the per-interaction `nonQtiAttributes` registry.
-// Inverse of the forward mirror tuples emitted by `@qti-editor/qti-roundtrip-export`.
+// Inverse of the forward mirror tuples emitted by `@qti-editor/qti-package`.
 // Adding a non-QTI attribute is done by editing the interaction's `composer/metadata.ts`;
 // this table updates automatically. See ROUNDTRIP.md for the canonical table.
 const FORWARD_REGISTRY: ReadonlyMap<string, InteractionComposerMetadata> = new Map(

@@ -21,4 +21,14 @@ export {
 } from './events/index.js';
 export * from './item-context/index.js';
 export { xmlFromNode, xmlToHTML } from './save-xml/index.js';
-export { qtiFromNode } from './save-qti/index.js';
+export {
+  qtiItemFromProsemirror,
+  type QtiComposeContext,
+} from './save-qti-item/index.js';
+
+export {
+  qtiTestFromProsemirror,
+  countQtiItems,
+  getQtiItems,
+  type QtiItemFragment,
+} from './save-qti-test/index.js';
