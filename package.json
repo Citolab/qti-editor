@@ -18,7 +18,7 @@
     "firebase:deploy:site": "pnpm deploy:build:site && firebase deploy --only hosting:site",
     "firebase:deploy:editor": "pnpm deploy:build:editor && firebase deploy --only hosting:editor",
     "firebase:deploy:rules": "firebase deploy --only firestore:rules",
-    "build:packages": "pnpm -r --filter \"./packages/**\" run build",
+    "build:packages": "pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/**\" run build",
     "registry:build": "pnpm --filter @qti-editor/ui registry:build",
     "registry:serve": "pnpm --filter @qti-editor/ui registry:serve",
     "test": "vitest run",

@@ -24,7 +24,7 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "pnpm --filter @qti-editor/core build && tsc",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
