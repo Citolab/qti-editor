@@ -468,7 +468,7 @@ Update the subformat doc and architecture doc to reflect the new single source o
 ## See also
 
 - [plans/rubric-block-attribute.md](plans/rubric-block-attribute.md) — recommended follow-up. Renames `correct-response` → `rubric-block` on `qti-extended-text-interaction` (eliminating the editor's only attribute-name overload) and promotes `rubric-block` to a reusable non-QTI attribute that any future interaction can opt into. Depends on this plan's unified `NonQtiAttribute` shape.
-- [plans/qti3-to-roundtrip-converter.md](plans/qti3-to-roundtrip-converter.md) — eventual follow-up. Adds a `@qti-editor/qti-transform` package with `roundtripChoice()` and `roundtripText()` transforms that hoist `correct-response` from `qti-response-declaration` onto the interaction element. Cleanest if the rubric-block rename ships first.
+- [plans/qti3-item-import.md](plans/qti3-item-import.md) — follow-up. Ships `@qti-editor/qti3-item-import` with `roundtripChoice()`, `roundtripTextEntry()`, and `roundtripExtendedText()` transforms that hoist `correct-response` and `score` from `qti-response-declaration` / `qti-response-processing` onto the interaction element.
 
 ---
 

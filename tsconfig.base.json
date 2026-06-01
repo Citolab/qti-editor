@@ -42,6 +42,12 @@
       "@qti-editor/qti-roundtrip-import/*": [
         "packages/qti/roundtrip-import/src/*"
       ],
+      "@qti-editor/qti3-item-import": [
+        "packages/qti/qti3-item-import/src/index.ts"
+      ],
+      "@qti-editor/qti3-item-import/*": [
+        "packages/qti/qti3-item-import/src/*"
+      ],
       "@qti-editor/prosekit-integration/save-qti": [
         "packages/qti/prosekit-integration/src/save-qti/index.ts"
       ],

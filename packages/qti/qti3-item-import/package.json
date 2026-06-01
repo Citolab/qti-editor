@@ -1,0 +1,37 @@
+{
+  "name": "@qti-editor/qti3-item-import",
+  "version": "0.0.1",
+  "description": "Transform arbitrary QTI 3.0 items into the editor's roundtrip-format by hoisting correct-response and score onto the interaction element.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Citolab/qti-editor",
+    "directory": "packages/qti/qti3-item-import"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --project browser --root ../../.. packages/qti/qti3-item-import",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@qti-components/transformers": "^1.6.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
