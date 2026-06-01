@@ -6,10 +6,12 @@ import type { StorybookConfig } from '@storybook/web-components-vite';
 
 const config: StorybookConfig = {
   "stories": [
-    "../packages/**/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-    "../packages/**/src/**/*.mdx",
-    "../apps/**/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-    "../apps/**/src/**/*.mdx"
+    "../packages/*/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../packages/*/*/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../packages/*/src/**/*.mdx",
+    "../packages/*/*/src/**/*.mdx",
+    "../apps/*/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../apps/*/src/**/*.mdx"
   ],
   "addons": [
     "@chromatic-com/storybook",

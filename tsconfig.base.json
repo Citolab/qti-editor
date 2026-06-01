@@ -136,8 +136,14 @@
       "@qti-editor/interaction-choice": [
         "packages/prosemirror/interaction-choice/src/index.ts"
       ],
+      "@qti-editor/interaction-associate": [
+        "packages/prosemirror/interaction-associate/src/index.ts"
+      ],
       "@qti-editor/interaction-extended-text": [
         "packages/prosemirror/interaction-extended-text/src/index.ts"
+      ],
+      "@qti-editor/interaction-gap-match": [
+        "packages/prosemirror/interaction-gap-match/src/index.ts"
       ],
       "@qti-editor/interaction-hottext": [
         "packages/prosemirror/interaction-hottext/src/index.ts"
@@ -156,6 +162,12 @@
       ],
       "@qti-editor/interaction-text-entry": [
         "packages/prosemirror/interaction-text-entry/src/index.ts"
+      ],
+      "@qti-editor/qti-item-divider": [
+        "packages/prosemirror/qti-item-divider/src/index.ts"
+      ],
+      "@qti-editor/qti-item-divider/*": [
+        "packages/prosemirror/qti-item-divider/src/*"
       ],
       "@qti-editor/interfaces": [
         "packages/interfaces/src/index.ts"

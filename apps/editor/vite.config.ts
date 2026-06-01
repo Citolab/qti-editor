@@ -21,6 +21,8 @@ const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/prose
 const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-select-point/src', import.meta.url));
 const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-inline-choice/src', import.meta.url));
 const interactionsGapMatchSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-gap-match/src', import.meta.url));
+const interactionsHottextSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-hottext/src', import.meta.url));
+const qtiItemDividerSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/qti-item-divider/src', import.meta.url));
 const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes/src', import.meta.url));
 const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes-ui/src', import.meta.url));
 const appCustomElementRoots = [
@@ -40,6 +42,8 @@ const fullReloadRoots = [
   interactionsSelectPointSrcRoot,
   interactionsInlineChoiceSrcRoot,
   interactionsGapMatchSrcRoot,
+  interactionsHottextSrcRoot,
+  qtiItemDividerSrcRoot,
   prosemirrorAttributesSrcRoot,
   prosemirrorAttributesUiProseKitSrcRoot,
 ];
@@ -192,6 +196,22 @@ export default defineConfig({
         replacement: `${interactionsGapMatchSrcRoot}/index.ts`,
       },
       {
+        find: /^@qti-editor\/interaction-hottext\/(.*)\.js$/,
+        replacement: `${interactionsHottextSrcRoot}/$1.ts`,
+      },
+      {
+        find: /^@qti-editor\/interaction-hottext$/,
+        replacement: `${interactionsHottextSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-item-divider\/(.*)\.js$/,
+        replacement: `${qtiItemDividerSrcRoot}/$1.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-item-divider$/,
+        replacement: `${qtiItemDividerSrcRoot}/index.ts`,
+      },
+      {
         find: /^@qti-editor\/prosemirror-attributes\/(.*)\.js$/,
         replacement: `${prosemirrorAttributesSrcRoot}/$1.ts`,
       },
@@ -243,6 +263,8 @@ export default defineConfig({
       '@qti-editor/interaction-select-point',
       '@qti-editor/interaction-inline-choice',
       '@qti-editor/interaction-gap-match',
+      '@qti-editor/interaction-hottext',
+      '@qti-editor/qti-item-divider',
       '@qti-editor/prosemirror-attributes',
       '@qti-editor/prosemirror-attributes-ui',
       '@qti-components/theme',
