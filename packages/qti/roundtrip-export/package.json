@@ -1,6 +1,6 @@
 {
   "name": "@qti-editor/qti-roundtrip-export",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Lossless ProseMirror→QTI 3.0 roundtrip export. NOT a generic QTI 3.0 exporter. See ROUNDTRIP.md.",
   "repository": {
     "type": "git",
@@ -29,8 +29,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-editor/core": "workspace:*",
-    "@qti-editor/qti-roundtrip-import": "workspace:*",
+    "@qti-editor/core": "1.7.0",
+    "@qti-editor/qti-roundtrip-import": "1.1.1",
     "jszip": "^3.10.1",
     "prosemirror-model": "^1.25.4"
   },
