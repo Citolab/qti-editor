@@ -38,7 +38,14 @@
     "lit": "^3.3.1"
   },
   "devDependencies": {
-    "lit": "^3.3.2"
+    "@qti-components/transformers": "^1.7.0",
+    "@qti-editor/qti3-item-import": "workspace:*",
+    "@qti-editor/prosekit-integration": "workspace:*",
+    "lit": "^3.3.2",
+    "prosemirror-schema-basic": "^1.2.4",
+    "prosemirror-gapcursor": "^1.4.1",
+    "prosemirror-keymap": "^1.2.3",
+    "prosemirror-history": "^1.5.0"
   },
   "files": [
     "dist"

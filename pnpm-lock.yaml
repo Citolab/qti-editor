@@ -625,9 +625,30 @@ importers:
         specifier: ^1.31.0
         version: 1.41.8
     devDependencies:
+      '@qti-components/transformers':
+        specifier: ^1.7.0
+        version: 1.7.0
+      '@qti-editor/prosekit-integration':
+        specifier: workspace:*
+        version: link:../../qti/prosekit-integration
+      '@qti-editor/qti3-item-import':
+        specifier: workspace:*
+        version: link:../../qti/qti3-item-import
       lit:
         specifier: ^3.3.2
         version: 3.3.2
+      prosemirror-gapcursor:
+        specifier: ^1.4.1
+        version: 1.4.1
+      prosemirror-history:
+        specifier: ^1.5.0
+        version: 1.5.0
+      prosemirror-keymap:
+        specifier: ^1.2.3
+        version: 1.2.3
+      prosemirror-schema-basic:
+        specifier: ^1.2.4
+        version: 1.2.4
 
   packages/prosemirror/interaction-gap-match:
     dependencies:
@@ -849,9 +870,30 @@ importers:
         specifier: ^1.31.0
         version: 1.41.8
     devDependencies:
+      '@qti-components/transformers':
+        specifier: ^1.7.0
+        version: 1.7.0
+      '@qti-editor/prosekit-integration':
+        specifier: workspace:*
+        version: link:../../qti/prosekit-integration
+      '@qti-editor/qti3-item-import':
+        specifier: workspace:*
+        version: link:../../qti/qti3-item-import
       lit:
         specifier: ^3.3.2
         version: 3.3.2
+      prosemirror-gapcursor:
+        specifier: ^1.4.1
+        version: 1.4.1
+      prosemirror-history:
+        specifier: ^1.5.0
+        version: 1.5.0
+      prosemirror-keymap:
+        specifier: ^1.2.3
+        version: 1.2.3
+      prosemirror-schema-basic:
+        specifier: ^1.2.4
+        version: 1.2.4
 
   packages/prosemirror/qti-item-divider:
     dependencies:
