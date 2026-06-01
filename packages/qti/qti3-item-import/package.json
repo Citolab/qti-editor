@@ -1,6 +1,6 @@
 {
   "name": "@qti-editor/qti3-item-import",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Transform arbitrary QTI 3.0 items into the editor's roundtrip-format by hoisting correct-response and score onto the interaction element.",
   "repository": {
     "type": "git",
