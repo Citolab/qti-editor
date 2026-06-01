@@ -6,9 +6,10 @@
  */
 
 import { ListDOMSerializer } from 'prosekit/extensions/list';
+import { xmlFromNode as xmlFromNodePure } from '@qti-editor/qti-roundtrip-export/pm-xml';
+
 import type { ProseMirrorNode } from 'prosekit/pm/model';
 
-import { xmlFromNode as xmlFromNodePure } from '@qti-editor/qti-roundtrip-export/pm-xml';
 
 export function xmlFromNode(node: ProseMirrorNode): string {
   return xmlFromNodePure(node, ListDOMSerializer.fromSchema(node.type.schema));

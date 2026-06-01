@@ -3,8 +3,6 @@ export * from './components/qti-match-interaction/qti-match-interaction.schema.j
 export * from './components/qti-match-interaction/qti-match-interaction.commands.js';
 export * from './components/qti-match-interaction/qti-match-interaction.compose.js';
 
-export * from './extensions/index.js';
-
 export * from './composer/metadata.js';
 export * from './composer/handler.js';
 export * from './descriptor.js';

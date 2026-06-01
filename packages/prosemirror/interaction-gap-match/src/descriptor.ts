@@ -9,7 +9,6 @@ import { insertGapMatchInteraction, qtiGapMatchEnterCommand } from './components
 import { qtiGapMatchInteractionNodeSpec } from './components/qti-gap-match-interaction/qti-gap-match-interaction.schema.js';
 import { gapMatchInteractionComposerMetadata, gapMatchNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
 import { gapMatchComposerHandler } from './composer/handler.js';
-import { createGapMatchCorrectResponsePlugin } from './extensions/correct-response.js';
 import { createGapMatchNodeViewPlugin } from './extensions/node-view.js';
 
 import type { InteractionDescriptor } from '@qti-editor/interfaces';
@@ -24,7 +23,7 @@ export const gapMatchInteractionDescriptor = {
     { name: 'qtiGapText', spec: qtiGapTextNodeSpec },
     { name: 'qtiGap', spec: qtiGapNodeSpec },
   ],
-  pluginFactories: [createGapMatchNodeViewPlugin, createGapMatchCorrectResponsePlugin],
+  pluginFactories: [createGapMatchNodeViewPlugin],
   insertCommand: insertGapMatchInteraction,
   enterCommand: qtiGapMatchEnterCommand,
   keyboardShortcut: 'Mod-Shift-g',

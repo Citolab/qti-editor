@@ -147,6 +147,18 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
 
   private _emitChange() {
     const associations = Array.from(this._associations.entries()) as MatchAssociation[];
+    const correctResponse = associations.length > 0 ? JSON.stringify(associations) : null;
+
+    this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
+      detail: {
+        nodeType: 'qtiMatchInteraction',
+        tagName: 'qti-match-interaction',
+        attrs: { correctResponse },
+      },
+      bubbles: true,
+      composed: true,
+    }));
+
     this.dispatchEvent(new CustomEvent<MatchAssociationChangeDetail>('match-association-change', {
       detail: { associations },
       bubbles: true,

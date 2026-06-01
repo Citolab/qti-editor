@@ -16,9 +16,11 @@
 import JSZip from 'jszip';
 import { collectMirrorMappings } from '@qti-editor/core/composer';
 import { getInteractionComposerMetadata } from '@qti-editor/core/interactions/composer';
-import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
 
 import { getQtiItems, type QtiComposeContext, type QtiItemFragment } from './pm-qti.js';
+
+import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
+
 
 const QTI_PACKAGE_NS = 'http://www.imsglobal.org/xsd/qti/qtiv3p0/imscp_v1p1';
 const QTI_ASI_NS = 'http://www.imsglobal.org/xsd/imsqtiasi_v3p0';

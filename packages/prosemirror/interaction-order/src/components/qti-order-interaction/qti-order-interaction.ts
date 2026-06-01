@@ -175,6 +175,17 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
   private _emitChange() {
     // Emit as JSON array string to match storage format
     const jsonOrder = JSON.stringify(this._order);
+
+    this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
+      detail: {
+        nodeType: 'qtiOrderInteraction',
+        tagName: 'qti-order-interaction',
+        attrs: { correctResponse: jsonOrder },
+      },
+      bubbles: true,
+      composed: true,
+    }));
+
     this.dispatchEvent(new CustomEvent('order-response-change', {
       detail: { order: this._order, correctResponse: jsonOrder },
       bubbles: true,

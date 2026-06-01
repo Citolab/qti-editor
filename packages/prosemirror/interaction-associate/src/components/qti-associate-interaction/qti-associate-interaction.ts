@@ -162,6 +162,17 @@ export class QtiAssociateInteractionEdit extends Interaction {
   private _emitChange() {
     const pairs = stateToPairs(this._state.containers);
     this._lastEmittedResponse = pairs.length > 0 ? JSON.stringify(pairs) : null;
+
+    this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
+      detail: {
+        nodeType: 'qtiAssociateInteraction',
+        tagName: 'qti-associate-interaction',
+        attrs: { correctResponse: this._lastEmittedResponse },
+      },
+      bubbles: true,
+      composed: true,
+    }));
+
     this.dispatchEvent(new CustomEvent<AssociatePairChangeDetail>('associate-pair-change', {
       detail: { pairs },
       bubbles: true,

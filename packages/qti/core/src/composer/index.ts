@@ -6,7 +6,6 @@
  */
 
 import { getInteractionComposerHandler, getInteractionComposerMetadata } from '../interactions/composer.js';
-
 import { copyMirrorsToTarget } from './non-qti-attributes.js';
 
 import type { ResponseProcessingKind } from '@qti-editor/interfaces';

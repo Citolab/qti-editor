@@ -170,6 +170,7 @@ wcConfigs['flat/recommended'], // Storybook-specific rules
 {
   ignores: [
     'node_modules/**',
+    'hosting/**', // Local deploy/storybook build artifacts
     'packages/ui/src/components/editor/**', // Clean prosekit installs — do not lint or modify
     '**/dist/**', // Build output directories
     'build/**',

@@ -6,8 +6,6 @@
  */
 
 import { ListDOMSerializer } from 'prosekit/extensions/list';
-import type { ProseMirrorNode } from 'prosekit/pm/model';
-
 import {
   qtiFromNode as qtiFromNodePure,
   countQtiItems as countQtiItemsPure,
@@ -16,6 +14,9 @@ import {
   type QtiComposeMode,
   type QtiItemFragment,
 } from '@qti-editor/qti-roundtrip-export/pm-qti';
+
+import type { ProseMirrorNode } from 'prosekit/pm/model';
+
 
 export type { QtiComposeContext, QtiComposeMode, QtiItemFragment };
 

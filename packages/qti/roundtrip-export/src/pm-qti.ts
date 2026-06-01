@@ -14,9 +14,11 @@ import {
   formatXml,
   type ComposerItemContext,
 } from '@qti-editor/core/composer';
-import type { DOMSerializer, Node as ProseMirrorNode } from 'prosemirror-model';
 
 import { xmlFromNode } from './pm-xml.js';
+
+import type { DOMSerializer, Node as ProseMirrorNode } from 'prosemirror-model';
+
 
 export type QtiComposeMode = 'single' | 'multiple';
 

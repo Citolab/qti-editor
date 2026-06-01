@@ -3,7 +3,6 @@ export * from './components/qti-gap-match-interaction/qti-gap-match-interaction.
 export * from './components/qti-gap-match-interaction/qti-gap-match-interaction.commands.js';
 export * from './components/qti-gap-match-interaction/qti-gap-match-interaction.compose.js';
 
-export * from './extensions/correct-response.js';
 export * from './extensions/node-view.js';
 
 export * from './composer/metadata.js';

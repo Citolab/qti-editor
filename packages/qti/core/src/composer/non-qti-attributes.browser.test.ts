@@ -9,8 +9,6 @@
  */
 import { describe, expect, it } from 'vitest';
 
-import type { InteractionComposerMetadata } from '@qti-editor/interfaces';
-
 import {
   collectMirrorMappings,
   copyMirrorsToTarget,
@@ -18,6 +16,9 @@ import {
   normalizeNonQtiAttribute,
   stripNonQtiAttributesFromElement,
 } from './non-qti-attributes.js';
+
+import type { InteractionComposerMetadata } from '@qti-editor/interfaces';
+
 
 function createElement(tagName: string, attrs: Record<string, string> = {}): Element {
   const doc = document.implementation.createDocument(null, tagName, null);

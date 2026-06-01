@@ -156,6 +156,15 @@ export class QtiGapMatchInteractionEdit extends InteractionPanel {
     this.isEmittingChange = true;
     queueMicrotask(() => {
       this.isEmittingChange = false;
+      this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
+        detail: {
+          nodeType: 'qtiGapMatchInteraction',
+          tagName: 'qti-gap-match-interaction',
+          attrs: { correctResponse: this.lastEmittedResponse },
+        },
+        bubbles: true,
+        composed: true,
+      }));
       this.dispatchEvent(new CustomEvent<GapAssociationChangeDetail>('gap-association-change', {
         detail: { associations },
         bubbles: true,
