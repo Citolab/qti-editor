@@ -25,6 +25,7 @@ const config: StorybookConfig = {
       },
     },
   ],
+  staticDirs: ['../public'],
   "framework": "@storybook/web-components-vite",
   async viteFinal(config: any, { configType }: { configType?: string }) {
     return {

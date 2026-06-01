@@ -13,6 +13,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./pm-xml": {
+      "types": "./dist/pm-xml.d.ts",
+      "default": "./dist/pm-xml.js"
+    },
+    "./pm-qti": {
+      "types": "./dist/pm-qti.d.ts",
+      "default": "./dist/pm-qti.js"
     }
   },
   "scripts": {
@@ -22,12 +30,9 @@
   },
   "dependencies": {
     "@qti-editor/core": "workspace:*",
-    "@qti-editor/prosekit-integration": "workspace:*",
     "@qti-editor/qti-roundtrip-import": "workspace:*",
-    "jszip": "^3.10.1"
-  },
-  "peerDependencies": {
-    "prosekit": "^0.20.0"
+    "jszip": "^3.10.1",
+    "prosemirror-model": "^1.25.4"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

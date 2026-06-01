@@ -31,6 +31,7 @@ import './components/qti-choice-interaction/qti-choice-interaction';
 import '../../interaction-shared/src/components/qti-prompt/qti-prompt';
 import '../../interaction-shared/src/components/qti-simple-choice/qti-simple-choice';
 
+import '@qti-components/theme/item.css'
 import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
 

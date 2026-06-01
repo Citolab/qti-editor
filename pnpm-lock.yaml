@@ -570,6 +570,15 @@ importers:
         specifier: ^1.31.0
         version: 1.41.8
     devDependencies:
+      '@qti-components/transformers':
+        specifier: ^1.6.4
+        version: 1.6.4
+      '@qti-editor/qti-roundtrip-export':
+        specifier: workspace:*
+        version: link:../../qti/roundtrip-export
+      '@qti-editor/qti3-item-import':
+        specifier: workspace:*
+        version: link:../../qti/qti3-item-import
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -941,6 +950,9 @@ importers:
       '@qti-editor/prosemirror-plugins':
         specifier: workspace:*
         version: link:../../prosemirror/extensions
+      '@qti-editor/qti-roundtrip-export':
+        specifier: workspace:*
+        version: link:../roundtrip-export
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -970,18 +982,15 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../core
-      '@qti-editor/prosekit-integration':
-        specifier: workspace:*
-        version: link:../prosekit-integration
       '@qti-editor/qti-roundtrip-import':
         specifier: workspace:*
         version: link:../roundtrip-import
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
-      prosekit:
-        specifier: ^0.20.0
-        version: 0.20.0(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
