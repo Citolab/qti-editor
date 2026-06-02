@@ -34,9 +34,9 @@ import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interaction-shar
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
-import { exportPackage, exportXml } from '../lib/exportXml.js';
+import { exportJson, exportPackage, exportRoundtripXml, exportXml, importJson } from '../lib/exportXml.js';
 import { getAutoSaveKey } from '../lib/fileStore.js';
-import { openXmlFilePicker } from '../lib/importXml.js';
+import { importRoundtripXml, openXmlFilePicker } from '../lib/importXml.js';
 
 import type { CompatibilityReport } from '@qti-editor/interfaces';
 
@@ -302,6 +302,38 @@ export class QtiEditorApp extends LitElement {
     });
   }
 
+
+  exportJson(fileName: string = 'item'): void {
+    exportJson(this.editor.view.state.doc, fileName);
+  }
+
+  async importJson(): Promise<void> {
+    try {
+      const pmDoc = await importJson(this.editor.schema);
+      this.editor.setContent(pmDoc.toJSON());
+      localStorage.setItem(getAutoSaveKey(), JSON.stringify(writePersistedDocStateEnvelope(pmDoc.toJSON())));
+      document.dispatchEvent(new CustomEvent('qti:content:change', { bubbles: true }));
+    } catch (error) {
+      console.error('Failed to import JSON:', error);
+      alert('Failed to import JSON file. Please check that the file contains valid ProseMirror JSON.');
+    }
+  }
+
+  exportRoundtripXml(fileName: string = 'item'): void {
+    exportRoundtripXml(this.editor.view.state.doc, fileName);
+  }
+
+  async importRoundtripXml(): Promise<void> {
+    try {
+      const pmDoc = await importRoundtripXml(this.editor.schema);
+      this.editor.setContent(pmDoc.toJSON());
+      localStorage.setItem(getAutoSaveKey(), JSON.stringify(writePersistedDocStateEnvelope(pmDoc.toJSON())));
+      document.dispatchEvent(new CustomEvent('qti:content:change', { bubbles: true }));
+    } catch (error) {
+      console.error('Failed to import roundtrip XML:', error);
+      alert('Failed to import roundtrip XML file.');
+    }
+  }
 
   async importXml(): Promise<void> {
     try {

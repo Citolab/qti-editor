@@ -6,6 +6,10 @@ export interface EditorLayoutHandle {
   exportXml: (fileName?: string) => void;
   exportPackage: (fileName?: string) => Promise<void> | undefined;
   importXml: () => void;
+  exportJson: (fileName?: string) => void;
+  exportRoundtripXml: (fileName?: string) => void;
+  importJson: () => void;
+  importRoundtripXml: () => void;
 }
 
 interface EditorLayoutProps {
@@ -22,6 +26,10 @@ export const EditorLayout = forwardRef<EditorLayoutHandle, EditorLayoutProps>(
       exportXml: (fileName) => elRef.current?.exportXml(fileName),
       exportPackage: (fileName) => elRef.current?.exportPackage(fileName),
       importXml: () => elRef.current?.importXml(),
+      exportJson: (fileName) => elRef.current?.exportJson(fileName),
+      exportRoundtripXml: (fileName) => elRef.current?.exportRoundtripXml(fileName),
+      importJson: () => elRef.current?.importJson(),
+      importRoundtripXml: () => elRef.current?.importRoundtripXml(),
     }));
 
     return (

@@ -124,6 +124,10 @@ export default function App() {
     [currentFile?.name, setFileName, t]
   );
 
+  // Dev mode flag
+  const isDev = new URLSearchParams(window.location.search).get('dev') === 'true'
+    || localStorage.getItem('qti-editor:dev') === 'true';
+
   // Handler: Export XML
   const handleExportXml = useCallback(() => {
     editorLayoutRef.current?.exportXml(fileName || 'item');
@@ -137,6 +141,26 @@ export default function App() {
   // Handler: Import XML
   const handleImportXml = useCallback(() => {
     editorLayoutRef.current?.importXml();
+  }, []);
+
+  // Handler: Export JSON
+  const handleExportJson = useCallback(() => {
+    editorLayoutRef.current?.exportJson(fileName || 'item');
+  }, [fileName]);
+
+  // Handler: Export roundtrip XML
+  const handleExportRoundtripXml = useCallback(() => {
+    editorLayoutRef.current?.exportRoundtripXml(fileName || 'item');
+  }, [fileName]);
+
+  // Handler: Import JSON
+  const handleImportJson = useCallback(() => {
+    editorLayoutRef.current?.importJson();
+  }, []);
+
+  // Handler: Import roundtrip XML
+  const handleImportRoundtripXml = useCallback(() => {
+    editorLayoutRef.current?.importRoundtripXml();
   }, []);
 
   // Unsaved dialog: Save action
@@ -174,6 +198,11 @@ export default function App() {
         onExport={handleExportXml}
         onExportPackage={handleExportPackage}
         onImport={handleImportXml}
+        onExportJson={handleExportJson}
+        onExportRoundtripXml={handleExportRoundtripXml}
+        onImportJson={handleImportJson}
+        onImportRoundtripXml={handleImportRoundtripXml}
+        isDev={isDev}
         onLoadMenuToggle={handleLoadMenuToggle}
         onLoad={handleLoadFile}
         onDelete={handleDeleteFile}

@@ -146,3 +146,27 @@ function isQtiPackageFile(file: File): boolean {
   const name = file.name.toLowerCase();
   return name.endsWith('.zip') || file.type === 'application/zip' || file.type === 'application/x-zip-compressed';
 }
+
+export function importRoundtripXml(schema: Schema): Promise<import('prosekit/pm/model').Node> {
+  return new Promise((resolve, reject) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.xml,application/xml';
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) return reject(new Error('No file selected'));
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const html = xmlToHTML(reader.result as string);
+          const json = jsonFromHTML(html, { schema });
+          resolve(schema.nodeFromJSON(json));
+        } catch {
+          reject(new Error('Invalid roundtrip XML'));
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  });
+}

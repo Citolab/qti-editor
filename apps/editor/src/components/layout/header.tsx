@@ -30,6 +30,11 @@ interface AppHeaderProps {
   onExport: () => void;
   onExportPackage: () => void;
   onImport: () => void;
+  onExportJson: () => void;
+  onExportRoundtripXml: () => void;
+  onImportJson: () => void;
+  onImportRoundtripXml: () => void;
+  isDev: boolean;
   onLoadMenuToggle: () => void;
   onLoad: (id: string) => void;
   onDelete: (e: MouseEvent, id: string) => void;
@@ -56,6 +61,11 @@ export function AppHeader({
   onExport,
   onExportPackage,
   onImport,
+  onExportJson,
+  onExportRoundtripXml,
+  onImportJson,
+  onImportRoundtripXml,
+  isDev,
   onLoadMenuToggle,
   onLoad,
   onDelete,
@@ -100,6 +110,11 @@ export function AppHeader({
         onExport={onExport}
         onExportPackage={onExportPackage}
         onImport={onImport}
+        onExportJson={onExportJson}
+        onExportRoundtripXml={onExportRoundtripXml}
+        onImportJson={onImportJson}
+        onImportRoundtripXml={onImportRoundtripXml}
+        isDev={isDev}
         isDirty={isDirty}
       />
 

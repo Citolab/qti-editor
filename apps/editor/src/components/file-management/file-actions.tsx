@@ -1,18 +1,24 @@
 import { useTranslation } from 'react-i18next';
 
-import { IconFile, IconSave, IconDownload, IconUpload } from '../../lib/icons';
+import { IconFile, IconSave, IconDownload, IconUpload, IconChevronDown } from '../../lib/icons';
 import { ToolbarButton } from '../ui/toolbar-button';
+import { DropdownMenu } from '../ui/dropdown-menu';
 
 interface FileActionsProps {
   onNew: () => void;
   onSave: () => void;
   onExport: () => void;
+  onExportJson: () => void;
+  onExportRoundtripXml: () => void;
   onExportPackage: () => void;
   onImport: () => void;
+  onImportJson: () => void;
+  onImportRoundtripXml: () => void;
   isDirty: boolean;
+  isDev: boolean;
 }
 
-export function FileActions({ onNew, onSave, onExport, onExportPackage, onImport, isDirty }: FileActionsProps) {
+export function FileActions({ onNew, onSave, onExport, onExportJson, onExportRoundtripXml, onExportPackage, onImport, onImportJson, onImportRoundtripXml, isDirty, isDev }: FileActionsProps) {
   const { t } = useTranslation();
 
   return (
@@ -26,13 +32,25 @@ export function FileActions({ onNew, onSave, onExport, onExportPackage, onImport
         {isDirty ? t('fileSaveDirty') : t('fileSave')}
       </ToolbarButton>
 
-      <ToolbarButton onClick={onImport} title={t('fileImportTitle')}>
-        <IconUpload /> {t('fileImport')}
-      </ToolbarButton>
+      <DropdownMenu
+        isDev={isDev}
+        label={<><IconUpload /> {t('fileImport')} <IconChevronDown /></>}
+        items={[
+          { label: t('fileImportQti'),       title: t('fileImportQtiTitle'),       onClick: onImport },
+          { label: t('fileImportJson'),       title: t('fileImportJsonTitle'),      onClick: onImportJson },
+          { label: t('fileImportRoundtrip'),  title: t('fileImportRoundtripTitle'), onClick: onImportRoundtripXml, devOnly: true },
+        ]}
+      />
 
-      <ToolbarButton onClick={onExport} title={t('fileExportTitle')}>
-        <IconDownload /> {t('fileExport')}
-      </ToolbarButton>
+      <DropdownMenu
+        isDev={isDev}
+        label={<><IconDownload /> {t('fileExport')} <IconChevronDown /></>}
+        items={[
+          { label: t('fileExportQti'),        title: t('fileExportQtiTitle'),        onClick: onExport },
+          { label: t('fileExportJson'),       title: t('fileExportJsonTitle'),       onClick: onExportJson },
+          { label: t('fileExportRoundtrip'),  title: t('fileExportRoundtripTitle'),  onClick: onExportRoundtripXml, devOnly: true },
+        ]}
+      />
 
       <ToolbarButton onClick={onExportPackage} title={t('fileExportPackageTitle')}>
         <IconDownload /> {t('fileExportPackage')}
