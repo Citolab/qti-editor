@@ -4,6 +4,7 @@ import type { QtiEditorApp } from '../qti-editor-app.js';
 
 export interface EditorLayoutHandle {
   exportXml: (fileName?: string) => void;
+  exportItem: (fileName?: string) => void;
   exportPackage: (fileName?: string) => Promise<void> | undefined;
   importXml: () => void;
   exportJson: (fileName?: string) => void;
@@ -24,6 +25,7 @@ export const EditorLayout = forwardRef<EditorLayoutHandle, EditorLayoutProps>(
 
     useImperativeHandle(ref, () => ({
       exportXml: (fileName) => elRef.current?.exportXml(fileName),
+      exportItem: (fileName) => elRef.current?.exportItem(fileName),
       exportPackage: (fileName) => elRef.current?.exportPackage(fileName),
       importXml: () => elRef.current?.importXml(),
       exportJson: (fileName) => elRef.current?.exportJson(fileName),

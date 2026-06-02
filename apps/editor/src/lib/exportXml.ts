@@ -1,3 +1,4 @@
+import { qtiItemFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-item';
 import { qtiTestFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-test';
 import { xmlFromNode } from '@qti-editor/prosekit-integration/save-xml';
 import { createQtiPackageFromNode } from '@qti-editor/qti-package';
@@ -88,6 +89,27 @@ export function importJson(schema: Schema): Promise<ProseMirrorNode> {
     };
     input.click();
   });
+}
+
+export function exportItem(options: ExportXmlOptions): void {
+  const safeFileName = (options.fileName || 'item')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-zA-Z0-9._-]/g, '') || 'item';
+
+  const xml = qtiItemFromProsemirror(options.node, {
+    identifier: options.items?.[0]?.identifier,
+    lang: options.lang,
+    title: options.items?.[0]?.title,
+  });
+
+  const blob = new Blob([xml], { type: 'application/xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${safeFileName}.xml`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 export function exportRoundtripXml(node: ProseMirrorNode, fileName: string = 'item'): void {

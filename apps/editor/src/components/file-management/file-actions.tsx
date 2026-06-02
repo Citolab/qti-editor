@@ -8,6 +8,7 @@ interface FileActionsProps {
   onNew: () => void;
   onSave: () => void;
   onExport: () => void;
+  onExportItem: () => void;
   onExportJson: () => void;
   onExportRoundtripXml: () => void;
   onExportPackage: () => void;
@@ -18,7 +19,7 @@ interface FileActionsProps {
   isDev: boolean;
 }
 
-export function FileActions({ onNew, onSave, onExport, onExportJson, onExportRoundtripXml, onExportPackage, onImport, onImportJson, onImportRoundtripXml, isDirty, isDev }: FileActionsProps) {
+export function FileActions({ onNew, onSave, onExport, onExportItem, onExportJson, onExportRoundtripXml, onExportPackage, onImport, onImportJson, onImportRoundtripXml, isDirty, isDev }: FileActionsProps) {
   const { t } = useTranslation();
 
   return (
@@ -37,7 +38,7 @@ export function FileActions({ onNew, onSave, onExport, onExportJson, onExportRou
         label={<><IconUpload /> {t('fileImport')} <IconChevronDown /></>}
         items={[
           { label: t('fileImportQti'),       title: t('fileImportQtiTitle'),       onClick: onImport },
-          { label: t('fileImportJson'),       title: t('fileImportJsonTitle'),      onClick: onImportJson },
+          { label: t('fileImportJson'),       title: t('fileImportJsonTitle'),      onClick: onImportJson,        devOnly: true },
           { label: t('fileImportRoundtrip'),  title: t('fileImportRoundtripTitle'), onClick: onImportRoundtripXml, devOnly: true },
         ]}
       />
@@ -46,8 +47,9 @@ export function FileActions({ onNew, onSave, onExport, onExportJson, onExportRou
         isDev={isDev}
         label={<><IconDownload /> {t('fileExport')} <IconChevronDown /></>}
         items={[
-          { label: t('fileExportQti'),        title: t('fileExportQtiTitle'),        onClick: onExport },
-          { label: t('fileExportJson'),       title: t('fileExportJsonTitle'),       onClick: onExportJson },
+          { label: t('fileExportQtiTest'),    title: t('fileExportQtiTestTitle'),    onClick: onExport },
+          { label: t('fileExportQtiItem'),    title: t('fileExportQtiItemTitle'),    onClick: onExportItem },
+          { label: t('fileExportJson'),       title: t('fileExportJsonTitle'),       onClick: onExportJson,        devOnly: true },
           { label: t('fileExportRoundtrip'),  title: t('fileExportRoundtripTitle'),  onClick: onExportRoundtripXml, devOnly: true },
         ]}
       />

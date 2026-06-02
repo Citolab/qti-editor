@@ -34,7 +34,7 @@ import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interaction-shar
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
-import { exportJson, exportPackage, exportRoundtripXml, exportXml, importJson } from '../lib/exportXml.js';
+import { exportItem, exportJson, exportPackage, exportRoundtripXml, exportXml, importJson } from '../lib/exportXml.js';
 import { getAutoSaveKey } from '../lib/fileStore.js';
 import { importRoundtripXml, openXmlFilePicker } from '../lib/importXml.js';
 
@@ -286,6 +286,15 @@ export class QtiEditorApp extends LitElement {
 
   exportXml(fileName: string = 'item'): void {
     exportXml({
+      node: this.editor.view.state.doc,
+      lang: this.lang,
+      items: this.itemContext.items,
+      fileName,
+    });
+  }
+
+  exportItem(fileName: string = 'item'): void {
+    exportItem({
       node: this.editor.view.state.doc,
       lang: this.lang,
       items: this.itemContext.items,

@@ -133,6 +133,11 @@ export default function App() {
     editorLayoutRef.current?.exportXml(fileName || 'item');
   }, [fileName]);
 
+  // Handler: Export single QTI item
+  const handleExportItem = useCallback(() => {
+    editorLayoutRef.current?.exportItem(fileName || 'item');
+  }, [fileName]);
+
   // Handler: Export QTI package
   const handleExportPackage = useCallback(() => {
     void editorLayoutRef.current?.exportPackage(fileName || 'item');
@@ -196,6 +201,7 @@ export default function App() {
         onNew={handleNewFile}
         onSave={handleSaveFile}
         onExport={handleExportXml}
+        onExportItem={handleExportItem}
         onExportPackage={handleExportPackage}
         onImport={handleImportXml}
         onExportJson={handleExportJson}
