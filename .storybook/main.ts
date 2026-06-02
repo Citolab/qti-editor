@@ -11,7 +11,8 @@ const config: StorybookConfig = {
     "../packages/*/src/**/*.mdx",
     "../packages/*/*/src/**/*.mdx",
     "../apps/*/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-    "../apps/*/src/**/*.mdx"
+    "../apps/*/src/**/*.mdx",
+    "../apps/*/stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   "addons": [
     "@chromatic-com/storybook",
@@ -37,7 +38,8 @@ const config: StorybookConfig = {
         tailwindcss(),
         tsconfigPaths({
           projects: [
-            './tsconfig.json'
+            './tsconfig.json',
+            './apps/e2e/tsconfig.json',
           ],
           ignoreConfigErrors: true,
         }),

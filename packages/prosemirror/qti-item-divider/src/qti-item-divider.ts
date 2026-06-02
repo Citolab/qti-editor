@@ -1,5 +1,4 @@
 import { css, html, LitElement } from 'lit';
-import { property } from 'lit/decorators.js';
 import { translateQti } from '@qti-editor/interaction-shared';
 
 /**
@@ -17,40 +16,56 @@ export class QtiItemDivider extends LitElement {
     return [
       css`
         :host {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          user-select: none;
+          padding: 0.25rem 0;
+          color: #94a3b8;
+        }
+
+        .line {
+          flex: 1;
+          height: 1px;
+          background-color: #e2e8f0;
+        }
+
+        .label {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          font-size: 0.625rem;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
           white-space: nowrap;
+        }
+
+        svg {
+          width: 0.875rem;
+          height: 0.875rem;
+          opacity: 0.7;
+        }
+
+        :host([data-selected]) {
+          outline: 2px solid #3b82f6;
+          outline-offset: 2px;
+          border-radius: 0.25rem;
         }
       `
     ];
   }
 
-  /**
-   * 0-based index of the item that starts after this divider.
-   * Display shows itemIndex + 1.
-   */
-  @property({ type: Number, attribute: 'data-item-index', reflect: true })
-  itemIndex: number | null = null;
-  
-  // Render to light DOM for easier CSS integration with gutter
-  override createRenderRoot() {
-    return this;
-  }
-
   override render() {
-    const displayIndex = this.itemIndex !== null ? this.itemIndex + 1 : null;
-
     return html`
-      <div class="divider-container">
-        <div class="divider-line"></div>
-        ${displayIndex !== null ? html`
-          <div class="divider-badge">${displayIndex}</div>
-        ` : null}
-        <div class="divider-label">
-          <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 12h18M3 6h18M3 18h18" />
-          </svg>
-          <span>${translateQti('divider.itemBoundary', { target: this })}</span>
-        </div>
+      <div class="line"></div>
+      <div class="label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12h18M3 6h18M3 18h18" />
+        </svg>
+        <span>${translateQti('divider.itemBoundary', { target: this })}</span>
       </div>
+      <div class="line"></div>
     `;
   }
 }

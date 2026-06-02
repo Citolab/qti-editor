@@ -42,8 +42,26 @@
       "@qti-editor/qti3-item-import/*": [
         "packages/qti/qti3-item-import/src/*"
       ],
-      "@qti-editor/prosekit-integration/save-qti": [
-        "packages/qti/prosekit-integration/src/save-qti/index.ts"
+      "@qti-editor/prosekit-integration/save-qti-item": [
+        "packages/qti/prosekit-integration/src/save-qti-item/index.ts"
+      ],
+      "@qti-editor/prosekit-integration/save-qti-test": [
+        "packages/qti/prosekit-integration/src/save-qti-test/index.ts"
+      ],
+      "@qti-editor/qti-item-export": [
+        "packages/qti/item-export/src/index.ts"
+      ],
+      "@qti-editor/qti-item-export/*": [
+        "packages/qti/item-export/src/*"
+      ],
+      "@qti-editor/qti-test-export": [
+        "packages/qti/test-export/src/index.ts"
+      ],
+      "@qti-editor/qti-test-export/*": [
+        "packages/qti/test-export/src/*"
+      ],
+      "@qti-editor/qti-package": [
+        "packages/qti/package/src/index.ts"
       ],
       "@qti-editor/core/*": [
         "packages/qti/core/src/*"
