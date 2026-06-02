@@ -16,9 +16,6 @@ export class QtiComposerMetadataForm extends LitElement {
   itemCount = 1;
 
   @property({ type: Boolean })
-  isInformational = false;
-
-  @property({ type: Boolean })
   showValidation = true;
 
   override createRenderRoot() {
@@ -35,18 +32,12 @@ export class QtiComposerMetadataForm extends LitElement {
     this.#emitChange();
   }
 
-  #onInformationalChange(event: Event) {
-    this.isInformational = (event.target as HTMLInputElement).checked;
-    this.#emitChange();
-  }
-
   #emitChange() {
     this.dispatchEvent(
       new CustomEvent('metadata-change', {
         detail: {
           title: this.title,
           identifier: this.identifier,
-          informational: this.isInformational,
         },
         bubbles: true,
         composed: true,
@@ -88,17 +79,6 @@ export class QtiComposerMetadataForm extends LitElement {
             </div>
           ` : ''}
         </div>
-        <label class="form-control flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            class="checkbox checkbox-sm"
-            .checked=${this.isInformational}
-            @change=${this.#onInformationalChange}
-          />
-          <span class="label-text text-xs" title=${this.i18n.t('composerMetadata.informationalHint')}>
-            ${this.i18n.t('composerMetadata.informational')}
-          </span>
-        </label>
       </section>
     `;
   }

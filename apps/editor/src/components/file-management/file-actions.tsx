@@ -7,20 +7,42 @@ import { DropdownMenu } from '../ui/dropdown-menu';
 interface FileActionsProps {
   onNew: () => void;
   onSave: () => void;
-  onExport: () => void;
   onExportItem: () => void;
+  onExportPackage: () => void;
+  onExportXml: () => void;
   onExportJson: () => void;
   onExportRoundtripXml: () => void;
-  onExportPackage: () => void;
   onImport: () => void;
   onImportJson: () => void;
   onImportRoundtripXml: () => void;
+  metadataTitle: string;
   isDirty: boolean;
   isDev: boolean;
 }
 
-export function FileActions({ onNew, onSave, onExport, onExportItem, onExportJson, onExportRoundtripXml, onExportPackage, onImport, onImportJson, onImportRoundtripXml, isDirty, isDev }: FileActionsProps) {
+function sanitizeForFilename(value: string): string {
+  return value.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9._-]/g, '') || 'item';
+}
+
+export function FileActions({
+  onNew,
+  onSave,
+  onExportItem,
+  onExportPackage,
+  onExportXml,
+  onExportJson,
+  onExportRoundtripXml,
+  onImport,
+  onImportJson,
+  onImportRoundtripXml,
+  metadataTitle,
+  isDirty,
+  isDev,
+}: FileActionsProps) {
   const { t } = useTranslation();
+  const safeTitle = sanitizeForFilename(metadataTitle);
+  const xmlName = `${safeTitle}.xml`;
+  const zipName = `${safeTitle}.zip`;
 
   return (
     <>
@@ -43,20 +65,25 @@ export function FileActions({ onNew, onSave, onExport, onExportItem, onExportJso
         ]}
       />
 
-      <DropdownMenu
-        isDev={isDev}
-        label={<><IconDownload /> {t('fileExport')} <IconChevronDown /></>}
-        items={[
-          { label: t('fileExportQtiTest'),    title: t('fileExportQtiTestTitle'),    onClick: onExport },
-          { label: t('fileExportQtiItem'),    title: t('fileExportQtiItemTitle'),    onClick: onExportItem },
-          { label: t('fileExportJson'),       title: t('fileExportJsonTitle'),       onClick: onExportJson,        devOnly: true },
-          { label: t('fileExportRoundtrip'),  title: t('fileExportRoundtripTitle'),  onClick: onExportRoundtripXml, devOnly: true },
-        ]}
-      />
-
-      <ToolbarButton onClick={onExportPackage} title={t('fileExportPackageTitle')}>
-        <IconDownload /> {t('fileExportPackage')}
+      <ToolbarButton onClick={onExportItem} title={`${t('fileExportQtiItemTitle')} — ${xmlName}`}>
+        <IconDownload /> {t('fileExportQtiItem')} <span style={{ opacity: 0.6 }}>({xmlName})</span>
       </ToolbarButton>
+
+      <ToolbarButton onClick={onExportPackage} title={`${t('fileExportQtiTestTitle')} — ${zipName}`}>
+        <IconDownload /> {t('fileExportQtiTest')} <span style={{ opacity: 0.6 }}>({zipName})</span>
+      </ToolbarButton>
+
+      {isDev && (
+        <DropdownMenu
+          isDev={isDev}
+          label={<><IconDownload /> {t('fileExport')} <IconChevronDown /></>}
+          items={[
+            { label: t('fileExportQtiTestXml'), title: t('fileExportQtiTestXmlTitle'), onClick: onExportXml,          devOnly: true },
+            { label: t('fileExportJson'),       title: t('fileExportJsonTitle'),       onClick: onExportJson,         devOnly: true },
+            { label: t('fileExportRoundtrip'),  title: t('fileExportRoundtripTitle'),  onClick: onExportRoundtripXml, devOnly: true },
+          ]}
+        />
+      )}
     </>
   );
 }

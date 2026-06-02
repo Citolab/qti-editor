@@ -14,6 +14,7 @@ type AutoSaveStatus = 'idle' | 'saving' | 'saved';
 
 interface AppHeaderProps {
   fileName: string;
+  metadataTitle: string;
   isDirty: boolean;
   autoSaveStatus: AutoSaveStatus;
   files: SavedFile[];
@@ -27,15 +28,16 @@ interface AppHeaderProps {
   onFileNameKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
   onNew: () => void;
   onSave: () => void;
-  onExport: () => void;
   onExportItem: () => void;
   onExportPackage: () => void;
+  onExportXml: () => void;
   onImport: () => void;
   onExportJson: () => void;
   onExportRoundtripXml: () => void;
   onImportJson: () => void;
   onImportRoundtripXml: () => void;
   isDev: boolean;
+  onDevToggle: (next: boolean) => void;
   onLoadMenuToggle: () => void;
   onLoad: (id: string) => void;
   onDelete: (e: MouseEvent, id: string) => void;
@@ -46,6 +48,7 @@ interface AppHeaderProps {
 
 export function AppHeader({
   fileName,
+  metadataTitle,
   isDirty,
   autoSaveStatus,
   files,
@@ -59,15 +62,16 @@ export function AppHeader({
   onFileNameKeyDown,
   onNew,
   onSave,
-  onExport,
   onExportItem,
   onExportPackage,
+  onExportXml,
   onImport,
   onExportJson,
   onExportRoundtripXml,
   onImportJson,
   onImportRoundtripXml,
   isDev,
+  onDevToggle,
   onLoadMenuToggle,
   onLoad,
   onDelete,
@@ -109,14 +113,15 @@ export function AppHeader({
       <FileActions
         onNew={onNew}
         onSave={onSave}
-        onExport={onExport}
         onExportItem={onExportItem}
         onExportPackage={onExportPackage}
+        onExportXml={onExportXml}
         onImport={onImport}
         onExportJson={onExportJson}
         onExportRoundtripXml={onExportRoundtripXml}
         onImportJson={onImportJson}
         onImportRoundtripXml={onImportRoundtripXml}
+        metadataTitle={metadataTitle}
         isDev={isDev}
         isDirty={isDirty}
       />
@@ -141,6 +146,15 @@ export function AppHeader({
       />
 
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#6b7280', cursor: 'pointer' }} title={t('devModeTitle')}>
+          <input
+            type="checkbox"
+            checked={isDev}
+            onChange={(event) => onDevToggle(event.currentTarget.checked)}
+            style={{ accentColor: '#3b82f6', cursor: 'pointer' }}
+          />
+          <span>{t('devMode')}</span>
+        </label>
         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#6b7280' }}>
           <span>{t('language')}</span>
           <select

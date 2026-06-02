@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Register the Lit web component
@@ -124,24 +124,44 @@ export default function App() {
     [currentFile?.name, setFileName, t]
   );
 
-  // Dev mode flag
-  const isDev = new URLSearchParams(window.location.search).get('dev') === 'true'
-    || localStorage.getItem('qti-editor:dev') === 'true';
+  // Dev mode flag — URL param or localStorage; toggleable from the header.
+  const [isDev, setIsDev] = useState(() =>
+    new URLSearchParams(window.location.search).get('dev') === 'true'
+    || localStorage.getItem('qti-editor:dev') === 'true'
+  );
+  const handleDevToggle = useCallback((next: boolean) => {
+    setIsDev(next);
+    if (next) localStorage.setItem('qti-editor:dev', 'true');
+    else localStorage.removeItem('qti-editor:dev');
+  }, []);
 
-  // Handler: Export XML
+  // Live metadata title from the editor app's doc.attrs — drives export filenames and button labels.
+  const [metadataTitle, setMetadataTitle] = useState('');
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{ title: string }>).detail;
+      setMetadataTitle(detail?.title ?? '');
+    };
+    document.addEventListener('qti:metadata:change', handler);
+    return () => document.removeEventListener('qti:metadata:change', handler);
+  }, []);
+
+  const exportName = metadataTitle || fileName || 'item';
+
+  // Handler: Export QTI test as single XML (dev only — the .zip button is the primary path).
   const handleExportXml = useCallback(() => {
-    editorLayoutRef.current?.exportXml(fileName || 'item');
-  }, [fileName]);
+    editorLayoutRef.current?.exportXml(exportName);
+  }, [exportName]);
 
   // Handler: Export single QTI item
   const handleExportItem = useCallback(() => {
-    editorLayoutRef.current?.exportItem(fileName || 'item');
-  }, [fileName]);
+    editorLayoutRef.current?.exportItem(exportName);
+  }, [exportName]);
 
   // Handler: Export QTI package
   const handleExportPackage = useCallback(() => {
-    void editorLayoutRef.current?.exportPackage(fileName || 'item');
-  }, [fileName]);
+    void editorLayoutRef.current?.exportPackage(exportName);
+  }, [exportName]);
 
   // Handler: Import XML
   const handleImportXml = useCallback(() => {
@@ -150,13 +170,13 @@ export default function App() {
 
   // Handler: Export JSON
   const handleExportJson = useCallback(() => {
-    editorLayoutRef.current?.exportJson(fileName || 'item');
-  }, [fileName]);
+    editorLayoutRef.current?.exportJson(exportName);
+  }, [exportName]);
 
   // Handler: Export roundtrip XML
   const handleExportRoundtripXml = useCallback(() => {
-    editorLayoutRef.current?.exportRoundtripXml(fileName || 'item');
-  }, [fileName]);
+    editorLayoutRef.current?.exportRoundtripXml(exportName);
+  }, [exportName]);
 
   // Handler: Import JSON
   const handleImportJson = useCallback(() => {
@@ -187,6 +207,7 @@ export default function App() {
     >
       <AppHeader
         fileName={fileName}
+        metadataTitle={metadataTitle}
         isDirty={isDirty}
         autoSaveStatus={autoSaveStatus}
         files={files}
@@ -200,15 +221,16 @@ export default function App() {
         onFileNameKeyDown={handleFileNameKeyDown}
         onNew={handleNewFile}
         onSave={handleSaveFile}
-        onExport={handleExportXml}
         onExportItem={handleExportItem}
         onExportPackage={handleExportPackage}
+        onExportXml={handleExportXml}
         onImport={handleImportXml}
         onExportJson={handleExportJson}
         onExportRoundtripXml={handleExportRoundtripXml}
         onImportJson={handleImportJson}
         onImportRoundtripXml={handleImportRoundtripXml}
         isDev={isDev}
+        onDevToggle={handleDevToggle}
         onLoadMenuToggle={handleLoadMenuToggle}
         onLoad={handleLoadFile}
         onDelete={handleDeleteFile}

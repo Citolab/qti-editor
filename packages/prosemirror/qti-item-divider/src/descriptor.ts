@@ -47,6 +47,14 @@ export const qtiItemDividerDescriptor = {
   },
   // No composer handler - dividers don't generate QTI XML interactions
   composerHandler: undefined,
-  // No attribute panel - dividers don't have editable attributes
-  attributePanelMetadata: {},
+  attributePanelMetadata: {
+    qtiitemdivider: {
+      nodeTypeName: 'qtiItemDivider',
+      editableAttributes: ['title', 'identifier'],
+      fields: {
+        title: { label: 'Title', input: 'text' },
+        identifier: { label: 'Identifier', input: 'text' },
+      },
+    },
+  },
 } satisfies InteractionDescriptor;

@@ -1,4 +1,5 @@
 import { css, html, LitElement } from 'lit';
+import { property } from 'lit/decorators.js';
 import { translateQti } from '@qti-editor/interaction-shared';
 
 /**
@@ -12,6 +13,12 @@ import { translateQti } from '@qti-editor/interaction-shared';
  * The badge displays itemIndex + 1 (1-based for display).
  */
 export class QtiItemDivider extends LitElement {
+  @property({ type: String })
+  override title = '';
+
+  @property({ type: String })
+  identifier = '';
+
   static override get styles() {
     return [
       css`
@@ -63,7 +70,7 @@ export class QtiItemDivider extends LitElement {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 12h18M3 6h18M3 18h18" />
         </svg>
-        <span>${translateQti('divider.itemBoundary', { target: this })}</span>
+        <span>${this.title || translateQti('divider.itemBoundary', { target: this })}</span>
       </div>
       <div class="line"></div>
     `;

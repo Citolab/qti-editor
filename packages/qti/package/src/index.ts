@@ -44,7 +44,6 @@ export interface QtiPackageContext extends QtiComposeContext {
   testTitle?: string;
   sectionIdentifier?: string;
   sectionTitle?: string;
-  informationalItems?: boolean[];
 }
 
 export interface QtiPackageOptions {
@@ -66,7 +65,7 @@ interface PackageItemResource {
   href: string;
   xml: string;
   dependencies: string[];
-  informational?: boolean;
+  informational: boolean;
 }
 
 interface AssetResource {
@@ -123,7 +122,7 @@ export async function createQtiPackageFromItems(
   const usedItemIdentifiers = new Set<string>();
 
   const itemResources: PackageItemResource[] = [];
-  for (const [index, item] of items.entries()) {
+  for (const item of items) {
     const sanitized = sanitizeIdentifier(item.identifier, 'item');
     const identifier = uniqueIdentifier(sanitized, usedItemIdentifiers);
     usedItemIdentifiers.add(identifier);
@@ -142,7 +141,7 @@ export async function createQtiPackageFromItems(
       href: `items/${itemFileBase}.xml`,
       xml: materialized.xml,
       dependencies: materialized.assetHrefs,
-      informational: context.informationalItems?.[index] ?? false,
+      informational: !hasAnyInteraction(materialized.xml),
     });
   }
 
@@ -159,7 +158,6 @@ export async function createQtiPackageFromItems(
     sectionIdentifier,
     sectionTitle,
     itemResources,
-    informationalItems: context.informationalItems,
   }));
 
   itemResources.forEach(item => {
@@ -221,11 +219,9 @@ function renderAssessmentTest(options: {
   sectionIdentifier: string;
   sectionTitle: string;
   itemResources: PackageItemResource[];
-  informationalItems?: boolean[];
 }): string {
-  const refs = options.itemResources.map((item, index) => {
-    const isInformational = item.informational ?? options.informationalItems?.[index] ?? false;
-    const category = isInformational ? ` category="dep-informational"` : '';
+  const refs = options.itemResources.map(item => {
+    const category = item.informational ? ` category="dep-informational"` : '';
     return `      <qti-assessment-item-ref identifier="${escapeXml(item.identifier)}" href="${escapeXml(item.href)}"${category}/>`;
   }).join('\n');
 
@@ -479,6 +475,10 @@ function hasImageExtension(path: string): boolean {
 
 function replaceAll(value: string, search: string, replacement: string): string {
   return value.split(search).join(replacement);
+}
+
+function hasAnyInteraction(xml: string): boolean {
+  return /<qti-[a-z0-9-]+-interaction\b/i.test(xml);
 }
 
 function escapeRegExp(value: string): string {

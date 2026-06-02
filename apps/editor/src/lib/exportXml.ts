@@ -9,7 +9,7 @@ import type { ProseMirrorNode } from 'prosekit/pm/model';
 export interface ExportXmlOptions {
   node: ProseMirrorNode;
   lang?: string;
-  items?: Array<{ identifier?: string; title?: string; informational?: boolean }>;
+  items?: Array<{ identifier?: string; title?: string }>;
   fileName?: string;
 }
 
@@ -136,7 +136,6 @@ export async function exportPackage(options: ExportPackageOptions): Promise<void
     items: options.items,
     packageIdentifier: safeFileName,
     testTitle: item0?.title || safeFileName,
-    informationalItems: (options.items ?? []).map(item => item.informational ?? false),
   });
 
   const url = URL.createObjectURL(blob);

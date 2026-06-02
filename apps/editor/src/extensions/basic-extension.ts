@@ -2,6 +2,7 @@ import {
   defineBaseCommands,
   defineBaseKeymap,
   defineHistory,
+  defineNodeAttr,
   union,
   type BaseCommandsExtension,
   type BaseKeymapExtension,
@@ -53,6 +54,8 @@ export function defineBasicExtension(): BasicExtension {
   return union(
     // Nodes
     defineDoc(),
+    defineNodeAttr({ type: 'doc', attr: 'title', default: '' }),
+    defineNodeAttr({ type: 'doc', attr: 'identifier', default: '' }),
     defineText(),
     defineParagraph(),
     defineHeading(),
