@@ -1,0 +1,28 @@
+{
+  "name": "@qti-editor/styles",
+  "description": "Mandatory CSS for the QTI editor: qti-components theme plus editor-specific overrides",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Citolab/qti-editor",
+    "directory": "packages/styles"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.css",
+    "./index.css": "./src/index.css"
+  },
+  "scripts": {
+    "build": "echo 'no build — css is shipped from src'",
+    "clean": "echo 'nothing to clean'"
+  },
+  "dependencies": {
+    "@qti-components/theme": "1.3.2"
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

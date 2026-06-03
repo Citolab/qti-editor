@@ -1,10 +1,12 @@
 /**
- * QTI Editor Integration Styles
+ * QTI Editor app shell stylesheet.
  *
- * Main stylesheet for the plugin orchestrator demo app
+ * Element-level QTI styling (interactions, choices, rubric-block, gap-text fix,
+ * upstream qti-components theme) lives in @qti-editor/styles. This file is just
+ * the app-shell glue: Tailwind, DaisyUI, and the editor card chrome.
  */
 
-@import '@qti-components/theme/item.css';
+@import '@qti-editor/styles';
 @import "tailwindcss";
 @source "../../../packages/ui/src/**/*.{ts,js}";
 
@@ -15,72 +17,3 @@
    themes: light --default;
 }
 @custom-variant dark (&:where(.dark, .dark *));
-
-p {
-   @apply p-2;
-}
-
-qti-prompt {
-   @apply bg-white rounded my-0 px-2 mb-2;
-}
-
-qti-choice-interaction,
-qti-gap-match-interaction,
-qti-associate-interaction,
-qti-inline-choice-interaction,
-qti-hottext-interaction,
-qti-match-interaction,
-qti-order-interaction,
-qti-select-point-interaction,
-qti-text-entry-interaction,
-qti-extended-text-interaction {
-   @apply bg-slate-100 rounded p-2 my-1;
-}
-
-qti-hottext-interaction > * {
-   @apply bg-white m-2
-}
-
-qti-simple-choice,
-qti-simple-associable-choice {
-   @apply bg-white rounded p-2;
-}
-
-qti-select-point-interaction img {
-   /* @apply; */
-}
-
-/* Editor card scroll container */
-.editor-card > .overflow-auto {
-  /* Removed smooth scrolling - using programmatic scroll instead */
-}
-
-/* QTI rubric block — visual boundary for authoring */
-qti-rubric-block {
-  display: block;
-  border-left: 3px solid #6366f1;
-  padding: 0.5rem 0.75rem;
-  margin: 0.5rem 0;
-  background: #eef2ff;
-  border-radius: 0.25rem;
-}
-qti-rubric-block::before {
-  content: 'Rubric — view: ' attr(view) ' · use: ' attr(use);
-  display: block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #4338ca;
-  margin-bottom: 0.25rem;
-}
-qti-rubric-block > qti-content-body {
-  display: block;
-}
-
-/* Fix placeholder alignment in gap-text elements - override ProseKit defaults */
-qti-gap-text.prosekit-placeholder::before {
-  position: static !important;
-  height: auto !important;
-  line-height: 1.5;
-  vertical-align: baseline;
-}
-

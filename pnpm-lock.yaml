@@ -293,6 +293,9 @@ importers:
       '@qti-editor/qti3-item-import':
         specifier: workspace:*
         version: link:../../packages/qti/qti3-item-import
+      '@qti-editor/styles':
+        specifier: workspace:*
+        version: link:../../packages/styles
       '@qti-editor/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -1240,6 +1243,12 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
+
+  packages/styles:
+    dependencies:
+      '@qti-components/theme':
+        specifier: 1.3.2
+        version: 1.3.2
 
   packages/ui:
     dependencies:
