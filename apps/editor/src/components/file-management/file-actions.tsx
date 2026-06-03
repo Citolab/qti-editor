@@ -9,7 +9,6 @@ interface FileActionsProps {
   onSave: () => void;
   onExportItem: () => void;
   onExportPackage: () => void;
-  onExportXml: () => void;
   onExportJson: () => void;
   onExportRoundtripXml: () => void;
   onImport: () => void;
@@ -29,7 +28,6 @@ export function FileActions({
   onSave,
   onExportItem,
   onExportPackage,
-  onExportXml,
   onExportJson,
   onExportRoundtripXml,
   onImport,
@@ -78,9 +76,8 @@ export function FileActions({
           isDev={isDev}
           label={<><IconDownload /> {t('fileExport')} <IconChevronDown /></>}
           items={[
-            { label: t('fileExportQtiTestXml'), title: t('fileExportQtiTestXmlTitle'), onClick: onExportXml,          devOnly: true },
-            { label: t('fileExportJson'),       title: t('fileExportJsonTitle'),       onClick: onExportJson,         devOnly: true },
             { label: t('fileExportRoundtrip'),  title: t('fileExportRoundtripTitle'),  onClick: onExportRoundtripXml, devOnly: true },
+            { label: t('fileExportJson'),       title: t('fileExportJsonTitle'),       onClick: onExportJson,         devOnly: true },
           ]}
         />
       )}

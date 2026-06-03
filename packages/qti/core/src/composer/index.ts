@@ -58,6 +58,22 @@ const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';
 const XML_NS = 'http://www.w3.org/XML/1998/namespace';
 const SCHEMA_LOCATION =
   'http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd';
+export const LAB_EDITOR_VERSION = '1';
+
+/**
+ * True iff every <qti-item-body> in the XML carries data-lab-editor-version.
+ * False if zero item-bodies exist, or any item-body is missing the marker.
+ * Symmetric reader for the attribute stamped by buildAssessmentItemXml.
+ */
+export function isEditorOriginXml(xmlText: string): boolean {
+  const doc = new DOMParser().parseFromString(xmlText, 'application/xml');
+  const bodies = doc.querySelectorAll('qti-item-body');
+  if (bodies.length === 0) return false;
+  for (const body of Array.from(bodies)) {
+    if (!body.hasAttribute('data-lab-editor-version')) return false;
+  }
+  return true;
+}
 const MATCH_CORRECT_TEMPLATE =
   'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct';
 function sanitizeIdentifier(value: string | undefined, fallback: string): string {
@@ -202,20 +218,20 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
   const xmlDoc = document.implementation.createDocument(QTI_NS, 'qti-assessment-item', null);
   const root = xmlDoc.documentElement;
 
+  const itemIdentifier = sanitizeIdentifier(
+    itemContext.identifier,
+    createAutoIdentifier({
+      title: itemContext.title,
+      baseIdentifier: itemContext.identifier,
+      body: itemContext.itemBody,
+    })
+  );
+  const itemTitle = itemContext.title?.trim() || 'Untitled Item';
+
   root.setAttribute('xmlns', QTI_NS);
   root.setAttributeNS(XSI_NS, 'xsi:schemaLocation', SCHEMA_LOCATION);
-  root.setAttribute(
-    'identifier',
-    sanitizeIdentifier(
-      itemContext.identifier,
-      createAutoIdentifier({
-        title: itemContext.title,
-        baseIdentifier: itemContext.identifier,
-        body: itemContext.itemBody,
-      })
-    )
-  );
-  root.setAttribute('title', itemContext.title?.trim() || 'Untitled Item');
+  root.setAttribute('identifier', itemIdentifier);
+  root.setAttribute('title', itemTitle);
   root.setAttribute('adaptive', 'false');
   root.setAttribute('time-dependent', 'false');
   root.setAttributeNS(XML_NS, 'xml:lang', itemContext.lang?.trim() || 'en');
@@ -231,6 +247,10 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
     sourceBodyRoot != null
       ? (xmlDoc.importNode(sourceBodyRoot, true) as Element)
       : xmlDoc.createElementNS(QTI_NS, 'qti-item-body');
+
+  composedItemBody.setAttribute('data-identifier', itemIdentifier);
+  composedItemBody.setAttribute('data-title', itemTitle);
+  composedItemBody.setAttribute('data-lab-editor-version', LAB_EDITOR_VERSION);
 
   const { declarations, responseTemplate, maxScore, hasAutomatedProcessing } = composeAndNormalizeItemBody(composedItemBody, xmlDoc);
 

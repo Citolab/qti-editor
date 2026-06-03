@@ -1,7 +1,11 @@
+import { isEditorOriginXml } from '@qti-editor/core/composer';
 import { xmlToHTML } from '@qti-editor/prosekit-integration';
 import { buildCompatibilityReport, migrateHtmlFragment } from '@qti-editor/prosemirror-plugins';
 import { importQtiPackageFromBlob } from '@qti-editor/qti-roundtrip-import';
+import { roundtripQtiItem } from '@qti-editor/qti3-item-import';
 import { jsonFromHTML } from 'prosekit/core';
+
+export { isEditorOriginXml };
 
 import type { CompatibilityReport, MigrationResult } from '@qti-editor/interfaces';
 import type { Schema } from 'prosekit/pm/model';
@@ -68,8 +72,14 @@ export function importXmlFromText(xmlText: string, options: ImportXmlOptions): I
     cleanedXml = cleanedXml.substring(firstLtIndex);
   }
 
+  // Foreign QTI: recover data-* mirrors from native QTI elements via the v1 transforms.
+  // Editor-origin XML already carries them — skip the transform to keep it lossless.
+  const xmlForImport = isEditorOriginXml(cleanedXml)
+    ? cleanedXml
+    : roundtripQtiItem(cleanedXml);
+
   // Convert XML to HTML
-  const compatibility = migrateHtmlFragment(xmlToHTML(cleanedXml), {
+  const compatibility = migrateHtmlFragment(xmlToHTML(xmlForImport), {
     metadata: {
       importPath: 'apps/editor/importXmlFromText',
     },

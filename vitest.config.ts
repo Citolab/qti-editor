@@ -21,8 +21,8 @@ export default defineConfig({
         test: {
           name: 'unit',
           globals: true,
-          include: ['packages/**/src/**/*.test.ts'],
-          exclude: ['packages/**/src/**/*.browser.test.ts'],
+          include: ['packages/**/src/**/*.test.ts', 'apps/**/src/**/*.test.ts'],
+          exclude: ['packages/**/src/**/*.browser.test.ts', 'apps/**/src/**/*.browser.test.ts'],
           server: {
             deps: {
               inline: [/@qti-components\//],
@@ -53,7 +53,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'browser',
-          include: ['packages/**/src/**/*.browser.test.ts'],
+          include: ['packages/**/src/**/*.browser.test.ts', 'apps/**/src/**/*.browser.test.ts'],
           browser: {
             enabled: true,
             headless: true,

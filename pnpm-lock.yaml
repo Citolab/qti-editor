@@ -287,6 +287,9 @@ importers:
       '@qti-editor/qti-roundtrip-import':
         specifier: workspace:*
         version: link:../../packages/qti/roundtrip-import
+      '@qti-editor/qti3-item-import':
+        specifier: workspace:*
+        version: link:../../packages/qti/qti3-item-import
       '@qti-editor/ui':
         specifier: workspace:*
         version: link:../../packages/ui

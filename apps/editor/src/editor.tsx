@@ -148,11 +148,6 @@ export default function App() {
 
   const exportName = metadataTitle || fileName || 'item';
 
-  // Handler: Export QTI test as single XML (dev only — the .zip button is the primary path).
-  const handleExportXml = useCallback(() => {
-    editorLayoutRef.current?.exportXml(exportName);
-  }, [exportName]);
-
   // Handler: Export single QTI item
   const handleExportItem = useCallback(() => {
     editorLayoutRef.current?.exportItem(exportName);
@@ -223,7 +218,6 @@ export default function App() {
         onSave={handleSaveFile}
         onExportItem={handleExportItem}
         onExportPackage={handleExportPackage}
-        onExportXml={handleExportXml}
         onImport={handleImportXml}
         onExportJson={handleExportJson}
         onExportRoundtripXml={handleExportRoundtripXml}

@@ -34,7 +34,7 @@ import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interaction-shar
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
-import { exportItem, exportJson, exportPackage, exportRoundtripXml, exportXml, importJson } from '../lib/exportXml.js';
+import { exportItem, exportJson, exportPackage, exportRoundtripXml, importJson } from '../lib/exportXml.js';
 import { getAutoSaveKey } from '../lib/fileStore.js';
 import { importRoundtripXml, openXmlFilePicker } from '../lib/importXml.js';
 
@@ -152,9 +152,14 @@ export class QtiEditorApp extends LitElement {
   }
 
   private _recomputeItems = () => {
-    const view = (this.editor as any).view;
-    if (!view?.state) return;
-    const { doc } = view.state;
+    // editor.view is a throwing getter while the editor isn't mounted yet —
+    // this listener can fire synchronously from a plugin view() during mount.
+    let doc: any;
+    try {
+      doc = this.editor.view.state.doc;
+    } catch {
+      return;
+    }
 
     const items: PerItemMetadata[] = [{
       title: (doc.attrs.title as string) ?? '',
@@ -314,15 +319,6 @@ export class QtiEditorApp extends LitElement {
         }
       }, 0);
     }
-  }
-
-  exportXml(fileName: string = 'item'): void {
-    exportXml({
-      node: this.editor.view.state.doc,
-      lang: this.lang,
-      items: this.itemContext.items,
-      fileName,
-    });
   }
 
   exportItem(fileName: string = 'item'): void {

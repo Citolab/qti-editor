@@ -30,7 +30,6 @@ interface AppHeaderProps {
   onSave: () => void;
   onExportItem: () => void;
   onExportPackage: () => void;
-  onExportXml: () => void;
   onImport: () => void;
   onExportJson: () => void;
   onExportRoundtripXml: () => void;
@@ -64,7 +63,6 @@ export function AppHeader({
   onSave,
   onExportItem,
   onExportPackage,
-  onExportXml,
   onImport,
   onExportJson,
   onExportRoundtripXml,
@@ -115,7 +113,6 @@ export function AppHeader({
         onSave={onSave}
         onExportItem={onExportItem}
         onExportPackage={onExportPackage}
-        onExportXml={onExportXml}
         onImport={onImport}
         onExportJson={onExportJson}
         onExportRoundtripXml={onExportRoundtripXml}
