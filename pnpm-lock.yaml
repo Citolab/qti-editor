@@ -287,6 +287,9 @@ importers:
       '@qti-editor/qti-roundtrip-import':
         specifier: workspace:*
         version: link:../../packages/qti/roundtrip-import
+      '@qti-editor/qti-rubric-block':
+        specifier: workspace:*
+        version: link:../../packages/prosemirror/qti-rubric-block
       '@qti-editor/qti3-item-import':
         specifier: workspace:*
         version: link:../../packages/qti/qti3-item-import
@@ -667,6 +670,9 @@ importers:
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../qti/prosekit-integration
+      '@qti-editor/qti-rubric-block':
+        specifier: workspace:*
+        version: link:../qti-rubric-block
       '@qti-editor/qti3-item-import':
         specifier: workspace:*
         version: link:../../qti/qti3-item-import
@@ -722,6 +728,9 @@ importers:
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../qti/prosekit-integration
+      '@qti-editor/qti-rubric-block':
+        specifier: workspace:*
+        version: link:../qti-rubric-block
       '@qti-editor/qti3-item-import':
         specifier: workspace:*
         version: link:../../qti/qti3-item-import
@@ -967,6 +976,9 @@ importers:
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../qti/prosekit-integration
+      '@qti-editor/qti-rubric-block':
+        specifier: workspace:*
+        version: link:../qti-rubric-block
       '@qti-editor/qti3-item-import':
         specifier: workspace:*
         version: link:../../qti/qti3-item-import
@@ -997,6 +1009,34 @@ importers:
       prosekit:
         specifier: ^0.20.0
         version: 0.20.0(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      prosemirror-commands:
+        specifier: ^1.7.1
+        version: 1.7.1
+      prosemirror-model:
+        specifier: ^1.25.4
+        version: 1.25.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+      prosemirror-view:
+        specifier: ^1.31.0
+        version: 1.41.8
+    devDependencies:
+      lit:
+        specifier: ^3.3.2
+        version: 3.3.2
+
+  packages/prosemirror/qti-rubric-block:
+    dependencies:
+      '@qti-editor/interaction-shared':
+        specifier: 1.6.1
+        version: 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interfaces':
+        specifier: 1.5.0
+        version: 1.5.0
+      prosekit:
+        specifier: ^0.20.0
+        version: 0.20.2(@shikijs/types@3.23.0)(@types/hast@3.0.4)(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       prosemirror-commands:
         specifier: ^1.7.1
         version: 1.7.1
@@ -1055,6 +1095,9 @@ importers:
       '@qti-editor/qti-item-divider':
         specifier: workspace:*
         version: link:../../prosemirror/qti-item-divider
+      '@qti-editor/qti-rubric-block':
+        specifier: workspace:*
+        version: link:../../prosemirror/qti-rubric-block
     devDependencies:
       '@types/node':
         specifier: ^20.0.0

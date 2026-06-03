@@ -9,6 +9,7 @@ import { orderInteractionDescriptor } from '@qti-editor/interaction-order';
 import { selectPointInteractionDescriptor } from '@qti-editor/interaction-select-point';
 import { textEntryInteractionDescriptor } from '@qti-editor/interaction-text-entry';
 import { qtiItemDividerDescriptor } from '@qti-editor/qti-item-divider';
+import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 
 import type {
   InteractionNodeSpecEntry,
@@ -30,6 +31,7 @@ const registeredDescriptors: InteractionDescriptor[] = [
   selectPointInteractionDescriptor,
   textEntryInteractionDescriptor,
   qtiItemDividerDescriptor,
+  qtiRubricBlockDescriptor,
 ];
 
 type DeclaredBaseSchemaDependencyCarrier = {

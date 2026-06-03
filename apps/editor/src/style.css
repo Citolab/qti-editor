@@ -55,6 +55,27 @@ qti-select-point-interaction img {
   /* Removed smooth scrolling - using programmatic scroll instead */
 }
 
+/* QTI rubric block — visual boundary for authoring */
+qti-rubric-block {
+  display: block;
+  border-left: 3px solid #6366f1;
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0;
+  background: #eef2ff;
+  border-radius: 0.25rem;
+}
+qti-rubric-block::before {
+  content: 'Rubric — view: ' attr(view) ' · use: ' attr(use);
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #4338ca;
+  margin-bottom: 0.25rem;
+}
+qti-rubric-block > qti-content-body {
+  display: block;
+}
+
 /* Fix placeholder alignment in gap-text elements - override ProseKit defaults */
 qti-gap-text.prosekit-placeholder::before {
   position: static !important;

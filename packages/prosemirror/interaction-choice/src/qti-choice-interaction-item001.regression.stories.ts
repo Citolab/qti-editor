@@ -21,6 +21,7 @@ import { baseKeymap } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 import { roundtripChoice, roundtripQtiItem } from '@qti-editor/qti3-item-import';
 import { qtiItemFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-item';
+import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 
 import { qtiTransformItem } from '@qti-components/transformers';
 
@@ -38,7 +39,10 @@ import 'prosemirror-gapcursor/style/gapcursor.css';
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 const qtiNodes = Object.fromEntries(
-  choiceInteractionDescriptor.nodeSpecs.map(({ name, spec }) => [name, spec])
+  [
+    ...choiceInteractionDescriptor.nodeSpecs,
+    ...qtiRubricBlockDescriptor.nodeSpecs,
+  ].map(({ name, spec }) => [name, spec])
 );
 
 const schema = new Schema({

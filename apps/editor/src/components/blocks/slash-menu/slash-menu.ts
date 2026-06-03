@@ -45,6 +45,7 @@ const TAG_TO_I18N_KEY: Record<string, string> = {
   'qti-select-point-interaction': 'interactionInsert.selectPoint',
   'qti-gap-match-interaction': 'interactionInsert.gapMatch',
   'qti-item-divider': 'interactionInsert.itemDivider',
+  'qti-rubric-block': 'interactionInsert.rubricBlock',
 };
 
 @customElement('qti-slash-menu')
