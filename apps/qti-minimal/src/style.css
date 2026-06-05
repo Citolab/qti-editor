@@ -3,40 +3,8 @@
 @source "../../../packages/ui/src/**/*.{ts,js}";
 
 @plugin "@egoist/tailwindcss-icons";
+@plugin "@tailwindcss/typography";
 @plugin "daisyui" {
    themes: light --default;
 }
 @custom-variant dark (&:where(.dark, .dark *));
-
-p {
-   @apply p-2;
-}
-
-qti-prompt {
-   @apply bg-white rounded my-0 px-2 mb-2;
-}
-
-qti-choice-interaction {
-   @apply bg-slate-100 rounded p-2 my-1;
-}
-
-qti-associate-interaction {
-   @apply bg-slate-100 rounded p-2 my-1;
-}
-
-qti-simple-choice,
-qti-simple-associable-choice {
-   @apply bg-white rounded p-2;
-}
-
-qti-text-entry-interaction {
-   @apply bg-slate-100 rounded p-2;
-}
-
-qti-extended-text-interaction {
-   @apply bg-slate-100 rounded p-2;
-}
-
-qti-order-interaction {
-   @apply bg-slate-100 rounded p-2 my-1;
-}

@@ -51,7 +51,7 @@
     "prosemirror-view": "^1.31.0"
   },
   "peerDependencies": {
-    "prosekit": "^0.20.0"
+    "prosekit": "^0.21.3"
   },
   "peerDependenciesMeta": {
     "prosekit": {

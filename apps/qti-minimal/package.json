@@ -18,8 +18,7 @@
     "@qti-editor/interaction-choice": "workspace:*",
     "@qti-editor/interaction-extended-text": "workspace:*",
     "@qti-editor/interaction-hottext": "workspace:*",
-    "@qti-editor/interaction-match": "workspace:*",
-    "@qti-editor/interaction-select-point": "workspace:*",
+    "@qti-editor/interaction-text-entry": "workspace:*",
     "@qti-editor/prosekit-integration": "workspace:*",
     "@qti-editor/prosemirror-attributes-ui": "workspace:*",
     "@qti-editor/prosemirror-plugins": "workspace:*",
@@ -30,6 +29,7 @@
     "prosemirror-schema-list": "^1.5.1"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.18",
     "@types/node": "^20.0.0",
     "daisyui": "^5.1.6",

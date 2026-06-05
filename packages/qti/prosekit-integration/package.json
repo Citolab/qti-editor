@@ -30,10 +30,10 @@
     "@qti-editor/qti-item-export": "workspace:*",
     "@qti-editor/qti-test-export": "workspace:*",
     "lit": "^3.3.2",
-    "prosekit": "^0.20.0"
+    "prosekit": "^0.21.3"
   },
   "peerDependencies": {
-    "prosekit": "^0.20.0"
+    "prosekit": "^0.21.3"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

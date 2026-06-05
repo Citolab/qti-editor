@@ -27,7 +27,7 @@
     "jszip": "^3.10.1"
   },
   "peerDependencies": {
-    "prosekit": "^0.20.0"
+    "prosekit": "^0.21.3"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

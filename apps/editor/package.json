@@ -40,7 +40,7 @@
     "firebase": "^12.11.0",
     "i18next": "^23.16.8",
     "lit": "^3.3.2",
-    "prosekit": "^0.20.0",
+    "prosekit": "^0.21.3",
     "prosemirror-inputrules": "^1.5.1",
     "prosemirror-schema-list": "^1.5.1",
     "prosemirror-state": "^1.4.4",

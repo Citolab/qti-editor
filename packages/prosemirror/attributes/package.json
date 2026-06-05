@@ -18,10 +18,10 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "prosekit": "^0.20.0"
+    "prosekit": "^0.21.3"
   },
   "peerDependencies": {
-    "prosekit": "^0.20.0"
+    "prosekit": "^0.21.3"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

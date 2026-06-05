@@ -2,7 +2,8 @@
   "name": "@qti-editor/root",
   "pnpm": {
     "overrides": {
-      "@qti-editor/qti-item-divider@1.1.10": "1.1.9"
+      "@qti-editor/qti-item-divider@1.1.10": "1.1.9",
+      "prosemirror-model": "1.25.7"
     }
   },
   "version": "0.1.0",
@@ -81,7 +82,7 @@
     "lit": "^3.3.2",
     "multi-semantic-release": "^3.0.0",
     "playwright": "^1.58.2",
-    "prosekit": "^0.20.0",
+    "prosekit": "^0.21.3",
     "remark-gfm": "^4.0.1",
     "semantic-release": "^24.0.0",
     "storybook": "^10.2.8",
