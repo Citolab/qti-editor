@@ -113,7 +113,7 @@ export class QtiMinimalApp extends LitElement {
             <lit-editor-toolbar .uploader=${sampleUploader}></lit-editor-toolbar>
           </div>
           <div class="relative flex-1 min-h-0 overflow-auto">
-            <div ${ref(this.editorRef)} class="min-h-80 px-6 py-6"></div>
+            <div ${ref(this.editorRef)} class="min-h-80 px-6 py-6 prose"></div>
             <lit-editor-table-handle></lit-editor-table-handle>
           </div>
         </div>
