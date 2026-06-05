@@ -116,49 +116,47 @@ export class QtiMinimalApp extends LitElement {
 
   override render() {
     return html`
-      <div class="min-h-screen pr-96">
-        <div class="mx-auto max-w-6xl px-4 py-4">
-          <div class="rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm">
-            <div class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
-              <lit-editor-toolbar .uploader=${sampleUploader}></lit-editor-toolbar>
-              <div
-                ${ref(this.editorRef)}
-                class="min-h-80 w-full px-6 py-6 prose max-w-none!"
-                style="padding-left: 2.5rem;"
-              ></div>
-              <lit-editor-block-handle></lit-editor-block-handle>
-              <lit-editor-drop-indicator></lit-editor-drop-indicator>
-              <lit-editor-table-handle></lit-editor-table-handle>
-            </div>
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-start">
+        <div class="min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm">
+          <div class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
+            <lit-editor-toolbar .uploader=${sampleUploader}></lit-editor-toolbar>
           </div>
-
-          <div class="flex gap-4 mt-4">
-            <qti-composer-metadata-form
-              class="block w-1/5"
-              .title=${this.itemContext.title ?? ''}
-              .identifier=${this.itemContext.identifier ?? ''}
-              @metadata-change=${this.onMetadataChange}
-            ></qti-composer-metadata-form>
-
-            <div class="mt-4 rounded-md border border-solid border-gray-200 bg-white p-4 shadow-sm flex gap-4">
-              <div class="mb-2 gap-2 flex ">
-                <button class="btn btn-sm" @click=${this.saveXml}>Save XML</button>
-                <button class="btn btn-sm" @click=${this.saveQti}>Save QTI</button>
-                <button class="btn btn-sm" @click=${this.loadXml}>Load XML</button>
-              </div>
-              <textarea
-                class="w-full h-48 rounded border border-gray-200 p-2 font-mono text-sm"
-                .value=${this.xmlOutput}
-                @input=${this.onTextareaInput}
-              ></textarea>
-            </div>
+          <div class="relative overflow-auto">
+            <div
+              ${ref(this.editorRef)}
+              class="min-h-80 w-full px-6 py-6 prose max-w-none"
+              style="padding-left: 2.5rem;"
+            ></div>
+            <lit-editor-block-handle></lit-editor-block-handle>
+            <lit-editor-drop-indicator></lit-editor-drop-indicator>
+            <lit-editor-table-handle></lit-editor-table-handle>
           </div>
         </div>
+        <div class="w-full lg:w-72 lg:shrink-0">
+          <qti-attributes-panel .editor=${this.editor} class="block w-full sticky top-0"></qti-attributes-panel>
+        </div>
       </div>
+      <div class="flex gap-4 mt-4">
+        <qti-composer-metadata-form
+          class="block w-2/5"
+          .title=${this.itemContext.title ?? ''}
+          .identifier=${this.itemContext.identifier ?? ''}
+          @metadata-change=${this.onMetadataChange}
+        ></qti-composer-metadata-form>
 
-      <qti-attributes-panel
-        class="fixed right-0 top-0 bottom-0 w-96 overflow-auto block border-l border-solid border-gray-200 bg-white shadow-sm"
-      ></qti-attributes-panel>
+        <div class="mt-4 rounded-md border border-solid border-gray-200 bg-white p-4 shadow-sm flex gap-4">
+          <div class="mb-2 gap-2 flex ">
+            <button class="btn btn-sm" @click=${this.saveXml}>Save XML</button>
+            <button class="btn btn-sm" @click=${this.saveQti}>Save QTI</button>
+            <button class="btn btn-sm" @click=${this.loadXml}>Load XML</button>
+          </div>
+          <textarea
+            class="w-full h-48 rounded border border-gray-200 p-2 font-mono text-sm"
+            .value=${this.xmlOutput}
+            @input=${this.onTextareaInput}
+          ></textarea>
+        </div>
+      </div>
     `;
   }
 }
