@@ -7,6 +7,7 @@ import {
   type Extension,
   type Union,
 } from 'prosekit/core'
+import { type Command } from 'prosekit/pm/state'
 import { inputRules, wrappingInputRule } from 'prosemirror-inputrules'
 import {
   bulletList,
@@ -17,7 +18,6 @@ import {
   wrapInList,
 } from 'prosemirror-schema-list'
 
-import type { Command } from 'prosekit/pm/state'
 import type { NodeType } from 'prosekit/pm/model'
 
 type BulletListSpecExtension = Extension<{ Nodes: { bullet_list: {} } }>
@@ -34,6 +34,14 @@ type ListCommandsExtension = Extension<{
 export type ListExtension = Union<
   [BulletListSpecExtension, OrderedListSpecExtension, ListItemSpecExtension, ListCommandsExtension, Extension]
 >
+
+export interface ListOptions {
+  /**
+   * Enable markdown-style input rules: typing `- ` (or `* ` / `+ `) starts a
+   * bullet list, and `1. ` starts an ordered list. Off by default.
+   */
+  inputRules?: boolean
+}
 
 function defineBulletListSpec(): BulletListSpecExtension {
   return defineNodeSpec({
@@ -72,27 +80,36 @@ function toggleListCommand(listTypeName: 'bullet_list' | 'ordered_list'): () => 
     const itemType = state.schema.nodes.list_item as NodeType | undefined
     if (!listType || !itemType) return false
 
-    const { $from, $to } = state.selection
-    let inMatchingList = false
+    const bulletType = state.schema.nodes.bullet_list as NodeType | undefined
+    const orderedType = state.schema.nodes.ordered_list as NodeType | undefined
+
+    // Find the innermost ancestor list node (bullet or ordered) around the selection.
+    const { $from } = state.selection
+    let listDepth = -1
     for (let d = $from.depth; d > 0; d--) {
-      if ($from.node(d).type === listType) {
-        inMatchingList = true
+      const nodeType = $from.node(d).type
+      if (nodeType === bulletType || nodeType === orderedType) {
+        listDepth = d
         break
       }
     }
-    // also accept selection-end side
-    if (!inMatchingList) {
-      for (let d = $to.depth; d > 0; d--) {
-        if ($to.node(d).type === listType) {
-          inMatchingList = true
-          break
-        }
+
+    if (listDepth !== -1) {
+      const currentListType = $from.node(listDepth).type
+      // Already this list type -> toggle off by lifting the items out.
+      if (currentListType === listType) {
+        return liftListItem(itemType)(state, dispatch)
       }
+      // Other list type -> convert the existing list node into the target type.
+      if (dispatch) {
+        const pos = $from.before(listDepth)
+        const attrs = listType === orderedType ? { order: 1 } : undefined
+        dispatch(state.tr.setNodeMarkup(pos, listType, attrs))
+      }
+      return true
     }
 
-    if (inMatchingList) {
-      return liftListItem(itemType)(state, dispatch)
-    }
+    // Not in a list -> wrap the selection in the target list type.
     return wrapInList(listType)(state, dispatch)
   }
 }
@@ -114,6 +131,10 @@ function defineListKeymapExt(): Extension {
   })
 }
 
+/**
+ * Markdown-style input rules: typing `- ` (or `* ` / `+ `) starts a bullet list,
+ * and `1. ` starts an ordered list.
+ */
 function defineListInputRules(): Extension {
   return definePlugin(({ schema }) => {
     const bullet = schema.nodes.bullet_list
@@ -136,13 +157,16 @@ function defineListInputRules(): Extension {
   })
 }
 
-export function defineList(): ListExtension {
-  return union(
+export function defineList(options: ListOptions = {}): ListExtension {
+  const extensions: Extension[] = [
     defineBulletListSpec(),
     defineOrderedListSpec(),
     defineListItemSpec(),
     defineListCommands(),
     defineListKeymapExt(),
-    defineListInputRules(),
-  ) as ListExtension
+  ]
+  if (options.inputRules) {
+    extensions.push(defineListInputRules())
+  }
+  return union(...extensions) as ListExtension
 }

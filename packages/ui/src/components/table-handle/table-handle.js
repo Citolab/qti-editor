@@ -94,9 +94,12 @@ class LitTableHandle extends LitElement {
   }
 
   attachEditorListener() {
-    this.detachEditorListener()
-
     const editor = this.editorConsumer.value
+    if (editor === this.attachedEditor) return
+
+    this.detachEditorListener()
+    this.attachedEditor = editor
+
     if (!editor) return
 
     // Only call requestUpdate when the dropdown menu inside the column/row
@@ -117,6 +120,7 @@ class LitTableHandle extends LitElement {
   detachEditorListener() {
     this.removeUpdateExtension?.()
     this.removeUpdateExtension = undefined
+    this.attachedEditor = undefined
   }
 
   render() {

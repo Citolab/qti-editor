@@ -5,7 +5,6 @@
  * using the descriptor registry from @qti-editor/core.
  */
 
-import '@qti-components/theme/item.css';
 import {
   listInteractionDescriptors,
   listSelectedInteractionPluginFactories,

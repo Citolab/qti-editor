@@ -25,18 +25,18 @@ function getToolbarItems(editor) {
           command: () => editor.commands.redo(),
         }
       : undefined,
-    bold: editor.commands.toggleBold
+    bold: editor.commands.toggleStrong
       ? {
-          isActive: editor.marks.bold.isActive(),
-          canExec: editor.commands.toggleBold.canExec(),
-          command: () => editor.commands.toggleBold(),
+          isActive: editor.marks.strong.isActive(),
+          canExec: editor.commands.toggleStrong.canExec(),
+          command: () => editor.commands.toggleStrong(),
         }
       : undefined,
-    italic: editor.commands.toggleItalic
+    italic: editor.commands.toggleEm
       ? {
-          isActive: editor.marks.italic.isActive(),
-          canExec: editor.commands.toggleItalic.canExec(),
-          command: () => editor.commands.toggleItalic(),
+          isActive: editor.marks.em.isActive(),
+          canExec: editor.commands.toggleEm.canExec(),
+          command: () => editor.commands.toggleEm(),
         }
       : undefined,
     underline: editor.commands.toggleUnderline
@@ -178,9 +178,12 @@ class LitToolbar extends LitElement {
   }
 
   attachEditorListener() {
-    this.detachEditorListener()
-
     const editor = this.resolvedEditor
+    if (editor === this.attachedEditor) return
+
+    this.detachEditorListener()
+    this.attachedEditor = editor
+
     if (!editor) return
 
     this.removeUpdateExtension = editor.use(defineUpdateHandler(() => this.requestUpdate()))
@@ -189,6 +192,7 @@ class LitToolbar extends LitElement {
   detachEditorListener() {
     this.removeUpdateExtension?.()
     this.removeUpdateExtension = undefined
+    this.attachedEditor = undefined
   }
 
   t(key, fallback) {

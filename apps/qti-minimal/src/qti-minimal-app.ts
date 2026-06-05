@@ -15,6 +15,8 @@ import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosem
 import { createEditor, union, jsonFromHTML, type Editor } from 'prosekit/core';
 import { sampleUploader } from '@qti-editor/ui/components/sample/sample-uploader';
 import { registerLitEditorTableHandle } from '@qti-editor/ui/components/table-handle';
+import { registerLitEditorBlockHandle } from '@qti-editor/ui/components/block-handle';
+import { registerLitEditorDropIndicator } from '@qti-editor/ui/components/drop-indicator';
 import { editorContext } from '@qti-editor/ui/components/editor-context';
 
 import { defineBasicExtension } from './extensions/basic-extension.js';
@@ -92,6 +94,8 @@ export class QtiMinimalApp extends LitElement {
     });
 
     registerLitEditorTableHandle();
+    registerLitEditorBlockHandle();
+    registerLitEditorDropIndicator();
   }
 
   override createRenderRoot() {
@@ -112,8 +116,10 @@ export class QtiMinimalApp extends LitElement {
           <div class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
             <lit-editor-toolbar .uploader=${sampleUploader}></lit-editor-toolbar>
           </div>
-          <div class="overflow-auto">
-            <div ${ref(this.editorRef)} class="min-h-80 w-full px-6 py-6 prose !max-w-none"></div>
+          <div class="relative overflow-auto">
+            <div ${ref(this.editorRef)} class="min-h-80 w-full px-6 py-6 prose !max-w-none" style="padding-left: 2.5rem;"></div>
+            <lit-editor-block-handle></lit-editor-block-handle>
+            <lit-editor-drop-indicator></lit-editor-drop-indicator>
             <lit-editor-table-handle></lit-editor-table-handle>
           </div>
         </div>

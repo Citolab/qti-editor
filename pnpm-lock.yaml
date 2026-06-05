@@ -270,6 +270,9 @@ importers:
       '@qti-editor/interaction-text-entry':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-text-entry
+      '@qti-editor/prosekit-extensions':
+        specifier: workspace:*
+        version: link:../../packages/prosekit/extensions
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../packages/qti/prosekit-integration
@@ -315,12 +318,6 @@ importers:
       prosekit:
         specifier: ^0.21.3
         version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      prosemirror-inputrules:
-        specifier: ^1.5.1
-        version: 1.5.1
-      prosemirror-schema-list:
-        specifier: ^1.5.1
-        version: 1.5.1
       prosemirror-state:
         specifier: ^1.4.4
         version: 1.4.4
@@ -400,6 +397,9 @@ importers:
       '@qti-editor/interaction-text-entry':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-text-entry
+      '@qti-editor/prosekit-extensions':
+        specifier: workspace:*
+        version: link:../../packages/prosekit/extensions
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../packages/qti/prosekit-integration
@@ -418,9 +418,9 @@ importers:
       prosekit:
         specifier: ^0.21.3
         version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      prosemirror-inputrules:
-        specifier: ^1.5.1
-        version: 1.5.1
+      prosemirror-schema-basic:
+        specifier: ^1.2.4
+        version: 1.2.4
       prosemirror-schema-list:
         specifier: ^1.5.1
         version: 1.5.1
@@ -494,12 +494,18 @@ importers:
       '@qti-editor/interaction-text-entry':
         specifier: workspace:*
         version: link:../../packages/prosemirror/interaction-text-entry
+      '@qti-editor/prosekit-extensions':
+        specifier: workspace:*
+        version: link:../../packages/prosekit/extensions
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../packages/qti/prosekit-integration
       '@qti-editor/prosemirror-plugins':
         specifier: workspace:*
         version: link:../../packages/prosemirror/extensions
+      '@qti-editor/styles':
+        specifier: workspace:*
+        version: link:../../packages/styles
       '@qti-editor/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -512,16 +518,13 @@ importers:
       prosekit:
         specifier: ^0.21.3
         version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      prosemirror-inputrules:
-        specifier: ^1.5.1
-        version: 1.5.1
-      prosemirror-schema-list:
-        specifier: ^1.5.1
-        version: 1.5.1
     devDependencies:
       '@astrojs/check':
         specifier: ^0.9.4
         version: 0.9.8(prettier@3.8.1)(typescript@5.9.3)
+      '@astrojs/mdx':
+        specifier: ^4.3.14
+        version: 4.3.14(astro@5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.3))
       '@tailwindcss/typography':
         specifier: ^0.5.19
         version: 0.5.19(tailwindcss@4.2.2)
@@ -546,6 +549,28 @@ importers:
       prosemirror-state:
         specifier: ^1.4.4
         version: 1.4.4
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/prosekit/extensions:
+    dependencies:
+      prosekit:
+        specifier: ^0.21.3
+        version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      prosemirror-inputrules:
+        specifier: ^1.5.1
+        version: 1.5.1
+      prosemirror-schema-basic:
+        specifier: ^1.2.4
+        version: 1.2.4
+      prosemirror-schema-list:
+        specifier: ^1.5.1
+        version: 1.5.1
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.39
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
@@ -3844,6 +3869,7 @@ packages:
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
+    deprecated: Potential CWE-502 - Update to 1.3.1 or higher
 
   '@unrs/resolver-binding-android-arm-eabi@1.11.1':
     resolution: {integrity: sha512-ppLRUgHVaGRWUx0R0Ut06Mjo9gBaBkg3v/8AxusGLhsIotbBLuRk51rAzqLC8gq6NyyAojEXglNjzf6R948DNw==}

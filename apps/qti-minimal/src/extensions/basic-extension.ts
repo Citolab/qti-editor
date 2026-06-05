@@ -4,17 +4,14 @@ import {
   defineHistory,
   union,
 } from 'prosekit/core'
-import { defineBold } from 'prosekit/extensions/bold'
 import { defineDoc } from 'prosekit/extensions/doc'
 import { defineHeading } from 'prosekit/extensions/heading'
 import { defineImage } from 'prosekit/extensions/image'
-import { defineItalic } from 'prosekit/extensions/italic'
 import { defineParagraph } from 'prosekit/extensions/paragraph'
 import { defineGapCursor } from 'prosekit/extensions/gap-cursor'
 import { defineTable } from 'prosekit/extensions/table'
 import { defineText } from 'prosekit/extensions/text'
-
-import { defineList } from './list-extension'
+import { defineEm, defineList, defineStrong } from '@qti-editor/prosekit-extensions'
 
 export function defineBasicExtension() {
   return union(
@@ -22,11 +19,11 @@ export function defineBasicExtension() {
     defineText(),
     defineParagraph(),
     defineHeading(),
-    defineList(),
+    defineList({ inputRules: true }),
     defineImage(),
     defineTable(),
-    defineItalic(),
-    defineBold(),
+    defineEm(),
+    defineStrong(),
     defineBaseKeymap(),
     defineBaseCommands(),
     defineHistory(),

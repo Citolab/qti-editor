@@ -8,19 +8,18 @@ import {
   type HistoryExtension,
   type Union,
 } from 'prosekit/core'
-import { defineBold, type BoldExtension } from 'prosekit/extensions/bold'
 import { defineDoc, type DocExtension } from 'prosekit/extensions/doc'
 import { defineGapCursor, type GapCursorExtension } from 'prosekit/extensions/gap-cursor'
 import { defineHardBreak, type HardBreakExtension } from 'prosekit/extensions/hard-break'
 import { defineHeading, type HeadingExtension } from 'prosekit/extensions/heading'
 import { defineImage, type ImageExtension } from 'prosekit/extensions/image'
-import { defineItalic, type ItalicExtension } from 'prosekit/extensions/italic'
-import { defineList, type ListExtension } from './list-extension'
 import { defineModClickPrevention, type ModClickPreventionExtension } from 'prosekit/extensions/mod-click-prevention'
 import { defineParagraph, type ParagraphExtension } from 'prosekit/extensions/paragraph'
 import { defineTable, type TableExtension } from 'prosekit/extensions/table'
 import { defineText, type TextExtension } from 'prosekit/extensions/text'
 import { defineVirtualSelection, type VirtualSelectionExtension } from 'prosekit/extensions/virtual-selection'
+
+import { defineList, defineEm, defineStrong, type EmExtension, type ListExtension, type StrongExtension } from '@qti-editor/prosekit-extensions'
 
 /**
  * @internal
@@ -37,8 +36,8 @@ export type BasicExtension = Union<
     HardBreakExtension,
     TableExtension,
     // Marks
-    ItalicExtension,
-    BoldExtension,
+    EmExtension,
+    StrongExtension,
     // Others
     BaseKeymapExtension,
     BaseCommandsExtension,
@@ -61,8 +60,8 @@ export function defineBasicExtension(): BasicExtension {
     defineHardBreak(),
     defineTable(),
     // Marks
-    defineItalic(),
-    defineBold(),
+    defineEm(),
+    defineStrong(),
     // Others
     defineBaseKeymap(),
     defineBaseCommands(),

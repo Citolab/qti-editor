@@ -27,16 +27,17 @@
     "@qti-editor/interaction-shared": "workspace:*",
     "@qti-editor/interaction-text-entry": "workspace:*",
     "@qti-editor/prosekit-integration": "workspace:*",
+    "@qti-editor/prosekit-extensions": "workspace:*",
     "@qti-editor/prosemirror-plugins": "workspace:*",
+    "@qti-editor/styles": "workspace:*",
     "@qti-editor/ui": "workspace:*",
     "astro": "^5.7.2",
     "lit": "^3.3.2",
-    "prosekit": "^0.21.3",
-    "prosemirror-inputrules": "^1.5.1",
-    "prosemirror-schema-list": "^1.5.1"
+    "prosekit": "^0.21.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@astrojs/mdx": "^4.3.14",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.18",
     "daisyui": "^5.1.6",

@@ -20,8 +20,19 @@ const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/pr
 const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes/src', import.meta.url));
 const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes-ui/src', import.meta.url));
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   resolve: {
+    // Dev only: the dev server pre-bundles deps (optimizeDeps), which can create
+    // two instances of @prosekit/core — one for the app's `prosekit/core` import
+    // and one for the block-handle web component imported via @qti-editor/ui.
+    // Two instances make ProseKit's facet union assert when the block-handle
+    // calls `editor.use(...)`. Deduping forces a single instance. The production
+    // build uses a single Rollup module graph and must NOT dedupe (it breaks
+    // resolution of prosekit's nested @prosekit/* sub-packages).
+    dedupe:
+      command === 'serve'
+        ? ['prosekit', '@prosekit/core', '@prosekit/web', '@prosekit/lit', '@prosekit/extensions', '@prosekit/basic', '@prosekit/pm']
+        : [],
     alias: [
       {
         find: /^@qti-editor\/interaction-shared\/(.*)\.js$/,
@@ -169,4 +180,4 @@ export default defineConfig({
       allow: [workspaceRoot],
     },
   },
-});
+}));

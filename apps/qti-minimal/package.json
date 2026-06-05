@@ -20,12 +20,13 @@
     "@qti-editor/interaction-hottext": "workspace:*",
     "@qti-editor/interaction-text-entry": "workspace:*",
     "@qti-editor/prosekit-integration": "workspace:*",
+    "@qti-editor/prosekit-extensions": "workspace:*",
     "@qti-editor/prosemirror-attributes-ui": "workspace:*",
     "@qti-editor/prosemirror-plugins": "workspace:*",
     "@qti-editor/ui": "workspace:*",
     "lit": "^3.3.2",
     "prosekit": "^0.21.3",
-    "prosemirror-inputrules": "^1.5.1",
+    "prosemirror-schema-basic": "^1.2.4",
     "prosemirror-schema-list": "^1.5.1"
   },
   "devDependencies": {
