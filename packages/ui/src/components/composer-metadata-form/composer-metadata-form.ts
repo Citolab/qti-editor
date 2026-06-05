@@ -48,7 +48,6 @@ export class QtiComposerMetadataForm extends LitElement {
   override render() {
     return html`
       <section class="card border border-base-300/50 bg-base-100 p-4 space-y-3">
-        <h3 class="text-sm font-semibold">${this.i18n.t('composerMetadata.heading')}</h3>
         <label class="form-control block">
           <span class="label-text text-xs">${this.i18n.t('composerMetadata.title')}</span>
           <input

@@ -77,7 +77,7 @@ export class QtiMinimalApp extends LitElement {
     const extension = union(
       defineBasicExtension(),
       defineQtiInteractionsExtension({
-        include: ['qti-choice-interaction', 'qti-extended-text-interaction', 'qti-text-entry-interaction']
+        include: ['qti-choice-interaction', 'qti-extended-text-interaction', 'qti-text-entry-interaction', 'qti-item-divider']
       }),
       blockSelectExtension,
       nodeAttrsSyncExtension,
@@ -112,8 +112,8 @@ export class QtiMinimalApp extends LitElement {
           <div class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
             <lit-editor-toolbar .uploader=${sampleUploader}></lit-editor-toolbar>
           </div>
-          <div class="relative flex-1 min-h-0 overflow-auto">
-            <div ${ref(this.editorRef)} class="min-h-80 px-6 py-6 prose"></div>
+          <div class="overflow-auto">
+            <div ${ref(this.editorRef)} class="min-h-80 w-full px-6 py-6 prose !max-w-none"></div>
             <lit-editor-table-handle></lit-editor-table-handle>
           </div>
         </div>
