@@ -1,5 +1,6 @@
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { ContextConsumer } from '@lit/context';
 import { defineMountHandler, union, type Editor, type Extension } from 'prosekit/core';
 import { getNodeAttributePanelMetadataByNodeTypeName } from '@qti-editor/core/interactions/composer';
 import { translateQti } from '@qti-editor/interaction-shared';
@@ -23,6 +24,7 @@ import {
 import '../choice-attributes-editor';
 import '../text-entry-attributes-editor';
 import '../extended-text-attributes-editor';
+import { editorContext } from '../editor-context';
 import { type ChoiceInteractionPanelPresentation } from '../choice-attributes-editor';
 import { type QtiAttributesPatchDetail } from './patch-event';
 
@@ -37,11 +39,15 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
   #internalEventTarget = new EventTarget();
   #unregisterExtension: VoidFunction | null = null;
 
-  get editor(): Editor | null {
-    return this.#editor;
-  }
+  #editorConsumer = new ContextConsumer(this, {
+    context: editorContext,
+    subscribe: true,
+    callback: value => {
+      this.#setEditor((value as Editor) ?? null);
+    },
+  });
 
-  set editor(value: Editor | null) {
+  #setEditor(value: Editor | null) {
     if (this.#editor === value) return;
     this.#teardownExtension();
     this.#editor = value;

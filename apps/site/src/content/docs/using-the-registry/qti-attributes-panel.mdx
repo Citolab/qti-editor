@@ -16,19 +16,29 @@ npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-attributes-panel.json
 
 ## Usage
 
+The panel reads the ProseKit editor from the shared `editorContext` (`@lit/context`). Provide the editor higher up in the DOM tree and the panel wires itself up automatically — no property assignment needed.
+
 ```ts
 import '@/components/attributes-panel';
+import '@/components/editor-context';
+import { ContextProvider } from '@lit/context';
+import { editorContext } from '@/components/editor-context';
 
-// Wire the element:
-const panel = document.querySelector('qti-attributes-panel');
-panel.editor = editor;
+// Provide the editor from a host element (e.g. in its constructor):
+new ContextProvider(host, {
+  context: editorContext,
+  initialValue: editor,
+});
+
+// Then just render the element anywhere inside that host:
+// <qti-attributes-panel></qti-attributes-panel>
 ```
 
-The current registry component manages its own attribute event wiring once you assign the ProseKit editor instance.
+The panel manages its own attribute event wiring once it receives the ProseKit editor from context.
 
 ## How it works
 
-Once the editor is assigned, the panel subscribes to selection changes. When the cursor moves into a QTI interaction node, the panel reads the schema-defined attributes for that node and its ancestors and renders the appropriate sub-editor. Changes made in the panel are applied as ProseMirror attribute transactions immediately — there is no save step.
+Once the editor is provided through context, the panel subscribes to selection changes. When the cursor moves into a QTI interaction node, the panel reads the schema-defined attributes for that node and its ancestors and renders the appropriate sub-editor. Changes made in the panel are applied as ProseMirror attribute transactions immediately — there is no save step.
 
 The panel dispatches sub-editors based on the active node type:
 
