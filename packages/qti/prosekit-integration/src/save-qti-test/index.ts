@@ -1,8 +1,6 @@
 /**
  * Save QTI test — prosekit wrapper.
- * Injects ListDOMSerializer for list-aware serialization.
  */
-import { ListDOMSerializer } from 'prosekit/extensions/list';
 import {
   qtiTestFromProsemirror as qtiTestFromProsemirrorPure,
   countQtiItems as countQtiItemsPure,
@@ -19,17 +17,13 @@ export function qtiTestFromProsemirror(
   node: ProseMirrorNode,
   context?: QtiComposeContext,
 ): string {
-  return qtiTestFromProsemirrorPure(
-    node,
-    context,
-    ListDOMSerializer.fromSchema(node.type.schema),
-  );
+  return qtiTestFromProsemirrorPure(node, context);
 }
 
 export function countQtiItems(node: ProseMirrorNode): number {
-  return countQtiItemsPure(node, ListDOMSerializer.fromSchema(node.type.schema));
+  return countQtiItemsPure(node);
 }
 
 export function getQtiItems(node: ProseMirrorNode, context?: QtiComposeContext): QtiItemFragment[] {
-  return getQtiItemsPure(node, context, ListDOMSerializer.fromSchema(node.type.schema));
+  return getQtiItemsPure(node, context);
 }

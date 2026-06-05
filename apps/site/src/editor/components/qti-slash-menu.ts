@@ -174,25 +174,13 @@ export class QtiSlashMenu extends LitElement {
           class="contents"
           label="Bullet list"
           kbd="-"
-          @select=${() => commands.wrapInList?.({ kind: 'bullet' })}
+          @select=${() => commands.toggleBulletList?.()}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
           label="Ordered list"
           kbd="1."
-          @select=${() => commands.wrapInList?.({ kind: 'ordered' })}
-        ></lit-editor-slash-menu-item>
-        <lit-editor-slash-menu-item
-          class="contents"
-          label="Task list"
-          kbd="[]"
-          @select=${() => commands.wrapInList?.({ kind: 'task' })}
-        ></lit-editor-slash-menu-item>
-        <lit-editor-slash-menu-item
-          class="contents"
-          label="Toggle list"
-          kbd=">>"
-          @select=${() => commands.wrapInList?.({ kind: 'toggle' })}
+          @select=${() => commands.toggleOrderedList?.()}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"

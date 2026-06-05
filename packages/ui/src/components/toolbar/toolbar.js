@@ -4,8 +4,10 @@ import '../interaction-insert-menu/index.ts'
 import '../convert-menu/index.ts'
 
 import { html, LitElement, nothing } from 'lit';
+import { ContextConsumer } from '@lit/context';
 import { defineUpdateHandler } from 'prosekit/core';
 import { subscribeQtiI18n, translateQti } from '@qti-editor/interaction-shared/i18n/index.js';
+import { editorContext } from '../editor-context';
 
 function getToolbarItems(editor) {
   return {
@@ -100,46 +102,18 @@ function getToolbarItems(editor) {
           command: () => editor.commands.toggleBlockquote(),
         }
       : undefined,
-    bulletList: editor.commands.toggleList
+    bulletList: editor.commands.toggleBulletList
       ? {
-          isActive: editor.nodes.list.isActive({ kind: 'bullet' }),
-          canExec: editor.commands.toggleList.canExec({ kind: 'bullet' }),
-          command: () => editor.commands.toggleList({ kind: 'bullet' }),
+          isActive: editor.nodes.bullet_list.isActive(),
+          canExec: editor.commands.toggleBulletList.canExec(),
+          command: () => editor.commands.toggleBulletList(),
         }
       : undefined,
-    orderedList: editor.commands.toggleList
+    orderedList: editor.commands.toggleOrderedList
       ? {
-          isActive: editor.nodes.list.isActive({ kind: 'ordered' }),
-          canExec: editor.commands.toggleList.canExec({ kind: 'ordered' }),
-          command: () => editor.commands.toggleList({ kind: 'ordered' }),
-        }
-      : undefined,
-    taskList: editor.commands.toggleList
-      ? {
-          isActive: editor.nodes.list.isActive({ kind: 'task' }),
-          canExec: editor.commands.toggleList.canExec({ kind: 'task' }),
-          command: () => editor.commands.toggleList({ kind: 'task' }),
-        }
-      : undefined,
-    toggleList: editor.commands.toggleList
-      ? {
-          isActive: editor.nodes.list.isActive({ kind: 'toggle' }),
-          canExec: editor.commands.toggleList.canExec({ kind: 'toggle' }),
-          command: () => editor.commands.toggleList({ kind: 'toggle' }),
-        }
-      : undefined,
-    indentList: editor.commands.indentList
-      ? {
-          isActive: false,
-          canExec: editor.commands.indentList.canExec(),
-          command: () => editor.commands.indentList(),
-        }
-      : undefined,
-    dedentList: editor.commands.dedentList
-      ? {
-          isActive: false,
-          canExec: editor.commands.dedentList.canExec(),
-          command: () => editor.commands.dedentList(),
+          isActive: editor.nodes.ordered_list.isActive(),
+          canExec: editor.commands.toggleOrderedList.canExec(),
+          command: () => editor.commands.toggleOrderedList(),
         }
       : undefined,
     insertImage: editor.commands.insertImage
@@ -175,6 +149,15 @@ class LitToolbar extends LitElement {
     return this
   }
 
+  editorConsumer = new ContextConsumer(this, {
+    context: editorContext,
+    subscribe: true,
+  });
+
+  get resolvedEditor() {
+    return this.editor ?? this.editorConsumer.value
+  }
+
   connectedCallback() {
     super.connectedCallback()
     this.removeI18nListener = subscribeQtiI18n(() => this.requestUpdate())
@@ -191,17 +174,16 @@ class LitToolbar extends LitElement {
   updated(changedProperties) {
     super.updated(changedProperties)
 
-    if (changedProperties.has('editor')) {
-      this.attachEditorListener()
-    }
+    this.attachEditorListener()
   }
 
   attachEditorListener() {
     this.detachEditorListener()
 
-    if (!this.editor) return
+    const editor = this.resolvedEditor
+    if (!editor) return
 
-    this.removeUpdateExtension = this.editor.use(defineUpdateHandler(() => this.requestUpdate()))
+    this.removeUpdateExtension = editor.use(defineUpdateHandler(() => this.requestUpdate()))
   }
 
   detachEditorListener() {
@@ -214,7 +196,7 @@ class LitToolbar extends LitElement {
   }
 
   render() {
-    const editor = this.editor
+    const editor = this.resolvedEditor
     if (!editor) {
       return nothing
     }
@@ -417,58 +399,6 @@ class LitToolbar extends LitElement {
                 .tooltip=${this.t('toolbar.orderedList', 'Ordered List')}
                 icon="i-lucide-list-ordered size-5 block"
                 @click=${items.orderedList.command}
-              ></lit-editor-button>
-            `
-            : nothing
-        }
-        ${
-          items.taskList
-            ? html`
-              <lit-editor-button
-                .pressed=${items.taskList.isActive}
-                .disabled=${!items.taskList.canExec}
-                .tooltip=${this.t('toolbar.taskList', 'Task List')}
-                icon="i-lucide-list-checks size-5 block"
-                @click=${items.taskList.command}
-              ></lit-editor-button>
-            `
-            : nothing
-        }
-        ${
-          items.toggleList
-            ? html`
-              <lit-editor-button
-                .pressed=${items.toggleList.isActive}
-                .disabled=${!items.toggleList.canExec}
-                .tooltip=${this.t('toolbar.toggleList', 'Toggle List')}
-                icon="i-lucide-list-collapse size-5 block"
-                @click=${items.toggleList.command}
-              ></lit-editor-button>
-            `
-            : nothing
-        }
-        ${
-          items.indentList
-            ? html`
-              <lit-editor-button
-                .pressed=${items.indentList.isActive}
-                .disabled=${!items.indentList.canExec}
-                .tooltip=${this.t('toolbar.indentIncrease', 'Increase indentation')}
-                icon="i-lucide-indent-increase size-5 block"
-                @click=${items.indentList.command}
-              ></lit-editor-button>
-            `
-            : nothing
-        }
-        ${
-          items.dedentList
-            ? html`
-              <lit-editor-button
-                .pressed=${items.dedentList.isActive}
-                .disabled=${!items.dedentList.canExec}
-                .tooltip=${this.t('toolbar.indentDecrease', 'Decrease indentation')}
-                icon="i-lucide-indent-decrease size-5 block"
-                @click=${items.dedentList.command}
               ></lit-editor-button>
             `
             : nothing

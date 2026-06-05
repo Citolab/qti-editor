@@ -11,8 +11,8 @@ import {
   registerPopoverTriggerElement,
 } from 'prosekit/lit/popover';
 import {
-  canConvertFlatListToChoiceInteraction,
-  convertFlatListToChoiceInteraction,
+  canConvertListToChoiceInteraction,
+  convertListToChoiceInteraction,
 } from '@qti-editor/interaction-choice';
 
 import type { EditorView } from 'prosekit/pm/view';
@@ -31,10 +31,10 @@ export interface ConvertMenuItem {
 function getConvertItems(view: EditorView): ConvertMenuItem[] {
   return [
     {
-      label: translateQti('convert.flatListToChoice', { target: view.dom }),
-      canRun: canConvertFlatListToChoiceInteraction(view),
+      label: translateQti('convert.listToChoice', { target: view.dom }),
+      canRun: canConvertListToChoiceInteraction(view),
       command: () => {
-        convertFlatListToChoiceInteraction(view);
+        convertListToChoiceInteraction(view);
         view.focus();
       },
     },

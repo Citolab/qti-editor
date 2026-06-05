@@ -424,7 +424,7 @@ export class QtiEditorApp extends LitElement {
         <div class="editor-card relative flex min-w-0 flex-1 flex-col rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden">
           ${this._editorMounted ? html`<qti-items-gutter .editor=${this.editor}></qti-items-gutter>` : ''}
           <div class="relative flex-1 min-h-0 overflow-auto" style="padding-left: 3rem;">
-            <div ${ref(this.editorRef)} class="card min-h-full px-6 py-6" style="padding-left: 1rem;"></div>
+            <div ${ref(this.editorRef)} class="card min-h-full px-6 py-6 prose" style="padding-left: 1rem;"></div>
             <lit-editor-block-handle></lit-editor-block-handle>
             <lit-editor-drop-indicator></lit-editor-drop-indicator>
             <lit-editor-table-handle></lit-editor-table-handle>

@@ -11,6 +11,6 @@ export {
 } from './commands/insert-choice-interaction.commands.js';
 
 export {
-  canConvertFlatListToChoiceInteraction,
-  convertFlatListToChoiceInteraction
+  canConvertListToChoiceInteraction,
+  convertListToChoiceInteraction
 } from './commands/convert-selection-to-choice.commands.js';

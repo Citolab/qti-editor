@@ -2,15 +2,10 @@
  * Save XML — pure ProseMirror
  *
  * Generic ProseMirror ↔ XML serialization with no prosekit dependency.
- * The prosekit-integration package wraps this and injects ListDOMSerializer
- * for list-aware serialization in the editor app.
  */
 
 import { DOMSerializer, type Node as ProseMirrorNode } from 'prosemirror-model';
 
-// Serialize a ProseMirror doc node to QTI item-body XML string.
-// Accepts an optional serializer so callers (e.g. prosekit-integration) can
-// inject a list-aware DOMSerializer subclass without duplicating this logic.
 export function xmlFromNode(
   node: ProseMirrorNode,
   serializer: DOMSerializer = DOMSerializer.fromSchema(node.type.schema),

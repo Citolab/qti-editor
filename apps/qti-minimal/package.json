@@ -21,11 +21,13 @@
     "@qti-editor/interaction-match": "workspace:*",
     "@qti-editor/interaction-select-point": "workspace:*",
     "@qti-editor/prosekit-integration": "workspace:*",
-    "@qti-editor/prosemirror-plugins": "workspace:*",
     "@qti-editor/prosemirror-attributes-ui": "workspace:*",
+    "@qti-editor/prosemirror-plugins": "workspace:*",
     "@qti-editor/ui": "workspace:*",
     "lit": "^3.3.2",
-    "prosekit": "^0.20.0"
+    "prosekit": "^0.21.3",
+    "prosemirror-inputrules": "^1.5.1",
+    "prosemirror-schema-list": "^1.5.1"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",

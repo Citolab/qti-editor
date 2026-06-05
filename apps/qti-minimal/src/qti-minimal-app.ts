@@ -14,6 +14,8 @@ import { qtiTestFromProsemirror } from '@qti-editor/prosekit-integration/save-qt
 import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror-plugins';
 import { createEditor, union, jsonFromHTML, type Editor } from 'prosekit/core';
 import { sampleUploader } from '@qti-editor/ui/components/sample/sample-uploader';
+import { registerLitEditorTableHandle } from '@qti-editor/ui/components/table-handle';
+import { editorContext } from '@qti-editor/ui/components/editor-context';
 
 import { defineBasicExtension } from './extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-extension.js';
@@ -75,7 +77,7 @@ export class QtiMinimalApp extends LitElement {
     const extension = union(
       defineBasicExtension(),
       defineQtiInteractionsExtension({
-        include: ['qti-choice-interaction', 'qti-extended-text-interaction']
+        include: ['qti-choice-interaction', 'qti-extended-text-interaction', 'qti-text-entry-interaction']
       }),
       blockSelectExtension,
       nodeAttrsSyncExtension,
@@ -83,6 +85,13 @@ export class QtiMinimalApp extends LitElement {
 
     this.editor = createEditor({ extension });
     this.editorRef = createRef<HTMLDivElement>();
+
+    new ContextProvider(this, {
+      context: editorContext,
+      initialValue: this.editor,
+    });
+
+    registerLitEditorTableHandle();
   }
 
   override createRenderRoot() {
@@ -101,9 +110,12 @@ export class QtiMinimalApp extends LitElement {
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start">
         <div class="min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm">
           <div class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
-            <lit-editor-toolbar .editor=${this.editor} .uploader=${sampleUploader}></lit-editor-toolbar>
+            <lit-editor-toolbar .uploader=${sampleUploader}></lit-editor-toolbar>
           </div>
-          <div ${ref(this.editorRef)} class="min-h-80 px-6 py-6"></div>
+          <div class="relative flex-1 min-h-0 overflow-auto">
+            <div ${ref(this.editorRef)} class="min-h-80 px-6 py-6"></div>
+            <lit-editor-table-handle></lit-editor-table-handle>
+          </div>
         </div>
         <div class="w-full lg:w-72 lg:shrink-0">
           <qti-composer-metadata-form

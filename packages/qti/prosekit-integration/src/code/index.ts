@@ -6,7 +6,7 @@
  */
 
 import { definePlugin, jsonFromNode, type Extension } from 'prosekit/core';
-import { ListDOMSerializer } from 'prosekit/extensions/list';
+import { DOMSerializer } from 'prosekit/pm/model';
 import { Plugin, PluginKey } from 'prosekit/pm/state';
 
 import { xmlFromNode } from '../save-xml/index.js';
@@ -32,7 +32,7 @@ const codePanelPluginKey = new PluginKey('qti-code-panel');
 
 function buildCodeDetail(state: EditorState): QtiCodeUpdateDetail {
   const json = jsonFromNode(state.doc) as QtiDocumentJson;
-  const serializer = ListDOMSerializer.fromSchema(state.schema);
+  const serializer = DOMSerializer.fromSchema(state.schema);
   const fragment = serializer.serializeFragment(state.doc.content);
   const wrapper = document.createElement('div');
   wrapper.appendChild(fragment);

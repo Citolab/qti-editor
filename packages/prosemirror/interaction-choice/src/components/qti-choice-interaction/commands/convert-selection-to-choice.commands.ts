@@ -15,18 +15,6 @@ type ConversionPlan = {
   choiceContents: Array<Fragment | null>;
 };
 
-function isFlatList(listNode: ProseMirrorNode, listType: any): boolean {
-  let hasNestedList = false;
-  listNode.descendants((node, pos: number) => {
-    if (pos > 0 && node.type === listType) {
-      hasNestedList = true;
-      return false;
-    }
-    return !hasNestedList;
-  });
-  return !hasNestedList;
-}
-
 function hasOnlyTextInlineContent(node: ProseMirrorNode): boolean {
   for (let i = 0; i < node.childCount; i++) {
     if (!node.child(i).isText) return false;
@@ -39,20 +27,25 @@ function isPlainTextParagraph(node: ProseMirrorNode, schema: any): boolean {
   return Boolean(paragraphType && node.type === paragraphType && hasOnlyTextInlineContent(node));
 }
 
+function isListNode(node: ProseMirrorNode, schema: any): boolean {
+  const bullet = schema.nodes.bullet_list;
+  const ordered = schema.nodes.ordered_list;
+  return Boolean((bullet && node.type === bullet) || (ordered && node.type === ordered));
+}
+
 function isConvertibleList(node: ProseMirrorNode, schema: any): boolean {
   const paragraphType = schema.nodes.paragraph;
-  const listType = schema.nodes.list;
-  if (!paragraphType || !listType || node.type !== listType) {
+  const listItemType = schema.nodes.list_item;
+  if (!paragraphType || !listItemType || !isListNode(node, schema)) {
     return false;
   }
 
-  const listKind = node.attrs?.kind;
-  if (!['bullet', 'ordered'].includes(listKind)) return false;
-  if (!isFlatList(node, listType)) return false;
-
   for (let i = 0; i < node.childCount; i += 1) {
-    const child = node.child(i);
-    if (child.type !== paragraphType || !hasOnlyTextInlineContent(child)) {
+    const item = node.child(i);
+    if (item.type !== listItemType) return false;
+    if (item.childCount !== 1) return false;
+    const paragraph = item.child(0);
+    if (paragraph.type !== paragraphType || !hasOnlyTextInlineContent(paragraph)) {
       return false;
     }
   }
@@ -173,13 +166,16 @@ function buildConversionPlan(blocks: RootBlock[], schema: any): ConversionPlan |
     .join(' ')
     .trim();
 
-  const paragraphType = schema.nodes.paragraph;
   const choiceContents = listBlocks.flatMap(block => {
     const contents: Array<Fragment | null> = [];
     for (let i = 0; i < block.node.childCount; i += 1) {
-      const child = block.node.child(i);
-      if (child.type !== paragraphType) continue;
-      contents.push(child.content.size > 0 ? child.content : null);
+      const listItem = block.node.child(i);
+      const paragraph = listItem.firstChild;
+      if (!paragraph) {
+        contents.push(null);
+        continue;
+      }
+      contents.push(paragraph.content.size > 0 ? paragraph.content : null);
     }
     return contents;
   });
@@ -191,7 +187,7 @@ function buildConversionPlan(blocks: RootBlock[], schema: any): ConversionPlan |
   };
 }
 
-export function canConvertFlatListToChoiceInteraction(view: EditorView): boolean {
+export function canConvertListToChoiceInteraction(view: EditorView): boolean {
   const { state } = view;
   const schema: any = state.schema;
   const interactionType = schema.nodes.qtiChoiceInteraction;
@@ -217,7 +213,7 @@ export function canConvertFlatListToChoiceInteraction(view: EditorView): boolean
   return $from.parent.canReplaceWith($from.index(), $to.index(), interactionType);
 }
 
-export function convertFlatListToChoiceInteraction(view: EditorView): boolean {
+export function convertListToChoiceInteraction(view: EditorView): boolean {
   const { state } = view;
   const schema: any = state.schema;
   const interactionType = schema.nodes.qtiChoiceInteraction;

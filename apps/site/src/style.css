@@ -1,102 +1,20 @@
 /**
- * QTI Editor Integration Styles
+ * QTI Editor app shell stylesheet.
  *
- * Main stylesheet for the website editor demo.
+ * Element-level QTI styling (interactions, choices, rubric-block, gap-text fix,
+ * upstream qti-components theme) lives in @qti-editor/styles. This file is just
+ * the app-shell glue: Tailwind, DaisyUI, and the editor card chrome.
  */
 
-@import '@qti-components/theme/item.css';
+@import '@qti-editor/styles';
 @import "tailwindcss";
 @source "../../../packages/ui/src/**/*.{ts,js}";
 
 /*---break---*/
 
 @plugin "@egoist/tailwindcss-icons";
+@plugin "@tailwindcss/typography";
 @plugin "daisyui" {
-  themes: light --default;
+   themes: light --default;
 }
 @custom-variant dark (&:where(.dark, .dark *));
-
-qti-editor-app p {
-  @apply p-2;
-}
-
-qti-editor-app qti-prompt {
-  @apply bg-white rounded my-0 px-2 mb-2 dark:bg-slate-800 dark:text-slate-100;
-}
-
-qti-editor-app qti-choice-interaction {
-  @apply bg-slate-100 rounded p-2 my-1 dark:bg-slate-700;
-}
-
-qti-editor-app qti-simple-choice,
-qti-editor-app qti-associable-choice {
-  @apply bg-white rounded p-2 dark:bg-slate-800 dark:text-slate-100;
-}
-
-qti-editor-app qti-inline-choice-interaction {
-  @apply bg-slate-100 rounded p-2 my-1 dark:bg-slate-700;
-}
-
-qti-editor-app qti-match-interaction {
-  @apply bg-slate-100 rounded p-2 my-1 dark:bg-slate-700;
-}
-
-qti-editor-app qti-select-point-interaction {
-  @apply bg-slate-100 rounded p-2 my-1 dark:bg-slate-700;
-}
-
-qti-editor-app qti-text-entry-interaction {
-  @apply bg-slate-100 rounded p-2 dark:bg-slate-700 dark:text-slate-100;
-}
-
-qti-editor-app qti-extended-text-interaction {
-  @apply bg-slate-100 rounded p-2 dark:bg-slate-700 dark:text-slate-100;
-}
-
-qti-editor-app qti-composer-metadata-form {
-  @apply block;
-}
-
-qti-editor-app qti-attributes-panel {
-  @apply mt-3 block;
-}
-
-qti-editor-app qti-composer section.card {
-  @apply dark:border-slate-700 dark:bg-slate-800;
-}
-
-qti-editor-app qti-composer h3,
-qti-editor-app qti-composer label,
-qti-editor-app qti-composer span {
-  @apply dark:text-slate-100;
-}
-
-qti-editor-app qti-composer p {
-  @apply dark:text-slate-300;
-}
-
-qti-editor-app qti-composer pre {
-  @apply dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100;
-}
-
-qti-editor-app qti-composer-metadata-form section.card,
-qti-editor-app qti-attributes-panel section.card {
-  @apply dark:border-slate-700 dark:bg-slate-800;
-}
-
-qti-editor-app qti-composer-metadata-form h3,
-qti-editor-app qti-attributes-panel h3 {
-  @apply dark:text-slate-100;
-}
-
-qti-editor-app qti-composer-metadata-form .label-text,
-qti-editor-app qti-attributes-panel p {
-  @apply dark:text-slate-300;
-}
-
-qti-editor-app qti-composer-metadata-form input,
-qti-editor-app qti-attributes-panel input,
-qti-editor-app qti-attributes-panel select,
-qti-editor-app qti-attributes-panel textarea {
-  @apply dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100;
-}

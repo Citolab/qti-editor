@@ -12,6 +12,7 @@
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "pnpm --filter @qti-editor/app dev",
+    "dev:minimal": "pnpm --filter @qti-editor/minimal dev",
     "site:dev": "pnpm --filter @qti-editor/site dev",
     "build": "pnpm build:packages && pnpm --filter @qti-editor/app build",
     "deploy:build": "pnpm deploy:build:site && pnpm deploy:build:editor",

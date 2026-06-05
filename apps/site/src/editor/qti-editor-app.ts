@@ -180,7 +180,7 @@ export class QtiEditorApp extends LitElement {
           <div class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/90">
             ${toolbar}
           </div>
-          <div ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col bg-white px-6 py-6 dark:bg-slate-900"></div>
+          <div ${ref(this.editorRef)} class="card h-full min-h-80 flex flex-col bg-white px-6 py-6 dark:bg-slate-900 prose"></div>
           ${this._editorMounted ? html`<qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>` : ''}
           ${this._editorMounted ? html`<qti-composer .editor=${this.editor} class="block w-full shrink-0"></qti-composer>` : ''}
         </div>

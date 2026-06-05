@@ -8,12 +8,12 @@ import {
 } from '@qti-editor/interaction-shared';
 
 import {
-  canConvertFlatListToChoiceInteraction,
-  convertFlatListToChoiceInteraction
+  canConvertListToChoiceInteraction,
+  convertListToChoiceInteraction
 } from './convert-selection-to-choice.commands';
 import { qtiChoiceInteractionNodeSpec } from '../qti-choice-interaction.schema';
 
-import type { Node as ProseMirrorNode, NodeSpec } from 'prosemirror-model';
+import type { NodeSpec } from 'prosemirror-model';
 import type { EditorView } from 'prosemirror-view';
 
 const baseNodes = {
@@ -25,17 +25,23 @@ const baseNodes = {
     parseDOM: [{ tag: 'p' }],
     toDOM: () => ['p', 0] as const
   },
-  list: {
+  bullet_list: {
     group: 'block',
-    content: 'paragraph+',
-    attrs: {
-      kind: { default: 'bullet' }
-    },
-    parseDOM: [
-      { tag: 'ul', getAttrs: () => ({ kind: 'bullet' }) },
-      { tag: 'ol', getAttrs: () => ({ kind: 'ordered' }) }
-    ],
-    toDOM: (node: ProseMirrorNode) => [node.attrs.kind === 'ordered' ? 'ol' : 'ul', 0] as const
+    content: 'list_item+',
+    parseDOM: [{ tag: 'ul' }],
+    toDOM: () => ['ul', 0] as const
+  },
+  ordered_list: {
+    group: 'block',
+    content: 'list_item+',
+    parseDOM: [{ tag: 'ol' }],
+    toDOM: () => ['ol', 0] as const
+  },
+  list_item: {
+    content: 'paragraph',
+    defining: true,
+    parseDOM: [{ tag: 'li' }],
+    toDOM: () => ['li', 0] as const
   }
 } satisfies Record<string, NodeSpec>;
 
@@ -72,16 +78,16 @@ function createView(state: EditorState) {
   };
 }
 
-describe('convertFlatListToChoiceInteraction', () => {
+describe('convertListToChoiceInteraction', () => {
   it('uses leading paragraph text as the prompt and converts list items into choices', () => {
     const schema = createSchema();
     let state = EditorState.create({
       schema,
       doc: schema.node('doc', null, [
         schema.node('paragraph', null, schema.text('Which option is correct?')),
-        schema.node('list', { kind: 'bullet' }, [
-          schema.node('paragraph', null, schema.text('Option A')),
-          schema.node('paragraph', null, schema.text('Option B'))
+        schema.node('bullet_list', null, [
+          schema.node('list_item', null, schema.node('paragraph', null, schema.text('Option A'))),
+          schema.node('list_item', null, schema.node('paragraph', null, schema.text('Option B')))
         ])
       ])
     });
@@ -90,8 +96,8 @@ describe('convertFlatListToChoiceInteraction', () => {
 
     const { view, getState } = createView(state);
 
-    expect(canConvertFlatListToChoiceInteraction(view)).toBe(true);
-    expect(convertFlatListToChoiceInteraction(view)).toBe(true);
+    expect(canConvertListToChoiceInteraction(view)).toBe(true);
+    expect(convertListToChoiceInteraction(view)).toBe(true);
 
     const nextState = getState();
     const interaction = nextState.doc.firstChild;
@@ -104,15 +110,39 @@ describe('convertFlatListToChoiceInteraction', () => {
     expect(interaction?.child(2).textContent).toBe('Option B');
   });
 
+  it('converts an ordered list the same way as a bullet list', () => {
+    const schema = createSchema();
+    let state = EditorState.create({
+      schema,
+      doc: schema.node('doc', null, [
+        schema.node('ordered_list', null, [
+          schema.node('list_item', null, schema.node('paragraph', null, schema.text('First'))),
+          schema.node('list_item', null, schema.node('paragraph', null, schema.text('Second')))
+        ])
+      ])
+    });
+
+    state = state.apply(state.tr.setSelection(new AllSelection(state.doc)));
+
+    const { view, getState } = createView(state);
+
+    expect(canConvertListToChoiceInteraction(view)).toBe(true);
+    expect(convertListToChoiceInteraction(view)).toBe(true);
+
+    const interaction = getState().doc.firstChild;
+    expect(interaction?.type.name).toBe('qtiChoiceInteraction');
+    expect(interaction?.childCount).toBe(3); // prompt + 2 choices
+  });
+
   it('rejects selections with plain text blocks after the list', () => {
     const schema = createSchema();
     let state = EditorState.create({
       schema,
       doc: schema.node('doc', null, [
         schema.node('paragraph', null, schema.text('Choose one answer.')),
-        schema.node('list', { kind: 'ordered' }, [
-          schema.node('paragraph', null, schema.text('First')),
-          schema.node('paragraph', null, schema.text('Second'))
+        schema.node('ordered_list', null, [
+          schema.node('list_item', null, schema.node('paragraph', null, schema.text('First'))),
+          schema.node('list_item', null, schema.node('paragraph', null, schema.text('Second')))
         ]),
         schema.node('paragraph', null, schema.text('This explanation should not be absorbed.'))
       ])
@@ -122,8 +152,8 @@ describe('convertFlatListToChoiceInteraction', () => {
 
     const { view, getState } = createView(state);
 
-    expect(canConvertFlatListToChoiceInteraction(view)).toBe(false);
-    expect(convertFlatListToChoiceInteraction(view)).toBe(false);
+    expect(canConvertListToChoiceInteraction(view)).toBe(false);
+    expect(convertListToChoiceInteraction(view)).toBe(false);
     expect(getState().doc.childCount).toBe(3);
     expect(getState().doc.firstChild?.type.name).toBe('paragraph');
   });

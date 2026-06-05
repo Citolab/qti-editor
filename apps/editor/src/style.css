@@ -13,6 +13,7 @@
 /*---break---*/
 
 @plugin "@egoist/tailwindcss-icons";
+@plugin "@tailwindcss/typography";
 @plugin "daisyui" {
    themes: light --default;
 }

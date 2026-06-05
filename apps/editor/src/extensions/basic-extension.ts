@@ -16,7 +16,7 @@ import { defineHardBreak, type HardBreakExtension } from 'prosekit/extensions/ha
 import { defineHeading, type HeadingExtension } from 'prosekit/extensions/heading'
 import { defineImage, type ImageExtension } from 'prosekit/extensions/image'
 import { defineItalic, type ItalicExtension } from 'prosekit/extensions/italic'
-import { defineList, type ListExtension } from 'prosekit/extensions/list'
+import { defineList, type ListExtension } from './list-extension'
 import { defineModClickPrevention, type ModClickPreventionExtension } from 'prosekit/extensions/mod-click-prevention'
 import { defineParagraph, type ParagraphExtension } from 'prosekit/extensions/paragraph'
 import { defineTable, type TableExtension } from 'prosekit/extensions/table'
