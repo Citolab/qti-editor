@@ -425,6 +425,9 @@ importers:
       '@qti-editor/prosemirror-plugins':
         specifier: workspace:*
         version: link:../../packages/prosemirror/extensions
+      '@qti-editor/styles':
+        specifier: workspace:*
+        version: link:../../packages/styles
       '@qti-editor/ui':
         specifier: workspace:*
         version: link:../../packages/ui

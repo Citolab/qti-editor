@@ -25,11 +25,16 @@ const interactionsGapMatchSrcRoot = fileURLToPath(new URL('../../packages/prosem
 const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes/src', import.meta.url));
 const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes-ui/src', import.meta.url));
 const uiSrcRoot = fileURLToPath(new URL('../../packages/ui/src', import.meta.url));
+const stylesSrcRoot = fileURLToPath(new URL('../../packages/styles/src', import.meta.url));
 
 export default defineConfig({
   vite: {
     resolve: {
       alias: [
+        {
+          find: /^@qti-editor\/styles$/,
+          replacement: `${stylesSrcRoot}/index.css`,
+        },
         {
           find: /^@qti-editor\/interaction-shared\/(.*)\.js$/,
           replacement: `${interactionsSharedSrcRoot}/$1.ts`,
