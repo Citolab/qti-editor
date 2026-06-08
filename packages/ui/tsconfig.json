@@ -38,8 +38,6 @@
       "@qti-editor/interfaces": ["../interfaces/src/index.ts"],
       "@qti-editor/qti-item-divider": ["../prosemirror/qti-item-divider/src/index.ts"],
       "@qti-editor/qti-item-divider/*": ["../prosemirror/qti-item-divider/src/*"],
-      "@qti-editor/qti-rubric-block": ["../prosemirror/qti-rubric-block/src/index.ts"],
-      "@qti-editor/qti-rubric-block/*": ["../prosemirror/qti-rubric-block/src/*"],
       "@qti-editor/qti-item-export/pm-qti-item": ["../qti/item-export/src/pm-qti-item.ts"],
       "@qti-editor/qti-item-export/pm-xml": ["../qti/item-export/src/pm-xml.ts"],
       "@qti-editor/qti-test-export/pm-qti-test": ["../qti/test-export/src/pm-qti-test.ts"],

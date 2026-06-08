@@ -21,7 +21,9 @@
       "@qti-editor/interactions/order": ["./src/order/index.ts"],
       "@qti-editor/interactions/select-point": ["./src/select-point/index.ts"],
       "@qti-editor/interactions/shared": ["./src/shared/index.ts"],
-      "@qti-editor/interactions/text-entry": ["./src/text-entry/index.ts"]
+      "@qti-editor/interactions/text-entry": ["./src/text-entry/index.ts"],
+      "@qti-editor/qti-rubric-block": ["../qti-rubric-block/src/index.ts"],
+      "@qti-editor/qti-rubric-block/*": ["../qti-rubric-block/src/*"]
     },
     "strict": false,
     "noUnusedLocals": false,

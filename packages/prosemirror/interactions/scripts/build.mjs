@@ -19,6 +19,7 @@ const packages = [
   ['select-point', 'interaction-select-point'],
   ['shared', 'interaction-shared'],
   ['text-entry', 'interaction-text-entry'],
+  ['qti-rubric-block', 'qti-rubric-block'],
 ];
 
 const importRewrites = [

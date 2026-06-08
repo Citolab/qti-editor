@@ -41,7 +41,6 @@
     "@qti-editor/prosemirror-attributes": "workspace:*",
     "@qti-editor/prosemirror-attributes-ui": "workspace:*",
     "@qti-editor/qti-item-divider": "workspace:*",
-    "@qti-editor/qti-rubric-block": "workspace:*",
     "lit": "^3.3.2",
     "prosekit": "^0.21.3",
     "prosemirror-state": "^1.4.4"

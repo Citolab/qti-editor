@@ -22,7 +22,6 @@
     "@qti-editor/qti-item-divider": "workspace:*",
     "@qti-editor/qti-package": "workspace:*",
     "@qti-editor/qti-roundtrip-import": "workspace:*",
-    "@qti-editor/qti-rubric-block": "workspace:*",
     "@qti-editor/qti3-item-import": "workspace:*",
     "@qti-editor/styles": "workspace:*",
     "@qti-editor/ui": "workspace:*",

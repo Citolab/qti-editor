@@ -2,6 +2,7 @@
   "name": "@qti-editor/qti-rubric-block",
   "description": "QTI rubric block element for instructions, scoring, or navigation rubrics",
   "version": "1.0.0",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",
@@ -44,8 +45,5 @@
   },
   "files": [
     "dist"
-  ],
-  "publishConfig": {
-    "access": "public"
-  }
+  ]
 }

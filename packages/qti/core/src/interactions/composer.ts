@@ -8,8 +8,8 @@ import { matchInteractionDescriptor } from '@qti-editor/interactions/match';
 import { orderInteractionDescriptor } from '@qti-editor/interactions/order';
 import { selectPointInteractionDescriptor } from '@qti-editor/interactions/select-point';
 import { textEntryInteractionDescriptor } from '@qti-editor/interactions/text-entry';
+import { qtiRubricBlockDescriptor } from '@qti-editor/interactions';
 import { qtiItemDividerDescriptor } from '@qti-editor/qti-item-divider';
-import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 
 import type {
   InteractionNodeSpecEntry,

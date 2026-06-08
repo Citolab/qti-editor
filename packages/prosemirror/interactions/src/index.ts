@@ -9,3 +9,4 @@ export * from './order/index.js';
 export * from './select-point/index.js';
 export * from './shared/index.js';
 export * from './text-entry/index.js';
+export * from '@qti-editor/qti-rubric-block';
