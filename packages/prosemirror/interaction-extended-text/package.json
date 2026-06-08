@@ -1,7 +1,7 @@
 {
   "name": "@qti-editor/interaction-extended-text",
   "description": "QTI extended text interaction schemas, components, commands, and composer",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",
@@ -44,6 +44,7 @@
     "@qti-components/transformers": "^1.7.0",
     "@qti-editor/interactions": "workspace:*",
     "@qti-editor/qti3-item-import": "workspace:*",
+    "@qti-editor/qti-rubric-block": "workspace:*",
     "@qti-editor/prosekit-integration": "workspace:*",
     "lit": "^3.3.2",
     "prosemirror-schema-basic": "^1.2.4",
