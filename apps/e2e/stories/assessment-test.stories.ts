@@ -20,7 +20,6 @@ import { ref } from 'lit/directives/ref.js';
 import { EditorState, type Transaction } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { expect, waitFor } from 'storybook/test';
-
 import { qtiTestFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-test';
 
 import { schema, plugins } from '../src/pm-setup.js';

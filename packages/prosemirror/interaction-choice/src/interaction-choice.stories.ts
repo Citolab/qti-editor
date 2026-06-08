@@ -1,8 +1,9 @@
 import '@qti-components/theme/item.css';
 import { html } from 'lit';
 import { expect, waitFor } from 'storybook/test';
-import { QtiChoiceInteractionEdit } from '@qti-editor/interaction-choice';
 import { QtiSimpleChoiceEdit } from '@qti-editor/interaction-shared';
+
+import { QtiChoiceInteractionEdit } from '@qti-editor/interaction-choice';
 
 if (!customElements.get('qti-choice-interaction')) {
   customElements.define('qti-choice-interaction', QtiChoiceInteractionEdit);

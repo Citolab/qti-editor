@@ -1,6 +1,7 @@
 import '@qti-components/theme/item.css';
 import { html } from 'lit';
 import { expect, waitFor } from 'storybook/test';
+
 import { QtiHottextInteractionEdit, QtiHottextEdit } from '@qti-editor/interaction-hottext';
 
 if (!customElements.get('qti-hottext-interaction')) {

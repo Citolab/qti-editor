@@ -1,6 +1,7 @@
 import '@qti-components/theme/item.css';
 import { html } from 'lit';
 import { expect, userEvent, waitFor } from 'storybook/test';
+
 import { QtiInlineChoiceInteraction, QtiInlineChoice } from '@qti-editor/interaction-inline-choice';
 
 if (!customElements.get('qti-inline-choice-interaction')) {

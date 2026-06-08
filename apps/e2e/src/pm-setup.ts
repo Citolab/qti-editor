@@ -4,7 +4,6 @@ import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 import { nodes } from 'prosemirror-schema-basic';
-
 import {
   listInteractionPluginFactories,
   listInteractionSchemaNodeSpecs,

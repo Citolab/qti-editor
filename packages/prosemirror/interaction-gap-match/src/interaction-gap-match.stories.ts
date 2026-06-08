@@ -1,8 +1,9 @@
 import '@qti-components/theme/item.css';
 import { html } from 'lit';
 import { expect, userEvent, waitFor } from 'storybook/test';
-import { QtiGapMatchInteractionEdit } from '@qti-editor/interaction-gap-match';
 import { QtiGapEdit, QtiGapTextEdit } from '@qti-editor/interaction-shared';
+
+import { QtiGapMatchInteractionEdit } from '@qti-editor/interaction-gap-match';
 
 if (!customElements.get('qti-gap-match-interaction')) {
   customElements.define('qti-gap-match-interaction', QtiGapMatchInteractionEdit);

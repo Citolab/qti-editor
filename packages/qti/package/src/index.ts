@@ -22,7 +22,6 @@
 import JSZip from 'jszip';
 import { collectMirrorMappings } from '@qti-editor/core/composer';
 import { getInteractionComposerMetadata } from '@qti-editor/core/interactions/composer';
-
 import { getQtiItems, type QtiComposeContext, type QtiItemFragment } from '@qti-editor/qti-test-export';
 
 import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';

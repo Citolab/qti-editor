@@ -4,12 +4,10 @@ import {
   getItemFragmentXmls,
   formatXml,
 } from '@qti-editor/core/composer';
-
 import {
   buildItemBodyContext,
   type QtiComposeContext,
 } from '@qti-editor/qti-item-export/pm-qti-item';
-
 import { xmlFromNode } from '@qti-editor/qti-item-export/pm-xml';
 
 import type { DOMSerializer, Node as ProseMirrorNode } from 'prosemirror-model';

@@ -7,6 +7,7 @@ import { html, LitElement, nothing } from 'lit';
 import { ContextConsumer } from '@lit/context';
 import { defineUpdateHandler } from 'prosekit/core';
 import { subscribeQtiI18n, translateQti } from '@qti-editor/interactions/shared';
+
 import { editorContext } from '../editor-context';
 
 function getToolbarItems(editor) {

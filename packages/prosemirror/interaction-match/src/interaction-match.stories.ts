@@ -1,8 +1,9 @@
 import '@qti-components/theme/item.css';
 import { html } from 'lit';
 import { expect, userEvent, waitFor } from 'storybook/test';
-import { QtiMatchInteractionEdit } from '@qti-editor/interaction-match';
 import { QtiSimpleAssociableChoiceEdit, QtiSimpleMatchSetEdit } from '@qti-editor/interaction-shared';
+
+import { QtiMatchInteractionEdit } from '@qti-editor/interaction-match';
 
 if (!customElements.get('qti-match-interaction')) {
   customElements.define('qti-match-interaction', QtiMatchInteractionEdit);
