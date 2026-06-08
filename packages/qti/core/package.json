@@ -1,6 +1,6 @@
 {
   "name": "@qti-editor/core",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "QTI semantics, composer registry, and XML export orchestration for QTI Editor",
   "repository": {
     "type": "git",
@@ -32,9 +32,9 @@
   },
   "dependencies": {
     "@qti-editor/interfaces": "1.5.0",
-    "@qti-editor/interactions": "workspace:*",
-    "@qti-editor/qti-item-divider": "workspace:*",
-    "@qti-editor/qti-rubric-block": "workspace:*"
+    "@qti-editor/interactions": "1.0.1",
+    "@qti-editor/qti-item-divider": "1.2.0",
+    "@qti-editor/qti-rubric-block": "1.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
