@@ -7,6 +7,12 @@ import {
   type Extension,
   type Union,
 } from 'prosekit/core'
+import {
+  chainCommands,
+  deleteSelection,
+  joinBackward,
+  selectNodeBackward,
+} from 'prosekit/pm/commands'
 import { type Command } from 'prosekit/pm/state'
 import { inputRules, wrappingInputRule } from 'prosemirror-inputrules'
 import {
@@ -128,6 +134,13 @@ function defineListKeymapExt(): Extension {
       if (!itemType) return false
       return splitListItem(itemType)(state, dispatch)
     },
+    // Restore ProseMirror's standard Backspace behavior. Prosekit's base keymap
+    // replaces `joinBackward` with `joinTextblockBackward`, which never lifts the
+    // first list item out into a paragraph. `joinBackward` (the command used by
+    // `prosemirror-commands`' `baseKeymap`, and therefore by the basic example and
+    // `prosemirror-example-setup`) handles both lifting the first item and merging
+    // later items into their predecessor.
+    Backspace: chainCommands(deleteSelection, joinBackward, selectNodeBackward),
   })
 }
 
