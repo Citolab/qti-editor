@@ -147,7 +147,3 @@ export class QtiHottextEdit extends LitElement {
     `;
   }
 }
-
-if (!customElements.get('qti-hottext')) {
-  customElements.define('qti-hottext', QtiHottextEdit);
-}

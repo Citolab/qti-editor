@@ -5,7 +5,7 @@ import {
   parseExtendedTextClassState,
   serializeExtendedTextClassState,
   type ExtendedTextHeightClassOption,
-} from '@qti-editor/interaction-extended-text';
+} from '@qti-editor/interactions/extended-text';
 
 import { QTI_ATTRIBUTES_PATCH_EVENT, type QtiAttributesPatchDetail } from '../attributes-panel/patch-event.js';
 

@@ -137,6 +137,3 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
         : nothing}`;
   }
 }
-if (!customElements.get('qti-extended-text-interaction')) {
-  customElements.define('qti-extended-text-interaction', QtiExtendedTextInteractionEdit);
-}

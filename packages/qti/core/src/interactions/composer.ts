@@ -1,13 +1,13 @@
-import { associateInteractionDescriptor } from '@qti-editor/interaction-associate';
-import { choiceInteractionDescriptor } from '@qti-editor/interaction-choice';
-import { extendedTextInteractionDescriptor } from '@qti-editor/interaction-extended-text';
-import { gapMatchInteractionDescriptor } from '@qti-editor/interaction-gap-match';
-import { hottextInteractionDescriptor } from '@qti-editor/interaction-hottext';
-import { inlineChoiceInteractionDescriptor } from '@qti-editor/interaction-inline-choice';
-import { matchInteractionDescriptor } from '@qti-editor/interaction-match';
-import { orderInteractionDescriptor } from '@qti-editor/interaction-order';
-import { selectPointInteractionDescriptor } from '@qti-editor/interaction-select-point';
-import { textEntryInteractionDescriptor } from '@qti-editor/interaction-text-entry';
+import { associateInteractionDescriptor } from '@qti-editor/interactions/associate';
+import { choiceInteractionDescriptor } from '@qti-editor/interactions/choice';
+import { extendedTextInteractionDescriptor } from '@qti-editor/interactions/extended-text';
+import { gapMatchInteractionDescriptor } from '@qti-editor/interactions/gap-match';
+import { hottextInteractionDescriptor } from '@qti-editor/interactions/hottext';
+import { inlineChoiceInteractionDescriptor } from '@qti-editor/interactions/inline-choice';
+import { matchInteractionDescriptor } from '@qti-editor/interactions/match';
+import { orderInteractionDescriptor } from '@qti-editor/interactions/order';
+import { selectPointInteractionDescriptor } from '@qti-editor/interactions/select-point';
+import { textEntryInteractionDescriptor } from '@qti-editor/interactions/text-entry';
 import { qtiItemDividerDescriptor } from '@qti-editor/qti-item-divider';
 import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 

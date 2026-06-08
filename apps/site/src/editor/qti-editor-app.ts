@@ -22,7 +22,7 @@ import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
 import { qtiTestFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-test';
-import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interaction-shared';
+import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interactions/shared';
 import { sampleUploader } from '@qti-editor/ui/components/sample/sample-uploader';
 
 import { defineBasicExtension } from './extensions/basic-extension';

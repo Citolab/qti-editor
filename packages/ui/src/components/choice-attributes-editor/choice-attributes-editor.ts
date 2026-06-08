@@ -1,13 +1,13 @@
 import { html, LitElement, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { translateQti } from '@qti-editor/interaction-shared';
+import { translateQti } from '@qti-editor/interactions/shared';
 import {
   choiceInteractionClassGroups,
   parseChoiceInteractionClasses,
   serializeChoiceInteractionClasses,
   type ChoiceInteractionClassGroupId,
   type ChoiceInteractionClassState,
-} from '@qti-editor/interaction-choice';
+} from '@qti-editor/interactions/choice';
 
 import { QTI_ATTRIBUTES_PATCH_EVENT, type QtiAttributesPatchDetail } from '../attributes-panel/patch-event';
 

@@ -770,7 +770,3 @@ export class QtiSelectPointInteractionEdit extends Interaction {
     `;
   }
 }
-
-if (!customElements.get('qti-select-point-interaction')) {
-  customElements.define('qti-select-point-interaction', QtiSelectPointInteractionEdit);
-}

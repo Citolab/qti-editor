@@ -41,7 +41,3 @@ export class QtiTextEntryInteractionEdit extends Interaction {
     </div>`;
   }
 }
-
-if (!customElements.get('qti-text-entry-interaction')) {
-  customElements.define('qti-text-entry-interaction', QtiTextEntryInteractionEdit);
-}

@@ -158,7 +158,3 @@ export class QtiHottextInteractionEdit extends Interaction {
     this._selectedText = text;
   }
 }
-
-if (!customElements.get('qti-hottext-interaction')) {
-  customElements.define('qti-hottext-interaction', QtiHottextInteractionEdit);
-}

@@ -164,18 +164,9 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../../packages/qti/core
-      '@qti-editor/interaction-choice':
+      '@qti-editor/interactions':
         specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-choice
-      '@qti-editor/interaction-extended-text':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-extended-text
-      '@qti-editor/interaction-select-point':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-select-point
-      '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-shared
+        version: link:../../packages/prosemirror/interactions
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../packages/qti/prosekit-integration
@@ -237,39 +228,9 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../../packages/qti/core
-      '@qti-editor/interaction-associate':
+      '@qti-editor/interactions':
         specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-associate
-      '@qti-editor/interaction-choice':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-choice
-      '@qti-editor/interaction-extended-text':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-extended-text
-      '@qti-editor/interaction-gap-match':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-gap-match
-      '@qti-editor/interaction-hottext':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-hottext
-      '@qti-editor/interaction-inline-choice':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-inline-choice
-      '@qti-editor/interaction-match':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-match
-      '@qti-editor/interaction-order':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-order
-      '@qti-editor/interaction-select-point':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-select-point
-      '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-shared
-      '@qti-editor/interaction-text-entry':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-text-entry
+        version: link:../../packages/prosemirror/interactions
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../packages/qti/prosekit-integration
@@ -388,18 +349,9 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../../packages/qti/core
-      '@qti-editor/interaction-choice':
+      '@qti-editor/interactions':
         specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-choice
-      '@qti-editor/interaction-extended-text':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-extended-text
-      '@qti-editor/interaction-hottext':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-hottext
-      '@qti-editor/interaction-text-entry':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-text-entry
+        version: link:../../packages/prosemirror/interactions
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../packages/qti/prosekit-integration
@@ -464,36 +416,9 @@ importers:
       '@qti-components/theme':
         specifier: 1.3.2
         version: 1.3.2
-      '@qti-editor/interaction-associate':
+      '@qti-editor/interactions':
         specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-associate
-      '@qti-editor/interaction-choice':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-choice
-      '@qti-editor/interaction-extended-text':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-extended-text
-      '@qti-editor/interaction-gap-match':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-gap-match
-      '@qti-editor/interaction-hottext':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-hottext
-      '@qti-editor/interaction-match':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-match
-      '@qti-editor/interaction-order':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-order
-      '@qti-editor/interaction-select-point':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-select-point
-      '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-shared
-      '@qti-editor/interaction-text-entry':
-        specifier: workspace:*
-        version: link:../../packages/prosemirror/interaction-text-entry
+        version: link:../../packages/prosemirror/interactions
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../../packages/qti/prosekit-integration
@@ -588,8 +513,8 @@ importers:
   packages/prosemirror/extensions:
     dependencies:
       '@qti-editor/interfaces':
-        specifier: 1.5.0
-        version: 1.5.0
+        specifier: workspace:*
+        version: link:../../interfaces
       prosekit:
         specifier: ^0.21.3
         version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -628,11 +553,11 @@ importers:
         specifier: 1.3.2
         version: 1.3.2(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: 1.6.1
-        version: 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: workspace:*
+        version: link:../interaction-shared
       '@qti-editor/interfaces':
-        specifier: 1.5.0
-        version: 1.5.0
+        specifier: workspace:*
+        version: link:../../interfaces
       prosekit:
         specifier: ^0.21.3
         version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -781,11 +706,11 @@ importers:
   packages/prosemirror/interaction-gap-match:
     dependencies:
       '@qti-editor/interaction-shared':
-        specifier: 1.6.1
-        version: 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: workspace:*
+        version: link:../interaction-shared
       '@qti-editor/interfaces':
-        specifier: 1.5.0
-        version: 1.5.0
+        specifier: workspace:*
+        version: link:../../interfaces
       prosemirror-commands:
         specifier: ^1.7.1
         version: 1.7.1
@@ -812,11 +737,11 @@ importers:
         specifier: 1.10.1
         version: 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: 1.6.1
-        version: 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: workspace:*
+        version: link:../interaction-shared
       '@qti-editor/interfaces':
-        specifier: 1.5.0
-        version: 1.5.0
+        specifier: workspace:*
+        version: link:../../interfaces
       prosekit:
         specifier: ^0.21.3
         version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -843,11 +768,11 @@ importers:
         specifier: 1.10.1
         version: 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: 1.6.1
-        version: 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: workspace:*
+        version: link:../interaction-shared
       '@qti-editor/interfaces':
-        specifier: 1.5.0
-        version: 1.5.0
+        specifier: workspace:*
+        version: link:../../interfaces
       prosemirror-model:
         specifier: 1.25.7
         version: 1.25.7
@@ -874,11 +799,11 @@ importers:
         specifier: 1.3.2
         version: 1.3.2(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: 1.6.1
-        version: 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: workspace:*
+        version: link:../interaction-shared
       '@qti-editor/interfaces':
-        specifier: 1.5.0
-        version: 1.5.0
+        specifier: workspace:*
+        version: link:../../interfaces
       prosekit:
         specifier: ^0.21.3
         version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -905,11 +830,11 @@ importers:
         specifier: ^1.1.2
         version: 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: 1.6.1
-        version: 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: workspace:*
+        version: link:../interaction-shared
       '@qti-editor/interfaces':
-        specifier: 1.5.0
-        version: 1.5.0
+        specifier: workspace:*
+        version: link:../../interfaces
       prosekit:
         specifier: ^0.21.3
         version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -936,11 +861,11 @@ importers:
         specifier: ^1.0.1
         version: 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: 1.6.1
-        version: 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: workspace:*
+        version: link:../interaction-shared
       '@qti-editor/interfaces':
-        specifier: 1.5.0
-        version: 1.5.0
+        specifier: workspace:*
+        version: link:../../interfaces
       prosemirror-model:
         specifier: 1.25.7
         version: 1.25.7
@@ -961,8 +886,8 @@ importers:
         specifier: ^1.1.3
         version: 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interfaces':
-        specifier: 1.5.0
-        version: 1.5.0
+        specifier: workspace:*
+        version: link:../../interfaces
     devDependencies:
       lit:
         specifier: ^3.3.2
@@ -983,11 +908,11 @@ importers:
         specifier: ^1.0.0
         version: 1.1.3(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-editor/interaction-shared':
-        specifier: 1.6.1
-        version: 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: workspace:*
+        version: link:../interaction-shared
       '@qti-editor/interfaces':
-        specifier: 1.5.0
-        version: 1.5.0
+        specifier: workspace:*
+        version: link:../../interfaces
       prosemirror-model:
         specifier: 1.25.7
         version: 1.25.7
@@ -1026,14 +951,120 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4
 
+  packages/prosemirror/interactions:
+    dependencies:
+      '@qti-components/associate-interaction':
+        specifier: ^1.0.1
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/base':
+        specifier: ^1.4.3
+        version: 1.4.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/choice-interaction':
+        specifier: ^1.1.4
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/hottext-interaction':
+        specifier: ^1.1.3
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/inline-choice-interaction':
+        specifier: ^1.1.3
+        version: 1.1.5(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions':
+        specifier: 1.10.3
+        version: 1.10.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core':
+        specifier: ^1.1.4
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/order-interaction':
+        specifier: ^1.1.2
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/select-point-interaction':
+        specifier: ^1.0.1
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/text-entry-interaction':
+        specifier: ^1.0.0
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities':
+        specifier: ^1.3.3
+        version: 1.3.3(lit@3.3.2)
+      '@qti-editor/interfaces':
+        specifier: workspace:*
+        version: link:../../interfaces
+      lit:
+        specifier: ^3.3.1
+        version: 3.3.2
+      prosekit:
+        specifier: ^0.20.0
+        version: 0.20.2(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      prosemirror-commands:
+        specifier: ^1.7.1
+        version: 1.7.1
+      prosemirror-gapcursor:
+        specifier: ^1.4.1
+        version: 1.4.1
+      prosemirror-history:
+        specifier: ^1.5.0
+        version: 1.5.0
+      prosemirror-keymap:
+        specifier: ^1.2.3
+        version: 1.2.3
+      prosemirror-model:
+        specifier: 1.25.7
+        version: 1.25.7
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+      prosemirror-view:
+        specifier: ^1.31.0
+        version: 1.41.8
+    devDependencies:
+      '@qti-editor/interaction-associate':
+        specifier: workspace:*
+        version: link:../interaction-associate
+      '@qti-editor/interaction-choice':
+        specifier: workspace:*
+        version: link:../interaction-choice
+      '@qti-editor/interaction-extended-text':
+        specifier: workspace:*
+        version: link:../interaction-extended-text
+      '@qti-editor/interaction-gap-match':
+        specifier: workspace:*
+        version: link:../interaction-gap-match
+      '@qti-editor/interaction-hottext':
+        specifier: workspace:*
+        version: link:../interaction-hottext
+      '@qti-editor/interaction-inline-choice':
+        specifier: workspace:*
+        version: link:../interaction-inline-choice
+      '@qti-editor/interaction-match':
+        specifier: workspace:*
+        version: link:../interaction-match
+      '@qti-editor/interaction-order':
+        specifier: workspace:*
+        version: link:../interaction-order
+      '@qti-editor/interaction-select-point':
+        specifier: workspace:*
+        version: link:../interaction-select-point
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../interaction-shared
+      '@qti-editor/interaction-text-entry':
+        specifier: workspace:*
+        version: link:../interaction-text-entry
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.39
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   packages/prosemirror/qti-item-divider:
     dependencies:
       '@qti-editor/interaction-shared':
-        specifier: 1.6.1
-        version: 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: workspace:*
+        version: link:../interaction-shared
       '@qti-editor/interfaces':
-        specifier: 1.5.0
-        version: 1.5.0
+        specifier: workspace:*
+        version: link:../../interfaces
       prosekit:
         specifier: ^0.21.3
         version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1084,39 +1115,9 @@ importers:
 
   packages/qti/core:
     dependencies:
-      '@qti-editor/interaction-associate':
-        specifier: 1.4.2
-        version: 1.4.2(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@qti-editor/interaction-choice':
-        specifier: 1.4.2
-        version: 1.4.2(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@qti-editor/interaction-extended-text':
-        specifier: 1.4.3
-        version: 1.4.3(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-gap-match':
-        specifier: 1.3.2
-        version: 1.3.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-hottext':
-        specifier: 1.3.3
-        version: 1.3.3(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@qti-editor/interaction-inline-choice':
-        specifier: 1.5.2
-        version: 1.5.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-match':
-        specifier: 1.4.2
-        version: 1.4.2(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@qti-editor/interaction-order':
-        specifier: 0.9.1
-        version: 0.9.1(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@qti-editor/interaction-select-point':
-        specifier: 1.3.3
-        version: 1.3.3(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-shared':
-        specifier: 1.6.1
-        version: 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-text-entry':
-        specifier: 1.3.3
-        version: 1.3.3(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-editor/interactions':
+        specifier: workspace:*
+        version: link:../../prosemirror/interactions
       '@qti-editor/interfaces':
         specifier: 1.5.0
         version: 1.5.0
@@ -1137,8 +1138,8 @@ importers:
   packages/qti/item-export:
     dependencies:
       '@qti-editor/core':
-        specifier: 1.7.0
-        version: 1.7.0(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: workspace:*
+        version: link:../core
       prosemirror-model:
         specifier: 1.25.7
         version: 1.25.7
@@ -1189,9 +1190,9 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../core
-      '@qti-editor/interaction-shared':
+      '@qti-editor/interactions':
         specifier: workspace:*
-        version: link:../../prosemirror/interaction-shared
+        version: link:../../prosemirror/interactions
       '@qti-editor/prosemirror-plugins':
         specifier: workspace:*
         version: link:../../prosemirror/extensions
@@ -1289,39 +1290,9 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../qti/core
-      '@qti-editor/interaction-associate':
+      '@qti-editor/interactions':
         specifier: workspace:*
-        version: link:../prosemirror/interaction-associate
-      '@qti-editor/interaction-choice':
-        specifier: workspace:*
-        version: link:../prosemirror/interaction-choice
-      '@qti-editor/interaction-extended-text':
-        specifier: workspace:*
-        version: link:../prosemirror/interaction-extended-text
-      '@qti-editor/interaction-gap-match':
-        specifier: workspace:*
-        version: link:../prosemirror/interaction-gap-match
-      '@qti-editor/interaction-hottext':
-        specifier: workspace:*
-        version: link:../prosemirror/interaction-hottext
-      '@qti-editor/interaction-inline-choice':
-        specifier: workspace:*
-        version: link:../prosemirror/interaction-inline-choice
-      '@qti-editor/interaction-match':
-        specifier: workspace:*
-        version: link:../prosemirror/interaction-match
-      '@qti-editor/interaction-order':
-        specifier: workspace:*
-        version: link:../prosemirror/interaction-order
-      '@qti-editor/interaction-select-point':
-        specifier: workspace:*
-        version: link:../prosemirror/interaction-select-point
-      '@qti-editor/interaction-shared':
-        specifier: workspace:*
-        version: link:../prosemirror/interaction-shared
-      '@qti-editor/interaction-text-entry':
-        specifier: workspace:*
-        version: link:../prosemirror/interaction-text-entry
+        version: link:../prosemirror/interactions
       '@qti-editor/prosekit-integration':
         specifier: workspace:*
         version: link:../qti/prosekit-integration
@@ -1334,6 +1305,9 @@ importers:
       '@qti-editor/qti-item-divider':
         specifier: workspace:*
         version: link:../prosemirror/qti-item-divider
+      '@qti-editor/qti-rubric-block':
+        specifier: workspace:*
+        version: link:../prosemirror/qti-rubric-block
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -2653,11 +2627,34 @@ packages:
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
+  '@prosekit/basic@0.9.0':
+    resolution: {integrity: sha512-EDx1RKJV6kiZoc6jiOwoPl+nTLseHPi5gcSQU7bvRhwMK1RCIfwGCOv1WEoU/vw5zr5QMAUkiP2P8VWr9ikZug==}
+
   '@prosekit/basic@0.9.4':
     resolution: {integrity: sha512-z/kVw4GiPyXCOheSolbv2OYx+4bqQ2Pp+c6W+bhKcGU2/PvEu8mwUiWyN43ImaB/MKLYF5KAV2PTobFQi+5s3w==}
 
+  '@prosekit/core@0.12.0':
+    resolution: {integrity: sha512-nC0xHijUm7BGbyMamDf233+LZbEZ45AD1aeUhxo0KLp3apl4NMlbH/kTVU5MGapLxajzLCwuU+PsVuEArKvi7Q==}
+
   '@prosekit/core@0.12.2':
     resolution: {integrity: sha512-9hYYmuF4Wd1m6d6JEbGieFystpZBSIFad3OY5eejjS6mrd+ZX6uPSuR6sQ/AjqnUJejaLeRIx4cOi+iRNTIs9g==}
+
+  '@prosekit/extensions@0.16.0':
+    resolution: {integrity: sha512-J6t1jHlYxHGlixqAvQg9GJpyPD79XcNWEOCkaC0/3pl24Irh1IB4tsQ8rb9d8Wj28Tah4u//ARib6H6WQawhFQ==}
+    peerDependencies:
+      loro-crdt: '>= 1.10.0'
+      loro-prosemirror: '>= 0.4.1'
+      y-prosemirror: '>= 1.2.9'
+      yjs: '>= 13.6.18'
+    peerDependenciesMeta:
+      loro-crdt:
+        optional: true
+      loro-prosemirror:
+        optional: true
+      y-prosemirror:
+        optional: true
+      yjs:
+        optional: true
 
   '@prosekit/extensions@0.17.3':
     resolution: {integrity: sha512-WXqCkE3NHUXIfbMVLFl71+uD6DnK6FOZsKnFjgYU1jk1uNRdwdH3+ifgx4LJkUhTILvBKv/OGZKQNAMAs/XVkA==}
@@ -2676,11 +2673,25 @@ packages:
       yjs:
         optional: true
 
+  '@prosekit/lit@0.6.2':
+    resolution: {integrity: sha512-zWSH2WFy5HNepJg8mUkSjZUwXx7kP5D7ji9O0QLRGVcRKQKjp5JM0GV5B8kLv6zdLDviOanAZ0ZnBNeB5YdVHQ==}
+
   '@prosekit/lit@0.6.6':
     resolution: {integrity: sha512-v0/VJ2K/ps5sXbxsPLBRIGt01fGhR+/FZ49Jh9NhaPLwD3LN6xvcIGeOHBTemXhbEAnrG50XjEX43iF90DGEoA==}
 
+  '@prosekit/pm@0.1.16':
+    resolution: {integrity: sha512-E5PVeiF3Va8gzrLRY5cSzmOnfkH0IKSMv/Us/PtBz8CH+IAlGNadVSRNE/pBgWq8Huizan7ABgnbDQkKS2P00g==}
+
   '@prosekit/pm@0.1.17':
     resolution: {integrity: sha512-cw/RR3/j02kA3zgcuOBcbWqgL+tOm2Q/OpC+RXR1cOTmb2Pz3lkGtojqzyYRU/D3Uov6wR/GZg9VAyM3pfF0Nw==}
+
+  '@prosekit/preact@0.7.1':
+    resolution: {integrity: sha512-OHz7M7weoI7soBtc7eWxG1oV9XYJCuee/OhuIjhsNrccIndnESllOUw1R/555nuOnS4rMFiDMeWclqQ7A7uJ9g==}
+    peerDependencies:
+      preact: '>= 10.11.0'
+    peerDependenciesMeta:
+      preact:
+        optional: true
 
   '@prosekit/preact@0.7.5':
     resolution: {integrity: sha512-g34Un1/Upkr6uX6ag7BwxZgig/H8xNlVOynAwv/U8iu9h6fp387N1OcUUe360qyqgJBmsffkIn6UgQPOO+hg2Q==}
@@ -2688,6 +2699,17 @@ packages:
       preact: '>= 10.11.0'
     peerDependenciesMeta:
       preact:
+        optional: true
+
+  '@prosekit/react@0.7.1':
+    resolution: {integrity: sha512-zi3eOsOMZ/NWGg6tCaHcNVSyEXkeCiCvmLBRzzPj1U4xJ1SHyrZkwl03cKdYMFOYL+XfvTLn/Myn2/n/ezZAnQ==}
+    peerDependencies:
+      react: '>= 18.2.0'
+      react-dom: '>= 18.2.0'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
         optional: true
 
   '@prosekit/react@0.7.5':
@@ -2701,12 +2723,28 @@ packages:
       react-dom:
         optional: true
 
+  '@prosekit/solid@0.7.1':
+    resolution: {integrity: sha512-oWnmOdZ9SnA2RZJpzXTzyV6xTDA5Mv8GrT5WnwqmVh0Mf8dipSdNjE8eFcPY/av4Fv6F6UB4s29zCRTKq/NZUA==}
+    peerDependencies:
+      solid-js: '>= 1.7.0'
+    peerDependenciesMeta:
+      solid-js:
+        optional: true
+
   '@prosekit/solid@0.7.5':
     resolution: {integrity: sha512-xWi+rNFh9yD2iy1+zHlGGvHEZ+3fnnfK36jZO6hCqwretcqIE95UG/feu9rq0nAGwdKIMlLBwB4Px4C+O3SjCg==}
     peerDependencies:
       solid-js: '>= 1.7.0'
     peerDependenciesMeta:
       solid-js:
+        optional: true
+
+  '@prosekit/svelte@0.9.1':
+    resolution: {integrity: sha512-pa8D2f1Y+9g3Qlb2ZvRMLFZPei8NLMunxPY/RTwvPwSBIXl3iN7B4mDQp+ektYlhwPiyGmw4kPaUBvxGlbbpIw==}
+    peerDependencies:
+      svelte: '>= 5.0.0'
+    peerDependenciesMeta:
+      svelte:
         optional: true
 
   '@prosekit/svelte@0.9.5':
@@ -2717,6 +2755,14 @@ packages:
       svelte:
         optional: true
 
+  '@prosekit/vue@0.7.1':
+    resolution: {integrity: sha512-DQbt3Uame00Eu98zwTfGCoEOr3pETjg9wB+fkckDCkgLkFFuuF1jkQqcrw+efaM4LDDIEYBf8pbsJlkMlqxhng==}
+    peerDependencies:
+      vue: '>= 3.0.0'
+    peerDependenciesMeta:
+      vue:
+        optional: true
+
   '@prosekit/vue@0.7.5':
     resolution: {integrity: sha512-fYnSlycg3n7j94FCvsUcwk7Aq9t4yD290CXvFQ1G/iznfdzbb+VDgCtervaOKLRyz1b20dwJv6Qq0BEIEWqKkw==}
     peerDependencies:
@@ -2724,6 +2770,9 @@ packages:
     peerDependenciesMeta:
       vue:
         optional: true
+
+  '@prosekit/web@0.8.1':
+    resolution: {integrity: sha512-xhi578ytNkNIL/P1ppMLczGBa8vc1KysOSBHGdqCiDDMqHnJKfaWh/TSNICvuJr925HVKMIhAYVROSSob9Pi/A==}
 
   '@prosekit/web@0.8.5':
     resolution: {integrity: sha512-y2PWOEd+v4VihW87Wucpx7GRhb8lFiWRLYWpgtFNuftNsh9JQy3+ZPkXtIzaBy5TP3nckbCF2lWbKmtUaNHI5w==}
@@ -3117,85 +3166,13 @@ packages:
     peerDependencies:
       lit: ^3.3.1
 
-  '@qti-editor/core@1.7.0':
-    resolution: {integrity: sha512-kHC7dcpm9LiydFSL7T/Ei2VEhigVCwgkKdOk2aL5Cg6GRdmnTNd+tbRAbDXRRuV01+wQTY8TJ5gCQRovEBTJEQ==}
-
-  '@qti-editor/interaction-associate@1.4.2':
-    resolution: {integrity: sha512-Y5cGP/Oy3yBq9I+LSNeEy4/3zJxWXLErAaNFAQWBMeUIhbnXfrWjAVXI/eP/3mNfLVlRtdDRw9TXCm0WWLD4Ww==}
-    peerDependencies:
-      lit: ^3.3.1
-      prosekit: ^0.20.0
-
-  '@qti-editor/interaction-choice@1.4.2':
-    resolution: {integrity: sha512-IHCx0HkUJATkrN2ETBVPUBHQbFbNzlTBaXlqCu5ocqyKgRR0dE3KVdJXZuYDBgnLU0MAN+guYLBoUpHaQzzC1g==}
-    peerDependencies:
-      lit: ^3.3.1
-      prosekit: ^0.20.0
-
-  '@qti-editor/interaction-extended-text@1.4.3':
-    resolution: {integrity: sha512-LbdKLZKUtaM/Dg5SpyWwLsTkLN8lqVQcNLGTQjp7jxn8+P2E840hK1K2JBLYlifdfGZUqEPd2e5UC15PPUqfMA==}
-    peerDependencies:
-      lit: ^3.3.1
-
-  '@qti-editor/interaction-gap-match@1.3.2':
-    resolution: {integrity: sha512-pJkBf7YhCaZ8+rUTPmFBZDSkewezyApFQQEmxpgq1FxIijLHIjFJOG4nw2fIra58WMiXE/4KbxgE/ZkeokLmOQ==}
-    peerDependencies:
-      lit: ^3.3.1
-
-  '@qti-editor/interaction-hottext@1.3.3':
-    resolution: {integrity: sha512-QUoBTKxLTcSiw4LdR5W8DAsxQgQ5tyeGaE9Z+atvTd1DSaBfcLhXFl/UNfrAQK7bBN+5a+t1hFzSgipxJ5/HWQ==}
-    peerDependencies:
-      lit: ^3.3.1
-      prosekit: ^0.20.0
-
-  '@qti-editor/interaction-inline-choice@1.5.2':
-    resolution: {integrity: sha512-yUy59Ep+GEUNggToTF1S+wmekc2q+k1KH9QSjMc9sfoG3GLF41TR8RoHjo53nsAXvFh0UQo/WreNx15p4e7yVA==}
-    peerDependencies:
-      lit: ^3.3.1
-
-  '@qti-editor/interaction-match@1.4.2':
-    resolution: {integrity: sha512-n9XeL547iFhZkGuN1ihas6XDnuw+bFP7Gw2KZIA9Gvr2i5qqnBFRhaxlFUhFOGtP0ZLOShwgGEQS1gdxYKnV1w==}
-    peerDependencies:
-      lit: ^3.3.1
-      prosekit: ^0.20.0
-
-  '@qti-editor/interaction-order@0.9.1':
-    resolution: {integrity: sha512-nKy2rErQgQNRWMOIRwGTvaFqCspb4NFEOrnLAamUwLrBGEMYbzjr+JCKp/vJx1/7hLmxYesd/J91n9lbDKX7/w==}
-    peerDependencies:
-      lit: ^3.3.1
-      prosekit: ^0.20.0
-
-  '@qti-editor/interaction-select-point@1.3.3':
-    resolution: {integrity: sha512-2nvLnnbDmR/YD8K/wvOvCds9mamjMu+y9cG8mYBTWWNiZMMQ9w/Ou9ENmmQnaWh8Czzoq7Z6E5USoekVQ3u7MA==}
-    peerDependencies:
-      lit: ^3.3.1
-
-  '@qti-editor/interaction-shared@1.6.0':
-    resolution: {integrity: sha512-nLvcfvGDI/h3lgjvczHsCfKe5rnLZsaqcX5Xs8jq/u85d1Yq48172ijLxkkEI+fmTc4+UMVnyVhEj/4m0Q09Pw==}
-    peerDependencies:
-      lit: ^3.3.1
-
   '@qti-editor/interaction-shared@1.6.1':
     resolution: {integrity: sha512-Po05J3mHSUn/x8hFzk1QmWxiurCotc6UA/mRPYSOvQFV2AQfX9MoDbv+8Ha41fAs6ux9Atr2LPgsyzHkGwsGHA==}
     peerDependencies:
       lit: ^3.3.1
 
-  '@qti-editor/interaction-text-entry@1.3.3':
-    resolution: {integrity: sha512-Fev0/Jw0DVwGewBtgfmrupeJoElYHyL2f0+UO0HwsUDcncXGwoqqaMpYe1EkZxGucsACTw0yX/+BM9k5NM8p7Q==}
-    peerDependencies:
-      lit: ^3.3.1
-
-  '@qti-editor/interfaces@1.4.0':
-    resolution: {integrity: sha512-Pgw8c8kjBr+3iHiGKN4phAPtKVkwm+swf7TzPu78P7+06dFGBYu23cMnHh9bcDFWa5Slrf/gMmN8m0D/hyo3yQ==}
-
   '@qti-editor/interfaces@1.5.0':
     resolution: {integrity: sha512-8llnmMpaCPNbdrS8Urav8OspYsF/o0xysfoY8nJzIkjNrVXdbVtbVukYahvzdKi7OK8HRL10HsQFahm+JHjDFw==}
-
-  '@qti-editor/qti-item-divider@1.1.9':
-    resolution: {integrity: sha512-z9sbRuG/jRleLjvw63x/3u8xCbELlnhyVZHmYDKv6T+c4jAMGCmG84Z2uOlf0L3sYz5F6bdblEH6htgDim9VyQ==}
-    peerDependencies:
-      lit: ^3.3.1
-      prosekit: ^0.20.0
 
   '@rolldown/pluginutils@1.0.0-beta.27':
     resolution: {integrity: sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==}
@@ -3844,6 +3821,7 @@ packages:
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
+    deprecated: Potential CWE-502 - Update to 1.3.1 or higher
 
   '@unrs/resolver-binding-android-arm-eabi@1.11.1':
     resolution: {integrity: sha512-ppLRUgHVaGRWUx0R0Ut06Mjo9gBaBkg3v/8AxusGLhsIotbBLuRk51rAzqLC8gq6NyyAojEXglNjzf6R948DNw==}
@@ -6532,17 +6510,11 @@ packages:
     resolution: {integrity: sha512-1FlR+gjXK7X+AsAHso35MnyN5KqGwJRi/31ft6x0M194ht7S+rWAvd7PHss9xSKMzE0asv1pyIHaJYq+BbacAQ==}
     engines: {node: '>=12'}
 
-  oniguruma-parser@0.12.1:
-    resolution: {integrity: sha512-8Unqkvk1RYc6yq2WBYRj4hdnsAxVze8i7iPfQr8e4uSP3tRv0rpZcbGUDvxfQQcdwHt/e9PrMvGCsa8OqG9X3w==}
-
   oniguruma-parser@0.12.2:
     resolution: {integrity: sha512-6HVa5oIrgMC6aA6WF6XyyqbhRPJrKR02L20+2+zpDtO5QAzGHAUGw5TKQvwi5vctNnRHkJYmjAhRVQF2EKdTQw==}
 
   oniguruma-to-es@2.3.0:
     resolution: {integrity: sha512-bwALDxriqfKGfUufKGGepCzu9x7nJQuoRoAFp4AnwehhC2crqrDIAP/uN2qdlsAvSMpeRC3+Yzhqc7hLmle5+g==}
-
-  oniguruma-to-es@4.3.5:
-    resolution: {integrity: sha512-Zjygswjpsewa0NLTsiizVuMQZbp0MDyM6lIt66OxsF21npUDlzpHi1Mgb/qhQdkb+dWFTzJmFbEWdvZgRho8eQ==}
 
   oniguruma-to-es@4.3.6:
     resolution: {integrity: sha512-csuQ9x3Yr0cEIs/Zgx/OEt9iBw9vqIunAPQkx19R/fiMq2oGVTgcMqO/V3Ybqefr1TBvosI6jU539ksaBULJyA==}
@@ -6824,6 +6796,41 @@ packages:
   property-information@7.1.0:
     resolution: {integrity: sha512-TwEZ+X+yCJmYfL7TPUOcvBZ4QfoT5YenQiJuX//0th53DE6w0xxLEtfK3iyryQFddXuvkIk51EEgrJQ0WJkOmQ==}
 
+  prosekit@0.20.2:
+    resolution: {integrity: sha512-CSfteLLRSIPqErAdt3LSTJ1iOGLW68eufcS+NWA0n43yGsCnHILNJ8X+vQrfH1RKmeLOC+/v+h9JqfCvAMgzlw==}
+    peerDependencies:
+      loro-crdt: '>= 1.10.0'
+      loro-prosemirror: '>= 0.4.1'
+      preact: '>= 10.11.0'
+      react: '>= 18.2.0'
+      react-dom: '>= 18.2.0'
+      solid-js: '>= 1.7.0'
+      svelte: '>= 5.0.0'
+      vue: '>= 3.0.0'
+      y-prosemirror: '>= 1.2.9'
+      yjs: '>= 13.6.18'
+    peerDependenciesMeta:
+      loro-crdt:
+        optional: true
+      loro-prosemirror:
+        optional: true
+      preact:
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+      solid-js:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      y-prosemirror:
+        optional: true
+      yjs:
+        optional: true
+
   prosekit@0.21.3:
     resolution: {integrity: sha512-6zok0kPVM/3H/NLFMbv9lNV9Bck6KlOWylYM1o3JN0t5aPDzYNrCE40m+JTx1hF3VSTpTORwV4+YTZR1MDD6Gg==}
     peerDependencies:
@@ -6873,6 +6880,9 @@ packages:
 
   prosemirror-enter-rules@0.1.5:
     resolution: {integrity: sha512-7K0r48x821Mptgx5rHDipmNRlOW+GxRtF0K7AJuoKnfhJTdtHb67WvpJ32IzSPnCG7oSNR0cbq3/eP8ule/2/A==}
+
+  prosemirror-flat-list@0.5.8:
+    resolution: {integrity: sha512-QHeogWkwVktecyFcCnWpJUs8d3gJ/D5H+67X1dqAIKPUCBJjsc5DNQMZ68QJ5gPHn0v6HYCIaCcQlZZu+YTvcA==}
 
   prosemirror-flat-list@0.6.0:
     resolution: {integrity: sha512-/C11nhH5gdNxj9qVKRlaox/ndK4+X1o/hGTkNCJWdzGVqBVgRkKI/dc6GdZ4/RNvudEtgnTk4QOMOB0zcFTeHQ==}
@@ -9692,6 +9702,29 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
+  '@prosekit/basic@0.9.0(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
+    dependencies:
+      '@prosekit/core': 0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
+      '@prosekit/extensions': 0.16.0(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosekit/pm': 0.1.17
+    transitivePeerDependencies:
+      - '@lezer/common'
+      - '@lezer/highlight'
+      - '@shikijs/types'
+      - '@types/hast'
+      - highlight.js
+      - loro-crdt
+      - loro-prosemirror
+      - lowlight
+      - prosemirror-model
+      - prosemirror-state
+      - prosemirror-transform
+      - prosemirror-view
+      - refractor
+      - sugar-high
+      - y-prosemirror
+      - yjs
+
   '@prosekit/basic@0.9.4(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
     dependencies:
       '@prosekit/core': 0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
@@ -9715,6 +9748,18 @@ snapshots:
       - y-prosemirror
       - yjs
 
+  '@prosekit/core@0.12.0(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)':
+    dependencies:
+      '@ocavue/utils': 1.6.0
+      '@prosekit/pm': 0.1.17
+      orderedmap: 2.1.1
+      prosemirror-splittable: 0.1.1(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
+      type-fest: 5.6.0
+    transitivePeerDependencies:
+      - prosemirror-model
+      - prosemirror-state
+      - prosemirror-transform
+
   '@prosekit/core@0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)':
     dependencies:
       '@ocavue/utils': 1.6.0
@@ -9726,6 +9771,37 @@ snapshots:
       - prosemirror-model
       - prosemirror-state
       - prosemirror-transform
+
+  '@prosekit/extensions@0.16.0(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
+    dependencies:
+      '@ocavue/utils': 1.6.0
+      '@prosekit/core': 0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
+      '@prosekit/pm': 0.1.17
+      prosemirror-changeset: 2.4.1
+      prosemirror-drop-indicator: 0.1.3
+      prosemirror-dropcursor: 1.8.2
+      prosemirror-enter-rules: 0.1.5
+      prosemirror-flat-list: 0.5.8
+      prosemirror-gapcursor: 1.4.1
+      prosemirror-highlight: 0.15.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      prosemirror-math: 0.2.2
+      prosemirror-search: 1.1.0
+      prosemirror-tables: 1.8.5
+      server-dom-shim: 1.1.0
+      shiki: 4.2.0
+    transitivePeerDependencies:
+      - '@lezer/common'
+      - '@lezer/highlight'
+      - '@shikijs/types'
+      - '@types/hast'
+      - highlight.js
+      - lowlight
+      - prosemirror-model
+      - prosemirror-state
+      - prosemirror-transform
+      - prosemirror-view
+      - refractor
+      - sugar-high
 
   '@prosekit/extensions@0.17.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
     dependencies:
@@ -9758,6 +9834,27 @@ snapshots:
       - refractor
       - sugar-high
 
+  '@prosekit/lit@0.6.2(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
+    dependencies:
+      '@prosekit/web': 0.8.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+    transitivePeerDependencies:
+      - '@lezer/common'
+      - '@lezer/highlight'
+      - '@shikijs/types'
+      - '@types/hast'
+      - highlight.js
+      - loro-crdt
+      - loro-prosemirror
+      - lowlight
+      - prosemirror-model
+      - prosemirror-state
+      - prosemirror-transform
+      - prosemirror-view
+      - refractor
+      - sugar-high
+      - y-prosemirror
+      - yjs
+
   '@prosekit/lit@0.6.6(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
     dependencies:
       '@prosekit/web': 0.8.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
@@ -9779,6 +9876,17 @@ snapshots:
       - y-prosemirror
       - yjs
 
+  '@prosekit/pm@0.1.16':
+    dependencies:
+      prosemirror-commands: 1.7.1
+      prosemirror-history: 1.5.0
+      prosemirror-inputrules: 1.5.1
+      prosemirror-keymap: 1.2.3
+      prosemirror-model: 1.25.7
+      prosemirror-state: 1.4.4
+      prosemirror-transform: 1.12.0
+      prosemirror-view: 1.41.8
+
   '@prosekit/pm@0.1.17':
     dependencies:
       prosemirror-commands: 1.7.1
@@ -9790,6 +9898,31 @@ snapshots:
       prosemirror-transform: 1.12.0
       prosemirror-view: 1.41.8
 
+  '@prosekit/preact@0.7.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
+    dependencies:
+      '@prosekit/core': 0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
+      '@prosekit/pm': 0.1.17
+      '@prosekit/web': 0.8.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosemirror-adapter/core': 0.5.3
+      '@prosemirror-adapter/preact': 0.5.3
+    transitivePeerDependencies:
+      - '@lezer/common'
+      - '@lezer/highlight'
+      - '@shikijs/types'
+      - '@types/hast'
+      - highlight.js
+      - loro-crdt
+      - loro-prosemirror
+      - lowlight
+      - prosemirror-model
+      - prosemirror-state
+      - prosemirror-transform
+      - prosemirror-view
+      - refractor
+      - sugar-high
+      - y-prosemirror
+      - yjs
+
   '@prosekit/preact@0.7.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
     dependencies:
       '@prosekit/core': 0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
@@ -9797,6 +9930,34 @@ snapshots:
       '@prosekit/web': 0.8.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
       '@prosemirror-adapter/core': 0.5.3
       '@prosemirror-adapter/preact': 0.5.3
+    transitivePeerDependencies:
+      - '@lezer/common'
+      - '@lezer/highlight'
+      - '@shikijs/types'
+      - '@types/hast'
+      - highlight.js
+      - loro-crdt
+      - loro-prosemirror
+      - lowlight
+      - prosemirror-model
+      - prosemirror-state
+      - prosemirror-transform
+      - prosemirror-view
+      - refractor
+      - sugar-high
+      - y-prosemirror
+      - yjs
+
+  '@prosekit/react@0.7.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@prosekit/core': 0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
+      '@prosekit/pm': 0.1.17
+      '@prosekit/web': 0.8.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosemirror-adapter/core': 0.5.3
+      '@prosemirror-adapter/react': 0.5.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    optionalDependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
     transitivePeerDependencies:
       - '@lezer/common'
       - '@lezer/highlight'
@@ -9843,6 +10004,31 @@ snapshots:
       - y-prosemirror
       - yjs
 
+  '@prosekit/solid@0.7.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
+    dependencies:
+      '@prosekit/core': 0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
+      '@prosekit/pm': 0.1.17
+      '@prosekit/web': 0.8.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosemirror-adapter/core': 0.5.3
+      '@prosemirror-adapter/solid': 0.5.3
+    transitivePeerDependencies:
+      - '@lezer/common'
+      - '@lezer/highlight'
+      - '@shikijs/types'
+      - '@types/hast'
+      - highlight.js
+      - loro-crdt
+      - loro-prosemirror
+      - lowlight
+      - prosemirror-model
+      - prosemirror-state
+      - prosemirror-transform
+      - prosemirror-view
+      - refractor
+      - sugar-high
+      - y-prosemirror
+      - yjs
+
   '@prosekit/solid@0.7.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
     dependencies:
       '@prosekit/core': 0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
@@ -9850,6 +10036,31 @@ snapshots:
       '@prosekit/web': 0.8.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
       '@prosemirror-adapter/core': 0.5.3
       '@prosemirror-adapter/solid': 0.5.3
+    transitivePeerDependencies:
+      - '@lezer/common'
+      - '@lezer/highlight'
+      - '@shikijs/types'
+      - '@types/hast'
+      - highlight.js
+      - loro-crdt
+      - loro-prosemirror
+      - lowlight
+      - prosemirror-model
+      - prosemirror-state
+      - prosemirror-transform
+      - prosemirror-view
+      - refractor
+      - sugar-high
+      - y-prosemirror
+      - yjs
+
+  '@prosekit/svelte@0.9.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
+    dependencies:
+      '@prosekit/core': 0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
+      '@prosekit/pm': 0.1.17
+      '@prosekit/web': 0.8.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosemirror-adapter/core': 0.5.3
+      '@prosemirror-adapter/svelte': 0.5.3
     transitivePeerDependencies:
       - '@lezer/common'
       - '@lezer/highlight'
@@ -9893,6 +10104,31 @@ snapshots:
       - y-prosemirror
       - yjs
 
+  '@prosekit/vue@0.7.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
+    dependencies:
+      '@prosekit/core': 0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
+      '@prosekit/pm': 0.1.17
+      '@prosekit/web': 0.8.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosemirror-adapter/core': 0.5.3
+      '@prosemirror-adapter/vue': 0.5.3
+    transitivePeerDependencies:
+      - '@lezer/common'
+      - '@lezer/highlight'
+      - '@shikijs/types'
+      - '@types/hast'
+      - highlight.js
+      - loro-crdt
+      - loro-prosemirror
+      - lowlight
+      - prosemirror-model
+      - prosemirror-state
+      - prosemirror-transform
+      - prosemirror-view
+      - refractor
+      - sugar-high
+      - y-prosemirror
+      - yjs
+
   '@prosekit/vue@0.7.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
     dependencies:
       '@prosekit/core': 0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
@@ -9900,6 +10136,35 @@ snapshots:
       '@prosekit/web': 0.8.5(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
       '@prosemirror-adapter/core': 0.5.3
       '@prosemirror-adapter/vue': 0.5.3
+    transitivePeerDependencies:
+      - '@lezer/common'
+      - '@lezer/highlight'
+      - '@shikijs/types'
+      - '@types/hast'
+      - highlight.js
+      - loro-crdt
+      - loro-prosemirror
+      - lowlight
+      - prosemirror-model
+      - prosemirror-state
+      - prosemirror-transform
+      - prosemirror-view
+      - refractor
+      - sugar-high
+      - y-prosemirror
+      - yjs
+
+  '@prosekit/web@0.8.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
+    dependencies:
+      '@aria-ui/core': 0.2.1
+      '@aria-ui/elements': 0.1.10
+      '@aria-ui/utils': 0.1.6
+      '@floating-ui/dom': 1.7.6
+      '@ocavue/utils': 1.6.0
+      '@prosekit/core': 0.12.2(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
+      '@prosekit/extensions': 0.16.0(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosekit/pm': 0.1.17
+      prosemirror-tables: 1.8.5
     transitivePeerDependencies:
       - '@lezer/common'
       - '@lezer/highlight'
@@ -10474,160 +10739,6 @@ snapshots:
     dependencies:
       lit: 3.3.2
 
-  '@qti-editor/core@1.7.0(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
-    dependencies:
-      '@qti-editor/interaction-associate': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@qti-editor/interaction-choice': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@qti-editor/interaction-extended-text': 1.4.3(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-gap-match': 1.3.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-hottext': 1.3.3(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@qti-editor/interaction-inline-choice': 1.5.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-match': 1.4.2(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@qti-editor/interaction-order': 0.9.1(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@qti-editor/interaction-select-point': 1.3.3(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-shared': 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-text-entry': 1.3.3(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.5.0
-      '@qti-editor/qti-item-divider': 1.1.9(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-    transitivePeerDependencies:
-      - '@lit/context'
-      - lit
-      - prosekit
-
-  '@qti-editor/interaction-associate@1.4.2(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
-    dependencies:
-      '@qti-components/associate-interaction': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions': 1.10.2(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.2(lit@3.3.2)
-      '@qti-editor/interaction-shared': 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.5.0
-      lit: 3.3.2
-      prosekit: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-    transitivePeerDependencies:
-      - '@lit/context'
-
-  '@qti-editor/interaction-choice@1.4.2(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
-    dependencies:
-      '@qti-components/base': 1.4.3(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/choice-interaction': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions': 1.10.3(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
-      '@qti-editor/interaction-shared': 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.5.0
-      lit: 3.3.2
-      prosekit: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      prosemirror-commands: 1.7.1
-      prosemirror-model: 1.25.7
-      prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
-    transitivePeerDependencies:
-      - '@lit/context'
-
-  '@qti-editor/interaction-extended-text@1.4.3(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@qti-components/extended-text-interaction': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions': 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.2(lit@3.3.2)
-      '@qti-editor/interaction-shared': 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.5.0
-      lit: 3.3.2
-      prosemirror-commands: 1.7.1
-      prosemirror-model: 1.25.7
-      prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
-    transitivePeerDependencies:
-      - '@lit/context'
-
-  '@qti-editor/interaction-gap-match@1.3.2(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@qti-editor/interaction-shared': 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.5.0
-      lit: 3.3.2
-      prosemirror-commands: 1.7.1
-      prosemirror-model: 1.25.7
-      prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
-    transitivePeerDependencies:
-      - '@lit/context'
-
-  '@qti-editor/interaction-hottext@1.3.3(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
-    dependencies:
-      '@qti-components/hottext-interaction': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions': 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-shared': 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.5.0
-      lit: 3.3.2
-      prosekit: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      prosemirror-model: 1.25.7
-      prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
-    transitivePeerDependencies:
-      - '@lit/context'
-
-  '@qti-editor/interaction-inline-choice@1.5.2(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@qti-components/inline-choice-interaction': 1.1.5(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions': 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-shared': 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.5.0
-      lit: 3.3.2
-      prosemirror-model: 1.25.7
-      prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
-    transitivePeerDependencies:
-      - '@lit/context'
-
-  '@qti-editor/interaction-match@1.4.2(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
-    dependencies:
-      '@qti-components/interactions': 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/match-interaction': 1.1.5(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.2(lit@3.3.2)
-      '@qti-editor/interaction-shared': 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.5.0
-      lit: 3.3.2
-      prosekit: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      prosemirror-commands: 1.7.1
-      prosemirror-model: 1.25.7
-      prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
-    transitivePeerDependencies:
-      - '@lit/context'
-
-  '@qti-editor/interaction-order@0.9.1(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
-    dependencies:
-      '@qti-components/order-interaction': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-shared': 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.5.0
-      lit: 3.3.2
-      prosekit: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      prosemirror-commands: 1.7.1
-      prosemirror-model: 1.25.7
-      prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
-    transitivePeerDependencies:
-      - '@lit/context'
-
-  '@qti-editor/interaction-select-point@1.3.3(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@qti-components/select-point-interaction': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-shared': 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.5.0
-      lit: 3.3.2
-      prosemirror-model: 1.25.7
-      prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
-    transitivePeerDependencies:
-      - '@lit/context'
-
-  '@qti-editor/interaction-shared@1.6.0(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.4.0
-      lit: 3.3.2
-    transitivePeerDependencies:
-      - '@lit/context'
-
   '@qti-editor/interaction-shared@1.6.1(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
@@ -10636,35 +10747,7 @@ snapshots:
     transitivePeerDependencies:
       - '@lit/context'
 
-  '@qti-editor/interaction-text-entry@1.3.3(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@qti-components/interactions': 1.10.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/text-entry-interaction': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interaction-shared': 1.6.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.5.0
-      lit: 3.3.2
-      prosemirror-model: 1.25.7
-      prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
-    transitivePeerDependencies:
-      - '@lit/context'
-
-  '@qti-editor/interfaces@1.4.0': {}
-
   '@qti-editor/interfaces@1.5.0': {}
-
-  '@qti-editor/qti-item-divider@1.1.9(@lit/context@1.1.6)(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
-    dependencies:
-      '@qti-editor/interaction-shared': 1.6.0(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-editor/interfaces': 1.4.0
-      lit: 3.3.2
-      prosekit: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      prosemirror-commands: 1.7.1
-      prosemirror-model: 1.25.7
-      prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
-    transitivePeerDependencies:
-      - '@lit/context'
 
   '@rolldown/pluginutils@1.0.0-beta.27': {}
 
@@ -10896,7 +10979,7 @@ snapshots:
     dependencies:
       '@shikijs/types': 3.23.0
       '@shikijs/vscode-textmate': 10.0.2
-      oniguruma-to-es: 4.3.5
+      oniguruma-to-es: 4.3.6
 
   '@shikijs/engine-javascript@4.2.0':
     dependencies:
@@ -14722,8 +14805,6 @@ snapshots:
     dependencies:
       mimic-fn: 4.0.0
 
-  oniguruma-parser@0.12.1: {}
-
   oniguruma-parser@0.12.2: {}
 
   oniguruma-to-es@2.3.0:
@@ -14731,12 +14812,6 @@ snapshots:
       emoji-regex-xs: 1.0.0
       regex: 5.1.1
       regex-recursion: 5.1.1
-
-  oniguruma-to-es@4.3.5:
-    dependencies:
-      oniguruma-parser: 0.12.1
-      regex: 6.1.0
-      regex-recursion: 6.0.2
 
   oniguruma-to-es@4.3.6:
     dependencies:
@@ -15001,6 +15076,36 @@ snapshots:
 
   property-information@7.1.0: {}
 
+  prosekit@0.20.2(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@prosekit/basic': 0.9.0(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosekit/core': 0.12.0(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)
+      '@prosekit/extensions': 0.16.0(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosekit/lit': 0.6.2(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosekit/pm': 0.1.16
+      '@prosekit/preact': 0.7.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosekit/react': 0.7.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@prosekit/solid': 0.7.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosekit/svelte': 0.9.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosekit/vue': 0.7.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+      '@prosekit/web': 0.8.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
+    optionalDependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    transitivePeerDependencies:
+      - '@lezer/common'
+      - '@lezer/highlight'
+      - '@shikijs/types'
+      - '@types/hast'
+      - highlight.js
+      - lowlight
+      - prosemirror-model
+      - prosemirror-state
+      - prosemirror-transform
+      - prosemirror-view
+      - refractor
+      - sugar-high
+
   prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@prosekit/basic': 0.9.4(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)
@@ -15059,6 +15164,16 @@ snapshots:
       prosemirror-keymap: 1.2.3
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
+      prosemirror-view: 1.41.8
+
+  prosemirror-flat-list@0.5.8:
+    dependencies:
+      prosemirror-commands: 1.7.1
+      prosemirror-inputrules: 1.5.1
+      prosemirror-model: 1.25.7
+      prosemirror-safari-ime-span: 1.0.2
+      prosemirror-state: 1.4.4
+      prosemirror-transform: 1.12.0
       prosemirror-view: 1.41.8
 
   prosemirror-flat-list@0.6.0:

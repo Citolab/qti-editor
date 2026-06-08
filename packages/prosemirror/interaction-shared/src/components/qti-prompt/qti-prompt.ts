@@ -22,7 +22,3 @@ declare global {
     'qti-prompt-edit': QtiPromptEdit;
   }
 }
-
-if (!customElements.get('qti-prompt')) {
-  customElements.define('qti-prompt', QtiPromptEdit);
-}

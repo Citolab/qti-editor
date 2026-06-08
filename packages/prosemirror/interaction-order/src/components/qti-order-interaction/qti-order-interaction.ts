@@ -332,7 +332,3 @@ declare global {
     'order-response-change': CustomEvent<{ order: string[]; correctResponse: string }>;
   }
 }
-
-if (!customElements.get('qti-order-interaction')) {
-  customElements.define('qti-order-interaction', QtiOrderInteractionEdit);
-}

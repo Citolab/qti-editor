@@ -1,8 +1,18 @@
 import '@qti-components/theme/item.css';
-import '@qti-editor/interaction-match';
-import '@qti-editor/interaction-shared';
 import { html } from 'lit';
 import { expect, userEvent, waitFor } from 'storybook/test';
+import { QtiMatchInteractionEdit } from '@qti-editor/interaction-match';
+import { QtiSimpleAssociableChoiceEdit, QtiSimpleMatchSetEdit } from '@qti-editor/interaction-shared';
+
+if (!customElements.get('qti-match-interaction')) {
+  customElements.define('qti-match-interaction', QtiMatchInteractionEdit);
+}
+if (!customElements.get('qti-simple-associable-choice')) {
+  customElements.define('qti-simple-associable-choice', QtiSimpleAssociableChoiceEdit);
+}
+if (!customElements.get('qti-simple-match-set')) {
+  customElements.define('qti-simple-match-set', QtiSimpleMatchSetEdit);
+}
 
 export default {
   title: 'Interactions/Match',

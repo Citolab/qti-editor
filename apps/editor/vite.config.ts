@@ -13,6 +13,7 @@ const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.
 const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/qti/prosekit-integration/src', import.meta.url));
 const qtiPackageSrcRoot = fileURLToPath(new URL('../../packages/qti/package/src', import.meta.url));
 const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-shared/src', import.meta.url));
+const interactionsUmbrellaSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interactions/src', import.meta.url));
 const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-choice/src', import.meta.url));
 const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-extended-text/src', import.meta.url));
 const interactionsAssociateSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-associate/src', import.meta.url));
@@ -34,6 +35,7 @@ const fullReloadRoots = [
   coreSrcRoot,
   prosekitIntegrationSrcRoot,
   qtiPackageSrcRoot,
+  interactionsUmbrellaSrcRoot,
   interactionsSharedSrcRoot,
   interactionsChoiceSrcRoot,
   interactionsExtendedTextSrcRoot,
@@ -124,6 +126,54 @@ export default defineConfig({
       {
         find: /^@qti-editor\/qti-package$/,
         replacement: `${qtiPackageSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions$/,
+        replacement: `${interactionsUmbrellaSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions\/associate$/,
+        replacement: `${interactionsUmbrellaSrcRoot}/associate/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions\/choice$/,
+        replacement: `${interactionsUmbrellaSrcRoot}/choice/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions\/extended-text$/,
+        replacement: `${interactionsUmbrellaSrcRoot}/extended-text/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions\/gap-match$/,
+        replacement: `${interactionsUmbrellaSrcRoot}/gap-match/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions\/hottext$/,
+        replacement: `${interactionsUmbrellaSrcRoot}/hottext/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions\/inline-choice$/,
+        replacement: `${interactionsUmbrellaSrcRoot}/inline-choice/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions\/match$/,
+        replacement: `${interactionsUmbrellaSrcRoot}/match/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions\/order$/,
+        replacement: `${interactionsUmbrellaSrcRoot}/order/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions\/select-point$/,
+        replacement: `${interactionsUmbrellaSrcRoot}/select-point/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions\/shared$/,
+        replacement: `${interactionsUmbrellaSrcRoot}/shared/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/interactions\/text-entry$/,
+        replacement: `${interactionsUmbrellaSrcRoot}/text-entry/index.ts`,
       },
       {
         find: /^@qti-editor\/interaction-shared$/,
@@ -259,6 +309,7 @@ export default defineConfig({
       '@qti-components/associate-interaction',
       '@qti-components/base',
       '@qti-components/interactions',
+      '@qti-editor/interactions',
       '@qti-editor/interaction-shared',
       '@qti-editor/qti-package',
       '@qti-editor/interaction-choice',

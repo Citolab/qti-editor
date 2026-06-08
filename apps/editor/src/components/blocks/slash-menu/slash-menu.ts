@@ -16,9 +16,9 @@ import {
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
-import { translateQti } from '@qti-editor/interaction-shared';
+import { translateQti } from '@qti-editor/interactions/shared';
 import { listInteractionDescriptors } from '@qti-editor/core/interactions/composer';
-import { insertGap } from '@qti-editor/interaction-gap-match';
+import { insertGap } from '@qti-editor/interactions/gap-match';
 import '@qti-editor/ui/components/slash-menu/slash-menu-item.js';
 import '@qti-editor/ui/components/slash-menu/slash-menu-empty.js';
 

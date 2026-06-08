@@ -89,7 +89,3 @@ export class QtiChoiceInteractionEdit extends ChoiceInteractionBase {
     return html`<slot part="prompt" name="prompt"></slot><slot part="slot"></slot>`;
   }
 }
-
-if (!customElements.get('qti-choice-interaction')) {
-  customElements.define('qti-choice-interaction', QtiChoiceInteractionEdit);
-}

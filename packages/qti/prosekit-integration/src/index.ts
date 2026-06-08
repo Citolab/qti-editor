@@ -32,3 +32,4 @@ export {
   getQtiItems,
   type QtiItemFragment,
 } from './save-qti-test/index.js';
+export { registerQtiInteractionElements } from './interactions/prosekit.js';

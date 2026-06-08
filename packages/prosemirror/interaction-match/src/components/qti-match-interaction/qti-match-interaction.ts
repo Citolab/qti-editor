@@ -337,7 +337,3 @@ declare global {
     'match-association-change': CustomEvent<MatchAssociationChangeDetail>;
   }
 }
-
-if (!customElements.get('qti-match-interaction')) {
-  customElements.define('qti-match-interaction', QtiMatchInteractionEdit);
-}

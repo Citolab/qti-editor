@@ -8,11 +8,11 @@
  */
 
 import '@qti-components/theme/item.css';
-import '@qti-editor/interaction-choice';
-import '@qti-editor/interaction-extended-text';
-import '@qti-editor/interaction-select-point';
-import '@qti-editor/interaction-shared';
-import '@qti-editor/qti-item-divider';
+import '@qti-editor/interactions/choice';
+import '@qti-editor/interactions/extended-text';
+import '@qti-editor/interactions/select-point';
+import '@qti-editor/interactions/shared';
+import '@qti-editor/qti-item-divider/define';
 import 'prosemirror-view/style/prosemirror.css';
 
 import { html } from 'lit';

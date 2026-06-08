@@ -29,7 +29,7 @@ import {
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
-import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interaction-shared';
+import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interactions/shared';
 
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';

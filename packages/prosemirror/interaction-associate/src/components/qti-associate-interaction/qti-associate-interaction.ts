@@ -359,7 +359,3 @@ declare global {
     'associate-pair-change': CustomEvent<AssociatePairChangeDetail>;
   }
 }
-
-if (!customElements.get('qti-associate-interaction')) {
-  customElements.define('qti-associate-interaction', QtiAssociateInteractionEdit);
-}

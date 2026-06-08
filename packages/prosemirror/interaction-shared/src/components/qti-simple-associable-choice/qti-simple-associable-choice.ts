@@ -59,6 +59,3 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
     `;
   }
 }
-if (!customElements.get('qti-simple-associable-choice')) {
-  customElements.define('qti-simple-associable-choice', QtiSimpleAssociableChoiceEdit);
-}

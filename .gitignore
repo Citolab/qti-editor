@@ -22,7 +22,7 @@ storybook-static
 hosting/*
 apps/editor/public/r
 
-.claude
+.claude/*
 .claude/settings.json
 .claude/claude.log
 .claude/claude-error.log
