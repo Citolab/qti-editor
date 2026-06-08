@@ -8,7 +8,7 @@ import { jsonFromHTML } from 'prosekit/core';
 export { isEditorOriginXml };
 
 import type { CompatibilityReport, MigrationResult } from '@qti-editor/interfaces';
-import type { Schema } from 'prosekit/pm/model';
+import type { Node, Schema } from 'prosekit/pm/model';
 
 export interface ImportXmlResult {
   json: ReturnType<typeof jsonFromHTML>;
@@ -157,7 +157,7 @@ function isQtiPackageFile(file: File): boolean {
   return name.endsWith('.zip') || file.type === 'application/zip' || file.type === 'application/x-zip-compressed';
 }
 
-export function importRoundtripXml(schema: Schema): Promise<import('prosekit/pm/model').Node> {
+export function importRoundtripXml(schema: Schema): Promise<Node> {
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.type = 'file';
