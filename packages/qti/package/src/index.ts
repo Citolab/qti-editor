@@ -281,7 +281,9 @@ function preserveEditorDataAttributes(xml: string): string {
 
 function preserveEditorDataAttributesInTag(tagName: string, attributes: string): string {
   const metadata = getInteractionComposerMetadata(tagName);
-  const mappings = metadata ? collectMirrorMappings(metadata) : [];
+  const mappings: ReadonlyArray<{ source: string; target: string }> = metadata
+    ? collectMirrorMappings(metadata)
+    : [];
 
   let nextAttributes = attributes;
   mappings.forEach(({ source, target }) => {

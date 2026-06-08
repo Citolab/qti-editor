@@ -13,6 +13,7 @@
     }
   },
   "scripts": {
+    "pretypecheck": "pnpm --dir ../../.. build:workspace-deps",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"

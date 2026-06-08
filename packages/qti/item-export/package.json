@@ -25,6 +25,7 @@
     }
   },
   "scripts": {
+    "pretypecheck": "pnpm --dir ../../.. build:workspace-deps && pnpm --filter @qti-editor/core build",
     "build": "pnpm --filter @qti-editor/core build && tsc",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"

@@ -1,10 +1,10 @@
 ---
-title: QTI Roundtrip Export Package
+title: QTI Package
 description: Reference for the lossless editor-specific QTI package exporter.
 slug: docs/packages/qti-roundtrip-export
 ---
 
-`@qti-editor/qti-roundtrip-export` exports the editor's ProseMirror document to a QTI 3.0 package **for lossless re-import by this editor**.
+`@qti-editor/qti-package` exports the editor's ProseMirror document to a QTI 3.0 package **for lossless re-import by this editor**.
 
 ## Scope
 
@@ -16,7 +16,7 @@ Its purpose is narrower:
 - preserve editor authoring state through `data-*` mirrors on QTI interaction tags
 - stay paired with `@qti-editor/qti-roundtrip-import`
 
-If you need the full contract, read [ROUNDTRIP.md](../../../../packages/qti/roundtrip-export/ROUNDTRIP.md).
+If you need the full contract, read [ROUNDTRIP.md](../../../../packages/qti/roundtrip-import/ROUNDTRIP.md).
 
 ## Main exports
 
@@ -25,7 +25,7 @@ import {
   createQtiPackageFromNode,
   createQtiPackageFromProseMirrorJson,
   createQtiPackageFromItems,
-} from '@qti-editor/qti-roundtrip-export';
+} from '@qti-editor/qti-package';
 ```
 
 ## Typical usage
@@ -33,7 +33,7 @@ import {
 Export directly from the current editor document:
 
 ```ts
-import { createQtiPackageFromNode } from '@qti-editor/qti-roundtrip-export';
+import { createQtiPackageFromNode } from '@qti-editor/qti-package';
 
 const blob = await createQtiPackageFromNode(editor.view.state.doc, {
   identifier: 'item-1',
