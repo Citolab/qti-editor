@@ -471,6 +471,9 @@ importers:
       '@qti-editor/prosemirror-plugins':
         specifier: workspace:*
         version: link:../prosemirror
+      '@qti-editor/qti-item-divider':
+        specifier: workspace:*
+        version: link:../../qti/item-divider
       '@qti-editor/qti-item-export':
         specifier: workspace:*
         version: link:../../qti/item-export
