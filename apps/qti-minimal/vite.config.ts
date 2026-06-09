@@ -9,6 +9,8 @@ const require = createRequire(import.meta.url);
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const litReactiveElementRoot = dirname(require.resolve('@lit/reactive-element'));
 const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
+const qtiItemExportSrcRoot = fileURLToPath(new URL('../../packages/qti/item-export/src', import.meta.url));
+const qtiTestExportSrcRoot = fileURLToPath(new URL('../../packages/qti/test-export/src', import.meta.url));
 const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/qti/prosekit-integration/src', import.meta.url));
 const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-shared/src', import.meta.url));
 const interactionsUmbrellaSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interactions/src', import.meta.url));
@@ -118,6 +120,18 @@ export default defineConfig(({ command }) => ({
       {
         find: /^@qti-editor\/core$/,
         replacement: `${coreSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-item-export\/pm-qti-item$/,
+        replacement: `${qtiItemExportSrcRoot}/pm-qti-item.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-item-export\/pm-xml$/,
+        replacement: `${qtiItemExportSrcRoot}/pm-xml.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-test-export\/pm-qti-test$/,
+        replacement: `${qtiTestExportSrcRoot}/pm-qti-test.ts`,
       },
       {
         find: /^@qti-editor\/prosekit-integration\/item-context$/,
