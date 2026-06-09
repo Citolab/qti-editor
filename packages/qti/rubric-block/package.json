@@ -1,0 +1,49 @@
+{
+  "name": "@qti-editor/qti-rubric-block",
+  "description": "QTI rubric block element for instructions, scoring, or navigation rubrics",
+  "version": "1.0.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Citolab/qti-editor",
+    "directory": "packages/qti/rubric-block"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*",
+      "default": "./dist/*"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@qti-editor/interfaces": "workspace:*",
+    "@qti-editor/interaction-shared": "workspace:*",
+    "prosemirror-commands": "^1.7.1",
+    "prosemirror-model": "^1.25.4",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.31.0"
+  },
+  "peerDependencies": {
+    "lit": "^3.3.1",
+    "prosekit": "^0.21.3"
+  },
+  "devDependencies": {
+    "lit": "^3.3.2"
+  },
+  "files": [
+    "dist"
+  ]
+}

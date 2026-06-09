@@ -52,10 +52,10 @@
         "packages/qti/qti3-item-import/src/*"
       ],
       "@qti-editor/prosekit-integration/save-qti-item": [
-        "packages/qti/prosekit-integration/src/save-qti-item/index.ts"
+        "packages/extensions/prosekit/src/save-qti-item/index.ts"
       ],
       "@qti-editor/prosekit-integration/save-qti-test": [
-        "packages/qti/prosekit-integration/src/save-qti-test/index.ts"
+        "packages/extensions/prosekit/src/save-qti-test/index.ts"
       ],
       "@qti-editor/qti-item-export": [
         "packages/qti/item-export/src/index.ts"
@@ -69,8 +69,8 @@
       "@qti-editor/qti-test-export/*": [
         "packages/qti/test-export/src/*"
       ],
-      "@qti-editor/qti-package": [
-        "packages/qti/package/src/index.ts"
+      "@qti-editor/qti-package-builder": [
+        "packages/qti/package-builder/src/index.ts"
       ],
       "@qti-editor/core/*": [
         "packages/qti/core/src/*"
@@ -103,13 +103,13 @@
         "packages/plugin-side-panel/index.ts"
       ],
       "@qti-editor/prosemirror-plugins": [
-        "packages/prosemirror/extensions/src/index.ts"
+        "packages/extensions/prosemirror/src/index.ts"
       ],
       "@qti-editor/prosemirror-attributes": [
-        "packages/prosemirror/attributes/src/index.ts"
+        "packages/extensions/prosemirror/src/attributes/index.ts"
       ],
       "@qti-editor/prosemirror-attributes-ui": [
-        "packages/prosemirror/attributes-ui/src/index.ts"
+        "packages/extensions/prosemirror/src/attributes-ui/index.ts"
       ],
       "@qti-editor/ui": [
         "packages/ui/src/index.ts"
@@ -118,130 +118,139 @@
         "packages/ui/src/*"
       ],
       "@qti-editor/prosekit-integration": [
-        "packages/qti/prosekit-integration/src/index.ts"
+        "packages/extensions/prosekit/src/index.ts"
+      ],
+      "@qti-editor/prosekit-extensions": [
+        "packages/prosekit/extensions/src/index.ts"
+      ],
+      "@qti-editor/prosekit-extensions/marks": [
+        "packages/prosekit/extensions/src/strong-em.ts"
+      ],
+      "@qti-editor/prosekit-extensions/list": [
+        "packages/prosekit/extensions/src/list.ts"
       ],
       "@qti-editor/prosekit-integration/code": [
-        "packages/qti/prosekit-integration/src/code/index.ts"
+        "packages/extensions/prosekit/src/code/index.ts"
       ],
       "@qti-editor/prosekit-integration/editor-context": [
-        "packages/qti/prosekit-integration/src/editor-context/index.ts"
+        "packages/extensions/prosekit/src/editor-context/index.ts"
       ],
       "@qti-editor/prosekit-integration/events": [
-        "packages/qti/prosekit-integration/src/events/index.ts"
+        "packages/extensions/prosekit/src/events/index.ts"
       ],
       "@qti-editor/prosekit-integration/interactions/prosekit": [
-        "packages/qti/prosekit-integration/src/interactions/prosekit.ts"
+        "packages/extensions/prosekit/src/interactions/prosekit.ts"
       ],
       "@qti-editor/prosekit-integration/item-context": [
-        "packages/qti/prosekit-integration/src/item-context/index.ts"
+        "packages/extensions/prosekit/src/item-context/index.ts"
       ],
       "@qti-editor/prosekit-integration/save-xml": [
-        "packages/qti/prosekit-integration/src/save-xml/index.ts"
+        "packages/extensions/prosekit/src/save-xml/index.ts"
       ],
       "@qti-editor/prosekit-integration/*": [
-        "packages/qti/prosekit-integration/src/*"
+        "packages/extensions/prosekit/src/*"
       ],
       "@qti-editor/prosemirror-plugins/block-select": [
-        "packages/prosemirror/extensions/src/block-select/index.ts"
+        "packages/extensions/prosemirror/src/block-select/index.ts"
       ],
       "@qti-editor/prosemirror-plugins/virtual-cursor": [
-        "packages/prosemirror/extensions/src/virtual-cursor/index.ts"
+        "packages/extensions/prosemirror/src/virtual-cursor/index.ts"
       ],
       "@qti-editor/prosemirror-plugins/node-attrs-sync": [
-        "packages/prosemirror/extensions/src/node-attrs-sync/index.ts"
+        "packages/extensions/prosemirror/src/node-attrs-sync/index.ts"
       ],
       "@qti-editor/prosemirror-plugins/paste-semantic-html": [
-        "packages/prosemirror/extensions/src/paste-semantic-html/index.ts"
+        "packages/extensions/prosemirror/src/paste-semantic-html/index.ts"
       ],
       "@qti-editor/interactions": [
-        "packages/prosemirror/interactions/src/index.ts"
+        "packages/interactions/barrel/src/index.ts"
       ],
       "@qti-editor/interactions/associate": [
-        "packages/prosemirror/interactions/src/associate/index.ts"
+        "packages/interactions/barrel/src/associate/index.ts"
       ],
       "@qti-editor/interactions/choice": [
-        "packages/prosemirror/interactions/src/choice/index.ts"
+        "packages/interactions/barrel/src/choice/index.ts"
       ],
       "@qti-editor/interactions/extended-text": [
-        "packages/prosemirror/interactions/src/extended-text/index.ts"
+        "packages/interactions/barrel/src/extended-text/index.ts"
       ],
       "@qti-editor/interactions/gap-match": [
-        "packages/prosemirror/interactions/src/gap-match/index.ts"
+        "packages/interactions/barrel/src/gap-match/index.ts"
       ],
       "@qti-editor/interactions/hottext": [
-        "packages/prosemirror/interactions/src/hottext/index.ts"
+        "packages/interactions/barrel/src/hottext/index.ts"
       ],
       "@qti-editor/interactions/inline-choice": [
-        "packages/prosemirror/interactions/src/inline-choice/index.ts"
+        "packages/interactions/barrel/src/inline-choice/index.ts"
       ],
       "@qti-editor/interactions/match": [
-        "packages/prosemirror/interactions/src/match/index.ts"
+        "packages/interactions/barrel/src/match/index.ts"
       ],
       "@qti-editor/interactions/order": [
-        "packages/prosemirror/interactions/src/order/index.ts"
+        "packages/interactions/barrel/src/order/index.ts"
       ],
       "@qti-editor/interactions/select-point": [
-        "packages/prosemirror/interactions/src/select-point/index.ts"
+        "packages/interactions/barrel/src/select-point/index.ts"
       ],
       "@qti-editor/interactions/shared": [
-        "packages/prosemirror/interactions/src/shared/index.ts"
+        "packages/interactions/barrel/src/shared/index.ts"
       ],
       "@qti-editor/interactions/shared/*": [
-        "packages/prosemirror/interaction-shared/src/*"
+        "packages/interactions/shared/src/*"
       ],
       "@qti-editor/interactions/text-entry": [
-        "packages/prosemirror/interactions/src/text-entry/index.ts"
+        "packages/interactions/barrel/src/text-entry/index.ts"
       ],
       "@qti-editor/interaction-choice": [
-        "packages/prosemirror/interaction-choice/src/index.ts"
+        "packages/interactions/choice/src/index.ts"
       ],
       "@qti-editor/interaction-associate": [
-        "packages/prosemirror/interaction-associate/src/index.ts"
+        "packages/interactions/associate/src/index.ts"
       ],
       "@qti-editor/interaction-extended-text": [
-        "packages/prosemirror/interaction-extended-text/src/index.ts"
+        "packages/interactions/extended-text/src/index.ts"
       ],
       "@qti-editor/interaction-gap-match": [
-        "packages/prosemirror/interaction-gap-match/src/index.ts"
+        "packages/interactions/gap-match/src/index.ts"
       ],
       "@qti-editor/interaction-hottext": [
-        "packages/prosemirror/interaction-hottext/src/index.ts"
+        "packages/interactions/hottext/src/index.ts"
       ],
       "@qti-editor/interaction-inline-choice": [
-        "packages/prosemirror/interaction-inline-choice/src/index.ts"
+        "packages/interactions/inline-choice/src/index.ts"
       ],
       "@qti-editor/interaction-match": [
-        "packages/prosemirror/interaction-match/src/index.ts"
+        "packages/interactions/match/src/index.ts"
       ],
       "@qti-editor/interaction-order": [
-        "packages/prosemirror/interaction-order/src/index.ts"
+        "packages/interactions/order/src/index.ts"
       ],
       "@qti-editor/interaction-select-point": [
-        "packages/prosemirror/interaction-select-point/src/index.ts"
+        "packages/interactions/select-point/src/index.ts"
       ],
       "@qti-editor/interaction-text-entry": [
-        "packages/prosemirror/interaction-text-entry/src/index.ts"
+        "packages/interactions/text-entry/src/index.ts"
       ],
       "@qti-editor/qti-item-divider": [
-        "packages/prosemirror/qti-item-divider/src/index.ts"
+        "packages/qti/item-divider/src/index.ts"
       ],
       "@qti-editor/qti-item-divider/*": [
-        "packages/prosemirror/qti-item-divider/src/*"
+        "packages/qti/item-divider/src/*"
       ],
       "@qti-editor/qti-rubric-block": [
-        "packages/prosemirror/qti-rubric-block/src/index.ts"
+        "packages/qti/rubric-block/src/index.ts"
       ],
       "@qti-editor/qti-rubric-block/*": [
-        "packages/prosemirror/qti-rubric-block/src/*"
+        "packages/qti/rubric-block/src/*"
       ],
       "@qti-editor/interfaces": [
         "packages/interfaces/src/index.ts"
       ],
       "@qti-editor/interaction-shared": [
-        "packages/prosemirror/interaction-shared/src/index.ts"
+        "packages/interactions/shared/src/index.ts"
       ],
       "@qti-editor/interaction-shared/*": [
-        "packages/prosemirror/interaction-shared/src/*"
+        "packages/interactions/shared/src/*"
       ]
     }
   }

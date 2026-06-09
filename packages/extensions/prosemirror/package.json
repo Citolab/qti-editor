@@ -1,0 +1,81 @@
+{
+  "name": "@qti-editor/prosemirror-plugins",
+  "version": "1.2.1",
+  "description": "Pure ProseMirror plugins for QTI Editor",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Citolab/qti-editor",
+    "directory": "packages/extensions/prosemirror"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./block-select": {
+      "types": "./dist/block-select/index.d.ts",
+      "default": "./dist/block-select/index.js"
+    },
+    "./virtual-cursor": {
+      "types": "./dist/virtual-cursor/index.d.ts",
+      "default": "./dist/virtual-cursor/index.js"
+    },
+    "./node-attrs-sync": {
+      "types": "./dist/node-attrs-sync/index.d.ts",
+      "default": "./dist/node-attrs-sync/index.js"
+    },
+    "./paste-semantic-html": {
+      "types": "./dist/paste-semantic-html/index.d.ts",
+      "default": "./dist/paste-semantic-html/index.js"
+    },
+    "./compatibility": {
+      "types": "./dist/compatibility/index.d.ts",
+      "default": "./dist/compatibility/index.js"
+    },
+    "./attributes": {
+      "types": "./dist/attributes/index.d.ts",
+      "default": "./dist/attributes/index.js"
+    },
+    "./attributes-ui": {
+      "types": "./dist/attributes-ui/index.d.ts",
+      "default": "./dist/attributes-ui/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@qti-editor/interfaces": "workspace:*",
+    "@qti-editor/interaction-shared": "workspace:*",
+    "lit": "^3.3.2",
+    "prosemirror-commands": "^1.5.0",
+    "prosemirror-history": "^1.4.0",
+    "prosemirror-menu": "^1.2.0",
+    "prosemirror-model": "^1.19.0",
+    "prosemirror-state": "^1.4.0",
+    "prosemirror-view": "^1.31.0"
+  },
+  "peerDependencies": {
+    "prosekit": "^0.21.3"
+  },
+  "peerDependenciesMeta": {
+    "prosekit": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,7 +1,7 @@
 {
   "name": "@qti-editor/qti-roundtrip-import",
   "version": "1.1.0",
-  "description": "Lossless QTI 3.0→ProseMirror roundtrip import. ONLY restores items previously written by @qti-editor/qti-package. NOT a generic QTI 3.0 importer. See ROUNDTRIP.md.",
+  "description": "Lossless QTI 3.0→ProseMirror roundtrip import. ONLY restores items previously written by @qti-editor/qti-package-builder. NOT a generic QTI 3.0 importer. See ROUNDTRIP.md.",
   "repository": {
     "type": "git",
     "url": "https://github.com/Citolab/qti-editor",

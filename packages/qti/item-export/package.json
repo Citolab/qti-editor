@@ -31,7 +31,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-editor/core": "1.8.1",
+    "@qti-editor/core": "workspace:*",
     "prosemirror-model": "^1.25.4"
   },
   "devDependencies": {

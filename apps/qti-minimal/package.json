@@ -17,8 +17,6 @@
     "@qti-editor/core": "workspace:*",
     "@qti-editor/interactions": "workspace:*",
     "@qti-editor/prosekit-integration": "workspace:*",
-    "@qti-editor/prosekit-extensions": "workspace:*",
-    "@qti-editor/prosemirror-attributes-ui": "workspace:*",
     "@qti-editor/prosemirror-plugins": "workspace:*",
     "@qti-editor/ui": "workspace:*",
     "lit": "^3.3.2",

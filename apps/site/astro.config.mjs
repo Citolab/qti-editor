@@ -10,20 +10,21 @@ const require = createRequire(import.meta.url);
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const litReactiveElementRoot = dirname(require.resolve('@lit/reactive-element'));
 const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
-const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/qti/prosekit-integration/src', import.meta.url));
-const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-shared/src', import.meta.url));
-const interactionsUmbrellaSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interactions/src', import.meta.url));
-const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-choice/src', import.meta.url));
-const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-extended-text/src', import.meta.url));
-const interactionsAssociateSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-associate/src', import.meta.url));
-const interactionsMatchSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-match/src', import.meta.url));
-const interactionsOrderSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-order/src', import.meta.url));
-const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-text-entry/src', import.meta.url));
-const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-select-point/src', import.meta.url));
-const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-inline-choice/src', import.meta.url));
-const interactionsGapMatchSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/interaction-gap-match/src', import.meta.url));
-const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes/src', import.meta.url));
-const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prosemirror/attributes-ui/src', import.meta.url));
+const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosekit/src', import.meta.url));
+const prosekitExtensionsSrcRoot = fileURLToPath(new URL('../../packages/prosekit/extensions/src', import.meta.url));
+const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/interactions/shared/src', import.meta.url));
+const interactionsUmbrellaSrcRoot = fileURLToPath(new URL('../../packages/interactions/barrel/src', import.meta.url));
+const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/interactions/choice/src', import.meta.url));
+const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/interactions/extended-text/src', import.meta.url));
+const interactionsAssociateSrcRoot = fileURLToPath(new URL('../../packages/interactions/associate/src', import.meta.url));
+const interactionsMatchSrcRoot = fileURLToPath(new URL('../../packages/interactions/match/src', import.meta.url));
+const interactionsOrderSrcRoot = fileURLToPath(new URL('../../packages/interactions/order/src', import.meta.url));
+const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/interactions/text-entry/src', import.meta.url));
+const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/interactions/select-point/src', import.meta.url));
+const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/interactions/inline-choice/src', import.meta.url));
+const interactionsGapMatchSrcRoot = fileURLToPath(new URL('../../packages/interactions/gap-match/src', import.meta.url));
+const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src/attributes', import.meta.url));
+const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src/attributes-ui', import.meta.url));
 const uiSrcRoot = fileURLToPath(new URL('../../packages/ui/src', import.meta.url));
 const stylesSrcRoot = fileURLToPath(new URL('../../packages/styles/src', import.meta.url));
 
@@ -142,6 +143,18 @@ export default defineConfig({
         {
           find: /^@qti-editor\/prosekit-integration$/,
           replacement: `${prosekitIntegrationSrcRoot}/index.ts`,
+        },
+        {
+          find: /^@qti-editor\/prosekit-extensions\/marks$/,
+          replacement: `${prosekitExtensionsSrcRoot}/strong-em.ts`,
+        },
+        {
+          find: /^@qti-editor\/prosekit-extensions\/list$/,
+          replacement: `${prosekitExtensionsSrcRoot}/list.ts`,
+        },
+        {
+          find: /^@qti-editor\/prosekit-extensions$/,
+          replacement: `${prosekitExtensionsSrcRoot}/index.ts`,
         },
         {
           find: /^@qti-editor\/interaction-shared$/,
@@ -269,6 +282,7 @@ export default defineConfig({
         '@qti-editor/interactions',
         '@qti-editor/ui',
         '@qti-editor/interaction-shared',
+        '@qti-editor/prosekit-extensions',
         '@qti-editor/interaction-choice',
         '@qti-editor/interaction-extended-text',
         '@qti-editor/interaction-associate',
