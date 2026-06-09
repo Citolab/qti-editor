@@ -21,7 +21,7 @@ import { baseKeymap } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 import { roundtripTextEntry } from '@qti-editor/qti3-item-import';
 import { qtiItemFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-item';
-import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
+import { qtiRubricBlockDescriptor } from '@qti-editor/interactions';
 
 import { qtiTransformItem } from '@qti-components/transformers';
 

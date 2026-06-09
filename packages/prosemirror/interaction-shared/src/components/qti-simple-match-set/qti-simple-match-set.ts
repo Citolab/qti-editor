@@ -14,6 +14,3 @@ export class QtiSimpleMatchSetEdit extends LitElement {
     return html`<slot></slot>`;
   }
 }
-if (!customElements.get('qti-simple-match-set')) {
-  customElements.define('qti-simple-match-set', QtiSimpleMatchSetEdit);
-}

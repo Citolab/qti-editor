@@ -82,7 +82,3 @@ export class QtiInlineChoice extends CorrectResponseClickMixin(QtiInlineChoiceBa
     `;
   }
 }
-
-if (!customElements.get('qti-inline-choice')) {
-  customElements.define('qti-inline-choice', QtiInlineChoice);
-}

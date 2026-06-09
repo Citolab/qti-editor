@@ -57,6 +57,3 @@ export class QtiSimpleChoiceEdit extends CorrectResponseClickMixin(QtiSimpleChoi
       <slot part="slot"></slot>`;
   }
 }
-if (!customElements.get('qti-simple-choice')) {
-  customElements.define('qti-simple-choice', QtiSimpleChoiceEdit);
-}

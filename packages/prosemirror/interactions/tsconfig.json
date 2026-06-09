@@ -1,0 +1,34 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true,
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "moduleResolution": "bundler",
+    "paths": {
+      "@qti-editor/interactions": ["./src/index.ts"],
+      "@qti-editor/interactions/associate": ["./src/associate/index.ts"],
+      "@qti-editor/interactions/choice": ["./src/choice/index.ts"],
+      "@qti-editor/interactions/extended-text": ["./src/extended-text/index.ts"],
+      "@qti-editor/interactions/gap-match": ["./src/gap-match/index.ts"],
+      "@qti-editor/interactions/hottext": ["./src/hottext/index.ts"],
+      "@qti-editor/interactions/inline-choice": ["./src/inline-choice/index.ts"],
+      "@qti-editor/interactions/match": ["./src/match/index.ts"],
+      "@qti-editor/interactions/order": ["./src/order/index.ts"],
+      "@qti-editor/interactions/select-point": ["./src/select-point/index.ts"],
+      "@qti-editor/interactions/shared": ["./src/shared/index.ts"],
+      "@qti-editor/interactions/text-entry": ["./src/text-entry/index.ts"],
+      "@qti-editor/qti-rubric-block": ["../qti-rubric-block/src/index.ts"],
+      "@qti-editor/qti-rubric-block/*": ["../qti-rubric-block/src/*"]
+    },
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.stories.ts", "src/stories/**", "node_modules", "dist"]
+}

@@ -10,6 +10,7 @@ import {
   listSelectedInteractionPluginFactories,
   listInteractionSchemaNodeSpecs,
 } from '@qti-editor/core/interactions/composer';
+import { registerQtiInteractionElements } from '@qti-editor/prosekit-integration/interactions/prosekit';
 import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
 
 import type { Command } from 'prosekit/pm/state';
@@ -30,6 +31,7 @@ import type { Command } from 'prosekit/pm/state';
 export function defineQtiInteractionsExtension(options?: {
   include?: string[];
 }): Extension {
+  registerQtiInteractionElements();
   const allDescriptors = listInteractionDescriptors();
   
   // Filter to only included interaction types if specified

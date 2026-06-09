@@ -44,25 +44,21 @@ pnpm add prosekit @qti-editor/core
 
 ## Adding QTI interactions
 
-All QTI interactions are pure ProseMirror plugins. No external dependencies necessary. Install the interaction packages you need, for example:
+All QTI interactions are pure ProseMirror plugins. No external dependencies necessary. Install the umbrella package once, then import the subpaths you need:
 
 ```bash
-pnpm add @qti-editor/interaction-choice \
-         @qti-editor/interaction-hottext \
-         @qti-editor/interaction-inline-choice \
-         @qti-editor/interaction-text-entry \
-         @qti-editor/interaction-select-point
+pnpm add @qti-editor/interactions
 ```
 
 | Package | Interaction type |
 |---|---|
-| `@qti-editor/interaction-choice` | `<qti-choice-interaction>` |
-| `@qti-editor/interaction-hottext` | `<qti-hottext-interaction>` |
-| `@qti-editor/interaction-inline-choice` | `<qti-inline-choice-interaction>` |
-| `@qti-editor/interaction-text-entry` | `<qti-text-entry-interaction>` |
-| `@qti-editor/interaction-select-point` | `<qti-select-point-interaction>` |
+| `@qti-editor/interactions/choice` | `<qti-choice-interaction>` |
+| `@qti-editor/interactions/hottext` | `<qti-hottext-interaction>` |
+| `@qti-editor/interactions/inline-choice` | `<qti-inline-choice-interaction>` |
+| `@qti-editor/interactions/text-entry` | `<qti-text-entry-interaction>` |
+| `@qti-editor/interactions/select-point` | `<qti-select-point-interaction>` |
 
-Each interaction package exports:
+Each interaction subpath exports:
 
 - **Pure ProseMirror plugins** - Plugin factories that return standard ProseMirror `Plugin` objects
 - **ProseMirror commands** - Standard command functions for inserting and manipulating nodes
@@ -83,7 +79,7 @@ const plugins = listInteractionPluginFactories().map(factory => factory());
 Or use individual plugin factories from interaction packages:
 
 ```typescript
-import { createCorrectResponseClickPlugin } from '@qti-editor/interaction-choice';
+import { createCorrectResponseClickPlugin } from '@qti-editor/interactions/choice';
 
 const choicePlugin = createCorrectResponseClickPlugin();
 ```
@@ -94,11 +90,13 @@ For external apps, assemble a small local helper around the descriptor registry:
 
 ```typescript
 import { listInteractionDescriptors, listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
+import { registerQtiInteractionElements } from '@qti-editor/prosekit-integration';
 import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
 
 import type { Command } from 'prosekit/pm/state';
 
 export function defineQtiInteractionsExtension() {
+  registerQtiInteractionElements();
   const descriptors = listInteractionDescriptors();
   const seenSpecs = new Set<string>();
   const nodeSpecExtensions: Extension[] = [];

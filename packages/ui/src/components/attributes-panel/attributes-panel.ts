@@ -3,7 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { ContextConsumer } from '@lit/context';
 import { defineMountHandler, union, type Editor, type Extension } from 'prosekit/core';
 import { getNodeAttributePanelMetadataByNodeTypeName } from '@qti-editor/core/interactions/composer';
-import { translateQti } from '@qti-editor/interaction-shared';
+import { translateQti } from '@qti-editor/interactions/shared';
 import {
   qtiAttributesExtension,
   qtiSidePanelExtension,

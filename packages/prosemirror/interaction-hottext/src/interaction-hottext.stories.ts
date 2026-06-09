@@ -1,6 +1,15 @@
 import '@qti-components/theme/item.css';
-import '@qti-editor/interaction-hottext';
 import { html } from 'lit';
+import { expect, waitFor } from 'storybook/test';
+
+import { QtiHottextInteractionEdit, QtiHottextEdit } from '@qti-editor/interaction-hottext';
+
+if (!customElements.get('qti-hottext-interaction')) {
+  customElements.define('qti-hottext-interaction', QtiHottextInteractionEdit);
+}
+if (!customElements.get('qti-hottext')) {
+  customElements.define('qti-hottext', QtiHottextEdit);
+}
 
 export default {
   title: 'Interactions/Hottext',
@@ -34,4 +43,13 @@ export const AuthoringFixture = {
       from drifting apart.
     </qti-hottext-interaction>
   `, 'block hottext fixture with multiple selected phrases'),
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const interaction = canvasElement.querySelector('qti-hottext-interaction');
+    expect(interaction).not.toBeNull();
+    await waitFor(() => {
+      expect(interaction?.shadowRoot).not.toBeNull();
+    });
+    const hotTexts = canvasElement.querySelectorAll('qti-hottext');
+    expect(hotTexts).toHaveLength(3);
+  },
 };

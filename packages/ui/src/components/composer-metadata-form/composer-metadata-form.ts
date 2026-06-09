@@ -1,6 +1,6 @@
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { QtiI18nController } from '@qti-editor/interaction-shared/i18n/index.js';
+import { QtiI18nController } from '@qti-editor/interactions/shared';
 
 @customElement('qti-composer-metadata-form')
 export class QtiComposerMetadataForm extends LitElement {

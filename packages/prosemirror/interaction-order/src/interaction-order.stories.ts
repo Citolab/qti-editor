@@ -1,8 +1,16 @@
 import '@qti-components/theme/item.css';
-import '@qti-editor/interaction-order';
-import '@qti-editor/interaction-shared';
 import { html } from 'lit';
 import { expect, userEvent, waitFor } from 'storybook/test';
+import { QtiSimpleChoiceEdit } from '@qti-editor/interaction-shared';
+
+import { QtiOrderInteractionEdit } from '@qti-editor/interaction-order';
+
+if (!customElements.get('qti-order-interaction')) {
+  customElements.define('qti-order-interaction', QtiOrderInteractionEdit);
+}
+if (!customElements.get('qti-simple-choice')) {
+  customElements.define('qti-simple-choice', QtiSimpleChoiceEdit);
+}
 
 export default {
   title: 'Interactions/Order',

@@ -22,7 +22,6 @@
 import JSZip from 'jszip';
 import { collectMirrorMappings } from '@qti-editor/core/composer';
 import { getInteractionComposerMetadata } from '@qti-editor/core/interactions/composer';
-
 import { getQtiItems, type QtiComposeContext, type QtiItemFragment } from '@qti-editor/qti-test-export';
 
 import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
@@ -282,7 +281,9 @@ function preserveEditorDataAttributes(xml: string): string {
 
 function preserveEditorDataAttributesInTag(tagName: string, attributes: string): string {
   const metadata = getInteractionComposerMetadata(tagName);
-  const mappings = metadata ? collectMirrorMappings(metadata) : [];
+  const mappings: ReadonlyArray<{ source: string; target: string }> = metadata
+    ? collectMirrorMappings(metadata)
+    : [];
 
   let nextAttributes = attributes;
   mappings.forEach(({ source, target }) => {

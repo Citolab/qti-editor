@@ -22,15 +22,15 @@ import {
   registerAutocompletePositionerElement,
   registerAutocompleteRootElement,
 } from 'prosekit/lit/autocomplete';
-import { translateQti } from '@qti-editor/interaction-shared';
-import { insertAssociateInteraction } from '@qti-editor/interaction-associate';
-import { insertGapMatchInteraction } from '@qti-editor/interaction-gap-match';
-import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
-import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
-import { insertHottextInteraction } from '@qti-editor/interaction-hottext';
-import { insertMatchInteraction } from '@qti-editor/interaction-match';
-import { insertOrderInteraction } from '@qti-editor/interaction-order';
-import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
+import { translateQti } from '@qti-editor/interactions/shared';
+import { insertAssociateInteraction } from '@qti-editor/interactions/associate';
+import { insertGapMatchInteraction } from '@qti-editor/interactions/gap-match';
+import { insertChoiceInteraction } from '@qti-editor/interactions/choice';
+import { insertExtendedTextInteraction } from '@qti-editor/interactions/extended-text';
+import { insertHottextInteraction } from '@qti-editor/interactions/hottext';
+import { insertMatchInteraction } from '@qti-editor/interactions/match';
+import { insertOrderInteraction } from '@qti-editor/interactions/order';
+import { insertSelectPointInteraction } from '@qti-editor/interactions/select-point';
 
 import type { EditorView } from 'prosekit/pm/view';
 

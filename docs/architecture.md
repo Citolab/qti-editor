@@ -442,14 +442,14 @@ Typical commands:
 
 ## Lossless QTI Roundtrip Packages
 
-`packages/qti/roundtrip-export` and `packages/qti/roundtrip-import` are a **paired, self-roundtrip**: the editor exports its ProseMirror tree to QTI 3.0, then imports it back losslessly using `data-*` mirrors on QTI interaction tags. **They are not a generic QTI 3.0 import/export.**
+`packages/qti/package` and `packages/qti/roundtrip-import` are a **paired, self-roundtrip**: the editor exports its ProseMirror tree to QTI 3.0, then imports it back losslessly using `data-*` mirrors on QTI interaction tags. **They are not a generic QTI 3.0 import/export.**
 
 - Export emits standard `qti-response-declaration` / `qti-response-processing` for conformance, plus `data-*` mirrors of ProseMirror schema attrs.
 - Import strips the response-declaration / response-processing nodes and rehydrates schema attrs from the `data-*` mirrors only.
 - Third-party QTI packages imported through this path will have empty authoring attributes — by design.
 - The names `@qti-editor/qti-export` / `qti-import` (without `roundtrip-`) are reserved for a future generic implementation.
 
-Canonical contract: [`packages/qti/roundtrip-export/ROUNDTRIP.md`](../packages/qti/roundtrip-export/ROUNDTRIP.md). The `data-*` mappings live in exactly one place — each interaction's `nonQtiAttributes` declaration in `packages/prosemirror/interaction-*/src/composer/metadata.ts` — and are derived at runtime by `collectMirrorMappings` (in `@qti-editor/interaction-shared/composer/non-qti-attributes`) for the compose pipeline, the export regex pass, and the import inverse mapping. Update the ROUNDTRIP doc's per-tag table whenever you add a new attribute.
+Canonical contract: [`packages/qti/roundtrip-import/ROUNDTRIP.md`](../packages/qti/roundtrip-import/ROUNDTRIP.md). The `data-*` mappings live in exactly one place — each interaction's `nonQtiAttributes` declaration in `packages/prosemirror/interaction-*/src/composer/metadata.ts` — and are derived at runtime by `collectMirrorMappings` (in `@qti-editor/interaction-shared/composer/non-qti-attributes`) for the compose pipeline, the export regex pass, and the import inverse mapping. Update the ROUNDTRIP doc's per-tag table whenever you add a new attribute.
 
 For the conceptual overview of the itembody-as-source-of-truth subformat — what non-QTI attributes the editor stores on interaction elements and how they are mirrored as `data-*` for QTI 3.0 conformance — see [Itembody-only QTI subformat](../apps/site/src/content/docs/packages/itembody-subformat.mdx) (published on the docs site under Package Reference).
 

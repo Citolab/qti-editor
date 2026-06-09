@@ -1,8 +1,19 @@
 import '@qti-components/theme/item.css';
-import '@qti-editor/interaction-gap-match';
-import '@qti-editor/interaction-shared';
 import { html } from 'lit';
 import { expect, userEvent, waitFor } from 'storybook/test';
+import { QtiGapEdit, QtiGapTextEdit } from '@qti-editor/interaction-shared';
+
+import { QtiGapMatchInteractionEdit } from '@qti-editor/interaction-gap-match';
+
+if (!customElements.get('qti-gap-match-interaction')) {
+  customElements.define('qti-gap-match-interaction', QtiGapMatchInteractionEdit);
+}
+if (!customElements.get('qti-gap')) {
+  customElements.define('qti-gap', QtiGapEdit);
+}
+if (!customElements.get('qti-gap-text')) {
+  customElements.define('qti-gap-text', QtiGapTextEdit);
+}
 
 export default {
   title: 'Interactions/Gap Match',

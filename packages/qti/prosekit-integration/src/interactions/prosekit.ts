@@ -2,7 +2,18 @@
  * ProseKit adapter for the supported QTI editor-kit interaction surface.
  */
 
-import '@qti-components/theme/item.css';
+import { QtiAssociateInteractionEdit } from '@qti-editor/interactions/associate';
+import { QtiChoiceInteractionEdit } from '@qti-editor/interactions/choice';
+import { QtiExtendedTextInteractionEdit } from '@qti-editor/interactions/extended-text';
+import { QtiGapMatchInteractionEdit } from '@qti-editor/interactions/gap-match';
+import { QtiGapEdit, QtiGapTextEdit, QtiPromptEdit, QtiSimpleAssociableChoiceEdit, QtiSimpleChoiceEdit, QtiSimpleMatchSetEdit } from '@qti-editor/interactions/shared';
+import { QtiHottextEdit, QtiHottextInteractionEdit } from '@qti-editor/interactions/hottext';
+import { QtiInlineChoice, QtiInlineChoiceInteraction } from '@qti-editor/interactions/inline-choice';
+import { QtiMatchInteractionEdit } from '@qti-editor/interactions/match';
+import { QtiOrderInteractionEdit } from '@qti-editor/interactions/order';
+import { QtiSelectPointInteractionEdit } from '@qti-editor/interactions/select-point';
+import { QtiTextEntryInteractionEdit } from '@qti-editor/interactions/text-entry';
+import { QtiItemDivider } from '@qti-editor/qti-item-divider';
 import {
   listInteractionDescriptors,
   listInteractionPluginFactories,
@@ -13,7 +24,36 @@ import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } fro
 
 import type { Command } from 'prosekit/pm/state';
 
+function registerElement(tagName: string, elementClass: CustomElementConstructor) {
+  if (!customElements.get(tagName)) {
+    customElements.define(tagName, elementClass);
+  }
+}
+
+export function registerQtiInteractionElements() {
+  registerElement('qti-simple-choice', QtiSimpleChoiceEdit);
+  registerElement('qti-simple-associable-choice', QtiSimpleAssociableChoiceEdit);
+  registerElement('qti-simple-match-set', QtiSimpleMatchSetEdit);
+  registerElement('qti-gap', QtiGapEdit);
+  registerElement('qti-gap-text', QtiGapTextEdit);
+  registerElement('qti-prompt', QtiPromptEdit);
+  registerElement('qti-associate-interaction', QtiAssociateInteractionEdit);
+  registerElement('qti-choice-interaction', QtiChoiceInteractionEdit);
+  registerElement('qti-extended-text-interaction', QtiExtendedTextInteractionEdit);
+  registerElement('qti-gap-match-interaction', QtiGapMatchInteractionEdit);
+  registerElement('qti-hottext-interaction', QtiHottextInteractionEdit);
+  registerElement('qti-hottext', QtiHottextEdit);
+  registerElement('qti-inline-choice-interaction', QtiInlineChoiceInteraction);
+  registerElement('qti-inline-choice', QtiInlineChoice);
+  registerElement('qti-match-interaction', QtiMatchInteractionEdit);
+  registerElement('qti-order-interaction', QtiOrderInteractionEdit);
+  registerElement('qti-select-point-interaction', QtiSelectPointInteractionEdit);
+  registerElement('qti-text-entry-interaction', QtiTextEntryInteractionEdit);
+  registerElement('qti-item-divider', QtiItemDivider);
+}
+
 export function defineQtiInteractionsExtension() {
+  registerQtiInteractionElements();
   const descriptors = listInteractionDescriptors();
 
   const nodeSpecExtensions: Extension[] = listInteractionSchemaNodeSpecs().map(({ name, spec }) =>

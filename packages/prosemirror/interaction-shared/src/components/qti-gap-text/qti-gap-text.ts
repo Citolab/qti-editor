@@ -63,7 +63,3 @@ export class QtiGapTextEdit extends LitElement {
     return html`<slot></slot>`;
   }
 }
-
-if (!customElements.get('qti-gap-text')) {
-  customElements.define('qti-gap-text', QtiGapTextEdit);
-}

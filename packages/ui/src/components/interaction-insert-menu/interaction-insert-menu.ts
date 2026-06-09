@@ -1,7 +1,7 @@
 /* eslint-disable wc/no-self-class */
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { translateQti, QtiI18nController } from '@qti-editor/interaction-shared/i18n/index.js';
+import { translateQti, QtiI18nController } from '@qti-editor/interactions/shared';
 import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { Selection } from 'prosekit/pm/state';
 import {
@@ -11,15 +11,15 @@ import {
   registerMenuRootElement,
   registerMenuTriggerElement,
 } from 'prosekit/lit/menu';
-import { insertAssociateInteraction } from '@qti-editor/interaction-associate';
-import { insertGapMatchInteraction, insertGap } from '@qti-editor/interaction-gap-match';
-import { insertChoiceInteraction } from '@qti-editor/interaction-choice';
-import { insertExtendedTextInteraction } from '@qti-editor/interaction-extended-text';
-import { insertHottextInteraction } from '@qti-editor/interaction-hottext';
-import { insertMatchInteraction } from '@qti-editor/interaction-match';
-import { insertOrderInteraction } from '@qti-editor/interaction-order';
-import { insertSelectPointInteraction } from '@qti-editor/interaction-select-point';
-import { insertInlineChoiceInteraction } from '@qti-editor/interaction-inline-choice';
+import { insertAssociateInteraction } from '@qti-editor/interactions/associate';
+import { insertGapMatchInteraction, insertGap } from '@qti-editor/interactions/gap-match';
+import { insertChoiceInteraction } from '@qti-editor/interactions/choice';
+import { insertExtendedTextInteraction } from '@qti-editor/interactions/extended-text';
+import { insertHottextInteraction } from '@qti-editor/interactions/hottext';
+import { insertMatchInteraction } from '@qti-editor/interactions/match';
+import { insertOrderInteraction } from '@qti-editor/interactions/order';
+import { insertSelectPointInteraction } from '@qti-editor/interactions/select-point';
+import { insertInlineChoiceInteraction } from '@qti-editor/interactions/inline-choice';
 import { insertItemDivider } from '@qti-editor/qti-item-divider';
 
 import type { EditorView } from 'prosekit/pm/view';

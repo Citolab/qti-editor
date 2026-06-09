@@ -42,7 +42,7 @@ jobs:
           fi
 
           changed_files="$(git diff --name-only HEAD^ HEAD)"
-          if echo "$changed_files" | grep -Eq '^(package\.json$|pnpm-lock\.yaml$|packages/interfaces/|packages/qti/core/|packages/prosemirror/(interaction-[^/]+|qti-item-divider)/|\.github/workflows/release\.yml$)'; then
+          if echo "$changed_files" | grep -Eq '^(package\.json$|pnpm-lock\.yaml$|packages/interfaces/|packages/styles/|packages/qti/core/|packages/prosemirror/(interaction-[^/]+|qti-item-divider|interactions|qti-rubric-block)/|\.github/workflows/release\.yml$)'; then
             echo "should_release=true" >> "$GITHUB_OUTPUT"
           else
             echo "should_release=false" >> "$GITHUB_OUTPUT"
@@ -59,6 +59,7 @@ jobs:
           token: ${{ secrets.RELEASE_BOT_TOKEN || secrets.GITHUB_TOKEN }}
           ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
           fetch-depth: 0
+          fetch-tags: true
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -76,6 +77,7 @@ jobs:
       - name: Build publishable packages
         run: |
           pnpm --filter @qti-editor/interfaces build
+          pnpm --filter @qti-editor/styles build
           pnpm --filter @qti-editor/interaction-shared build
           pnpm --filter @qti-editor/interaction-associate build
           pnpm --filter @qti-editor/interaction-choice build
@@ -88,6 +90,8 @@ jobs:
           pnpm --filter @qti-editor/interaction-gap-match build
           pnpm --filter @qti-editor/interaction-hottext build
           pnpm --filter @qti-editor/qti-item-divider build
+          pnpm --filter @qti-editor/qti-rubric-block build
+          pnpm --filter @qti-editor/interactions build
           pnpm --filter @qti-editor/core build
 
       - name: Configure git
@@ -96,18 +100,8 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Release
-        run: pnpm exec multi-semantic-release --ignore-private-packages
+        run: |
+          git fetch --tags --force
+          pnpm exec multi-semantic-release --ignore-private-packages --deps.bump=ignore
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN || secrets.GITHUB_TOKEN }}
-
-      - name: Restore workspace refs and sync lockfile
-        run: |
-          git fetch origin main
-          git rebase origin/main
-          find packages -name "package.json" ! -path "*/node_modules/*" ! -path "*/dist/*" \
-            -exec sed -i -E 's/"(@qti-editor\/[^"]+)": "[0-9][^"]*"/"\1": "workspace:*"/g' {} +
-          pnpm install --no-frozen-lockfile
-          git add pnpm-lock.yaml
-          find packages -name "package.json" ! -path "*/node_modules/*" ! -path "*/dist/*" | xargs git add
-          git diff --staged --quiet || git commit -m "chore: restore workspace refs after release [skip ci]"
-          git push origin HEAD:main

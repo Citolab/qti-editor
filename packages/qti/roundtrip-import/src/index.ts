@@ -42,18 +42,19 @@ const FORWARD_REGISTRY: ReadonlyMap<string, InteractionComposerMetadata> = new M
 // the same `data-*` target — flipping yields multiple inverse entries with the same
 // `source` (the data-* attr). Dedupe by that flipped source so each data-* attr only
 // maps to one canonical editor attribute.
+type MirrorTarget = Readonly<{ source: string; target: string }>;
 const _seenInverseSources = new Set<string>();
-export const DATA_ATTRIBUTE_MAPPINGS: ReadonlyArray<{ source: string; target: string }> =
-  getAllMirrorTargets(FORWARD_REGISTRY)
-    .filter(({ target }) => {
-      if (_seenInverseSources.has(target)) return false;
-      _seenInverseSources.add(target);
-      return true;
-    })
-    .map(({ source, target }) => ({
-      source: target, // data-* attr on the DOM
-      target: source, // canonical editor attr name
-    }));
+const mirrorTargets = getAllMirrorTargets(FORWARD_REGISTRY) as ReadonlyArray<MirrorTarget>;
+export const DATA_ATTRIBUTE_MAPPINGS: ReadonlyArray<MirrorTarget> = mirrorTargets
+  .filter(({ target }) => {
+    if (_seenInverseSources.has(target)) return false;
+    _seenInverseSources.add(target);
+    return true;
+  })
+  .map(({ source, target }) => ({
+    source: target, // data-* attr on the DOM
+    target: source, // canonical editor attr name
+  }));
 
 type ProseMirrorJson = ReturnType<typeof jsonFromHTML>;
 

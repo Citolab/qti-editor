@@ -82,7 +82,3 @@ declare global {
     'qti-item-divider': QtiItemDivider;
   }
 }
-
-if (!customElements.get('qti-item-divider')) {
-  customElements.define('qti-item-divider', QtiItemDivider);
-}

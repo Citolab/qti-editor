@@ -30,7 +30,7 @@
       "type": "registry:ui",
       "title": "QTI Choice Attributes Editor",
       "description": "Standalone choice-interaction class editor UI used by the attributes panel host.",
-      "dependencies": ["lit", "@qti-editor/interaction-choice"],
+      "dependencies": ["lit", "@qti-editor/interactions/choice"],
       "files": [
         {
           "path": "components/choice-attributes-editor/index.ts",
@@ -50,7 +50,7 @@
       "type": "registry:ui",
       "title": "QTI Text Entry Attributes Editor",
       "description": "Standalone text-entry editor for width presets, case sensitivity, and accepted-answer synonyms.",
-      "dependencies": ["lit", "@qti-editor/interaction-text-entry"],
+      "dependencies": ["lit", "@qti-editor/interactions/text-entry"],
       "files": [
         {
           "path": "components/text-entry-attributes-editor/index.ts",
@@ -70,7 +70,7 @@
       "type": "registry:ui",
       "title": "QTI Extended Text Attributes Editor",
       "description": "Standalone extended-text editor for height presets and rubric/model answer configuration.",
-      "dependencies": ["lit", "@qti-editor/interaction-extended-text"],
+      "dependencies": ["lit", "@qti-editor/interactions/extended-text"],
       "files": [
         {
           "path": "components/extended-text-attributes-editor/index.ts",
@@ -212,10 +212,10 @@
       "dependencies": [
         "lit",
         "prosekit",
-        "@qti-editor/interaction-choice",
-        "@qti-editor/interaction-extended-text",
-        "@qti-editor/interaction-match",
-        "@qti-editor/interaction-select-point",
+        "@qti-editor/interactions/choice",
+        "@qti-editor/interactions/extended-text",
+        "@qti-editor/interactions/match",
+        "@qti-editor/interactions/select-point",
         "@qti-editor/qti-editor-kit"
       ],
       "files": [
@@ -273,7 +273,7 @@
       "dependencies": [
         "lit",
         "prosekit",
-        "@qti-editor/interaction-choice"
+        "@qti-editor/interactions/choice"
       ],
       "files": [
         {

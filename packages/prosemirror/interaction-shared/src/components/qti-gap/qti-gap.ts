@@ -50,7 +50,3 @@ export class QtiGapEdit extends LitElement {
     return html`<span class="label">${this.assignedLabel ?? ''}</span>`;
   }
 }
-
-if (!customElements.get('qti-gap')) {
-  customElements.define('qti-gap', QtiGapEdit);
-}

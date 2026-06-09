@@ -49,7 +49,7 @@ Entries can be:
 
 The compose handler reads these from the source element to populate the response declaration, then removes them from the normalized element so the output is clean QTI.
 
-As of the unification work (see `plans/unify-non-qti-attribute-metadata.md`), all `data-*` mirror behavior is derived from the per-interaction `nonQtiAttributes` declaration. The helper `collectMirrorMappings(metadata)` is the single source of truth; the compose pipeline (`@qti-editor/qti-core`), the export regex pass (`@qti-editor/qti-roundtrip-export`), and the import inverse mapping (`@qti-editor/qti-roundtrip-import`) all read from it.
+As of the unification work (see `plans/unify-non-qti-attribute-metadata.md`), all `data-*` mirror behavior is derived from the per-interaction `nonQtiAttributes` declaration. The helper `collectMirrorMappings(metadata)` is the single source of truth; the compose pipeline (`@qti-editor/core`), the export regex pass (`@qti-editor/qti-package`), and the import inverse mapping (`@qti-editor/qti-roundtrip-import`) all read from it.
 
 ## Current non-QTI attribute set
 
@@ -62,13 +62,13 @@ As of the unification work (see `plans/unify-non-qti-attribute-metadata.md`), al
 
 ## Where the `data-*` mirrors come from
 
-The per-interaction `nonQtiAttributes` declaration **is** the source of truth. The helper `collectMirrorMappings(metadata)` in `packages/prosemirror/interaction-shared/src/composer/non-qti-attributes.ts` (re-exported from `@qti-editor/qti-core/composer`) walks each entry and produces the `{ source, target: 'data-<source>' }` pairs that drive:
+The per-interaction `nonQtiAttributes` declaration **is** the source of truth. The helper `collectMirrorMappings(metadata)` in `packages/prosemirror/interaction-shared/src/composer/non-qti-attributes.ts` (re-exported from `@qti-editor/core/composer`) walks each entry and produces the `{ source, target: 'data-<source>' }` pairs that drive:
 
-- the compose pipeline strip + mirror step (`@qti-editor/qti-core`)
-- the export regex pass (`@qti-editor/qti-roundtrip-export`)
+- the compose pipeline strip + mirror step (`@qti-editor/core`)
+- the export regex pass (`@qti-editor/qti-package`)
 - the import inverse mapping (`@qti-editor/qti-roundtrip-import`)
 
-The detailed per-tag table — useful as a human-readable reference of the resulting wire format — is in [ROUNDTRIP.md](../../../../../packages/qti/roundtrip-export/ROUNDTRIP.md).
+The detailed per-tag table — useful as a human-readable reference of the resulting wire format — is in [ROUNDTRIP.md](../../../../../packages/qti/roundtrip-import/ROUNDTRIP.md).
 
 ## Adding a new non-QTI attribute
 
@@ -81,5 +81,5 @@ No other code changes are needed. The strip step, the `data-*` mirror, the expor
 
 ## Related
 
-- [QTI Roundtrip Export Package](./qti-roundtrip-export)
+- [QTI Package](./qti-roundtrip-export)
 - [QTI Roundtrip Import Package](./qti-roundtrip-import)

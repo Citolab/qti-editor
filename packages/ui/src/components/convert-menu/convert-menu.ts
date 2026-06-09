@@ -1,7 +1,7 @@
 /* eslint-disable wc/no-self-class */
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { QtiI18nController, translateQti } from '@qti-editor/interaction-shared/i18n/index.js';
+import { QtiI18nController, translateQti } from '@qti-editor/interactions/shared';
 import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { Selection } from 'prosekit/pm/state';
 import {
@@ -13,7 +13,7 @@ import {
 import {
   canConvertListToChoiceInteraction,
   convertListToChoiceInteraction,
-} from '@qti-editor/interaction-choice';
+} from '@qti-editor/interactions/choice';
 
 import type { EditorView } from 'prosekit/pm/view';
 

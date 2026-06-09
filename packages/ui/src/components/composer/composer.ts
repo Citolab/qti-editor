@@ -1,7 +1,7 @@
 import { consume } from '@lit/context';
 import { html, LitElement, nothing } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { QtiI18nController } from '@qti-editor/interaction-shared/i18n/index.js';
+import { QtiI18nController } from '@qti-editor/interactions/shared';
 import { defineDocChangeHandler, defineMountHandler, union, type Editor } from 'prosekit/core';
 import { qtiItemFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-item';
 import { countQtiItems, getQtiItems, type QtiItemFragment } from '@qti-editor/prosekit-integration/save-qti-test';

@@ -1,6 +1,6 @@
 /**
  * Re-exports the unified non-QTI attribute helpers from
- * `@qti-editor/interaction-shared`. The helpers live there (not here) so that
+ * `@qti-editor/interactions/shared`. The helpers live there (not here) so that
  * per-interaction `.compose.ts` files can call them without creating a
  * package-level circular dependency on `@qti-editor/qti-core` (which depends
  * on all the interaction packages via the registry).
@@ -15,5 +15,5 @@ export {
   getAllMirrorTargets,
   normalizeNonQtiAttribute,
   stripNonQtiAttributesFromElement,
-} from '@qti-editor/interaction-shared/composer/non-qti-attributes.js';
-export type { NonQtiAttributeEntry } from '@qti-editor/interaction-shared/composer/non-qti-attributes.js';
+} from '@qti-editor/interactions/shared/composer/non-qti-attributes.js';
+export type { NonQtiAttributeEntry } from '@qti-editor/interactions/shared/composer/non-qti-attributes.js';

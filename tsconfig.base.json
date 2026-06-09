@@ -30,11 +30,20 @@
       "@qti-editor/core/interactions/composer": [
         "packages/qti/core/src/interactions/composer.ts"
       ],
-"@qti-editor/qti-roundtrip-import": [
+      "@qti-editor/qti-roundtrip-import": [
         "packages/qti/roundtrip-import/src/index.ts"
       ],
       "@qti-editor/qti-roundtrip-import/*": [
         "packages/qti/roundtrip-import/src/*"
+      ],
+      "@qti-editor/qti-item-export/pm-qti-item": [
+        "packages/qti/item-export/src/pm-qti-item.ts"
+      ],
+      "@qti-editor/qti-item-export/pm-xml": [
+        "packages/qti/item-export/src/pm-xml.ts"
+      ],
+      "@qti-editor/qti-test-export/pm-qti-test": [
+        "packages/qti/test-export/src/pm-qti-test.ts"
       ],
       "@qti-editor/qti3-item-import": [
         "packages/qti/qti3-item-import/src/index.ts"
@@ -144,7 +153,45 @@
       "@qti-editor/prosemirror-plugins/paste-semantic-html": [
         "packages/prosemirror/extensions/src/paste-semantic-html/index.ts"
       ],
-      
+      "@qti-editor/interactions": [
+        "packages/prosemirror/interactions/src/index.ts"
+      ],
+      "@qti-editor/interactions/associate": [
+        "packages/prosemirror/interactions/src/associate/index.ts"
+      ],
+      "@qti-editor/interactions/choice": [
+        "packages/prosemirror/interactions/src/choice/index.ts"
+      ],
+      "@qti-editor/interactions/extended-text": [
+        "packages/prosemirror/interactions/src/extended-text/index.ts"
+      ],
+      "@qti-editor/interactions/gap-match": [
+        "packages/prosemirror/interactions/src/gap-match/index.ts"
+      ],
+      "@qti-editor/interactions/hottext": [
+        "packages/prosemirror/interactions/src/hottext/index.ts"
+      ],
+      "@qti-editor/interactions/inline-choice": [
+        "packages/prosemirror/interactions/src/inline-choice/index.ts"
+      ],
+      "@qti-editor/interactions/match": [
+        "packages/prosemirror/interactions/src/match/index.ts"
+      ],
+      "@qti-editor/interactions/order": [
+        "packages/prosemirror/interactions/src/order/index.ts"
+      ],
+      "@qti-editor/interactions/select-point": [
+        "packages/prosemirror/interactions/src/select-point/index.ts"
+      ],
+      "@qti-editor/interactions/shared": [
+        "packages/prosemirror/interactions/src/shared/index.ts"
+      ],
+      "@qti-editor/interactions/shared/*": [
+        "packages/prosemirror/interaction-shared/src/*"
+      ],
+      "@qti-editor/interactions/text-entry": [
+        "packages/prosemirror/interactions/src/text-entry/index.ts"
+      ],
       "@qti-editor/interaction-choice": [
         "packages/prosemirror/interaction-choice/src/index.ts"
       ],

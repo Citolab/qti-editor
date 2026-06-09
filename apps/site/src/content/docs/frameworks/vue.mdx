@@ -22,8 +22,8 @@ QTI Editor is a composable kit — it provides the QTI building blocks that slot
 ```bash
 pnpm add prosemirror-state prosemirror-view prosemirror-model \
   @qti-editor/core \
-  @qti-editor/interaction-choice \
-  @qti-editor/interaction-text-entry
+  @qti-editor/interactions/choice \
+  @qti-editor/interactions/text-entry
 ```
 
 ### 2. Editor component
@@ -86,8 +86,8 @@ onUnmounted(() => view?.destroy());
 
 ```bash
 pnpm add prosekit @qti-editor/core \
-  @qti-editor/interaction-choice \
-  @qti-editor/interaction-text-entry
+  @qti-editor/interactions/choice \
+  @qti-editor/interactions/text-entry
 ```
 
 ### 2. Add the local helpers

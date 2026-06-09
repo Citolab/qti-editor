@@ -6,7 +6,7 @@ import {
   serializeTextEntryClassState,
   textEntryWidthClassOptions,
   type TextEntryWidthClassOption,
-} from '@qti-editor/interaction-text-entry';
+} from '@qti-editor/interactions/text-entry';
 
 import { QTI_ATTRIBUTES_PATCH_EVENT, type QtiAttributesPatchDetail } from '../attributes-panel/patch-event';
 

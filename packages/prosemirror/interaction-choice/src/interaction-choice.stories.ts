@@ -1,8 +1,16 @@
 import '@qti-components/theme/item.css';
-import '@qti-editor/interaction-choice';
-import '@qti-editor/interaction-shared';
 import { html } from 'lit';
 import { expect, waitFor } from 'storybook/test';
+import { QtiSimpleChoiceEdit } from '@qti-editor/interaction-shared';
+
+import { QtiChoiceInteractionEdit } from '@qti-editor/interaction-choice';
+
+if (!customElements.get('qti-choice-interaction')) {
+  customElements.define('qti-choice-interaction', QtiChoiceInteractionEdit);
+}
+if (!customElements.get('qti-simple-choice')) {
+  customElements.define('qti-simple-choice', QtiSimpleChoiceEdit);
+}
 
 export default {
   title: 'Interactions/Choice',
@@ -35,7 +43,7 @@ export const AuthoringFixture = {
     </qti-choice-interaction>
   `, 'single-select fixture with prompt and correct response'),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    const interaction = canvasElement.querySelector('qti-choice-interaction');
+    const interaction = canvasElement.querySelector<HTMLElement>('qti-choice-interaction');
     expect(interaction).not.toBeNull();
 
     await waitFor(() => {

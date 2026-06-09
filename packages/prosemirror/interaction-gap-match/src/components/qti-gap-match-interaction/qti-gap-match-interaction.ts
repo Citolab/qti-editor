@@ -360,7 +360,3 @@ declare global {
     'gap-association-change': CustomEvent<GapAssociationChangeDetail>;
   }
 }
-
-if (!customElements.get('qti-gap-match-interaction')) {
-  customElements.define('qti-gap-match-interaction', QtiGapMatchInteractionEdit);
-}

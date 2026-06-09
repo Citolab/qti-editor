@@ -5,7 +5,7 @@ import {
   registerPopoverRootElement,
   registerPopoverTriggerElement,
 } from 'prosekit/lit/popover'
-import { subscribeQtiI18n, translateQti } from '@qti-editor/interaction-shared/i18n/index.js';
+import { subscribeQtiI18n, translateQti } from '@qti-editor/interactions/shared';
 import '../button/index'
 
 // needed for tree shaking
