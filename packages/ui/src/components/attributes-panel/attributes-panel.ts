@@ -60,6 +60,7 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
 
   constructor() {
     super();
+    void this.#editorConsumer;
     this.eventName = 'qti:attributes:update';
     this.changeEventName = 'qti:attributes:change';
     this.metadataResolver = (nodeType, node) => {

@@ -15,5 +15,5 @@ export {
   getAllMirrorTargets,
   normalizeNonQtiAttribute,
   stripNonQtiAttributesFromElement,
-} from '@qti-editor/interaction-shared/composer/non-qti-attributes.js';
-export type { NonQtiAttributeEntry } from '@qti-editor/interaction-shared/composer/non-qti-attributes.js';
+} from '@qti-editor/interaction-shared';
+export type { NonQtiAttributeEntry } from '@qti-editor/interaction-shared';

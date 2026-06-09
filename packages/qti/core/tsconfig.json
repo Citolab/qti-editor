@@ -9,6 +9,8 @@
     "noEmit": false,
     "allowImportingTsExtensions": false,
     "paths": {
+      "@qti-editor/interaction-shared": ["../../interactions/shared/dist/index.d.ts"],
+      "@qti-editor/interaction-shared/*": ["../../interactions/shared/dist/*"],
       "@qti-editor/interactions": ["../../interactions/barrel/dist/index.d.ts"],
       "@qti-editor/interactions/associate": ["../../interactions/barrel/dist/associate/index.d.ts"],
       "@qti-editor/interactions/choice": ["../../interactions/barrel/dist/choice/index.d.ts"],
