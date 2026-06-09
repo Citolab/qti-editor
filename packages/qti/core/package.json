@@ -31,7 +31,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-editor/interfaces": "1.5.0",
+    "@qti-editor/interfaces": "workspace:*",
     "@qti-editor/interactions": "workspace:*",
     "@qti-editor/qti-item-divider": "workspace:*",
     "@qti-editor/qti-rubric-block": "workspace:*"
