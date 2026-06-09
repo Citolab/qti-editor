@@ -1,4 +1,3 @@
-@import '@qti-components/theme/item.css';
 @import "tailwindcss";
 @source "../../../packages/ui/src/**/*.{ts,js}";
 
@@ -7,4 +6,5 @@
 @plugin "daisyui" {
    themes: light --default;
 }
+@import '@qti-components/theme/item.css';
 @custom-variant dark (&:where(.dark, .dark *));

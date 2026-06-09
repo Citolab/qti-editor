@@ -26,6 +26,7 @@ const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/in
 const interactionsGapMatchSrcRoot = fileURLToPath(new URL('../../packages/interactions/gap-match/src', import.meta.url));
 const interactionsHottextSrcRoot = fileURLToPath(new URL('../../packages/interactions/hottext/src', import.meta.url));
 const qtiItemDividerSrcRoot = fileURLToPath(new URL('../../packages/qti/item-divider/src', import.meta.url));
+const qtiRubricBlockSrcRoot = fileURLToPath(new URL('../../packages/qti/rubric-block/src', import.meta.url));
 const prosemirrorPluginsSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src', import.meta.url));
 const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src/attributes', import.meta.url));
 const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src/attributes-ui', import.meta.url));
@@ -282,6 +283,14 @@ export default defineConfig({
       {
         find: /^@qti-editor\/qti-item-divider$/,
         replacement: `${qtiItemDividerSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-rubric-block$/,
+        replacement: `${qtiRubricBlockSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@qti-editor\/qti-rubric-block\/(.*)\.js$/,
+        replacement: `${qtiRubricBlockSrcRoot}/$1.ts`,
       },
       {
         find: /^@qti-editor\/prosemirror-plugins\/(.*)\.js$/,
