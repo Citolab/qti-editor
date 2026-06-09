@@ -1,6 +1,6 @@
 {
   "name": "@qti-editor/qti-package",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "QTI 3.0 content package (.zip) builder — IMS manifest + assessment-test + items + assets.",
   "repository": {
     "type": "git",
@@ -22,13 +22,13 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-editor/core": "workspace:*",
-    "@qti-editor/qti-test-export": "workspace:*",
+    "@qti-editor/core": "1.8.1",
+    "@qti-editor/qti-test-export": "1.0.0",
     "jszip": "^3.10.1",
     "prosemirror-model": "^1.25.4"
   },
   "devDependencies": {
-    "@qti-editor/qti-roundtrip-import": "workspace:*",
+    "@qti-editor/qti-roundtrip-import": "1.2.0",
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0"
   },
