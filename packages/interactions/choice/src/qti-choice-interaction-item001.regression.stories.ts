@@ -3,7 +3,7 @@
  *
  *   /qti/kennisnet/ITEM001.xml
  *     → qtiTransformItem().load  (load XML)
- *     → roundtripQtiItem         (hoist correct-response/score onto interactions)
+ *     → roundtripChoice          (hoist correct-response/score onto interactions)
  *     → DOMParser.fromSchema     (import item-body into the PM doc)
  *     → qtiItemFromProsemirror   (export PM doc back to QTI XML — console.log)
  *
@@ -19,18 +19,18 @@ import { nodes, marks } from 'prosemirror-schema-basic';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
-import { roundtripChoice, roundtripQtiItem } from '@qti-editor/qti3-item-import';
-import { qtiItemFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-item';
-import { qtiRubricBlockDescriptor } from '@qti-editor/interactions';
+import { roundtripChoice } from '@qti-editor/qti3-item-import';
+import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 
 import { qtiTransformItem } from '@qti-components/transformers';
 
-import { blockSelectPlugin } from '../../extensions/src/block-select/block-select-plugin';
+import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
 import { choiceInteractionDescriptor } from './descriptor';
+import { qtiItemFromProsemirror } from '../../shared/src/roundtrip-export';
 
 import './components/qti-choice-interaction/qti-choice-interaction';
-import '../../interaction-shared/src/components/qti-prompt/qti-prompt';
-import '../../interaction-shared/src/components/qti-simple-choice/qti-simple-choice';
+import '../../shared/src/components/qti-prompt/qti-prompt';
+import '../../shared/src/components/qti-simple-choice/qti-simple-choice';
 
 import '@qti-components/theme/item.css'
 import 'prosemirror-view/style/prosemirror.css';
@@ -111,6 +111,7 @@ export const RoundtripItem001: Story = {
       const xml = qtiItemFromProsemirror(
         currentView.state.doc,
         { identifier: 'ITEM001', title: 'ITEM001 roundtrip' },
+        schema,
       );
       console.log('[Roundtrip Export]\n' + xml);
     };

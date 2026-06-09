@@ -10,8 +10,8 @@ import { selectPointInteractionDescriptor } from '@qti-editor/interactions/selec
 import { textEntryInteractionDescriptor } from '@qti-editor/interactions/text-entry';
 import { qtiRubricBlockDescriptor } from '@qti-editor/interactions';
 import { TextSelection, type EditorState, type Transaction } from 'prosemirror-state';
-import type { NodeSpec } from 'prosemirror-model';
 
+import type { NodeSpec } from 'prosemirror-model';
 import type {
   InteractionNodeSpecEntry,
   InteractionComposerHandler,

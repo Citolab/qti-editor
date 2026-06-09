@@ -24,7 +24,7 @@
   "dependencies": {
     "@qti-editor/core": "workspace:*",
     "@qti-editor/prosemirror-plugins": "workspace:*",
-    "@qti-editor/prosekit-integration": "workspace:*",
+    "@qti-editor/qti-item-export": "workspace:*",
     "jszip": "^3.10.1"
   },
   "peerDependencies": {

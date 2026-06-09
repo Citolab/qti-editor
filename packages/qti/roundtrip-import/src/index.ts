@@ -18,7 +18,7 @@
  */
 import JSZip from 'jszip';
 import { buildCompatibilityReport, migrateHtmlFragment } from '@qti-editor/prosemirror-plugins';
-import { xmlToHTML } from '@qti-editor/prosekit-integration';
+import { xmlToHTML } from '@qti-editor/qti-item-export/pm-xml';
 import { getAllMirrorTargets } from '@qti-editor/core/composer';
 import { listInteractionDescriptors } from '@qti-editor/core/interactions/composer';
 import { jsonFromHTML } from 'prosekit/core';

@@ -20,13 +20,13 @@ import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 import { roundtripTextEntry } from '@qti-editor/qti3-item-import';
-import { qtiItemFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-item';
-import { qtiRubricBlockDescriptor } from '@qti-editor/interactions';
+import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 
 import { qtiTransformItem } from '@qti-components/transformers';
 
-import { blockSelectPlugin } from '../../extensions/src/block-select/block-select-plugin';
+import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
 import { textEntryInteractionDescriptor } from './descriptor';
+import { qtiItemFromProsemirror } from '../../shared/src/roundtrip-export';
 
 import './components/qti-text-entry-interaction/qti-text-entry-interaction';
 
@@ -101,6 +101,7 @@ export const RoundtripItem004: Story = {
       const xml = qtiItemFromProsemirror(
         currentView.state.doc,
         { identifier: 'ITEM004', title: 'ITEM004 roundtrip' },
+        schema,
       );
       console.log('[Roundtrip Export]\n' + xml);
     };
