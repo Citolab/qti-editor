@@ -471,6 +471,9 @@ importers:
       '@qti-editor/prosemirror-plugins':
         specifier: workspace:*
         version: link:../prosemirror
+      '@qti-editor/qti-item-divider':
+        specifier: workspace:*
+        version: link:../../qti/item-divider
       '@qti-editor/qti-item-export':
         specifier: workspace:*
         version: link:../../qti/item-export
@@ -716,12 +719,6 @@ importers:
       '@qti-components/transformers':
         specifier: ^1.7.0
         version: 1.7.0
-      '@qti-editor/interactions':
-        specifier: workspace:*
-        version: link:../barrel
-      '@qti-editor/prosekit-integration':
-        specifier: workspace:*
-        version: link:../../extensions/prosekit
       '@qti-editor/qti-rubric-block':
         specifier: workspace:*
         version: link:../../qti/rubric-block
@@ -777,12 +774,6 @@ importers:
       '@qti-components/transformers':
         specifier: ^1.7.0
         version: 1.7.0
-      '@qti-editor/interactions':
-        specifier: workspace:*
-        version: link:../barrel
-      '@qti-editor/prosekit-integration':
-        specifier: workspace:*
-        version: link:../../extensions/prosekit
       '@qti-editor/qti-rubric-block':
         specifier: workspace:*
         version: link:../../qti/rubric-block
@@ -1028,12 +1019,6 @@ importers:
       '@qti-components/transformers':
         specifier: ^1.7.0
         version: 1.7.0
-      '@qti-editor/interactions':
-        specifier: workspace:*
-        version: link:../barrel
-      '@qti-editor/prosekit-integration':
-        specifier: workspace:*
-        version: link:../../extensions/prosekit
       '@qti-editor/qti3-item-import':
         specifier: workspace:*
         version: link:../../qti/qti3-item-import
@@ -1190,12 +1175,12 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../core
-      '@qti-editor/prosekit-integration':
-        specifier: workspace:*
-        version: link:../../extensions/prosekit
       '@qti-editor/prosemirror-plugins':
         specifier: workspace:*
         version: link:../../extensions/prosemirror
+      '@qti-editor/qti-item-export':
+        specifier: workspace:*
+        version: link:../item-export
       jszip:
         specifier: ^3.10.1
         version: 3.10.1

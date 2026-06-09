@@ -1,6 +1,7 @@
 import { LitElement, css, html, nothing, type CSSResultGroup, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { QtiI18nController } from '@qti-editor/interaction-shared/i18n/index.js';
+
 import {
   updateNodeAttrs,
   type AttributesEventDetail,

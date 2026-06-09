@@ -19,7 +19,7 @@
   },
   "scripts": {
     "pretypecheck": "pnpm --dir ../../.. build:workspace-deps && pnpm --filter @qti-editor/qti-test-export build",
-    "build": "pnpm --filter @qti-editor/qti-test-export build && tsc",
+    "build": "pnpm --filter @qti-editor/qti-item-divider build && pnpm --filter @qti-editor/qti-test-export build && tsc",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -29,6 +29,7 @@
     "@qti-editor/core": "workspace:*",
     "@qti-editor/interactions": "workspace:*",
     "@qti-editor/prosemirror-plugins": "workspace:*",
+    "@qti-editor/qti-item-divider": "workspace:*",
     "@qti-editor/qti-item-export": "workspace:*",
     "@qti-editor/qti-test-export": "workspace:*",
     "lit": "^3.3.2",
