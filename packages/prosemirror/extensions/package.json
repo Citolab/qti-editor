@@ -1,6 +1,6 @@
 {
   "name": "@qti-editor/prosemirror-plugins",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Pure ProseMirror plugins for QTI Editor",
   "repository": {
     "type": "git",

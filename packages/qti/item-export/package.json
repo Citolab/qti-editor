@@ -1,6 +1,6 @@
 {
   "name": "@qti-editor/qti-item-export",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "ProseMirror → QTI 3.0 single assessment item export.",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@qti-editor/core": "workspace:*",
+    "@qti-editor/core": "1.8.1",
     "prosemirror-model": "^1.25.4"
   },
   "devDependencies": {

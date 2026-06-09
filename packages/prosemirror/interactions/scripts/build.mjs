@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -7,19 +8,35 @@ const packageRoot = join(__dirname, '..');
 const workspaceRoot = join(packageRoot, '..');
 const distRoot = join(packageRoot, 'dist');
 
+const prerequisitePackages = [
+  ['@qti-editor/interfaces', join(workspaceRoot, '..', 'interfaces')],
+  ['@qti-editor/interaction-shared', join(workspaceRoot, 'interaction-shared')],
+  ['@qti-editor/qti-rubric-block', join(workspaceRoot, 'qti-rubric-block')],
+  ['@qti-editor/interaction-associate', join(workspaceRoot, 'interaction-associate')],
+  ['@qti-editor/interaction-choice', join(workspaceRoot, 'interaction-choice')],
+  ['@qti-editor/interaction-gap-match', join(workspaceRoot, 'interaction-gap-match')],
+  ['@qti-editor/interaction-hottext', join(workspaceRoot, 'interaction-hottext')],
+  ['@qti-editor/interaction-inline-choice', join(workspaceRoot, 'interaction-inline-choice')],
+  ['@qti-editor/interaction-match', join(workspaceRoot, 'interaction-match')],
+  ['@qti-editor/interaction-order', join(workspaceRoot, 'interaction-order')],
+  ['@qti-editor/interaction-select-point', join(workspaceRoot, 'interaction-select-point')],
+  ['@qti-editor/interaction-text-entry', join(workspaceRoot, 'interaction-text-entry')],
+  ['@qti-editor/interaction-extended-text', join(workspaceRoot, 'interaction-extended-text')],
+];
+
 const packages = [
+  ['shared', 'interaction-shared'],
+  ['qti-rubric-block', 'qti-rubric-block'],
   ['associate', 'interaction-associate'],
   ['choice', 'interaction-choice'],
-  ['extended-text', 'interaction-extended-text'],
   ['gap-match', 'interaction-gap-match'],
   ['hottext', 'interaction-hottext'],
   ['inline-choice', 'interaction-inline-choice'],
   ['match', 'interaction-match'],
   ['order', 'interaction-order'],
   ['select-point', 'interaction-select-point'],
-  ['shared', 'interaction-shared'],
   ['text-entry', 'interaction-text-entry'],
-  ['qti-rubric-block', 'qti-rubric-block'],
+  ['extended-text', 'interaction-extended-text'],
 ];
 
 const importRewrites = [
@@ -56,16 +73,33 @@ function* walkFiles(rootDir) {
   }
 }
 
+function ensureBuilt(packageName, packageRootDir) {
+  const sourceDist = join(packageRootDir, 'dist');
+  if (existsSync(sourceDist)) {
+    return;
+  }
+
+  execFileSync('pnpm', ['--filter', packageName, 'build'], {
+    cwd: workspaceRoot,
+    stdio: 'inherit',
+  });
+
+  if (!existsSync(sourceDist)) {
+    throw new Error(`Missing built output for ${packageName}: ${sourceDist}`);
+  }
+}
+
 rmSync(distRoot, { recursive: true, force: true });
 mkdirSync(distRoot, { recursive: true });
+
+// Build sibling workspace packages first when their dist folders are absent.
+for (const [packageName, packageRootDir] of prerequisitePackages) {
+  ensureBuilt(packageName, packageRootDir);
+}
 
 for (const [subpath, packageFolder] of packages) {
   const sourceDist = join(workspaceRoot, packageFolder, 'dist');
   const targetDist = join(distRoot, subpath);
-
-  if (!existsSync(sourceDist)) {
-    throw new Error(`Missing built output for ${packageFolder}: ${sourceDist}`);
-  }
 
   cpSync(sourceDist, targetDist, { recursive: true });
 

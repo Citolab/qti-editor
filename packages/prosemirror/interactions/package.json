@@ -1,6 +1,6 @@
 {
   "name": "@qti-editor/interactions",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Umbrella QTI interaction package with tree-shakeable subpath exports",
   "repository": {
     "type": "git",
@@ -142,8 +142,8 @@
   },
   "devDependencies": {
     "@qti-editor/interaction-associate": "workspace:*",
-    "@qti-editor/interaction-choice": "1.5.0",
-    "@qti-editor/interaction-extended-text": "1.5.0",
+    "@qti-editor/interaction-choice": "1.5.1",
+    "@qti-editor/interaction-extended-text": "1.5.1",
     "@qti-editor/interaction-gap-match": "workspace:*",
     "@qti-editor/interaction-hottext": "workspace:*",
     "@qti-editor/interaction-inline-choice": "workspace:*",
