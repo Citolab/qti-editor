@@ -25,7 +25,8 @@
     }
   },
   "scripts": {
-    "pretypecheck": "pnpm --dir ../../.. build:workspace-deps",
+    "prebuild": "if [ -z \"$QTI_SKIP_CORE_PREBUILD\" ]; then pnpm --dir ../../.. build:core-deps; fi",
+    "pretypecheck": "pnpm --dir ../../.. build:core-deps",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
@@ -33,7 +34,6 @@
   "dependencies": {
     "@qti-editor/interfaces": "workspace:*",
     "@qti-editor/interactions": "workspace:*",
-    "@qti-editor/qti-item-divider": "workspace:*",
     "@qti-editor/qti-rubric-block": "workspace:*"
   },
   "devDependencies": {
