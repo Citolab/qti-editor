@@ -19,7 +19,7 @@
   },
   "scripts": {
     "pretypecheck": "pnpm --dir ../../.. build:workspace-deps && pnpm --filter @qti-editor/qti-test-export build",
-    "build": "pnpm --filter @qti-editor/qti-test-export build && tsc",
+    "build": "pnpm --filter @qti-editor/qti-item-divider build && pnpm --filter @qti-editor/qti-test-export build && tsc",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
