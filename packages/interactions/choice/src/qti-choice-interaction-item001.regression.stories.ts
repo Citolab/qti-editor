@@ -23,23 +23,20 @@ import { history, undo, redo } from 'prosemirror-history';
 import { roundtripChoice } from '@qti-editor/qti3-item-import';
 import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 import { buildSingleAssessmentItemXml, formatXml } from '@qti-editor/core/composer';
+import { expect } from 'storybook/test';
 
 import { qtiTransformItem } from '@qti-components/transformers';
 
 import { qtiItemFromProsemirror, prosemirrorFromQtiItem } from '../../shared/src/index';
 import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
 import { choiceInteractionDescriptor } from './descriptor';
-
-// import './components/qti-choice-interaction/qti-choice-interaction';
 import './register';
 import '../../shared/src/components/qti-prompt/register';
 import '../../shared/src/components/qti-simple-choice/register';
-
-// import '@qti-components/theme/item.css'
 import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
-
 import sourceXML from '../../../../public/qti/kennisnet/ITEM001.xml?raw';
+import assertedXML from '../../../../public/qti/kennisnet/ITEM001-editor.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
@@ -179,6 +176,14 @@ export const RoundtripItem001: Story = {
         ></div>
       </div>
     `;
+  },
+  play: async ({ canvasElement }) => {
+    // The story exposes its exported QTI on the editor container.
+    const container = canvasElement.querySelector<EditorContainer>('.editor-container');
+    const exportedXml = container?.__exportedXml;
+
+    // Exported XML must equal the imported asserted fixture.
+    expect(exportedXml).toEqualXml(assertedXML);
   },
 };
 
