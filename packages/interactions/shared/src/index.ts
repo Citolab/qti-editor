@@ -29,5 +29,8 @@ export * from './composer/non-qti-attributes.js';
 export * from './correct-response/codec.js';
 export * from './i18n/index.js';
 
+export * from './roundtrip-export.js';
+export * from './roundtrip-import.js';
+
 export * from './mixins/index.js';
 export * from './styles/panel.js';

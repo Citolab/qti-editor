@@ -719,6 +719,9 @@ importers:
       '@qti-components/transformers':
         specifier: ^1.7.0
         version: 1.7.0
+      '@qti-editor/core':
+        specifier: workspace:*
+        version: link:../../qti/core
       '@qti-editor/qti-rubric-block':
         specifier: workspace:*
         version: link:../../qti/rubric-block

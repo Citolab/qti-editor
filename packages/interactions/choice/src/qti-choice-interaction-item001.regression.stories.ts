@@ -5,14 +5,15 @@
  *     → qtiTransformItem().load  (load XML)
  *     → roundtripChoice          (hoist correct-response/score onto interactions)
  *     → DOMParser.fromSchema     (import item-body into the PM doc)
- *     → qtiItemFromProsemirror   (export PM doc back to QTI XML — console.log)
+ *     → qtiItemFromProsemirror   (export PM doc back to the editor-origin item-body)
+ *     → buildSingleAssessmentItemXml (compose the complete QTI item — console.log)
  *
  * No ProseKit imports.
  */
 
 import { html } from 'lit';
 import { ref } from 'lit/directives/ref.js';
-import { Schema, DOMParser } from 'prosemirror-model';
+import { Schema, DOMParser as PMDOMParser } from 'prosemirror-model';
 import { EditorState, type Plugin } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { nodes, marks } from 'prosemirror-schema-basic';
@@ -21,12 +22,13 @@ import { baseKeymap } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 import { roundtripChoice } from '@qti-editor/qti3-item-import';
 import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
+import { buildSingleAssessmentItemXml, formatXml } from '@qti-editor/core/composer';
 
 import { qtiTransformItem } from '@qti-components/transformers';
 
 import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
 import { choiceInteractionDescriptor } from './descriptor';
-import { qtiItemFromProsemirror } from '../../shared/src/roundtrip-export';
+import { qtiItemFromProsemirror, prosemirrorFromQtiItem } from '../../shared/src/index';
 
 // import './components/qti-choice-interaction/qti-choice-interaction';
 import './register';
@@ -65,36 +67,76 @@ const meta: Meta = {
 };
 export default meta;
 
+// Single source of truth for the non-QTI → data-* mirror contract.
+const interactionMetadata = [choiceInteractionDescriptor.composerMetadata];
+
 type Story = StoryObj;
 
+interface RoundtripLoaded {
+  sourceDoc: XMLDocument;
+}
+
 export const RoundtripItem001: Story = {
-  render: () => {
+  render: (_args, { loaded }) => {
+    const { sourceDoc } = loaded as RoundtripLoaded;
     let currentView: EditorView | null = null;
 
-    const init = async (container: HTMLElement) => {
+    console.log('1. Loaded QTI (source)');
+    console.dirxml(sourceDoc.documentElement);
 
+    const sourceXml = new XMLSerializer().serializeToString(sourceDoc);
+    const roundtripXml = qtiTransformItem()
+      .parse(sourceXml)
+      .fn(roundtripChoice)
+      .xmlDoc();
 
-      const loaded = (await qtiTransformItem().load('/qti/kennisnet/ITEM001.xml', { shuffle: false })).path('/qti/kennisnet');
-      const sourceXml = loaded.xml();
+    console.log('2. Roundtrip XML (import)');
+    console.dirxml(roundtripXml.documentElement);
 
-      const roundtripXml = qtiTransformItem()
-          .parse(sourceXml)
-          .fn(roundtripChoice)
-          .xml();
-      
-      // roundtripQtiItem(sourceXml);
+    const t = document.createElement("template");
+    t.innerHTML = new XMLSerializer().serializeToString(roundtripXml.documentElement);
+    const roundtripHTML = t.content.firstElementChild;
 
-      
-      const itemDoc = new window.DOMParser().parseFromString(roundtripXml, 'application/xml');
-      const body = itemDoc.querySelector('qti-item-body');
-      const tempEl = document.createElement('div');
-      tempEl.innerHTML = body ? body.innerHTML : roundtripXml;
-      
-      console.log(`%c ${roundtripXml}`, 'color: red');
-      const pmDoc = DOMParser.fromSchema(schema).parse(tempEl);
-      console.log(`%c ${JSON.stringify(pmDoc.toJSON(), null, 2)}`, 'color: green');
+    const pmDoc = PMDOMParser.fromSchema(schema).parse(roundtripHTML!);
+    console.groupCollapsed('3. ProseMirror doc (JSON)');
+    console.log(pmDoc.toJSON());
+    console.groupEnd();
 
+    const logExport = () => {
+      if (!currentView) return;
 
+      // 1. PM doc → editor-origin item-body (data-* mirrors + markers)
+      const itemBodyXml = qtiItemFromProsemirror(
+        currentView.state.doc,
+        { identifier: 'ITEM001', title: 'ITEM001 roundtrip' },
+        schema,
+        interactionMetadata,
+      );
+      const itemBodyDoc = new DOMParser().parseFromString(itemBodyXml, 'application/xml');
+      console.log('4. Editor-origin item-body (export)');
+      console.dirxml(itemBodyDoc.documentElement);
+
+      // 2. item-body → PM doc again (proves the roundtrip is lossless)
+      const reimported = prosemirrorFromQtiItem(itemBodyXml, schema, interactionMetadata);
+      console.groupCollapsed('5. Re-imported ProseMirror doc (JSON)');
+      console.log(reimported.toJSON());
+      console.groupEnd();
+
+      // 3. item-body → complete QTI assessment item (composer expands
+      //    response/outcome declarations + response processing)
+      const fullQtiXml = formatXml(
+        buildSingleAssessmentItemXml({
+          identifier: 'ITEM001',
+          title: 'ITEM001 roundtrip',
+          itemBody: itemBodyDoc,
+        }),
+      );
+      const fullQtiDoc = new DOMParser().parseFromString(fullQtiXml, 'application/xml');
+      console.log('6. Composed QTI assessment item');
+      console.dirxml(fullQtiDoc.documentElement);
+    };
+
+    const mount = (container: HTMLElement) => {
       if (currentView) currentView.destroy();
       currentView = new EditorView(container, {
         state: EditorState.create({ doc: pmDoc, schema, plugins }),
@@ -103,18 +145,6 @@ export const RoundtripItem001: Story = {
           currentView.updateState(currentView.state.apply(tr));
         }
       });
-
-      logExport();
-    };
-
-    const logExport = () => {
-      if (!currentView) return;
-      const xml = qtiItemFromProsemirror(
-        currentView.state.doc,
-        { identifier: 'ITEM001', title: 'ITEM001 roundtrip' },
-        schema,
-      );
-      console.log('[Roundtrip Export]\n' + xml);
     };
 
     return html`
@@ -125,16 +155,17 @@ export const RoundtripItem001: Story = {
         </div>
         <div
           class="editor-container"
-          ${ref(el => {
-            if (el) init(el as HTMLElement);
-          })}
+          ${ref(el => { if (el) mount(el as HTMLElement); })}
         ></div>
-        <p style="color: #666; font-size: 0.9rem;">
-          Loads <code>/qti/kennisnet/ITEM001.xml</code>, runs
-          <code>roundtripQtiItem</code>, imports into ProseMirror, then exports the PM doc
-          back to QTI XML. See the browser console.
-        </p>
       </div>
     `;
-  }
+  },
+  loaders: [
+    async (): Promise<RoundtripLoaded> => {
+      const loaded = (await qtiTransformItem().load('/qti/kennisnet/ITEM001.xml', { shuffle: false })).path('/qti/kennisnet');
+      return { sourceDoc: loaded.xmlDoc() };
+    },
+  ],
 };
+
+

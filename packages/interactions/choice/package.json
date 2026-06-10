@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "@qti-components/transformers": "^1.7.0",
+    "@qti-editor/core": "workspace:*",
     "@qti-editor/qti3-item-import": "workspace:*",
     "@qti-editor/qti-rubric-block": "workspace:*",
     "lit": "^3.3.2",
