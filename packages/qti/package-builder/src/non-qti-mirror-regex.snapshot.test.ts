@@ -130,7 +130,7 @@ describe('non-QTI data-* mirror snapshots (Phase 1 baseline)', () => {
       "<?xml version="1.0" encoding="UTF-8"?>
       <qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" identifier="snap-extended-text" title="snap-extended-text" adaptive="false" time-dependent="false">
         <qti-item-body>
-              <qti-extended-text-interaction response-identifier="EXTENDED" correct-response="Model answer" score="4" expected-lines="6"  data-correct-response="Model answer" data-score="4" />
+              <qti-extended-text-interaction response-identifier="EXTENDED" correct-response="Model answer" score="4" expected-lines="6"  data-score="4" />
             </qti-item-body>
       </qti-assessment-item>"
     `);
@@ -162,7 +162,7 @@ describe('non-QTI data-* mirror snapshots (Phase 1 baseline)', () => {
                 correct-response="Model answer"
                 score="4"
                 expected-lines="6"
-                rubricScoringBlock="Award 1 point for any correct mention of photosynthesis."  data-correct-response="Model answer" data-score="4" />
+                rubricScoringBlock="Award 1 point for any correct mention of photosynthesis."  data-score="4" />
             </qti-item-body>
       </qti-assessment-item>"
     `);

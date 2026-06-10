@@ -453,7 +453,89 @@ Canonical contract: [`packages/qti/roundtrip-import/ROUNDTRIP.md`](../packages/q
 
 For the conceptual overview of the itembody-as-source-of-truth subformat — what non-QTI attributes the editor stores on interaction elements and how they are mirrored as `data-*` for QTI 3.0 conformance — see [Itembody-only QTI subformat](../apps/site/src/content/docs/packages/itembody-subformat.mdx) (published on the docs site under Package Reference).
 
+## Document Schema Versioning
+
+The editor uses a single, monotonically increasing **schema version** for the
+ProseMirror document model. There is one source of truth:
+
+```ts
+// packages/interfaces/src/compatibility.ts
+export const CURRENT_SCHEMA_VERSION = 6;
+```
+
+Both representations of a document — the persisted ProseMirror `NodeJSON` and
+the roundtrip-QTI HTML/XML — are migrated up to this shared target version.
+
+### Where the version lives
+
+- **Persisted JSON** — the version travels *inside* the document as a single
+  extra top-level property: `{ "type": "doc", "schemaVersion": 6, ... }`.
+  There is no separate storage envelope.
+  - `stampSchemaVersion(doc)` adds the marker before writing.
+  - `readPersistedDoc(value)` strips it, migrates, and reports what changed.
+  - Never stamp a document *before* migrating it — that marks stale content as
+    current and prevents migration from ever running.
+- **Roundtrip-QTI** — the version is mirrored onto `<qti-item-body>` as
+  `data-schema-version="6"`, alongside `data-identifier` and `data-title`, so
+  the JSON and HTML representations stay in sync. This attribute also doubles as
+  the editor-origin marker read by `isEditorOriginXml`.
+
+### The migration pipeline
+
+Migrations live in `packages/extensions/prosemirror/src/compatibility/migrations/`,
+one file per transition, named `json-vN-to-vM.ts` / `html-vN-to-vM.ts`:
+
+| Step | Transition | What it does |
+| --- | --- | --- |
+| `json-v1-to-v2` | 1 → 2 | normalise legacy hyphenated attrs to camelCase |
+| `json-v2-to-v3` | 2 → 3 | rename `correctResponse` → `rubricScoringBlock` on extended-text |
+| `json-v3-to-v4` | 3 → 4 | lift `rubricScoringBlock` into a sibling `qtiRubricBlock` |
+| `json-v4-to-v5` | 4 → 5 | flat prosekit list → prosemirror-schema-list (`bullet_list`/`ordered_list`) |
+| `json-v5-to-v6` | 5 → 6 | `bold`/`italic` marks → `strong`/`em` |
+| `html-v1-to-v2` | 1 → 2 | normalise legacy camelCase HTML attrs |
+
+The engine (`migrateDocument` in `compatibility/index.ts`) walks the chain in
+version order. When no step bridges exactly from the current version it **skips
+forward** to the next registered step, or to the target version if none remain.
+This lets one representation stop early (HTML defines steps only up to v2) while
+another keeps going (JSON to v6) under one shared target version.
+
+To add a migration: bump `CURRENT_SCHEMA_VERSION`, add a `json-vN-to-vM.ts`
+file, register it in `compatibility/migrations/index.ts`, and add a test.
+
+## Roundtrip-QTI Format
+
+The **roundtrip-QTI** format is a lossless XML serialization of the editor's
+ProseMirror document. It is produced by `xmlFromNode`
+(`packages/qti/item-export/src/pm-xml.ts`) and consumed on import via
+`xmlToHTML` → `jsonFromHTML`. It is *not* persisted today — it is an
+interchange format for export/import — but it is fully round-trippable.
+
+The conversion rules are:
+
+- Every ProseMirror node is serialized to its XML element form.
+- The document root node becomes `<qti-item-body>`.
+- All **non-QTI** attributes become `data-*` attributes. This applies to
+  interaction nodes (via their `nonQtiAttributes` mirrors) **and** to the
+  document root: the doc node's own attributes are mirrored onto the body, so a
+  document with `title`/`identifier` plus the schema version emits:
+
+  ```xml
+  <qti-item-body
+    data-title="My Item"
+    data-identifier="ITEM_001"
+    data-schema-version="6">
+    ...
+  </qti-item-body>
+  ```
+
+On import, `data-schema-version` is read from the first `<qti-item-body>` (from
+the raw XML, before `xmlToHTML` rewrites attributes) and passed as the
+`sourceVersion` to `migrateHtmlFragment`, so an item exported from an older
+editor build is migrated forward on the way back in.
+
 ## Migration Note
+
 
 Some current source paths still reflect the old structure. During migration:
 

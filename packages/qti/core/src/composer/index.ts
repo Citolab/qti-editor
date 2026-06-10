@@ -9,6 +9,7 @@ import { getInteractionComposerHandler, getInteractionComposerMetadata } from '.
 import { copyMirrorsToTarget } from './non-qti-attributes.js';
 
 import type { ResponseProcessingKind } from '@qti-editor/interfaces';
+import { CURRENT_SCHEMA_VERSION } from '@qti-editor/interfaces';
 
 export {
   collectMirrorMappings,
@@ -58,10 +59,9 @@ const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';
 const XML_NS = 'http://www.w3.org/XML/1998/namespace';
 const SCHEMA_LOCATION =
   'http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd';
-export const LAB_EDITOR_VERSION = '1';
 
 /**
- * True iff every <qti-item-body> in the XML carries data-lab-editor-version.
+ * True iff every <qti-item-body> in the XML carries data-schema-version.
  * False if zero item-bodies exist, or any item-body is missing the marker.
  * Symmetric reader for the attribute stamped by buildAssessmentItemXml.
  */
@@ -70,7 +70,7 @@ export function isEditorOriginXml(xmlText: string): boolean {
   const bodies = doc.querySelectorAll('qti-item-body');
   if (bodies.length === 0) return false;
   for (const body of Array.from(bodies)) {
-    if (!body.hasAttribute('data-lab-editor-version')) return false;
+    if (!body.hasAttribute('data-schema-version')) return false;
   }
   return true;
 }
@@ -250,7 +250,7 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
 
   composedItemBody.setAttribute('data-identifier', itemIdentifier);
   composedItemBody.setAttribute('data-title', itemTitle);
-  composedItemBody.setAttribute('data-lab-editor-version', LAB_EDITOR_VERSION);
+  composedItemBody.setAttribute('data-schema-version', String(CURRENT_SCHEMA_VERSION));
 
   const { declarations, responseTemplate, maxScore, hasAutomatedProcessing } = composeAndNormalizeItemBody(composedItemBody, xmlDoc);
 

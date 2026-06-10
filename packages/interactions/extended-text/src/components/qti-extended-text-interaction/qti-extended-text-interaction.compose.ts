@@ -1,10 +1,8 @@
-import { collectMirrorMappings, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
+import { collectMirrorMappings, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { extendedTextInteractionComposerMetadata } from '../../composer/metadata.js';
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@qti-editor/interaction-shared/composer/types.js';
-
-const QTI_NS = 'http://www.imsglobal.org/xsd/imsqtiasi_v3p0';
 
 function toFiniteNumber(value: string | null, fallback: number | null): number | null {
   if (value == null || value.trim().length === 0) return fallback;
@@ -18,38 +16,15 @@ function toNonEmptyString(value: string | null): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
-function createRubricBlock(xmlDoc: Document, correctResponse: string | string[]): Element {
-  const rubricBlock = xmlDoc.createElementNS(QTI_NS, 'qti-rubric-block');
-  rubricBlock.setAttribute('view', 'scorer');
-  rubricBlock.setAttribute('use', 'scoring');
-
-  const contentBlock = xmlDoc.createElementNS(QTI_NS, 'qti-content-body');
-  const div = xmlDoc.createElementNS(QTI_NS, 'div');
-
-  const lines = Array.isArray(correctResponse) ? correctResponse : correctResponse.split('\n');
-  for (const line of lines) {
-    const p = xmlDoc.createElementNS(QTI_NS, 'p');
-    p.textContent = line || '\u00A0';
-    div.appendChild(p);
-  }
-
-  contentBlock.appendChild(div);
-  rubricBlock.appendChild(contentBlock);
-
-  return rubricBlock;
-}
-
 export function composeExtendedTextInteractionElement(sourceElement: Element, xmlDoc: Document): InteractionComposeResult {
   const metadata = extendedTextInteractionComposerMetadata;
   const warnings: ComposerWarning[] = [];
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
-  const additionalElements: Element[] = [];
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
   const expectedLength = toFiniteNumber(sourceElement.getAttribute('expected-length'), null);
   const expectedLines = toFiniteNumber(sourceElement.getAttribute('expected-lines'), null);
   const format = toNonEmptyString(sourceElement.getAttribute('format')) || 'plain';
-  const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
@@ -67,12 +42,6 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
     normalizedElement.setAttribute('format', format);
   } else {
     normalizedElement.removeAttribute('format');
-  }
-
-  // Create rubric block if correctResponse is present
-  if (correctResponse && responseIdentifier) {
-    const rubricBlock = createRubricBlock(xmlDoc, correctResponse);
-    additionalElements.push(rubricBlock);
   }
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
@@ -99,6 +68,6 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
     responseProcessingKind: undefined,
     nonQtiAttributes,
     warnings,
-    additionalElements: additionalElements.length > 0 ? additionalElements : undefined,
+    additionalElements: undefined,
   };
 }

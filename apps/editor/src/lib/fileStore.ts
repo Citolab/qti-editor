@@ -1,9 +1,9 @@
 import {
-  readPersistedDocStateEnvelope,
-  writePersistedDocStateEnvelope,
-  type PersistedDocStateEnvelope,
+  readPersistedDoc,
+  stampSchemaVersion,
 } from '@qti-editor/prosemirror-plugins';
 
+import type { NodeJSON } from 'prosekit/core';
 import type { MigrationResult } from '@qti-editor/interfaces';
 
 /**
@@ -77,9 +77,11 @@ export function saveFile(
   let schemaVersion: number | undefined;
   try {
     const raw = localStorage.getItem(getAutoSaveKey(scope));
-    const parsed = raw ? (JSON.parse(raw) as PersistedDocStateEnvelope) : null;
-    doc = parsed?.doc ?? null;
-    schemaVersion = parsed?.schemaVersion;
+    // The autosave value is the bare ProseMirror doc carrying an embedded
+    // `schemaVersion` marker.
+    const parsed = raw ? (JSON.parse(raw) as { schemaVersion?: number } | null) : null;
+    doc = parsed ?? null;
+    schemaVersion = typeof parsed?.schemaVersion === 'number' ? parsed.schemaVersion : undefined;
   } catch { /* ignore corrupt state */ }
 
   const file: SavedFile = {
@@ -107,29 +109,24 @@ export function loadFile(scope: StorageScope = activeStorageScope, id: string): 
   const file = listFiles(scope).find(f => f.id === id);
   if (!file) return null;
 
-  // Run migration eagerly using the file's original schemaVersion so any
-  // legacy attrs are normalised before the editor sees them, and so the
-  // migration report is available to the caller.
-  const originalVersion = file.schemaVersion ?? 1;
-  const envelope = readPersistedDocStateEnvelope({
-    version: originalVersion,
-    schemaVersion: originalVersion,
-    doc: file.doc,
-  });
+  // Run migration eagerly so any legacy attrs are normalised before the
+  // editor sees them, and so the migration report is available to the caller.
+  // The stored doc carries its own embedded schemaVersion marker.
+  const result = readPersistedDoc(file.doc);
 
   // Write the migrated content stamped at the current version so the
   // editor skips re-migration when it reads from localStorage.
   localStorage.setItem(
     getAutoSaveKey(scope),
-    JSON.stringify(writePersistedDocStateEnvelope(envelope.doc ?? (file.doc as any))),
+    JSON.stringify(stampSchemaVersion((result.doc ?? file.doc) as NodeJSON)),
   );
   localStorage.setItem(getCurrentFileIdKey(scope), id);
 
   const migrationRan =
-    envelope.compatibility != null &&
-    envelope.compatibility.sourceVersion < envelope.compatibility.targetVersion;
+    result.compatibility != null &&
+    result.compatibility.sourceVersion < result.compatibility.targetVersion;
 
-  return { file, compatibility: migrationRan ? envelope.compatibility : undefined };
+  return { file, compatibility: migrationRan ? result.compatibility : undefined };
 }
 
 export function deleteFile(scope: StorageScope = activeStorageScope, id: string): void {

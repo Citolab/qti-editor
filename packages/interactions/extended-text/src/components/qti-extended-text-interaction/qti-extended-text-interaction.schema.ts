@@ -1,5 +1,3 @@
-import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '@qti-editor/interaction-shared';
-
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
@@ -7,7 +5,6 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
   content: 'qtiPrompt?',
   attrs: {
     responseIdentifier: { default: null },
-    rubricScoringBlock: { default: null },
     expectedLength: { default: null },
     expectedLines: { default: null },
     placeholderText: { default: null },
@@ -34,7 +31,6 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
         const scoreAttr = node.getAttribute('score');
         return {
           responseIdentifier: node.getAttribute('response-identifier'),
-          rubricScoringBlock: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           expectedLength: expectedLength ? parseInt(expectedLength, 10) : null,
           expectedLines: expectedLines ? parseInt(expectedLines, 10) : null,
           placeholderText: node.getAttribute('placeholder-text'),
@@ -54,10 +50,6 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
     const attrs: Record<string, string> = {};
     if (node.attrs.responseIdentifier) {
       attrs['response-identifier'] = node.attrs.responseIdentifier;
-    }
-    const cr = serializeCorrectResponseAttribute(node.attrs.rubricScoringBlock);
-    if (cr) {
-      attrs['correct-response'] = cr;
     }
     if (node.attrs.expectedLength != null) {
       attrs['expected-length'] = String(node.attrs.expectedLength);

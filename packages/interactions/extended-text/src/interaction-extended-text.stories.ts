@@ -26,10 +26,9 @@ export const AuthoringFixture = {
       expected-lines="6"
       expected-length="280"
       placeholder-text="Explain how descriptor contracts prevent accidental schema drift."
-      correct-response="A strong answer explains descriptor-owned node specs, declared base schema dependencies, and shared runtime assembly."
       score="5"
     >
       <qti-prompt>Explain why the interaction descriptor should be the source of truth.</qti-prompt>
     </qti-extended-text-interaction>
-  `, 'essay-style fixture with rubric/model answer preview'),
+  `, 'essay-style fixture'),
 };

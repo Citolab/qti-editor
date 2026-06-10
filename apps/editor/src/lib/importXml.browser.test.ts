@@ -15,12 +15,12 @@ vi.mock('@qti-editor/qti3-item-import', () => ({
 }));
 
 describe('isEditorOriginXml', () => {
-  it('returns true when the only item-body carries data-lab-editor-version', () => {
-    const xml = wrapItem('<p>hi</p>', 'data-lab-editor-version="1"');
+  it('returns true when the only item-body carries data-schema-version', () => {
+    const xml = wrapItem('<p>hi</p>', 'data-schema-version="6"');
     expect(isEditorOriginXml(xml)).toBe(true);
   });
 
-  it('returns false when the item-body lacks data-lab-editor-version', () => {
+  it('returns false when the item-body lacks data-schema-version', () => {
     const xml = wrapItem('<p>hi</p>');
     expect(isEditorOriginXml(xml)).toBe(false);
   });
@@ -32,7 +32,7 @@ describe('isEditorOriginXml', () => {
 
   it('returns false when at least one item-body is missing the marker', () => {
     const xml = `<root xmlns="${QTI_NS}">`
-      + `<qti-item-body data-lab-editor-version="1"><p>a</p></qti-item-body>`
+      + `<qti-item-body data-schema-version="6"><p>a</p></qti-item-body>`
       + `<qti-item-body><p>b</p></qti-item-body>`
       + `</root>`;
     expect(isEditorOriginXml(xml)).toBe(false);
@@ -54,7 +54,7 @@ describe('importXmlFromText branching', () => {
 
   it('does NOT call roundtripQtiItem for editor-origin XML (marker present)', () => {
     roundtripSpy.mockClear();
-    const xml = wrapItem('<p>editor</p>', 'data-lab-editor-version="1"');
+    const xml = wrapItem('<p>editor</p>', 'data-schema-version="6"');
     try {
       importXmlFromText(xml, { schema: undefined as never });
     } catch {

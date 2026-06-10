@@ -1,5 +1,10 @@
 # Lossless ProseMirror ↔ QTI Roundtrip
 
-The canonical doc lives in the export package: [`../roundtrip-export/ROUNDTRIP.md`](../roundtrip-export/ROUNDTRIP.md).
+The canonical conceptual reference lives in the architecture doc:
+[Roundtrip-QTI Format](../../../docs/architecture.md#roundtrip-qti-format) and
+[Lossless QTI Roundtrip Packages](../../../docs/architecture.md#lossless-qti-roundtrip-packages).
 
-Both packages are paired. **Do not change the `DATA_ATTRIBUTE_MAPPINGS` table in `src/index.ts` without updating the sibling export package and the contract table in the canonical doc.**
+Both the export (`@qti-editor/qti-item-export`) and this import package are
+paired. **Do not change the `DATA_ATTRIBUTE_MAPPINGS` table in `src/index.ts`
+without updating the sibling export path and the contract table in the
+architecture doc.**

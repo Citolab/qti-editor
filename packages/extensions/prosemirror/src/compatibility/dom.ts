@@ -1,10 +1,11 @@
+import { CURRENT_SCHEMA_VERSION, type MigrationResult } from '@qti-editor/interfaces';
+
 import { createMigrationRegistry } from './index.js';
-import { HTML_MIGRATION_STEPS } from './migrations.js';
+import { HTML_MIGRATION_STEPS } from './migrations/index.js';
 
-import type { MigrationResult } from '@qti-editor/interfaces';
 
-/** Derived from the last entry in HTML_MIGRATION_STEPS — do not edit manually. */
-export const CURRENT_HTML_DOCUMENT_VERSION = HTML_MIGRATION_STEPS[HTML_MIGRATION_STEPS.length - 1].toVersion;
+/** The schema version every migrated HTML fragment is targeted at. */
+export const CURRENT_HTML_DOCUMENT_VERSION = CURRENT_SCHEMA_VERSION;
 
 /** Attributes and element tags to snapshot into the preservation sidecar before ProseMirror parses. */
 export interface HtmlCompatibilityPreservationOptions {

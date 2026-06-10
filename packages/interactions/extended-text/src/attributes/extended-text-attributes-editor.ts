@@ -6,7 +6,7 @@ export interface ExtendedTextAttributesFriendlyEditorDefinition
 }
 
 export const extendedTextAttributesFriendlyEditor = {
-  attribute: 'rubricScoringBlock',
+  attribute: 'class',
   kind: 'extendedTextAttributes',
 } as const satisfies ExtendedTextAttributesFriendlyEditorDefinition;
 

@@ -14,8 +14,8 @@ export const extendedTextInteractionComposerMetadata = {
     internalKind: undefined,
     internalSourceXml: '',
   },
-  nonQtiAttributes: [{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }, { source: 'rubricScoringBlock', mirror: false }, 'score'],
-  userEditableAttributes: ['expectedLength', 'expectedLines', 'placeholderText', 'format', 'rubricScoringBlock', 'class', 'score'],
+  nonQtiAttributes: ['score'],
+  userEditableAttributes: ['expectedLength', 'expectedLines', 'placeholderText', 'format', 'class', 'score'],
 
 } satisfies InteractionComposerMetadata;
 
@@ -23,7 +23,7 @@ export const extendedTextNodeAttributePanelMetadataByNodeTypeName = {
   [EXTENDED_TEXT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: EXTENDED_TEXT_INTERACTION_NODE_TYPE,
     editableAttributes: extendedTextInteractionComposerMetadata.userEditableAttributes,
-    hiddenAttributes: ['class', 'rubricScoringBlock'],
+    hiddenAttributes: ['class'],
     friendlyEditors: [extendedTextAttributesFriendlyEditor],
     fields: { score: { label: 'Score', input: 'number' } },
   },

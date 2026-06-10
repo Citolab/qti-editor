@@ -1,43 +1,32 @@
 import { createMigrationRegistry } from './index.js';
-import { JSON_MIGRATION_STEPS } from './migrations.js';
+import { JSON_MIGRATION_STEPS } from './migrations/index.js';
 
-import type { MigrationResult } from '@qti-editor/interfaces';
+import { CURRENT_SCHEMA_VERSION, type MigrationResult } from '@qti-editor/interfaces';
 import type { NodeJSON } from 'prosekit/core';
 
-/** Derived from the last entry in JSON_MIGRATION_STEPS — do not edit manually. */
-export const CURRENT_JSON_DOCUMENT_VERSION = JSON_MIGRATION_STEPS[JSON_MIGRATION_STEPS.length - 1].toVersion;
-export const CURRENT_PERSISTED_STATE_VERSION = 2;
+/** The schema version every persisted document is migrated up to. */
+export const CURRENT_JSON_DOCUMENT_VERSION = CURRENT_SCHEMA_VERSION;
 
 /**
- * DB SNAPSHOT ENVELOPE FORMAT
+ * PERSISTED DOCUMENT FORMAT
  *
- * All persisted documents are wrapped in this envelope before writing to
- * storage (localStorage, Firestore, etc.):
+ * Documents are stored as the raw ProseMirror `NodeJSON` with a single extra
+ * top-level property, `schemaVersion`, recording the schema version at save
+ * time:
  *
- *   { "version": 2, "schemaVersion": 3, "doc": { ...NodeJSON } }
+ *   { "type": "doc", "schemaVersion": 6, "content": [ ... ] }
  *
- * - `version`       — envelope format version (bumped if the wrapper shape changes)
- * - `schemaVersion` — document schema version at the time the doc was saved;
- *                     used as `sourceVersion` for `migrateJsonDocument` on read
+ * `stampSchemaVersion` adds the marker before writing; `readPersistedDoc`
+ * reads it back, strips it, and runs migration up to `CURRENT_SCHEMA_VERSION`.
  *
- * `readPersistedDocStateEnvelope` handles three legacy shapes without a version
- * marker: bare NodeJSON → treated as schemaVersion 1; envelope without
- * `schemaVersion` → falls back to `version`; missing both → assumes 1.
- *
- * Never write a file to storage using `writePersistedDocStateEnvelope` before
- * running migration — doing so stamps `schemaVersion: CURRENT` and prevents
- * future migration from running.
+ * There is no separate storage envelope — the version travels with the doc.
+ * Never stamp a document before migrating it: doing so marks it as current and
+ * prevents future migration from running.
  */
-export interface PersistedDocStateEnvelope {
-  version: number;
-  schemaVersion?: number;
-  doc?: NodeJSON;
-}
 
-/** Result of reading a stored document envelope, including any migration that ran. */
+/** Result of reading a stored document, including any migration that ran. */
 export interface ReadPersistedDocStateResult {
   doc?: NodeJSON;
-  envelopeVersion?: number;
   /** The schema version the document had at save time (before migration). */
   schemaVersion?: number;
   /** Present only when migration actually ran (sourceVersion < targetVersion). */
@@ -45,7 +34,7 @@ export interface ReadPersistedDocStateResult {
 }
 
 const jsonDocumentMigrationRegistry = createMigrationRegistry<NodeJSON>({
-  targetVersion: CURRENT_JSON_DOCUMENT_VERSION,
+  targetVersion: CURRENT_SCHEMA_VERSION,
   detectVersion(document, options) {
     if (typeof options?.sourceVersion === 'number') return options.sourceVersion;
     if (typeof options?.metadata?.documentVersion === 'number') return options.metadata.documentVersion;
@@ -58,9 +47,9 @@ const jsonDocumentMigrationRegistry = createMigrationRegistry<NodeJSON>({
 /**
  * Migrates a raw ProseMirror `NodeJSON` document to the current schema version.
  *
- * Pass `sourceVersion` when it is known (e.g. from a stored envelope). If
- * omitted, the pipeline attempts to detect it from the document itself, then
- * falls back to `fallbackVersion` (default 1) with a `VERSION_ASSUMED` warning.
+ * Pass `sourceVersion` when it is known. If omitted, the pipeline reads an
+ * embedded `schemaVersion`, then falls back to `fallbackVersion` (default 1)
+ * with a `VERSION_ASSUMED` warning.
  */
 export function migrateJsonDocument(
   document: NodeJSON,
@@ -79,63 +68,33 @@ export function migrateJsonDocument(
 }
 
 /**
- * Wraps a migrated document in the current versioned envelope for storage.
- * Always call this *after* migration — never before (see envelope format comment above).
+ * Stamps the current schema version onto a (migrated) document for storage.
+ * Always call this *after* migration — never before.
  */
-export function writePersistedDocStateEnvelope(doc: NodeJSON): PersistedDocStateEnvelope {
-  return {
-    version: CURRENT_PERSISTED_STATE_VERSION,
-    schemaVersion: CURRENT_JSON_DOCUMENT_VERSION,
-    doc,
-  };
+export function stampSchemaVersion(doc: NodeJSON): NodeJSON {
+  return { ...(doc as unknown as Record<string, unknown>), schemaVersion: CURRENT_SCHEMA_VERSION } as unknown as NodeJSON;
 }
 
 /**
- * Reads a stored value (envelope object, bare NodeJSON, or unknown garbage)
- * and returns the migrated document plus any compatibility metadata.
+ * Reads a stored value (a doc carrying an embedded `schemaVersion`, a bare
+ * legacy `NodeJSON`, or unknown garbage) and returns the migrated document
+ * plus any compatibility metadata.
  *
  * Safe to call with untrusted input — returns `{}` for anything unparseable.
  */
-export function readPersistedDocStateEnvelope(value: unknown): ReadPersistedDocStateResult {
-  if (isNodeJson(value)) {
-    return {
-      doc: migrateJsonDocument(value, {
-        sourceVersion: 1,
-        metadata: { envelopeVersion: 1, envelopeShape: 'bare-doc' },
-      }).document,
-      envelopeVersion: 1,
-      schemaVersion: 1,
-      compatibility: migrateJsonDocument(value, {
-        sourceVersion: 1,
-        metadata: { envelopeVersion: 1, envelopeShape: 'bare-doc' },
-      }),
-    };
-  }
+export function readPersistedDoc(value: unknown): ReadPersistedDocStateResult {
+  if (!isNodeJson(value)) return {};
 
-  if (!value || typeof value !== 'object') return {};
-
-  const envelope = value as Record<string, unknown>;
-  const doc = envelope.doc;
-  if (!isNodeJson(doc)) return {};
-
-  const envelopeVersion = typeof envelope.version === 'number' ? envelope.version : 1;
-  const schemaVersion = typeof envelope.schemaVersion === 'number'
-    ? envelope.schemaVersion
-    : typeof envelope.version === 'number'
-      ? envelope.version
-      : 1;
+  const { schemaVersion: embeddedVersion, ...rawDoc } = value as unknown as Record<string, unknown>;
+  const schemaVersion = typeof embeddedVersion === 'number' ? embeddedVersion : 1;
+  const doc = rawDoc as unknown as NodeJSON;
 
   const compatibility = migrateJsonDocument(doc, {
-    sourceVersion: schemaVersion,
-    metadata: {
-      envelopeVersion,
-      envelopeShape: 'object',
-    },
+    sourceVersion: typeof embeddedVersion === 'number' ? embeddedVersion : undefined,
   });
 
   return {
     doc: compatibility.document,
-    envelopeVersion,
     schemaVersion,
     compatibility,
   };

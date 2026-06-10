@@ -24,7 +24,7 @@ import {
   defineSemanticPasteExtension,
   nodeAttrsSyncExtension,
   readPersistedStateFromLocalStorage,
-  writePersistedDocStateEnvelope,
+  stampSchemaVersion,
 } from '@qti-editor/prosemirror-plugins';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
@@ -348,7 +348,7 @@ export class QtiEditorApp extends LitElement {
     try {
       const pmDoc = await importJson(this.editor.schema);
       this.editor.setContent(pmDoc.toJSON());
-      localStorage.setItem(getAutoSaveKey(), JSON.stringify(writePersistedDocStateEnvelope(pmDoc.toJSON())));
+      localStorage.setItem(getAutoSaveKey(), JSON.stringify(stampSchemaVersion(pmDoc.toJSON())));
       document.dispatchEvent(new CustomEvent('qti:content:change', { bubbles: true }));
     } catch (error) {
       console.error('Failed to import JSON:', error);
@@ -364,7 +364,7 @@ export class QtiEditorApp extends LitElement {
     try {
       const pmDoc = await importRoundtripXml(this.editor.schema);
       this.editor.setContent(pmDoc.toJSON());
-      localStorage.setItem(getAutoSaveKey(), JSON.stringify(writePersistedDocStateEnvelope(pmDoc.toJSON())));
+      localStorage.setItem(getAutoSaveKey(), JSON.stringify(stampSchemaVersion(pmDoc.toJSON())));
       document.dispatchEvent(new CustomEvent('qti:content:change', { bubbles: true }));
     } catch (error) {
       console.error('Failed to import roundtrip XML:', error);
@@ -380,7 +380,7 @@ export class QtiEditorApp extends LitElement {
       // Write the imported doc to localStorage immediately so saveFile() reads
       // the correct content without waiting for the persistence plugin's debounce.
       const doc = this.editor.view.state.doc.toJSON();
-      localStorage.setItem(getAutoSaveKey(), JSON.stringify(writePersistedDocStateEnvelope(doc)));
+      localStorage.setItem(getAutoSaveKey(), JSON.stringify(stampSchemaVersion(doc)));
 
       // Notify the React layer (dirty state, auto-save status) that content changed.
       document.dispatchEvent(new CustomEvent('qti:content:change', { bubbles: true }));

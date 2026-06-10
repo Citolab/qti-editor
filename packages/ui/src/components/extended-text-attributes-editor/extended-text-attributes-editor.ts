@@ -63,23 +63,18 @@ export class QtiExtendedTextAttributesEditor extends LitElement {
     this.emitPatch({ class: nextClass });
   }
 
-  private updateCorrectResponse(value: string) {
-    this.emitPatch({ rubricScoringBlock: value || null });
-  }
-
   override render() {
     const activeNode = this.getActiveExtendedTextNode();
     if (!activeNode) return nothing;
 
     const classState = parseExtendedTextClassState(String(activeNode.attrs.class ?? ''));
-    const correctResponse = String(activeNode.attrs.rubricScoringBlock ?? '');
 
     return html`
       <section class="rounded-xl border border-base-300/60 bg-base-100/80 p-3">
         <div class="mb-3">
           <div class="text-sm font-semibold">Extended text</div>
           <div class="text-xs text-base-content/70">
-            Configure height and provide rubric/model answer.
+            Configure height.
           </div>
         </div>
 
@@ -104,23 +99,6 @@ export class QtiExtendedTextAttributesEditor extends LitElement {
                   html`<option value=${option}>${heightOptionLabels[option] ?? option}</option>`,
               )}
             </select>
-          </label>
-
-          <label class="form-control w-full">
-            <span class="mb-1 text-xs font-semibold uppercase tracking-wide text-base-content/70">
-              Rubric / Model answer
-            </span>
-            <textarea
-              class="textarea textarea-bordered w-full min-h-[80px]"
-              placeholder="Enter the expected or model answer (for grading reference only)"
-              .value=${correctResponse}
-              @input=${(event: Event) => {
-                this.updateCorrectResponse((event.currentTarget as HTMLTextAreaElement).value);
-              }}
-            ></textarea>
-            <span class="mt-1 text-xs text-base-content/60">
-              This will be output as a rubric block for graders. Not used for automated scoring.
-            </span>
           </label>
         </div>
       </section>

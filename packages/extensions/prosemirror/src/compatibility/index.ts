@@ -10,8 +10,11 @@
  *    Use `jsonPreserveUnknownAttrs` / `htmlPreserveUnknownAttrs` from helpers.ts.
  *
  * 3. Steps are strictly version-ordered — each `MigrationStep` declares
- *    `fromVersion` and `toVersion`. `migrateDocument` walks the chain in order;
- *    a missing bridge throws rather than skipping silently.
+ *    `fromVersion` and `toVersion`. `migrateDocument` walks the chain in order.
+ *    When no step bridges exactly from the current version, it skips forward to
+ *    the next registered step (or to the target version if none remain). This
+ *    lets one representation stop early (e.g. HTML at v2) while another keeps
+ *    going (JSON to v6) under a single shared target version.
  *
  * 4. Version is detected before migration — `detectVersion` is called first;
  *    if it returns null the pipeline falls back to `fallbackVersion` (default 1)
@@ -116,10 +119,9 @@ export function createMigrationRegistry<TDocument>(
 }
 
 export * from './helpers.js';
-export * from './migrations.js';
+export * from './migrations/index.js';
 export * from './json.js';
 export * from './dom.js';
-export * from './diff.js';
 export * from './report.js';
 
 /**
@@ -150,9 +152,25 @@ export function migrateDocument<TDocument>(
   while (currentVersion < options.targetVersion) {
     const nextStep = steps.find(step => step.fromVersion === currentVersion);
     if (!nextStep) {
-      throw new Error(
-        `No compatibility migration step registered from version ${currentVersion} to ${options.targetVersion}.`,
-      );
+      // No step bridges exactly from currentVersion. Skip forward to the next
+      // registered step (a representation may not need a transform at every
+      // version — e.g. HTML stops at v2 while JSON continues to v6). If no
+      // further step exists, jump straight to the target version.
+      const forwardStep = steps.find(step => step.fromVersion > currentVersion);
+      if (!forwardStep) {
+        currentVersion = options.targetVersion;
+        break;
+      }
+      changes.push({
+        code: 'VERSION_DETECTED',
+        severity: 'info',
+        message: `No migration step for version ${currentVersion}; skipping forward to ${forwardStep.fromVersion}.`,
+        fromVersion: currentVersion,
+        toVersion: forwardStep.fromVersion,
+        data: { detection: 'skip-forward' },
+      });
+      currentVersion = forwardStep.fromVersion;
+      continue;
     }
 
     const context = new CompatibilityContext(

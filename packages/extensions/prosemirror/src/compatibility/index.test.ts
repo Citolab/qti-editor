@@ -50,15 +50,31 @@ describe('migration ordering', () => {
     expect(result.appliedStepIds).toEqual(['v2-to-v3', 'v3-to-v4']);
   });
 
-  it('throws when a required version bridge is missing', () => {
+  it('skips forward to the target version when no further step bridges the gap', () => {
     const registry = createMigrationRegistry<Doc>({
       targetVersion: 3,
       steps: [makeStep(1, 2, '-b')], // no v2→v3
     });
 
-    expect(() => registry.migrate({ value: 'x' }, { source: 'test', fallbackVersion: 1 })).toThrow(
-      /No compatibility migration step registered from version 2/,
-    );
+    const result = registry.migrate({ value: 'x' }, { source: 'test', fallbackVersion: 1 });
+
+    // v1→v2 runs, then there is no v2→v3 step so the engine jumps to the target.
+    expect(result.document.value).toBe('x-b');
+    expect(result.appliedStepIds).toEqual(['v1-to-v2']);
+    expect(result.targetVersion).toBe(3);
+  });
+
+  it('skips forward to the next registered step when an intermediate version has no step', () => {
+    const registry = createMigrationRegistry<Doc>({
+      targetVersion: 4,
+      steps: [makeStep(1, 2, '-b'), makeStep(3, 4, '-d')], // no v2→v3
+    });
+
+    const result = registry.migrate({ value: 'x' }, { source: 'test', fallbackVersion: 1 });
+
+    expect(result.document.value).toBe('x-b-d');
+    expect(result.appliedStepIds).toEqual(['v1-to-v2', 'v3-to-v4']);
+    expect(result.changes.some(c => c.code === 'VERSION_DETECTED' && c.data?.detection === 'skip-forward')).toBe(true);
   });
 
   it('returns the document unchanged (by reference) when already at target version', () => {

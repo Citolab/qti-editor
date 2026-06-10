@@ -1,9 +1,8 @@
 import {
   CURRENT_JSON_DOCUMENT_VERSION,
-  CURRENT_PERSISTED_STATE_VERSION,
   migrateJsonDocument,
-  readPersistedDocStateEnvelope,
-  writePersistedDocStateEnvelope,
+  readPersistedDoc,
+  stampSchemaVersion,
 } from './json.js';
 
 import type { NodeJSON } from 'prosekit/core';
@@ -42,24 +41,21 @@ describe('json snapshot compatibility', () => {
     expect(result.appliedStepIds).toContain('json-v1-to-v2-normalize-legacy-attrs');
   });
 
-  it('reads old persisted envelopes and returns migrated content', () => {
-    const result = readPersistedDocStateEnvelope({
-      version: 1,
-      doc: {
-        type: 'doc',
-        content: [
-          {
-            type: 'qtiTextEntryInteraction',
-            attrs: {
-              'response-identifier': 'TEXT',
-              'correct-response': 'answer',
-            },
+  it('reads a stored doc with an embedded schemaVersion and returns migrated content', () => {
+    const result = readPersistedDoc({
+      type: 'doc',
+      schemaVersion: 1,
+      content: [
+        {
+          type: 'qtiTextEntryInteraction',
+          attrs: {
+            'response-identifier': 'TEXT',
+            'correct-response': 'answer',
           },
-        ],
-      },
+        },
+      ],
     });
 
-    expect(result.envelopeVersion).toBe(1);
     expect(result.schemaVersion).toBe(1);
     expect(result.doc?.content?.[0]?.attrs).toEqual({
       responseIdentifier: 'TEXT',
@@ -69,13 +65,13 @@ describe('json snapshot compatibility', () => {
     expect(result.compatibility?.targetVersion).toBe(CURRENT_JSON_DOCUMENT_VERSION);
   });
 
-  it('writes the latest persisted envelope shape', () => {
-    const payload = writePersistedDocStateEnvelope({ type: 'doc', content: [] });
+  it('stamps the current schema version onto a document', () => {
+    const stamped = stampSchemaVersion({ type: 'doc', content: [] });
 
-    expect(payload).toEqual({
-      version: CURRENT_PERSISTED_STATE_VERSION,
+    expect(stamped).toEqual({
+      type: 'doc',
+      content: [],
       schemaVersion: CURRENT_JSON_DOCUMENT_VERSION,
-      doc: { type: 'doc', content: [] },
     });
   });
 });
@@ -159,35 +155,35 @@ describe('no silent data loss — v1 JSON snapshot regression', () => {
     }
   });
 
-  it('reads a bare NodeJSON (no envelope) via readPersistedDocStateEnvelope without data loss', () => {
-    const result = readPersistedDocStateEnvelope(v1RegressionDoc);
+  it('reads a bare NodeJSON (no embedded version) via readPersistedDoc without data loss', () => {
+    const result = readPersistedDoc(v1RegressionDoc);
 
-    expect(result.envelopeVersion).toBe(1);
+    expect(result.schemaVersion).toBe(1);
     expect(result.doc?.content?.[0]?.attrs?.responseIdentifier).toBe('RESPONSE_1');
     expect(result.doc?.content?.[1]?.attrs?.caseSensitive).toBe(false);
     expect(result.compatibility?.sourceVersion).toBe(1);
     expect(result.compatibility?.targetVersion).toBe(CURRENT_JSON_DOCUMENT_VERSION);
   });
 
-  it('passes through a current-version envelope without running any migration steps', () => {
+  it('passes through a current-version doc without running any migration steps', () => {
     const currentDoc: NodeJSON = {
       type: 'doc',
       content: [
         { type: 'qtiTextEntryInteraction', attrs: { responseIdentifier: 'R1', caseSensitive: true } },
       ],
     };
-    const envelope = writePersistedDocStateEnvelope(currentDoc);
-    const result = readPersistedDocStateEnvelope(envelope);
+    const stamped = stampSchemaVersion(currentDoc);
+    const result = readPersistedDoc(stamped);
 
     expect(result.doc?.content?.[0]?.attrs?.responseIdentifier).toBe('R1');
     expect(result.compatibility?.appliedStepIds).toHaveLength(0);
   });
 });
 
-// ── v2 → v3: correctResponse renamed to rubricScoringBlock on qtiExtendedTextInteraction ──
+// ── v2 → v3 → v4: correctResponse lifted into a sibling qtiRubricBlock ──
 
-describe('v2 → v3: correctResponse → rubricScoringBlock on qtiExtendedTextInteraction', () => {
-  it('renames correctResponse to rubricScoringBlock on extended text nodes', () => {
+describe('correctResponse → rubricScoringBlock → qtiRubricBlock on qtiExtendedTextInteraction', () => {
+  it('lifts the rubric value into a sibling qtiRubricBlock and drops the attr', () => {
     const v2Doc: NodeJSON = {
       type: 'doc',
       content: [
@@ -200,9 +196,17 @@ describe('v2 → v3: correctResponse → rubricScoringBlock on qtiExtendedTextIn
 
     const result = migrateJsonDocument(v2Doc, { sourceVersion: 2 });
 
-    expect(result.document.content?.[0]?.attrs?.rubricScoringBlock).toBe('model answer\n');
-    expect(result.document.content?.[0]?.attrs?.correctResponse).toBeUndefined();
+    const extendedText = result.document.content?.[0];
+    expect(extendedText?.attrs?.rubricScoringBlock).toBeUndefined();
+    expect(extendedText?.attrs?.correctResponse).toBeUndefined();
+
+    const rubricBlock = result.document.content?.[1];
+    expect(rubricBlock?.type).toBe('qtiRubricBlock');
+    expect(rubricBlock?.attrs).toEqual({ use: 'scoring', view: 'scorer' });
+    expect(rubricBlock?.content?.[0]?.content?.[0]?.text).toBe('model answer\n');
+
     expect(result.changes.some(c => c.code === 'RENAME_ATTRIBUTE' && c.attributeName === 'rubricScoringBlock')).toBe(true);
+    expect(result.changes.some(c => c.code === 'ATTRIBUTE_MOVED' && c.attributeName === 'rubricScoringBlock')).toBe(true);
   });
 
   it('does not rename correctResponse on other interaction types', () => {
@@ -220,27 +224,27 @@ describe('v2 → v3: correctResponse → rubricScoringBlock on qtiExtendedTextIn
 
     expect(result.document.content?.[0]?.attrs?.correctResponse).toBe('choice-a');
     expect(result.document.content?.[0]?.attrs?.rubricScoringBlock).toBeUndefined();
+    expect(result.document.content?.[1]?.type).not.toBe('qtiRubricBlock');
   });
 
-  it('reads a v2 envelope end-to-end and produces rubricScoringBlock', () => {
-    const v2Envelope = {
-      version: 2,
+  it('reads a v2 doc end-to-end and lifts the rubric into a sibling block', () => {
+    const v2Doc = {
+      type: 'doc',
       schemaVersion: 2,
-      doc: {
-        type: 'doc',
-        content: [
-          {
-            type: 'qtiExtendedTextInteraction',
-            attrs: { responseIdentifier: 'R1', correctResponse: 'antwoord', expectedLines: 3 },
-          },
-        ],
-      },
+      content: [
+        {
+          type: 'qtiExtendedTextInteraction',
+          attrs: { responseIdentifier: 'R1', correctResponse: 'antwoord', expectedLines: 3 },
+        },
+      ],
     };
 
-    const result = readPersistedDocStateEnvelope(v2Envelope);
+    const result = readPersistedDoc(v2Doc);
 
-    expect(result.doc?.content?.[0]?.attrs?.rubricScoringBlock).toBe('antwoord');
+    expect(result.doc?.content?.[0]?.attrs?.rubricScoringBlock).toBeUndefined();
     expect(result.doc?.content?.[0]?.attrs?.correctResponse).toBeUndefined();
+    expect(result.doc?.content?.[1]?.type).toBe('qtiRubricBlock');
+    expect(result.doc?.content?.[1]?.content?.[0]?.content?.[0]?.text).toBe('antwoord');
     expect(result.compatibility?.sourceVersion).toBe(2);
     expect(result.compatibility?.targetVersion).toBe(CURRENT_JSON_DOCUMENT_VERSION);
   });
@@ -258,13 +262,143 @@ describe('v2 → v3: correctResponse → rubricScoringBlock on qtiExtendedTextIn
 
     const result = migrateJsonDocument(v1Doc, { sourceVersion: 1 });
 
-    // v1→v2 renamed hyphenated attrs, v2→v3 renamed correctResponse→rubricScoringBlock
+    // v1→v2 renamed hyphenated attrs, v2→v3 renamed correctResponse→rubricScoringBlock,
+    // v3→v4 lifted rubricScoringBlock into a sibling qtiRubricBlock node.
     expect(result.document.content?.[0]?.attrs?.responseIdentifier).toBe('R1');
-    expect(result.document.content?.[0]?.attrs?.rubricScoringBlock).toBe('oud antwoord');
+    expect(result.document.content?.[0]?.attrs?.rubricScoringBlock).toBeUndefined();
     expect(result.document.content?.[0]?.attrs?.correctResponse).toBeUndefined();
+    expect(result.document.content?.[1]?.type).toBe('qtiRubricBlock');
+    expect(result.document.content?.[1]?.content?.[0]?.content?.[0]?.text).toBe('oud antwoord');
     expect(result.appliedStepIds).toEqual([
       'json-v1-to-v2-normalize-legacy-attrs',
       'json-v2-to-v3-extended-text-correctResponse-to-rubricScoringBlock',
+      'json-v3-to-v4-extended-text-rubricScoringBlock-to-rubric-block',
+      'json-v4-to-v5-flat-list-to-schema-list',
+      'json-v5-to-v6-bold-italic-marks-to-strong-em',
     ]);
+  });
+
+  it('drops an empty rubricScoringBlock without inserting a qtiRubricBlock', () => {
+    const v3Doc: NodeJSON = {
+      type: 'doc',
+      content: [
+        {
+          type: 'qtiExtendedTextInteraction',
+          attrs: { responseIdentifier: 'R1', rubricScoringBlock: '   ', expectedLines: 3 },
+        },
+      ],
+    };
+
+    const result = migrateJsonDocument(v3Doc, { sourceVersion: 3 });
+
+    expect(result.document.content?.[0]?.attrs?.rubricScoringBlock).toBeUndefined();
+    expect(result.document.content).toHaveLength(1);
+    expect(result.changes.some(c => c.code === 'ATTRIBUTE_REMOVED' && c.attributeName === 'rubricScoringBlock')).toBe(true);
+  });
+});
+
+// ── v4 → v5: prosekit flat list → prosemirror-schema-list ──
+
+describe('v4 → v5 flat list conversion', () => {
+  it('converts a bullet flat list to bullet_list with list_item children', () => {
+    const v4Doc: NodeJSON = {
+      type: 'doc',
+      content: [
+        {
+          type: 'list',
+          attrs: { kind: 'bullet' },
+          content: [
+            { type: 'paragraph', content: [{ type: 'text', text: 'one' }] },
+            { type: 'paragraph', content: [{ type: 'text', text: 'two' }] },
+          ],
+        },
+      ],
+    };
+
+    const result = migrateJsonDocument(v4Doc, { sourceVersion: 4 });
+
+    const list = result.document.content?.[0];
+    expect(list?.type).toBe('bullet_list');
+    expect(list?.attrs).toBeUndefined();
+    expect(list?.content).toHaveLength(2);
+    expect(list?.content?.[0]?.type).toBe('list_item');
+    expect(list?.content?.[0]?.content?.[0]?.type).toBe('paragraph');
+    expect(list?.content?.[0]?.content?.[0]?.content?.[0]?.text).toBe('one');
+    expect(result.changes.some(c => c.code === 'RENAME_NODE')).toBe(true);
+  });
+
+  it('converts an ordered flat list to ordered_list', () => {
+    const v4Doc: NodeJSON = {
+      type: 'doc',
+      content: [
+        {
+          type: 'list',
+          attrs: { kind: 'ordered' },
+          content: [{ type: 'paragraph', content: [{ type: 'text', text: 'a' }] }],
+        },
+      ],
+    };
+
+    const result = migrateJsonDocument(v4Doc, { sourceVersion: 4 });
+
+    expect(result.document.content?.[0]?.type).toBe('ordered_list');
+  });
+
+  it('coerces task/toggle lists to bullet_list with a warning', () => {
+    const v4Doc: NodeJSON = {
+      type: 'doc',
+      content: [
+        {
+          type: 'list',
+          attrs: { kind: 'task' },
+          content: [{ type: 'paragraph', content: [{ type: 'text', text: 'todo' }] }],
+        },
+      ],
+    };
+
+    const result = migrateJsonDocument(v4Doc, { sourceVersion: 4 });
+
+    expect(result.document.content?.[0]?.type).toBe('bullet_list');
+    expect(result.changes.some(c => c.code === 'NODE_REMOVED' && c.severity === 'warning')).toBe(true);
+  });
+});
+
+// ── v5 → v6: bold/italic marks → strong/em ──
+
+describe('v5 → v6 mark conversion', () => {
+  it('renames bold/italic marks to strong/em', () => {
+    const v5Doc: NodeJSON = {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            { type: 'text', text: 'x', marks: [{ type: 'bold' }, { type: 'italic' }] },
+          ],
+        },
+      ],
+    };
+
+    const result = migrateJsonDocument(v5Doc, { sourceVersion: 5 });
+
+    const text = result.document.content?.[0]?.content?.[0];
+    expect(text?.marks).toEqual([{ type: 'strong' }, { type: 'em' }]);
+    expect(result.changes.filter(c => c.code === 'RENAME_NODE')).toHaveLength(2);
+  });
+
+  it('leaves unrelated marks untouched', () => {
+    const v5Doc: NodeJSON = {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [{ type: 'text', text: 'x', marks: [{ type: 'code' }] }],
+        },
+      ],
+    };
+
+    const result = migrateJsonDocument(v5Doc, { sourceVersion: 5 });
+
+    expect(result.document.content?.[0]?.content?.[0]?.marks).toEqual([{ type: 'code' }]);
   });
 });

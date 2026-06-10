@@ -3,8 +3,8 @@ import { type NodeJSON } from 'prosekit/core';
 import { Plugin, PluginKey } from 'prosemirror-state';
 
 import {
-  readPersistedDocStateEnvelope,
-  writePersistedDocStateEnvelope,
+  readPersistedDoc,
+  stampSchemaVersion,
   type ReadPersistedDocStateResult,
 } from '../compatibility/json.js';
 
@@ -16,8 +16,7 @@ export interface LocalStorageDocPersistenceOptions {
 const localStorageDocPersistencePluginKey = new PluginKey('local-storage-doc-persistence');
 
 function writePersistedState(storageKey: string, doc: NodeJSON): void {
-  const payload = writePersistedDocStateEnvelope(doc);
-  localStorage.setItem(storageKey, JSON.stringify(payload));
+  localStorage.setItem(storageKey, JSON.stringify(stampSchemaVersion(doc)));
 }
 
 export function readPersistedDocFromLocalStorage(storageKey: string): NodeJSON | undefined {
@@ -29,7 +28,7 @@ export function readPersistedStateFromLocalStorage(storageKey: string): ReadPers
   try {
     const raw = window.localStorage.getItem(storageKey);
     if (!raw) return {};
-    return readPersistedDocStateEnvelope(JSON.parse(raw));
+    return readPersistedDoc(JSON.parse(raw));
   } catch {
     return {};
   }

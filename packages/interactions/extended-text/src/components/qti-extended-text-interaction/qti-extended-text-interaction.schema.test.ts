@@ -34,7 +34,6 @@ describe('qtiExtendedTextInteractionNodeSpec', () => {
 
     expect(interaction.attrs).toEqual({
       responseIdentifier: null,
-      rubricScoringBlock: null,
       expectedLength: null,
       expectedLines: null,
       placeholderText: null,
@@ -61,7 +60,6 @@ describe('qtiExtendedTextInteractionNodeSpec', () => {
 
     const interaction = schema.node('qtiExtendedTextInteraction', {
       responseIdentifier: 'RESPONSE',
-      rubricScoringBlock: 'rubric-1',
       expectedLength: 120,
       expectedLines: 6,
       placeholderText: 'Explain your answer',
@@ -79,7 +77,6 @@ describe('qtiExtendedTextInteractionNodeSpec', () => {
       'qti-extended-text-interaction',
       {
         'response-identifier': 'RESPONSE',
-        'correct-response': 'rubric-1',
         'expected-length': '120',
         'expected-lines': '6',
         'placeholder-text': 'Explain your answer',

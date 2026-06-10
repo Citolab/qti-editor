@@ -9,11 +9,21 @@ import { DOMSerializer, type Node as ProseMirrorNode } from 'prosemirror-model';
 export function xmlFromNode(
   node: ProseMirrorNode,
   serializer: DOMSerializer = DOMSerializer.fromSchema(node.type.schema),
+  bodyAttributes: Record<string, string> = {},
 ): string {
   const fragment = serializer.serializeFragment(node.content);
   const wrapper = document.createElement('div');
   wrapper.appendChild(fragment);
-  return htmlToXmlString(wrapper.innerHTML);
+
+  // Doc-level (non-QTI) attributes are mirrored onto the roundtrip body as
+  // data-* so the JSON ↔ roundtrip-HTML representations stay in sync.
+  const docAttributes: Record<string, string> = {};
+  for (const [key, value] of Object.entries(node.attrs ?? {})) {
+    if (value == null) continue;
+    docAttributes[`data-${key}`] = String(value);
+  }
+
+  return htmlToXmlString(wrapper.innerHTML, { ...docAttributes, ...bodyAttributes });
 }
 
 const VOID_HTML_TAGS = [
@@ -33,13 +43,24 @@ function htmlToXmlCompatible(html: string): string {
   return result;
 }
 
-function htmlToXmlString(html: string): string {
+function htmlToXmlString(html: string, bodyAttributes: Record<string, string> = {}): string {
   const xmlCompatibleHtml = htmlToXmlCompatible(html);
-  const wrapped = `<qti-item-body>${xmlCompatibleHtml}</qti-item-body>`;
+  const attrString = Object.entries(bodyAttributes)
+    .map(([key, value]) => ` ${key}="${escapeXmlAttr(value)}"`)
+    .join('');
+  const wrapped = `<qti-item-body${attrString}>${xmlCompatibleHtml}</qti-item-body>`;
   const parsed = new DOMParser().parseFromString(wrapped, 'application/xml');
   if (parsed.querySelector('parsererror')) return wrapped;
   const raw = new XMLSerializer().serializeToString(parsed.documentElement);
   return formatXml(raw);
+}
+
+function escapeXmlAttr(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function formatXml(xml: string): string {

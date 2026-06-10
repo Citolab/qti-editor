@@ -60,6 +60,19 @@ function extractMetadata(xmlText: string): { title?: string; identifier?: string
 }
 
 /**
+ * Reads the editor-origin schema version marker (`data-schema-version`) from
+ * the first `<qti-item-body>`. Returns undefined for foreign QTI (no marker).
+ */
+function readSchemaVersionMarker(xmlText: string): number | undefined {
+  const doc = new DOMParser().parseFromString(xmlText, 'application/xml');
+  const body = doc.querySelector('qti-item-body');
+  const raw = body?.getAttribute('data-schema-version');
+  if (raw == null) return undefined;
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+/**
  * Import QTI XML and convert to ProseMirror JSON
  */
 export function importXmlFromText(xmlText: string, options: ImportXmlOptions): ImportXmlResult {
@@ -78,8 +91,14 @@ export function importXmlFromText(xmlText: string, options: ImportXmlOptions): I
     ? cleanedXml
     : roundtripQtiItem(cleanedXml);
 
+  // Editor-origin XML stamps the schema version on <qti-item-body>; use it as the
+  // migration source version so the right migration steps run. Read it from the raw
+  // XML (before xmlToHTML, which may rewrite attributes).
+  const sourceVersion = readSchemaVersionMarker(cleanedXml);
+
   // Convert XML to HTML
   const compatibility = migrateHtmlFragment(xmlToHTML(xmlForImport), {
+    sourceVersion,
     metadata: {
       importPath: 'apps/editor/importXmlFromText',
     },
