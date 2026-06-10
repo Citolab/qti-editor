@@ -73,9 +73,13 @@ export function qtiItemFromProsemirror(
   schema: Schema,
   interactionMetadata: readonly InteractionComposerMetadata[] = [],
 ): string {
+  // Serialize into an XML document (not the HTML document) so the output is
+  // well-formed XML: void elements like <img>/<br> are self-closed instead of
+  // left open, which would make the re-parsed `application/xml` fail.
+  const xmlDoc = document.implementation.createDocument(null, null, null);
   const serializer = DOMSerializer.fromSchema(schema);
-  const fragment = serializer.serializeFragment(node.content);
-  const wrapper = document.createElement('div');
+  const fragment = serializer.serializeFragment(node.content, { document: xmlDoc });
+  const wrapper = xmlDoc.createElement('div');
   wrapper.appendChild(fragment);
 
   applyNonQtiMirrors(wrapper, interactionMetadata);
@@ -88,5 +92,11 @@ export function qtiItemFromProsemirror(
   ];
   if (context.lang) attrs.push(`xml:lang="${escapeXmlAttribute(context.lang)}"`);
 
-  return `<qti-item-body ${attrs.join(' ')}>${wrapper.innerHTML}</qti-item-body>`;
+  const xmlSerializer = new XMLSerializer();
+  let inner = '';
+  wrapper.childNodes.forEach(child => {
+    inner += xmlSerializer.serializeToString(child);
+  });
+
+  return `<qti-item-body ${attrs.join(' ')}>${inner}</qti-item-body>`;
 }
