@@ -23,6 +23,7 @@ export default defineConfig({
           globals: true,
           include: ['packages/**/src/**/*.test.ts', 'apps/**/src/**/*.test.ts'],
           exclude: ['packages/**/src/**/*.browser.test.ts', 'apps/**/src/**/*.browser.test.ts'],
+          setupFiles: ['./tools/testing/setup/vitest.js'],
           server: {
             deps: {
               inline: [/@qti-components\//],
@@ -54,6 +55,7 @@ export default defineConfig({
         test: {
           name: 'browser',
           include: ['packages/**/src/**/*.browser.test.ts', 'apps/**/src/**/*.browser.test.ts'],
+          setupFiles: ['./tools/testing/setup/vitest.js'],
           browser: {
             enabled: true,
             headless: true,

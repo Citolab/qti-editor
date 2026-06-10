@@ -1,8 +1,8 @@
 /**
  * Pure-ProseMirror QTI roundtrip regression.
  *
- *   /qti/kennisnet/ITEM001.xml
- *     → qtiTransformItem().load  (load XML)
+ *   ITEM001.xml (raw import)
+ *     → qtiTransformItem().parse  (parse XML)
  *     → roundtripChoice          (hoist correct-response/score onto interactions)
  *     → DOMParser.fromSchema     (import item-body into the PM doc)
  *     → qtiItemFromProsemirror   (export PM doc back to the editor-origin item-body)
@@ -26,9 +26,9 @@ import { buildSingleAssessmentItemXml, formatXml } from '@qti-editor/core/compos
 
 import { qtiTransformItem } from '@qti-components/transformers';
 
+import { qtiItemFromProsemirror, prosemirrorFromQtiItem } from '../../shared/src/index';
 import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
 import { choiceInteractionDescriptor } from './descriptor';
-import { qtiItemFromProsemirror, prosemirrorFromQtiItem } from '../../shared/src/index';
 
 // import './components/qti-choice-interaction/qti-choice-interaction';
 import './register';
@@ -38,6 +38,8 @@ import '../../shared/src/components/qti-simple-choice/register';
 // import '@qti-components/theme/item.css'
 import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
+
+import sourceXML from '../../../../public/qti/kennisnet/ITEM001.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
@@ -52,6 +54,11 @@ const schema = new Schema({
   nodes: { ...nodes, ...qtiNodes },
   marks
 });
+
+/** Test/runtime hook: the editor's exported QTI is attached to the `.editor-container` element. */
+export interface EditorContainer extends HTMLElement {
+  __exportedXml?: string;
+}
 
 const plugins: Plugin[] = [
   history(),
@@ -70,23 +77,45 @@ export default meta;
 // Single source of truth for the non-QTI → data-* mirror contract.
 const interactionMetadata = [choiceInteractionDescriptor.composerMetadata];
 
+/** Export a ProseMirror doc back to the editor-origin QTI item-body XML. */
+const exportItemBodyXml = (doc: EditorView['state']['doc']): string =>
+  qtiItemFromProsemirror(
+    doc,
+    { identifier: 'ITEM001', title: 'ITEM001 roundtrip' },
+    schema,
+    interactionMetadata,
+  );
+
+/**
+ * Export a ProseMirror doc back to the complete editor-origin QTI assessment
+ * item (item-body wrapped with response/outcome declarations + response
+ * processing). This is the editor's "save" output and mirrors ITEM001-editor.xml.
+ */
+const exportAssessmentItemXml = (doc: EditorView['state']['doc']): string => {
+  const itemBodyXml = exportItemBodyXml(doc);
+  const itemBodyDoc = new DOMParser().parseFromString(itemBodyXml, 'application/xml');
+  return formatXml(
+    buildSingleAssessmentItemXml({
+      identifier: 'ITEM001',
+      title: 'ITEM001 roundtrip',
+      itemBody: itemBodyDoc,
+    }),
+  );
+};
+
 type Story = StoryObj;
 
-interface RoundtripLoaded {
-  sourceDoc: XMLDocument;
-}
-
 export const RoundtripItem001: Story = {
-  render: (_args, { loaded }) => {
-    const { sourceDoc } = loaded as RoundtripLoaded;
+  render: () => {
     let currentView: EditorView | null = null;
 
     console.log('1. Loaded QTI (source)');
+    const sourceDoc = new DOMParser().parseFromString(sourceXML, 'application/xml');
     console.dirxml(sourceDoc.documentElement);
 
-    const sourceXml = new XMLSerializer().serializeToString(sourceDoc);
     const roundtripXml = qtiTransformItem()
-      .parse(sourceXml)
+      .parse(sourceXML)
+      .path('/qti/kennisnet')
       .fn(roundtripChoice)
       .xmlDoc();
 
@@ -106,12 +135,7 @@ export const RoundtripItem001: Story = {
       if (!currentView) return;
 
       // 1. PM doc → editor-origin item-body (data-* mirrors + markers)
-      const itemBodyXml = qtiItemFromProsemirror(
-        currentView.state.doc,
-        { identifier: 'ITEM001', title: 'ITEM001 roundtrip' },
-        schema,
-        interactionMetadata,
-      );
+      const itemBodyXml = exportItemBodyXml(currentView.state.doc);
       const itemBodyDoc = new DOMParser().parseFromString(itemBodyXml, 'application/xml');
       console.log('4. Editor-origin item-body (export)');
       console.dirxml(itemBodyDoc.documentElement);
@@ -124,13 +148,7 @@ export const RoundtripItem001: Story = {
 
       // 3. item-body → complete QTI assessment item (composer expands
       //    response/outcome declarations + response processing)
-      const fullQtiXml = formatXml(
-        buildSingleAssessmentItemXml({
-          identifier: 'ITEM001',
-          title: 'ITEM001 roundtrip',
-          itemBody: itemBodyDoc,
-        }),
-      );
+      const fullQtiXml = exportAssessmentItemXml(currentView.state.doc);
       const fullQtiDoc = new DOMParser().parseFromString(fullQtiXml, 'application/xml');
       console.log('6. Composed QTI assessment item');
       console.dirxml(fullQtiDoc.documentElement);
@@ -145,6 +163,8 @@ export const RoundtripItem001: Story = {
           currentView.updateState(currentView.state.apply(tr));
         }
       });
+      // Expose the editor's exported QTI for the regression test.
+      (container as EditorContainer).__exportedXml = exportAssessmentItemXml(currentView.state.doc);
     };
 
     return html`
@@ -160,12 +180,6 @@ export const RoundtripItem001: Story = {
       </div>
     `;
   },
-  loaders: [
-    async (): Promise<RoundtripLoaded> => {
-      const loaded = (await qtiTransformItem().load('/qti/kennisnet/ITEM001.xml', { shuffle: false })).path('/qti/kennisnet');
-      return { sourceDoc: loaded.xmlDoc() };
-    },
-  ],
 };
 
 
