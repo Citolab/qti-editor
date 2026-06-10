@@ -17,7 +17,7 @@
     "clean": "echo 'nothing to clean'"
   },
   "dependencies": {
-    "@qti-components/theme": "1.3.2"
+    "@qti-components/theme": "^1.4.0"
   },
   "files": [
     "src"

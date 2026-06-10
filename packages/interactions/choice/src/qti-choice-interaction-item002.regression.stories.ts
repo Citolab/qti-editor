@@ -28,11 +28,10 @@ import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-sel
 import { choiceInteractionDescriptor } from './descriptor';
 import { qtiItemFromProsemirror } from '../../shared/src/roundtrip-export';
 
-import './components/qti-choice-interaction/qti-choice-interaction';
-import '../../shared/src/components/qti-prompt/qti-prompt';
-import '../../shared/src/components/qti-simple-choice/qti-simple-choice';
+import './register';
+import '../../shared/src/components/qti-prompt/register';
+import '../../shared/src/components/qti-simple-choice/register';
 
-import '@qti-components/theme/item.css'
 import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
 

@@ -28,9 +28,8 @@ import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-sel
 import { textEntryInteractionDescriptor } from './descriptor';
 import { qtiItemFromProsemirror } from '../../shared/src/roundtrip-export';
 
-import './components/qti-text-entry-interaction/qti-text-entry-interaction';
+import './register';
 
-import '@qti-components/theme/item.css'
 import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
 

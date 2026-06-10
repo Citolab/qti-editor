@@ -28,10 +28,9 @@ import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-sel
 import { extendedTextInteractionDescriptor } from './descriptor';
 import { qtiItemFromProsemirror } from '../../shared/src/roundtrip-export';
 
-import './components/qti-extended-text-interaction/qti-extended-text-interaction';
-import '../../shared/src/components/qti-prompt/qti-prompt';
+import './register';
+import '../../shared/src/components/qti-prompt/register';
 
-import '@qti-components/theme/item.css'
 import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
 

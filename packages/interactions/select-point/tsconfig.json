@@ -20,6 +20,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
-  "include": ["src/index.ts"],
+  "include": ["src/index.ts", "src/register.ts"],
   "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.stories.ts", "src/stories/**", "node_modules", "dist"]
 }

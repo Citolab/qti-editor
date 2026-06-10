@@ -121,3 +121,37 @@ for (const [subpath, packageRootDir] of packages) {
 const rootBarrel = packages.map(([subpath]) => `export * from './${subpath}/index.js';`).join('\n') + '\n';
 writeFileSync(join(distRoot, 'index.js'), rootBarrel);
 writeFileSync(join(distRoot, 'index.d.ts'), rootBarrel);
+
+// Aggregate side-effect register module: registers every interaction custom
+// element and the shared sub-elements they depend on. Importing this once
+// registers them all (`import '@qti-editor/interactions/register'`).
+const interactionRegisterSubpaths = [
+  'associate',
+  'choice',
+  'extended-text',
+  'gap-match',
+  'hottext',
+  'inline-choice',
+  'match',
+  'order',
+  'select-point',
+  'text-entry',
+];
+const sharedRegisterElements = [
+  'qti-prompt',
+  'qti-simple-choice',
+  'qti-simple-associable-choice',
+  'qti-simple-match-set',
+  'qti-gap',
+  'qti-gap-text',
+];
+const registerModule =
+  interactionRegisterSubpaths.map(subpath => `import './${subpath}/register.js';`).join('\n') +
+  '\n' +
+  sharedRegisterElements
+    .map(element => `import './shared/components/${element}/register.js';`)
+    .join('\n') +
+  '\n';
+writeFileSync(join(distRoot, 'register.js'), registerModule);
+writeFileSync(join(distRoot, 'register.d.ts'), 'export {};\n');
+

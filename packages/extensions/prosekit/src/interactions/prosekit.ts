@@ -2,18 +2,12 @@
  * ProseKit adapter for the supported QTI editor-kit interaction surface.
  */
 
-import { QtiAssociateInteractionEdit } from '@qti-editor/interactions/associate';
-import { QtiChoiceInteractionEdit } from '@qti-editor/interactions/choice';
-import { QtiExtendedTextInteractionEdit } from '@qti-editor/interactions/extended-text';
-import { QtiGapMatchInteractionEdit } from '@qti-editor/interactions/gap-match';
-import { QtiGapEdit, QtiGapTextEdit, QtiPromptEdit, QtiSimpleAssociableChoiceEdit, QtiSimpleChoiceEdit, QtiSimpleMatchSetEdit } from '@qti-editor/interactions/shared';
-import { QtiHottextEdit, QtiHottextInteractionEdit } from '@qti-editor/interactions/hottext';
-import { QtiInlineChoice, QtiInlineChoiceInteraction } from '@qti-editor/interactions/inline-choice';
-import { QtiMatchInteractionEdit } from '@qti-editor/interactions/match';
-import { QtiOrderInteractionEdit } from '@qti-editor/interactions/order';
-import { QtiSelectPointInteractionEdit } from '@qti-editor/interactions/select-point';
-import { QtiTextEntryInteractionEdit } from '@qti-editor/interactions/text-entry';
-import { QtiItemDivider } from '@qti-editor/qti-item-divider';
+// Register all QTI interaction custom elements (and their shared sub-elements)
+// via the explicit per-package register side-effect modules. Importing the
+// barrel aggregate registers them all at once; the item divider lives in its
+// own package and is registered via its `/define` side-effect module.
+import '@qti-editor/interactions/register';
+import '@qti-editor/qti-item-divider/define';
 import {
   listInteractionDescriptors,
   listInteractionPluginFactories,
@@ -24,36 +18,18 @@ import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } fro
 
 import type { Command } from 'prosekit/pm/state';
 
-function registerElement(tagName: string, elementClass: CustomElementConstructor) {
-  if (!customElements.get(tagName)) {
-    customElements.define(tagName, elementClass);
-  }
-}
-
+/**
+ * @deprecated Custom elements are now registered via the explicit `register`
+ * side-effect imports at the top of this module (and the per-package
+ * `@qti-editor/interaction-<name>/register` modules). This function is retained
+ * as a no-op for backwards compatibility and will be removed in a future
+ * release.
+ */
 export function registerQtiInteractionElements() {
-  registerElement('qti-simple-choice', QtiSimpleChoiceEdit);
-  registerElement('qti-simple-associable-choice', QtiSimpleAssociableChoiceEdit);
-  registerElement('qti-simple-match-set', QtiSimpleMatchSetEdit);
-  registerElement('qti-gap', QtiGapEdit);
-  registerElement('qti-gap-text', QtiGapTextEdit);
-  registerElement('qti-prompt', QtiPromptEdit);
-  registerElement('qti-associate-interaction', QtiAssociateInteractionEdit);
-  registerElement('qti-choice-interaction', QtiChoiceInteractionEdit);
-  registerElement('qti-extended-text-interaction', QtiExtendedTextInteractionEdit);
-  registerElement('qti-gap-match-interaction', QtiGapMatchInteractionEdit);
-  registerElement('qti-hottext-interaction', QtiHottextInteractionEdit);
-  registerElement('qti-hottext', QtiHottextEdit);
-  registerElement('qti-inline-choice-interaction', QtiInlineChoiceInteraction);
-  registerElement('qti-inline-choice', QtiInlineChoice);
-  registerElement('qti-match-interaction', QtiMatchInteractionEdit);
-  registerElement('qti-order-interaction', QtiOrderInteractionEdit);
-  registerElement('qti-select-point-interaction', QtiSelectPointInteractionEdit);
-  registerElement('qti-text-entry-interaction', QtiTextEntryInteractionEdit);
-  registerElement('qti-item-divider', QtiItemDivider);
+  // Intentionally empty: registration happens through side-effect imports.
 }
 
 export function defineQtiInteractionsExtension() {
-  registerQtiInteractionElements();
   const descriptors = listInteractionDescriptors();
 
   const nodeSpecExtensions: Extension[] = listInteractionSchemaNodeSpecs().map(({ name, spec }) =>

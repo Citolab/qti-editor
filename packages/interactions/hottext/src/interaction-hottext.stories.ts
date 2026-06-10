@@ -2,14 +2,7 @@ import '@qti-components/theme/item.css';
 import { html } from 'lit';
 import { expect, waitFor } from 'storybook/test';
 
-import { QtiHottextInteractionEdit, QtiHottextEdit } from '@qti-editor/interaction-hottext';
-
-if (!customElements.get('qti-hottext-interaction')) {
-  customElements.define('qti-hottext-interaction', QtiHottextInteractionEdit);
-}
-if (!customElements.get('qti-hottext')) {
-  customElements.define('qti-hottext', QtiHottextEdit);
-}
+import './register';
 
 export default {
   title: 'Interactions/Hottext',

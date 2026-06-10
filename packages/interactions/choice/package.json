@@ -20,7 +20,10 @@
       "default": "./dist/*"
     }
   },
-  "sideEffects": "./register",
+  "sideEffects": [
+    "**/register.js",
+    "**/register.ts"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc",

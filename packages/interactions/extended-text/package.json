@@ -8,7 +8,10 @@
     "directory": "packages/interactions/extended-text"
   },
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "**/register.js",
+    "**/register.ts"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
