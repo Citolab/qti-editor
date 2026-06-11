@@ -105,11 +105,10 @@ const buildField = (
   readOnly: boolean,
 ): HTMLLabelElement => {
   const label = document.createElement('label');
-  label.style.cssText = 'display:flex; flex-direction:column; gap:2px; font-size:12px;';
+  label.style.display = 'contents';
 
   const span = document.createElement('span');
   span.textContent = key;
-  span.style.cssText = 'font-weight:600; color:#555;';
   label.appendChild(span);
 
   const input = document.createElement('input');
@@ -117,9 +116,6 @@ const buildField = (
   input.dataset.attrKey = key;
   input.disabled = readOnly;
   input.value = value == null ? '' : String(value);
-  input.style.cssText =
-    'padding:3px 6px; border:1px solid #ccc; border-radius:4px; font-size:12px;' +
-    (readOnly ? ' background:#f3f3f3; color:#777;' : '');
 
   if (!readOnly) {
     input.addEventListener('input', () => {
@@ -137,23 +133,19 @@ const buildSection = (
   editableAttrs: ReadonlySet<string> | undefined,
   docLabelSuffix: string,
 ): HTMLElement => {
-  const section = document.createElement('section');
+  const section = document.createElement('fieldset');
   section.dataset.nodeType = entry.type;
-  section.style.cssText = 'border:1px solid #ddd; border-radius:8px; padding:10px 12px; background:#fff;';
+  section.style.cssText = 'display:grid; grid-template-columns:auto 1fr; gap:6px 10px; align-items:center;';
 
-  const header = document.createElement('h4');
-  header.textContent = entry.isDoc && docLabelSuffix ? `${entry.type} ${docLabelSuffix}` : entry.type;
-  header.style.cssText = 'margin:0 0 8px; font-size:13px; font-weight:700;';
-  section.appendChild(header);
+  const legend = document.createElement('legend');
+  legend.textContent = entry.isDoc && docLabelSuffix ? `${entry.type} ${docLabelSuffix}` : entry.type;
+  section.appendChild(legend);
 
-  const fields = document.createElement('div');
-  fields.style.cssText = 'display:flex; flex-direction:column; gap:8px;';
   for (const [key, value] of Object.entries(entry.attrs)) {
     // No allowlist for this node type → every attribute is editable.
     const readOnly = editableAttrs ? !editableAttrs.has(key) : false;
-    fields.appendChild(buildField(view, entry, key, value, readOnly));
+    section.appendChild(buildField(view, entry, key, value, readOnly));
   }
-  section.appendChild(fields);
   return section;
 };
 
@@ -169,13 +161,11 @@ const renderAttrsPanel = (
 
   const title = document.createElement('h3');
   title.textContent = 'Attributes';
-  title.style.cssText = 'margin:0 0 10px; font-size:14px; font-weight:700;';
   panelEl.appendChild(title);
 
   if (chain.length === 0) {
     const empty = document.createElement('p');
     empty.textContent = 'Place the cursor on a node with attributes.';
-    empty.style.cssText = 'font-size:12px; color:#888;';
     panelEl.appendChild(empty);
     return;
   }
@@ -212,7 +202,7 @@ export const attributesPanelPlugin = (panelEl: HTMLElement, options: AttributesP
           return;
         }
         // Same chain — refresh values of inputs that are not currently focused.
-        const sections = panelEl.querySelectorAll('section');
+        const sections = panelEl.querySelectorAll('fieldset');
         chain.forEach((entry, index) => {
           const section = sections[index];
           if (!section) return;

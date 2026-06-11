@@ -56,6 +56,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.2.2(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
+      '@testing-library/dom':
+        specifier: ^10.4.1
+        version: 10.4.1
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.39
@@ -137,6 +140,9 @@ importers:
       semantic-release:
         specifier: ^24.0.0
         version: 24.2.9(typescript@5.9.3)
+      shadow-dom-testing-library:
+        specifier: ^1.13.1
+        version: 1.13.1(@testing-library/dom@10.4.1)
       storybook:
         specifier: ^10.2.8
         version: 10.3.4(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -246,9 +252,6 @@ importers:
       '@qti-editor/qti-package-builder':
         specifier: workspace:*
         version: link:../../packages/qti/package-builder
-      '@qti-editor/qti-roundtrip-import':
-        specifier: workspace:*
-        version: link:../../packages/qti/roundtrip-import
       '@qti-editor/qti3-item-import':
         specifier: workspace:*
         version: link:../../packages/qti/qti3-item-import
@@ -1156,9 +1159,6 @@ importers:
         specifier: 1.25.7
         version: 1.25.7
     devDependencies:
-      '@qti-editor/qti-roundtrip-import':
-        specifier: workspace:*
-        version: link:../roundtrip-import
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.39
@@ -7194,6 +7194,12 @@ packages:
 
   setimmediate@1.0.5:
     resolution: {integrity: sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==}
+
+  shadow-dom-testing-library@1.13.1:
+    resolution: {integrity: sha512-X73VDI3KumYeYuz/C2yjn4/1bsUN68JleYI3NwFJUDa+5fWhO//s+02gdxdetY+mVRYZosVokkkmIhdzjABnmQ==}
+    engines: {node: '>= 14', npm: '>= 7'}
+    peerDependencies:
+      '@testing-library/dom': '>= 8'
 
   sharp@0.34.5:
     resolution: {integrity: sha512-Ou9I5Ft9WNcCbXrU9cMgPBcCK8LiwLqcbywW3t4oDV37n1pzpuNLsYiAV8eODnjbtQlSDwZ2cUEeQz4E54Hltg==}
@@ -15544,6 +15550,10 @@ snapshots:
       es-object-atoms: 1.1.1
 
   setimmediate@1.0.5: {}
+
+  shadow-dom-testing-library@1.13.1(@testing-library/dom@10.4.1):
+    dependencies:
+      '@testing-library/dom': 10.4.1
 
   sharp@0.34.5:
     dependencies:

@@ -35,7 +35,6 @@ import './register';
 import '../../shared/src/components/qti-prompt/register';
 import '../../shared/src/components/qti-simple-choice/register';
 import 'prosemirror-view/style/prosemirror.css';
-import 'prosemirror-gapcursor/style/gapcursor.css';
 import sourceXML from '../../../../public/qti/kennisnet/ITEM001.xml?raw';
 import assertedXML from '../../../../public/qti/kennisnet/ITEM001-editor.xml?raw';
 
@@ -191,6 +190,9 @@ export const RoundtripItem001: Story = {
         dispatchTransaction(tr) {
           if (!currentView) return;
           currentView.updateState(currentView.state.apply(tr));
+          // Keep the editor's exported QTI current after every edit so tests can
+          // re-read it (e.g. after toggling a correct choice).
+          (container as EditorContainer).__exportedXml = exportAssessmentItemXml(currentView.state.doc);
         }
       });
       // Expose the editor's exported QTI for the regression test.

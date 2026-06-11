@@ -22,7 +22,7 @@ qti-rubric-block {
     
 /* --- Interaction backgrounds + spacing -------------------------------------- */
 
-qti-prompt {
+/* qti-prompt {
   background: #fff;
 }
 
@@ -56,5 +56,5 @@ qti-gap-text.prosekit-placeholder::before {
   height: auto !important;
   line-height: 1.5;
   vertical-align: baseline;
-}
+} */
 
