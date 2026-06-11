@@ -71,16 +71,12 @@ const meta: Meta = {
 };
 export default meta;
 
-// Single source of truth for the non-QTI → data-* mirror contract.
-const interactionMetadata = [choiceInteractionDescriptor.composerMetadata];
-
-/** Export a ProseMirror doc back to the editor-origin QTI item-body XML. */
+// Export a ProseMirror doc back to the canonical QTI item-body XML.
 const exportItemBodyXml = (doc: EditorView['state']['doc']): string =>
   qtiItemFromProsemirror(
     doc,
     { identifier: 'ITEM001', title: 'ITEM001 roundtrip' },
     schema,
-    interactionMetadata,
   );
 
 /**
@@ -131,14 +127,14 @@ export const RoundtripItem001: Story = {
     const logExport = () => {
       if (!currentView) return;
 
-      // 1. PM doc → editor-origin item-body (data-* mirrors + markers)
+      // 1. PM doc → canonical item-body
       const itemBodyXml = exportItemBodyXml(currentView.state.doc);
       const itemBodyDoc = new DOMParser().parseFromString(itemBodyXml, 'application/xml');
-      console.log('4. Editor-origin item-body (export)');
+      console.log('4. Canonical item-body (export)');
       console.dirxml(itemBodyDoc.documentElement);
 
       // 2. item-body → PM doc again (proves the roundtrip is lossless)
-      const reimported = prosemirrorFromQtiItem(itemBodyXml, schema, interactionMetadata);
+      const reimported = prosemirrorFromQtiItem(itemBodyXml, schema);
       console.groupCollapsed('5. Re-imported ProseMirror doc (JSON)');
       console.log(reimported.toJSON());
       console.groupEnd();

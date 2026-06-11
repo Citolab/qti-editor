@@ -1,19 +1,18 @@
 ---
 title: Itembody-only QTI Subformat
-description: How QTI-Editor stores authoring state in the itembody using non-QTI attributes mirrored as data-* on export.
+description: How QTI-Editor stores authoring state in the itembody using canonical (unprefixed) non-QTI attributes.
 slug: docs/packages/itembody-subformat
 ---
 
 QTI-Editor stores authoring state in the QTI itembody itself, so the itembody is the **single source of truth** for an item — including state that QTI 3.0 does not define an attribute for (e.g. an authoring `correct-response`, per-interaction `score`, per-choice scoring).
 
-This document explains the subformat: what extra attributes the editor reads, how they are kept valid-QTI on export, and how to declare a new one.
+This document explains the subformat: what extra attributes the editor reads, how the final export stays valid QTI 3.0, and how to declare a new one.
 
 ## The contract
 
-1. While editing, the QTI element may carry **non-QTI attributes** (e.g. `correct-response`, `score`, `case-sensitive`, `area-mappings`).
-2. On compose / export, each non-QTI attribute is **stripped** from the QTI element and **mirrored** as a `data-*` attribute on the same element (e.g. `correct-response` → `data-correct-response`).
-3. The exported XML is therefore **valid QTI 3.0**: every non-standard piece of authoring state lives behind the `data-*` prefix, which QTI permits on any element.
-4. On re-import, the `data-*` attributes are converted back to their editor-facing names, restoring the authoring state losslessly.
+1. The **roundtrip item-body** (the editor's own save/load format) carries **non-QTI authoring attributes** directly on the interaction as **canonical, unprefixed** names (e.g. `correct-response`, `score`, `case-sensitive`, `area-mappings`). There are **no `data-*` mirrors** and no marker attributes.
+2. On **final QTI 3.0 export**, the composer reads those canonical attributes, folds them into standard `qti-response-declaration` / `qti-response-processing`, and **strips** them from the emitted interaction. The exported item is therefore standard QTI 3.0 with no editor-specific attributes.
+3. On **import**, every QTI 3.0 item is treated as third-party: `roundtripQtiItem` hoists `correct-response` / `score` from the native declarations back onto each interaction as canonical attributes, restoring the authoring state.
 
 ## Where non-QTI attributes are declared
 
@@ -35,8 +34,8 @@ export const choiceInteractionComposerMetadata = {
 
 Entries can be:
 
-- A **plain string** (e.g. `'score'`) — the attribute is read from the source element, stripped, and mirrored to `data-<name>` (e.g. `data-score`).
-- An **object** with `{ source, mirror: false }` — the attribute is stripped but NOT mirrored as `data-*` (used when the value is preserved elsewhere, e.g. as a synthesized QTI element).
+- A **plain string** (e.g. `'score'`) — the attribute is read from the source element and stripped on final export.
+- An **object** with `{ source, mirror: false }` — strip-only (the `mirror` field is retained for backwards compatibility but no longer affects output, since there are no `data-*` mirrors).
 - An **object** with `{ source, aliases: [...] }` — additional legacy attribute names that should also be accepted on the source element and normalized to `source`.
 
 ```ts
@@ -47,39 +46,31 @@ Entries can be:
 { source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }
 ```
 
-The compose handler reads these from the source element to populate the response declaration, then removes them from the normalized element so the output is clean QTI.
-
-As of the unification work (see `plans/unify-non-qti-attribute-metadata.md`), all `data-*` mirror behavior is derived from the per-interaction `nonQtiAttributes` declaration. The helper `collectMirrorMappings(metadata)` is the single source of truth; the compose pipeline (`@qti-editor/core`), the export regex pass (`@qti-editor/qti-package`), and the import inverse mapping (`@qti-editor/qti-roundtrip-import`) all read from it.
+The compose handler reads these from the source element to populate the response declaration, then removes them from the normalized element so the final export is clean standard QTI 3.0.
 
 ## Current non-QTI attribute set
 
-| Attribute | Interactions | data-* mirror |
+| Attribute | Interactions | Recovered on import from |
 |---|---|---|
-| `correct-response` | choice, extended-text, associate, hottext, text-entry, match, gap-match, order, inline-choice, select-point | `data-correct-response` |
-| `score` | all interactions above | `data-score` |
-| `case-sensitive` | text-entry | `data-case-sensitive` |
-| `area-mappings` | select-point | `data-area-mappings` |
+| `correct-response` | choice, extended-text, associate, hottext, text-entry, match, gap-match, order, inline-choice, select-point | `qti-correct-response` values of the matching `qti-response-declaration` |
+| `score` | all interactions above | `qti-response-processing` (defaults to 1) |
+| `case-sensitive` | text-entry | editor authoring hint — not reconstructed from standard QTI |
+| `area-mappings` | select-point | editor authoring hint — not reconstructed from standard QTI |
 
-## Where the `data-*` mirrors come from
+> `case-sensitive` and `area-mappings` have no lossless standard-QTI source, so a third-party item that never carried them imports without them.
 
-The per-interaction `nonQtiAttributes` declaration **is** the source of truth. The helper `collectMirrorMappings(metadata)` in `packages/prosemirror/interaction-shared/src/composer/non-qti-attributes.ts` (re-exported from `@qti-editor/core/composer`) walks each entry and produces the `{ source, target: 'data-<source>' }` pairs that drive:
+## How recovery works on import
 
-- the compose pipeline strip + mirror step (`@qti-editor/core`)
-- the export regex pass (`@qti-editor/qti-package`)
-- the import inverse mapping (`@qti-editor/qti-roundtrip-import`)
-
-The detailed per-tag table — useful as a human-readable reference of the resulting wire format — is in [ROUNDTRIP.md](../../../../../packages/qti/roundtrip-import/ROUNDTRIP.md).
+Every QTI 3.0 item is treated as third-party. `roundtripQtiItem` (`@qti-editor/qti3-item-import`) runs a chain of idempotent transforms that hoist `correct-response` / `score` from native `qti-response-declaration` / `qti-response-processing` onto each interaction as canonical attributes. Per-type transforms run first (they carry type-specific behaviour such as the extended-text rubric source); a generic fallback then covers any remaining interaction with a `response-identifier`. A final `roundtripItemBody` transform copies `identifier` / `title` from the `qti-assessment-item` onto the `qti-item-body`.
 
 ## Adding a new non-QTI attribute
 
 To extend the subformat with a new attribute on an interaction:
 
-1. Add the attribute to `nonQtiAttributes` in the interaction's `composer/metadata.ts`. Use a **plain string** for the simple case (mirror is auto-derived as `data-<name>`); the **object form** `{ source, mirror: false }` for strip-only attributes (preserved elsewhere); the **object form** `{ source, aliases: [...] }` to also accept legacy source-name casings on input.
+1. Add the attribute to `nonQtiAttributes` in the interaction's `composer/metadata.ts`. Use a **plain string** for the simple case; the **object form** `{ source, mirror: false }` for strip-only attributes (preserved elsewhere); the **object form** `{ source, aliases: [...] }` to also accept legacy source-name casings on input.
 2. Read the attribute in the interaction's `.compose.ts` from the source element and use it for whatever the interaction needs (response declaration, UI state, additional element synthesis like extended-text's rubric block).
-
-No other code changes are needed. The strip step, the `data-*` mirror, the export's regex pass, and the import's inverse mapping all derive automatically from `collectMirrorMappings`.
+3. If the attribute must survive a third-party round-trip, ensure `roundtripQtiItem` can reconstruct it from standard QTI; otherwise document it as an editor-only hint.
 
 ## Related
 
 - [QTI Package](./qti-roundtrip-export)
-- [QTI Roundtrip Import Package](./qti-roundtrip-import)

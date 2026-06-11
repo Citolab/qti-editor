@@ -1,4 +1,4 @@
-import { collectMirrorMappings, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
+import { getNonQtiAttributeSources, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { parseTextEntryCaseSensitiveAttribute } from '../../attributes/text-entry-attributes-editor.js';
 import { textEntryInteractionComposerMetadata } from '../../composer/metadata.js';
@@ -29,7 +29,7 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
   stripNonQtiAttributesFromElement(normalizedElement, metadata);
-  const nonQtiAttributes = collectMirrorMappings(metadata).map(m => m.source);
+  const nonQtiAttributes = getNonQtiAttributeSources(metadata);
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
   if (!responseIdentifier) {

@@ -52,21 +52,20 @@ export function normalizeNonQtiAttribute(entry: NonQtiAttribute): NonQtiAttribut
 }
 
 /**
- * Flat list of `{ source, target }` mirror tuples for one interaction's
- * metadata. Each entry contributes one tuple for its canonical source plus
- * one per alias, all targeting the same `target`. Strip-only entries
- * (`mirror === null`) are excluded.
+ * Flat list of canonical source attribute names for one interaction's
+ * metadata, including any declared aliases. This is the set of authoring
+ * attributes the compose pipeline reads off the source element before
+ * stripping them from the emitted standard-QTI interaction.
  */
-export function collectMirrorMappings(
+export function getNonQtiAttributeSources(
   metadata: Pick<InteractionComposerMetadata, 'nonQtiAttributes'>,
-): ReadonlyArray<{ source: string; target: string }> {
-  const out: Array<{ source: string; target: string }> = [];
+): string[] {
+  const out: string[] = [];
   for (const raw of metadata.nonQtiAttributes) {
     const entry = normalizeNonQtiAttribute(raw);
-    if (entry.mirror === null) continue;
-    out.push({ source: entry.source, target: entry.mirror });
+    out.push(entry.source);
     for (const alias of entry.aliases) {
-      out.push({ source: alias, target: entry.mirror });
+      out.push(alias);
     }
   }
   return out;
@@ -74,9 +73,8 @@ export function collectMirrorMappings(
 
 /**
  * Remove the canonical source attribute (NOT aliases) for every entry in the
- * metadata. Strip-only entries are included. Aliases are intentionally NOT
- * stripped — that matches today's behavior captured in the Phase 1 snapshot
- * (camelCase variants survive on the source element).
+ * metadata. Aliases are intentionally NOT stripped — that matches today's
+ * behavior (camelCase variants survive on the output element).
  */
 export function stripNonQtiAttributesFromElement(
   element: Element,
@@ -86,60 +84,4 @@ export function stripNonQtiAttributesFromElement(
     const entry = normalizeNonQtiAttribute(raw);
     element.removeAttribute(entry.source);
   }
-}
-
-/**
- * Copy values from `sourceElement` to `targetElement` following the mirror
- * tuples implied by the metadata.
- *
- * For each non-strip entry:
- * - Try the canonical source first; fall back to each alias in declaration
- *   order. First non-empty value wins.
- * - The destination attribute is always the canonical mirror target.
- * - Skip if the target attribute already exists on `targetElement`.
- * - Skip if no source carries a non-empty value.
- *
- * Strip-only entries (`mirror === null`) are no-ops here.
- */
-export function copyMirrorsToTarget(
-  sourceElement: Element,
-  targetElement: Element,
-  metadata: Pick<InteractionComposerMetadata, 'nonQtiAttributes'>,
-): void {
-  for (const raw of metadata.nonQtiAttributes) {
-    const entry = normalizeNonQtiAttribute(raw);
-    if (entry.mirror === null) continue;
-    if (targetElement.hasAttribute(entry.mirror)) continue;
-    const candidates = [entry.source, ...entry.aliases];
-    for (const candidate of candidates) {
-      const value = sourceElement.getAttribute(candidate);
-      if (value !== null && value !== '') {
-        targetElement.setAttribute(entry.mirror, value);
-        break;
-      }
-    }
-  }
-}
-
-/**
- * Aggregate every `{ source, target }` mirror tuple from all registered
- * interactions. Used by the importer to derive the inverse `data-*` → canonical
- * mapping. Duplicate `(source, target)` tuples are de-duplicated so that
- * universally-shared mirrors (e.g. `correct-response` declared per
- * interaction) only appear once.
- */
-export function getAllMirrorTargets(
-  registry: ReadonlyMap<string, InteractionComposerMetadata>,
-): ReadonlyArray<{ source: string; target: string }> {
-  const seen = new Set<string>();
-  const out: Array<{ source: string; target: string }> = [];
-  for (const metadata of registry.values()) {
-    for (const tuple of collectMirrorMappings(metadata)) {
-      const key = `${tuple.source} ${tuple.target}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      out.push(tuple);
-    }
-  }
-  return out;
 }

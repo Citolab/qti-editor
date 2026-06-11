@@ -15,15 +15,7 @@ export function xmlFromNode(
   const wrapper = document.createElement('div');
   wrapper.appendChild(fragment);
 
-  // Doc-level (non-QTI) attributes are mirrored onto the roundtrip body as
-  // data-* so the JSON ↔ roundtrip-HTML representations stay in sync.
-  const docAttributes: Record<string, string> = {};
-  for (const [key, value] of Object.entries(node.attrs ?? {})) {
-    if (value == null) continue;
-    docAttributes[`data-${key}`] = String(value);
-  }
-
-  return htmlToXmlString(wrapper.innerHTML, { ...docAttributes, ...bodyAttributes });
+  return htmlToXmlString(wrapper.innerHTML, bodyAttributes);
 }
 
 const VOID_HTML_TAGS = [

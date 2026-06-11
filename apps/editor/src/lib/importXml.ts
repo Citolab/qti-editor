@@ -1,11 +1,7 @@
-import { isEditorOriginXml } from '@qti-editor/core/composer';
 import { xmlToHTML } from '@qti-editor/prosekit-integration';
 import { buildCompatibilityReport, migrateHtmlFragment } from '@qti-editor/prosemirror-plugins';
-import { importQtiPackageFromBlob } from '@qti-editor/qti-roundtrip-import';
 import { roundtripQtiItem } from '@qti-editor/qti3-item-import';
 import { jsonFromHTML } from 'prosekit/core';
-
-export { isEditorOriginXml };
 
 import type { CompatibilityReport, MigrationResult } from '@qti-editor/interfaces';
 import type { Node, Schema } from 'prosekit/pm/model';
@@ -60,19 +56,6 @@ function extractMetadata(xmlText: string): { title?: string; identifier?: string
 }
 
 /**
- * Reads the editor-origin schema version marker (`data-schema-version`) from
- * the first `<qti-item-body>`. Returns undefined for foreign QTI (no marker).
- */
-function readSchemaVersionMarker(xmlText: string): number | undefined {
-  const doc = new DOMParser().parseFromString(xmlText, 'application/xml');
-  const body = doc.querySelector('qti-item-body');
-  const raw = body?.getAttribute('data-schema-version');
-  if (raw == null) return undefined;
-  const parsed = Number.parseInt(raw, 10);
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
-
-/**
  * Import QTI XML and convert to ProseMirror JSON
  */
 export function importXmlFromText(xmlText: string, options: ImportXmlOptions): ImportXmlResult {
@@ -85,20 +68,13 @@ export function importXmlFromText(xmlText: string, options: ImportXmlOptions): I
     cleanedXml = cleanedXml.substring(firstLtIndex);
   }
 
-  // Foreign QTI: recover data-* mirrors from native QTI elements via the v1 transforms.
-  // Editor-origin XML already carries them — skip the transform to keep it lossless.
-  const xmlForImport = isEditorOriginXml(cleanedXml)
-    ? cleanedXml
-    : roundtripQtiItem(cleanedXml);
-
-  // Editor-origin XML stamps the schema version on <qti-item-body>; use it as the
-  // migration source version so the right migration steps run. Read it from the raw
-  // XML (before xmlToHTML, which may rewrite attributes).
-  const sourceVersion = readSchemaVersionMarker(cleanedXml);
+  // Every QTI 3.0 item is treated as third-party: hoist correct-response / score
+  // from native qti-response-declaration / qti-response-processing onto each
+  // interaction as canonical authoring attributes the schema's parseDOM reads.
+  const xmlForImport = roundtripQtiItem(cleanedXml);
 
   // Convert XML to HTML
   const compatibility = migrateHtmlFragment(xmlToHTML(xmlForImport), {
-    sourceVersion,
     metadata: {
       importPath: 'apps/editor/importXmlFromText',
     },
@@ -134,10 +110,6 @@ export function importXmlFromText(xmlText: string, options: ImportXmlOptions): I
  * Import QTI XML from a File object
  */
 export async function importXmlFromFile(file: File, options: ImportXmlOptions): Promise<ImportXmlResult> {
-  if (isQtiPackageFile(file)) {
-    return importQtiPackageFromBlob(file, options);
-  }
-
   const xmlText = await file.text();
   return importXmlFromText(xmlText, options);
 }
@@ -149,7 +121,7 @@ export function openXmlFilePicker(options: ImportXmlOptions): Promise<ImportXmlR
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.xml,.zip,application/xml,text/xml,application/zip,application/x-zip-compressed';
+    input.accept = '.xml,application/xml,text/xml';
     
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
@@ -169,11 +141,6 @@ export function openXmlFilePicker(options: ImportXmlOptions): Promise<ImportXmlR
     
     input.click();
   });
-}
-
-function isQtiPackageFile(file: File): boolean {
-  const name = file.name.toLowerCase();
-  return name.endsWith('.zip') || file.type === 'application/zip' || file.type === 'application/x-zip-compressed';
 }
 
 export function importRoundtripXml(schema: Schema): Promise<Node> {

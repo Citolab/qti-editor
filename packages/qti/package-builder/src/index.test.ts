@@ -64,7 +64,7 @@ describe('createQtiPackageFromItems', () => {
     expect(manifest).toContain('href="assets/image-item-image-1.png"');
   });
 
-  it('copies editor-only interaction attributes to data attributes', async () => {
+  it('passes interaction XML through without rewriting attributes', async () => {
     const zip = await unzip(await createQtiPackageFromItems([
       {
         identifier: 'editor-data-item',
@@ -86,10 +86,11 @@ describe('createQtiPackageFromItems', () => {
 
     const item = await zip.file('items/editor-data-item.xml')?.async('string');
 
-    expect(item).toContain('data-correct-response="choice-a"');
-    expect(item).toContain('data-score="2"');
-    expect(item).toContain('data-correct-response="alpha,beta"');
-    expect(item).toContain('data-correct-response="Model answer"');
-    expect(item).toContain('data-score="4"');
+    // The package builder emits standard QTI 3.0 with no data-* mirrors.
+    expect(item).not.toContain('data-correct-response');
+    expect(item).not.toContain('data-score');
+    expect(item).toContain('correct-response="choice-a"');
+    expect(item).toContain('correct-response="alpha,beta"');
+    expect(item).toContain('correct-response="Model answer"');
   });
 });

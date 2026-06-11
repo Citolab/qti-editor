@@ -5,16 +5,12 @@
  * No Lit/UI dependencies - these can be used in any environment.
  */
 
-import { getInteractionComposerHandler, getInteractionComposerMetadata } from '../interactions/composer.js';
-import { copyMirrorsToTarget } from './non-qti-attributes.js';
+import { getInteractionComposerHandler } from '../interactions/composer.js';
 
 import type { ResponseProcessingKind } from '@qti-editor/interfaces';
-import { CURRENT_SCHEMA_VERSION } from '@qti-editor/interfaces';
 
 export {
-  collectMirrorMappings,
-  copyMirrorsToTarget,
-  getAllMirrorTargets,
+  getNonQtiAttributeSources,
   normalizeNonQtiAttribute,
   stripNonQtiAttributesFromElement,
 } from './non-qti-attributes.js';
@@ -60,20 +56,6 @@ const XML_NS = 'http://www.w3.org/XML/1998/namespace';
 const SCHEMA_LOCATION =
   'http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd';
 
-/**
- * True iff every <qti-item-body> in the XML carries data-schema-version.
- * False if zero item-bodies exist, or any item-body is missing the marker.
- * Symmetric reader for the attribute stamped by buildAssessmentItemXml.
- */
-export function isEditorOriginXml(xmlText: string): boolean {
-  const doc = new DOMParser().parseFromString(xmlText, 'application/xml');
-  const bodies = doc.querySelectorAll('qti-item-body');
-  if (bodies.length === 0) return false;
-  for (const body of Array.from(bodies)) {
-    if (!body.hasAttribute('data-schema-version')) return false;
-  }
-  return true;
-}
 const MATCH_CORRECT_TEMPLATE =
   'https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct';
 function sanitizeIdentifier(value: string | undefined, fallback: string): string {
@@ -247,10 +229,6 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
     sourceBodyRoot != null
       ? (xmlDoc.importNode(sourceBodyRoot, true) as Element)
       : xmlDoc.createElementNS(QTI_NS, 'qti-item-body');
-
-  composedItemBody.setAttribute('data-identifier', itemIdentifier);
-  composedItemBody.setAttribute('data-title', itemTitle);
-  composedItemBody.setAttribute('data-schema-version', String(CURRENT_SCHEMA_VERSION));
 
   const { declarations, responseTemplate, maxScore, hasAutomatedProcessing } = composeAndNormalizeItemBody(composedItemBody, xmlDoc);
 
@@ -524,10 +502,6 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
 
     if (handler) {
       const composeResult = handler.compose(element, xmlDoc);
-      const metadata = getInteractionComposerMetadata(tagName);
-      if (metadata) {
-        copyMirrorsToTarget(element, composeResult.normalizedElement, metadata);
-      }
 
       composeResult.warnings.forEach(warning => {
         console.warn(`[QTI Composer] ${warning.message}`);

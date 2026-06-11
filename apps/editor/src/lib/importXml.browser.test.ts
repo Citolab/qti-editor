@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { isEditorOriginXml, importXmlFromText } from './importXml';
+import { importXmlFromText } from './importXml';
 
 const QTI_NS = 'http://www.imsglobal.org/xsd/imsqtiasi_v3p0';
 
@@ -14,52 +14,28 @@ vi.mock('@qti-editor/qti3-item-import', () => ({
   roundtripQtiItem: (s: string) => roundtripSpy(s),
 }));
 
-describe('isEditorOriginXml', () => {
-  it('returns true when the only item-body carries data-schema-version', () => {
-    const xml = wrapItem('<p>hi</p>', 'data-schema-version="6"');
-    expect(isEditorOriginXml(xml)).toBe(true);
-  });
-
-  it('returns false when the item-body lacks data-schema-version', () => {
-    const xml = wrapItem('<p>hi</p>');
-    expect(isEditorOriginXml(xml)).toBe(false);
-  });
-
-  it('returns false when zero qti-item-body elements exist', () => {
-    const xml = `<qti-assessment-item xmlns="${QTI_NS}" identifier="i1" title="t1"></qti-assessment-item>`;
-    expect(isEditorOriginXml(xml)).toBe(false);
-  });
-
-  it('returns false when at least one item-body is missing the marker', () => {
-    const xml = `<root xmlns="${QTI_NS}">`
-      + `<qti-item-body data-schema-version="6"><p>a</p></qti-item-body>`
-      + `<qti-item-body><p>b</p></qti-item-body>`
-      + `</root>`;
-    expect(isEditorOriginXml(xml)).toBe(false);
-  });
-});
-
-describe('importXmlFromText branching', () => {
-  it('calls roundtripQtiItem for foreign QTI (no marker)', () => {
+describe('importXmlFromText', () => {
+  it('always hoists native declarations via roundtripQtiItem (every QTI3 is third-party)', () => {
     roundtripSpy.mockClear();
-    const xml = wrapItem('<p>foreign</p>');
+    const xml = wrapItem('<p>hi</p>');
     try {
       importXmlFromText(xml, { schema: undefined as never });
     } catch {
-      // jsonFromHTML may throw without a real schema — we only care that the spy fired first.
+      // jsonFromHTML may throw without a real schema — we only care that the hoist ran first.
     }
     expect(roundtripSpy).toHaveBeenCalledOnce();
-    expect(roundtripSpy).toHaveBeenCalledWith(expect.stringContaining('foreign'));
+    expect(roundtripSpy).toHaveBeenCalledWith(expect.stringContaining('hi'));
   });
 
-  it('does NOT call roundtripQtiItem for editor-origin XML (marker present)', () => {
+  it('runs roundtripQtiItem regardless of any data-* markers on the item-body', () => {
     roundtripSpy.mockClear();
-    const xml = wrapItem('<p>editor</p>', 'data-schema-version="6"');
+    const xml = wrapItem('<p>marked</p>', 'data-schema-version="6"');
     try {
       importXmlFromText(xml, { schema: undefined as never });
     } catch {
       // schema may throw downstream
     }
-    expect(roundtripSpy).not.toHaveBeenCalled();
+    expect(roundtripSpy).toHaveBeenCalledOnce();
+    expect(roundtripSpy).toHaveBeenCalledWith(expect.stringContaining('marked'));
   });
 });

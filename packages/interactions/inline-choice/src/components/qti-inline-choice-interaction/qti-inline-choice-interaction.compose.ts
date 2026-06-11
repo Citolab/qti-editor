@@ -1,4 +1,4 @@
-import { collectMirrorMappings, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
+import { getNonQtiAttributeSources, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { inlineChoiceInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -21,7 +21,7 @@ export function composeInlineChoiceInteractionElement(sourceElement: Element, xm
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
   stripNonQtiAttributesFromElement(normalizedElement, metadata);
-  const nonQtiAttributes = collectMirrorMappings(metadata).map(m => m.source);
+  const nonQtiAttributes = getNonQtiAttributeSources(metadata);
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
   if (!responseIdentifier) {

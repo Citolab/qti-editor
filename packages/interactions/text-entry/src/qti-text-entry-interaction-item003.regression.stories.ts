@@ -101,7 +101,6 @@ export const RoundtripItem003: Story = {
         currentView.state.doc,
         { identifier: 'ITEM003', title: 'ITEM003 roundtrip' },
         schema,
-        [textEntryInteractionDescriptor.composerMetadata],
       );
       console.log('[Roundtrip Export]\n' + xml);
     };

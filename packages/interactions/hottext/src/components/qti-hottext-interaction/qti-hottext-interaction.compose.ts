@@ -1,4 +1,4 @@
-import { collectMirrorMappings, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
+import { getNonQtiAttributeSources, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { hottextInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -32,7 +32,7 @@ export function composeHottextInteractionElement(sourceElement: Element, xmlDoc:
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
   stripNonQtiAttributesFromElement(normalizedElement, metadata);
-  const nonQtiAttributes = collectMirrorMappings(metadata).map(m => m.source);
+  const nonQtiAttributes = getNonQtiAttributeSources(metadata);
 
   normalizedElement.setAttribute('max-choices', String(maxChoices));
   if (minChoices > 0) {

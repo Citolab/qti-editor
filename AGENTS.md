@@ -76,14 +76,14 @@
 - If unexpected modifications appear during work, stop and ask how to proceed.
 - Surface behavioral risks, compatibility concerns, and unverified assumptions in handoff.
 
-## Lossless QTI Roundtrip Packages
-- `@qti-editor/qti-roundtrip-export` and `@qti-editor/qti-roundtrip-import` (under `packages/qti/roundtrip-{export,import}/`) form a **paired, self-roundtrip** for the editor's own save/load — they are **NOT** a generic QTI 3.0 import/export.
-- Export writes ProseMirror authoring attributes (e.g. `correct-response`, `score`, `case-sensitive`, `area-mappings`) onto QTI interaction tags as `data-*` mirrors. Import strips `qti-response-declaration` and `qti-response-processing` and rehydrates ProseMirror attrs from those `data-*` mirrors.
+## QTI Item Export / Import
+- `@qti-editor/qti-item-export` and `@qti-editor/qti-package-builder` (under `packages/qti/item-export/` and `packages/qti/package-builder/`) serialize the editor's ProseMirror tree to **standard QTI 3.0**. `@qti-editor/qti3-item-import` (under `packages/qti/qti3-item-import/`) reads any QTI 3.0 item back — it is a generic importer.
+- The packaged QTI is standard: editor authoring state is folded into `qti-response-declaration` / `qti-response-processing`. There are **no `data-*` mirrors** and no editor-origin markers. The editor's own *roundtrip item-body* representation carries authoring attributes (`correct-response`, `score`, `case-sensitive`, `area-mappings`) as **canonical, unprefixed** attributes.
+- On import, `roundtripQtiItem` runs idempotent transforms that hoist `correct-response` / `score` from the native declarations onto each interaction as canonical attributes. A generic fallback covers any interaction with a `response-identifier`; per-type transforms add type-specific behaviour. A final `roundtripItemBody` transform copies `identifier` / `title` onto `qti-item-body`.
 - **Rules:**
-  - Do not refactor the importer to read `qti-response-declaration` / `qti-response-processing` as a source of authoring state. They are intentionally ignored.
-  - Any new `data-*` mapping must be added to BOTH packages in the same commit, with a row in the contract table in `packages/qti/roundtrip-export/ROUNDTRIP.md` and a passing roundtrip test.
-  - Do not rename or repurpose these packages for third-party QTI import — the names `@qti-editor/qti-export` / `qti-import` are reserved for a separate future generic implementation.
-- See `packages/qti/roundtrip-export/ROUNDTRIP.md` for the full contract.
+  - The non-QTI attribute set lives in exactly one place — each interaction's `nonQtiAttributes` in `packages/prosemirror/interaction-*/src/composer/metadata.ts` — exposed via `getNonQtiAttributeSources`.
+  - Editor-only hints with no standard-QTI source (`case-sensitive`, `area-mappings`) are only reconstructed if the source item carried them.
+- See [Itembody-only QTI subformat](apps/site/src/content/docs/packages/itembody-subformat.mdx) and `docs/architecture.md` for the full model.
 
 ## Architecture Source Of Truth
 - Use `docs/architecture.md` as the canonical architecture reference.

@@ -1,22 +1,20 @@
 ---
 title: QTI Package
-description: Reference for the lossless editor-specific QTI package exporter.
+description: Reference for the QTI 3.0 package exporter.
 slug: docs/packages/qti-roundtrip-export
 ---
 
-`@qti-editor/qti-package` exports the editor's ProseMirror document to a QTI 3.0 package **for lossless re-import by this editor**.
+`@qti-editor/qti-package-builder` exports the editor's ProseMirror document to a **standard QTI 3.0 package**.
 
 ## Scope
 
-This package is **not** a generic QTI 3.0 exporter.
+The package builder:
 
-Its purpose is narrower:
+- writes valid QTI 3.0 package files
+- folds editor authoring state (correct responses, scores) into standard `qti-response-declaration` / `qti-response-processing`
+- emits interactions with **no editor-specific attributes** (no `data-*` mirrors, no marker attributes)
 
-- write valid QTI 3.0 package files
-- preserve editor authoring state through `data-*` mirrors on QTI interaction tags
-- stay paired with `@qti-editor/qti-roundtrip-import`
-
-If you need the full contract, read [ROUNDTRIP.md](../../../../packages/qti/roundtrip-import/ROUNDTRIP.md).
+The output is interchange-friendly standard QTI 3.0. On re-import, `@qti-editor/qti3-item-import` reconstructs authoring state from the native declarations (see [Itembody-only QTI Subformat](./itembody-subformat)).
 
 ## Main exports
 
@@ -25,7 +23,7 @@ import {
   createQtiPackageFromNode,
   createQtiPackageFromProseMirrorJson,
   createQtiPackageFromItems,
-} from '@qti-editor/qti-package';
+} from '@qti-editor/qti-package-builder';
 ```
 
 ## Typical usage
@@ -33,7 +31,7 @@ import {
 Export directly from the current editor document:
 
 ```ts
-import { createQtiPackageFromNode } from '@qti-editor/qti-package';
+import { createQtiPackageFromNode } from '@qti-editor/qti-package-builder';
 
 const blob = await createQtiPackageFromNode(editor.view.state.doc, {
   identifier: 'item-1',
@@ -70,19 +68,12 @@ The context object supports both item-level and package-level metadata:
 - `sectionIdentifier`
 - `sectionTitle`
 
-## "Roundtrip"?
+## Roundtrip model
 
-This package writes editor-specific authoring attributes onto interaction elements as `data-*` attributes. The paired import package reads those `data-*` mirrors back into the ProseMirror schema.
+Authoring state is preserved through **standard QTI 3.0**, not through editor-specific attributes:
 
-That is why this package can preserve authoring state such as:
+- correct responses → `qti-correct-response` values in `qti-response-declaration`
+- scores → `qti-response-processing`
 
-- correct responses
-- scores
-- text-entry case sensitivity
-- select-point area mappings
+On import, `@qti-editor/qti3-item-import` (`roundtripQtiItem`) hoists these back onto each interaction as canonical, unprefixed attributes. Because the export is standard QTI, the same importer can also ingest third-party QTI 3.0 items — though editor-only hints with no standard source (text-entry `case-sensitive`, select-point `area-mappings`) are only present when the source item carried them.
 
-Those mirrors are the authoritative roundtrip contract. The standard QTI response declarations and response processing are emitted for QTI conformance, but the import side intentionally does not use them as the source of authoring truth.
-
-## Important constraint
-
-Do not document or present this package as a third-party QTI exporter. It is designed to roundtrip this editor's own data model, not to be a general-purpose interchange layer.

@@ -68,16 +68,19 @@ export interface InteractionComposeResult {
 export type ResponseProcessingKind = 'match_correct' | 'map_response' | 'map_response_point';
 
 /**
- * Declaration of a non-QTI attribute on an interaction source element.
+ * Declaration of a non-QTI authoring attribute on an interaction source
+ * element. These are editor-only attributes (e.g. `correct-response`, `score`,
+ * `case-sensitive`, `area-mappings`) that the compose pipeline reads and then
+ * strips from the emitted standard-QTI interaction — their values are folded
+ * into `qti-response-declaration` / `qti-response-processing` instead.
  *
- * - A bare `string` is shorthand for `{ source, mirror: \`data-${source}\` }`.
- * - The object form supports two special cases:
- *   - `mirror: false` — strip the attribute on compose but do NOT mirror it to
- *     any `data-*` attribute on the normalized element (e.g. `rubricScoringBlock`,
- *     whose content is preserved via a synthesized `<qti-rubric-block>` instead).
- *   - `aliases` — additional source attribute names that mirror to the same
- *     target. Defensive net for raw-XML callers that bypass upstream renames
- *     (e.g. camelCase `correctResponse` / `correctAnswer` → `data-correct-response`).
+ * - A bare `string` names a single canonical source attribute to strip.
+ * - The object form supports:
+ *   - `aliases` — additional source attribute names treated as the same
+ *     authoring attribute. Defensive net for raw-XML callers that bypass
+ *     upstream renames (e.g. camelCase `correctResponse` / `correctAnswer`).
+ *   - `mirror` — retained for backwards compatibility; no longer affects
+ *     output (the editor emits standard QTI 3.0 with no `data-*` mirrors).
  */
 export type NonQtiAttribute =
   | string
@@ -85,15 +88,14 @@ export type NonQtiAttribute =
       /** The canonical attribute name on the source element. */
       source: string;
       /**
-       * The data-* attribute to mirror to.
-       * - Omit to derive as `data-${source}`.
-       * - Set to `false` to strip without mirroring (e.g. `rubricScoringBlock`).
+       * Retained for backwards compatibility only. The editor no longer emits
+       * `data-*` mirrors, so this field has no effect on compose output.
        */
       mirror?: string | false;
       /**
-       * Additional source attribute names that mirror to the same target.
-       * Defensive net for raw-XML callers that bypass upstream renames
-       * (e.g. camelCase `correctResponse` / `correctAnswer` → `data-correct-response`).
+       * Additional source attribute names treated as the same authoring
+       * attribute. Defensive net for raw-XML callers that bypass upstream
+       * renames (e.g. camelCase `correctResponse` / `correctAnswer`).
        */
       aliases?: readonly string[];
     };

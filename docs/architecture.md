@@ -440,18 +440,37 @@ Typical commands:
 - `pnpm --filter @qti-editor/app build`
 - `pnpm -r --filter "./packages/**" run typecheck`
 
-## Lossless QTI Roundtrip Packages
+## QTI Item Export / Import
 
-`packages/qti/package` and `packages/qti/roundtrip-import` are a **paired, self-roundtrip**: the editor exports its ProseMirror tree to QTI 3.0, then imports it back losslessly using `data-*` mirrors on QTI interaction tags. **They are not a generic QTI 3.0 import/export.**
+`packages/qti/item-export` and `packages/qti/package-builder` serialize the
+editor's ProseMirror tree to **standard QTI 3.0**, and `packages/qti/qti3-item-import`
+reads any QTI 3.0 item back. There are no `data-*` mirrors and no editor-origin
+markers — the output is interchange-friendly standard QTI.
 
-- Export emits standard `qti-response-declaration` / `qti-response-processing` for conformance, plus `data-*` mirrors of ProseMirror schema attrs.
-- Import strips the response-declaration / response-processing nodes and rehydrates schema attrs from the `data-*` mirrors only.
-- Third-party QTI packages imported through this path will have empty authoring attributes — by design.
-- The names `@qti-editor/qti-export` / `qti-import` (without `roundtrip-`) are reserved for a future generic implementation.
+- Export folds editor authoring state into standard `qti-response-declaration` /
+  `qti-response-processing`, and emits interactions carrying their authoring
+  attributes (`correct-response`, `score`, …) as **canonical, unprefixed**
+  attributes only in the editor's own *roundtrip item-body* representation. The
+  packaged QTI strips those and keeps only standard QTI nodes.
+- Import treats every item as third-party. `roundtripQtiItem`
+  (`@qti-editor/qti3-item-import`) runs idempotent transforms that hoist
+  `correct-response` / `score` from the native declarations back onto each
+  interaction as canonical attributes. A generic fallback covers any interaction
+  with a `response-identifier`; per-type transforms add type-specific behaviour.
+- Editor-only hints with no standard-QTI source — text-entry `case-sensitive`,
+  select-point `area-mappings` — are reconstructed only if the source item
+  carried them.
 
-Canonical contract: [`packages/qti/roundtrip-import/ROUNDTRIP.md`](../packages/qti/roundtrip-import/ROUNDTRIP.md). The `data-*` mappings live in exactly one place — each interaction's `nonQtiAttributes` declaration in `packages/prosemirror/interaction-*/src/composer/metadata.ts` — and are derived at runtime by `collectMirrorMappings` (in `@qti-editor/interaction-shared/composer/non-qti-attributes`) for the compose pipeline, the export regex pass, and the import inverse mapping. Update the ROUNDTRIP doc's per-tag table whenever you add a new attribute.
+The non-QTI attribute set lives in exactly one place — each interaction's
+`nonQtiAttributes` declaration in `packages/prosemirror/interaction-*/src/composer/metadata.ts`
+— exposed at runtime via `getNonQtiAttributeSources`
+(in `@qti-editor/interaction-shared/composer/non-qti-attributes`) for the
+compose/strip step.
 
-For the conceptual overview of the itembody-as-source-of-truth subformat — what non-QTI attributes the editor stores on interaction elements and how they are mirrored as `data-*` for QTI 3.0 conformance — see [Itembody-only QTI subformat](../apps/site/src/content/docs/packages/itembody-subformat.mdx) (published on the docs site under Package Reference).
+For the conceptual overview of the itembody-as-source-of-truth subformat — what
+non-QTI attributes the editor stores on interaction elements and how the final
+export stays standard QTI 3.0 — see [Itembody-only QTI subformat](../apps/site/src/content/docs/packages/itembody-subformat.mdx) (published on the docs site under Package Reference).
+
 
 ## Document Schema Versioning
 
@@ -475,10 +494,10 @@ the roundtrip-QTI HTML/XML — are migrated up to this shared target version.
   - `readPersistedDoc(value)` strips it, migrates, and reports what changed.
   - Never stamp a document *before* migrating it — that marks stale content as
     current and prevents migration from ever running.
-- **Roundtrip-QTI** — the version is mirrored onto `<qti-item-body>` as
-  `data-schema-version="6"`, alongside `data-identifier` and `data-title`, so
-  the JSON and HTML representations stay in sync. This attribute also doubles as
-  the editor-origin marker read by `isEditorOriginXml`.
+- **Roundtrip-QTI** — the HTML/XML representation does not carry the schema
+  version inline. On import, the `sourceVersion` is supplied programmatically to
+  `migrateHtmlFragment` so an item exported from an older editor build is
+  migrated forward on the way back in.
 
 ### The migration pipeline
 
@@ -515,24 +534,23 @@ The conversion rules are:
 
 - Every ProseMirror node is serialized to its XML element form.
 - The document root node becomes `<qti-item-body>`.
-- All **non-QTI** attributes become `data-*` attributes. This applies to
-  interaction nodes (via their `nonQtiAttributes` mirrors) **and** to the
-  document root: the doc node's own attributes are mirrored onto the body, so a
-  document with `title`/`identifier` plus the schema version emits:
+- **Non-QTI** attributes are written as **canonical, unprefixed** attributes
+  (no `data-*` prefix). This applies to interaction nodes (via their
+  `nonQtiAttributes`) **and** to the document root: the doc node's own
+  `title` / `identifier` are written onto the body, so a document with
+  `title`/`identifier` emits:
 
   ```xml
   <qti-item-body
-    data-title="My Item"
-    data-identifier="ITEM_001"
-    data-schema-version="6">
+    title="My Item"
+    identifier="ITEM_001">
     ...
   </qti-item-body>
   ```
 
-On import, `data-schema-version` is read from the first `<qti-item-body>` (from
-the raw XML, before `xmlToHTML` rewrites attributes) and passed as the
-`sourceVersion` to `migrateHtmlFragment`, so an item exported from an older
-editor build is migrated forward on the way back in.
+On import, an item exported from an older editor build is migrated forward via
+`migrateHtmlFragment` (the `sourceVersion` is supplied programmatically rather
+than read from an inline attribute).
 
 ## Migration Note
 

@@ -5,23 +5,12 @@
  * per-item XML under `items/`, and materialized image assets under `assets/`. Items
  * are produced by `@qti-editor/qti-test-export` (`getQtiItems`).
  *
- * Paired with `@qti-editor/qti-roundtrip-import` for the lossless authoring
- * roundtrip: this builder writes `data-*` mirror attributes onto interaction tags
- * (via `preserveEditorDataAttributes`) that the import side rehydrates. Both halves
- * must agree on the `data-*` attribute table in ROUNDTRIP.md.
- *
- * DO NOT:
- *   - Stop writing the `data-*` mirrors. They are the only thing the import side
- *     reads — `qti-response-declaration` / `qti-response-processing` are emitted
- *     for QTI conformance but ignored on re-import on purpose.
- *   - Add a `data-*` mapping here without adding its inverse in the import package.
- *   - Generalize this for third-party QTI consumers. That belongs in a separate package.
- *
- * If you need to break these rules, stop and read ROUNDTRIP.md, then update it.
+ * The composer emits standard, conformant QTI 3.0: authoring attributes
+ * (`correct-response` / `score` / …) are expressed as
+ * `qti-response-declaration` / `qti-response-processing`, not as `data-*`
+ * mirrors. Exported packages are plain third-party QTI 3.0.
  */
 import JSZip from 'jszip';
-import { collectMirrorMappings } from '@qti-editor/core/composer';
-import { getInteractionComposerMetadata } from '@qti-editor/core/interactions/composer';
 import { getQtiItems, type QtiComposeContext, type QtiItemFragment } from '@qti-editor/qti-test-export';
 
 import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
@@ -242,7 +231,7 @@ async function materializeImageReferences(
 ): Promise<{ xml: string; assetHrefs: string[] }> {
   const assetHrefs: string[] = [];
   const replacements = new Map<string, string>();
-  const cleanedXml = preserveEditorDataAttributes(cleanXmlString(xml));
+  const cleanedXml = cleanXmlString(xml);
   const attributePattern = new RegExp(`\\b(${IMAGE_REFERENCE_ATTRIBUTES.join('|')})="([^"]+)"`, 'gi');
   const matches = [...cleanedXml.matchAll(attributePattern)];
 
@@ -264,48 +253,6 @@ async function materializeImageReferences(
   });
 
   return { xml: rewrittenXml, assetHrefs };
-}
-
-// Mirrors ProseMirror authoring attributes onto QTI interaction tags as `data-*`
-// attributes. This is the *write* half of the lossless roundtrip — the import
-// package strips `qti-response-*` nodes and rehydrates schema attrs from these
-// mirrors. Do not remove without coordinating with the import side.
-function preserveEditorDataAttributes(xml: string): string {
-  return xml.replace(/<(?<tagName>qti-[a-z0-9-]+-interaction)\b(?<attributes>[^<>]*)>/gi, (match, tagName: string, attributes: string) => {
-    const isSelfClosing = match.endsWith('/>') || /\/\s*$/.test(attributes);
-    const baseAttributes = isSelfClosing ? attributes.replace(/\/\s*$/, '') : attributes;
-    const nextAttributes = preserveEditorDataAttributesInTag(tagName.toLowerCase(), baseAttributes);
-    return `<${tagName}${nextAttributes}${isSelfClosing ? ' />' : '>'}`;
-  });
-}
-
-function preserveEditorDataAttributesInTag(tagName: string, attributes: string): string {
-  const metadata = getInteractionComposerMetadata(tagName);
-  const mappings: ReadonlyArray<{ source: string; target: string }> = metadata
-    ? collectMirrorMappings(metadata)
-    : [];
-
-  let nextAttributes = attributes;
-  mappings.forEach(({ source, target }) => {
-    const value = findAttributeValue(attributes, source);
-    if (value == null || value.length === 0 || hasAttribute(nextAttributes, target)) return;
-    nextAttributes += ` ${target}="${escapePreservedAttributeValue(value)}"`;
-  });
-
-  return nextAttributes;
-}
-
-function findAttributeValue(attributes: string, name: string): string | null {
-  const match = attributes.match(new RegExp(`(?:^|\\s)${escapeRegExp(name)}=(["'])(.*?)\\1`));
-  return match?.[2] ?? null;
-}
-
-function hasAttribute(attributes: string, name: string): boolean {
-  return new RegExp(`(?:^|\\s)${escapeRegExp(name)}=`).test(attributes);
-}
-
-function escapePreservedAttributeValue(value: string): string {
-  return value.replace(/"/g, '&quot;');
 }
 
 async function createAssetFromReference(
@@ -480,10 +427,6 @@ function replaceAll(value: string, search: string, replacement: string): string 
 
 function hasAnyInteraction(xml: string): boolean {
   return /<qti-[a-z0-9-]+-interaction\b/i.test(xml);
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function cleanXmlString(xmlString: string): string {

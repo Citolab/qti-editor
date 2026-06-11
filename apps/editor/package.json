@@ -20,7 +20,6 @@
     "@qti-editor/prosemirror-plugins": "workspace:*",
     "@qti-editor/qti-item-divider": "workspace:*",
     "@qti-editor/qti-package-builder": "workspace:*",
-    "@qti-editor/qti-roundtrip-import": "workspace:*",
     "@qti-editor/qti3-item-import": "workspace:*",
     "@qti-editor/styles": "workspace:*",
     "@qti-editor/ui": "workspace:*",

@@ -10,9 +10,7 @@
  */
 
 export {
-  collectMirrorMappings,
-  copyMirrorsToTarget,
-  getAllMirrorTargets,
+  getNonQtiAttributeSources,
   normalizeNonQtiAttribute,
   stripNonQtiAttributesFromElement,
 } from '@qti-editor/interaction-shared';

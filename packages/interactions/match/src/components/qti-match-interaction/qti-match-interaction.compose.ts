@@ -1,4 +1,4 @@
-import { collectMirrorMappings, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
+import { getNonQtiAttributeSources, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { matchInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -30,7 +30,7 @@ export function composeMatchInteractionElement(sourceElement: Element, xmlDoc: D
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
   stripNonQtiAttributesFromElement(normalizedElement, metadata);
-  const nonQtiAttributes = collectMirrorMappings(metadata).map(m => m.source);
+  const nonQtiAttributes = getNonQtiAttributeSources(metadata);
 
   normalizedElement.setAttribute('max-associations', String(maxAssociations > 0 ? maxAssociations : 1));
   if (minAssociations > 0) {

@@ -1,7 +1,6 @@
 import { qtiItemFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-item';
 import { xmlFromNode } from '@qti-editor/prosekit-integration/save-xml';
 import { createQtiPackageFromNode } from '@qti-editor/qti-package-builder';
-import { CURRENT_SCHEMA_VERSION } from '@qti-editor/interfaces';
 
 import type { Schema } from 'prosekit/pm/model';
 import type { ProseMirrorNode } from 'prosekit/pm/model';
@@ -73,9 +72,7 @@ export function exportItem(options: ExportXmlOptions): void {
 
 export function exportRoundtripXml(node: ProseMirrorNode, fileName: string = 'item'): void {
   const safeFileName = fileName.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9._-]/g, '') || 'item';
-  const xml = xmlFromNode(node, undefined, {
-    'data-schema-version': String(CURRENT_SCHEMA_VERSION),
-  });
+  const xml = xmlFromNode(node);
   const blob = new Blob([xml], { type: 'application/xml' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

@@ -1,4 +1,4 @@
-import { collectMirrorMappings, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
+import { getNonQtiAttributeSources, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { gapMatchInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -28,7 +28,7 @@ export function composeGapMatchInteractionElement(sourceElement: Element, xmlDoc
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
   stripNonQtiAttributesFromElement(normalizedElement, metadata);
-  const nonQtiAttributes = collectMirrorMappings(metadata).map(m => m.source);
+  const nonQtiAttributes = getNonQtiAttributeSources(metadata);
 
   normalizedElement.setAttribute('max-associations', String(maxAssociations > 0 ? maxAssociations : 1));
   if (minAssociations > 0) {

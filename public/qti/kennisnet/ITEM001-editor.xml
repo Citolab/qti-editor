@@ -1,5 +1,9 @@
 <qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="ITEM001" title="ITEM001 roundtrip" adaptive="false" time-dependent="false" xml:lang="en">
-  <qti-response-declaration identifier="RESPONSE" cardinality="single" base-type="identifier"/>
+  <qti-response-declaration identifier="RESPONSE" cardinality="single" base-type="identifier">
+    <qti-correct-response>
+      <qti-value>choice3</qti-value>
+    </qti-correct-response>
+  </qti-response-declaration>
   <qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float">
     <qti-default-value>
       <qti-value>0</qti-value>
@@ -10,12 +14,12 @@
       <qti-value>1</qti-value>
     </qti-default-value>
   </qti-outcome-declaration>
-  <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" data-identifier="ITEM001" data-title="ITEM001 roundtrip" data-schema-version="6">
+  <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
     <p>choice3 0 1</p>
     <p>
       <img src="/qti/kennisnet/resources/atom.png" alt="Atoom"/>
     </p>
-    <qti-choice-interaction max-choices="1" response-identifier="RESPONSE" data-correct-response="choice3" data-score="1">
+    <qti-choice-interaction max-choices="1" response-identifier="RESPONSE">
       <qti-prompt>
         <p>Welke van de onderstaande elementen heeft de hoogste atoommassa?</p>
       </qti-prompt>

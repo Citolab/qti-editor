@@ -1,4 +1,4 @@
-import { collectMirrorMappings, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
+import { getNonQtiAttributeSources, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { extendedTextInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -29,7 +29,7 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
   stripNonQtiAttributesFromElement(normalizedElement, metadata);
-  const nonQtiAttributes = collectMirrorMappings(metadata).map(m => m.source);
+  const nonQtiAttributes = getNonQtiAttributeSources(metadata);
 
   // Set normalized attributes
   if (expectedLength != null) {
