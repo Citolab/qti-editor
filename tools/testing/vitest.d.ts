@@ -3,6 +3,7 @@ import 'storybook/test';
 
 interface CustomMatchers<R = unknown> {
   toEqualXml: (expected: string) => R;
+  toEqualXmlDoc: (expected: Document | Element | string) => R;
 }
 
 declare module 'vitest' {
@@ -19,6 +20,7 @@ declare global {
   namespace jest {
     interface Matchers<R, T = {}> {
       toEqualXml(expected: string): R;
+      toEqualXmlDoc(expected: Document | Element | string): R;
     }
   }
 }
