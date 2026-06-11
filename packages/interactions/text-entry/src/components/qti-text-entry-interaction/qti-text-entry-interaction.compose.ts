@@ -1,4 +1,4 @@
-import { getNonQtiAttributeSources, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
+import { getStrippedAttributeSources, parseCorrectResponseAttribute, stripAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { parseTextEntryCaseSensitiveAttribute } from '../../attributes/text-entry-attributes-editor.js';
 import { textEntryInteractionComposerMetadata } from '../../composer/metadata.js';
@@ -28,8 +28,8 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
-  stripNonQtiAttributesFromElement(normalizedElement, metadata);
-  const nonQtiAttributes = getNonQtiAttributeSources(metadata);
+  stripAttributesFromElement(normalizedElement, metadata);
+  const strippedAttributes = getStrippedAttributeSources(metadata);
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
   if (!responseIdentifier) {
@@ -65,7 +65,7 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
     responseDeclaration,
     responseProcessingTemplate: metadata.responseProcessingTemplate,
     responseProcessingKind: metadata.responseProcessing.internalKind,
-    nonQtiAttributes,
+    strippedAttributes,
     warnings,
   };
 }

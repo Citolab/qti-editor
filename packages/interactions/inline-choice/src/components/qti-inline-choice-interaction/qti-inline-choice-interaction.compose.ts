@@ -1,4 +1,4 @@
-import { getNonQtiAttributeSources, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
+import { getStrippedAttributeSources, parseCorrectResponseAttribute, stripAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { inlineChoiceInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -20,8 +20,8 @@ export function composeInlineChoiceInteractionElement(sourceElement: Element, xm
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
-  stripNonQtiAttributesFromElement(normalizedElement, metadata);
-  const nonQtiAttributes = getNonQtiAttributeSources(metadata);
+  stripAttributesFromElement(normalizedElement, metadata);
+  const strippedAttributes = getStrippedAttributeSources(metadata);
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
   if (!responseIdentifier) {
@@ -46,7 +46,7 @@ export function composeInlineChoiceInteractionElement(sourceElement: Element, xm
     responseDeclaration,
     responseProcessingTemplate: metadata.responseProcessingTemplate,
     responseProcessingKind: metadata.responseProcessing.internalKind,
-    nonQtiAttributes,
+    strippedAttributes,
     warnings,
   };
 }

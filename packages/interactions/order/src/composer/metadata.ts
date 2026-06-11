@@ -33,14 +33,13 @@ export const orderInteractionComposerMetadata = {
     internalKind: 'match_correct',
     internalSourceXml: MATCH_CORRECT_INTERNAL_TEMPLATE,
   },
-  nonQtiAttributes: [{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }, 'score'],
-  userEditableAttributes: ['shuffle', 'correctResponse', 'score'],
+  strippedAttributes: ['correct-response', 'score'],
 } satisfies InteractionComposerMetadata;
 
 export const orderNodeAttributePanelMetadataByNodeTypeName = {
   [ORDER_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: ORDER_INTERACTION_NODE_TYPE,
-    editableAttributes: orderInteractionComposerMetadata.userEditableAttributes,
+    editableAttributes: ['shuffle', 'correctResponse', 'score'],
     fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

@@ -1,5 +1,5 @@
 /**
- * Re-exports the unified non-QTI attribute helpers from
+ * Re-exports the unified stripped attribute helpers from
  * `@qti-editor/interactions/shared`. The helpers live there (not here) so that
  * per-interaction `.compose.ts` files can call them without creating a
  * package-level circular dependency on `@qti-editor/qti-core` (which depends
@@ -10,8 +10,8 @@
  */
 
 export {
-  getNonQtiAttributeSources,
-  normalizeNonQtiAttribute,
-  stripNonQtiAttributesFromElement,
+  getStrippedAttributeSources,
+  normalizeStrippedAttribute,
+  stripAttributesFromElement,
 } from '@qti-editor/interaction-shared';
-export type { NonQtiAttributeEntry } from '@qti-editor/interaction-shared';
+export type { StrippedAttributeEntry } from '@qti-editor/interaction-shared';

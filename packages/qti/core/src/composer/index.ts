@@ -10,11 +10,11 @@ import { getInteractionComposerHandler } from '../interactions/composer.js';
 import type { ResponseProcessingKind } from '@qti-editor/interfaces';
 
 export {
-  getNonQtiAttributeSources,
-  normalizeNonQtiAttribute,
-  stripNonQtiAttributesFromElement,
-} from './non-qti-attributes.js';
-export type { NonQtiAttributeEntry } from './non-qti-attributes.js';
+  getStrippedAttributeSources,
+  normalizeStrippedAttribute,
+  stripAttributesFromElement,
+} from './stripped-attributes.js';
+export type { StrippedAttributeEntry } from './stripped-attributes.js';
 
 export interface ComposerItemContext {
   identifier?: string;

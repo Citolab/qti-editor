@@ -32,8 +32,7 @@ export const qtiRubricBlockDescriptor = {
       templateUri: '',
       internalSourceXml: '',
     },
-    nonQtiAttributes: [],
-    userEditableAttributes: ['use', 'view'],
+    strippedAttributes: [],
   },
   composerHandler: undefined,
   attributePanelMetadata: {

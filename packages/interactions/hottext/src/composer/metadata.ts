@@ -31,14 +31,13 @@ export const hottextInteractionComposerMetadata = {
     internalKind: 'match_correct',
     internalSourceXml: MATCH_CORRECT_INTERNAL_TEMPLATE,
   },
-  nonQtiAttributes: [{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }, 'score'],
-  userEditableAttributes: ['maxChoices', 'minChoices', 'correctResponse', 'score'],
+  strippedAttributes: ['correct-response', 'score'],
 } satisfies InteractionComposerMetadata;
 
 export const hottextNodeAttributePanelMetadataByNodeTypeName = {
   [HOTTEXT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: HOTTEXT_INTERACTION_NODE_TYPE,
-    editableAttributes: hottextInteractionComposerMetadata.userEditableAttributes,
+    editableAttributes: ['maxChoices', 'minChoices', 'correctResponse', 'score'],
     fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

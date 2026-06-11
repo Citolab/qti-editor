@@ -24,14 +24,13 @@ export const selectPointInteractionComposerMetadata = {
     internalKind: 'map_response_point',
     internalSourceXml: MAP_RESPONSE_POINT_INTERNAL_TEMPLATE,
   },
-  nonQtiAttributes: [{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }, 'score', 'area-mappings'],
-  userEditableAttributes: ['maxChoices', 'minChoices', 'score'],
+  strippedAttributes: ['correct-response', 'score', 'area-mappings'],
 } satisfies InteractionComposerMetadata;
 
 export const selectPointNodeAttributePanelMetadataByNodeTypeName = {
   [SELECT_POINT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: SELECT_POINT_INTERACTION_NODE_TYPE,
-    editableAttributes: selectPointInteractionComposerMetadata.userEditableAttributes,
+    editableAttributes: ['maxChoices', 'minChoices', 'score'],
     fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

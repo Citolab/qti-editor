@@ -42,8 +42,7 @@ export const qtiItemDividerDescriptor = {
       templateUri: '',
       internalSourceXml: '',
     },
-    nonQtiAttributes: [],
-    userEditableAttributes: [],
+    strippedAttributes: [],
   },
   // No composer handler - dividers don't generate QTI XML interactions
   composerHandler: undefined,

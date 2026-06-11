@@ -1,4 +1,4 @@
-import { getNonQtiAttributeSources, parseCorrectResponseAttribute, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
+import { getStrippedAttributeSources, parseCorrectResponseAttribute, stripAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { hottextInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -31,8 +31,8 @@ export function composeHottextInteractionElement(sourceElement: Element, xmlDoc:
   const minChoices = toFiniteNumber(sourceElement.getAttribute('min-choices'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
-  stripNonQtiAttributesFromElement(normalizedElement, metadata);
-  const nonQtiAttributes = getNonQtiAttributeSources(metadata);
+  stripAttributesFromElement(normalizedElement, metadata);
+  const strippedAttributes = getStrippedAttributeSources(metadata);
 
   normalizedElement.setAttribute('max-choices', String(maxChoices));
   if (minChoices > 0) {
@@ -66,7 +66,7 @@ export function composeHottextInteractionElement(sourceElement: Element, xmlDoc:
     responseDeclaration,
     responseProcessingTemplate: metadata.responseProcessingTemplate,
     responseProcessingKind: metadata.responseProcessing.internalKind,
-    nonQtiAttributes,
+    strippedAttributes,
     warnings,
   };
 }

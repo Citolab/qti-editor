@@ -14,15 +14,14 @@ export const extendedTextInteractionComposerMetadata = {
     internalKind: undefined,
     internalSourceXml: '',
   },
-  nonQtiAttributes: ['score'],
-  userEditableAttributes: ['expectedLength', 'expectedLines', 'placeholderText', 'format', 'class', 'score'],
+  strippedAttributes: ['score'],
 
 } satisfies InteractionComposerMetadata;
 
 export const extendedTextNodeAttributePanelMetadataByNodeTypeName = {
   [EXTENDED_TEXT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: EXTENDED_TEXT_INTERACTION_NODE_TYPE,
-    editableAttributes: extendedTextInteractionComposerMetadata.userEditableAttributes,
+    editableAttributes: ['expectedLength', 'expectedLines', 'placeholderText', 'format', 'class', 'score'],
     hiddenAttributes: ['class'],
     friendlyEditors: [extendedTextAttributesFriendlyEditor],
     fields: { score: { label: 'Score', input: 'number' } },

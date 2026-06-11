@@ -1,4 +1,4 @@
-import { getNonQtiAttributeSources, stripNonQtiAttributesFromElement } from '@qti-editor/interaction-shared';
+import { getStrippedAttributeSources, stripAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { extendedTextInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -28,8 +28,8 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
-  stripNonQtiAttributesFromElement(normalizedElement, metadata);
-  const nonQtiAttributes = getNonQtiAttributeSources(metadata);
+  stripAttributesFromElement(normalizedElement, metadata);
+  const strippedAttributes = getStrippedAttributeSources(metadata);
 
   // Set normalized attributes
   if (expectedLength != null) {
@@ -66,7 +66,7 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
     responseDeclaration,
     responseProcessingTemplate: undefined, // Extended text typically requires manual scoring
     responseProcessingKind: undefined,
-    nonQtiAttributes,
+    strippedAttributes,
     warnings,
     additionalElements: undefined,
   };

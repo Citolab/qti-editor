@@ -1,17 +1,17 @@
 /**
- * Unit tests for the non-QTI attribute helpers.
+ * Unit tests for the stripped attribute helpers.
  *
- * Runs as a browser test because `stripNonQtiAttributesFromElement` operates on
+ * Runs as a browser test because `stripAttributesFromElement` operates on
  * real DOM `Element` instances which the `unit` vitest project doesn't provide
  * (no jsdom/happy-dom).
  */
 import { describe, expect, it } from 'vitest';
 
 import {
-  getNonQtiAttributeSources,
-  normalizeNonQtiAttribute,
-  stripNonQtiAttributesFromElement,
-} from './non-qti-attributes.js';
+  getStrippedAttributeSources,
+  normalizeStrippedAttribute,
+  stripAttributesFromElement,
+} from './stripped-attributes.js';
 
 import type { InteractionComposerMetadata } from '@qti-editor/interfaces';
 
@@ -26,14 +26,14 @@ function createElement(tagName: string, attrs: Record<string, string> = {}): Ele
 }
 
 function makeMetadata(
-  nonQtiAttributes: InteractionComposerMetadata['nonQtiAttributes'],
-): Pick<InteractionComposerMetadata, 'nonQtiAttributes'> {
-  return { nonQtiAttributes };
+  strippedAttributes: InteractionComposerMetadata['strippedAttributes'],
+): Pick<InteractionComposerMetadata, 'strippedAttributes'> {
+  return { strippedAttributes };
 }
 
-describe('normalizeNonQtiAttribute', () => {
+describe('normalizeStrippedAttribute', () => {
   it('expands a plain string into a default data-* mirror with no aliases', () => {
-    expect(normalizeNonQtiAttribute('score')).toEqual({
+    expect(normalizeStrippedAttribute('score')).toEqual({
       source: 'score',
       mirror: 'data-score',
       aliases: [],
@@ -42,7 +42,7 @@ describe('normalizeNonQtiAttribute', () => {
 
   it('treats `mirror: false` as strip-only (mirror = null)', () => {
     expect(
-      normalizeNonQtiAttribute({ source: 'rubricScoringBlock', mirror: false }),
+      normalizeStrippedAttribute({ source: 'rubricScoringBlock', mirror: false }),
     ).toEqual({
       source: 'rubricScoringBlock',
       mirror: null,
@@ -52,7 +52,7 @@ describe('normalizeNonQtiAttribute', () => {
 
   it('preserves explicit aliases and derives the default mirror', () => {
     expect(
-      normalizeNonQtiAttribute({
+      normalizeStrippedAttribute({
         source: 'correct-response',
         aliases: ['correctResponse', 'correctAnswer'],
       }),
@@ -64,7 +64,7 @@ describe('normalizeNonQtiAttribute', () => {
   });
 
   it('preserves an explicit mirror string', () => {
-    expect(normalizeNonQtiAttribute({ source: 'foo', mirror: 'data-bar' })).toEqual({
+    expect(normalizeStrippedAttribute({ source: 'foo', mirror: 'data-bar' })).toEqual({
       source: 'foo',
       mirror: 'data-bar',
       aliases: [],
@@ -72,7 +72,7 @@ describe('normalizeNonQtiAttribute', () => {
   });
 });
 
-describe('getNonQtiAttributeSources', () => {
+describe('getStrippedAttributeSources', () => {
   it('emits the canonical source plus every alias, including strip-only entries', () => {
     const metadata = makeMetadata([
       { source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] },
@@ -81,7 +81,7 @@ describe('getNonQtiAttributeSources', () => {
       'case-sensitive',
     ]);
 
-    expect(getNonQtiAttributeSources(metadata)).toEqual([
+    expect(getStrippedAttributeSources(metadata)).toEqual([
       'correct-response',
       'correctResponse',
       'correctAnswer',
@@ -92,7 +92,7 @@ describe('getNonQtiAttributeSources', () => {
   });
 });
 
-describe('stripNonQtiAttributesFromElement', () => {
+describe('stripAttributesFromElement', () => {
   it('removes the canonical source attribute but leaves aliases intact', () => {
     const el = createElement('qti-choice-interaction', {
       'response-identifier': 'RESPONSE',
@@ -102,7 +102,7 @@ describe('stripNonQtiAttributesFromElement', () => {
       score: '1',
     });
 
-    stripNonQtiAttributesFromElement(
+    stripAttributesFromElement(
       el,
       makeMetadata([
         { source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] },
@@ -124,7 +124,7 @@ describe('stripNonQtiAttributesFromElement', () => {
       score: '2',
     });
 
-    stripNonQtiAttributesFromElement(
+    stripAttributesFromElement(
       el,
       makeMetadata([{ source: 'rubricScoringBlock', mirror: false }, 'score']),
     );

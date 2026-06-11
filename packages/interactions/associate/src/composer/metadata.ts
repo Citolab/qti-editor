@@ -32,14 +32,13 @@ export const associateInteractionComposerMetadata = {
     internalKind: 'map_response',
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
-  nonQtiAttributes: [{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }, 'score'],
-  userEditableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'correctResponse', 'score'],
+  strippedAttributes: ['correct-response', 'score'],
 } satisfies InteractionComposerMetadata;
 
 export const associateNodeAttributePanelMetadataByNodeTypeName = {
   [ASSOCIATE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: ASSOCIATE_INTERACTION_NODE_TYPE,
-    editableAttributes: associateInteractionComposerMetadata.userEditableAttributes,
+    editableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'correctResponse', 'score'],
     fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

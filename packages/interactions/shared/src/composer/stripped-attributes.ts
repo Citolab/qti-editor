@@ -1,8 +1,8 @@
 /**
- * Unified, pure-function helpers for non-QTI attribute handling.
+ * Unified, pure-function helpers for stripped attribute handling.
  *
  * Single source of truth derived from each interaction's
- * `InteractionComposerMetadata.nonQtiAttributes`. Lives in `interaction-shared`
+ * `InteractionComposerMetadata.strippedAttributes`. Lives in `interaction-shared`
  * so per-interaction `.compose.ts` files can call these helpers without taking
  * a circular dependency on `@qti-editor/qti-core` (which depends on the
  * interaction packages). `@qti-editor/qti-core/composer` re-exports these
@@ -11,9 +11,9 @@
  * No side effects and no I/O.
  */
 
-import type { InteractionComposerMetadata, NonQtiAttribute } from '@qti-editor/interfaces';
+import type { InteractionComposerMetadata, StrippedAttribute } from '@qti-editor/interfaces';
 
-export interface NonQtiAttributeEntry {
+export interface StrippedAttributeEntry {
   /** Canonical attribute name on the source element. */
   source: string;
   /** `data-*` target, or `null` for strip-only entries. */
@@ -34,7 +34,7 @@ const EMPTY_ALIASES: readonly string[] = Object.freeze([]);
  * - `{ source }` with omitted `mirror` → `mirror: 'data-' + source`
  *   (no case folding; canonical sources today are all lowercase-hyphenated).
  */
-export function normalizeNonQtiAttribute(entry: NonQtiAttribute): NonQtiAttributeEntry {
+export function normalizeStrippedAttribute(entry: StrippedAttribute): StrippedAttributeEntry {
   if (typeof entry === 'string') {
     return { source: entry, mirror: `data-${entry}`, aliases: EMPTY_ALIASES };
   }
@@ -57,12 +57,12 @@ export function normalizeNonQtiAttribute(entry: NonQtiAttribute): NonQtiAttribut
  * attributes the compose pipeline reads off the source element before
  * stripping them from the emitted standard-QTI interaction.
  */
-export function getNonQtiAttributeSources(
-  metadata: Pick<InteractionComposerMetadata, 'nonQtiAttributes'>,
+export function getStrippedAttributeSources(
+  metadata: Pick<InteractionComposerMetadata, 'strippedAttributes'>,
 ): string[] {
   const out: string[] = [];
-  for (const raw of metadata.nonQtiAttributes) {
-    const entry = normalizeNonQtiAttribute(raw);
+  for (const raw of metadata.strippedAttributes) {
+    const entry = normalizeStrippedAttribute(raw);
     out.push(entry.source);
     for (const alias of entry.aliases) {
       out.push(alias);
@@ -76,12 +76,12 @@ export function getNonQtiAttributeSources(
  * metadata. Aliases are intentionally NOT stripped — that matches today's
  * behavior (camelCase variants survive on the output element).
  */
-export function stripNonQtiAttributesFromElement(
+export function stripAttributesFromElement(
   element: Element,
-  metadata: Pick<InteractionComposerMetadata, 'nonQtiAttributes'>,
+  metadata: Pick<InteractionComposerMetadata, 'strippedAttributes'>,
 ): void {
-  for (const raw of metadata.nonQtiAttributes) {
-    const entry = normalizeNonQtiAttribute(raw);
+  for (const raw of metadata.strippedAttributes) {
+    const entry = normalizeStrippedAttribute(raw);
     element.removeAttribute(entry.source);
   }
 }

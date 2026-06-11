@@ -29,6 +29,7 @@ import { qtiTransformItem } from '@qti-components/transformers';
 
 import { qtiItemFromProsemirror, prosemirrorFromQtiItem } from '../../shared/src/index';
 import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
+import { attributesPanelPlugin } from '../../../extensions/prosemirror/src/attributes-panel/index';
 import { choiceInteractionDescriptor } from './descriptor';
 import './register';
 import '../../shared/src/components/qti-prompt/register';
@@ -47,8 +48,25 @@ const qtiNodes = Object.fromEntries(
   ].map(({ name, spec }) => [name, spec])
 );
 
+// Item-level title/identifier live on the ProseMirror doc node (doc attrs) so they
+// can be edited generically through the attributes panel — instead of being passed
+// as external metadata. Defaults match the source fixture so the roundtrip stays lossless.
+const DOC_IDENTIFIER_DEFAULT = 'ITEM001';
+const DOC_TITLE_DEFAULT = 'ITEM001 roundtrip';
+
+const baseNodes = { ...nodes, ...qtiNodes };
+
 const schema = new Schema({
-  nodes: { ...nodes, ...qtiNodes },
+  nodes: {
+    ...baseNodes,
+    doc: {
+      ...baseNodes.doc,
+      attrs: {
+        identifier: { default: DOC_IDENTIFIER_DEFAULT },
+        title: { default: DOC_TITLE_DEFAULT },
+      },
+    },
+  },
   marks
 });
 
@@ -75,7 +93,10 @@ export default meta;
 const exportItemBodyXml = (doc: EditorView['state']['doc']): string =>
   qtiItemFromProsemirror(
     doc,
-    { identifier: 'ITEM001', title: 'ITEM001 roundtrip' },
+    {
+      identifier: (doc.attrs.identifier as string) || DOC_IDENTIFIER_DEFAULT,
+      title: (doc.attrs.title as string) || DOC_TITLE_DEFAULT,
+    },
     schema,
   );
 
@@ -89,11 +110,23 @@ const exportAssessmentItemXml = (doc: EditorView['state']['doc']): string => {
   const itemBodyDoc = new DOMParser().parseFromString(itemBodyXml, 'application/xml');
   return formatXml(
     buildSingleAssessmentItemXml({
-      identifier: 'ITEM001',
-      title: 'ITEM001 roundtrip',
+      identifier: (doc.attrs.identifier as string) || DOC_IDENTIFIER_DEFAULT,
+      title: (doc.attrs.title as string) || DOC_TITLE_DEFAULT,
       itemBody: itemBodyDoc,
     }),
   );
+};
+
+// ---------------------------------------------------------------------------
+// Editable-attribute allowlist for the panel, sourced from the interaction's
+// attribute-panel metadata (`editableAttributes`). Attributes outside this list
+// (e.g. `correctResponse` and `maxChoices`, which are set by clicking choices)
+// are rendered disabled. Node types without an entry stay fully editable.
+// ---------------------------------------------------------------------------
+const EDITABLE_ATTRS = {
+  [choiceInteractionDescriptor.nodeTypeName]:
+    choiceInteractionDescriptor.attributePanelMetadata[choiceInteractionDescriptor.nodeTypeName.toLowerCase()]
+      ?.editableAttributes ?? [],
 };
 
 type Story = StoryObj;
@@ -101,6 +134,7 @@ type Story = StoryObj;
 export const RoundtripItem001: Story = {
   render: () => {
     let currentView: EditorView | null = null;
+    let panelEl: HTMLElement | null = null;
 
     console.log('1. Loaded QTI (source)');
     const sourceDoc = new DOMParser().parseFromString(sourceXML, 'application/xml');
@@ -149,8 +183,11 @@ export const RoundtripItem001: Story = {
 
     const mount = (container: HTMLElement) => {
       if (currentView) currentView.destroy();
+      const viewPlugins = panelEl
+        ? [...plugins, attributesPanelPlugin(panelEl, { editableAttrs: EDITABLE_ATTRS, docLabelSuffix: '(item)' })]
+        : plugins;
       currentView = new EditorView(container, {
-        state: EditorState.create({ doc: pmDoc, schema, plugins }),
+        state: EditorState.create({ doc: pmDoc, schema, plugins: viewPlugins }),
         dispatchTransaction(tr) {
           if (!currentView) return;
           currentView.updateState(currentView.state.apply(tr));
@@ -161,15 +198,23 @@ export const RoundtripItem001: Story = {
     };
 
     return html`
-      <div style="max-width: 850px; margin: 40px auto; padding: 0 20px; font-family: system-ui;">
+      <div style="max-width: 1100px; margin: 40px auto; padding: 0 20px; font-family: system-ui;">
         <h3>QTI Roundtrip: load → import → edit → export</h3>
         <div style="margin-bottom: 10px;">
           <button @click=${logExport}>Export current PM doc → console</button>
         </div>
-        <div
-          class="editor-container"
-          ${ref(el => { if (el) mount(el as HTMLElement); })}
-        ></div>
+        <div style="display: flex; gap: 20px; align-items: flex-start;">
+          <aside
+            class="attrs-panel"
+            style="order: 2; flex: 0 0 280px; display: flex; flex-direction: column; gap: 12px;"
+            ${ref(el => { if (el) panelEl = el as HTMLElement; })}
+          ></aside>
+          <div
+            class="editor-container"
+            style="order: 1; flex: 1 1 auto; min-width: 0;"
+            ${ref(el => { if (el) mount(el as HTMLElement); })}
+          ></div>
+        </div>
       </div>
     `;
   },

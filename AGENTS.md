@@ -81,7 +81,7 @@
 - The packaged QTI is standard: editor authoring state is folded into `qti-response-declaration` / `qti-response-processing`. There are **no `data-*` mirrors** and no editor-origin markers. The editor's own *roundtrip item-body* representation carries authoring attributes (`correct-response`, `score`, `case-sensitive`, `area-mappings`) as **canonical, unprefixed** attributes.
 - On import, `roundtripQtiItem` runs idempotent transforms that hoist `correct-response` / `score` from the native declarations onto each interaction as canonical attributes. A generic fallback covers any interaction with a `response-identifier`; per-type transforms add type-specific behaviour. A final `roundtripItemBody` transform copies `identifier` / `title` onto `qti-item-body`.
 - **Rules:**
-  - The non-QTI attribute set lives in exactly one place — each interaction's `nonQtiAttributes` in `packages/prosemirror/interaction-*/src/composer/metadata.ts` — exposed via `getNonQtiAttributeSources`.
+  - The non-QTI attribute set lives in exactly one place — each interaction's `strippedAttributes` in `packages/prosemirror/interaction-*/src/composer/metadata.ts` — exposed via `getStrippedAttributeSources`.
   - Editor-only hints with no standard-QTI source (`case-sensitive`, `area-mappings`) are only reconstructed if the source item carried them.
 - See [Itembody-only QTI subformat](apps/site/src/content/docs/packages/itembody-subformat.mdx) and `docs/architecture.md` for the full model.
 

@@ -87,8 +87,7 @@ const qtiItemDividerDescriptor: InteractionDescriptor = {
       templateUri: '',
       internalSourceXml: '',
     },
-    nonQtiAttributes: [],
-    userEditableAttributes: [],
+    strippedAttributes: [],
   },
   composerHandler: undefined,
   attributePanelMetadata: {

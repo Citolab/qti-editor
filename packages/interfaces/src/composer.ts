@@ -56,7 +56,7 @@ export interface InteractionComposeResult {
   responseDeclaration?: InteractionResponseDeclaration;
   responseProcessingTemplate?: string;
   responseProcessingKind?: ResponseProcessingKind;
-  nonQtiAttributes: string[];
+  strippedAttributes: string[];
   warnings: ComposerWarning[];
   /**
    * Additional elements to insert after the interaction element.
@@ -68,11 +68,12 @@ export interface InteractionComposeResult {
 export type ResponseProcessingKind = 'match_correct' | 'map_response' | 'map_response_point';
 
 /**
- * Declaration of a non-QTI authoring attribute on an interaction source
- * element. These are editor-only attributes (e.g. `correct-response`, `score`,
+ * Declaration of an authoring attribute on an interaction source element that
+ * the compose pipeline strips from the emitted standard-QTI interaction. These
+ * are editor-only attributes (e.g. `correct-response`, `score`,
  * `case-sensitive`, `area-mappings`) that the compose pipeline reads and then
- * strips from the emitted standard-QTI interaction — their values are folded
- * into `qti-response-declaration` / `qti-response-processing` instead.
+ * strips — their values are folded into `qti-response-declaration` /
+ * `qti-response-processing` instead.
  *
  * - A bare `string` names a single canonical source attribute to strip.
  * - The object form supports:
@@ -82,7 +83,7 @@ export type ResponseProcessingKind = 'match_correct' | 'map_response' | 'map_res
  *   - `mirror` — retained for backwards compatibility; no longer affects
  *     output (the editor emits standard QTI 3.0 with no `data-*` mirrors).
  */
-export type NonQtiAttribute =
+export type StrippedAttribute =
   | string
   | {
       /** The canonical attribute name on the source element. */
@@ -109,8 +110,7 @@ export interface InteractionComposerMetadata {
     internalKind?: ResponseProcessingKind;
     internalSourceXml: string;
   };
-  nonQtiAttributes: readonly NonQtiAttribute[];
-  userEditableAttributes: readonly string[];
+  strippedAttributes: readonly StrippedAttribute[];
 }
 
 export interface InteractionComposerHandler {

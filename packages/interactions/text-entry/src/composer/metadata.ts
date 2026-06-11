@@ -25,14 +25,13 @@ export const textEntryInteractionComposerMetadata = {
     internalKind: 'map_response',
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
-  nonQtiAttributes: [{ source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] }, 'score', 'case-sensitive'],
-  userEditableAttributes: ['class', 'caseSensitive', 'correctResponse', 'placeholderText', 'score'],
+  strippedAttributes: ['correct-response', 'score', 'case-sensitive'],
 } satisfies InteractionComposerMetadata;
 
 export const textEntryNodeAttributePanelMetadataByNodeTypeName = {
   [TEXT_ENTRY_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: TEXT_ENTRY_INTERACTION_NODE_TYPE,
-    editableAttributes: textEntryInteractionComposerMetadata.userEditableAttributes,
+    editableAttributes: ['class', 'caseSensitive', 'correctResponse', 'placeholderText', 'score'],
     hiddenAttributes: ['class', 'caseSensitive', 'correctResponse'],
     friendlyEditors: [textEntryAttributesFriendlyEditor],
     fields: { score: { label: 'Score', input: 'number' } },
