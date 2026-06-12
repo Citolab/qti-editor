@@ -1,5 +1,5 @@
 {
-  "name": "@qti-editor/app",
+  "name": "@qti-editor/prosekit-app",
   "private": true,
   "version": "0.1.0",
   "description": "QTI Editor Demo Application - ProseKit editor with QTI support",

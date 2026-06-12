@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, '..');
 const editorHostingDir = join(repoRoot, 'hosting', 'editor');
-const appDistDir = join(repoRoot, 'apps', 'editor', 'dist');
+const appDistDir = join(repoRoot, 'apps', 'qti-prosekit-app', 'dist');
 
 if (!existsSync(appDistDir)) {
   throw new Error(`Editor build output not found: ${appDistDir}`);

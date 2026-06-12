@@ -66,7 +66,7 @@ jobs:
 
           changed=$(git diff --name-only "$base_sha" "$head_sha")
 
-          editor_re="^(apps/editor/|packages/interfaces/|packages/qti/|packages/prosemirror/|packages/ui/|firebase\.json|\.firebaserc|scripts/prepare-hosting-editor\.mjs|package\.json|pnpm-lock\.yaml|\.github/workflows/deploy-editor\.yml)"
+          editor_re="^(apps/qti-prosekit-app/|packages/interfaces/|packages/qti/|packages/prosemirror/|packages/ui/|firebase\.json|\.firebaserc|scripts/prepare-hosting-editor\.mjs|package\.json|pnpm-lock\.yaml|\.github/workflows/deploy-editor\.yml)"
           site_re="^(apps/site/|packages/interfaces/|packages/qti/|packages/prosemirror/|packages/ui/|firebase\.json|\.firebaserc|scripts/prepare-hosting-site\.mjs|package\.json|pnpm-lock\.yaml|\.github/workflows/deploy-site\.yml)"
 
           if echo "$changed" | grep -qE "$editor_re"; then

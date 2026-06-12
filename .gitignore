@@ -20,7 +20,7 @@ pnpm-local-overrides.json
 *storybook.log
 storybook-static
 hosting/*
-apps/editor/public/r
+apps/qti-prosekit-app/public/r
 
 .claude/*
 .claude/settings.json

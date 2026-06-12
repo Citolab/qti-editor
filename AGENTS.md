@@ -6,8 +6,9 @@
 - Package-level rules must not weaken core safety, quality, and verification requirements in this root file.
 
 ## Repository Map
-- App entrypoint: `apps/editor/src/main.ts`
-- App package: `apps/editor/`
+- App entrypoint: `apps/qti-prosekit-app/src/main.ts`
+- App package: `apps/qti-prosekit-app/`
+- Example apps: `apps/qti-prosekit-item/` (minimal ProseKit), `apps/qti-prosemirror-item/` (minimal pure-ProseMirror)
 - Plugin packages: `packages/plugin-*`
 - ProseMirror utility plugins: `packages/prosemirror-*`
 - UI component registry: `packages/ui/` (see Registry Pattern below)
@@ -20,16 +21,16 @@
 - Build all packages and app: `pnpm build`
 - Build all workspace packages only: `pnpm -r --filter "./packages/**" run build`
 - Run app only (dev/build/preview):
-  - `pnpm --filter @qti-editor/app dev`
-  - `pnpm --filter @qti-editor/app build`
-  - `pnpm --filter @qti-editor/app preview`
+  - `pnpm --filter @qti-editor/prosekit-app dev`
+  - `pnpm --filter @qti-editor/prosekit-app build`
+  - `pnpm --filter @qti-editor/prosekit-app preview`
 - Lint check (non-mutating default): `pnpm lint:check`
 
 ## Coding Defaults
 - Keep package boundaries explicit and clean.
 - Add or change shared types at plugin boundaries first.
 - Preserve event contracts (event names + payload shape) unless a deliberate breaking change is requested.
-- Keep app integration decisions in `apps/editor/src/main.ts`; keep domain logic in package modules.
+- Keep app integration decisions in `apps/qti-prosekit-app/src/main.ts`; keep domain logic in package modules.
 - Make focused changes and avoid opportunistic refactors unless requested.
 - Keep the base interaction rendering as close as possible to the actual runtime interaction.
 - Put editor-only affordances in popovers or similar edit-mode UI that appears only while the interaction is being edited.

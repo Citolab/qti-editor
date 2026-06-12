@@ -1,5 +1,5 @@
 {
-  "name": "@qti-editor/roundtrip-minimal",
+  "name": "@qti-editor/prosemirror-item",
   "private": true,
   "version": "0.1.0",
   "description": "Minimal pure-ProseMirror QTI roundtrip editor example",

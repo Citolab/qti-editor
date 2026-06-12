@@ -76,7 +76,7 @@ export function importXmlFromText(xmlText: string, options: ImportXmlOptions): I
   // Convert XML to HTML
   const compatibility = migrateHtmlFragment(xmlToHTML(xmlForImport), {
     metadata: {
-      importPath: 'apps/editor/importXmlFromText',
+      importPath: 'apps/qti-prosekit-app/importXmlFromText',
     },
     preserve: {
       attributeNames: ['rubric-text'],

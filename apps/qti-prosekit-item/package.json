@@ -1,5 +1,5 @@
 {
-  "name": "@qti-editor/minimal",
+  "name": "@qti-editor/prosekit-item",
   "private": true,
   "version": "0.1.0",
   "description": "Minimal QTI Editor example",

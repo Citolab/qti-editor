@@ -220,7 +220,7 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  apps/editor:
+  apps/qti-prosekit-app:
     dependencies:
       '@egoist/tailwindcss-icons':
         specifier: ^1.9.2
@@ -326,7 +326,7 @@ importers:
         specifier: ^5.0.0
         version: 5.4.21(@types/node@20.19.39)(lightningcss@1.32.0)
 
-  apps/qti-minimal:
+  apps/qti-prosekit-item:
     dependencies:
       '@egoist/tailwindcss-icons':
         specifier: ^1.9.2
@@ -393,7 +393,7 @@ importers:
         specifier: ^4.3.1
         version: 4.3.2(typescript@5.9.3)(vite@5.4.21(@types/node@20.19.39)(lightningcss@1.32.0))
 
-  apps/qti-roundtrip-minimal:
+  apps/qti-prosemirror-item:
     dependencies:
       '@qti-components/transformers':
         specifier: ^1.6.4
