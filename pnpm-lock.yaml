@@ -416,6 +416,9 @@ importers:
       '@qti-editor/prosemirror-plugins':
         specifier: workspace:*
         version: link:../../packages/extensions/prosemirror
+      '@qti-editor/qti-item-roundtrip':
+        specifier: workspace:*
+        version: link:../../packages/qti/item-roundtrip
       '@qti-editor/qti-rubric-block':
         specifier: workspace:*
         version: link:../../packages/qti/rubric-block
@@ -804,6 +807,9 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../../qti/core
+      '@qti-editor/qti-item-roundtrip':
+        specifier: workspace:*
+        version: link:../../qti/item-roundtrip
       '@qti-editor/qti-rubric-block':
         specifier: workspace:*
         version: link:../../qti/rubric-block
@@ -859,6 +865,9 @@ importers:
       '@qti-components/transformers':
         specifier: ^1.7.0
         version: 1.7.0
+      '@qti-editor/qti-item-roundtrip':
+        specifier: workspace:*
+        version: link:../../qti/item-roundtrip
       '@qti-editor/qti-rubric-block':
         specifier: workspace:*
         version: link:../../qti/rubric-block
@@ -1104,6 +1113,9 @@ importers:
       '@qti-components/transformers':
         specifier: ^1.7.0
         version: 1.7.0
+      '@qti-editor/qti-item-roundtrip':
+        specifier: workspace:*
+        version: link:../../qti/item-roundtrip
       '@qti-editor/qti3-item-import':
         specifier: workspace:*
         version: link:../../qti/qti3-item-import
@@ -1216,6 +1228,28 @@ importers:
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.39
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/qti/item-roundtrip:
+    dependencies:
+      '@qti-components/transformers':
+        specifier: ^1.6.4
+        version: 1.7.0
+      '@qti-editor/core':
+        specifier: workspace:*
+        version: link:../core
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../../interactions/shared
+      '@qti-editor/qti3-item-import':
+        specifier: workspace:*
+        version: link:../qti3-item-import
+    devDependencies:
+      prosemirror-model:
+        specifier: 1.25.7
+        version: 1.25.7
       typescript:
         specifier: ^5.0.0
         version: 5.9.3

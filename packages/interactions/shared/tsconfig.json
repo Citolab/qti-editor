@@ -18,6 +18,11 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
-  "include": ["src/index.ts", "src/components/*/register.ts"],
+  "include": [
+    "src/index.ts",
+    "src/roundtrip-xml-to-pm.ts",
+    "src/pm-to-roundtrip-xml.ts",
+    "src/components/*/register.ts"
+  ],
   "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.stories.ts", "src/stories/**", "node_modules", "dist"]
 }

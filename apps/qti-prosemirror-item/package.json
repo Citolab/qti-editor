@@ -17,6 +17,7 @@
     "@qti-editor/interaction-shared": "workspace:*",
     "@qti-editor/interaction-text-entry": "workspace:*",
     "@qti-editor/prosemirror-plugins": "workspace:*",
+    "@qti-editor/qti-item-roundtrip": "workspace:*",
     "@qti-editor/qti-rubric-block": "workspace:*",
     "@qti-editor/qti3-item-import": "workspace:*",
     "@qti-editor/styles": "workspace:*",

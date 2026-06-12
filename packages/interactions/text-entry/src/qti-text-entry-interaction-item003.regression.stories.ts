@@ -22,14 +22,10 @@ import { EditorView } from 'prosemirror-view';
 import { nodes, marks } from 'prosemirror-schema-basic';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
-import { roundtripTextEntry, roundtripItemBody, reduceToItemBody } from '@qti-editor/qti3-item-import';
+import { roundtripTextEntry, roundtripItemBody } from '@qti-editor/qti3-item-import';
+import { exportItemXml, importItemFromString } from '@qti-editor/qti-item-roundtrip';
 import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
-import { buildSingleAssessmentItemXml, formatXml } from '@qti-editor/core/composer';
 
-import { qtiTransformItem } from '@qti-components/transformers';
-
-import { pmToRoundtripXml } from '../../shared/src/pm-to-roundtrip-xml';
-import { roundtripXmlToPm } from '../../shared/src/roundtrip-xml-to-pm';
 import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
 import { attributesPanelPlugin } from '../../../extensions/prosemirror/src/attributes-panel/index';
 import { textEntryInteractionDescriptor } from './descriptor';
@@ -68,47 +64,19 @@ export const schema = new Schema({
 const editorPlugins: Plugin[] = [keymap(baseKeymap), blockSelectPlugin];
 
 /** Import ITEM003.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
-export const importItem003 = (): ProseMirrorNode => {
-  // After `reduceToItemBody` the document element IS the `<qti-item-body>`, so
-  // the XMLDocument can be handed straight to `roundtripXmlToPm`.
-  const roundtripXml = qtiTransformItem()
-    .parse(sourceXML)
-    .path('/qti/kennisnet')
-    .fn(roundtripTextEntry)
-    .fn(roundtripItemBody)
-    .fn(reduceToItemBody)
-    .xmlDoc();
-  return roundtripXmlToPm(roundtripXml, schema);
-};
-
-/** Export a ProseMirror doc back to the canonical QTI item-body XML. */
-const exportItemBodyXml = (doc: ProseMirrorNode): string =>
-  pmToRoundtripXml(
-    doc,
-    {
-      identifier: doc.attrs.identifier as string,
-      title: doc.attrs.title as string
-    },
-    schema
-  );
+export const importItem003 = (): ProseMirrorNode =>
+  importItemFromString(sourceXML, schema, {
+    assetBasePath: '/qti/kennisnet',
+    transforms: [roundtripTextEntry, roundtripItemBody]
+  });
 
 /**
  * Export a ProseMirror doc to the complete editor-origin QTI assessment item
  * (item-body wrapped with response/outcome declarations + response processing),
  * parsed as an XML `Document`. This is the editor's "save" output.
  */
-export const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document => {
-  const itemBodyXml = exportItemBodyXml(doc);
-  const itemBodyDoc = new DOMParser().parseFromString(itemBodyXml, 'application/xml');
-  const xml = formatXml(
-    buildSingleAssessmentItemXml({
-      identifier: doc.attrs.identifier as string,
-      title: doc.attrs.title as string,
-      itemBody: itemBodyDoc
-    })
-  );
-  return new DOMParser().parseFromString(xml, 'application/xml');
-};
+export const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document =>
+  new DOMParser().parseFromString(exportItemXml(doc, schema), 'application/xml');
 
 /** Mount the ITEM003 editor into `container`, optionally wiring the attributes panel. */
 export const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLElement } = {}): EditorView => {
