@@ -26,6 +26,20 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
           correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
+      },
+      // The interaction and its choices are inline, so ProseMirror treats the
+      // indentation between `<qti-inline-choice>` elements as significant inline
+      // content. Since the content model (`qtiInlineChoice+`) allows no text, the
+      // parser would otherwise wrap each whitespace run into an empty default
+      // choice. Parse from a clone with whitespace-only child text nodes removed.
+      contentElement: (node: Node) => {
+        const clone = (node as HTMLElement).cloneNode(true) as HTMLElement;
+        for (const child of [...clone.childNodes]) {
+          if (child.nodeType === Node.TEXT_NODE && !/\S/.test(child.nodeValue ?? '')) {
+            clone.removeChild(child);
+          }
+        }
+        return clone;
       }
     }
   ],

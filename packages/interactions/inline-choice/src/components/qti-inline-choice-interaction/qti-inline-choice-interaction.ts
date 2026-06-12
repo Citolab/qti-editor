@@ -16,11 +16,7 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
       css`
         :host {
           white-space: nowrap;
-        }
-        [part='value'].is-correct {
-          color: #16a34a;
-          font-weight: 500;
-        }
+        }        
       `
     ];
   }

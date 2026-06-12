@@ -11,8 +11,7 @@
  * Fields are rendered by value type: boolean attributes become checkboxes and
  * everything else becomes a text input (the stored value type is preserved on
  * write). The only configuration is a generic read-only allowlist
- * (`editableAttrs`) and an optional doc-node label suffix. Read-only attrs are
- * rendered disabled.
+ * (`editableAttrs`). Read-only attrs are rendered disabled.
  *
  * No ProseKit imports — works with raw ProseMirror.
  */
@@ -24,9 +23,6 @@ import type { EditorView } from 'prosemirror-view';
 
 /** Sentinel position for the doc node (it has no addressable document position). */
 const DOC_POS = -1;
-
-/** Delay before a text-field edit is committed as a transaction (ms). */
-const ATTR_INPUT_DEBOUNCE_MS = 250;
 
 export interface ChainEntry {
   type: string;
@@ -42,13 +38,8 @@ export interface AttributesPanelOptions {
    * attribute is rendered disabled. Node types without an entry (e.g. the doc
    * node) have all of their attributes editable.
    */
-  editableAttrs?: Record<string, ReadonlySet<string> | readonly string[]>;
-  /** Optional suffix appended to the doc node's section header (e.g. "(item)"). */
-  docLabelSuffix?: string;
+  editableAttrs?: Record<string, readonly string[]>;
 }
-
-const toSet = (value: ReadonlySet<string> | readonly string[] | undefined): ReadonlySet<string> =>
-  value instanceof Set ? value : new Set(value ?? []);
 
 /** Does this node type define any schema attrs? */
 const nodeHasSchemaAttrs = (node: ProseMirrorNode): boolean =>
@@ -132,21 +123,10 @@ const buildField = (
     input.type = 'text';
     input.value = value == null ? '' : String(value);
     if (!readOnly) {
-      // Debounce text edits so each keystroke doesn't dispatch a transaction;
-      // commit shortly after typing stops, and flush immediately on blur.
-      let debounceId: ReturnType<typeof setTimeout> | undefined;
-      const commit = () => {
-        debounceId = undefined;
+      // `change` fires when editing finishes (blur/Enter), so each edit commits
+      // a single transaction rather than one per keystroke.
+      input.addEventListener('change', () => {
         applyAttrChange(view, entry, key, input.value === '' ? null : input.value);
-      };
-      input.addEventListener('input', () => {
-        if (debounceId !== undefined) clearTimeout(debounceId);
-        debounceId = setTimeout(commit, ATTR_INPUT_DEBOUNCE_MS);
-      });
-      input.addEventListener('blur', () => {
-        if (debounceId === undefined) return;
-        clearTimeout(debounceId);
-        commit();
       });
     }
   }
@@ -207,11 +187,11 @@ const renderAttrsPanel = (
  * a field never steals focus; otherwise field values are refreshed in place.
  *
  * @param panelEl The host element to render the panel into.
- * @param options Editable-attribute allowlist and doc label customization.
+ * @param options Editable-attribute allowlist.
  */
 export const attributesPanelPlugin = (panelEl: HTMLElement, options: AttributesPanelOptions = {}): Plugin => {
   const editableAttrs: Record<string, ReadonlySet<string>> = Object.fromEntries(
-    Object.entries(options.editableAttrs ?? {}).map(([type, attrs]) => [type, toSet(attrs)]),
+    Object.entries(options.editableAttrs ?? {}).map(([type, attrs]) => [type, new Set(attrs)]),
   );
 
   return new Plugin({

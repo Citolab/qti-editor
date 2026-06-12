@@ -21,7 +21,7 @@
 
 import { Schema } from 'prosemirror-model';
 import { nodes, marks } from 'prosemirror-schema-basic';
-import { baseKeymap } from 'prosemirror-commands';
+import { baseKeymap, chainCommands } from 'prosemirror-commands';
 import { keymap } from 'prosemirror-keymap';
 import { choiceInteractionDescriptor } from '@qti-editor/interaction-choice';
 import { extendedTextInteractionDescriptor } from '@qti-editor/interaction-extended-text';
@@ -104,15 +104,27 @@ export const editableAttrs = Object.fromEntries(
   )
 );
 
-/** Enter inserts a new sibling choice; falls back to the base behaviour elsewhere. */
-const enterCommand = choiceInteractionDescriptor.enterCommand ?? baseKeymap.Enter;
+/**
+ * Enter/Backspace insert or remove a sibling option for whichever interaction the
+ * selection is in (choice, inline-choice, …); each tries in turn and falls back to
+ * the base behaviour when none applies.
+ */
+const enterCommand = chainCommands(
+  ...descriptors.flatMap(descriptor => descriptor.enterCommand ?? []),
+  baseKeymap.Enter
+);
+const backspaceCommand = chainCommands(
+  ...descriptors.flatMap(descriptor => descriptor.backspaceCommand ?? []),
+  baseKeymap.Backspace
+);
 
 /**
- * QTI-specific plugins: the choice-aware Enter keymap plus each descriptor's own
- * plugins. Compose these *before* `keymap(baseKeymap)` so the Enter override wins.
+ * QTI-specific plugins: the interaction-aware Enter/Backspace keymap plus each
+ * descriptor's own plugins. Compose these *before* `keymap(baseKeymap)` so the
+ * overrides win.
  */
 export const qtiPlugins: Plugin[] = [
-  keymap({ Enter: enterCommand }),
+  keymap({ Enter: enterCommand, Backspace: backspaceCommand }),
   ...descriptors.flatMap(descriptor => descriptor.pluginFactories?.map(factory => factory()) ?? [])
 ];
 
