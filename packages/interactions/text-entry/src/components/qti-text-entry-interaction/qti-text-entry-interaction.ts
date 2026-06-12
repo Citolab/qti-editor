@@ -18,6 +18,9 @@ export class QtiTextEntryInteractionEdit extends Interaction {
         [part="input"] {
           color: hsl(var(--muted-foreground, 220 9% 56%));
           font-style: italic;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       `
     ];
@@ -32,7 +35,8 @@ export class QtiTextEntryInteractionEdit extends Interaction {
     if (this.placeholderText) {
       return this.placeholderText;
     }
-    return 'Candidate enters text response here...';
+    // Reserve a sensible default width with 10 non-breaking spaces (invisible).
+    return '\u00A0'.repeat(40);
   }
 
   override render() {

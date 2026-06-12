@@ -69,7 +69,8 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
     if (this.placeholderText) {
       return this.placeholderText;
     }
-    return 'Candidate enters extended text response here...';
+    // Reserve a sensible default width with 40 non-breaking spaces (invisible).
+    return '\u00A0'.repeat(1);
   }
 
   override render() {
