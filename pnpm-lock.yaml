@@ -396,8 +396,8 @@ importers:
   apps/qti-prosemirror-item:
     dependencies:
       '@qti-components/transformers':
-        specifier: ^1.6.4
-        version: 1.7.0
+        specifier: ^1.7.1
+        version: 1.7.1
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../../packages/qti/core
@@ -432,13 +432,13 @@ importers:
         specifier: ^1.7.1
         version: 1.7.1
       prosemirror-dropcursor:
-        specifier: ^1.8.1
+        specifier: ^1.8.2
         version: 1.8.2
       prosemirror-gapcursor:
-        specifier: ^1.3.2
+        specifier: ^1.4.1
         version: 1.4.1
       prosemirror-history:
-        specifier: ^1.4.1
+        specifier: ^1.5.0
         version: 1.5.0
       prosemirror-keymap:
         specifier: ^1.2.3
@@ -456,8 +456,8 @@ importers:
         specifier: ^1.4.4
         version: 1.4.4
       prosemirror-view:
-        specifier: ^1.31.0
-        version: 1.41.8
+        specifier: ^1.41.9
+        version: 1.41.9
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
@@ -3092,6 +3092,9 @@ packages:
 
   '@qti-components/transformers@1.7.0':
     resolution: {integrity: sha512-Cmn2jDHQsmXZDSQP6Kra1Mi5OrXzzTNBFU5KaMcn2pWPAPH06xcHsEdLfmbkkI5UUX5HrYml/lHB5Geot2H4yg==}
+
+  '@qti-components/transformers@1.7.1':
+    resolution: {integrity: sha512-Ol8s3zpzTncvfFY7YM7SNTmKODs68IkWQnDODpxKDof4PV26yqT7POg/LmLdfin8A/xTvNNOdgJ+QNEgta1VZA==}
 
   '@qti-components/upload-interaction@1.1.4':
     resolution: {integrity: sha512-RfUbJ+exv5oMhrw6afIE7RhThCoUXw3atHyYCbrJWhGPFmmuKsqouQRuOsmuijHnfq1ll4lsBdW2/6RlFcZ04w==}
@@ -6939,6 +6942,9 @@ packages:
   prosemirror-view@1.41.8:
     resolution: {integrity: sha512-TnKDdohEatgyZNGCDWIdccOHXhYloJwbwU+phw/a23KBvJIR9lWQWW7WHHK3vBdOLDNuF7TaX98GObUZOWkOnA==}
 
+  prosemirror-view@1.41.9:
+    resolution: {integrity: sha512-clTunTX+eaLbr87L1V1QPheRlEQJyTlL3gXe9x3jQIk3rL0RVWxviDGz8tFaydwIVm+hKhYCyr+R/zBtWr9s6A==}
+
   proto-list@1.2.4:
     resolution: {integrity: sha512-vtK/94akxsTMhe0/cbfpR+syPuszcuwhqVjJq26CuNDgFGj682oRBXOP5MJpv2r7JtE8MsiepGIqvvOTBwn2vA==}
 
@@ -9852,7 +9858,7 @@ snapshots:
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   '@prosekit/pm@0.1.17':
     dependencies:
@@ -9863,7 +9869,7 @@ snapshots:
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   '@prosekit/preact@0.7.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)':
     dependencies:
@@ -10184,21 +10190,21 @@ snapshots:
       '@ocavue/utils': 1.6.0
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   '@prosemirror-adapter/preact@0.5.3':
     dependencies:
       '@prosemirror-adapter/core': 0.5.3
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   '@prosemirror-adapter/react@0.5.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@prosemirror-adapter/core': 0.5.3
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
     optionalDependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -10208,21 +10214,21 @@ snapshots:
       '@prosemirror-adapter/core': 0.5.3
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   '@prosemirror-adapter/svelte@0.5.3':
     dependencies:
       '@prosemirror-adapter/core': 0.5.3
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   '@prosemirror-adapter/vue@0.5.3':
     dependencies:
       '@prosemirror-adapter/core': 0.5.3
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   '@protobufjs/aspromise@1.1.2': {}
 
@@ -10529,6 +10535,8 @@ snapshots:
   '@qti-components/transformers@1.6.4': {}
 
   '@qti-components/transformers@1.7.0': {}
+
+  '@qti-components/transformers@1.7.1': {}
 
   '@qti-components/upload-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
@@ -14965,20 +14973,20 @@ snapshots:
       '@ocavue/utils': 1.6.0
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   prosemirror-dropcursor@1.8.2:
     dependencies:
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   prosemirror-enter-rules@0.1.5:
     dependencies:
       prosemirror-keymap: 1.2.3
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   prosemirror-flat-list@0.5.8:
     dependencies:
@@ -14988,7 +14996,7 @@ snapshots:
       prosemirror-safari-ime-span: 1.0.2
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   prosemirror-flat-list@0.6.0:
     dependencies:
@@ -14998,14 +15006,14 @@ snapshots:
       prosemirror-safari-ime-span: 1.0.2
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   prosemirror-gapcursor@1.4.1:
     dependencies:
       prosemirror-keymap: 1.2.3
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   prosemirror-highlight@0.15.1(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8):
     optionalDependencies:
@@ -15040,7 +15048,7 @@ snapshots:
       prosemirror-inputrules: 1.5.1
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   prosemirror-menu@1.3.0:
     dependencies:
@@ -15063,7 +15071,7 @@ snapshots:
   prosemirror-safari-ime-span@1.0.2:
     dependencies:
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   prosemirror-schema-basic@1.2.4:
     dependencies:
@@ -15079,7 +15087,7 @@ snapshots:
     dependencies:
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   prosemirror-splittable@0.1.1(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0):
     optionalDependencies:
@@ -15099,13 +15107,19 @@ snapshots:
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
-      prosemirror-view: 1.41.8
+      prosemirror-view: 1.41.9
 
   prosemirror-transform@1.12.0:
     dependencies:
       prosemirror-model: 1.25.7
 
   prosemirror-view@1.41.8:
+    dependencies:
+      prosemirror-model: 1.25.7
+      prosemirror-state: 1.4.4
+      prosemirror-transform: 1.12.0
+
+  prosemirror-view@1.41.9:
     dependencies:
       prosemirror-model: 1.25.7
       prosemirror-state: 1.4.4
