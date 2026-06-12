@@ -2,7 +2,7 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
   group: 'block',
-  content: 'qtiPrompt?',
+  content: 'qtiPrompt',
   attrs: {
     responseIdentifier: { default: null },
     expectedLength: { default: null },

@@ -1,6 +1,7 @@
 export * from './components/interaction.js';
 
 export * from './components/qti-prompt/qti-prompt.js';
+export * from './components/qti-prompt/qti-prompt.compose.js';
 export * from './components/qti-prompt/qti-prompt-paragraph.schema.js';
 export * from './components/qti-prompt/qti-prompt.schema.js';
 

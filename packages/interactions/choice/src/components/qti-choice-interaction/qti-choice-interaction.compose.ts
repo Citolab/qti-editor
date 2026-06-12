@@ -1,4 +1,4 @@
-import { getStrippedAttributeSources, parseCorrectResponseAttribute, stripAttributesFromElement } from '@qti-editor/interaction-shared';
+import { getStrippedAttributeSources, parseCorrectResponseAttribute, removeEmptyPrompts, stripAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { choiceInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -28,6 +28,7 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
   stripAttributesFromElement(normalizedElement, metadata);
+  removeEmptyPrompts(normalizedElement);
   const strippedAttributes = getStrippedAttributeSources(metadata);
 
   normalizedElement.setAttribute('max-choices', String(maxChoices));

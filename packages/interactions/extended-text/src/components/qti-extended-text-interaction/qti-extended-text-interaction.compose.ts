@@ -1,4 +1,4 @@
-import { getStrippedAttributeSources, stripAttributesFromElement } from '@qti-editor/interaction-shared';
+import { getStrippedAttributeSources, removeEmptyPrompts, stripAttributesFromElement } from '@qti-editor/interaction-shared';
 
 import { extendedTextInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -29,6 +29,7 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
   stripAttributesFromElement(normalizedElement, metadata);
+  removeEmptyPrompts(normalizedElement);
   const strippedAttributes = getStrippedAttributeSources(metadata);
 
   // Set normalized attributes
