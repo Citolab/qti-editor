@@ -58,9 +58,14 @@ export class QtiInlineChoice extends CorrectResponseClickMixin(QtiInlineChoiceBa
   override identifier = 'A';
 
   protected handleLabelMousedown(event: MouseEvent) {
-    // Prevent ProseMirror's default posAtCoords cursor placement (it checks
-    // event.defaultPrevented before handling mousedown). The plugin will set
-    // the cursor precisely at the end of this choice's text content instead.
+    // For a choice that already has text, let ProseMirror handle the mousedown
+    // natively so the user can click to position the caret and drag to select.
+    // Only an *empty* choice needs help: an empty inline element has no DOM text
+    // node, so ProseMirror's posAtCoords can't land a cursor inside it. In that
+    // case suppress PM's default placement (it bails when defaultPrevented) and
+    // ask the plugin to place the caret precisely instead.
+    if ((this.textContent ?? '').trim().length > 0) return;
+
     event.preventDefault();
     this.dispatchEvent(
       new CustomEvent<QtiInlineChoiceFocusDetail>(QTI_INLINE_CHOICE_FOCUS_EVENT, {
