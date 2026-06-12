@@ -393,6 +393,70 @@ importers:
         specifier: ^4.3.1
         version: 4.3.2(typescript@5.9.3)(vite@5.4.21(@types/node@20.19.39)(lightningcss@1.32.0))
 
+  apps/qti-roundtrip-minimal:
+    dependencies:
+      '@qti-components/transformers':
+        specifier: ^1.6.4
+        version: 1.7.0
+      '@qti-editor/core':
+        specifier: workspace:*
+        version: link:../../packages/qti/core
+      '@qti-editor/interaction-choice':
+        specifier: workspace:*
+        version: link:../../packages/interactions/choice
+      '@qti-editor/interaction-extended-text':
+        specifier: workspace:*
+        version: link:../../packages/interactions/extended-text
+      '@qti-editor/interaction-shared':
+        specifier: workspace:*
+        version: link:../../packages/interactions/shared
+      '@qti-editor/interaction-text-entry':
+        specifier: workspace:*
+        version: link:../../packages/interactions/text-entry
+      '@qti-editor/prosemirror-plugins':
+        specifier: workspace:*
+        version: link:../../packages/extensions/prosemirror
+      '@qti-editor/qti-rubric-block':
+        specifier: workspace:*
+        version: link:../../packages/qti/rubric-block
+      '@qti-editor/qti3-item-import':
+        specifier: workspace:*
+        version: link:../../packages/qti/qti3-item-import
+      '@qti-editor/styles':
+        specifier: workspace:*
+        version: link:../../packages/styles
+      prosemirror-commands:
+        specifier: ^1.7.1
+        version: 1.7.1
+      prosemirror-keymap:
+        specifier: ^1.2.3
+        version: 1.2.3
+      prosemirror-model:
+        specifier: 1.25.7
+        version: 1.25.7
+      prosemirror-schema-basic:
+        specifier: ^1.2.4
+        version: 1.2.4
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+      prosemirror-view:
+        specifier: ^1.31.0
+        version: 1.41.8
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.39
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.39)(lightningcss@1.32.0)
+      vite-tsconfig-paths:
+        specifier: ^4.3.1
+        version: 4.3.2(typescript@5.9.3)(vite@5.4.21(@types/node@20.19.39)(lightningcss@1.32.0))
+
   apps/site:
     dependencies:
       '@astrojs/starlight':
@@ -1172,31 +1236,6 @@ importers:
         specifier: ^1.6.4
         version: 1.6.4
     devDependencies:
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-
-  packages/qti/roundtrip-import:
-    dependencies:
-      '@qti-editor/core':
-        specifier: workspace:*
-        version: link:../core
-      '@qti-editor/prosemirror-plugins':
-        specifier: workspace:*
-        version: link:../../extensions/prosemirror
-      '@qti-editor/qti-item-export':
-        specifier: workspace:*
-        version: link:../item-export
-      jszip:
-        specifier: ^3.10.1
-        version: 3.10.1
-      prosekit:
-        specifier: ^0.21.3
-        version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-    devDependencies:
-      '@types/node':
-        specifier: ^20.0.0
-        version: 20.19.39
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
