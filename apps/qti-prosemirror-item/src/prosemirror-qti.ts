@@ -61,7 +61,7 @@ import type { Node as ProseMirrorNode } from 'prosemirror-model';
 import type { Plugin } from 'prosemirror-state';
 
 /** Every descriptor this minimal editor understands. */
-const descriptors = [
+const descriptors: InteractionDescriptor[] = [
   choiceInteractionDescriptor,
   extendedTextInteractionDescriptor,
   textEntryInteractionDescriptor,
@@ -73,7 +73,7 @@ const descriptors = [
   orderInteractionDescriptor,
   selectPointInteractionDescriptor,
   qtiRubricBlockDescriptor
-] satisfies InteractionDescriptor[];
+];
 
 const qtiNodes = Object.fromEntries(
   descriptors.flatMap(descriptor => descriptor.nodeSpecs).map(({ name, spec }) => [name, spec])

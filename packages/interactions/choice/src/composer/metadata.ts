@@ -37,7 +37,7 @@ export const choiceInteractionComposerMetadata = {
   strippedAttributes: ['correct-response', 'score'],
 } satisfies InteractionComposerMetadata;
 
-export const choiceNodeAttributePanelMetadataByNodeTypeName = {
+export const choiceNodeAttributePanelMetadataByNodeTypeName: Record<string, NodeAttributePanelMetadata> = {
   [CHOICE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: CHOICE_INTERACTION_NODE_TYPE,
     editableAttributes: ['class', 'shuffle'],
@@ -52,4 +52,4 @@ export const choiceNodeAttributePanelMetadataByNodeTypeName = {
     editableAttributes: ['fixed'],
     fields: { fixed: { label: 'Fixed', input: 'checkbox' }, identifier: { readOnly: true } },
   },
-} satisfies Record<string, NodeAttributePanelMetadata>;
+};
