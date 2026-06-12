@@ -20,6 +20,10 @@ export const qtiRubricBlockNodeSpec: NodeSpec = {
   group: 'block',
   content: 'paragraph+',
   defining: true,
+  // Let the gap cursor settle directly before/after the rubric block so authors
+  // can place a cursor between it and an adjacent interaction (or below it at the
+  // end of the body) instead of being forced inside its paragraphs.
+  createGapCursor: true,
   attrs: {
     use: { default: 'instructions' },
     view: { default: 'author' },
