@@ -144,18 +144,6 @@ header p {
   min-height: 100%;
 }
 
-#export-output {
-  margin: 0;
-  max-height: 40vh;
-  overflow: auto;
-  padding: 1rem 1.5rem;
-  border-top: 1px solid var(--border);
-  background: var(--bg-muted);
-  font-size: 0.75rem;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
 /* Attributes panel */
 #attributes-panel {
   padding: 0.75rem;
