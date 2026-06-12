@@ -18,7 +18,7 @@
     <p>
       <img src="/qti/kennisnet/resources/atom.png" alt="Atoom"/>
     </p>
-    <qti-choice-interaction max-choices="1" response-identifier="RESPONSE">
+    <qti-choice-interaction max-choices="1" response-identifier="RESPONSE" shuffle="true">
       <qti-prompt>
         <p>Welke van de onderstaande elementen heeft de hoogste atoommassa?</p>
       </qti-prompt>

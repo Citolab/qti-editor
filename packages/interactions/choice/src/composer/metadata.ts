@@ -23,6 +23,7 @@ const MATCH_CORRECT_INTERNAL_TEMPLATE = `
 
 export const CHOICE_INTERACTION_TAG = 'qti-choice-interaction' as const;
 export const CHOICE_INTERACTION_NODE_TYPE = 'qtiChoiceInteraction' as const;
+export const SIMPLE_CHOICE_NODE_TYPE = 'qtiSimpleChoice' as const;
 
 export const choiceInteractionComposerMetadata = {
   tagName: CHOICE_INTERACTION_TAG,
@@ -39,9 +40,16 @@ export const choiceInteractionComposerMetadata = {
 export const choiceNodeAttributePanelMetadataByNodeTypeName = {
   [CHOICE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: CHOICE_INTERACTION_NODE_TYPE,
-    editableAttributes: ['class'],
+    editableAttributes: ['class', 'shuffle'],
     hiddenAttributes: ['class'],
     friendlyEditors: [choiceInteractionClassFriendlyEditor],
-    fields: { score: { label: 'Score', input: 'number' } },
+    fields: { score: { label: 'Score', input: 'number' }, shuffle: { label: 'Shuffle', input: 'checkbox' } },
+  },
+  [SIMPLE_CHOICE_NODE_TYPE.toLowerCase()]: {
+    nodeTypeName: SIMPLE_CHOICE_NODE_TYPE,
+    // `fixed` is user-editable (rendered as a checkbox); `identifier` is
+    // omitted from the allowlist, so the panel renders it read-only.
+    editableAttributes: ['fixed'],
+    fields: { fixed: { label: 'Fixed', input: 'checkbox' }, identifier: { readOnly: true } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

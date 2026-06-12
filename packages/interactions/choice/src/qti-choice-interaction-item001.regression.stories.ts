@@ -75,14 +75,16 @@ const editorPlugins: Plugin[] = [
 ];
 
 // Editable-attribute allowlist for the panel, sourced from the interaction's
-// attribute-panel metadata (`editableAttributes`). Attributes outside this list
-// (e.g. `correctResponse` and `maxChoices`, which are set by clicking choices)
-// are rendered disabled. Node types without an entry stay fully editable.
-const EDITABLE_ATTRS = {
-  [choiceInteractionDescriptor.nodeTypeName]:
-    choiceInteractionDescriptor.attributePanelMetadata[choiceInteractionDescriptor.nodeTypeName.toLowerCase()]
-      ?.editableAttributes ?? []
-};
+// attribute-panel metadata (`editableAttributes`), keyed by node type. Attributes
+// outside a node type's list (e.g. the interaction's `correctResponse`/`maxChoices`,
+// or a simple choice's `identifier`) are rendered disabled. Node types without an
+// entry stay fully editable.
+const EDITABLE_ATTRS = Object.fromEntries(
+  Object.values(choiceInteractionDescriptor.attributePanelMetadata ?? {}).map(metadata => [
+    metadata.nodeTypeName,
+    metadata.editableAttributes ?? []
+  ])
+);
 
 /** Import ITEM001.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
 export const importItem001 = (): ProseMirrorNode => {

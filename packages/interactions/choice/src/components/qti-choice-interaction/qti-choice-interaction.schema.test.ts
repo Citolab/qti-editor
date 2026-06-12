@@ -20,6 +20,7 @@ describe('qtiChoiceInteractionNodeSpec', () => {
       correctResponse: null,
       responseIdentifier: null,
       score: 1,
+      shuffle: false,
     });
   });
 
@@ -53,5 +54,33 @@ describe('qtiChoiceInteractionNodeSpec', () => {
       },
       0,
     ]);
+  });
+
+  it('omits `shuffle` from the serialized DOM when false', () => {
+    const schema = createSchemaFromNodeSpecs(choiceInteractionDescriptor.nodeSpecs);
+    const prompt = schema.node('qtiPrompt', null, [
+      schema.node('qtiPromptParagraph', null, [schema.text('Choose one answer.')]),
+    ]);
+    const choiceA = schema.node('qtiSimpleChoice', { identifier: 'choice-a' }, [
+      schema.node('qtiSimpleChoiceParagraph', null, [schema.text('Option A')]),
+    ]);
+    const interaction = schema.node('qtiChoiceInteraction', null, [prompt, choiceA]);
+
+    const [, attrs] = qtiChoiceInteractionNodeSpec.toDOM?.(interaction) as [string, Record<string, string>, number];
+    expect('shuffle' in attrs).toBe(false);
+  });
+
+  it('serializes `shuffle="true"` when set', () => {
+    const schema = createSchemaFromNodeSpecs(choiceInteractionDescriptor.nodeSpecs);
+    const prompt = schema.node('qtiPrompt', null, [
+      schema.node('qtiPromptParagraph', null, [schema.text('Choose one answer.')]),
+    ]);
+    const choiceA = schema.node('qtiSimpleChoice', { identifier: 'choice-a' }, [
+      schema.node('qtiSimpleChoiceParagraph', null, [schema.text('Option A')]),
+    ]);
+    const interaction = schema.node('qtiChoiceInteraction', { shuffle: true }, [prompt, choiceA]);
+
+    const [, attrs] = qtiChoiceInteractionNodeSpec.toDOM?.(interaction) as [string, Record<string, string>, number];
+    expect(attrs.shuffle).toBe('true');
   });
 });

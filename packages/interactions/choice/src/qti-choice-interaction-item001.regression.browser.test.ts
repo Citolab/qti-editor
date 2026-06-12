@@ -130,4 +130,91 @@ test('word-deleting the typed text empties the new choice, then Enter exits into
   host.remove();
 });
 
+test('attributes panel renders qti-simple-choice identifier read-only and fixed as a checkbox', async () => {
+  const host = document.createElement('div');
+  const panel = document.createElement('div');
+  document.body.append(host, panel);
+  const view = mountEditor(host, { panelEl: panel });
+
+  // Put the cursor inside a choice so the panel shows its qtiSimpleChoice section.
+  const choice = await findByShadowText(host, 'Tin (Sn)');
+  await userEvent.click(choice);
+
+  const section = panel.querySelector<HTMLElement>('fieldset[data-node-type="qtiSimpleChoice"]');
+  expect(section).not.toBeNull();
+
+  // `identifier` is rendered as a disabled text input (read-only).
+  const identifierInput = section!.querySelector<HTMLInputElement>('input[data-attr-key="identifier"]');
+  expect(identifierInput).not.toBeNull();
+  expect(identifierInput!.type).toBe('text');
+  expect(identifierInput!.disabled).toBe(true);
+  expect(identifierInput!.value).toBe('choice1');
+
+  // `fixed` is a boolean attr → rendered as an editable checkbox, unchecked.
+  const fixedInput = section!.querySelector<HTMLInputElement>('input[data-attr-key="fixed"]');
+  expect(fixedInput).not.toBeNull();
+  expect(fixedInput!.type).toBe('checkbox');
+  expect(fixedInput!.disabled).toBe(false);
+  expect(fixedInput!.checked).toBe(false);
+
+  // Toggling the checkbox sets the boolean attr and exports `fixed="true"`.
+  await userEvent.click(fixedInput!);
+
+  const firstChoice = exportAssessmentItemDoc(view.state.doc).querySelector(
+    'qti-choice-interaction > qti-simple-choice[identifier="choice1"]',
+  );
+  expect(firstChoice?.getAttribute('fixed')).toBe('true');
+
+  // Other choices are unaffected and carry no `fixed` attribute.
+  const secondChoice = exportAssessmentItemDoc(view.state.doc).querySelector(
+    'qti-choice-interaction > qti-simple-choice[identifier="choice2"]',
+  );
+  expect(secondChoice?.hasAttribute('fixed')).toBe(false);
+
+  view.destroy();
+  host.remove();
+  panel.remove();
+});
+
+test('attributes panel renders qti-choice-interaction shuffle as a checkbox that exports shuffle="true"', async () => {
+  const host = document.createElement('div');
+  const panel = document.createElement('div');
+  document.body.append(host, panel);
+  const view = mountEditor(host, { panelEl: panel });
+
+  // Put the cursor inside the interaction so the panel shows its section.
+  const choice = await findByShadowText(host, 'Tin (Sn)');
+  await userEvent.click(choice);
+
+  const section = panel.querySelector<HTMLElement>('fieldset[data-node-type="qtiChoiceInteraction"]');
+  expect(section).not.toBeNull();
+
+  // `shuffle` is a boolean attr → rendered as an editable checkbox. ITEM001 ships
+  // with shuffle="true", so the box is checked and the export carries the attribute.
+  const shuffleInput = section!.querySelector<HTMLInputElement>('input[data-attr-key="shuffle"]');
+  expect(shuffleInput).not.toBeNull();
+  expect(shuffleInput!.type).toBe('checkbox');
+  expect(shuffleInput!.disabled).toBe(false);
+  expect(shuffleInput!.checked).toBe(true);
+
+  expect(
+    exportAssessmentItemDoc(view.state.doc)
+      .querySelector('qti-choice-interaction')
+      ?.getAttribute('shuffle'),
+  ).toBe('true');
+
+  // Toggling the checkbox off clears the boolean attr and drops `shuffle` from export.
+  await userEvent.click(shuffleInput!);
+
+  expect(
+    exportAssessmentItemDoc(view.state.doc)
+      .querySelector('qti-choice-interaction')
+      ?.hasAttribute('shuffle'),
+  ).toBe(false);
+
+  view.destroy();
+  host.remove();
+  panel.remove();
+});
+
 

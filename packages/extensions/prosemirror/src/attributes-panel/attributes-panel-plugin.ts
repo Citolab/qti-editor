@@ -3,14 +3,14 @@
  *
  * A pure, generic ProseMirror side panel that shows the selected node AND every
  * ancestor (including the doc node) as stacked sections — outermost (doc) first,
- * innermost (selection) last — with no node switcher/tabs. Every attribute is
- * rendered as a single text input with live two-way binding: editing a field
+ * innermost (selection) last — with no node switcher/tabs. Each attribute is
+ * rendered as a single input with live two-way binding: editing a field
  * dispatches a transaction that updates the node's attrs, and external attr
  * changes refresh the inputs in place.
  *
- * Deliberately QTI-agnostic and string-only: it has no concept of typed fields,
- * friendly editors, or hidden attributes — attribute values are shown and stored
- * as strings. The only configuration is a generic read-only allowlist
+ * Fields are rendered by value type: boolean attributes become checkboxes and
+ * everything else becomes a text input (the stored value type is preserved on
+ * write). The only configuration is a generic read-only allowlist
  * (`editableAttrs`) and an optional doc-node label suffix. Read-only attrs are
  * rendered disabled.
  *
@@ -112,15 +112,27 @@ const buildField = (
   label.appendChild(span);
 
   const input = document.createElement('input');
-  input.type = 'text';
   input.dataset.attrKey = key;
   input.disabled = readOnly;
-  input.value = value == null ? '' : String(value);
 
-  if (!readOnly) {
-    input.addEventListener('input', () => {
-      applyAttrChange(view, entry, key, input.value === '' ? null : input.value);
-    });
+  // Type-aware field: boolean attrs render as a checkbox, everything else as a
+  // text input. The stored value type is preserved on write (boolean ↔ string).
+  if (typeof value === 'boolean') {
+    input.type = 'checkbox';
+    input.checked = value;
+    if (!readOnly) {
+      input.addEventListener('change', () => {
+        applyAttrChange(view, entry, key, input.checked);
+      });
+    }
+  } else {
+    input.type = 'text';
+    input.value = value == null ? '' : String(value);
+    if (!readOnly) {
+      input.addEventListener('input', () => {
+        applyAttrChange(view, entry, key, input.value === '' ? null : input.value);
+      });
+    }
   }
 
   label.appendChild(input);
@@ -206,7 +218,11 @@ export const attributesPanelPlugin = (panelEl: HTMLElement, options: AttributesP
           for (const [key, value] of Object.entries(entry.attrs)) {
             const input = section.querySelector<HTMLInputElement>(`input[data-attr-key="${key}"]`);
             if (!input || input === document.activeElement) continue;
-            input.value = value == null ? '' : String(value);
+            if (input.type === 'checkbox') {
+              input.checked = Boolean(value);
+            } else {
+              input.value = value == null ? '' : String(value);
+            }
           }
         });
       };

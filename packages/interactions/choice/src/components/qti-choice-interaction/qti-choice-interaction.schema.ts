@@ -11,6 +11,9 @@ export const qtiChoiceInteractionNodeSpec: NodeSpec = {
     correctResponse: { default: null },
     responseIdentifier: { default: null },
     score: { default: 1 },
+    // Standard QTI `shuffle` flag: when true the choices are presented in a
+    // randomized order at delivery time (choices with `fixed` keep their spot).
+    shuffle: { default: false },
   },
   parseDOM: [
     {
@@ -26,6 +29,7 @@ export const qtiChoiceInteractionNodeSpec: NodeSpec = {
           correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
+          shuffle: node.getAttribute('shuffle') === 'true',
         };
       }
     }
@@ -37,6 +41,8 @@ export const qtiChoiceInteractionNodeSpec: NodeSpec = {
     if (cr) attrs['correct-response'] = cr;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     attrs.score = String(node.attrs.score ?? 1);
+    // Only emit `shuffle` when set, so unshuffled-by-default interactions stay clean.
+    if (node.attrs.shuffle) attrs.shuffle = 'true';
     return ['qti-choice-interaction', attrs, 0];
   },
   defining: true,

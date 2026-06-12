@@ -17,7 +17,7 @@
     </qti-default-value>
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
-    <qti-choice-interaction max-choices="0" response-identifier="RESPONSE">
+    <qti-choice-interaction max-choices="0" response-identifier="RESPONSE" shuffle="true">
       <qti-prompt>
         <p>Welke van de volgende landen zijn volledig door één enkel ander land ingesloten?</p>
       </qti-prompt>
