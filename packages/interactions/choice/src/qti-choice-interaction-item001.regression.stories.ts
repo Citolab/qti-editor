@@ -4,8 +4,8 @@
  *   ITEM001.xml (raw import)
  *     → qtiTransformItem().parse  (parse XML)
  *     → roundtripChoice          (hoist correct-response/score onto interactions)
- *     → PMDOMParser.fromSchema   (import item-body into the PM doc)
- *     → qtiItemFromProsemirror   (export PM doc back to the editor-origin item-body)
+ *     → roundtripXmlToPm   (import item-body + doc attrs into the PM doc)
+ *     → pmToRoundtripXml   (export PM doc back to the editor-origin item-body)
  *     → buildSingleAssessmentItemXml (compose the complete QTI assessment item)
  *
  * The import/export pipeline is exported so the regression test can drive it
@@ -16,19 +16,20 @@
 
 import { html } from 'lit';
 import { ref } from 'lit/directives/ref.js';
-import { Schema, DOMParser as PMDOMParser, type Node as ProseMirrorNode } from 'prosemirror-model';
+import { Schema, type Node as ProseMirrorNode } from 'prosemirror-model';
 import { EditorState, type Plugin } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { nodes, marks } from 'prosemirror-schema-basic';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
-import { roundtripChoice, roundtripItemBody } from '@qti-editor/qti3-item-import';
+import { roundtripChoice, roundtripItemBody, reduceToItemBody } from '@qti-editor/qti3-item-import';
 import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 import { buildSingleAssessmentItemXml, formatXml } from '@qti-editor/core/composer';
 
 import { qtiTransformItem } from '@qti-components/transformers';
 
-import { qtiItemFromProsemirror } from '../../shared/src/index';
+import { pmToRoundtripXml } from '../../shared/src/pm-to-roundtrip-xml';
+import { roundtripXmlToPm } from '../../shared/src/roundtrip-xml-to-pm';
 import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
 import { attributesPanelPlugin } from '../../../extensions/prosemirror/src/attributes-panel/index';
 import { choiceInteractionDescriptor } from './descriptor';
@@ -47,12 +48,6 @@ const qtiNodes = Object.fromEntries(
   ])
 );
 
-// Item-level title/identifier live on the ProseMirror doc node (doc attrs) so they
-// can be edited generically through the attributes panel — instead of being passed
-// as external metadata. Defaults match the source fixture so the roundtrip stays lossless.
-const DOC_IDENTIFIER_DEFAULT = 'ITEM001';
-const DOC_TITLE_DEFAULT = 'ITEM001 roundtrip';
-
 const baseNodes = { ...nodes, ...qtiNodes };
 
 /** The editor schema used for the ITEM001 roundtrip. */
@@ -61,9 +56,10 @@ export const schema = new Schema({
     ...baseNodes,
     doc: {
       ...baseNodes.doc,
+      // identifier/title are always supplied from the item-body on import.
       attrs: {
-        identifier: { default: DOC_IDENTIFIER_DEFAULT },
-        title: { default: DOC_TITLE_DEFAULT }
+        identifier: {},
+        title: {}
       }
     }
   },
@@ -78,23 +74,27 @@ const editorPlugins: Plugin[] = [
   blockSelectPlugin
 ];
 
-/** Import ITEM001.xml into a ProseMirror document (raw QTI → roundtrip → PM doc). */
+/** Import ITEM001.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
 export const importItem001 = (): ProseMirrorNode => {
-  const roundtripXml = qtiTransformItem().parse(sourceXML).path('/qti/kennisnet').fn(roundtripChoice).fn(roundtripItemBody).xmlDoc();
-  const template = document.createElement('template');
-  template.innerHTML = new XMLSerializer().serializeToString(roundtripXml.documentElement);
-  const itemBody = template.content.querySelector('qti-item-body');
-  console.log('Roundtrip XML:', itemBody);
-  return PMDOMParser.fromSchema(schema).parse(itemBody!);
+  // After `reduceToItemBody` the document element IS the `<qti-item-body>`, so
+  // the XMLDocument can be handed straight to `roundtripXmlToPm`.
+  const roundtripXml = qtiTransformItem()
+    .parse(sourceXML)
+    .path('/qti/kennisnet')
+    .fn(roundtripChoice)
+    .fn(roundtripItemBody)
+    .fn(reduceToItemBody)
+    .xmlDoc();
+  return roundtripXmlToPm(roundtripXml, schema);
 };
 
 /** Export a ProseMirror doc back to the canonical QTI item-body XML. */
 const exportItemBodyXml = (doc: ProseMirrorNode): string =>
-  qtiItemFromProsemirror(
+  pmToRoundtripXml(
     doc,
     {
-      identifier: (doc.attrs.identifier as string) || DOC_IDENTIFIER_DEFAULT,
-      title: (doc.attrs.title as string) || DOC_TITLE_DEFAULT
+      identifier: doc.attrs.identifier as string,
+      title: doc.attrs.title as string
     },
     schema
   );
@@ -109,8 +109,8 @@ export const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document => {
   const itemBodyDoc = new DOMParser().parseFromString(itemBodyXml, 'application/xml');
   const xml = formatXml(
     buildSingleAssessmentItemXml({
-      identifier: (doc.attrs.identifier as string) || DOC_IDENTIFIER_DEFAULT,
-      title: (doc.attrs.title as string) || DOC_TITLE_DEFAULT,
+      identifier: doc.attrs.identifier as string,
+      title: doc.attrs.title as string,
       itemBody: itemBodyDoc
     })
   );

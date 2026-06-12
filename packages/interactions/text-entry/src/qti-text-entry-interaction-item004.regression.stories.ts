@@ -5,7 +5,7 @@
  *     → qtiTransformItem().load   (load XML)
  *     → roundtripTextEntry        (hoist correct-response/score onto interactions)
  *     → DOMParser.fromSchema      (import item-body into the PM doc)
- *     → qtiItemFromProsemirror    (export PM doc back to QTI XML — console.log)
+ *     → pmToRoundtripXml    (export PM doc back to QTI XML — console.log)
  *
  * No ProseKit imports.
  */
@@ -26,7 +26,7 @@ import { qtiTransformItem } from '@qti-components/transformers';
 
 import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
 import { textEntryInteractionDescriptor } from './descriptor';
-import { qtiItemFromProsemirror } from '../../shared/src/roundtrip-export';
+import { pmToRoundtripXml } from '../../shared/src/pm-to-roundtrip-xml';
 
 import './register';
 
@@ -97,7 +97,7 @@ export const RoundtripItem004: Story = {
 
     const logExport = () => {
       if (!currentView) return;
-      const xml = qtiItemFromProsemirror(
+      const xml = pmToRoundtripXml(
         currentView.state.doc,
         { identifier: 'ITEM004', title: 'ITEM004 roundtrip' },
         schema,

@@ -5,6 +5,7 @@ import { roundtripExtendedText } from './roundtrip-extended-text';
 import { roundtripInteractions } from './roundtrip-interactions';
 import { roundtripItemBody } from './roundtrip-item-body';
 import { roundtripTextEntry } from './roundtrip-text-entry';
+import { reduceToItemBody } from './reduce-to-item-body';
 
 /**
  * Run the roundtrip transforms on a QTI 3.0 item XML string and return the
@@ -22,5 +23,6 @@ export function roundtripQtiItem(xmlString: string): string {
     .fn(roundtripExtendedText)
     .fn(roundtripInteractions)
     .fn(roundtripItemBody)
+    .fn(reduceToItemBody)
     .xml();
 }

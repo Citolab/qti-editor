@@ -1,4 +1,4 @@
-<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="ITEM001" title="ITEM001 roundtrip" adaptive="false" time-dependent="false" xml:lang="en">
+<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="ITEM001" title="Meerkeuzevraag één antwoord" adaptive="false" time-dependent="false" xml:lang="en">
   <qti-response-declaration identifier="RESPONSE" cardinality="single" base-type="identifier">
     <qti-correct-response>
       <qti-value>choice3</qti-value>
@@ -15,7 +15,6 @@
     </qti-default-value>
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
-    <p>choice3 0 1</p>
     <p>
       <img src="/qti/kennisnet/resources/atom.png" alt="Atoom"/>
     </p>
