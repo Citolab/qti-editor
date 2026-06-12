@@ -9,6 +9,7 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
     class: { default: null },
     correctResponse: { default: null },
     score: { default: 1 },
+    dataPrompt: { default: null },
   },
   content: 'qtiInlineChoice+',
   inline: true,
@@ -25,6 +26,7 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
           class: node.getAttribute('class') || null,
           correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
+          dataPrompt: node.getAttribute('data-prompt') || null,
         };
       },
       // The interaction and its choices are inline, so ProseMirror treats the
@@ -59,6 +61,10 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
       attrs.class = node.attrs.class;
     }
     attrs.score = String(node.attrs.score ?? 1);
+
+    if (node.attrs.dataPrompt) {
+      attrs['data-prompt'] = node.attrs.dataPrompt;
+    }
 
     return ['qti-inline-choice-interaction', attrs, 0];
   },

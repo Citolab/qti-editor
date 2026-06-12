@@ -1,5 +1,5 @@
 import { css, html, LitElement, nothing } from 'lit';
-import { state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import { InteractionPanel, QtiI18nController } from '@qti-editor/interaction-shared';
 
 import styles from '@qti-components/inline-choice-interaction/styles';
@@ -31,6 +31,13 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
   @state()
   private _correctChoiceText: string | null = null;
 
+  /**
+   * Custom text rendered while the selection is in its unselected state
+   * (`data-prompt`). When unset, the platform default placeholder is used.
+   */
+  @property({ type: String, attribute: 'data-prompt' })
+  dataPrompt: string | null = null;
+
   private readonly i18n = new QtiI18nController(this);
 
   protected override shouldOpenPanelOnPointerDown(): boolean {
@@ -55,7 +62,7 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
         @click=${this.togglePanel}
       >
         <span part="value" class=${this._correctChoiceText ? 'is-correct' : ''}
-          >${this._correctChoiceText ?? this.i18n.t('inlineChoice.placeholder')}</span
+          >${this._correctChoiceText ?? this.dataPrompt ?? this.i18n.t('inlineChoice.placeholder')}</span
         >
         <span part="dropdown-icon" aria-hidden="true">▾</span>
       </button>
@@ -63,7 +70,7 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
         ? html`
             <div part="menu" role="listbox">
               <button part="option" type="button" role="option">
-                <span part="option-content">${this.i18n.t('inlineChoice.emptyOption')}</span>
+                <span part="option-content">${this.dataPrompt ?? this.i18n.t('inlineChoice.emptyOption')}</span>
               </button>
               <slot @slotchange=${this.#onChoicesSlotChange}></slot>
             </div>

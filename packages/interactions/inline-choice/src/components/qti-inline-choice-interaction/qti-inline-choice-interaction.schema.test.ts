@@ -15,6 +15,7 @@ describe('qtiInlineChoiceInteractionNodeSpec', () => {
       class: null,
       correctResponse: null,
       score: 1,
+      dataPrompt: null,
     });
   });
 
@@ -37,6 +38,26 @@ describe('qtiInlineChoiceInteractionNodeSpec', () => {
         shuffle: 'true',
         class: 'review-mode',
         score: '3',
+      },
+      0,
+    ]);
+  });
+
+  it('serializes data-prompt only when set', () => {
+    const schema = createSchemaFromNodeSpecs(inlineChoiceInteractionDescriptor.nodeSpecs);
+    const choice = schema.node('qtiInlineChoice', { identifier: 'choice-a' }, [schema.text('Option A')]);
+    const interaction = schema.node('qtiInlineChoiceInteraction', {
+      responseIdentifier: 'RESPONSE',
+      dataPrompt: 'kies het juiste antwoord…',
+    }, [choice]);
+
+    expect(qtiInlineChoiceInteractionNodeSpec.toDOM?.(interaction)).toEqual([
+      'qti-inline-choice-interaction',
+      {
+        'response-identifier': 'RESPONSE',
+        shuffle: 'false',
+        score: '1',
+        'data-prompt': 'kies het juiste antwoord…',
       },
       0,
     ]);

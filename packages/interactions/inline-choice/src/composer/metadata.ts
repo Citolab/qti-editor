@@ -38,8 +38,11 @@ export const inlineChoiceInteractionComposerMetadata = {
 export const inlineChoiceNodeAttributePanelMetadataByNodeTypeName = {
   [INLINE_CHOICE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: INLINE_CHOICE_INTERACTION_NODE_TYPE,
-    editableAttributes: ['shuffle', 'score'],
-    fields: { score: { label: 'Score', input: 'number' } },
+    editableAttributes: ['shuffle', 'score', 'dataPrompt'],
+    fields: {
+      score: { label: 'Score', input: 'number' },
+      dataPrompt: { label: 'Prompt', input: 'text' },
+    },
   },
   [INLINE_CHOICE_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: INLINE_CHOICE_NODE_TYPE,
