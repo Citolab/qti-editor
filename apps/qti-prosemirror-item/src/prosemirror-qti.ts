@@ -15,7 +15,8 @@
  * It also carries the side-effect imports that register the QTI interaction edit
  * elements (custom elements used by the node views).
  *
- * Supported interactions: choice, extended-text, text-entry (+ rubric block).
+ * Supported interactions: choice, extended-text, text-entry, associate,
+ * gap-match, hottext, inline-choice, match, order, select-point (+ rubric block).
  */
 
 import { Schema } from 'prosemirror-model';
@@ -25,6 +26,13 @@ import { keymap } from 'prosemirror-keymap';
 import { choiceInteractionDescriptor } from '@qti-editor/interaction-choice';
 import { extendedTextInteractionDescriptor } from '@qti-editor/interaction-extended-text';
 import { textEntryInteractionDescriptor } from '@qti-editor/interaction-text-entry';
+import { associateInteractionDescriptor } from '@qti-editor/interaction-associate';
+import { gapMatchInteractionDescriptor } from '@qti-editor/interaction-gap-match';
+import { hottextInteractionDescriptor } from '@qti-editor/interaction-hottext';
+import { inlineChoiceInteractionDescriptor } from '@qti-editor/interaction-inline-choice';
+import { matchInteractionDescriptor } from '@qti-editor/interaction-match';
+import { orderInteractionDescriptor } from '@qti-editor/interaction-order';
+import { selectPointInteractionDescriptor } from '@qti-editor/interaction-select-point';
 import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 import { exportItemXml, importItemFromUrl } from '@qti-editor/qti-item-roundtrip';
 
@@ -34,8 +42,19 @@ import { qtiTransformTest } from '@qti-components/transformers';
 import '@qti-editor/interaction-choice/register.js';
 import '@qti-editor/interaction-extended-text/register.js';
 import '@qti-editor/interaction-text-entry/register.js';
+import '@qti-editor/interaction-associate/register.js';
+import '@qti-editor/interaction-gap-match/register.js';
+import '@qti-editor/interaction-hottext/register.js';
+import '@qti-editor/interaction-inline-choice/register.js';
+import '@qti-editor/interaction-match/register.js';
+import '@qti-editor/interaction-order/register.js';
+import '@qti-editor/interaction-select-point/register.js';
 import '@qti-editor/interaction-shared/components/qti-prompt/register.js';
 import '@qti-editor/interaction-shared/components/qti-simple-choice/register.js';
+import '@qti-editor/interaction-shared/components/qti-simple-associable-choice/register.js';
+import '@qti-editor/interaction-shared/components/qti-simple-match-set/register.js';
+import '@qti-editor/interaction-shared/components/qti-gap/register.js';
+import '@qti-editor/interaction-shared/components/qti-gap-text/register.js';
 
 import type { InteractionDescriptor } from '@qti-editor/interfaces';
 import type { Node as ProseMirrorNode } from 'prosemirror-model';
@@ -46,6 +65,13 @@ const descriptors = [
   choiceInteractionDescriptor,
   extendedTextInteractionDescriptor,
   textEntryInteractionDescriptor,
+  associateInteractionDescriptor,
+  gapMatchInteractionDescriptor,
+  hottextInteractionDescriptor,
+  inlineChoiceInteractionDescriptor,
+  matchInteractionDescriptor,
+  orderInteractionDescriptor,
+  selectPointInteractionDescriptor,
   qtiRubricBlockDescriptor
 ] satisfies InteractionDescriptor[];
 

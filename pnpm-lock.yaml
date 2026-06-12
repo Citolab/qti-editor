@@ -401,12 +401,33 @@ importers:
       '@qti-editor/core':
         specifier: workspace:*
         version: link:../../packages/qti/core
+      '@qti-editor/interaction-associate':
+        specifier: workspace:*
+        version: link:../../packages/interactions/associate
       '@qti-editor/interaction-choice':
         specifier: workspace:*
         version: link:../../packages/interactions/choice
       '@qti-editor/interaction-extended-text':
         specifier: workspace:*
         version: link:../../packages/interactions/extended-text
+      '@qti-editor/interaction-gap-match':
+        specifier: workspace:*
+        version: link:../../packages/interactions/gap-match
+      '@qti-editor/interaction-hottext':
+        specifier: workspace:*
+        version: link:../../packages/interactions/hottext
+      '@qti-editor/interaction-inline-choice':
+        specifier: workspace:*
+        version: link:../../packages/interactions/inline-choice
+      '@qti-editor/interaction-match':
+        specifier: workspace:*
+        version: link:../../packages/interactions/match
+      '@qti-editor/interaction-order':
+        specifier: workspace:*
+        version: link:../../packages/interactions/order
+      '@qti-editor/interaction-select-point':
+        specifier: workspace:*
+        version: link:../../packages/interactions/select-point
       '@qti-editor/interaction-shared':
         specifier: workspace:*
         version: link:../../packages/interactions/shared
