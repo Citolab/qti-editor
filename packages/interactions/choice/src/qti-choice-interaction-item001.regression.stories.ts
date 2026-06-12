@@ -74,6 +74,16 @@ const editorPlugins: Plugin[] = [
   blockSelectPlugin
 ];
 
+// Editable-attribute allowlist for the panel, sourced from the interaction's
+// attribute-panel metadata (`editableAttributes`). Attributes outside this list
+// (e.g. `correctResponse` and `maxChoices`, which are set by clicking choices)
+// are rendered disabled. Node types without an entry stay fully editable.
+const EDITABLE_ATTRS = {
+  [choiceInteractionDescriptor.nodeTypeName]:
+    choiceInteractionDescriptor.attributePanelMetadata[choiceInteractionDescriptor.nodeTypeName.toLowerCase()]
+      ?.editableAttributes ?? []
+};
+
 /** Import ITEM001.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
 export const importItem001 = (): ProseMirrorNode => {
   // After `reduceToItemBody` the document element IS the `<qti-item-body>`, so
@@ -119,7 +129,9 @@ export const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document => {
 
 /** Mount the ITEM001 editor into `container`, optionally wiring the attributes panel. */
 export const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLElement } = {}): EditorView => {
-  const plugins = options.panelEl ? [...editorPlugins, attributesPanelPlugin(options.panelEl)] : editorPlugins;
+  const plugins = options.panelEl
+    ? [...editorPlugins, attributesPanelPlugin(options.panelEl, { editableAttrs: EDITABLE_ATTRS })]
+    : editorPlugins;
 
   const view = new EditorView(container, {
     state: EditorState.create({ doc: importItem001(), schema, plugins }),

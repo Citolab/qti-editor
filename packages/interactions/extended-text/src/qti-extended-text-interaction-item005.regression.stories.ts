@@ -1,128 +1,156 @@
 /**
  * Pure-ProseMirror QTI roundtrip regression for ITEM005 (extended text).
  *
- *   /qti/kennisnet/ITEM005.xml
- *     → qtiTransformItem().load    (load XML)
- *     → roundtripExtendedText      (hoist correct-response/score onto interactions)
- *     → DOMParser.fromSchema       (import item-body into the PM doc)
- *     → pmToRoundtripXml     (export PM doc back to QTI XML — console.log)
+ *   ITEM005.xml (raw import)
+ *     → qtiTransformItem().parse  (parse XML)
+ *     → roundtripExtendedText     (hoist correct-response/score onto interactions)
+ *     → roundtripXmlToPm   (import item-body + doc attrs into the PM doc)
+ *     → pmToRoundtripXml   (export PM doc back to the editor-origin item-body)
+ *     → buildSingleAssessmentItemXml (compose the complete QTI assessment item)
+ *
+ * The import/export pipeline is exported so the regression test can drive it
+ * directly (without rendering); the story is a thin visual wrapper around it.
  *
  * No ProseKit imports.
  */
 
 import { html } from 'lit';
 import { ref } from 'lit/directives/ref.js';
-import { Schema, DOMParser } from 'prosemirror-model';
+import { Schema, type Node as ProseMirrorNode } from 'prosemirror-model';
 import { EditorState, type Plugin } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { nodes, marks } from 'prosemirror-schema-basic';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
-import { history, undo, redo } from 'prosemirror-history';
-import { roundtripExtendedText } from '@qti-editor/qti3-item-import';
+import { roundtripExtendedText, roundtripItemBody, reduceToItemBody } from '@qti-editor/qti3-item-import';
 import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
+import { buildSingleAssessmentItemXml, formatXml } from '@qti-editor/core/composer';
 
 import { qtiTransformItem } from '@qti-components/transformers';
 
-import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
-import { extendedTextInteractionDescriptor } from './descriptor';
 import { pmToRoundtripXml } from '../../shared/src/pm-to-roundtrip-xml';
-
+import { roundtripXmlToPm } from '../../shared/src/roundtrip-xml-to-pm';
+import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
+import { attributesPanelPlugin } from '../../../extensions/prosemirror/src/attributes-panel/index';
+import { extendedTextInteractionDescriptor } from './descriptor';
 import './register';
 import '../../shared/src/components/qti-prompt/register';
-
 import 'prosemirror-view/style/prosemirror.css';
-import 'prosemirror-gapcursor/style/gapcursor.css';
+import sourceXML from '../../../../public/qti/kennisnet/ITEM005.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 const qtiNodes = Object.fromEntries(
-  [
-    ...extendedTextInteractionDescriptor.nodeSpecs,
-    ...qtiRubricBlockDescriptor.nodeSpecs,
-  ].map(({ name, spec }) => [name, spec])
+  [...extendedTextInteractionDescriptor.nodeSpecs, ...qtiRubricBlockDescriptor.nodeSpecs].map(({ name, spec }) => [
+    name,
+    spec
+  ])
 );
 
-const schema = new Schema({
-  nodes: { ...nodes, ...qtiNodes },
+const baseNodes = { ...nodes, ...qtiNodes };
+
+/** The editor schema used for the ITEM005 roundtrip. */
+export const schema = new Schema({
+  nodes: {
+    ...baseNodes,
+    doc: {
+      ...baseNodes.doc,
+      // identifier/title are always supplied from the item-body on import.
+      attrs: {
+        identifier: {},
+        title: {}
+      }
+    }
+  },
   marks
 });
 
-const plugins: Plugin[] = [
-  history(),
-  keymap({ 'Mod-z': undo, 'Mod-y': redo, 'Mod-Shift-z': redo }),
-  keymap(baseKeymap),
-  blockSelectPlugin
-];
+/** Minimal plugin set: base keymap and block-select. */
+const editorPlugins: Plugin[] = [keymap(baseKeymap), blockSelectPlugin];
+
+/** Import ITEM005.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
+export const importItem005 = (): ProseMirrorNode => {
+  // After `reduceToItemBody` the document element IS the `<qti-item-body>`, so
+  // the XMLDocument can be handed straight to `roundtripXmlToPm`.
+  const roundtripXml = qtiTransformItem()
+    .parse(sourceXML)
+    .path('/qti/kennisnet')
+    .fn(roundtripExtendedText)
+    .fn(roundtripItemBody)
+    .fn(reduceToItemBody)
+    .xmlDoc();
+  return roundtripXmlToPm(roundtripXml, schema);
+};
+
+/** Export a ProseMirror doc back to the canonical QTI item-body XML. */
+const exportItemBodyXml = (doc: ProseMirrorNode): string =>
+  pmToRoundtripXml(
+    doc,
+    {
+      identifier: doc.attrs.identifier as string,
+      title: doc.attrs.title as string
+    },
+    schema
+  );
+
+/**
+ * Export a ProseMirror doc to the complete editor-origin QTI assessment item
+ * (item-body wrapped with response/outcome declarations + response processing),
+ * parsed as an XML `Document`. This is the editor's "save" output.
+ */
+export const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document => {
+  const itemBodyXml = exportItemBodyXml(doc);
+  const itemBodyDoc = new DOMParser().parseFromString(itemBodyXml, 'application/xml');
+  const xml = formatXml(
+    buildSingleAssessmentItemXml({
+      identifier: doc.attrs.identifier as string,
+      title: doc.attrs.title as string,
+      itemBody: itemBodyDoc
+    })
+  );
+  return new DOMParser().parseFromString(xml, 'application/xml');
+};
+
+/** Mount the ITEM005 editor into `container`, optionally wiring the attributes panel. */
+export const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLElement } = {}): EditorView => {
+  const plugins = options.panelEl
+    ? [...editorPlugins, attributesPanelPlugin(options.panelEl)]
+    : editorPlugins;
+
+  const view = new EditorView(container, {
+    state: EditorState.create({ doc: importItem005(), schema, plugins }),
+    dispatchTransaction(tr) {
+      view.updateState(view.state.apply(tr));
+    }
+  });
+  return view;
+};
 
 const meta: Meta = {
   title: 'QTI ProseMirror/Roundtrip Regression',
+  // These exports are the reusable import/export pipeline (consumed by the
+  // regression test), not stories.
+  excludeStories: ['schema', 'importItem005', 'exportAssessmentItemDoc', 'mountEditor']
 };
 export default meta;
 
-type Story = StoryObj;
-
-export const RoundtripItem005: Story = {
+export const RoundtripItem005: StoryObj = {
   render: () => {
-    let currentView: EditorView | null = null;
-
-    const init = async (container: HTMLElement) => {
-      const loaded = (await qtiTransformItem().load('/qti/kennisnet/ITEM005.xml', { shuffle: false })).path('/qti/kennisnet');
-      const sourceXml = loaded.xml();
-
-      const roundtripXml = qtiTransformItem()
-          .parse(sourceXml)
-          .fn(roundtripExtendedText)
-          .xml();
-
-      const itemDoc = new window.DOMParser().parseFromString(roundtripXml, 'application/xml');
-      const body = itemDoc.querySelector('qti-item-body');
-      const tempEl = document.createElement('div');
-      tempEl.innerHTML = body ? body.innerHTML : roundtripXml;
-
-      console.log(`%c ${roundtripXml}`, 'color: red');
-      const pmDoc = DOMParser.fromSchema(schema).parse(tempEl);
-      console.log(`%c ${JSON.stringify(pmDoc.toJSON(), null, 2)}`, 'color: green');
-
-      if (currentView) currentView.destroy();
-      currentView = new EditorView(container, {
-        state: EditorState.create({ doc: pmDoc, schema, plugins }),
-        dispatchTransaction(tr) {
-          if (!currentView) return;
-          currentView.updateState(currentView.state.apply(tr));
-        }
-      });
-
-      logExport();
-    };
-
-    const logExport = () => {
-      if (!currentView) return;
-      const xml = pmToRoundtripXml(
-        currentView.state.doc,
-        { identifier: 'ITEM005', title: 'ITEM005 roundtrip' },
-        schema,
-      );
-      console.log('[Roundtrip Export]\n' + xml);
-    };
-
+    let panelEl: HTMLElement | null = null;
     return html`
-      <div style="max-width: 850px; margin: 40px auto; padding: 0 20px; font-family: system-ui;">
-        <h3>QTI Roundtrip: load → import → edit → export (ITEM005)</h3>
-        <div style="margin-bottom: 10px;">
-          <button @click=${logExport}>Export current PM doc → console</button>
-        </div>
+      <div style="display: flex; gap: 20px; align-items: flex-start;">
+        <aside
+          ${ref(el => {
+            if (el) panelEl = el as HTMLElement;
+          })}
+        ></aside>
         <div
           class="editor-container"
+          style="flex: 1 1 auto; min-width: 0;"
           ${ref(el => {
-            if (el) init(el as HTMLElement);
+            if (el) mountEditor(el as HTMLElement, { panelEl: panelEl ?? undefined });
           })}
         ></div>
-        <p style="color: #666; font-size: 0.9rem;">
-          Loads <code>/qti/kennisnet/ITEM005.xml</code>, runs
-          <code>roundtripExtendedText</code>, imports into ProseMirror, then exports the PM doc
-          back to QTI XML. See the browser console.
-        </p>
       </div>
     `;
   }

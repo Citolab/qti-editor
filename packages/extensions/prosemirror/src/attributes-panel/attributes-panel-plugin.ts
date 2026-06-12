@@ -131,14 +131,13 @@ const buildSection = (
   view: EditorView,
   entry: ChainEntry,
   editableAttrs: ReadonlySet<string> | undefined,
-  docLabelSuffix: string,
 ): HTMLElement => {
   const section = document.createElement('fieldset');
   section.dataset.nodeType = entry.type;
   section.style.cssText = 'display:grid; grid-template-columns:auto 1fr; gap:6px 10px; align-items:center;';
 
   const legend = document.createElement('legend');
-  legend.textContent = entry.isDoc && docLabelSuffix ? `${entry.type} ${docLabelSuffix}` : entry.type;
+  legend.textContent = entry.type;
   section.appendChild(legend);
 
   for (const [key, value] of Object.entries(entry.attrs)) {
@@ -154,7 +153,6 @@ const renderAttrsPanel = (
   view: EditorView,
   panelEl: HTMLElement,
   editableAttrs: Record<string, ReadonlySet<string>>,
-  docLabelSuffix: string,
 ): void => {
   const chain = collectAncestorChain(view.state);
   panelEl.replaceChildren();
@@ -171,7 +169,7 @@ const renderAttrsPanel = (
   }
 
   for (const entry of chain) {
-    panelEl.appendChild(buildSection(view, entry, editableAttrs[entry.type], docLabelSuffix));
+    panelEl.appendChild(buildSection(view, entry, editableAttrs[entry.type]));
   }
 };
 
@@ -187,7 +185,6 @@ export const attributesPanelPlugin = (panelEl: HTMLElement, options: AttributesP
   const editableAttrs: Record<string, ReadonlySet<string>> = Object.fromEntries(
     Object.entries(options.editableAttrs ?? {}).map(([type, attrs]) => [type, toSet(attrs)]),
   );
-  const docLabelSuffix = options.docLabelSuffix ?? '';
 
   return new Plugin({
     view: (view: EditorView) => {
@@ -198,7 +195,7 @@ export const attributesPanelPlugin = (panelEl: HTMLElement, options: AttributesP
         const nextSignature = chainSignature(chain);
         if (nextSignature !== signature) {
           signature = nextSignature;
-          renderAttrsPanel(view, panelEl, editableAttrs, docLabelSuffix);
+          renderAttrsPanel(view, panelEl, editableAttrs);
           return;
         }
         // Same chain — refresh values of inputs that are not currently focused.

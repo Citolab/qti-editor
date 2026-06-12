@@ -1,0 +1,29 @@
+<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="ITEM005" title="Open tekstvraag" adaptive="false" time-dependent="false" xml:lang="en">
+  <qti-response-declaration identifier="RESPONSE" cardinality="single" base-type="string"/>
+  <qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>0</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>1</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
+    <p>
+      <img src="/qti/kennisnet/resources/solarpark-wind-park.jpg" alt="Wereldkaart"/>
+    </p>
+    <p>Leg in 3–5 zinnen uit waarom veel landen overstappen op een mix van zonne- en windenergie in plaats van op één enkele bron te vertrouwen.</p>
+    <qti-extended-text-interaction response-identifier="RESPONSE" expected-lines="5"/>
+    <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
+      <qti-content-body>
+        <p>Beoordelingscriteria (controle):</p>
+        <p>Antwoord noemt minstens twee rationale factoren (bijv. variatie in opbrengst, leveringszekerheid, kosten, netstabiliteit).</p>
+        <p>Toelichting waarom mix betrouwbaarder is.</p>
+        <p>Begrijpelijke argumentatie.</p>
+        <p>Opmerking: handmatige beoordeling vereist; automatische scoring is niet geconfigureerd.</p>
+      </qti-content-body>
+    </qti-rubric-block>
+  </qti-item-body>
+</qti-assessment-item>
