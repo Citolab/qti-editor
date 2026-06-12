@@ -67,6 +67,9 @@ export const insertSimpleChoiceOnEnter: Command = (state, dispatch) => {
         { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
         paragraphType.create()
       ),
+    // Enter on an empty trailing choice exits the interaction into a new
+    // paragraph below it, instead of adding another empty choice.
+    createExitNode: currentState => currentState.schema.nodes.paragraph?.create() ?? null,
   })(state, dispatch);
 };
 

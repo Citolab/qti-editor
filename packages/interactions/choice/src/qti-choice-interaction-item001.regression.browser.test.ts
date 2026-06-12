@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
 import { findByShadowText } from 'shadow-dom-testing-library';
+import { userEvent } from 'vitest/browser';
 
 import {
   exportAssessmentItemDoc,
@@ -40,6 +41,90 @@ test('clicking a second choice exports cardinality=multiple with both correct va
     responseDeclaration!.querySelectorAll('qti-correct-response > qti-value'),
   ).map(value => value.textContent?.trim());
   expect(values).toEqual(['choice2', 'choice3']);
+
+  view.destroy();
+  host.remove();
+});
+
+test('pressing Enter after the last choice and typing creates a fourth qti-simple-choice', async () => {
+  const host = document.createElement('div');
+  document.body.appendChild(host);
+  const view = mountEditor(host);
+
+  // Place the text cursor at the end of the "Xenon (Xe)" choice, then press
+  // Enter and type — exactly like a user adding a new option. Clicking the text
+  // focuses the editor and puts the caret inside the last choice; End moves it
+  // to the end of that line.
+  const xenon = await findByShadowText(host, 'Xenon (Xe)');
+  await userEvent.click(xenon);
+  await userEvent.keyboard('{End}');
+  await userEvent.keyboard('{Enter}');
+  await userEvent.keyboard('Telluur (Te)');
+
+  // The exported item-body should now carry a fourth choice with that text.
+  const choices = Array.from(
+    exportAssessmentItemDoc(view.state.doc).querySelectorAll('qti-choice-interaction > qti-simple-choice'),
+  );
+
+  expect(choices).toHaveLength(4);
+  expect(choices[3].textContent?.trim()).toBe('Telluur (Te)');
+
+  view.destroy();
+  host.remove();
+});
+
+test('word-deleting the typed text empties the new choice, then Enter exits into a new paragraph', async () => {
+  const host = document.createElement('div');
+  document.body.appendChild(host);
+  const view = mountEditor(host);
+
+  // Add a fourth choice and type into it, exactly like the previous test.
+  const xenon = await findByShadowText(host, 'Xenon (Xe)');
+  await userEvent.click(xenon);
+  await userEvent.keyboard('{End}');
+  await userEvent.keyboard('{Enter}');
+  await userEvent.keyboard('Telluur (Te)');
+
+  // Press Command+Backspace (Meta) once — on macOS this word-deletes the entire
+  // "Telluur (Te)" text in a single press, emptying the new choice.
+  await userEvent.keyboard('{Meta>}{Backspace}{/Meta}');
+
+  const choices = Array.from(
+    exportAssessmentItemDoc(view.state.doc).querySelectorAll('qti-choice-interaction > qti-simple-choice'),
+  );
+
+  expect(choices).toHaveLength(4);
+  expect(choices[3].textContent?.trim()).toBe('');
+
+  // Pressing Enter on the now-empty last choice exits the interaction: the
+  // empty trailing choice is removed and the cursor lands in a fresh paragraph
+  // right after the interaction — the same affordance a list offers when you
+  // press Enter on an empty trailing item.
+  await userEvent.keyboard('{Enter}');
+
+  const choicesAfterEnter = Array.from(
+    exportAssessmentItemDoc(view.state.doc).querySelectorAll('qti-choice-interaction > qti-simple-choice'),
+  );
+
+  expect(choicesAfterEnter).toHaveLength(3);
+  expect(choicesAfterEnter.map(choice => choice.textContent?.trim())).toEqual([
+    'Tin (Sn)',
+    'Jodium (I)',
+    'Xenon (Xe)',
+  ]);
+
+  // The cursor jumped out of the interaction into a new empty paragraph that
+  // sits as a sibling after the qti-choice-interaction.
+  const { doc, selection } = view.state;
+  const interactionIndex = doc.content.content.findIndex(node => node.type.name === 'qtiChoiceInteraction');
+  const nodeAfterInteraction = doc.content.content[interactionIndex + 1];
+
+  expect(nodeAfterInteraction?.type.name).toBe('paragraph');
+  expect(nodeAfterInteraction?.textContent).toBe('');
+
+  // The selection is inside that trailing paragraph.
+  expect(selection.$from.parent.type.name).toBe('paragraph');
+  expect(selection.empty).toBe(true);
 
   view.destroy();
   host.remove();
