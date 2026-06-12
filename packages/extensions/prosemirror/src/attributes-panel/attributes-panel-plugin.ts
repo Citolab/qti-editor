@@ -25,6 +25,9 @@ import type { EditorView } from 'prosemirror-view';
 /** Sentinel position for the doc node (it has no addressable document position). */
 const DOC_POS = -1;
 
+/** Delay before a text-field edit is committed as a transaction (ms). */
+const ATTR_INPUT_DEBOUNCE_MS = 250;
+
 export interface ChainEntry {
   type: string;
   attrs: Record<string, unknown>;
@@ -129,8 +132,21 @@ const buildField = (
     input.type = 'text';
     input.value = value == null ? '' : String(value);
     if (!readOnly) {
-      input.addEventListener('input', () => {
+      // Debounce text edits so each keystroke doesn't dispatch a transaction;
+      // commit shortly after typing stops, and flush immediately on blur.
+      let debounceId: ReturnType<typeof setTimeout> | undefined;
+      const commit = () => {
+        debounceId = undefined;
         applyAttrChange(view, entry, key, input.value === '' ? null : input.value);
+      };
+      input.addEventListener('input', () => {
+        if (debounceId !== undefined) clearTimeout(debounceId);
+        debounceId = setTimeout(commit, ATTR_INPUT_DEBOUNCE_MS);
+      });
+      input.addEventListener('blur', () => {
+        if (debounceId === undefined) return;
+        clearTimeout(debounceId);
+        commit();
       });
     }
   }
