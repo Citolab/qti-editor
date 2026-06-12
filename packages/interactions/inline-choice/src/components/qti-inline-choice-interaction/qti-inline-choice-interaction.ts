@@ -7,7 +7,7 @@ import styles from '@qti-components/inline-choice-interaction/styles';
 export class QtiInlineChoiceInteraction extends InteractionPanel {
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
-    delegatesFocus: true,
+    delegatesFocus: true
   };
 
   static override get styles() {
@@ -15,8 +15,15 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
       styles,
       css`
         :host {
+          position: relative; /* anchor for the absolute menu */
           white-space: nowrap;
-        }        
+        }
+        [part='menu'] {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          z-index: 10;
+        }
       `
     ];
   }
@@ -47,23 +54,24 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
         aria-expanded="${this._panelOpen ? 'true' : 'false'}"
         @click=${this.togglePanel}
       >
-        <span
-          part="value"
-          class=${this._correctChoiceText ? 'is-correct' : ''}
-        >${this._correctChoiceText ?? this.i18n.t('inlineChoice.placeholder')}</span>
+        <span part="value" class=${this._correctChoiceText ? 'is-correct' : ''}
+          >${this._correctChoiceText ?? this.i18n.t('inlineChoice.placeholder')}</span
+        >
         <span part="dropdown-icon" aria-hidden="true">▾</span>
       </button>
-      ${this._panelOpen ? html`
-        <div part="menu" role="listbox">
-          <button part="option" type="button" role="option">
-            <span part="option-content">${this.i18n.t('inlineChoice.emptyOption')}</span>
-          </button>
-          <slot @slotchange=${this.#onChoicesSlotChange}></slot>
-        </div>
-      ` : html`
-        ${nothing}
-        <slot @slotchange=${this.#onChoicesSlotChange} hidden></slot>
-      `}
+      ${this._panelOpen
+        ? html`
+            <div part="menu" role="listbox">
+              <button part="option" type="button" role="option">
+                <span part="option-content">${this.i18n.t('inlineChoice.emptyOption')}</span>
+              </button>
+              <slot @slotchange=${this.#onChoicesSlotChange}></slot>
+            </div>
+          `
+        : html`
+            ${nothing}
+            <slot @slotchange=${this.#onChoicesSlotChange} hidden></slot>
+          `}
     `;
   }
 
@@ -91,11 +99,11 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
           : [this.correctResponse]
         : Array.isArray(this.correctResponse)
           ? this.correctResponse
-          : [],
+          : []
     );
     let correctText: string | null = null;
     this.querySelectorAll<HTMLElement & { setSelected?: (v: boolean) => void; identifier?: string }>(
-      'qti-inline-choice',
+      'qti-inline-choice'
     ).forEach(choice => {
       const isSelected = identifiers.has(choice.identifier ?? '');
       choice.setSelected?.(isSelected);
