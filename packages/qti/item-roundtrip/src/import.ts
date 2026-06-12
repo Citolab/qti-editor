@@ -102,6 +102,9 @@ export function importItemFromString(
 /**
  * Import a QTI 3.0 item from a URL into a ProseMirror document. Fetches the XML
  * via the transform pipeline's async loader (`qti-transform` `.load(...)`).
+ *
+ * The asset base path defaults to the URL's directory so relative `<img src>`
+ * URLs resolve at runtime; pass `options.assetBasePath` to override.
  */
 export async function importItemFromUrl(
   url: string,
@@ -109,6 +112,7 @@ export async function importItemFromUrl(
   options: RoundtripImportOptions & { signal?: AbortSignal } = {},
 ): Promise<ProseMirrorNode> {
   const api = await qtiTransformItem().load(url, options.signal);
-  const itemBody = runRoundtrip(api, options);
+  const assetBasePath = options.assetBasePath ?? url.substring(0, url.lastIndexOf('/'));
+  const itemBody = runRoundtrip(api, { ...options, assetBasePath });
   return roundtripXmlToPm(itemBody, schema);
 }
