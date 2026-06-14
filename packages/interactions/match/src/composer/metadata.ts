@@ -22,6 +22,7 @@ const MAP_RESPONSE_INTERNAL_TEMPLATE = `
 
 export const MATCH_INTERACTION_TAG = 'qti-match-interaction' as const;
 export const MATCH_INTERACTION_NODE_TYPE = 'qtiMatchInteraction' as const;
+export const SIMPLE_ASSOCIABLE_CHOICE_NODE_TYPE = 'qtiSimpleAssociableChoice' as const;
 
 export const matchInteractionComposerMetadata = {
   tagName: MATCH_INTERACTION_TAG,
@@ -41,10 +42,17 @@ export const matchNodeAttributePanelMetadataByNodeTypeName = {
     // `correctResponse` is authored via the interaction's click-to-associate UI
     // (and shown as fake drags), not by editing raw JSON in the panel, so it is
     // intentionally read-only here.
-    editableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'score'],
+    editableAttributes: ['shuffle','class'],
     fields: {
       score: { label: 'Score', input: 'number' },
       correctResponse: { label: 'Correct response', readOnly: true },
     },
+  },
+  [SIMPLE_ASSOCIABLE_CHOICE_NODE_TYPE.toLowerCase()]: {
+    nodeTypeName: SIMPLE_ASSOCIABLE_CHOICE_NODE_TYPE,
+    // `identifier`, `matchMax` and `matchMin` are derived from the match set's
+    // structure and the correct-response authoring, not hand-edited, so they are
+    // read-only here. Only `fixed` (shuffle pinning) stays editable.
+    editableAttributes: ['fixed'],
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

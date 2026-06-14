@@ -1,10 +1,10 @@
 import { html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { InteractionPanel, QtiI18nController } from '@qti-editor/interaction-shared';
+import { InteractionPanel, MATCH_SELECTING_TARGET_EVENT, QtiI18nController } from '@qti-editor/interaction-shared';
 
 import styles from './qti-match-interaction.styles.js';
 
-import type { FakeDrag } from '@qti-editor/interaction-shared';
+import type { FakeDrag, MatchSelectingTargetDetail } from '@qti-editor/interaction-shared';
 
 /** Association pair: [sourceIdentifier, targetIdentifier] */
 export type MatchAssociation = [string, string];
@@ -170,6 +170,23 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
   private _triggerRender() {
     this._renderTrigger++;
     this._syncFakeDrags();
+    this._syncSelectingTarget();
+  }
+
+  /**
+   * Tell the target match-set whether a source is pending, so it can render its
+   * slotted choices as selectable drop slots. We dispatch a DOM event instead of
+   * mutating an attribute: the set keeps the state in its own shadow DOM, which
+   * keeps ProseMirror's mutation observer from reverting it (and looping).
+   */
+  private _syncSelectingTarget() {
+    const [, targetSet] = this._getMatchSets();
+    if (!targetSet) return;
+    targetSet.dispatchEvent(
+      new CustomEvent<MatchSelectingTargetDetail>(MATCH_SELECTING_TARGET_EVENT, {
+        detail: { active: this._pendingSourceId != null }
+      })
+    );
   }
 
   /**
