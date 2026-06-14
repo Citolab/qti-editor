@@ -4,6 +4,8 @@ import { InteractionPanel, QtiI18nController } from '@qti-editor/interaction-sha
 
 import styles, { LIGHT_DOM_STYLES } from './qti-match-interaction.styles.js';
 
+import type { FakeDrag } from '@qti-editor/interaction-shared';
+
 /** Association pair: [sourceIdentifier, targetIdentifier] */
 export type MatchAssociation = [string, string];
 
@@ -68,6 +70,7 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
 
   override disconnectedCallback() {
     this.removeEventListener('click', this._onClick);
+    this.removeEventListener('fake-drag-remove', this._onFakeDragRemove as EventListener);
     document.removeEventListener('keydown', this._onKeyDown);
     this._observer?.disconnect();
     this._observer = null;
@@ -106,6 +109,7 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
     this._setupDone = true;
     this._buildLabelCache();
     this.addEventListener('click', this._onClick);
+    this.addEventListener('fake-drag-remove', this._onFakeDragRemove as EventListener);
     document.addEventListener('keydown', this._onKeyDown);
     this._setupMutationObserver();
     this._triggerRender();
@@ -130,11 +134,14 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
     this._associations.clear();
     this._pendingSourceId = null;
     if (!this.correctResponse) return;
-    
+
     try {
-      const pairs: MatchAssociation[] = JSON.parse(this.correctResponse);
+      // Same shape as qti-components: a JSON array of `"source target"` strings.
+      const pairs: unknown = JSON.parse(this.correctResponse);
       if (Array.isArray(pairs)) {
-        for (const [sourceId, targetId] of pairs) {
+        for (const pair of pairs) {
+          if (typeof pair !== 'string') continue;
+          const [sourceId, targetId] = pair.split(' ');
           if (sourceId && targetId) {
             this._associations.set(sourceId, targetId);
           }
@@ -147,7 +154,11 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
 
   private _emitChange() {
     const associations = Array.from(this._associations.entries()) as MatchAssociation[];
-    const correctResponse = associations.length > 0 ? JSON.stringify(associations) : null;
+    // Serialize as qti-components does: `["source target", ...]`.
+    const correctResponse =
+      associations.length > 0
+        ? JSON.stringify(associations.map(([source, target]) => `${source} ${target}`))
+        : null;
 
     this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
       detail: {
@@ -168,6 +179,28 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
 
   private _triggerRender() {
     this._renderTrigger++;
+    this._syncFakeDrags();
+  }
+
+  /**
+   * Push the assigned source choices into each target choice's drop slot as
+   * non-interactive "fake drags", so the correct response resembles the live
+   * student view. No DOM is moved — only the target's `fakeDrags` property.
+   */
+  private _syncFakeDrags() {
+    if (!this._setupDone) return;
+    for (const target of this._getTargetChoices()) {
+      const targetId = target.getAttribute('identifier');
+      const drags: FakeDrag[] = [];
+      if (targetId) {
+        for (const [sourceId, assignedTargetId] of this._associations) {
+          if (assignedTargetId === targetId) {
+            drags.push({ identifier: sourceId, label: this._getLabel(sourceId) });
+          }
+        }
+      }
+      (target as HTMLElement & { fakeDrags: FakeDrag[] }).fakeDrags = drags;
+    }
   }
 
   private _getMatchSets(): [HTMLElement | null, HTMLElement | null] {
@@ -265,6 +298,14 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
     this._emitChange();
     this._triggerRender();
   }
+
+  private _onFakeDragRemove = (e: CustomEvent<{ identifier: string }>) => {
+    e.stopPropagation();
+    const sourceId = e.detail?.identifier;
+    if (sourceId) {
+      this._removeAssociation(sourceId);
+    }
+  };
 
   private _cancelPending() {
     this._pendingSourceId = null;

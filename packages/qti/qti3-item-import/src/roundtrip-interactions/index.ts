@@ -23,8 +23,13 @@ export const roundtripInteractions = (xmlDoc: XMLDocument): void => {
   const correctResponses = buildCorrectResponseIndex(xmlDoc);
   if (correctResponses.size === 0) return;
 
-  const interactions = Array.from(xmlDoc.querySelectorAll('[response-identifier]')).filter((el) =>
-    el.tagName.toLowerCase().endsWith('-interaction')
+  const interactions = Array.from(xmlDoc.querySelectorAll('[response-identifier]')).filter(
+    (el) =>
+      el.tagName.toLowerCase().endsWith('-interaction') &&
+      // qti-match-interaction has its own explicit transform (roundtripMatch)
+      // that emits the editor's JSON directed-pair format. The generic
+      // comma-joined hoist here would corrupt it, so skip it.
+      el.tagName.toLowerCase() !== 'qti-match-interaction'
   );
 
   for (const interaction of interactions) {

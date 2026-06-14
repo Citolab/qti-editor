@@ -44,8 +44,9 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
       attrs['shuffle'] = 'true';
     }
     if (node.attrs.class) attrs.class = node.attrs.class;
-    // correctResponse is raw JSON (e.g. '[["A","1"]]') — pass through as-is.
-    // The shared codec strips commas, which corrupts JSON, so we bypass it here.
+    // correctResponse is raw JSON (e.g. '["A 1"]', qti-components' shape) —
+    // pass through as-is. The shared codec strips commas, which corrupts JSON,
+    // so we bypass it here.
     if (node.attrs.correctResponse) attrs['correct-response'] = node.attrs.correctResponse;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     attrs.score = String(node.attrs.score ?? 1);

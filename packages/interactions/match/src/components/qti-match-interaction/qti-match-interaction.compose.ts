@@ -22,7 +22,8 @@ export function composeMatchInteractionElement(sourceElement: Element, xmlDoc: D
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
-  // correctResponse is stored as raw JSON ('[["A","1"],["B","2"]]'), not comma-separated identifiers.
+  // correctResponse is stored as raw JSON (qti-components' shape:
+  // '["A 1","B 2"]'), not comma-separated identifiers.
   const correctResponseRaw = sourceElement.getAttribute('correct-response');
   const correctResponse = correctResponseRaw || null;
   const maxAssociations = toFiniteNumber(sourceElement.getAttribute('max-associations'), 1);

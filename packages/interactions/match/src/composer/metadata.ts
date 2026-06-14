@@ -38,7 +38,13 @@ export const matchInteractionComposerMetadata = {
 export const matchNodeAttributePanelMetadataByNodeTypeName = {
   [MATCH_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: MATCH_INTERACTION_NODE_TYPE,
-    editableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'correctResponse', 'score'],
-    fields: { score: { label: 'Score', input: 'number' } },
+    // `correctResponse` is authored via the interaction's click-to-associate UI
+    // (and shown as fake drags), not by editing raw JSON in the panel, so it is
+    // intentionally read-only here.
+    editableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'score'],
+    fields: {
+      score: { label: 'Score', input: 'number' },
+      correctResponse: { label: 'Correct response', readOnly: true },
+    },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

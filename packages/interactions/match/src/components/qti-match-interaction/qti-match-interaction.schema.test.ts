@@ -72,7 +72,7 @@ describe('qtiMatchInteractionNodeSpec', () => {
       minAssociations: 1,
       shuffle: true,
       class: 'review-mode',
-      correctResponse: '[["source-a","target-1"],["source-b","target-1"]]',
+      correctResponse: '["source-a target-1","source-b target-1"]',
       responseIdentifier: 'RESPONSE',
       score: 3,
     }, [prompt, matchSetA, matchSetB]);
@@ -84,7 +84,7 @@ describe('qtiMatchInteractionNodeSpec', () => {
         'min-associations': '1',
         shuffle: 'true',
         class: 'review-mode',
-        'correct-response': '[["source-a","target-1"],["source-b","target-1"]]',
+        'correct-response': '["source-a target-1","source-b target-1"]',
         'response-identifier': 'RESPONSE',
         score: '3',
       },
@@ -125,7 +125,7 @@ describe('qtiMatchInteractionNodeSpec', () => {
     
     // Multiple sources (a, b) point to the same target (target-x)
     const interaction = schema.node('qtiMatchInteraction', {
-      correctResponse: '[["a","target-x"],["b","target-x"],["c","target-y"]]',
+      correctResponse: '["a target-x","b target-x","c target-y"]',
       responseIdentifier: 'RESPONSE',
       score: 2,
     }, [prompt, matchSetA, matchSetB]);
@@ -135,18 +135,14 @@ describe('qtiMatchInteractionNodeSpec', () => {
     const [, attrs] = dom as [string, Record<string, string>, number];
     
     // Verify the JSON is preserved correctly (not corrupted by comma stripping)
-    expect(attrs['correct-response']).toBe('[["a","target-x"],["b","target-x"],["c","target-y"]]');
+    expect(attrs['correct-response']).toBe('["a target-x","b target-x","c target-y"]');
     
     // Verify it's valid JSON
     expect(() => JSON.parse(attrs['correct-response'])).not.toThrow();
     
     // Verify the parsed structure
     const parsed = JSON.parse(attrs['correct-response']);
-    expect(parsed).toEqual([
-      ['a', 'target-x'],
-      ['b', 'target-x'],
-      ['c', 'target-y'],
-    ]);
+    expect(parsed).toEqual(['a target-x', 'b target-x', 'c target-y']);
   });
 
   it('omits min-associations when zero', () => {

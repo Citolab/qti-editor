@@ -26,7 +26,7 @@ export const AuthoringFixture = {
   render: () => renderFixture(html`
     <qti-match-interaction
       response-identifier="RESPONSE_MATCH"
-      correct-response='[["source-a","target-a"],["source-b","target-b"],["source-c","target-b"],["source-d","target-c"]]'
+      correct-response='["source-a target-a","source-b target-b","source-c target-b","source-d target-c"]'
       score="3"
     >
       <qti-prompt>Match the following characters to the Shakespeare play they appeared in:</qti-prompt>

@@ -24,7 +24,6 @@ describe('roundtripInteractions (generic fallback)', () => {
   it.each([
     ['qti-order-interaction', 'ORDER'],
     ['qti-associate-interaction', 'ASSOC'],
-    ['qti-match-interaction', 'MATCH'],
     ['qti-gap-match-interaction', 'GAP'],
     ['qti-hottext-interaction', 'HOT'],
     ['qti-inline-choice-interaction', 'INLINE'],
@@ -39,6 +38,18 @@ describe('roundtripInteractions (generic fallback)', () => {
     const interaction = doc.querySelector(tag)!;
     expect(interaction.getAttribute('correct-response')).toBe('A');
     expect(interaction.getAttribute('score')).toBe('1');
+  });
+
+  it('skips qti-match-interaction (handled by the explicit roundtripMatch transform)', () => {
+    const doc = itemXml(
+      `<qti-match-interaction response-identifier="MATCH"></qti-match-interaction>`,
+      matchCorrect,
+      declaration('MATCH', 'C R'),
+    );
+    roundtripInteractions(doc);
+    const interaction = doc.querySelector('qti-match-interaction')!;
+    expect(interaction.hasAttribute('correct-response')).toBe(false);
+    expect(interaction.hasAttribute('score')).toBe(false);
   });
 
   it('hoists onto multiple interactions, matching each by response-identifier', () => {
