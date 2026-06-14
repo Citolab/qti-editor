@@ -2,7 +2,7 @@ import { html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { InteractionPanel, QtiI18nController } from '@qti-editor/interaction-shared';
 
-import styles, { LIGHT_DOM_STYLES } from './qti-match-interaction.styles.js';
+import styles from './qti-match-interaction.styles.js';
 
 import type { FakeDrag } from '@qti-editor/interaction-shared';
 
@@ -54,14 +54,11 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
   /** Observer for DOM changes (new items added) */
   private _observer: MutationObserver | null = null;
 
-  /** Light DOM style element */
-  private _lightDomStyle: HTMLStyleElement | null = null;
   private _pendingSourceId: string | null = null;
   private _associations = new Map<string, string>();
 
   override connectedCallback() {
     super.connectedCallback();
-    this._injectLightDomStyles();
     this._parseCorrectResponse();
     requestAnimationFrame(() => {
       this._trySetup();
@@ -74,17 +71,8 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
     document.removeEventListener('keydown', this._onKeyDown);
     this._observer?.disconnect();
     this._observer = null;
-    this._lightDomStyle?.remove();
-    this._lightDomStyle = null;
     this._setupDone = false;
     super.disconnectedCallback();
-  }
-
-  private _injectLightDomStyles() {
-    if (this._lightDomStyle) return;
-    this._lightDomStyle = document.createElement('style');
-    this._lightDomStyle.textContent = LIGHT_DOM_STYLES;
-    this.prepend(this._lightDomStyle);
   }
 
   override firstUpdated() {
@@ -102,10 +90,10 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
 
   private _trySetup() {
     if (this._setupDone) return;
-    
+
     const matchSets = this.querySelectorAll('qti-simple-match-set');
     if (matchSets.length < 2) return;
-    
+
     this._setupDone = true;
     this._buildLabelCache();
     this.addEventListener('click', this._onClick);
@@ -121,12 +109,12 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
       this._buildLabelCache();
       this._triggerRender();
     });
-    
+
     // Watch for changes to children (subtree to catch nested changes)
     this._observer.observe(this, {
       childList: true,
       subtree: true,
-      characterData: true,
+      characterData: true
     });
   }
 
@@ -156,25 +144,27 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
     const associations = Array.from(this._associations.entries()) as MatchAssociation[];
     // Serialize as qti-components does: `["source target", ...]`.
     const correctResponse =
-      associations.length > 0
-        ? JSON.stringify(associations.map(([source, target]) => `${source} ${target}`))
-        : null;
+      associations.length > 0 ? JSON.stringify(associations.map(([source, target]) => `${source} ${target}`)) : null;
 
-    this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
-      detail: {
-        nodeType: 'qtiMatchInteraction',
-        tagName: 'qti-match-interaction',
-        attrs: { correctResponse },
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    this.dispatchEvent(
+      new CustomEvent('qti-prosemirror-node-attrs-change', {
+        detail: {
+          nodeType: 'qtiMatchInteraction',
+          tagName: 'qti-match-interaction',
+          attrs: { correctResponse }
+        },
+        bubbles: true,
+        composed: true
+      })
+    );
 
-    this.dispatchEvent(new CustomEvent<MatchAssociationChangeDetail>('match-association-change', {
-      detail: { associations },
-      bubbles: true,
-      composed: true
-    }));
+    this.dispatchEvent(
+      new CustomEvent<MatchAssociationChangeDetail>('match-association-change', {
+        detail: { associations },
+        bubbles: true,
+        composed: true
+      })
+    );
   }
 
   private _triggerRender() {
@@ -256,8 +246,8 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
 
   private _onClick = (e: MouseEvent) => {
     const path = e.composedPath();
-    const choiceIndex = path.findIndex(el =>
-      el instanceof HTMLElement && el.tagName === 'QTI-SIMPLE-ASSOCIABLE-CHOICE'
+    const choiceIndex = path.findIndex(
+      el => el instanceof HTMLElement && el.tagName === 'QTI-SIMPLE-ASSOCIABLE-CHOICE'
     );
     if (choiceIndex < 0) return;
     const choice = path[choiceIndex] as HTMLElement;
@@ -316,38 +306,32 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
 
   private _renderAssociationsPanel() {
     const associations = Array.from(this._associations.entries());
-    
+
     return html`
       <div class="associations-panel">
         <div class="associations-panel-title">${this.i18n.t('match.correctResponse')}</div>
         <div class="association-list">
-          ${this._pendingSourceId ? html`
-            <span class="pending-indicator">
-              ${this.i18n.t('match.selectTargetFor', { label: this._getLabel(this._pendingSourceId) })}
-              <button 
-                type="button" 
-                class="association-chip-remove" 
-                aria-label=${this.i18n.t('match.cancel')}
-                @click=${(e: Event) => { e.stopPropagation(); this._cancelPending(); }}
-              >×</button>
-            </span>
-          ` : nothing}
-          ${associations.length === 0 && !this._pendingSourceId ? html`
-            <span class="no-associations">${this.i18n.t('match.noAssociations')}</span>
-          ` : nothing}
-          ${associations.map(([sourceId, targetId]) => html`
-            <span class="association-chip">
-              <span>${this._getLabel(sourceId)}</span>
-              <span class="association-chip-arrow">→</span>
-              <span><strong>${this._getLabel(targetId)}</strong></span>
-              <button
-                type="button"
-                class="association-chip-remove"
-                aria-label=${this.i18n.t('match.remove')}
-                @click=${(e: Event) => { e.stopPropagation(); this._removeAssociation(sourceId); }}
-              >×</button>
-            </span>
-          `)}
+          ${this._pendingSourceId
+            ? html`
+                <span class="pending-indicator">
+                  ${this.i18n.t('match.selectTargetFor', { label: this._getLabel(this._pendingSourceId) })}
+                  <button
+                    type="button"
+                    class="association-chip-remove"
+                    aria-label=${this.i18n.t('match.cancel')}
+                    @click=${(e: Event) => {
+                      e.stopPropagation();
+                      this._cancelPending();
+                    }}
+                  >
+                    ×
+                  </button>
+                </span>
+              `
+            : nothing}
+          ${associations.length === 0 && !this._pendingSourceId
+            ? html` <span class="no-associations">${this.i18n.t('match.noAssociations')}</span> `
+            : nothing}
         </div>
       </div>
     `;
