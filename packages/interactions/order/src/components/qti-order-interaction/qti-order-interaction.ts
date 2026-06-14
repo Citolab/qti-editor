@@ -110,16 +110,12 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
       return;
     }
 
-    // correctResponse is a JSON array of identifiers: ["id1", "id2", "id3"]
-    try {
-      const parsed = JSON.parse(this.correctResponse);
-      if (Array.isArray(parsed)) {
-        this._order = parsed.filter(Boolean);
-      }
-    } catch {
-      // Invalid JSON, ignore
-      this._order = [];
-    }
+    // correctResponse is a comma-separated list of identifiers (qti-components
+    // convention): "id1,id2,id3". Order is significant (ordered cardinality).
+    this._order = this.correctResponse
+      .split(',')
+      .map(id => id.trim())
+      .filter(Boolean);
   }
 
   private _syncOrderWithChoices() {
@@ -173,21 +169,21 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
   }
 
   private _emitChange() {
-    // Emit as JSON array string to match storage format
-    const jsonOrder = JSON.stringify(this._order);
+    // Serialize as qti-components does: a comma-separated identifier list.
+    const correctResponse = this._order.length > 0 ? this._order.join(',') : null;
 
     this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
       detail: {
         nodeType: 'qtiOrderInteraction',
         tagName: 'qti-order-interaction',
-        attrs: { correctResponse: jsonOrder },
+        attrs: { correctResponse },
       },
       bubbles: true,
       composed: true,
     }));
 
     this.dispatchEvent(new CustomEvent('order-response-change', {
-      detail: { order: this._order, correctResponse: jsonOrder },
+      detail: { order: this._order, correctResponse },
       bubbles: true,
       composed: true,
     }));
@@ -262,7 +258,19 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
             ?data-filled=${choiceId !== null}
             ?data-pending-target=${pendingTarget}
             @click=${(e: Event) => { e.stopPropagation(); this._handleSlotClick(index); }}
-          ></div>
+          >
+            ${choiceId !== null ? html`
+              <span class="fake-drag" data-identifier=${choiceId}>
+                ${this._getLabel(choiceId)}
+                <button
+                  type="button"
+                  class="fake-drag-remove"
+                  aria-label=${this.i18n.t('order.remove')}
+                  @click=${(e: Event) => { e.stopPropagation(); this._clearSlot(index); }}
+                >×</button>
+              </span>
+            ` : nothing}
+          </div>
         `;
       })}
     `;
@@ -329,6 +337,6 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
 
 declare global {
   interface HTMLElementEventMap {
-    'order-response-change': CustomEvent<{ order: string[]; correctResponse: string }>;
+    'order-response-change': CustomEvent<{ order: string[]; correctResponse: string | null }>;
   }
 }

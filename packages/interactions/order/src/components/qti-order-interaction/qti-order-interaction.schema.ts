@@ -34,7 +34,8 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
     if (node.attrs.shuffle) attrs['shuffle'] = 'true';
     if (node.attrs.orientation && node.attrs.orientation !== 'vertical') attrs['orientation'] = node.attrs.orientation;
     if (node.attrs.class) attrs['class'] = node.attrs.class;
-    // correctResponse is raw JSON array (e.g. '["a","b"]') — pass through as-is like match interaction
+    // correctResponse is a comma-separated identifier list (qti-components
+    // convention) — pass through as-is.
     if (node.attrs.correctResponse) attrs['correct-response'] = node.attrs.correctResponse;
     attrs.score = String(node.attrs.score ?? 1);
     return ['qti-order-interaction', attrs, 0];

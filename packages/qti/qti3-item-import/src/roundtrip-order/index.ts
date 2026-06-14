@@ -16,10 +16,10 @@ import { extractItemScore } from '../_shared';
  *
  * Each <qti-value> is one choice identifier, and document order encodes the
  * correct sequence. The editor's qti-order-interaction stores its
- * correct-response the same way qti-components does: a JSON array of choice
- * identifiers in order (`["step_hypothese", ...]`), which is what its
+ * correct-response the same way qti-components does: a comma-separated list of
+ * choice identifiers in order (`step_hypothese,step_data,…`), which is what its
  * parseDOM / compose path round-trips. This transform converts the qti-value
- * list into that array.
+ * list into that string.
  *
  * Conditions (all must hold; otherwise no-op):
  * - Exactly ONE qti-order-interaction in the item.
@@ -42,7 +42,7 @@ export const roundtripOrder = (xmlDoc: XMLDocument): void => {
   const score = extractItemScore(xmlDoc);
 
   if (!interaction.getAttribute('correct-response')) {
-    interaction.setAttribute('correct-response', JSON.stringify(order));
+    interaction.setAttribute('correct-response', order.join(','));
   }
   if (!interaction.getAttribute('score')) {
     interaction.setAttribute('score', String(score));

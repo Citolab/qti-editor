@@ -28,11 +28,11 @@ const declaration = (identifier: string, ...values: string[]) =>
 const matchResponse = `<qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct" />`;
 
 describe('roundtripOrder', () => {
-  it('converts ordered qti-values into the editor JSON array format, preserving order', () => {
+  it('converts ordered qti-values into a comma-separated identifier list, preserving order', () => {
     const doc = itemXml(orderFor(), matchResponse, declaration('RESPONSE', 'step_hypothese', 'step_data', 'step_conclusies'));
     roundtripOrder(doc);
     const interaction = doc.querySelector('qti-order-interaction')!;
-    expect(interaction.getAttribute('correct-response')).toBe('["step_hypothese","step_data","step_conclusies"]');
+    expect(interaction.getAttribute('correct-response')).toBe('step_hypothese,step_data,step_conclusies');
     expect(interaction.getAttribute('score')).toBe('1');
   });
 
@@ -52,13 +52,13 @@ describe('roundtripOrder', () => {
 
   it('is idempotent — preserves an existing canonical correct-response/score', () => {
     const doc = itemXml(
-      orderFor('RESPONSE', 'correct-response=\'["a","b"]\' score="9"'),
+      orderFor('RESPONSE', 'correct-response=\'a,b\' score="9"'),
       matchResponse,
       declaration('RESPONSE', 'step_hypothese', 'step_data', 'step_conclusies'),
     );
     roundtripOrder(doc);
     const interaction = doc.querySelector('qti-order-interaction')!;
-    expect(interaction.getAttribute('correct-response')).toBe('["a","b"]');
+    expect(interaction.getAttribute('correct-response')).toBe('a,b');
     expect(interaction.getAttribute('score')).toBe('9');
   });
 

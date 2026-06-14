@@ -56,7 +56,7 @@ const styles: CSSResultGroup = [
       align-content: start;
     }
 
-    /* Drop slot — simple clickable area, no inner content */
+    /* Drop slot — clickable area that shows the assigned choice as a fake drag */
     .order-slot {
       min-height: 3rem;
       border: 2px dashed #f59e0b;
@@ -64,6 +64,11 @@ const styles: CSSResultGroup = [
       background: #fffbeb;
       cursor: pointer;
       transition: border-color 0.15s, background 0.15s;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
     }
 
     .order-slot:hover {
@@ -91,6 +96,44 @@ const styles: CSSResultGroup = [
     .order-slot[data-pending-target]:not([data-filled]):hover {
       border-color: #2563eb;
       background: #dbeafe;
+    }
+
+    /* Fake drag — non-interactive preview of the assigned choice inside a slot,
+       mirroring the qti-simple-associable-choice fake drags in match. */
+    .fake-drag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border: 1px solid var(--qti-correct, #22c55e);
+      border-radius: 4px;
+      background: var(--qti-bg-success, #dcfce7);
+      font-size: 0.9em;
+      line-height: 1.2;
+      user-select: none;
+      cursor: default;
+    }
+
+    .fake-drag-remove {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: inherit;
+      font-size: 1.1em;
+      line-height: 1;
+      cursor: pointer;
+      opacity: 0.6;
+    }
+
+    .fake-drag-remove:hover {
+      opacity: 1;
+      background: rgb(0 0 0 / 0.1);
     }
   `,
   associationPanelStyles

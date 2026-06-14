@@ -39,7 +39,7 @@ describe('qtiOrderInteractionNodeSpec', () => {
       shuffle: true,
       orientation: 'horizontal',
       class: 'review-mode',
-      correctResponse: '["choice-a","choice-b"]',
+      correctResponse: 'choice-a,choice-b',
       responseIdentifier: 'RESPONSE',
       score: 2,
     }, [prompt, choiceA, choiceB]);
@@ -51,14 +51,14 @@ describe('qtiOrderInteractionNodeSpec', () => {
         shuffle: 'true',
         orientation: 'horizontal',
         class: 'review-mode',
-        'correct-response': '["choice-a","choice-b"]',
+        'correct-response': 'choice-a,choice-b',
         score: '2',
       },
       0,
     ]);
   });
 
-  it('handles JSON array format for correct-response', () => {
+  it('handles comma-separated format for correct-response', () => {
     const schema = createSchemaFromNodeSpecs(orderInteractionDescriptor.nodeSpecs);
     const prompt = schema.node('qtiPrompt', null, [
       schema.node('qtiPromptParagraph', null, [schema.text('Put the steps in order.')]),
@@ -73,17 +73,17 @@ describe('qtiOrderInteractionNodeSpec', () => {
       schema.node('qtiSimpleChoiceParagraph', null, [schema.text('Step 3')]),
     ]);
 
-    // Test that JSON array format is preserved as-is
+    // Test that comma-separated format is preserved as-is
     const interaction = schema.node('qtiOrderInteraction', {
-      correctResponse: '["CHOICE_123","CHOICE_456","CHOICE_789"]',
+      correctResponse: 'CHOICE_123,CHOICE_456,CHOICE_789',
       responseIdentifier: 'RESPONSE',
       score: 1,
     }, [prompt, choiceA, choiceB, choiceC]);
 
     const dom = qtiOrderInteractionNodeSpec.toDOM?.(interaction);
     const [, domAttrs] = dom as [string, Record<string, string>, number];
-    
-    // Should preserve JSON array format
-    expect(domAttrs['correct-response']).toBe('["CHOICE_123","CHOICE_456","CHOICE_789"]');
+
+    // Should preserve comma-separated format
+    expect(domAttrs['correct-response']).toBe('CHOICE_123,CHOICE_456,CHOICE_789');
   });
 });
