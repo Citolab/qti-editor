@@ -26,10 +26,12 @@ export const roundtripInteractions = (xmlDoc: XMLDocument): void => {
   const interactions = Array.from(xmlDoc.querySelectorAll('[response-identifier]')).filter(
     (el) =>
       el.tagName.toLowerCase().endsWith('-interaction') &&
-      // qti-match-interaction has its own explicit transform (roundtripMatch)
-      // that emits the editor's JSON directed-pair format. The generic
-      // comma-joined hoist here would corrupt it, so skip it.
-      el.tagName.toLowerCase() !== 'qti-match-interaction'
+      // qti-match-interaction and qti-order-interaction have their own explicit
+      // transforms (roundtripMatch / roundtripOrder) that emit the editor's JSON
+      // array format. The generic comma-joined hoist here would corrupt them, so
+      // skip them.
+      el.tagName.toLowerCase() !== 'qti-match-interaction' &&
+      el.tagName.toLowerCase() !== 'qti-order-interaction'
   );
 
   for (const interaction of interactions) {

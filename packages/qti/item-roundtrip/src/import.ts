@@ -20,6 +20,7 @@ import {
   roundtripInteractions,
   roundtripItemBody,
   roundtripMatch,
+  roundtripOrder,
   roundtripTextEntry,
 } from '@qti-editor/qti3-item-import';
 import { roundtripXmlToPm } from '@qti-editor/interaction-shared/roundtrip-xml-to-pm.js';
@@ -42,6 +43,7 @@ export const defaultRoundtripTransforms: readonly RoundtripTransform[] = [
   roundtripTextEntry,
   roundtripExtendedText,
   roundtripMatch,
+  roundtripOrder,
   roundtripInteractions,
   roundtripItemBody,
 ];
