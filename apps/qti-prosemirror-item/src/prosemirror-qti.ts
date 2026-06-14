@@ -38,6 +38,9 @@ import { exportItemXml, importItemFromUrl } from '@qti-editor/qti-item-roundtrip
 
 import { qtiTransformTest } from '@qti-components/transformers';
 
+// EXPERIMENT: lockable qti-layout-* div wrappers.
+import { qtiLayoutDivNodeSpec, divLockPlugin } from './qti-layout-div.js';
+
 // Register the interaction edit elements (custom elements used by the views).
 import '@qti-editor/interaction-choice/register.js';
 import '@qti-editor/interaction-extended-text/register.js';
@@ -79,7 +82,8 @@ const qtiNodes = Object.fromEntries(
   descriptors.flatMap(descriptor => descriptor.nodeSpecs).map(({ name, spec }) => [name, spec])
 );
 
-const baseNodes = { ...nodes, ...qtiNodes };
+// EXPERIMENT: register the lockable layout-div node alongside the QTI nodes.
+const baseNodes = { ...nodes, ...qtiNodes, qtiLayoutDiv: qtiLayoutDivNodeSpec };
 
 /** The editor schema: basic prose nodes + the QTI interaction node specs. */
 export const schema = new Schema({
@@ -125,6 +129,8 @@ const backspaceCommand = chainCommands(
  */
 export const qtiPlugins: Plugin[] = [
   keymap({ Enter: enterCommand, Backspace: backspaceCommand }),
+  // EXPERIMENT: keep qti-layout-* divs immutable while their content stays editable.
+  divLockPlugin,
   ...descriptors.flatMap(descriptor => descriptor.pluginFactories?.map(factory => factory()) ?? [])
 ];
 
