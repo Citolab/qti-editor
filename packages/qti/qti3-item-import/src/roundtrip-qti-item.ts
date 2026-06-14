@@ -5,6 +5,7 @@ import { roundtripExtendedText } from './roundtrip-extended-text';
 import { roundtripInteractions } from './roundtrip-interactions';
 import { roundtripItemBody } from './roundtrip-item-body';
 import { roundtripMatch } from './roundtrip-match';
+import { roundtripGapMatch } from './roundtrip-gap-match';
 import { roundtripOrder } from './roundtrip-order';
 import { roundtripSelectPoint } from './roundtrip-select-point';
 import { roundtripTextEntry } from './roundtrip-text-entry';
@@ -25,6 +26,7 @@ export function roundtripQtiItem(xmlString: string): string {
     .fn(roundtripTextEntry)
     .fn(roundtripExtendedText)
     .fn(roundtripMatch)
+    .fn(roundtripGapMatch)
     .fn(roundtripOrder)
     .fn(roundtripSelectPoint)
     .fn(roundtripInteractions)

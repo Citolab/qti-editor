@@ -4,9 +4,8 @@ import { associationPanelStyles } from '@qti-editor/interaction-shared';
 const styles: CSSResultGroup = [
   css`
     :host {
-      white-space: nowrap;
-      position: relative;
-      overflow: visible;
+      word-wrap: break-word;
+      white-space: normal;
     }
 
     .choices {

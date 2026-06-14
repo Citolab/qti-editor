@@ -27,9 +27,15 @@ export function roundtripXmlToPm(xmlDoc: XMLDocument, schema: Schema): ProseMirr
 
   // Re-host the item-body content as HTML so the schema's DOMParser (which
   // matches lowercase tag names) can read the canonical authoring attributes.
-  const template = document.createElement('template');
-  template.innerHTML = new XMLSerializer().serializeToString(itemBody);
-  const htmlBody = template.content.firstElementChild as HTMLElement;
+  //
+  // We rebuild the tree node-by-node into HTML elements rather than going
+  // through `XMLSerializer` + `innerHTML`. The string round-trip emits empty
+  // elements self-closed (e.g. `<qti-gap/>`), but the HTML parser does NOT treat
+  // custom elements as void: it reopens them, nesting every following sibling
+  // inside the first empty element. Since `qti-gap` is an atom, that nested
+  // content is then silently dropped on parse. A direct DOM import keeps empty
+  // elements empty and preserves sibling order.
+  const htmlBody = importXmlAsHtml(itemBody, document) as HTMLElement;
 
   // `parse` only fills content; the doc node's own attributes come from the
   // `topNode`. The item-body acts as a body-double for the document, so hoist
@@ -45,3 +51,28 @@ export function roundtripXmlToPm(xmlDoc: XMLDocument, schema: Schema): ProseMirr
 
   return PMDOMParser.fromSchema(schema).parse(htmlBody, topNode ? { topNode } : undefined);
 }
+
+/**
+ * Recursively clone an XML node into an HTML element owned by `htmlDoc`. Tag
+ * names are lowercased into the HTML namespace (so PM's tag matching works) and
+ * namespace declarations are dropped. Unlike a `XMLSerializer` + `innerHTML`
+ * round-trip, this keeps empty custom elements empty instead of reopening them
+ * and nesting their following siblings inside (which silently drops content for
+ * atom nodes such as `qti-gap`).
+ */
+function importXmlAsHtml(xmlNode: Node, htmlDoc: Document): Node {
+  if (xmlNode.nodeType === Node.ELEMENT_NODE) {
+    const xmlEl = xmlNode as Element;
+    const htmlEl = htmlDoc.createElement(xmlEl.localName);
+    for (const attr of Array.from(xmlEl.attributes)) {
+      if (attr.name === 'xmlns' || attr.name.startsWith('xmlns:')) continue;
+      htmlEl.setAttribute(attr.localName, attr.value);
+    }
+    for (const child of Array.from(xmlEl.childNodes)) {
+      htmlEl.appendChild(importXmlAsHtml(child, htmlDoc));
+    }
+    return htmlEl;
+  }
+  return htmlDoc.createTextNode(xmlNode.textContent ?? '');
+}
+

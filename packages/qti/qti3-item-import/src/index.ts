@@ -2,6 +2,7 @@ export { roundtripChoice } from './roundtrip-choice';
 export { roundtripTextEntry } from './roundtrip-text-entry';
 export { roundtripExtendedText } from './roundtrip-extended-text';
 export { roundtripMatch } from './roundtrip-match';
+export { roundtripGapMatch } from './roundtrip-gap-match';
 export { roundtripOrder } from './roundtrip-order';
 export { roundtripSelectPoint } from './roundtrip-select-point';
 export { roundtripInteractions } from './roundtrip-interactions';

@@ -26,7 +26,7 @@ export const AuthoringFixture = {
   render: () => renderFixture(html`
     <qti-gap-match-interaction
       response-identifier="RESPONSE_GAP_MATCH"
-      correct-response='[["gap-text-a","gap-a"],["gap-text-b","gap-b"]]'
+      correct-response='["gap-text-a gap-a","gap-text-b gap-b"]'
       score="2"
     >
       <qti-prompt>Place each label into the correct authoring placeholder.</qti-prompt>

@@ -29,7 +29,10 @@ export const roundtripInteractions = (xmlDoc: XMLDocument): void => {
       // qti-match-interaction has its own explicit transform (roundtripMatch)
       // that emits the editor's JSON directed-pair format. The generic
       // comma-joined hoist here would corrupt it, so skip it.
-      el.tagName.toLowerCase() !== 'qti-match-interaction'
+      el.tagName.toLowerCase() !== 'qti-match-interaction' &&
+      // qti-gap-match-interaction likewise has roundtripGapMatch emitting JSON
+      // directed pairs; the generic comma-joined hoist would corrupt it.
+      el.tagName.toLowerCase() !== 'qti-gap-match-interaction'
   );
 
   for (const interaction of interactions) {

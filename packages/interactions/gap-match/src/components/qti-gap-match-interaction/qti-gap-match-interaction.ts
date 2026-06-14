@@ -132,11 +132,13 @@ export class QtiGapMatchInteractionEdit extends InteractionPanel {
     if (!this.correctResponse) return;
 
     try {
-      const parsed = JSON.parse(this.correctResponse) as GapAssociation[];
+      // Same shape as qti-components: a JSON array of `"gapText gap"` strings
+      // (standard QTI directedPair entries, source = gap-text, target = gap).
+      const parsed: unknown = JSON.parse(this.correctResponse);
       if (!Array.isArray(parsed)) return;
       for (const entry of parsed) {
-        if (!Array.isArray(entry) || entry.length !== 2) continue;
-        const [textId, gapId] = entry;
+        if (typeof entry !== 'string') continue;
+        const [textId, gapId] = entry.split(' ');
         if (textId && gapId) this.associations.set(gapId, textId);
       }
     } catch {
@@ -150,7 +152,11 @@ export class QtiGapMatchInteractionEdit extends InteractionPanel {
     const associations = Array.from(this.associations.entries()).map(
       ([gapId, textId]) => [textId, gapId] as GapAssociation,
     );
-    this.lastEmittedResponse = associations.length > 0 ? JSON.stringify(associations) : null;
+    // Serialize as qti-components does: `["gapText gap", ...]`.
+    this.lastEmittedResponse =
+      associations.length > 0
+        ? JSON.stringify(associations.map(([textId, gapId]) => `${textId} ${gapId}`))
+        : null;
     
     // Defer the event dispatch to avoid re-entrancy during click handling
     this.isEmittingChange = true;

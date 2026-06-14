@@ -67,7 +67,7 @@ describe('qtiGapMatchInteractionNodeSpec', () => {
       minAssociations: 1,
       shuffle: true,
       class: 'fill-in-blank',
-      correctResponse: 'word-1 gap-1, word-2 gap-2',
+      correctResponse: '["word-1 gap-1","word-2 gap-2"]',
       responseIdentifier: 'RESPONSE',
       score: 3,
     }, [prompt, gapText1, gapText2, paragraph]);
@@ -79,7 +79,7 @@ describe('qtiGapMatchInteractionNodeSpec', () => {
         'min-associations': '1',
         shuffle: 'true',
         class: 'fill-in-blank',
-        'correct-response': 'word-1 gap-1, word-2 gap-2',
+        'correct-response': '["word-1 gap-1","word-2 gap-2"]',
         'response-identifier': 'RESPONSE',
         score: '3',
       },
@@ -114,7 +114,7 @@ describe('qtiGapMatchInteractionNodeSpec', () => {
     
     // Multiple associations: a→gap-1, b→gap-2, a→gap-3 (same gap text in multiple gaps)
     const interaction = schema.node('qtiGapMatchInteraction', {
-      correctResponse: 'a gap-1, b gap-2, a gap-3',
+      correctResponse: '["a gap-1","b gap-2","a gap-3"]',
       responseIdentifier: 'RESPONSE',
       score: 2,
     }, [prompt, gapText1, gapText2, paragraph]);
@@ -124,7 +124,7 @@ describe('qtiGapMatchInteractionNodeSpec', () => {
     const [, attrs] = dom as [string, Record<string, string>, number];
     
     // Verify the correct response is preserved
-    expect(attrs['correct-response']).toBe('a gap-1, b gap-2, a gap-3');
+    expect(attrs['correct-response']).toBe('["a gap-1","b gap-2","a gap-3"]');
   });
 
   it('omits min-associations when zero', () => {
