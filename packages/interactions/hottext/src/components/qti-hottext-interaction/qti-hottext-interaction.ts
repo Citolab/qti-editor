@@ -73,19 +73,19 @@ export class QtiHottextInteractionEdit extends Interaction {
     const selectedIdentifiers = parseCorrectResponse(this.correctResponse);
     const isSelected = selectedIdentifiers.includes(identifier);
 
-    let nextIdentifiers: string[];
-    if (isSelected) {
-      nextIdentifiers = selectedIdentifiers.filter(value => value !== identifier);
-    } else if (this.maxChoices === 1) {
-      nextIdentifiers = [identifier];
-    } else if (this.maxChoices > 1 && selectedIdentifiers.length >= this.maxChoices) {
-      return;
-    } else {
-      nextIdentifiers = [...selectedIdentifiers, identifier];
-    }
+    // Toggle the clicked hottext in/out of the correct response unconditionally,
+    // mirroring qti-choice-interaction: selecting a second hottext switches the
+    // interaction from single (max-choices=1) to unlimited (max-choices=0 →
+    // cardinality multiple).
+    const nextIdentifiers = isSelected
+      ? selectedIdentifiers.filter(value => value !== identifier)
+      : [...selectedIdentifiers, identifier];
 
     const correctResponse = nextIdentifiers.length > 0 ? nextIdentifiers.join(',') : null;
+    const maxChoices = nextIdentifiers.length <= 1 ? 1 : 0;
+
     this.correctResponse = correctResponse;
+    this.maxChoices = maxChoices;
     this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
       bubbles: true,
       composed: true,
@@ -94,6 +94,7 @@ export class QtiHottextInteractionEdit extends Interaction {
         tagName: 'qti-hottext-interaction',
         attrs: {
           correctResponse,
+          maxChoices,
         },
       },
     }));
