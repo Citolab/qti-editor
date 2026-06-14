@@ -14,8 +14,9 @@
 
 img {
   width: 100%;
-  max-width: 300px;
+  height: auto;
 }
+
 qti-rubric-block {
   display: block !important;
 }
