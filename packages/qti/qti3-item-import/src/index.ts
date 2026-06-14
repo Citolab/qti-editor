@@ -3,6 +3,7 @@ export { roundtripTextEntry } from './roundtrip-text-entry';
 export { roundtripExtendedText } from './roundtrip-extended-text';
 export { roundtripMatch } from './roundtrip-match';
 export { roundtripOrder } from './roundtrip-order';
+export { roundtripSelectPoint } from './roundtrip-select-point';
 export { roundtripInteractions } from './roundtrip-interactions';
 export { roundtripItemBody } from './roundtrip-item-body';
 export { reduceToItemBody } from './reduce-to-item-body';
