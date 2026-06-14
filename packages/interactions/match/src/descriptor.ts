@@ -6,7 +6,10 @@ import {
   qtiSimpleAssociableChoiceParagraphNodeSpec,
 } from '@qti-editor/interaction-shared';
 
-import { insertMatchInteraction } from './components/qti-match-interaction/qti-match-interaction.commands.js';
+import {
+  insertMatchInteraction,
+  insertSimpleAssociableChoiceOnEnter,
+} from './components/qti-match-interaction/qti-match-interaction.commands.js';
 import { qtiMatchInteractionNodeSpec } from './components/qti-match-interaction/qti-match-interaction.schema.js';
 import { matchInteractionComposerMetadata, matchNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
 import { matchComposerHandler } from './composer/handler.js';
@@ -30,6 +33,7 @@ export const matchInteractionDescriptor = {
   ],
   insertCommand: insertMatchInteraction,
   keyboardShortcut: 'Mod-Shift-m',
+  enterCommand: insertSimpleAssociableChoiceOnEnter,
   composerMetadata: matchInteractionComposerMetadata,
   composerHandler: matchComposerHandler,
   attributePanelMetadata: matchNodeAttributePanelMetadataByNodeTypeName,
