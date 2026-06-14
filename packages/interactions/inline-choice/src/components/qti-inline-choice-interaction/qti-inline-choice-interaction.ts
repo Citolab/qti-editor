@@ -1,6 +1,11 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { InteractionPanel, QtiI18nController } from '@qti-editor/interaction-shared';
+import {
+  InteractionPanel,
+  QtiI18nController,
+  QTI_CORRECT_RESPONSE_TOGGLE_EVENT,
+  type QtiCorrectResponseToggleDetail,
+} from '@qti-editor/interaction-shared';
 
 import styles from '@qti-components/inline-choice-interaction/styles';
 
@@ -84,12 +89,36 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.addEventListener(QTI_CORRECT_RESPONSE_TOGGLE_EVENT, this.#handleCorrectResponseToggle);
     this.#estimateOptimalWidth();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.removeEventListener(QTI_CORRECT_RESPONSE_TOGGLE_EVENT, this.#handleCorrectResponseToggle);
   }
+
+  /**
+   * A child option toggled its selected state. Ask the editor to persist the
+   * single `correctResponse` identifier onto this interaction node via the
+   * shared node-attrs-sync plugin.
+   */
+  #handleCorrectResponseToggle = (event: Event) => {
+    const detail = (event as CustomEvent<QtiCorrectResponseToggleDetail>).detail;
+    const correctResponse = detail.selected ? detail.identifier : null;
+
+    this.dispatchEvent(
+      new CustomEvent('qti-prosemirror-node-attrs-change', {
+        detail: {
+          nodeType: 'qtiInlineChoiceInteraction',
+          tagName: 'qti-inline-choice-interaction',
+          attrs: { correctResponse },
+        },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  };
 
   override updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);

@@ -22,7 +22,7 @@ import { history, undo, redo } from 'prosemirror-history';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
 import { menuBar, MenuItem, liftItem, selectParentNodeItem, undoItem, redoItem, type MenuElement } from 'prosemirror-menu';
-import { attributesPanelPlugin, blockSelectPlugin } from '@qti-editor/prosemirror-plugins';
+import { attributesPanelPlugin, blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-plugins';
 
 import { schema, editableAttrs, qtiPlugins, loadQtiItems, importQtiItem, exportQtiItem } from './prosemirror-qti.js';
 
@@ -68,7 +68,10 @@ const editorPlugins: Plugin[] = [
   dropCursor(),
   gapCursor(),
   menuBar({ content: menuContent }),
-  blockSelectPlugin
+  blockSelectPlugin,
+  // Applies inline interaction attr edits (e.g. hottext radio clicks) that are
+  // dispatched as `qti-prosemirror-node-attrs-change` events to the document.
+  nodeAttrsSyncPlugin
 ];
 
 /** Mount an editor for `doc` into `container`, wiring the attributes panel into `panelEl`. */

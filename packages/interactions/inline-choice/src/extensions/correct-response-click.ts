@@ -1,8 +1,4 @@
 import { Plugin, PluginKey, TextSelection } from 'prosemirror-state';
-import {
-  QTI_CORRECT_RESPONSE_TOGGLE_EVENT,
-  type QtiCorrectResponseToggleDetail,
-} from '@qti-editor/interaction-shared';
 
 import {
   QTI_INLINE_CHOICE_FOCUS_EVENT,
@@ -127,32 +123,11 @@ export function createInlineChoiceCorrectResponseClickPlugin(): Plugin {
         dispatch(state.tr.setSelection(TextSelection.create(state.doc, targetPos)).scrollIntoView());
       };
 
-      const handleToggle = (event: Event) => {
-        const detail = (event as CustomEvent<QtiCorrectResponseToggleDetail>).detail;
-        const choiceElement = event.target as HTMLElement;
-
-        const interactionElement = choiceElement.closest('qti-inline-choice-interaction') as HTMLElement | null;
-        if (!interactionElement) return;
-
-        const correctResponse = detail.selected ? detail.identifier : null;
-
-        const pos = findInteractionNodePos(view, interactionElement);
-        if (pos === null) return;
-
-        const { state, dispatch } = view;
-        const node = state.doc.nodeAt(pos);
-        if (!node) return;
-
-        dispatch(state.tr.setNodeMarkup(pos, undefined, { ...node.attrs, correctResponse }));
-      };
-
       view.dom.addEventListener(QTI_INLINE_CHOICE_FOCUS_EVENT, handleChoiceFocus);
-      view.dom.addEventListener(QTI_CORRECT_RESPONSE_TOGGLE_EVENT, handleToggle);
 
       return {
         destroy() {
           view.dom.removeEventListener(QTI_INLINE_CHOICE_FOCUS_EVENT, handleChoiceFocus);
-          view.dom.removeEventListener(QTI_CORRECT_RESPONSE_TOGGLE_EVENT, handleToggle);
         },
       };
     },

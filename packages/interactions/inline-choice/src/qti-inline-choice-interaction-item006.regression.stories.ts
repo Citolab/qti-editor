@@ -28,6 +28,7 @@ import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 
 import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
 import { attributesPanelPlugin } from '../../../extensions/prosemirror/src/attributes-panel/index';
+import { nodeAttrsSyncPlugin } from '../../../extensions/prosemirror/src/node-attrs-sync/node-attrs-sync-plugin';
 import { inlineChoiceInteractionDescriptor } from './descriptor';
 import './register';
 import 'prosemirror-view/style/prosemirror.css';
@@ -60,11 +61,12 @@ export const schema = new Schema({
   marks
 });
 
-/** Minimal plugin set: enter/base keymaps, the inline-choice interaction plugins and block-select. */
+/** Minimal plugin set: enter/base keymaps, the inline-choice interaction plugins, node-attrs sync and block-select. */
 const editorPlugins: Plugin[] = [
   keymap({ Enter: inlineChoiceInteractionDescriptor.enterCommand }),
   keymap(baseKeymap),
   ...inlineChoiceInteractionDescriptor.pluginFactories.map(factory => factory()),
+  nodeAttrsSyncPlugin,
   blockSelectPlugin
 ];
 

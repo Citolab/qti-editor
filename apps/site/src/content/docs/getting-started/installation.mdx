@@ -76,12 +76,13 @@ import { listInteractionPluginFactories } from '@qti-editor/core/interactions/co
 const plugins = listInteractionPluginFactories().map(factory => factory());
 ```
 
-Or use individual plugin factories from interaction packages:
+Some interactions also write their attributes through the shared
+`nodeAttrsSyncPlugin`, so include it alongside the interaction plugins:
 
 ```typescript
-import { createCorrectResponseClickPlugin } from '@qti-editor/interactions/choice';
+import { nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-plugins';
 
-const choicePlugin = createCorrectResponseClickPlugin();
+const plugins = [nodeAttrsSyncPlugin, ...listInteractionPluginFactories().map(factory => factory())];
 ```
 
 ### Using with ProseKit

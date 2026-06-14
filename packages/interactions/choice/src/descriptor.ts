@@ -9,7 +9,6 @@ import { insertChoiceInteraction, insertSimpleChoiceOnEnter } from './components
 import { qtiChoiceInteractionNodeSpec } from './components/qti-choice-interaction/qti-choice-interaction.schema.js';
 import { choiceInteractionComposerMetadata, choiceNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
 import { choiceComposerHandler } from './composer/handler.js';
-import { createCorrectResponseClickPlugin } from './extensions/correct-response-click.js';
 
 import type { InteractionDescriptor } from '@qti-editor/interfaces';
 
@@ -24,7 +23,6 @@ export const choiceInteractionDescriptor = {
     { name: 'qtiSimpleChoice', spec: qtiSimpleChoiceNodeSpec },
     { name: 'qtiSimpleChoiceParagraph', spec: qtiSimpleChoiceParagraphNodeSpec },
   ],
-  pluginFactories: [createCorrectResponseClickPlugin],
   insertCommand: insertChoiceInteraction,
   keyboardShortcut: 'Mod-Shift-q',
   enterCommand: insertSimpleChoiceOnEnter,
