@@ -83,108 +83,153 @@ export const collectAncestorChain = (state: EditorState): ChainEntry[] => {
 const chainSignature = (chain: ChainEntry[]): string =>
   chain.map(entry => `${entry.type}@${entry.pos}`).join('|');
 
-/** Apply an attribute change to a node (or the doc) via a transaction. */
-const applyAttrChange = (view: EditorView, entry: ChainEntry, key: string, value: unknown): void => {
-  const tr = entry.isDoc
-    ? view.state.tr.setDocAttribute(key, value)
-    : view.state.tr.setNodeAttribute(entry.pos, key, value);
-  view.dispatch(tr);
-};
+/**
+ * PluginView that keeps the side panel in sync with the selection. State and
+ * behavior are explicit on the instance (rather than hidden in a closure): the
+ * only mutable state is `#signature`, and each responsibility — value sync,
+ * full render, section/field construction, attr writes — is its own method.
+ *
+ * It only fully re-renders when the ancestor chain (types + positions) changes,
+ * so typing into a field never steals focus; otherwise field values are
+ * refreshed in place.
+ */
+export class AttributesPanelView {
+  readonly #view: EditorView;
+  readonly #panelEl: HTMLElement;
+  readonly #editableAttrs: Record<string, ReadonlySet<string>>;
+  /** Signature of the currently rendered chain; `'\u0000'` forces the first render. */
+  #signature = '\u0000';
 
-const buildField = (
-  view: EditorView,
-  entry: ChainEntry,
-  key: string,
-  value: unknown,
-  readOnly: boolean,
-): HTMLLabelElement => {
-  const label = document.createElement('label');
-  label.style.display = 'contents';
+  constructor(view: EditorView, panelEl: HTMLElement, editableAttrs: Record<string, ReadonlySet<string>>) {
+    this.#view = view;
+    this.#panelEl = panelEl;
+    this.#editableAttrs = editableAttrs;
+    this.#sync();
+  }
 
-  const span = document.createElement('span');
-  span.textContent = key;
-  label.appendChild(span);
+  /** PluginView contract: called after every editor update. */
+  update(): void {
+    this.#sync();
+  }
 
-  const input = document.createElement('input');
-  input.dataset.attrKey = key;
-  input.disabled = readOnly;
-
-  // Type-aware field: boolean attrs render as a checkbox, everything else as a
-  // text input. The stored value type is preserved on write (boolean ↔ string).
-  if (typeof value === 'boolean') {
-    input.type = 'checkbox';
-    input.checked = value;
-    if (!readOnly) {
-      input.addEventListener('change', () => {
-        applyAttrChange(view, entry, key, input.checked);
-      });
+  /**
+   * Reconcile the panel with the current selection. Full re-render when the
+   * ancestor chain changes; otherwise refresh unfocused input values in place.
+   */
+  #sync(): void {
+    const chain = collectAncestorChain(this.#view.state);
+    const nextSignature = chainSignature(chain);
+    if (nextSignature !== this.#signature) {
+      this.#signature = nextSignature;
+      this.#render(chain);
+      return;
     }
-  } else {
-    input.type = 'text';
-    input.value = value == null ? '' : String(value);
-    if (!readOnly) {
-      // `change` fires when editing finishes (blur/Enter), so each edit commits
-      // a single transaction rather than one per keystroke.
-      input.addEventListener('change', () => {
-        applyAttrChange(view, entry, key, input.value === '' ? null : input.value);
-      });
+    // Same chain — refresh values of inputs that are not currently focused.
+    const sections = this.#panelEl.querySelectorAll('fieldset');
+    chain.forEach((entry, index) => {
+      const section = sections[index];
+      if (!section) return;
+      for (const [key, value] of Object.entries(entry.attrs)) {
+        const input = section.querySelector<HTMLInputElement>(`input[data-attr-key="${key}"]`);
+        if (!input || input === document.activeElement) continue;
+        if (input.type === 'checkbox') {
+          input.checked = Boolean(value);
+        } else {
+          input.value = value == null ? '' : String(value);
+        }
+      }
+    });
+  }
+
+  /** Render the stacked attributes panel for the given ancestor chain. */
+  #render(chain: ChainEntry[]): void {
+    this.#panelEl.replaceChildren();
+
+    const title = document.createElement('h3');
+    title.textContent = 'Attributes';
+    this.#panelEl.appendChild(title);
+
+    if (chain.length === 0) {
+      const empty = document.createElement('p');
+      empty.textContent = 'Place the cursor on a node with attributes.';
+      this.#panelEl.appendChild(empty);
+      return;
+    }
+
+    for (const entry of chain) {
+      this.#panelEl.appendChild(this.#buildSection(entry));
     }
   }
 
-  label.appendChild(input);
-  return label;
-};
+  #buildSection(entry: ChainEntry): HTMLElement {
+    const editableAttrs = this.#editableAttrs[entry.type];
+    const section = document.createElement('fieldset');
+    section.dataset.nodeType = entry.type;
+    section.style.cssText = 'display:grid; grid-template-columns:auto 1fr; gap:6px 10px; align-items:center;';
 
-const buildSection = (
-  view: EditorView,
-  entry: ChainEntry,
-  editableAttrs: ReadonlySet<string> | undefined,
-): HTMLElement => {
-  const section = document.createElement('fieldset');
-  section.dataset.nodeType = entry.type;
-  section.style.cssText = 'display:grid; grid-template-columns:auto 1fr; gap:6px 10px; align-items:center;';
+    const legend = document.createElement('legend');
+    legend.textContent = entry.type;
+    section.appendChild(legend);
 
-  const legend = document.createElement('legend');
-  legend.textContent = entry.type;
-  section.appendChild(legend);
-
-  for (const [key, value] of Object.entries(entry.attrs)) {
-    // No allowlist for this node type → every attribute is editable.
-    const readOnly = editableAttrs ? !editableAttrs.has(key) : false;
-    section.appendChild(buildField(view, entry, key, value, readOnly));
-  }
-  return section;
-};
-
-/** Render the stacked attributes panel for the current selection. */
-const renderAttrsPanel = (
-  view: EditorView,
-  panelEl: HTMLElement,
-  editableAttrs: Record<string, ReadonlySet<string>>,
-): void => {
-  const chain = collectAncestorChain(view.state);
-  panelEl.replaceChildren();
-
-  const title = document.createElement('h3');
-  title.textContent = 'Attributes';
-  panelEl.appendChild(title);
-
-  if (chain.length === 0) {
-    const empty = document.createElement('p');
-    empty.textContent = 'Place the cursor on a node with attributes.';
-    panelEl.appendChild(empty);
-    return;
+    for (const [key, value] of Object.entries(entry.attrs)) {
+      // No allowlist for this node type → every attribute is editable.
+      const readOnly = editableAttrs ? !editableAttrs.has(key) : false;
+      section.appendChild(this.#buildField(entry, key, value, readOnly));
+    }
+    return section;
   }
 
-  for (const entry of chain) {
-    panelEl.appendChild(buildSection(view, entry, editableAttrs[entry.type]));
+  #buildField(entry: ChainEntry, key: string, value: unknown, readOnly: boolean): HTMLLabelElement {
+    const label = document.createElement('label');
+    label.style.display = 'contents';
+
+    const span = document.createElement('span');
+    span.textContent = key;
+    label.appendChild(span);
+
+    const input = document.createElement('input');
+    input.dataset.attrKey = key;
+    input.disabled = readOnly;
+
+    // Type-aware field: boolean attrs render as a checkbox, everything else as a
+    // text input. The stored value type is preserved on write (boolean ↔ string).
+    if (typeof value === 'boolean') {
+      input.type = 'checkbox';
+      input.checked = value;
+      if (!readOnly) {
+        input.addEventListener('change', () => {
+          this.#applyAttrChange(entry, key, input.checked);
+        });
+      }
+    } else {
+      input.type = 'text';
+      input.value = value == null ? '' : String(value);
+      if (!readOnly) {
+        // `change` fires when editing finishes (blur/Enter), so each edit commits
+        // a single transaction rather than one per keystroke.
+        input.addEventListener('change', () => {
+          this.#applyAttrChange(entry, key, input.value === '' ? null : input.value);
+        });
+      }
+    }
+
+    label.appendChild(input);
+    return label;
   }
-};
+
+  /** Apply an attribute change to a node (or the doc) via a transaction. */
+  #applyAttrChange(entry: ChainEntry, key: string, value: unknown): void {
+    const tr = entry.isDoc
+      ? this.#view.state.tr.setDocAttribute(key, value)
+      : this.#view.state.tr.setNodeAttribute(entry.pos, key, value);
+    this.#view.dispatch(tr);
+  }
+}
 
 /**
- * Plugin that keeps the side panel in sync with the selection. It only fully
- * re-renders when the ancestor chain (types + positions) changes, so typing into
- * a field never steals focus; otherwise field values are refreshed in place.
+ * Plugin that keeps the side panel in sync with the selection via an
+ * {@link AttributesPanelView}. Thin factory wrapper — normalizes the editable
+ * allowlist to sets and wires the view.
  *
  * @param panelEl The host element to render the panel into.
  * @param options Editable-attribute allowlist.
@@ -195,36 +240,6 @@ export const attributesPanelPlugin = (panelEl: HTMLElement, options: AttributesP
   );
 
   return new Plugin({
-    view: (view: EditorView) => {
-      let signature = '\u0000'; // force initial render
-
-      const sync = () => {
-        const chain = collectAncestorChain(view.state);
-        const nextSignature = chainSignature(chain);
-        if (nextSignature !== signature) {
-          signature = nextSignature;
-          renderAttrsPanel(view, panelEl, editableAttrs);
-          return;
-        }
-        // Same chain — refresh values of inputs that are not currently focused.
-        const sections = panelEl.querySelectorAll('fieldset');
-        chain.forEach((entry, index) => {
-          const section = sections[index];
-          if (!section) return;
-          for (const [key, value] of Object.entries(entry.attrs)) {
-            const input = section.querySelector<HTMLInputElement>(`input[data-attr-key="${key}"]`);
-            if (!input || input === document.activeElement) continue;
-            if (input.type === 'checkbox') {
-              input.checked = Boolean(value);
-            } else {
-              input.value = value == null ? '' : String(value);
-            }
-          }
-        });
-      };
-
-      sync();
-      return { update: sync };
-    },
+    view: (view: EditorView) => new AttributesPanelView(view, panelEl, editableAttrs),
   });
 };
