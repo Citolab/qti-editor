@@ -18,11 +18,19 @@
       <button id="export-btn" type="button" disabled>Download item.xml</button>
     </header>
     <main id="app">
-      <aside id="attributes-panel" aria-label="Attributes"></aside>
       <section id="editor-pane">
         <div id="editor-host"></div>
       </section>
-      <select id="item-list" size="10" aria-label="QTI items"></select>
+      <aside id="sidebar" aria-label="Tools">
+        <details name="sidebar" open>
+          <summary>Items</summary>
+          <select id="item-list" size="10" aria-label="QTI items"></select>
+        </details>
+        <details name="sidebar">
+          <summary>Attributes</summary>
+          <div id="attributes-panel" aria-label="Attributes"></div>
+        </details>
+      </aside>
     </main>
   </body>
 </html>
