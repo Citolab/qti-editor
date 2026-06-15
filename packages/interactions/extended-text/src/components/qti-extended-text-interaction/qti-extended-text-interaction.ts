@@ -1,5 +1,6 @@
 import { css, html } from 'lit';
 import { property } from 'lit/decorators.js';
+import { styleMap } from 'lit/directives/style-map.js';
 import { Interaction } from '@qti-editor/interaction-shared/components/interaction.js';
 
 import styles from '@qti-components/extended-text-interaction/styles';
@@ -16,13 +17,13 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
 
         /* QTI height classes for expectedLines support */
         :host(.qti-height-lines-3) [part="textarea"] {
-          min-height: calc(3 * 1.5em + 1rem);
+          min-height: calc(3 * 1lh + 1rem);
         }
         :host(.qti-height-lines-6) [part="textarea"] {
-          min-height: calc(6 * 1.5em + 1rem);
+          min-height: calc(6 * 1lh + 1rem);
         }
         :host(.qti-height-lines-15) [part="textarea"] {
-          min-height: calc(15 * 1.5em + 1rem);
+          min-height: calc(15 * 1lh + 1rem);
         }
 
         /* Lighten placeholder text */
@@ -40,6 +41,9 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
 
   @property({ type: Number, attribute: 'expected-lines' })
   expectedLines: number | null = null;
+
+  @property({ type: Number })
+  rows: number | null = null;
 
   @property({ type: String, attribute: 'placeholder-text' })
   placeholderText: string | null = null;
@@ -74,6 +78,11 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
   }
 
   override render() {
-    return html`<slot name="prompt"></slot><div part="textarea">${this._getPlaceholderText()}</div>`;
+    const textareaStyles = styleMap(
+      this.rows != null ? { minHeight: `calc(${this.rows} * 1lh + 1rem)` } : {}
+    );
+    return html`<slot name="prompt"></slot><div part="textarea" style=${textareaStyles}>
+      ${this._getPlaceholderText()}
+    </div>`;
   }
 }
