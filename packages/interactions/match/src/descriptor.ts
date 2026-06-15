@@ -32,7 +32,6 @@ export const matchInteractionDescriptor = {
     { name: 'qtiSimpleAssociableChoiceParagraph', spec: qtiSimpleAssociableChoiceParagraphNodeSpec },
   ],
   insertCommand: insertMatchInteraction,
-  keyboardShortcut: 'Mod-Shift-m',
   enterCommand: insertSimpleAssociableChoiceOnEnter,
   composerMetadata: matchInteractionComposerMetadata,
   composerHandler: matchComposerHandler,

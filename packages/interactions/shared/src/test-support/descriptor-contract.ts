@@ -39,11 +39,6 @@ export function assertInteractionDescriptorContract(descriptor: InteractionDescr
   expect(descriptor.composerMetadata.tagName).toBe(descriptor.tagName);
   expect(descriptor.composerMetadata.nodeTypeName).toBe(descriptor.nodeTypeName);
 
-  if (descriptor.keyboardShortcut) {
-    expect(descriptor.keyboardShortcut.length).toBeGreaterThan(0);
-    expect(descriptor.insertCommand).toBeDefined();
-  }
-
   for (const createPlugin of descriptor.pluginFactories ?? []) {
     const plugin = createPlugin();
     expect(plugin).toBeDefined();

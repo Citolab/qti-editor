@@ -27,7 +27,6 @@ export const associateInteractionDescriptor = {
     { name: 'qtiSimpleAssociableChoiceParagraph', spec: qtiSimpleAssociableChoiceParagraphNodeSpec },
   ],
   insertCommand: insertAssociateInteraction,
-  keyboardShortcut: 'Mod-Shift-a',
   enterCommand: qtiAssociateEnterCommand,
   composerMetadata: associateInteractionComposerMetadata,
   composerHandler: associateComposerHandler,

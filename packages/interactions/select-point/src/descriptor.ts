@@ -22,7 +22,6 @@ export const selectPointInteractionDescriptor = {
     { name: 'imgSelectPoint', spec: imgSelectPointNodeSpec },
   ],
   insertCommand: insertSelectPointInteraction,
-  keyboardShortcut: 'Mod-Shift-p',
   composerMetadata: selectPointInteractionComposerMetadata,
   composerHandler: selectPointComposerHandler,
   attributePanelMetadata: selectPointNodeAttributePanelMetadataByNodeTypeName,

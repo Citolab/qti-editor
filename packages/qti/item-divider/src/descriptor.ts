@@ -33,7 +33,6 @@ export const qtiItemDividerDescriptor = {
     { name: 'qtiItemDivider', spec: qtiItemDividerNodeSpec },
   ],
   insertCommand: insertItemDivider,
-  keyboardShortcut: 'Mod-Shift-d', // Ctrl/Cmd + Shift + D to insert divider
   // No composer metadata - this doesn't map to a QTI interaction element
   composerMetadata: {
     tagName: 'qti-item-divider',

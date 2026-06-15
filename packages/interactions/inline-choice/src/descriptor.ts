@@ -24,7 +24,6 @@ export const inlineChoiceInteractionDescriptor = {
   ],
   pluginFactories: [createInlineChoiceCorrectResponseClickPlugin],
   insertCommand: insertInlineChoiceInteraction,
-  keyboardShortcut: 'Mod-Shift-l',
   enterCommand: insertInlineChoiceOnEnter,
   backspaceCommand: deleteInlineChoiceOnBackspace,
   composerMetadata: inlineChoiceInteractionComposerMetadata,

@@ -20,7 +20,6 @@ export const extendedTextInteractionDescriptor = {
     { name: 'qtiPromptParagraph', spec: qtiPromptParagraphNodeSpec },
   ],
   insertCommand: insertExtendedTextInteraction,
-  keyboardShortcut: 'Mod-Shift-e',
   composerMetadata: extendedTextInteractionComposerMetadata,
   composerHandler: extendedTextComposerHandler,
   attributePanelMetadata: extendedTextNodeAttributePanelMetadataByNodeTypeName,

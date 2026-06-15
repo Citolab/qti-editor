@@ -23,7 +23,6 @@ export const orderInteractionDescriptor = {
     { name: 'qtiSimpleChoiceParagraph', spec: qtiSimpleChoiceParagraphNodeSpec },
   ],
   insertCommand: insertOrderInteraction,
-  keyboardShortcut: 'Mod-Shift-o',
   composerMetadata: orderInteractionComposerMetadata,
   composerHandler: orderComposerHandler,
   attributePanelMetadata: orderNodeAttributePanelMetadataByNodeTypeName,

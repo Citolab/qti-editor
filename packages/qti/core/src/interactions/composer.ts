@@ -79,7 +79,6 @@ const qtiItemDividerDescriptor: InteractionDescriptor = {
   nodeTypeName: 'qtiItemDivider',
   nodeSpecs: [{ name: 'qtiItemDivider', spec: qtiItemDividerNodeSpec }],
   insertCommand: insertItemDivider,
-  keyboardShortcut: 'Mod-Shift-d',
   composerMetadata: {
     tagName: 'qti-item-divider',
     nodeTypeName: 'qtiItemDivider',

@@ -24,7 +24,6 @@ export const choiceInteractionDescriptor = {
     { name: 'qtiSimpleChoiceParagraph', spec: qtiSimpleChoiceParagraphNodeSpec },
   ],
   insertCommand: insertChoiceInteraction,
-  keyboardShortcut: 'Mod-Shift-q',
   enterCommand: insertSimpleChoiceOnEnter,
   composerMetadata: choiceInteractionComposerMetadata,
   composerHandler: choiceComposerHandler,

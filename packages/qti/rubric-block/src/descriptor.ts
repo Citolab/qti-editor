@@ -24,7 +24,6 @@ export const qtiRubricBlockDescriptor = {
     { name: 'qtiRubricBlock', spec: qtiRubricBlockNodeSpec },
   ],
   insertCommand: insertRubricBlock,
-  keyboardShortcut: 'Mod-Shift-r',
   composerMetadata: {
     tagName: 'qti-rubric-block',
     nodeTypeName: 'qtiRubricBlock',

@@ -13,7 +13,6 @@ export const textEntryInteractionDescriptor = {
     { name: 'qtiTextEntryInteraction', spec: qtiTextEntryInteractionNodeSpec },
   ],
   insertCommand: insertTextEntryInteraction,
-  keyboardShortcut: 'Mod-Shift-t',
   composerMetadata: textEntryInteractionComposerMetadata,
   composerHandler: textEntryComposerHandler,
   attributePanelMetadata: textEntryNodeAttributePanelMetadataByNodeTypeName,

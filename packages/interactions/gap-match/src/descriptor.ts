@@ -26,7 +26,6 @@ export const gapMatchInteractionDescriptor = {
   pluginFactories: [createGapMatchNodeViewPlugin],
   insertCommand: insertGapMatchInteraction,
   enterCommand: qtiGapMatchEnterCommand,
-  keyboardShortcut: 'Mod-Shift-g',
   composerMetadata: gapMatchInteractionComposerMetadata,
   composerHandler: gapMatchComposerHandler,
   attributePanelMetadata: gapMatchNodeAttributePanelMetadataByNodeTypeName,

@@ -20,7 +20,6 @@ export const hottextInteractionDescriptor = {
   ],
   pluginFactories: [createHottextWrapSelectionPlugin, createHottextSelectedDecorationsPlugin],
   insertCommand: insertHottextInteraction,
-  keyboardShortcut: 'Mod-Shift-h',
   composerMetadata: hottextInteractionComposerMetadata,
   composerHandler: hottextComposerHandler,
   attributePanelMetadata: hottextNodeAttributePanelMetadataByNodeTypeName,

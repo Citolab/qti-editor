@@ -46,8 +46,6 @@ export interface InteractionDescriptor {
   baseSchemaDependencies?: InteractionBaseSchemaDependencies;
   /** Command to insert this interaction at the current selection. */
   insertCommand?: Command;
-  /** Keyboard shortcut bound to `insertCommand`, e.g. `'Mod-Shift-q'`. */
-  keyboardShortcut?: string;
   /**
    * Command run on Enter within this interaction, e.g. to append a new choice.
    * Multiple interactions may provide this; they are tried in registration order.

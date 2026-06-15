@@ -59,12 +59,6 @@ export function defineQtiInteractionsExtension() {
       backspaceCommands.some(cmd => cmd(state, dispatch, view));
   }
 
-  for (const descriptor of descriptors) {
-    if (descriptor.insertCommand && descriptor.keyboardShortcut) {
-      keymap[descriptor.keyboardShortcut] = descriptor.insertCommand;
-    }
-  }
-
   const pluginExtensions = listInteractionPluginFactories().map(pluginFactory => definePlugin(pluginFactory));
 
   return union(...nodeSpecExtensions, defineKeymap(keymap), ...pluginExtensions);
