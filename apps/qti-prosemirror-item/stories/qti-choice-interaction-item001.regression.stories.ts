@@ -1,9 +1,9 @@
 /**
- * Pure-ProseMirror QTI roundtrip regression for ITEM005 (extended text).
+ * Pure-ProseMirror QTI roundtrip regression.
  *
- *   ITEM005.xml (raw import)
+ *   ITEM001.xml (raw import)
  *     → qtiTransformItem().parse  (parse XML)
- *     → roundtripExtendedText     (hoist correct-response/score onto interactions)
+ *     → roundtripChoice          (hoist correct-response/score onto interactions)
  *     → roundtripXmlToPm   (import item-body + doc attrs into the PM doc)
  *     → pmToRoundtripXml   (export PM doc back to the editor-origin item-body)
  *     → buildSingleAssessmentItemXml (compose the complete QTI assessment item)
@@ -22,22 +22,23 @@ import { EditorView } from 'prosemirror-view';
 import { nodes, marks } from 'prosemirror-schema-basic';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
-import { roundtripExtendedText, roundtripItemBody } from '@qti-editor/qti3-item-import';
+import { roundtripChoice, roundtripItemBody } from '@qti-editor/qti3-item-import';
 import { exportItemXml, importItemFromString } from '@qti-editor/qti-item-roundtrip';
 import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 
-import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
-import { attributesPanelPlugin } from '../../../extensions/prosemirror/src/attributes-panel/index';
-import { extendedTextInteractionDescriptor } from './descriptor';
-import './register';
-import '../../shared/src/components/qti-prompt/register';
+import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-plugins';
+import { choiceInteractionDescriptor } from '@qti-editor/interaction-choice';
+import '@qti-editor/interaction-choice/register.js';
+import '@qti-editor/interaction-shared/components/qti-prompt/register.js';
+import '@qti-editor/interaction-shared/components/qti-simple-choice/register.js';
+import { attributesPanelPlugin } from '../src/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';
-import sourceXML from '../../../../public/qti/kennisnet/ITEM005.xml?raw';
+import sourceXML from '../assets/qti/kennisnet/ITEM001.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 const qtiNodes = Object.fromEntries(
-  [...extendedTextInteractionDescriptor.nodeSpecs, ...qtiRubricBlockDescriptor.nodeSpecs].map(({ name, spec }) => [
+  [...choiceInteractionDescriptor.nodeSpecs, ...qtiRubricBlockDescriptor.nodeSpecs].map(({ name, spec }) => [
     name,
     spec
   ])
@@ -45,7 +46,7 @@ const qtiNodes = Object.fromEntries(
 
 const baseNodes = { ...nodes, ...qtiNodes };
 
-/** The editor schema used for the ITEM005 roundtrip. */
+/** The editor schema used for the ITEM001 roundtrip. */
 export const schema = new Schema({
   nodes: {
     ...baseNodes,
@@ -61,14 +62,31 @@ export const schema = new Schema({
   marks
 });
 
-/** Minimal plugin set: base keymap and block-select. */
-const editorPlugins: Plugin[] = [keymap(baseKeymap), blockSelectPlugin];
+/** Minimal plugin set: enter/base keymaps, node-attrs sync (applies correct-response clicks) and block-select. */
+const editorPlugins: Plugin[] = [
+  keymap({ Enter: choiceInteractionDescriptor.enterCommand }),
+  keymap(baseKeymap),
+  nodeAttrsSyncPlugin,
+  blockSelectPlugin
+];
 
-/** Import ITEM005.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
-export const importItem005 = (): ProseMirrorNode =>
+// Editable-attribute allowlist for the panel, sourced from the interaction's
+// attribute-panel metadata (`editableAttributes`), keyed by node type. Attributes
+// outside a node type's list (e.g. the interaction's `correctResponse`/`maxChoices`,
+// or a simple choice's `identifier`) are rendered disabled. Node types without an
+// entry stay fully editable.
+const EDITABLE_ATTRS = Object.fromEntries(
+  Object.values(choiceInteractionDescriptor.attributePanelMetadata ?? {}).map(metadata => [
+    metadata.nodeTypeName,
+    metadata.editableAttributes ?? []
+  ])
+);
+
+/** Import ITEM001.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
+export const importItem001 = (): ProseMirrorNode =>
   importItemFromString(sourceXML, schema, {
     assetBasePath: '/qti/kennisnet',
-    transforms: [roundtripExtendedText, roundtripItemBody]
+    transforms: [roundtripChoice, roundtripItemBody]
   });
 
 /**
@@ -79,14 +97,14 @@ export const importItem005 = (): ProseMirrorNode =>
 export const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document =>
   new DOMParser().parseFromString(exportItemXml(doc, schema), 'application/xml');
 
-/** Mount the ITEM005 editor into `container`, optionally wiring the attributes panel. */
+/** Mount the ITEM001 editor into `container`, optionally wiring the attributes panel. */
 export const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLElement } = {}): EditorView => {
   const plugins = options.panelEl
-    ? [...editorPlugins, attributesPanelPlugin(options.panelEl)]
+    ? [...editorPlugins, attributesPanelPlugin(options.panelEl, { editableAttrs: EDITABLE_ATTRS })]
     : editorPlugins;
 
   const view = new EditorView(container, {
-    state: EditorState.create({ doc: importItem005(), schema, plugins }),
+    state: EditorState.create({ doc: importItem001(), schema, plugins }),
     dispatchTransaction(tr) {
       view.updateState(view.state.apply(tr));
     }
@@ -98,11 +116,11 @@ const meta: Meta = {
   title: 'QTI ProseMirror/Roundtrip Regression',
   // These exports are the reusable import/export pipeline (consumed by the
   // regression test), not stories.
-  excludeStories: ['schema', 'importItem005', 'exportAssessmentItemDoc', 'mountEditor']
+  excludeStories: ['schema', 'importItem001', 'exportAssessmentItemDoc', 'mountEditor']
 };
 export default meta;
 
-export const RoundtripItem005: StoryObj = {
+export const RoundtripItem001: StoryObj = {
   render: () => {
     let panelEl: HTMLElement | null = null;
     return html`

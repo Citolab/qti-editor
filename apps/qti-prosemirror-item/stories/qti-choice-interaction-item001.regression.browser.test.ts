@@ -7,7 +7,7 @@ import {
   importItem001,
   mountEditor,
 } from './qti-choice-interaction-item001.regression.stories';
-import assertedXML from '../../../../public/qti/kennisnet/ITEM001-editor.xml?raw';
+import assertedXML from '../assets/qti/kennisnet/ITEM001-editor.xml?raw';
 
 test('exported QTI matches the imported ITEM001-editor.xml', () => {
   // Pure pipeline — no rendering needed: import ITEM001 → export → compare.
@@ -216,5 +216,3 @@ test('attributes panel renders qti-choice-interaction shuffle as a checkbox that
   host.remove();
   panel.remove();
 });
-
-

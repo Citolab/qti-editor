@@ -54,7 +54,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'browser',
-          include: ['packages/**/src/**/*.browser.test.ts', 'apps/**/src/**/*.browser.test.ts'],
+          include: ['packages/**/src/**/*.browser.test.ts', 'apps/**/*.browser.test.ts'],
           setupFiles: ['./tools/testing/setup/vitest.js'],
           browser: {
             enabled: true,

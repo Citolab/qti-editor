@@ -1,9 +1,9 @@
 /**
- * Pure-ProseMirror QTI roundtrip regression.
+ * Pure-ProseMirror QTI roundtrip regression for ITEM005 (extended text).
  *
- *   ITEM001.xml (raw import)
+ *   ITEM005.xml (raw import)
  *     → qtiTransformItem().parse  (parse XML)
- *     → roundtripChoice          (hoist correct-response/score onto interactions)
+ *     → roundtripExtendedText     (hoist correct-response/score onto interactions)
  *     → roundtripXmlToPm   (import item-body + doc attrs into the PM doc)
  *     → pmToRoundtripXml   (export PM doc back to the editor-origin item-body)
  *     → buildSingleAssessmentItemXml (compose the complete QTI assessment item)
@@ -22,24 +22,22 @@ import { EditorView } from 'prosemirror-view';
 import { nodes, marks } from 'prosemirror-schema-basic';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
-import { roundtripChoice, roundtripItemBody } from '@qti-editor/qti3-item-import';
+import { roundtripExtendedText, roundtripItemBody } from '@qti-editor/qti3-item-import';
 import { exportItemXml, importItemFromString } from '@qti-editor/qti-item-roundtrip';
 import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 
-import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
-import { attributesPanelPlugin } from '../../../extensions/prosemirror/src/attributes-panel/index';
-import { nodeAttrsSyncPlugin } from '../../../extensions/prosemirror/src/node-attrs-sync/node-attrs-sync-plugin';
-import { choiceInteractionDescriptor } from './descriptor';
-import './register';
-import '../../shared/src/components/qti-prompt/register';
-import '../../shared/src/components/qti-simple-choice/register';
+import { blockSelectPlugin } from '@qti-editor/prosemirror-plugins';
+import { extendedTextInteractionDescriptor } from '@qti-editor/interaction-extended-text';
+import '@qti-editor/interaction-extended-text/register.js';
+import '@qti-editor/interaction-shared/components/qti-prompt/register.js';
+import { attributesPanelPlugin } from '../src/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';
-import sourceXML from '../../../../public/qti/kennisnet/ITEM001.xml?raw';
+import sourceXML from '../assets/qti/kennisnet/ITEM005.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 const qtiNodes = Object.fromEntries(
-  [...choiceInteractionDescriptor.nodeSpecs, ...qtiRubricBlockDescriptor.nodeSpecs].map(({ name, spec }) => [
+  [...extendedTextInteractionDescriptor.nodeSpecs, ...qtiRubricBlockDescriptor.nodeSpecs].map(({ name, spec }) => [
     name,
     spec
   ])
@@ -47,7 +45,7 @@ const qtiNodes = Object.fromEntries(
 
 const baseNodes = { ...nodes, ...qtiNodes };
 
-/** The editor schema used for the ITEM001 roundtrip. */
+/** The editor schema used for the ITEM005 roundtrip. */
 export const schema = new Schema({
   nodes: {
     ...baseNodes,
@@ -63,31 +61,14 @@ export const schema = new Schema({
   marks
 });
 
-/** Minimal plugin set: enter/base keymaps, node-attrs sync (applies correct-response clicks) and block-select. */
-const editorPlugins: Plugin[] = [
-  keymap({ Enter: choiceInteractionDescriptor.enterCommand }),
-  keymap(baseKeymap),
-  nodeAttrsSyncPlugin,
-  blockSelectPlugin
-];
+/** Minimal plugin set: base keymap and block-select. */
+const editorPlugins: Plugin[] = [keymap(baseKeymap), blockSelectPlugin];
 
-// Editable-attribute allowlist for the panel, sourced from the interaction's
-// attribute-panel metadata (`editableAttributes`), keyed by node type. Attributes
-// outside a node type's list (e.g. the interaction's `correctResponse`/`maxChoices`,
-// or a simple choice's `identifier`) are rendered disabled. Node types without an
-// entry stay fully editable.
-const EDITABLE_ATTRS = Object.fromEntries(
-  Object.values(choiceInteractionDescriptor.attributePanelMetadata ?? {}).map(metadata => [
-    metadata.nodeTypeName,
-    metadata.editableAttributes ?? []
-  ])
-);
-
-/** Import ITEM001.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
-export const importItem001 = (): ProseMirrorNode =>
+/** Import ITEM005.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
+export const importItem005 = (): ProseMirrorNode =>
   importItemFromString(sourceXML, schema, {
     assetBasePath: '/qti/kennisnet',
-    transforms: [roundtripChoice, roundtripItemBody]
+    transforms: [roundtripExtendedText, roundtripItemBody]
   });
 
 /**
@@ -98,14 +79,14 @@ export const importItem001 = (): ProseMirrorNode =>
 export const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document =>
   new DOMParser().parseFromString(exportItemXml(doc, schema), 'application/xml');
 
-/** Mount the ITEM001 editor into `container`, optionally wiring the attributes panel. */
+/** Mount the ITEM005 editor into `container`, optionally wiring the attributes panel. */
 export const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLElement } = {}): EditorView => {
   const plugins = options.panelEl
-    ? [...editorPlugins, attributesPanelPlugin(options.panelEl, { editableAttrs: EDITABLE_ATTRS })]
+    ? [...editorPlugins, attributesPanelPlugin(options.panelEl)]
     : editorPlugins;
 
   const view = new EditorView(container, {
-    state: EditorState.create({ doc: importItem001(), schema, plugins }),
+    state: EditorState.create({ doc: importItem005(), schema, plugins }),
     dispatchTransaction(tr) {
       view.updateState(view.state.apply(tr));
     }
@@ -117,11 +98,11 @@ const meta: Meta = {
   title: 'QTI ProseMirror/Roundtrip Regression',
   // These exports are the reusable import/export pipeline (consumed by the
   // regression test), not stories.
-  excludeStories: ['schema', 'importItem001', 'exportAssessmentItemDoc', 'mountEditor']
+  excludeStories: ['schema', 'importItem005', 'exportAssessmentItemDoc', 'mountEditor']
 };
 export default meta;
 
-export const RoundtripItem001: StoryObj = {
+export const RoundtripItem005: StoryObj = {
   render: () => {
     let panelEl: HTMLElement | null = null;
     return html`

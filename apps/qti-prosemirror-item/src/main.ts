@@ -22,8 +22,9 @@ import { history, undo, redo } from 'prosemirror-history';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
 import { menuBar, MenuItem, liftItem, selectParentNodeItem, undoItem, redoItem, type MenuElement } from 'prosemirror-menu';
-import { attributesPanelPlugin, blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-plugins';
+import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-plugins';
 
+import { attributesPanelPlugin } from './attributes-panel-plugin.js';
 import { schema, editableAttrs, qtiPlugins, loadQtiItems, importQtiItem, exportQtiItem } from './prosemirror-qti.js';
 
 import 'prosemirror-view/style/prosemirror.css';

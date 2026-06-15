@@ -28,17 +28,16 @@ import { buildSingleAssessmentItemXml, formatXml } from '@qti-editor/core/compos
 
 import { qtiTransformItem } from '@qti-components/transformers';
 
-import { pmToRoundtripXml } from '../../shared/src/pm-to-roundtrip-xml';
-import { roundtripXmlToPm } from '../../shared/src/roundtrip-xml-to-pm';
-import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
-import { attributesPanelPlugin } from '../../../extensions/prosemirror/src/attributes-panel/index';
-import { nodeAttrsSyncPlugin } from '../../../extensions/prosemirror/src/node-attrs-sync/node-attrs-sync-plugin';
-import { choiceInteractionDescriptor } from './descriptor';
-import './register';
-import '../../shared/src/components/qti-prompt/register';
-import '../../shared/src/components/qti-simple-choice/register';
+import { pmToRoundtripXml } from '@qti-editor/interaction-shared/pm-to-roundtrip-xml';
+import { roundtripXmlToPm } from '@qti-editor/interaction-shared/roundtrip-xml-to-pm';
+import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-plugins';
+import { choiceInteractionDescriptor } from '@qti-editor/interaction-choice';
+import '@qti-editor/interaction-choice/register.js';
+import '@qti-editor/interaction-shared/components/qti-prompt/register.js';
+import '@qti-editor/interaction-shared/components/qti-simple-choice/register.js';
+import { attributesPanelPlugin } from '../src/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';
-import sourceXML from '../../../../public/qti/kennisnet/ITEM002.xml?raw';
+import sourceXML from '../assets/qti/kennisnet/ITEM002.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 

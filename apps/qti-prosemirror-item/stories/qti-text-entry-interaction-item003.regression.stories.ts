@@ -26,12 +26,12 @@ import { roundtripTextEntry, roundtripItemBody } from '@qti-editor/qti3-item-imp
 import { exportItemXml, importItemFromString } from '@qti-editor/qti-item-roundtrip';
 import { qtiRubricBlockDescriptor } from '@qti-editor/qti-rubric-block';
 
-import { blockSelectPlugin } from '../../../extensions/prosemirror/src/block-select/block-select-plugin';
-import { attributesPanelPlugin } from '../../../extensions/prosemirror/src/attributes-panel/index';
-import { textEntryInteractionDescriptor } from './descriptor';
-import './register';
+import { blockSelectPlugin } from '@qti-editor/prosemirror-plugins';
+import { textEntryInteractionDescriptor } from '@qti-editor/interaction-text-entry';
+import '@qti-editor/interaction-text-entry/register.js';
+import { attributesPanelPlugin } from '../src/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';
-import sourceXML from '../../../../public/qti/kennisnet/ITEM003.xml?raw';
+import sourceXML from '../assets/qti/kennisnet/ITEM003.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 

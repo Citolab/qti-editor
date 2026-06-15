@@ -43,10 +43,6 @@
     "./attributes-ui": {
       "types": "./dist/attributes-ui/index.d.ts",
       "default": "./dist/attributes-ui/index.js"
-    },
-    "./attributes-panel": {
-      "types": "./dist/attributes-panel/index.d.ts",
-      "default": "./dist/attributes-panel/index.js"
     }
   },
   "scripts": {

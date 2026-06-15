@@ -18,4 +18,3 @@ export * from './virtual-cursor/index.js';
 export * from './node-attrs-sync/index.js';
 export * from './paste-semantic-html/index.js';
 export * from './local-storage-doc-persistence-extension/index.js';
-export * from './attributes-panel/index.js';
