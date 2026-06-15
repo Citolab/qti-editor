@@ -90,7 +90,6 @@ function mountEditor(container: HTMLElement, doc: ProseMirrorNode, panelEl: HTML
 }
 
 const itemList = document.querySelector<HTMLSelectElement>('#item-list')!;
-const editorTitle = document.querySelector<HTMLElement>('#editor-title')!;
 const editorHost = document.querySelector<HTMLElement>('#editor-host')!;
 const exportBtn = document.querySelector<HTMLButtonElement>('#export-btn')!;
 const attributesPanel = document.querySelector<HTMLElement>('#attributes-panel')!;
@@ -121,6 +120,5 @@ async function openItem(href: string): Promise<void> {
   view?.destroy();
   editorHost.innerHTML = '';
   view = mountEditor(editorHost, doc, attributesPanel);
-  editorTitle.textContent = href;
   exportBtn.disabled = false;
 }

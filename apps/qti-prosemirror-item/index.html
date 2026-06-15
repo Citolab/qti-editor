@@ -9,19 +9,20 @@
   </head>
   <body>
     <header>
-      <h1>QTI ProseMirror — Roundtrip Minimal</h1>
-      <p>Pick a Kennisnet item to import it, edit it with ProseMirror, and export it back to QTI 3.0.</p>
+      <h1>
+        Voorvertoning toets
+        <a href="https://toetsen.wikiwijs.nl/preview/4f19076e-9bb1-5886-b549-50e7da41163d">
+          link
+        </a>
+      </h1>
+      <button id="export-btn" type="button" disabled>Export QTI</button>
     </header>
     <main id="app">
-      <select id="item-list" size="10" aria-label="QTI items"></select>
+      <aside id="attributes-panel" aria-label="Attributes"></aside>
       <section id="editor-pane">
-        <div id="editor-toolbar">
-          <span id="editor-title">Select an item to start editing.</span>
-          <button id="export-btn" type="button" disabled>Export QTI</button>
-        </div>
         <div id="editor-host"></div>
       </section>
-      <aside id="attributes-panel" aria-label="Attributes"></aside>
+      <select id="item-list" size="10" aria-label="QTI items"></select>
     </main>
   </body>
 </html>
