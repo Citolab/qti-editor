@@ -21,7 +21,18 @@ import { baseKeymap, toggleMark, chainCommands } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
-import { menuBar, MenuItem, Dropdown, liftItem, selectParentNodeItem, undoItem, redoItem, type MenuElement } from 'prosemirror-menu';
+import {
+  menuBar,
+  MenuItem,
+  Dropdown,
+  liftItem,
+  selectParentNodeItem,
+  undoItem,
+  redoItem,
+  icons,
+  type IconSpec,
+  type MenuElement
+} from 'prosemirror-menu';
 import {
   orderedList,
   bulletList,
@@ -107,9 +118,9 @@ function markItem(markType: MarkType, label: string, title: string): MenuItem {
   });
 }
 
-/** A command-backed menu item that disables itself when the command can't run. */
-function cmdItem(command: Command, label: string, title: string): MenuItem {
-  return new MenuItem({ run: command, enable: state => command(state), label, title });
+/** A command-backed menu item (icon-only) that disables itself when the command can't run. */
+function cmdItem(command: Command, icon: IconSpec, title: string): MenuItem {
+  return new MenuItem({ run: command, enable: state => command(state), icon, title });
 }
 
 /** Dropdown of every registered interaction (descriptors that have an insert command). */
@@ -147,14 +158,14 @@ const menuContent: MenuElement[][] = [
   [undoItem, redoItem],
   [liftItem, selectParentNodeItem],
   [
-    cmdItem(wrapInList(schema.nodes.bullet_list), '• List', 'Wrap in bullet list'),
-    cmdItem(wrapInList(schema.nodes.ordered_list), '1. List', 'Wrap in ordered list')
+    cmdItem(wrapInList(schema.nodes.bullet_list), icons.bulletList, 'Wrap in bullet list'),
+    cmdItem(wrapInList(schema.nodes.ordered_list), icons.orderedList, 'Wrap in ordered list')
   ],
   [
-    cmdItem(insertTable, 'Table', 'Insert table'),
-    cmdItem(addRowAfter, '+Row', 'Add row after'),
-    cmdItem(addColumnAfter, '+Col', 'Add column after'),
-    cmdItem(deleteTable, '×Table', 'Delete table')
+    cmdItem(insertTable, { text: '\u25A6' }, 'Insert table'),
+    cmdItem(addRowAfter, { text: '\u2261' }, 'Add row after'),
+    cmdItem(addColumnAfter, { text: '\u2980' }, 'Add column after'),
+    cmdItem(deleteTable, { text: '\u2715' }, 'Delete table')
   ]
 ];
 
