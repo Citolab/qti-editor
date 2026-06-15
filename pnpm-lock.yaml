@@ -474,9 +474,15 @@ importers:
       prosemirror-schema-basic:
         specifier: ^1.2.4
         version: 1.2.4
+      prosemirror-schema-list:
+        specifier: ^1.5.1
+        version: 1.5.1
       prosemirror-state:
         specifier: ^1.4.4
         version: 1.4.4
+      prosemirror-tables:
+        specifier: ^1.8.5
+        version: 1.8.5
       prosemirror-view:
         specifier: 1.41.9
         version: 1.41.9

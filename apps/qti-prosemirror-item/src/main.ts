@@ -17,22 +17,73 @@
 import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { keymap } from 'prosemirror-keymap';
-import { baseKeymap, toggleMark } from 'prosemirror-commands';
+import { baseKeymap, toggleMark, chainCommands } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
 import { menuBar, MenuItem, liftItem, selectParentNodeItem, undoItem, redoItem, type MenuElement } from 'prosemirror-menu';
+import {
+  orderedList,
+  bulletList,
+  listItem,
+  splitListItem,
+  liftListItem,
+  sinkListItem,
+  wrapInList
+} from 'prosemirror-schema-list';
+import {
+  tableNodes,
+  tableEditing,
+  columnResizing,
+  goToNextCell,
+  addRowAfter,
+  addColumnAfter,
+  deleteTable
+} from 'prosemirror-tables';
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-plugins';
 
 import { attributesPanelPlugin } from './attributes-panel-plugin.js';
-import { schema, editableAttrs, qtiPlugins, loadQtiItems, importQtiItem, exportQtiItem } from './prosemirror-qti.js';
+import { createSchema, editableAttrs, qtiPlugins, loadQtiItems, importQtiItem, exportQtiItem } from './prosemirror-qti.js';
 
 import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
 import 'prosemirror-menu/style/menu.css';
+import 'prosemirror-tables/style/tables.css';
 
 import type { MarkType, Node as ProseMirrorNode } from 'prosemirror-model';
+import type { Command } from 'prosemirror-state';
 import type { Plugin } from 'prosemirror-state';
+
+// Generic (non-QTI) ProseMirror nodes: standard lists and tables.
+// `listNodes` mirrors prosemirror-schema-list's addListNodes(nodes, 'paragraph block*', 'block').
+// Lists and tables join the `richtext` group so they're allowed inside the rubric block.
+const listNodes = {
+  ordered_list: { ...orderedList, content: 'list_item+', group: 'block richtext' },
+  bullet_list: { ...bulletList, content: 'list_item+', group: 'block richtext' },
+  list_item: { ...listItem, content: 'paragraph block*' }
+};
+const tableSchemaNodes = tableNodes({ tableGroup: 'block richtext', cellContent: 'block+', cellAttributes: {} });
+
+/** The editor schema: QTI nodes (from the integration layer) + generic lists/tables. */
+const schema = createSchema({ ...listNodes, ...tableSchemaNodes });
+
+/**
+ * Standard ProseMirror list & table editing plugins (not QTI-specific): Enter
+ * splits a list item, Tab/Shift-Tab indent list items or move between table
+ * cells, plus column resizing and table cell selection/editing. These sit after
+ * `qtiPlugins` and before `keymap(baseKeymap)` so unhandled keys fall through.
+ */
+const tableListPlugins: Plugin[] = [
+  keymap({
+    Enter: splitListItem(schema.nodes.list_item),
+    Tab: chainCommands(sinkListItem(schema.nodes.list_item), goToNextCell(1)),
+    'Shift-Tab': chainCommands(liftListItem(schema.nodes.list_item), goToNextCell(-1)),
+    'Mod-[': liftListItem(schema.nodes.list_item),
+    'Mod-]': sinkListItem(schema.nodes.list_item)
+  }),
+  columnResizing(),
+  tableEditing()
+];
 
 /** A mark-toggle menu item that lights up when the mark is active. */
 function markItem(markType: MarkType, label: string, title: string): MenuItem {
@@ -48,23 +99,53 @@ function markItem(markType: MarkType, label: string, title: string): MenuItem {
   });
 }
 
-/** A tiny menu bar: bold/italic, undo/redo, plus lift / select-parent structural helpers. */
+/** A command-backed menu item that disables itself when the command can't run. */
+function cmdItem(command: Command, label: string, title: string): MenuItem {
+  return new MenuItem({ run: command, enable: state => command(state), label, title });
+}
+
+/** Insert a 3×3 table (first row as header cells) at the selection. */
+const insertTable: Command = (state, dispatch) => {
+  const { table, table_row, table_cell, table_header } = schema.nodes;
+  const cells = (cell: typeof table_cell) => Array.from({ length: 3 }, () => cell.createAndFill()!);
+  const rows = [
+    table_row.create(null, cells(table_header)),
+    table_row.create(null, cells(table_cell)),
+    table_row.create(null, cells(table_cell))
+  ];
+  if (dispatch) dispatch(state.tr.replaceSelectionWith(table.create(null, rows)).scrollIntoView());
+  return true;
+};
+
+/** A tiny menu bar: marks, undo/redo, structural helpers, lists, and tables. */
 const menuContent: MenuElement[][] = [
   [markItem(schema.marks.strong, 'B', 'Toggle bold'), markItem(schema.marks.em, 'i', 'Toggle italic')],
   [undoItem, redoItem],
-  [liftItem, selectParentNodeItem]
+  [liftItem, selectParentNodeItem],
+  [
+    cmdItem(wrapInList(schema.nodes.bullet_list), '• List', 'Wrap in bullet list'),
+    cmdItem(wrapInList(schema.nodes.ordered_list), '1. List', 'Wrap in ordered list')
+  ],
+  [
+    cmdItem(insertTable, 'Table', 'Insert table'),
+    cmdItem(addRowAfter, '+Row', 'Add row after'),
+    cmdItem(addColumnAfter, '+Col', 'Add column after'),
+    cmdItem(deleteTable, '×Table', 'Delete table')
+  ]
 ];
 
 /**
  * The plugin stack shared by every editor instance. `qtiPlugins` (the choice
- * Enter keymap + interaction plugins) are placed before `keymap(baseKeymap)` so
- * the Enter override wins; the attributes panel plugin is added per-editor in
+ * Enter keymap + interaction plugins) and `tableListPlugins` (list-split + table
+ * editing) are placed before `keymap(baseKeymap)` so their overrides win and
+ * unhandled keys fall through; the attributes panel plugin is added per-editor in
  * `mountEditor` since it needs the panel host element.
  */
 const editorPlugins: Plugin[] = [
   history(),
   keymap({ 'Mod-z': undo, 'Mod-y': redo, 'Shift-Mod-z': redo }),
   ...qtiPlugins,
+  ...tableListPlugins,
   keymap(baseKeymap),
   dropCursor(),
   gapCursor(),
@@ -98,7 +179,7 @@ let view: EditorView | null = null;
 
 exportBtn.addEventListener('click', () => {
   if (!view) return;
-  const xml = exportQtiItem(view.state.doc);
+  const xml = exportQtiItem(view.state.doc, schema);
   console.dirxml(new DOMParser().parseFromString(xml, 'application/xml').documentElement);
 });
 
@@ -115,7 +196,7 @@ itemList.addEventListener('change', () => {
 async function openItem(href: string): Promise<void> {
   attributesPanel.innerHTML = '';
 
-  const doc = await importQtiItem(href);
+  const doc = await importQtiItem(href, schema);
 
   view?.destroy();
   editorHost.innerHTML = '';

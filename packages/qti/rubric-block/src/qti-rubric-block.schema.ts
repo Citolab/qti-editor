@@ -10,15 +10,15 @@ export const QTI_RUBRIC_BLOCK_VIEW_VALUES = VIEW_VALUES;
  * QTI Rubric Block node specification.
  *
  * Authors instructions / scoring / navigation rubrics inside qti-item-body.
- * Content is restricted to paragraphs and lists (bold/italic marks via the
- * paragraph). No headings, images, tables, hard-breaks, or interactions.
+ * Content is restricted to the `richtext` group (paragraphs, lists, and tables
+ * — whichever the host schema places in that group). No interactions.
  *
  * On the wire the body is wrapped in <qti-content-body>; that wrapper is
  * pure serialization framing — it has no PM node.
  */
 export const qtiRubricBlockNodeSpec: NodeSpec = {
   group: 'block',
-  content: 'paragraph+',
+  content: 'richtext+',
   defining: true,
   // Let the gap cursor settle directly before/after the rubric block so authors
   // can place a cursor between it and an adjacent interaction (or below it at the
