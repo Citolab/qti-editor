@@ -215,7 +215,10 @@ let view: EditorView | null = null;
 exportBtn.addEventListener('click', () => {
   if (!view) return;
   const xml = exportQtiItem(view.state.doc, schema);
-  console.dirxml(new DOMParser().parseFromString(xml, 'application/xml').documentElement);
+  const url = URL.createObjectURL(new Blob([xml], { type: 'application/xml' }));
+  const link = Object.assign(document.createElement('a'), { href: url, download: 'item.xml' });
+  link.click();
+  URL.revokeObjectURL(url);
 });
 
 const items = await loadQtiItems();
