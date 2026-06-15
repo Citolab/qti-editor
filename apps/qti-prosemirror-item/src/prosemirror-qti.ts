@@ -66,7 +66,7 @@ import type { Node as ProseMirrorNode, NodeSpec } from 'prosemirror-model';
 import type { Plugin } from 'prosemirror-state';
 
 /** Every descriptor this minimal editor understands. */
-const descriptors: InteractionDescriptor[] = [
+export const descriptors: InteractionDescriptor[] = [
   choiceInteractionDescriptor,
   extendedTextInteractionDescriptor,
   textEntryInteractionDescriptor,

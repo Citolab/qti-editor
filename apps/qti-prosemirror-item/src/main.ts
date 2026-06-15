@@ -21,7 +21,7 @@ import { baseKeymap, toggleMark, chainCommands } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
-import { menuBar, MenuItem, liftItem, selectParentNodeItem, undoItem, redoItem, type MenuElement } from 'prosemirror-menu';
+import { menuBar, MenuItem, Dropdown, liftItem, selectParentNodeItem, undoItem, redoItem, type MenuElement } from 'prosemirror-menu';
 import {
   orderedList,
   bulletList,
@@ -43,7 +43,15 @@ import {
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-plugins';
 
 import { attributesPanelPlugin } from './attributes-panel-plugin.js';
-import { createSchema, editableAttrs, qtiPlugins, loadQtiItems, importQtiItem, exportQtiItem } from './prosemirror-qti.js';
+import {
+  createSchema,
+  descriptors,
+  editableAttrs,
+  qtiPlugins,
+  loadQtiItems,
+  importQtiItem,
+  exportQtiItem
+} from './prosemirror-qti.js';
 
 import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
@@ -104,6 +112,21 @@ function cmdItem(command: Command, label: string, title: string): MenuItem {
   return new MenuItem({ run: command, enable: state => command(state), label, title });
 }
 
+/** Dropdown of every registered interaction (descriptors that have an insert command). */
+const insertInteractionDropdown = new Dropdown(
+  descriptors
+    .map(descriptor => {
+      const command = descriptor.insertCommand!;
+      return new MenuItem({
+        run: command,
+        enable: state => command(state),
+        label: (descriptor.tagName),
+        title: `Insert ${(descriptor.tagName)} interaction`
+      });
+    }),
+  { label: 'Insert' }
+);
+
 /** Insert a 3×3 table (first row as header cells) at the selection. */
 const insertTable: Command = (state, dispatch) => {
   const { table, table_row, table_cell, table_header } = schema.nodes;
@@ -117,8 +140,9 @@ const insertTable: Command = (state, dispatch) => {
   return true;
 };
 
-/** A tiny menu bar: marks, undo/redo, structural helpers, lists, and tables. */
+/** A tiny menu bar: insert dropdown, marks, undo/redo, structural helpers, lists, and tables. */
 const menuContent: MenuElement[][] = [
+  [insertInteractionDropdown],
   [markItem(schema.marks.strong, 'B', 'Toggle bold'), markItem(schema.marks.em, 'i', 'Toggle italic')],
   [undoItem, redoItem],
   [liftItem, selectParentNodeItem],
