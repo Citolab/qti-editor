@@ -153,6 +153,24 @@ header h1 {
   min-height: 100%;
 }
 
+/* prosemirror-tables ships only editing affordances (resize handle, selected
+ * overlay) — visible cell borders are left to the document theme, so add them. */
+#editor-host .ProseMirror table {
+  margin: 0.5rem 0;
+}
+
+#editor-host .ProseMirror td,
+#editor-host .ProseMirror th {
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.5rem;
+}
+
+#editor-host .ProseMirror th {
+  background: var(--bg-muted);
+  font-weight: 600;
+  text-align: left;
+}
+
 /* Attributes panel */
 #attributes-panel {
   padding: 0.75rem;

@@ -49,6 +49,8 @@ import {
   goToNextCell,
   addRowAfter,
   addColumnAfter,
+  deleteRow,
+  deleteColumn,
   deleteTable
 } from 'prosemirror-tables';
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-plugins';
@@ -165,6 +167,8 @@ const menuContent: MenuElement[][] = [
     cmdItem(insertTable, { text: '\u25A6' }, 'Insert table'),
     cmdItem(addRowAfter, { text: '\u2261' }, 'Add row after'),
     cmdItem(addColumnAfter, { text: '\u2980' }, 'Add column after'),
+    cmdItem(deleteRow, { text: '\u2796\u2261' }, 'Delete row'),
+    cmdItem(deleteColumn, { text: '\u2796\u2980' }, 'Delete column'),
     cmdItem(deleteTable, { text: '\u2715' }, 'Delete table')
   ]
 ];
