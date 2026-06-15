@@ -210,9 +210,15 @@ function mountEditor(container: HTMLElement, doc: ProseMirrorNode, panelEl: HTML
 }
 
 const itemList = document.querySelector<HTMLSelectElement>('#item-list')!;
+const itemPicker = document.querySelector<HTMLDetailsElement>('#item-picker')!;
 const editorHost = document.querySelector<HTMLElement>('#editor-host')!;
 const exportBtn = document.querySelector<HTMLButtonElement>('#export-btn')!;
 const attributesPanel = document.querySelector<HTMLElement>('#attributes-panel')!;
+
+// Close the items dropdown when clicking anywhere outside it.
+document.addEventListener('pointerdown', event => {
+  if (itemPicker.open && !itemPicker.contains(event.target as Node)) itemPicker.open = false;
+});
 
 let view: EditorView | null = null;
 
@@ -233,6 +239,7 @@ itemList.innerHTML = items
 
 itemList.addEventListener('change', () => {
   if (itemList.value) void openItem(itemList.value);
+  itemPicker.open = false;
 });
 
 async function openItem(href: string): Promise<void> {

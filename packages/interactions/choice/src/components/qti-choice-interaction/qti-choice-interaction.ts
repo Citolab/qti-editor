@@ -15,7 +15,8 @@ export class QtiChoiceInteractionEdit extends ChoiceInteractionBase {
       styles,
       css`
         :host {
-          white-space: nowrap;
+          word-wrap: break-word;
+          white-space: normal;
         }
       `
     ];
@@ -64,7 +65,7 @@ export class QtiChoiceInteractionEdit extends ChoiceInteractionBase {
     this.querySelectorAll<HTMLElement & { selected?: boolean; identifier?: string }>('qti-simple-choice').forEach(
       choice => {
         if (choice.selected) selected.push(choice.identifier ?? choice.getAttribute('identifier') ?? '');
-      },
+      }
     );
 
     const correctResponse = selected.length > 0 ? selected.filter(Boolean).join(',') : null;
@@ -75,11 +76,11 @@ export class QtiChoiceInteractionEdit extends ChoiceInteractionBase {
         detail: {
           nodeType: 'qtiChoiceInteraction',
           tagName: 'qti-choice-interaction',
-          attrs: { correctResponse, maxChoices },
+          attrs: { correctResponse, maxChoices }
         },
         bubbles: true,
-        composed: true,
-      }),
+        composed: true
+      })
     );
   };
 
@@ -99,10 +100,10 @@ export class QtiChoiceInteractionEdit extends ChoiceInteractionBase {
         ? this.correctResponse.split(',')
         : Array.isArray(this.correctResponse)
           ? this.correctResponse
-          : [],
+          : []
     );
     this.querySelectorAll<HTMLElement & { setSelected?: (v: boolean) => void; identifier?: string }>(
-      'qti-simple-choice',
+      'qti-simple-choice'
     ).forEach(choice => {
       choice.setSelected?.(identifiers.has(choice.identifier ?? ''));
     });

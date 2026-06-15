@@ -56,53 +56,60 @@ header h1 {
   background: #fff;
 }
 
-/* Sidebar: details/summary acting as fake tabs (exclusive via shared name).
- * Summaries flow in a row as a tab strip; the open panel is positioned below. */
+/* Sidebar: an "Items" dropdown stacked above the always-visible attributes. */
 #sidebar {
   display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
+  flex-direction: column;
   position: relative;
-  overflow: hidden;
 }
 
-#sidebar details {
-  flex: 0 0 auto;
+/* Items dropdown: summary is the trigger; the list overlays the attributes. */
+#item-picker {
+  position: relative;
+  border-bottom: 1px solid var(--border);
 }
 
-#sidebar summary {
+#item-picker > summary {
   padding: 0.625rem 0.875rem;
   font-weight: 600;
   font-size: 0.8125rem;
   cursor: pointer;
   user-select: none;
   list-style: none;
-  border-bottom: 1px solid var(--border);
   background: var(--bg-muted);
   color: #57606a;
 }
 
-#sidebar summary::-webkit-details-marker {
+#item-picker > summary::-webkit-details-marker {
   display: none;
 }
 
-#sidebar summary:hover {
-  color: var(--accent);
+#item-picker > summary::after {
+  content: '▾';
+  float: right;
+  color: #8c959f;
 }
 
-#sidebar details[open] summary {
-  background: #fff;
+#item-picker[open] > summary {
   color: var(--accent);
   box-shadow: inset 0 -2px 0 var(--accent);
 }
 
-#sidebar details > :not(summary) {
+#item-picker[open] > summary::after {
+  content: '▴';
+}
+
+/* The open item list floats over the attributes panel below it. */
+#item-picker[open] > #item-list {
   position: absolute;
-  top: 2.5rem;
+  top: 100%;
   left: 0;
   right: 0;
-  bottom: 0;
-  overflow-y: auto;
+  z-index: 5;
+  /* max-height: 90vh; */
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
 }
 
 /* Item list */
@@ -111,6 +118,7 @@ header h1 {
   border: none;
   outline: none;
   font: inherit;
+  overflow-y: auto;
 }
 
 #item-list option {
@@ -171,10 +179,12 @@ header h1 {
   text-align: left;
 }
 
-/* Attributes panel */
+/* Attributes panel — always visible, fills the rest of the sidebar. */
 #attributes-panel {
+  flex: 1 1 auto;
   padding: 0.75rem;
   font-size: 0.8125rem;
+  overflow-y: auto;
 }
 
 #attributes-panel fieldset {
