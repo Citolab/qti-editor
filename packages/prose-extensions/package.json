@@ -76,16 +76,16 @@
   },
   "dependencies": {
     "@citolab/prose-qti": "workspace:*",
-    "lit": "^3.3.2",
-    "prosemirror-inputrules": "^1.5.1",
-    "prosemirror-model": "^1.19.0",
-    "prosemirror-schema-basic": "^1.2.4",
-    "prosemirror-schema-list": "^1.5.1",
-    "prosemirror-state": "^1.4.0",
-    "prosemirror-view": "^1.31.0"
+    "lit": "^3.3.2"
   },
   "peerDependencies": {
-    "prosekit": "^0.21.3"
+    "prosekit": "^0.21.3",
+    "prosemirror-inputrules": "^1.5.1",
+    "prosemirror-model": "^1.25.8",
+    "prosemirror-schema-basic": "^1.2.4",
+    "prosemirror-schema-list": "^1.5.1",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.41.9"
   },
   "peerDependenciesMeta": {
     "prosekit": {
