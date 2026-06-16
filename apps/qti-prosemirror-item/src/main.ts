@@ -21,7 +21,6 @@ import { baseKeymap, toggleMark, chainCommands } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
-import { createVirtualCursor } from 'prosemirror-virtual-cursor';
 import {
   menuBar,
   MenuItem,
@@ -70,11 +69,14 @@ import {
 // EXPERIMENT: lockable qti-layout-* div wrappers (non-QTI affordance).
 import { qtiLayoutDivNodeSpec, divLockPlugin } from './qti-layout-div.js';
 
+// Example app-level widget: edit a selected text-entry interaction's correct
+// response with a plain <textarea> (the package ships only the data model).
+import { textEntryWidgetPlugin } from './text-entry-widget.js';
+
 import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
 import 'prosemirror-menu/style/menu.css';
 import 'prosemirror-tables/style/tables.css';
-import 'prosemirror-virtual-cursor/style/virtual-cursor.css';
 
 import type { MarkType, Node as ProseMirrorNode } from 'prosemirror-model';
 import type { Command } from 'prosemirror-state';
@@ -190,13 +192,14 @@ const editorPlugins: Plugin[] = [
   history(),
   keymap({ 'Mod-z': undo, 'Mod-y': redo, 'Shift-Mod-z': redo }),
   ...qtiPlugins,
+  // Example: textarea widget for a selected text-entry interaction's correct response.
+  textEntryWidgetPlugin(),
   // EXPERIMENT: keep qti-layout-* divs immutable while their content stays editable.
   divLockPlugin,
   ...tableListPlugins,
   keymap(baseKeymap),
   dropCursor(),
   gapCursor(),
-  createVirtualCursor(),
   menuBar({ content: menuContent }),
   blockSelectPlugin,
   // Applies inline interaction attr edits (e.g. hottext radio clicks) that are
