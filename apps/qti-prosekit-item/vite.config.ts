@@ -8,11 +8,11 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 const require = createRequire(import.meta.url);
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const litReactiveElementRoot = dirname(require.resolve('@lit/reactive-element'));
-const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
-const qtiItemExportSrcRoot = fileURLToPath(new URL('../../packages/qti/item-export/src', import.meta.url));
-const qtiTestExportSrcRoot = fileURLToPath(new URL('../../packages/qti/test-export/src', import.meta.url));
-const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosekit/src', import.meta.url));
-const prosekitExtensionsSrcRoot = fileURLToPath(new URL('../../packages/prosekit/extensions/src', import.meta.url));
+const coreSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/core', import.meta.url));
+const qtiItemExportSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/item-export', import.meta.url));
+const qtiTestExportSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/test-export', import.meta.url));
+const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/integration', import.meta.url));
+const prosekitExtensionsSrcRoot = fileURLToPath(new URL('../../packages/prose-extensions/src/prosekit', import.meta.url));
 const qtiStylesSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/core-css/core-css.css', import.meta.url));
 const qtiInterfacesSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/interfaces/index.ts', import.meta.url));
 const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/shared', import.meta.url));
@@ -23,9 +23,9 @@ const interactionsMatchSrcRoot = fileURLToPath(new URL('../../packages/prose-qti
 const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/text-entry/src', import.meta.url));
 const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/select-point/src', import.meta.url));
 const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/inline-choice/src', import.meta.url));
-const prosemirrorPluginsSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src', import.meta.url));
-const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src/attributes', import.meta.url));
-const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src/attributes-ui', import.meta.url));
+const prosemirrorPluginsSrcRoot = fileURLToPath(new URL('../../packages/prose-extensions/src/prosemirror', import.meta.url));
+const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/prose-extensions/src/prosemirror/attributes', import.meta.url));
+const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prose-extensions/src/prosemirror/attributes-ui', import.meta.url));
 
 export default defineConfig(({ command }) => ({
   resolve: {
@@ -156,6 +156,30 @@ export default defineConfig(({ command }) => ({
       {
         find: /^@qti-editor\/prosekit-integration$/,
         replacement: `${prosekitIntegrationSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@citolab\/prose-extensions\/prosekit$/,
+        replacement: `${prosekitExtensionsSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@citolab\/prose-extensions\/prosemirror$/,
+        replacement: `${prosemirrorPluginsSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@citolab\/prose-extensions\/block-select$/,
+        replacement: `${prosemirrorPluginsSrcRoot}/block-select/index.ts`,
+      },
+      {
+        find: /^@citolab\/prose-extensions\/node-attrs-sync$/,
+        replacement: `${prosemirrorPluginsSrcRoot}/node-attrs-sync/index.ts`,
+      },
+      {
+        find: /^@citolab\/prose-extensions\/attributes$/,
+        replacement: `${prosemirrorAttributesSrcRoot}/index.ts`,
+      },
+      {
+        find: /^@citolab\/prose-extensions\/attributes-ui$/,
+        replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/index.ts`,
       },
       {
         find: /^@qti-editor\/prosekit-extensions\/marks$/,

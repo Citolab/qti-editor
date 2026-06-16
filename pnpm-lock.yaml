@@ -359,6 +359,9 @@ importers:
 
   apps/qti-prosemirror-item:
     dependencies:
+      '@citolab/prose-extensions':
+        specifier: workspace:*
+        version: link:../../packages/prose-extensions
       '@citolab/prose-qti':
         specifier: workspace:*
         version: link:../../packages/prose-qti

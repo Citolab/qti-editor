@@ -54,7 +54,7 @@ import {
   deleteColumn,
   deleteTable
 } from 'prosemirror-tables';
-import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror/plugins';
+import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
 
 import { attributesPanelPlugin } from './attributes-panel-plugin.js';
 import {

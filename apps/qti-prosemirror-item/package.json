@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@qti-components/transformers": "^1.7.1",
+    "@citolab/prose-extensions": "workspace:*",
     "@citolab/prose-qti": "workspace:*",
     "prosemirror-commands": "^1.7.1",
     "prosemirror-dropcursor": "^1.8.2",
