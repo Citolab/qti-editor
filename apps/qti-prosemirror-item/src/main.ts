@@ -81,7 +81,7 @@ import type { Plugin } from 'prosemirror-state';
 const listNodes = {
   ordered_list: { ...orderedList, content: 'list_item+', group: 'block richtext' },
   bullet_list: { ...bulletList, content: 'list_item+', group: 'block richtext' },
-  list_item: { ...listItem, content: 'paragraph block*' }
+  list_item: { ...listItem, content: 'paragraph (paragraph | bullet_list | ordered_list)*' }
 };
 const tableSchemaNodes = tableNodes({ tableGroup: 'block richtext', cellContent: 'block+', cellAttributes: {} });
 
@@ -113,7 +113,9 @@ function markItem(markType: MarkType, label: string, title: string): MenuItem {
     enable: state => !state.selection.empty,
     active: state => {
       const { from, $from, to, empty } = state.selection;
-      return empty ? !!markType.isInSet(state.storedMarks ?? $from.marks()) : state.doc.rangeHasMark(from, to, markType);
+      return empty
+        ? !!markType.isInSet(state.storedMarks ?? $from.marks())
+        : state.doc.rangeHasMark(from, to, markType);
     },
     label,
     title
@@ -127,16 +129,15 @@ function cmdItem(command: Command, icon: IconSpec, title: string): MenuItem {
 
 /** Dropdown of every registered interaction (descriptors that have an insert command). */
 const insertInteractionDropdown = new Dropdown(
-  descriptors
-    .map(descriptor => {
-      const command = descriptor.insertCommand!;
-      return new MenuItem({
-        run: command,
-        enable: state => command(state),
-        label: (descriptor.tagName),
-        title: `Insert ${(descriptor.tagName)} interaction`
-      });
-    }),
+  descriptors.map(descriptor => {
+    const command = descriptor.insertCommand!;
+    return new MenuItem({
+      run: command,
+      enable: state => command(state),
+      label: descriptor.tagName,
+      title: `Insert ${descriptor.tagName} interaction`
+    });
+  }),
   { label: 'Insert' }
 );
 
@@ -227,9 +228,7 @@ exportBtn.addEventListener('click', () => {
 
 const items = await loadQtiItems();
 
-itemList.innerHTML = items
-  .map(item => `<option value="${item.href}">${item.identifier}</option>`)
-  .join('');
+itemList.innerHTML = items.map(item => `<option value="${item.href}">${item.identifier}</option>`).join('');
 
 itemList.addEventListener('change', () => {
   if (itemList.value) void openItem(itemList.value);
