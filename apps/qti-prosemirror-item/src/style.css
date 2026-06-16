@@ -129,17 +129,6 @@ header h1 {
   overflow-y: auto;
 }
 
-/* Lay the menu bar out as a flex row so the spacer can push the trailing
- * group (lift / select-parent) to the far right. */
-#editor-pane .ProseMirror-menubar {
-  display: flex;
-  align-items: center;
-}
-
-#editor-pane .ProseMirror-menubar .menu-spacer {
-  flex: 1 1 auto;
-}
-
 #editor-host .ProseMirror {
   outline: none;
   min-height: 100%;

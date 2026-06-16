@@ -176,7 +176,6 @@ const menuContent: MenuElement[][] = [
     cmdItem(deleteColumn, { text: '\u2796\u2980' }, 'Delete column'),
     cmdItem(deleteTable, { text: '\u2715' }, 'Delete table')
   ],
-  // Pushed to the far right of the menu bar by the flexible spacer.
   [liftItem, selectParentNodeItem]
 ];
 
