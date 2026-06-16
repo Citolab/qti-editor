@@ -52,7 +52,7 @@ header h1 {
 
 #app {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px 220px;
+  grid-template-columns: minmax(0, 1fr) 320px 100px;
   gap: 1px;
   background: var(--border);
   min-height: calc(100vh - 73px);
