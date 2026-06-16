@@ -47,16 +47,16 @@ pnpm add prosekit @qti-editor/core
 All QTI interactions are pure ProseMirror plugins. No external dependencies necessary. Install the umbrella package once, then import the subpaths you need:
 
 ```bash
-pnpm add @qti-editor/interactions
+pnpm add @citolab/prose-qti/components/register
 ```
 
 | Package | Interaction type |
 |---|---|
-| `@qti-editor/interactions/choice` | `<qti-choice-interaction>` |
-| `@qti-editor/interactions/hottext` | `<qti-hottext-interaction>` |
-| `@qti-editor/interactions/inline-choice` | `<qti-inline-choice-interaction>` |
-| `@qti-editor/interactions/text-entry` | `<qti-text-entry-interaction>` |
-| `@qti-editor/interactions/select-point` | `<qti-select-point-interaction>` |
+| `@citolab/prose-qti/components/choice` | `<qti-choice-interaction>` |
+| `@citolab/prose-qti/components/hottext` | `<qti-hottext-interaction>` |
+| `@citolab/prose-qti/components/inline-choice` | `<qti-inline-choice-interaction>` |
+| `@citolab/prose-qti/components/text-entry` | `<qti-text-entry-interaction>` |
+| `@citolab/prose-qti/components/select-point` | `<qti-select-point-interaction>` |
 
 Each interaction subpath exports:
 
@@ -90,14 +90,14 @@ const plugins = [nodeAttrsSyncPlugin, ...listInteractionPluginFactories().map(fa
 For external apps, assemble a small local helper around the descriptor registry:
 
 ```typescript
+import '@citolab/prose-qti/components/register';
+import '@citolab/prose-qti/components/item-divider/register';
 import { listInteractionDescriptors, listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
-import { registerQtiInteractionElements } from '@qti-editor/prosekit-integration';
 import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
 
 import type { Command } from 'prosekit/pm/state';
 
 export function defineQtiInteractionsExtension() {
-  registerQtiInteractionElements();
   const descriptors = listInteractionDescriptors();
   const seenSpecs = new Set<string>();
   const nodeSpecExtensions: Extension[] = [];
@@ -133,6 +133,8 @@ export function defineQtiInteractionsExtension() {
   return union(...nodeSpecExtensions, defineKeymap(keymap), ...pluginExtensions);
 }
 ```
+
+Custom elements are registered through side-effect imports at the top of the module (`@citolab/prose-qti/components/register` registers all interactions; import individual `@qti-editor/interaction-<name>/register` modules when you only need a subset).
 
 The host application's dependencies stay on public npm packages. The local helper is what wires in QTI-specific authoring behaviors; things like marking choices as correct or wrapping selected text as hottext.
 

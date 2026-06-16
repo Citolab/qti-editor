@@ -1,0 +1,68 @@
+import { getStrippedAttributeSources, stripAttributesFromElement } from '../../../shared';
+import { matchInteractionComposerMetadata } from '../../composer/metadata.js';
+
+import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@citolab/prose-qti/components/shared/composer/types.js';
+
+function toFiniteNumber(value: string | null, fallback: number): number {
+  if (value == null || value.trim().length === 0) return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function toNonEmptyString(value: string | null): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+export function composeMatchInteractionElement(sourceElement: Element, xmlDoc: Document): InteractionComposeResult {
+  const metadata = matchInteractionComposerMetadata;
+  const warnings: ComposerWarning[] = [];
+  const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
+
+  const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
+  // correctResponse is stored as raw JSON (qti-components' shape:
+  // '["A 1","B 2"]'), not comma-separated identifiers.
+  const correctResponseRaw = sourceElement.getAttribute('correct-response');
+  const correctResponse = correctResponseRaw || null;
+  const maxAssociations = toFiniteNumber(sourceElement.getAttribute('max-associations'), 1);
+  const minAssociations = toFiniteNumber(sourceElement.getAttribute('min-associations'), 0);
+  const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
+
+  stripAttributesFromElement(normalizedElement, metadata);
+  const strippedAttributes = getStrippedAttributeSources(metadata);
+
+  normalizedElement.setAttribute('max-associations', String(maxAssociations > 0 ? maxAssociations : 1));
+  if (minAssociations > 0) {
+    normalizedElement.setAttribute('min-associations', String(minAssociations));
+  } else {
+    normalizedElement.removeAttribute('min-associations');
+  }
+
+  let responseDeclaration: InteractionResponseDeclaration | undefined;
+  if (!responseIdentifier) {
+    warnings.push({
+      code: 'MISSING_RESPONSE_IDENTIFIER',
+      message: 'qti-match-interaction is missing response-identifier; declaration will be skipped.',
+      tagName: metadata.tagName,
+    });
+  } else {
+    responseDeclaration = {
+      identifier: responseIdentifier,
+      cardinality: maxAssociations > 1 ? 'multiple' : 'single',
+      baseType: 'identifier', // directedPair in full QTI, but using identifier for simplicity
+      correctResponse: correctResponse ?? undefined,
+      sourceTag: metadata.tagName,
+      score,
+    };
+  }
+
+  return {
+    normalizedElement,
+    responseDeclaration,
+    responseProcessingTemplate: metadata.responseProcessingTemplate,
+    responseProcessingKind: metadata.responseProcessing.internalKind,
+    strippedAttributes,
+    warnings,
+  };
+}

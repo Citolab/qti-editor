@@ -1,22 +1,22 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
-import '@qti-editor/ui/components/code-panel';
-import '@qti-editor/ui/components/composer';
-import '@qti-editor/ui/components/composer-metadata-form';
-import '@qti-editor/ui/components/attributes-panel';
-import '@qti-editor/ui/components/toolbar';
-import '@qti-editor/ui/components/items-gutter';
-import '@qti-editor/ui/components/items-navigator';
-import { registerLitEditorBlockHandle } from '@qti-editor/ui/components/block-handle';
-import { registerLitEditorDropIndicator } from '@qti-editor/ui/components/drop-indicator';
-import { registerLitEditorTableHandle } from '@qti-editor/ui/components/table-handle';
-import { editorContext } from '@qti-editor/ui/components/editor-context';
+import '@citolab/prose-qti-ui/components/attributes-panel';
+import './blocks/code-panel/index.js';
+import './blocks/composer/index.js';
+import './blocks/composer-metadata-form/index.js';
+import './blocks/toolbar/index.js';
+import './blocks/items-gutter/index.js';
+import './blocks/items-navigator/index.js';
+import { registerLitEditorDropIndicator } from './blocks/drop-indicator/index.js';
+
+import { registerLitEditorTableHandle } from './blocks/table-handle/index.js';
+
 import './blocks/slash-menu/index.js';
 import { provide, ContextProvider } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { LitElement, html, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
-import { itemContext, itemContextVariables, type ItemContext, type PerItemMetadata } from '@qti-editor/prosekit-integration/item-context';
+import { itemContext, itemContextVariables, type ItemContext, type PerItemMetadata } from '@citolab/prose-qti/integration/item-context';
 import {
   blockSelectExtension,
   buildCompatibilityReport,
@@ -25,11 +25,14 @@ import {
   nodeAttrsSyncExtension,
   readPersistedStateFromLocalStorage,
   stampSchemaVersion,
-} from '@qti-editor/prosemirror-plugins';
+} from 'packages/prose-extensions/src/prosemirror/index.js';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
-import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
-import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interactions/shared';
+import { qtiEditorEventsExtension } from '@citolab/prose-qti/integration/events';
+import { editorContext } from '@citolab/prose-qti/integration/editor-context';
+import { notifyQtiI18nChanged, translateQti } from '@citolab/prose-qti/components/shared';
+
+import { registerLitEditorBlockHandle } from './blocks/block-handle/index.js';
 
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
@@ -38,7 +41,7 @@ import { exportItem, exportJson, exportPackage, exportRoundtripXml, importJson }
 import { getAutoSaveKey } from '../lib/fileStore.js';
 import { importRoundtripXml, openXmlFilePicker } from '../lib/importXml.js';
 
-import type { CompatibilityReport } from '@qti-editor/interfaces';
+import type { CompatibilityReport } from '@citolab/prose-qti/interfaces';
 
 function slugifyTitle(title: string): string {
   return title.trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '');

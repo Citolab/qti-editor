@@ -1,9 +1,9 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
-import '@qti-editor/ui/components/composer';
-import '@qti-editor/ui/components/composer-metadata-form';
-import '@qti-editor/ui/components/attributes-panel';
-import '@qti-editor/ui/components/toolbar';
+import '@citolab/prose-qti-ui/components/attributes-panel';
+import './components/blocks/composer/index.js';
+import './components/blocks/composer-metadata-form/index.js';
+import './components/blocks/toolbar/index.js';
 import './components/qti-slash-menu';
 
 import { provide } from '@lit/context';
@@ -17,13 +17,13 @@ import {
   defineSemanticPasteExtension,
   nodeAttrsSyncExtension,
   readPersistedStateFromLocalStorage
-} from '@qti-editor/prosemirror-plugins';
+} from 'packages/prose-extensions/src/prosemirror/index.js';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
 import { qtiTestFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-test';
-import { notifyQtiI18nChanged, translateQti } from '@qti-editor/interactions/shared';
-import { sampleUploader } from '@qti-editor/ui/components/sample/sample-uploader';
+import { notifyQtiI18nChanged, translateQti } from '@citolab/prose-qti/components/shared';
+import { sampleUploader } from './components/blocks/sample/sample-uploader.js';
 
 import { defineBasicExtension } from './extensions/basic-extension';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension';

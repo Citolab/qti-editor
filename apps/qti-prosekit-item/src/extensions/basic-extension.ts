@@ -11,7 +11,7 @@ import { defineParagraph } from 'prosekit/extensions/paragraph'
 import { defineGapCursor } from 'prosekit/extensions/gap-cursor'
 import { defineTable } from 'prosekit/extensions/table'
 import { defineText } from 'prosekit/extensions/text'
-import { defineEm, defineList, defineStrong } from '@qti-editor/prosekit-extensions'
+import { defineEm, defineList, defineStrong } from '@citolab/prose-extensions/prosekit'
 
 export function defineBasicExtension() {
   return union(

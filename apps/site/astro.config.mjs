@@ -12,20 +12,22 @@ const litReactiveElementRoot = dirname(require.resolve('@lit/reactive-element'))
 const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
 const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosekit/src', import.meta.url));
 const prosekitExtensionsSrcRoot = fileURLToPath(new URL('../../packages/prosekit/extensions/src', import.meta.url));
-const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/interactions/shared/src', import.meta.url));
-const interactionsUmbrellaSrcRoot = fileURLToPath(new URL('../../packages/interactions/barrel/src', import.meta.url));
-const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/interactions/choice/src', import.meta.url));
-const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/interactions/extended-text/src', import.meta.url));
-const interactionsAssociateSrcRoot = fileURLToPath(new URL('../../packages/interactions/associate/src', import.meta.url));
-const interactionsMatchSrcRoot = fileURLToPath(new URL('../../packages/interactions/match/src', import.meta.url));
-const interactionsOrderSrcRoot = fileURLToPath(new URL('../../packages/interactions/order/src', import.meta.url));
-const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/interactions/text-entry/src', import.meta.url));
-const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/interactions/select-point/src', import.meta.url));
-const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/interactions/inline-choice/src', import.meta.url));
-const interactionsGapMatchSrcRoot = fileURLToPath(new URL('../../packages/interactions/gap-match/src', import.meta.url));
+const qtiStylesSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/core-css/core-css.css', import.meta.url));
+const qtiInterfacesSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/interfaces/index.ts', import.meta.url));
+const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/shared', import.meta.url));
+const interactionsUmbrellaSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components', import.meta.url));
+const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/choice/src', import.meta.url));
+const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/extended-text/src', import.meta.url));
+const interactionsAssociateSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/associate/src', import.meta.url));
+const interactionsMatchSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/match/src', import.meta.url));
+const interactionsOrderSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/order/src', import.meta.url));
+const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/text-entry/src', import.meta.url));
+const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/select-point/src', import.meta.url));
+const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/inline-choice/src', import.meta.url));
+const interactionsGapMatchSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/gap-match/src', import.meta.url));
 const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src/attributes', import.meta.url));
 const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src/attributes-ui', import.meta.url));
-const uiSrcRoot = fileURLToPath(new URL('../../packages/ui/src', import.meta.url));
+const proseQtiUiSrcRoot = fileURLToPath(new URL('../../packages/prose-qti-ui/src', import.meta.url));
 const stylesSrcRoot = fileURLToPath(new URL('../../packages/styles/src', import.meta.url));
 
 export default defineConfig({
@@ -34,7 +36,19 @@ export default defineConfig({
       alias: [
         {
           find: /^@qti-editor\/styles$/,
-          replacement: `${stylesSrcRoot}/index.css`,
+          replacement: qtiStylesSrcRoot,
+        },
+        {
+          find: /^@qti-editor\/interfaces$/,
+          replacement: qtiInterfacesSrcRoot,
+        },
+        {
+          find: /^@citolab\/prose-qti-ui$/,
+          replacement: `${proseQtiUiSrcRoot}/index.ts`,
+        },
+        {
+          find: /^@citolab\/prose-qti-ui\/(.*)$/,
+          replacement: `${proseQtiUiSrcRoot}/$1`,
         },
         {
           find: /^@qti-editor\/interaction-shared\/(.*)\.js$/,
@@ -248,22 +262,6 @@ export default defineConfig({
           find: /^@qti-editor\/prosemirror-attributes-ui$/,
           replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/index.ts`,
         },
-        {
-          find: /^@qti-editor\/ui\/components\/blocks\/([^/]+)$/,
-          replacement: `${uiSrcRoot}/components/blocks/$1/index.ts`,
-        },
-        {
-          find: /^@qti-editor\/ui\/components\/editor\/ui\/([^/]+)$/,
-          replacement: `${uiSrcRoot}/components/editor/ui/$1/index.js`,
-        },
-        {
-          find: /^@qti-editor\/ui\/components\/editor\/sample\/([^/]+)$/,
-          replacement: `${uiSrcRoot}/components/editor/sample/$1.js`,
-        },
-        {
-          find: /^@qti-editor\/ui$/,
-          replacement: `${uiSrcRoot}/index.ts`,
-        },
       ],
     },
     plugins: [
@@ -279,18 +277,18 @@ export default defineConfig({
         '@qti-components/associate-interaction',
         '@qti-components/base',
         '@qti-components/interactions',
-        '@qti-editor/interactions',
-        '@qti-editor/ui',
-        '@qti-editor/interaction-shared',
+        '@citolab/prose-qti-ui',
+        '@citolab/prose-qti/components/register',
+        '@citolab/prose-qti/components/shared',
         '@qti-editor/prosekit-extensions',
-        '@qti-editor/interaction-choice',
-        '@qti-editor/interaction-extended-text',
-        '@qti-editor/interaction-associate',
-        '@qti-editor/interaction-match',
-        '@qti-editor/interaction-text-entry',
-        '@qti-editor/interaction-select-point',
-        '@qti-editor/interaction-inline-choice',
-        '@qti-editor/interaction-gap-match',
+        '@citolab/prose-qti/components/choice',
+        '@citolab/prose-qti/components/extended-text',
+        '@citolab/prose-qti/components/associate',
+        '@citolab/prose-qti/components/match',
+        '@citolab/prose-qti/components/text-entry',
+        '@citolab/prose-qti/components/select-point',
+        '@citolab/prose-qti/components/inline-choice',
+        '@citolab/prose-qti/components/gap-match',
         '@qti-editor/prosemirror-attributes',
         '@qti-editor/prosemirror-attributes-ui',
         '@qti-components/theme',

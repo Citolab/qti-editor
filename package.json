@@ -2,7 +2,6 @@
   "name": "@qti-editor/root",
   "pnpm": {
     "overrides": {
-      "@qti-editor/qti-item-divider@1.1.10": "1.1.9",
       "prosemirror-model": "1.25.7",
       "prosemirror-view": "1.41.9"
     }
@@ -19,8 +18,8 @@
     "dev:prosemirror-item": "pnpm --filter @qti-editor/prosemirror-item dev",
     "site:dev": "pnpm --filter @qti-editor/site dev",
     "build": "pnpm build:packages && pnpm --filter @qti-editor/prosekit-app build",
-    "build:workspace-deps": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/interfaces\" --filter \"./packages/interactions/**\" --filter \"./packages/extensions/**\" --filter \"./packages/qti/**\" run build",
-    "build:core-deps": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/interfaces\" --filter \"./packages/interactions/**\" --filter \"./packages/extensions/**\" --filter \"./packages/qti/rubric-block\" run build",
+    "build:workspace-deps": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/interfaces\" --filter \"./packages/extensions/**\" --filter \"./packages/qti/**\" --filter \"./packages/prose-qti\" run build",
+    "build:core-deps": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/interfaces\" --filter \"./packages/extensions/**\" --filter \"./packages/prose-qti\" run build",
     "deploy:build": "pnpm deploy:build:site && pnpm deploy:build:editor",
     "deploy:build:site": "pnpm build:packages && pnpm registry:build && pnpm --filter @qti-editor/site build && pnpm build-storybook && node scripts/prepare-hosting-site.mjs",
     "deploy:build:editor": "pnpm build:packages && pnpm --filter @qti-editor/prosekit-app build && node scripts/prepare-hosting-editor.mjs",
@@ -30,9 +29,9 @@
     "firebase:deploy:site": "pnpm deploy:build:site && firebase deploy --only hosting:site",
     "firebase:deploy:editor": "pnpm deploy:build:editor && firebase deploy --only hosting:editor",
     "firebase:deploy:rules": "firebase deploy --only firestore:rules",
-    "build:packages": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/interfaces\" --filter \"./packages/styles\" --filter \"./packages/interactions/**\" --filter \"./packages/extensions/**\" run build && QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/qti/**\" --filter \"./packages/ui\" run build",
-    "registry:build": "pnpm --filter @qti-editor/ui registry:build",
-    "registry:serve": "pnpm --filter @qti-editor/ui registry:serve",
+    "build:packages": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/interfaces\" --filter \"./packages/styles\" --filter \"./packages/extensions/**\" --filter \"./packages/prose-qti\" run build && QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/qti/**\" --filter \"./packages/prose-qti-ui\" run build",
+    "registry:build": "pnpm --filter @citolab/prose-qti-ui registry:build",
+    "registry:serve": "pnpm --filter @citolab/prose-qti-ui registry:serve",
     "test": "vitest run",
     "test:unit": "vitest run --project unit",
     "test:browser": "vitest run --project browser",

@@ -8,11 +8,11 @@
  */
 
 import '@qti-components/theme/item.css';
-import '@qti-editor/interactions/choice';
-import '@qti-editor/interactions/extended-text';
-import '@qti-editor/interactions/select-point';
-import '@qti-editor/interactions/shared';
-import '@qti-editor/qti-item-divider/define';
+import '@citolab/prose-qti/components/choice';
+import '@citolab/prose-qti/components/extended-text';
+import '@citolab/prose-qti/components/select-point';
+import '@citolab/prose-qti/components/shared';
+import '@citolab/prose-qti/components/item-divider';
 import 'prosemirror-view/style/prosemirror.css';
 
 import { html } from 'lit';
@@ -20,7 +20,7 @@ import { ref } from 'lit/directives/ref.js';
 import { EditorState, type Transaction } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { expect, waitFor } from 'storybook/test';
-import { qtiTestFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-test';
+import { qtiTestFromProsemirror } from '@citolab/prose-qti/integration/save-qti-test';
 
 import { schema, plugins } from '../src/pm-setup.js';
 

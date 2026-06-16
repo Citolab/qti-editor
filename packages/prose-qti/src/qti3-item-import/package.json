@@ -1,0 +1,12 @@
+{
+  "name": "@qti-editor/qti3-item-import",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./*": "./*"
+  }
+}

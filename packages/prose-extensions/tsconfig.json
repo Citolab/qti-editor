@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "dist",
+    "rootDir": "src",
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "allowImportingTsExtensions": false,
+    "moduleResolution": "bundler",
+    "paths": {
+      "@qti-editor/interfaces": ["../prose-qti/src/interfaces/index.ts"],
+      "@citolab/prose-qti/components/shared": ["../prose-qti/src/components/shared/index.ts"],
+      "@citolab/prose-qti/components/shared/*": ["../prose-qti/src/components/shared/*"],
+      "@qti-editor/prosemirror-plugins": ["src/prosemirror/index.ts"],
+      "@qti-editor/prosemirror-plugins/*": ["./src/*"]
+    },
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["src"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.stories.ts", "node_modules", "dist"]
+}

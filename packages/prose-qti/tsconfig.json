@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "useDefineForClassFields": false,
+    "types": ["vitest/globals"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.js", "../../tools/testing/vitest.d.ts"]
+}

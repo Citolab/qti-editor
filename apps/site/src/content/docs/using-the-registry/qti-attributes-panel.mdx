@@ -20,9 +20,8 @@ The panel reads the ProseKit editor from the shared `editorContext` (`@lit/conte
 
 ```ts
 import '@/components/attributes-panel';
-import '@/components/editor-context';
 import { ContextProvider } from '@lit/context';
-import { editorContext } from '@/components/editor-context';
+import { editorContext } from '@qti-editor/prosekit-integration/editor-context';
 
 // Provide the editor from a host element (e.g. in its constructor):
 new ContextProvider(host, {

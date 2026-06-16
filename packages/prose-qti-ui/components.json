@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": false,
+  "tailwind": {
+    "config": "",
+    "css": "src/style.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@citolab/prose-qti-ui/components",
+    "utils": "@citolab/prose-qti-ui/lib/utils",
+    "ui": "@citolab/prose-qti-ui/components/ui",
+    "blocks": "@citolab/prose-qti-ui/components/blocks",
+    "lib": "@citolab/prose-qti-ui/lib",
+    "hooks": "@citolab/prose-qti-ui/hooks"
+  },
+  "registries": {
+    "@prosekit": "https://prosekit.dev/r/{name}.json"
+  }
+}

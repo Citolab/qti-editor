@@ -1,24 +1,24 @@
 import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
-import '@qti-editor/ui/components/toolbar';
-import '@qti-editor/ui/components/interaction-insert-menu';
-import '@qti-editor/ui/components/attributes-panel';
-import '@qti-editor/ui/components/composer-metadata-form';
+import './components/blocks/toolbar/index.js';
+import '@citolab/prose-qti-ui/components/interaction-insert-menu';
+import '@citolab/prose-qti-ui/components/attributes-panel';
+import './components/blocks/composer-metadata-form/index.js';
 
 import { ContextProvider } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { LitElement, html, type PropertyValues } from 'lit';
-import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
-import { xmlFromNode, xmlToHTML } from '@qti-editor/prosekit-integration/save-xml';
-import { qtiTestFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-test';
-import { blockSelectExtension, nodeAttrsSyncExtension } from '@qti-editor/prosemirror-plugins';
 import { createEditor, union, jsonFromHTML, type Editor } from 'prosekit/core';
-import { sampleUploader } from '@qti-editor/ui/components/sample/sample-uploader';
-import { registerLitEditorTableHandle } from '@qti-editor/ui/components/table-handle';
-import { registerLitEditorBlockHandle } from '@qti-editor/ui/components/block-handle';
-import { registerLitEditorDropIndicator } from '@qti-editor/ui/components/drop-indicator';
-import { editorContext } from '@qti-editor/ui/components/editor-context';
+import { itemContext, itemContextVariables, type ItemContext } from '@citolab/prose-qti/integration/item-context';
+import { xmlFromNode, xmlToHTML } from '@citolab/prose-qti/integration/save-xml';
+import { qtiTestFromProsemirror } from '@citolab/prose-qti/integration/save-qti-test';
+import { blockSelectExtension, nodeAttrsSyncExtension } from '@citolab/prose-extensions/prosemirror';
+import { editorContext } from '@citolab/prose-qti/integration/editor-context';
 
+import { sampleUploader } from './components/blocks/sample/sample-uploader.js';
+import { registerLitEditorTableHandle } from './components/blocks/table-handle/index.js';
+import { registerLitEditorBlockHandle } from './components/blocks/block-handle/index.js';
+import { registerLitEditorDropIndicator } from './components/blocks/drop-indicator/index.js';
 import { defineBasicExtension } from './extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-extension.js';
 

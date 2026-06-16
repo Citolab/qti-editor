@@ -1,0 +1,17 @@
+import './associate/register.js';
+import './choice/register.js';
+import './extended-text/register.js';
+import './gap-match/register.js';
+import './hottext/register.js';
+import './inline-choice/register.js';
+import './match/register.js';
+import './order/register.js';
+import './select-point/register.js';
+import './text-entry/register.js';
+import './item-divider/register.js';
+import './shared/components/qti-prompt/register.js';
+import './shared/components/qti-simple-choice/register.js';
+import './shared/components/qti-simple-associable-choice/register.js';
+import './shared/components/qti-simple-match-set/register.js';
+import './shared/components/qti-gap/register.js';
+import './shared/components/qti-gap-text/register.js';

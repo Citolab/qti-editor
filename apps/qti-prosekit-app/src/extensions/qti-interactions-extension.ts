@@ -1,16 +1,17 @@
 /**
  * QTI interactions extension using the descriptor pattern.
  * 
- * This uses the descriptor registry from @qti-editor/core to automatically
+ * This uses the descriptor registry from @citolab/prose-qti/core to automatically
  * assemble all interaction node specs, commands, and plugins.
  */
+
+import '@citolab/prose-qti/components/register';
 
 import {
   listInteractionDescriptors,
   listSelectedInteractionPluginFactories,
   listInteractionSchemaNodeSpecs,
-} from '@qti-editor/core/interactions/composer';
-import { registerQtiInteractionElements } from '@qti-editor/prosekit-integration/interactions/prosekit';
+} from '@citolab/prose-qti/core/interactions/composer';
 import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
 import { splitBlock } from 'prosekit/pm/commands';
 
@@ -32,7 +33,6 @@ import type { Command } from 'prosekit/pm/state';
 export function defineQtiInteractionsExtension(options?: {
   include?: string[];
 }): Extension {
-  registerQtiInteractionElements();
   const allDescriptors = listInteractionDescriptors();
   
   // Filter to only included interaction types if specified

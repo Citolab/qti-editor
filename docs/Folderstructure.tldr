@@ -746,9 +746,9 @@
 			"typeName": "shape"
 		},
 		{
-			"x": 357.4790611334218,
-			"y": 105.04823213267393,
-			"z": 0.5037187423238794,
+			"x": 34.229295200983984,
+			"y": -338.99420541787885,
+			"z": 0.5954847658721047,
 			"meta": {},
 			"id": "camera:page:page",
 			"typeName": "camera"
@@ -1139,10 +1139,10 @@
 			"typeName": "shape"
 		},
 		{
-			"editingShapeId": null,
+			"editingShapeId": "shape:PgaGt4ByLyXpznrLhKEbx",
 			"croppingShapeId": null,
 			"selectedShapeIds": [
-				"shape:PD5U5anhQ1kfy6lJ6binK"
+				"shape:PgaGt4ByLyXpznrLhKEbx"
 			],
 			"hoveredShapeId": null,
 			"erasingShapeIds": [],
@@ -1840,6 +1840,14 @@
 			"typeName": "shape"
 		},
 		{
+			"name": "",
+			"color": "#39B178",
+			"imageUrl": "",
+			"meta": {},
+			"id": "user:bLFoEnWmuFqLjyKSX6kL7",
+			"typeName": "user"
+		},
+		{
 			"x": -131.4188429707822,
 			"y": 660.4639181291882,
 			"rotation": 0,
@@ -1937,7 +1945,7 @@
 			"props": {
 				"color": "green",
 				"size": "m",
-				"w": 190.078125,
+				"w": 256.890625,
 				"font": "draw",
 				"textAlign": "start",
 				"autoSize": true,
@@ -1956,7 +1964,7 @@
 							"content": [
 								{
 									"type": "text",
-									"text": "@citolab/kit-qti"
+									"text": "@citolab/prose-qti-ui"
 								}
 							]
 						}
@@ -2158,7 +2166,7 @@
 			"brush": null,
 			"scribbles": [],
 			"cursor": {
-				"type": "move",
+				"type": "default",
 				"rotation": 0
 			},
 			"isFocusMode": false,
@@ -2168,8 +2176,8 @@
 			"screenBounds": {
 				"x": 0,
 				"y": 0,
-				"w": 1176,
-				"h": 965
+				"w": 949,
+				"h": 844
 			},
 			"insets": [
 				false,
@@ -2184,7 +2192,7 @@
 			"isChatting": false,
 			"highlightedUserIds": [],
 			"isFocused": true,
-			"devicePixelRatio": 2,
+			"devicePixelRatio": 1,
 			"isCoarsePointer": false,
 			"isHoveringCanvas": true,
 			"openMenus": [],

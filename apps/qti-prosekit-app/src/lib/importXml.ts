@@ -1,9 +1,9 @@
-import { xmlToHTML } from '@qti-editor/prosekit-integration';
-import { buildCompatibilityReport, migrateHtmlFragment } from '@qti-editor/prosemirror-plugins';
-import { roundtripQtiItem } from '@qti-editor/qti3-item-import';
 import { jsonFromHTML } from 'prosekit/core';
+import { buildCompatibilityReport, migrateHtmlFragment } from '@citolab/prose-extensions/prosemirror';
+import { roundtripQtiItem } from '@citolab/prose-qti/qti3-item-import';
+import { xmlToHTML } from '@qti-editor/qti-item-export/pm-xml';
 
-import type { CompatibilityReport, MigrationResult } from '@qti-editor/interfaces';
+import type { CompatibilityReport, MigrationResult } from '@citolab/prose-qti/interfaces';
 import type { Node, Schema } from 'prosekit/pm/model';
 
 export interface ImportXmlResult {

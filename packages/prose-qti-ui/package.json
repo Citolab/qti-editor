@@ -1,0 +1,36 @@
+{
+  "name": "@citolab/prose-qti-ui",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Canonical UI source for QTI Editor blocks and vendored ProseKit-shaped components",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components/attributes-panel": "./src/components/attributes-panel/index.ts",
+    "./components/choice-attributes-editor": "./src/components/choice-attributes-editor/index.ts",
+    "./components/text-entry-attributes-editor": "./src/components/text-entry-attributes-editor/index.ts",
+    "./components/extended-text-attributes-editor": "./src/components/extended-text-attributes-editor/index.ts",
+    "./components/interaction-insert-menu": "./src/components/interaction-insert-menu/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "registry:transform": "node scripts/transform-imports.mjs",
+    "registry:build": "node scripts/transform-imports.mjs && cd dist && npx shadcn@latest build ./registry.json --output ./public/r",
+    "registry:serve": "npx serve dist/public -p 4100 --cors"
+  },
+  "dependencies": {
+    "@citolab/prose-extensions": "workspace:*",
+    "@citolab/prose-qti": "workspace:*",
+    "@lit/context": "^1.1.6",
+    "lit": "^3.3.2",
+    "prosekit": "^0.21.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "esbuild": "^0.27.4",
+    "serve": "^14.0.0",
+    "typescript": "^5.0.0"
+  }
+}

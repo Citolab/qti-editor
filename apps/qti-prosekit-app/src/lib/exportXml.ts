@@ -1,6 +1,6 @@
-import { qtiItemFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-item';
-import { xmlFromNode } from '@qti-editor/prosekit-integration/save-xml';
-import { createQtiPackageFromNode } from '@qti-editor/qti-package-builder';
+import { qtiItemFromProsemirror } from '@citolab/prose-qti/integration/save-qti-item';
+import { xmlFromNode } from '@citolab/prose-qti/integration/save-xml';
+import { createQtiPackageFromNode } from '@citolab/prose-qti/package-builder';
 
 import type { Schema } from 'prosekit/pm/model';
 import type { ProseMirrorNode } from 'prosekit/pm/model';

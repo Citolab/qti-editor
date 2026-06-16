@@ -54,7 +54,7 @@ import {
   deleteColumn,
   deleteTable
 } from 'prosemirror-tables';
-import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@qti-editor/prosemirror-plugins';
+import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror/plugins';
 
 import { attributesPanelPlugin } from './attributes-panel-plugin.js';
 import {
@@ -66,7 +66,6 @@ import {
   importQtiItem,
   exportQtiItem
 } from './prosemirror-qti.js';
-
 // EXPERIMENT: lockable qti-layout-* div wrappers (non-QTI affordance).
 import { qtiLayoutDivNodeSpec, divLockPlugin } from './qti-layout-div.js';
 

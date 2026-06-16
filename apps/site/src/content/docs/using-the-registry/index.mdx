@@ -56,9 +56,9 @@ After installation, import the copied files from your own app source tree. The e
 - Each component is a Lit custom element, which makes the registry framework-agnostic and usable in any HTML context.
 - In framework hosts such as Angular or React, assign object values such as the editor instance or `eventTarget` through refs rather than HTML attributes.
 - Angular is not auto-detected by the shadcn CLI. Follow the manual setup described in the [Angular guide](/docs/frameworks/angular/) first, then run `shadcn add`.
-- When the shadcn CLI installs a component, it rewrites `@qti-editor/ui/...` imports to `@/...` using your project's path aliases. Make sure `@/` resolves to your project's `src/` directory.
+- When the shadcn CLI installs a component, it rewrites `@citolab/prose-qti-ui/...` imports to `@/...` using your project's path aliases. Make sure `@/` resolves to your project's `src/` directory.
 - Components with `registryDependencies`, such as `qti-attributes-panel`, will automatically pull in their sub-components in a single CLI command.
 - Some registry items are app-shell utilities rather than end-user panels. `lit-editor-block-handle` and `lit-editor-drop-indicator` expect a Lit `editorContext` provider instead of a direct `.editor` assignment.
 - In Angular, import the registry files for side effects and add `CUSTOM_ELEMENTS_SCHEMA` to the host component that renders them.
 - The copied registry components are optional. The stable integration surface is the public package API plus your own app-level ProseKit assembly.
-- `@qti-editor/ui` is the canonical source for the registry, not the primary runtime import path for external apps.
+- `@citolab/prose-qti-ui` is the canonical source for the registry, not the primary runtime import path for external apps.

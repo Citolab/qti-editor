@@ -1,10 +1,10 @@
 import {
   readPersistedDoc,
   stampSchemaVersion,
-} from '@qti-editor/prosemirror-plugins';
+} from '@citolab/prose-extensions/prosemirror';
 
 import type { NodeJSON } from 'prosekit/core';
-import type { MigrationResult } from '@qti-editor/interfaces';
+import type { MigrationResult } from '@citolab/prose-qti/interfaces';
 
 /**
  * File management backed by localStorage.

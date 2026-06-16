@@ -4,7 +4,7 @@ description: Overview of the QTI interaction packages shipped with QTI Editor.
 slug: docs/qti-interactions
 ---
 
-QTI Editor ships its interactions as focused subpath exports from `@qti-editor/interactions`. Each subpath adds the schema, commands, serialization, web components, and any runtime ProseMirror plugins needed for one QTI interaction type.
+QTI Editor ships its interactions as focused subpath exports from `@citolab/prose-qti/components/register`. Each subpath adds the schema, commands, serialization, web components, and any runtime ProseMirror plugins needed for one QTI interaction type.
 
 These packages are closely coupled to our other open source library, [`qti-components`](https://github.com/Citolab/qti-components). In practice, QTI Editor is responsible for authoring behavior and document structure, while `qti-components` supplies the underlying QTI web components that render and encapsulate the interaction behavior itself. That split keeps the integration framework agnostic while letting each interaction package stay small and explicit.
 
@@ -14,23 +14,23 @@ When you install the umbrella package, the matching `@qti-components/*` dependen
 
 | Interaction | What it does | Package |
 |---|---|---|
-| [Associate Interaction](/docs/qti-interactions/associate/) | Associating options from a shared set according to configured matching rules | `@qti-editor/interactions/associate` |
-| [Choice Interaction](/docs/qti-interactions/choice/) | Single- or multiple-choice questions with a prompt and selectable choices | `@qti-editor/interactions/choice` |
-| [Gap Match Interaction](/docs/qti-interactions/gap-match/) | Dragging or placing predefined gap texts into matching gaps in a passage | `@qti-editor/interactions/gap-match` |
-| [Hottext Interaction](/docs/qti-interactions/hottext/) | Marking words or phrases inside a text passage as selectable response options | `@qti-editor/interactions/hottext` |
-| [Inline Choice Interaction](/docs/qti-interactions/inline-choice/) | Dropdown choices embedded directly in a sentence | `@qti-editor/interactions/inline-choice` |
-| [Text Entry Interaction](/docs/qti-interactions/text-entry/) | Short free-text answers entered inline | `@qti-editor/interactions/text-entry` |
-| [Extended Text Interaction](/docs/qti-interactions/extended-text/) | Longer free-text answers in a multi-line response area | `@qti-editor/interactions/extended-text` |
-| [Match Interaction](/docs/qti-interactions/match/) | Matching items across two sets | `@qti-editor/interactions/match` |
-| [Order Interaction](/docs/qti-interactions/order/) | Ordering a list of choices into the correct sequence | `@qti-editor/interactions/order` |
-| [Select Point Interaction](/docs/qti-interactions/select-point/) | Clicking a coordinate or hotspot on an image | `@qti-editor/interactions/select-point` |
+| [Associate Interaction](/docs/qti-interactions/associate/) | Associating options from a shared set according to configured matching rules | `@citolab/prose-qti/components/associate` |
+| [Choice Interaction](/docs/qti-interactions/choice/) | Single- or multiple-choice questions with a prompt and selectable choices | `@citolab/prose-qti/components/choice` |
+| [Gap Match Interaction](/docs/qti-interactions/gap-match/) | Dragging or placing predefined gap texts into matching gaps in a passage | `@citolab/prose-qti/components/gap-match` |
+| [Hottext Interaction](/docs/qti-interactions/hottext/) | Marking words or phrases inside a text passage as selectable response options | `@citolab/prose-qti/components/hottext` |
+| [Inline Choice Interaction](/docs/qti-interactions/inline-choice/) | Dropdown choices embedded directly in a sentence | `@citolab/prose-qti/components/inline-choice` |
+| [Text Entry Interaction](/docs/qti-interactions/text-entry/) | Short free-text answers entered inline | `@citolab/prose-qti/components/text-entry` |
+| [Extended Text Interaction](/docs/qti-interactions/extended-text/) | Longer free-text answers in a multi-line response area | `@citolab/prose-qti/components/extended-text` |
+| [Match Interaction](/docs/qti-interactions/match/) | Matching items across two sets | `@citolab/prose-qti/components/match` |
+| [Order Interaction](/docs/qti-interactions/order/) | Ordering a list of choices into the correct sequence | `@citolab/prose-qti/components/order` |
+| [Select Point Interaction](/docs/qti-interactions/select-point/) | Clicking a coordinate or hotspot on an image | `@citolab/prose-qti/components/select-point` |
 
 ## Installing interactions
 
 Install the umbrella package once, then import only the subpaths you need:
 
 ```bash
-pnpm add @qti-editor/interactions
+pnpm add @citolab/prose-qti/components/register
 ```
 
 Each interaction subpath exports [ProseMirror](https://prosemirror.net/) commands, schema pieces, and web components. Interactions that need runtime behavior (like click-to-mark-correct-response or wrapping selected text as hottext) include their ProseMirror plugins in the subpath.
@@ -59,14 +59,14 @@ const plugins = listInteractionPluginFactories().map(factory => factory());
 For external apps, build a small local ProseKit helper around the descriptor registry:
 
 ```typescript
+import '@citolab/prose-qti/components/register';
+import '@citolab/prose-qti/components/item-divider/register';
 import { listInteractionDescriptors, listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
-import { registerQtiInteractionElements } from '@qti-editor/prosekit-integration';
 import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
 
 import type { Command } from 'prosekit/pm/state';
 
 export function defineQtiInteractionsExtension() {
-  registerQtiInteractionElements();
   const descriptors = listInteractionDescriptors();
   const seenSpecs = new Set<string>();
   const nodeSpecExtensions: Extension[] = [];
@@ -103,6 +103,8 @@ export function defineQtiInteractionsExtension() {
 }
 ```
 
+Custom elements are registered through side-effect imports, not a runtime helper. Import `@citolab/prose-qti/components/register` to register every interaction at once, or import the per-interaction `@qti-editor/interaction-<name>/register` modules (plus any shared sub-elements they need) when you only include a subset.
+
 ## Inserting an interaction
 
 In the editor UI, use the **Interactions** toolbar button to open the insert menu. Only interactions whose schema nodes are registered in your editor extension are listed. Each item is disabled when the cursor is in a position where that node cannot be inserted.
@@ -110,11 +112,11 @@ In the editor UI, use the **Interactions** toolbar button to open the insert men
 Interactions can also be inserted programmatically using the command functions exported from each package:
 
 ```ts
-import { insertChoiceInteraction } from '@qti-editor/interactions/choice';
-import { insertHottextInteraction } from '@qti-editor/interactions/hottext';
-import { insertTextEntryInteraction } from '@qti-editor/interactions/text-entry';
-import { insertInlineChoiceInteraction } from '@qti-editor/interactions/inline-choice';
-import { insertSelectPointInteraction } from '@qti-editor/interactions/select-point';
+import { insertChoiceInteraction } from '@citolab/prose-qti/components/choice';
+import { insertHottextInteraction } from '@citolab/prose-qti/components/hottext';
+import { insertTextEntryInteraction } from '@citolab/prose-qti/components/text-entry';
+import { insertInlineChoiceInteraction } from '@citolab/prose-qti/components/inline-choice';
+import { insertSelectPointInteraction } from '@citolab/prose-qti/components/select-point';
 
 // Call as a command:
 insertChoiceInteraction(view.state, view.dispatch, view);

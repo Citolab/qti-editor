@@ -9,8 +9,8 @@
  * QTI-specific items in a separate group.
  */
 
-import '@qti-editor/ui/components/slash-menu/slash-menu-item.js';
-import '@qti-editor/ui/components/slash-menu/slash-menu-empty.js';
+import './blocks/slash-menu/slash-menu-item.js';
+import './blocks/slash-menu/slash-menu-empty.js';
 
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
@@ -22,15 +22,15 @@ import {
   registerAutocompletePositionerElement,
   registerAutocompleteRootElement,
 } from 'prosekit/lit/autocomplete';
-import { translateQti } from '@qti-editor/interactions/shared';
-import { insertAssociateInteraction } from '@qti-editor/interactions/associate';
-import { insertGapMatchInteraction } from '@qti-editor/interactions/gap-match';
-import { insertChoiceInteraction } from '@qti-editor/interactions/choice';
-import { insertExtendedTextInteraction } from '@qti-editor/interactions/extended-text';
-import { insertHottextInteraction } from '@qti-editor/interactions/hottext';
-import { insertMatchInteraction } from '@qti-editor/interactions/match';
-import { insertOrderInteraction } from '@qti-editor/interactions/order';
-import { insertSelectPointInteraction } from '@qti-editor/interactions/select-point';
+import { translateQti } from '@citolab/prose-qti/components/shared';
+import { insertAssociateInteraction } from '@citolab/prose-qti/components/associate';
+import { insertGapMatchInteraction } from '@citolab/prose-qti/components/gap-match';
+import { insertChoiceInteraction } from '@citolab/prose-qti/components/choice';
+import { insertExtendedTextInteraction } from '@citolab/prose-qti/components/extended-text';
+import { insertHottextInteraction } from '@citolab/prose-qti/components/hottext';
+import { insertMatchInteraction } from '@citolab/prose-qti/components/match';
+import { insertOrderInteraction } from '@citolab/prose-qti/components/order';
+import { insertSelectPointInteraction } from '@citolab/prose-qti/components/select-point';
 
 import type { EditorView } from 'prosekit/pm/view';
 

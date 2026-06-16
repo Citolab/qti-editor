@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@source "../../../packages/ui/src/**/*.{ts,js}";
+@source "../../../packages/prose-qti-ui/src/**/*.{ts,js}";
 
 @plugin "@egoist/tailwindcss-icons";
 @plugin "@tailwindcss/typography";

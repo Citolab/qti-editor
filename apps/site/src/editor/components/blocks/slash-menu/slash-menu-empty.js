@@ -1,0 +1,20 @@
+import { registerAutocompleteEmptyElement } from 'prosekit/lit/autocomplete'
+import { html, LitElement } from 'lit'
+
+registerAutocompleteEmptyElement()
+
+class SlashMenuEmptyElement extends LitElement {
+  createRenderRoot() {
+    return this
+  }
+
+  render() {
+    return html`
+      <prosekit-autocomplete-empty class="relative flex items-center justify-between min-w-32 scroll-my-1 rounded-md px-3 py-1.5 text-sm box-border cursor-default select-none whitespace-nowrap outline-hidden data-highlighted:bg-gray-100 dark:data-highlighted:bg-gray-800">
+        <span>No results</span>
+      </prosekit-autocomplete-empty>
+    `;
+  }
+}
+
+customElements.define('lit-editor-slash-menu-empty', SlashMenuEmptyElement)

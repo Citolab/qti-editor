@@ -1,0 +1,13 @@
+{
+  "name": "@qti-editor/interfaces",
+  "version": "1.0.0",
+  "description": "Shared TypeScript interfaces and types for QTI Editor",
+  "type": "module",
+  "private": true,
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./*": "./*"
+  }
+}

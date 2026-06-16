@@ -1,0 +1,104 @@
+{
+  "name": "@citolab/prose-extensions",
+  "version": "0.1.0",
+  "description": "Extensions for QTI Editor",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Citolab/qti-editor",
+    "directory": "packages/prose-extensions"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./prosemirror": {
+      "types": "./dist/prosemirror/index.d.ts",
+      "default": "./dist/prosemirror/index.js"
+    },
+    "./prosemirror/*": {
+      "types": "./dist/prosemirror/*",
+      "default": "./dist/prosemirror/*"
+    },
+    "./prosekit": {
+      "types": "./dist/prosekit/index.d.ts",
+      "default": "./dist/prosekit/index.js"
+    },
+    "./prosekit/list": {
+      "types": "./dist/prosekit/list.d.ts",
+      "default": "./dist/prosekit/list.js"
+    },
+    "./prosekit/marks": {
+      "types": "./dist/prosekit/strong-em.d.ts",
+      "default": "./dist/prosekit/strong-em.js"
+    },
+    "./attributes": {
+      "types": "./dist/prosemirror/attributes/index.d.ts",
+      "default": "./dist/prosemirror/attributes/index.js"
+    },
+    "./attributes-ui": {
+      "types": "./dist/prosemirror/attributes-ui/index.d.ts",
+      "default": "./dist/prosemirror/attributes-ui/index.js"
+    },
+    "./compatibility": {
+      "types": "./dist/prosemirror/compatibility/index.d.ts",
+      "default": "./dist/prosemirror/compatibility/index.js"
+    },
+    "./block-select": {
+      "types": "./dist/prosemirror/block-select/index.d.ts",
+      "default": "./dist/prosemirror/block-select/index.js"
+    },
+    "./virtual-cursor": {
+      "types": "./dist/prosemirror/virtual-cursor/index.d.ts",
+      "default": "./dist/prosemirror/virtual-cursor/index.js"
+    },
+    "./node-attrs-sync": {
+      "types": "./dist/prosemirror/node-attrs-sync/index.d.ts",
+      "default": "./dist/prosemirror/node-attrs-sync/index.js"
+    },
+    "./paste-semantic-html": {
+      "types": "./dist/prosemirror/paste-semantic-html/index.d.ts",
+      "default": "./dist/prosemirror/paste-semantic-html/index.js"
+    },
+    "./local-storage-doc-persistence-extension": {
+      "types": "./dist/prosemirror/local-storage-doc-persistence-extension/index.d.ts",
+      "default": "./dist/prosemirror/local-storage-doc-persistence-extension/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@citolab/prose-qti": "workspace:*",
+    "lit": "^3.3.2",
+    "prosemirror-inputrules": "^1.5.1",
+    "prosemirror-model": "^1.19.0",
+    "prosemirror-schema-basic": "^1.2.4",
+    "prosemirror-schema-list": "^1.5.1",
+    "prosemirror-state": "^1.4.0",
+    "prosemirror-view": "^1.31.0"
+  },
+  "peerDependencies": {
+    "prosekit": "^0.21.3"
+  },
+  "peerDependenciesMeta": {
+    "prosekit": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,83 @@
+import { getStrippedAttributeSources, stripAttributesFromElement } from '../../../shared';
+import { gapMatchInteractionComposerMetadata } from '../../composer/metadata.js';
+
+import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@citolab/prose-qti/components/shared/composer/types.js';
+
+function toFiniteNumber(value: string | null, fallback: number): number {
+  if (value == null || value.trim().length === 0) return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+/**
+ * Parse the gap-match `correct-response` attribute. Aligned with qti-components,
+ * it is a JSON array of standard QTI `directedPair` strings (`"gapText gap"`),
+ * e.g. `'["ht_zuur gap_low","ht_basisch gap_high"]'`. Each string becomes one
+ * `qti-value` in the response declaration.
+ */
+function parseDirectedPairs(value: string | null): string[] | undefined {
+  if (!value) return undefined;
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (!Array.isArray(parsed)) return undefined;
+    const pairs = parsed.filter((entry): entry is string => typeof entry === 'string' && entry.includes(' '));
+    return pairs.length > 0 ? pairs : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function toNonEmptyString(value: string | null): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+export function composeGapMatchInteractionElement(sourceElement: Element, xmlDoc: Document): InteractionComposeResult {
+  const metadata = gapMatchInteractionComposerMetadata;
+  const warnings: ComposerWarning[] = [];
+  const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
+
+  const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
+  const correctResponse = parseDirectedPairs(sourceElement.getAttribute('correct-response'));
+  const maxAssociations = toFiniteNumber(sourceElement.getAttribute('max-associations'), 1);
+  const minAssociations = toFiniteNumber(sourceElement.getAttribute('min-associations'), 0);
+  const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
+
+  stripAttributesFromElement(normalizedElement, metadata);
+  const strippedAttributes = getStrippedAttributeSources(metadata);
+
+  normalizedElement.setAttribute('max-associations', String(maxAssociations > 0 ? maxAssociations : 1));
+  if (minAssociations > 0) {
+    normalizedElement.setAttribute('min-associations', String(minAssociations));
+  } else {
+    normalizedElement.removeAttribute('min-associations');
+  }
+
+  let responseDeclaration: InteractionResponseDeclaration | undefined;
+  if (!responseIdentifier) {
+    warnings.push({
+      code: 'MISSING_RESPONSE_IDENTIFIER',
+      message: 'qti-gap-match-interaction is missing response-identifier; declaration will be skipped.',
+      tagName: metadata.tagName,
+    });
+  } else {
+    responseDeclaration = {
+      identifier: responseIdentifier,
+      cardinality: 'multiple',
+      baseType: 'directedPair',
+      correctResponse: correctResponse ?? undefined,
+      sourceTag: metadata.tagName,
+      score,
+    };
+  }
+
+  return {
+    normalizedElement,
+    responseDeclaration,
+    responseProcessingTemplate: metadata.responseProcessingTemplate,
+    responseProcessingKind: metadata.responseProcessing.internalKind,
+    strippedAttributes,
+    warnings,
+  };
+}

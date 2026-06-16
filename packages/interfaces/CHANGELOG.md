@@ -1,4 +1,0 @@
-# @qti-editor/interfaces
-
-## Changelog
-

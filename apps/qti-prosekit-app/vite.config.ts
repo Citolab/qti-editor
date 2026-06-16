@@ -13,20 +13,22 @@ const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.
 const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosekit/src', import.meta.url));
 const prosekitExtensionsSrcRoot = fileURLToPath(new URL('../../packages/prosekit/extensions/src', import.meta.url));
 const qtiPackageSrcRoot = fileURLToPath(new URL('../../packages/qti/package-builder/src', import.meta.url));
-const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/interactions/shared/src', import.meta.url));
-const interactionsUmbrellaSrcRoot = fileURLToPath(new URL('../../packages/interactions/barrel/src', import.meta.url));
-const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/interactions/choice/src', import.meta.url));
-const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/interactions/extended-text/src', import.meta.url));
-const interactionsAssociateSrcRoot = fileURLToPath(new URL('../../packages/interactions/associate/src', import.meta.url));
-const interactionsMatchSrcRoot = fileURLToPath(new URL('../../packages/interactions/match/src', import.meta.url));
-const interactionsOrderSrcRoot = fileURLToPath(new URL('../../packages/interactions/order/src', import.meta.url));
-const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/interactions/text-entry/src', import.meta.url));
-const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/interactions/select-point/src', import.meta.url));
-const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/interactions/inline-choice/src', import.meta.url));
-const interactionsGapMatchSrcRoot = fileURLToPath(new URL('../../packages/interactions/gap-match/src', import.meta.url));
-const interactionsHottextSrcRoot = fileURLToPath(new URL('../../packages/interactions/hottext/src', import.meta.url));
-const qtiItemDividerSrcRoot = fileURLToPath(new URL('../../packages/qti/item-divider/src', import.meta.url));
-const qtiRubricBlockSrcRoot = fileURLToPath(new URL('../../packages/qti/rubric-block/src', import.meta.url));
+const qtiStylesSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/core-css/core-css.css', import.meta.url));
+const qtiInterfacesSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/interfaces/index.ts', import.meta.url));
+const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/shared', import.meta.url));
+const interactionsUmbrellaSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components', import.meta.url));
+const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/choice/src', import.meta.url));
+const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/extended-text/src', import.meta.url));
+const interactionsAssociateSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/associate/src', import.meta.url));
+const interactionsMatchSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/match/src', import.meta.url));
+const interactionsOrderSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/order/src', import.meta.url));
+const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/text-entry/src', import.meta.url));
+const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/select-point/src', import.meta.url));
+const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/inline-choice/src', import.meta.url));
+const interactionsGapMatchSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/gap-match/src', import.meta.url));
+const interactionsHottextSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/hottext/src', import.meta.url));
+const qtiItemDividerSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/item-divider/src', import.meta.url));
+const qtiRubricBlockSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/rubric-block/src', import.meta.url));
 const prosemirrorPluginsSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src', import.meta.url));
 const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src/attributes', import.meta.url));
 const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src/attributes-ui', import.meta.url));
@@ -68,6 +70,14 @@ function shouldForceFullReload(file: string): boolean {
 export default defineConfig({
   resolve: {
     alias: [
+      {
+        find: /^@qti-editor\/styles$/,
+        replacement: qtiStylesSrcRoot,
+      },
+      {
+        find: /^@qti-editor\/interfaces$/,
+        replacement: qtiInterfacesSrcRoot,
+      },
       {
         find: /^@qti-editor\/interaction-shared\/(.*)\.js$/,
         replacement: `${interactionsSharedSrcRoot}/$1.ts`,
@@ -342,21 +352,21 @@ export default defineConfig({
       '@qti-components/associate-interaction',
       '@qti-components/base',
       '@qti-components/interactions',
-      '@qti-editor/interactions',
-      '@qti-editor/interaction-shared',
+      '@citolab/prose-qti/components/register',
+      '@citolab/prose-qti/components/shared',
       '@qti-editor/prosekit-extensions',
       '@qti-editor/qti-package-builder',
-      '@qti-editor/interaction-choice',
-      '@qti-editor/interaction-extended-text',
-      '@qti-editor/interaction-associate',
-      '@qti-editor/interaction-match',
-      '@qti-editor/interaction-order',
-      '@qti-editor/interaction-text-entry',
-      '@qti-editor/interaction-select-point',
-      '@qti-editor/interaction-inline-choice',
-      '@qti-editor/interaction-gap-match',
-      '@qti-editor/interaction-hottext',
-      '@qti-editor/qti-item-divider',
+      '@citolab/prose-qti/components/choice',
+      '@citolab/prose-qti/components/extended-text',
+      '@citolab/prose-qti/components/associate',
+      '@citolab/prose-qti/components/match',
+      '@citolab/prose-qti/components/order',
+      '@citolab/prose-qti/components/text-entry',
+      '@citolab/prose-qti/components/select-point',
+      '@citolab/prose-qti/components/inline-choice',
+      '@citolab/prose-qti/components/gap-match',
+      '@citolab/prose-qti/components/hottext',
+      '@citolab/prose-qti/components/item-divider',
       '@qti-editor/prosemirror-attributes',
       '@qti-editor/prosemirror-attributes-ui',
       '@qti-components/theme',

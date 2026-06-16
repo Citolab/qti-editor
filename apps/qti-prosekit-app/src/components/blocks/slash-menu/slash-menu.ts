@@ -16,11 +16,11 @@ import {
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
-import { translateQti } from '@qti-editor/interactions/shared';
-import { listInteractionDescriptors } from '@qti-editor/core/interactions/composer';
-import { insertGap } from '@qti-editor/interactions/gap-match';
-import '@qti-editor/ui/components/slash-menu/slash-menu-item.js';
-import '@qti-editor/ui/components/slash-menu/slash-menu-empty.js';
+import { listInteractionDescriptors } from '@citolab/prose-qti/core/interactions/composer';
+import { translateQti } from '@citolab/prose-qti/components/shared';
+import { insertGap } from '@citolab/prose-qti/components/gap-match';
+import './slash-menu-item.js';
+import './slash-menu-empty.js';
 
 import type { EditorView } from 'prosekit/pm/view';
 

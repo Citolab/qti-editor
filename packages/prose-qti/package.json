@@ -1,0 +1,121 @@
+{
+  "name": "@citolab/prose-qti",
+  "version": "0.1.0",
+  "description": "QTI functionality for ProseMirror-based editors.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Citolab/qti-editor",
+    "directory": "packages/prose-qti"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./core": "./src/core/index.ts",
+    "./core/composer": "./src/core/composer/index.ts",
+    "./core/interactions/composer": "./src/core/interactions/composer.ts",
+    "./interfaces": "./src/interfaces/index.ts",
+    "./integration": "./src/integration/index.ts",
+    "./integration/code": "./src/integration/code/index.ts",
+    "./integration/editor-context": "./src/integration/editor-context/index.ts",
+    "./integration/events": "./src/integration/events/index.ts",
+    "./integration/interactions/prosekit": "./src/integration/interactions/prosekit.ts",
+    "./integration/item-context": "./src/integration/item-context/index.ts",
+    "./integration/save-xml": "./src/integration/save-xml/index.ts",
+    "./integration/save-qti-item": "./src/integration/save-qti-item/index.ts",
+    "./integration/save-qti-test": "./src/integration/save-qti-test/index.ts",
+    "./item-export": "./src/item-export/index.ts",
+    "./item-export/pm-qti-item": "./src/item-export/pm-qti-item.ts",
+    "./item-export/pm-xml": "./src/item-export/pm-xml.ts",
+    "./test-export": "./src/test-export/index.ts",
+    "./test-export/pm-qti-test": "./src/test-export/pm-qti-test.ts",
+    "./item-roundtrip": "./src/item-roundtrip/index.ts",
+    "./item-roundtrip/import": "./src/item-roundtrip/import.ts",
+    "./item-roundtrip/export": "./src/item-roundtrip/export.ts",
+    "./package-builder": "./src/package-builder/index.ts",
+    "./qti3-item-import": "./src/qti3-item-import/index.ts",
+    "./qti3-item-import/roundtrip-choice": "./src/qti3-item-import/roundtrip-choice/index.ts",
+    "./qti3-item-import/roundtrip-text-entry": "./src/qti3-item-import/roundtrip-text-entry/index.ts",
+    "./qti3-item-import/roundtrip-extended-text": "./src/qti3-item-import/roundtrip-extended-text/index.ts",
+    "./qti3-item-import/roundtrip-match": "./src/qti3-item-import/roundtrip-match/index.ts",
+    "./qti3-item-import/roundtrip-gap-match": "./src/qti3-item-import/roundtrip-gap-match/index.ts",
+    "./qti3-item-import/roundtrip-order": "./src/qti3-item-import/roundtrip-order/index.ts",
+    "./qti3-item-import/roundtrip-select-point": "./src/qti3-item-import/roundtrip-select-point/index.ts",
+    "./qti3-item-import/roundtrip-interactions": "./src/qti3-item-import/roundtrip-interactions/index.ts",
+    "./qti3-item-import/roundtrip-item-body": "./src/qti3-item-import/roundtrip-item-body/index.ts",
+    "./qti3-item-import/reduce-to-item-body": "./src/qti3-item-import/reduce-to-item-body/index.ts",
+    "./qti3-item-import/roundtrip-qti-item": "./src/qti3-item-import/roundtrip-qti-item.ts",
+    "./components/register": "./src/components/register.ts",
+    "./components/associate": "./src/components/associate/index.ts",
+    "./components/associate/*": "./src/components/associate/*",
+    "./components/choice": "./src/components/choice/index.ts",
+    "./components/choice/*": "./src/components/choice/*",
+    "./components/extended-text": "./src/components/extended-text/index.ts",
+    "./components/extended-text/*": "./src/components/extended-text/*",
+    "./components/gap-match": "./src/components/gap-match/index.ts",
+    "./components/gap-match/*": "./src/components/gap-match/*",
+    "./components/hottext": "./src/components/hottext/index.ts",
+    "./components/hottext/*": "./src/components/hottext/*",
+    "./components/inline-choice": "./src/components/inline-choice/index.ts",
+    "./components/inline-choice/*": "./src/components/inline-choice/*",
+    "./components/item-divider": "./src/components/item-divider/index.ts",
+    "./components/item-divider/*": "./src/components/item-divider/*",
+    "./components/match": "./src/components/match/index.ts",
+    "./components/match/*": "./src/components/match/*",
+    "./components/order": "./src/components/order/index.ts",
+    "./components/order/*": "./src/components/order/*",
+    "./components/rubric-block": "./src/components/rubric-block/index.ts",
+    "./components/rubric-block/*": "./src/components/rubric-block/*",
+    "./components/select-point": "./src/components/select-point/index.ts",
+    "./components/select-point/*": "./src/components/select-point/*",
+    "./components/shared": "./src/components/shared/index.ts",
+    "./components/shared/*": "./src/components/shared/*",
+    "./components/text-entry": "./src/components/text-entry/index.ts",
+    "./components/text-entry/*": "./src/components/text-entry/*",
+    "./core-css": "./src/core-css/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit -p ./tsconfig.json",
+    "typecheck": "tsc --noEmit -p ./tsconfig.json",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@lit/context": "^1.1.6",
+    "@qti-components/associate-interaction": "^1.0.1",
+    "@qti-components/base": "^1.4.3",
+    "@qti-components/choice-interaction": "^1.1.4",
+    "@qti-components/extended-text-interaction": "^1.0.1",
+    "@qti-components/hottext-interaction": "^1.1.3",
+    "@qti-components/inline-choice-interaction": "^1.1.3",
+    "@qti-components/interactions-core": "^1.1.4",
+    "@qti-components/match-interaction": "^1.0.0",
+    "@qti-components/order-interaction": "^1.1.2",
+    "@qti-components/text-entry-interaction": "^1.0.0",
+    "@qti-components/transformers": "^1.6.4",
+    "jszip": "^3.10.1"
+  },
+  "peerDependencies": {
+    "lit": "^3.3.2",
+    "prosekit": "^0.21.3",
+    "prosemirror-commands": "^1.7.1",
+    "prosemirror-model": "^1.25.4",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.41.8"
+  },
+  "peerDependenciesMeta": {
+    "prosekit": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

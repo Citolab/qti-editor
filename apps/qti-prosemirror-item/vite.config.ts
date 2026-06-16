@@ -18,11 +18,11 @@ export default defineConfig({
   plugins: [tsconfigPaths({ projects: ['../../tsconfig.json'], ignoreConfigErrors: true })],
   optimizeDeps: {
     exclude: [
-      '@qti-editor/interaction-shared',
-      '@qti-editor/interaction-choice',
-      '@qti-editor/interaction-extended-text',
-      '@qti-editor/interaction-text-entry',
-      '@qti-editor/qti-rubric-block',
+      '@citolab/prose-qti/components/shared',
+      '@citolab/prose-qti/components/choice',
+      '@citolab/prose-qti/components/extended-text',
+      '@citolab/prose-qti/components/text-entry',
+      '@citolab/prose-qti/components/rubric-block',
       '@qti-editor/prosemirror-plugins',
       '@qti-editor/qti3-item-import',
       '@qti-editor/core',

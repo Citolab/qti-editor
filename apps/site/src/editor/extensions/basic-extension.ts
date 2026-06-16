@@ -18,7 +18,7 @@ import { defineParagraph, type ParagraphExtension } from 'prosekit/extensions/pa
 import { defineTable, type TableExtension } from 'prosekit/extensions/table'
 import { defineText, type TextExtension } from 'prosekit/extensions/text'
 import { defineVirtualSelection, type VirtualSelectionExtension } from 'prosekit/extensions/virtual-selection'
-import { defineList, defineEm, defineStrong, type EmExtension, type ListExtension, type StrongExtension } from '@qti-editor/prosekit-extensions'
+import { defineList, defineEm, defineStrong, type EmExtension, type ListExtension, type StrongExtension } from 'packages/prose-extensions/src/prosekit'
 
 /**
  * @internal
