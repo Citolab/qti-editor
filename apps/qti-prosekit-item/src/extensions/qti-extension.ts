@@ -39,9 +39,21 @@ export function defineQtiInteractionsExtension(options?: {
     ? allDescriptors.filter(d => options.include!.includes(d.tagName))
     : allDescriptors;
 
-  const nodeSpecExtensions: Extension[] = listInteractionSchemaNodeSpecs(options).map(({ name, spec }) =>
+  const nodeSpecs = listInteractionSchemaNodeSpecs(options);
+  const rubricIncluded = nodeSpecs.some(s => s.name === 'qtiRubricBlock');
+
+  const nodeSpecExtensions: Extension[] = nodeSpecs.map(({ name, spec }) =>
     defineNodeSpec({ name, ...spec }),
   );
+
+  if (rubricIncluded) {
+    // qtiRubricBlock uses `content: 'richtext+'`. Patch the standard prose nodes to
+    // join that group so ProseKit's schema builder can resolve the content expression.
+    nodeSpecExtensions.push(
+      defineNodeSpec({ name: 'paragraph', group: 'block richtext' }),
+      defineNodeSpec({ name: 'table', group: 'block richtext' }),
+    );
+  }
 
   // Build keymap from descriptors
   const keymap: Record<string, Command> = {};

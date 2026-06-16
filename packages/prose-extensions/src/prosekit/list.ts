@@ -52,7 +52,7 @@ export interface ListOptions {
 function defineBulletListSpec(): BulletListSpecExtension {
   return defineNodeSpec({
     name: 'bullet_list',
-    group: 'block',
+    group: 'block richtext',
     content: 'list_item+',
     parseDOM: bulletList.parseDOM,
     toDOM: bulletList.toDOM,
@@ -62,7 +62,7 @@ function defineBulletListSpec(): BulletListSpecExtension {
 function defineOrderedListSpec(): OrderedListSpecExtension {
   return defineNodeSpec({
     name: 'ordered_list',
-    group: 'block',
+    group: 'block richtext',
     content: 'list_item+',
     attrs: orderedList.attrs as any,
     parseDOM: orderedList.parseDOM,
