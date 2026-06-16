@@ -48,11 +48,6 @@ export class QtiSelectPointInteractionEdit extends Interaction {
   static override styles: CSSResultGroup = [
     css`
       :host {
-        display: block;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        padding: 12px;
-        background: #ffffff;
         white-space: normal;
       }
 
