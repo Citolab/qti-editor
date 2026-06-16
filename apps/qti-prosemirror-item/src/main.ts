@@ -21,6 +21,7 @@ import { baseKeymap, toggleMark, chainCommands } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
+import { createVirtualCursor } from 'prosemirror-virtual-cursor';
 import {
   menuBar,
   MenuItem,
@@ -66,10 +67,14 @@ import {
   exportQtiItem
 } from './prosemirror-qti.js';
 
+// EXPERIMENT: lockable qti-layout-* div wrappers (non-QTI affordance).
+import { qtiLayoutDivNodeSpec, divLockPlugin } from './qti-layout-div.js';
+
 import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
 import 'prosemirror-menu/style/menu.css';
 import 'prosemirror-tables/style/tables.css';
+import 'prosemirror-virtual-cursor/style/virtual-cursor.css';
 
 import type { MarkType, Node as ProseMirrorNode } from 'prosemirror-model';
 import type { Command } from 'prosemirror-state';
@@ -86,7 +91,7 @@ const listNodes = {
 const tableSchemaNodes = tableNodes({ tableGroup: 'block richtext', cellContent: 'block+', cellAttributes: {} });
 
 /** The editor schema: QTI nodes (from the integration layer) + generic lists/tables. */
-const schema = createSchema({ ...listNodes, ...tableSchemaNodes });
+const schema = createSchema({ ...listNodes, ...tableSchemaNodes, qtiLayoutDiv: qtiLayoutDivNodeSpec });
 
 /**
  * Standard ProseMirror list & table editing plugins (not QTI-specific): Enter
@@ -159,7 +164,6 @@ const menuContent: MenuElement[][] = [
   [insertInteractionDropdown],
   [markItem(schema.marks.strong, 'B', 'Toggle bold'), markItem(schema.marks.em, 'i', 'Toggle italic')],
   [undoItem, redoItem],
-  [liftItem, selectParentNodeItem],
   [
     cmdItem(wrapInList(schema.nodes.bullet_list), icons.bulletList, 'Wrap in bullet list'),
     cmdItem(wrapInList(schema.nodes.ordered_list), icons.orderedList, 'Wrap in ordered list')
@@ -171,7 +175,9 @@ const menuContent: MenuElement[][] = [
     cmdItem(deleteRow, { text: '\u2796\u2261' }, 'Delete row'),
     cmdItem(deleteColumn, { text: '\u2796\u2980' }, 'Delete column'),
     cmdItem(deleteTable, { text: '\u2715' }, 'Delete table')
-  ]
+  ],
+  // Pushed to the far right of the menu bar by the flexible spacer.
+  [liftItem, selectParentNodeItem]
 ];
 
 /**
@@ -185,10 +191,13 @@ const editorPlugins: Plugin[] = [
   history(),
   keymap({ 'Mod-z': undo, 'Mod-y': redo, 'Shift-Mod-z': redo }),
   ...qtiPlugins,
+  // EXPERIMENT: keep qti-layout-* divs immutable while their content stays editable.
+  divLockPlugin,
   ...tableListPlugins,
   keymap(baseKeymap),
   dropCursor(),
   gapCursor(),
+  createVirtualCursor(),
   menuBar({ content: menuContent }),
   blockSelectPlugin,
   // Applies inline interaction attr edits (e.g. hottext radio clicks) that are

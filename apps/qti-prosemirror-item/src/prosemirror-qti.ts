@@ -40,9 +40,6 @@ import { exportItemXml, importItemFromUrl } from '@qti-editor/qti-item-roundtrip
 
 import { qtiTransformTest } from '@qti-components/transformers';
 
-// EXPERIMENT: lockable qti-layout-* div wrappers.
-import { qtiLayoutDivNodeSpec, divLockPlugin } from './qti-layout-div.js';
-
 // Register the interaction edit elements (custom elements used by the views).
 import '@qti-editor/interaction-choice/register.js';
 import '@qti-editor/interaction-extended-text/register.js';
@@ -90,7 +87,6 @@ const qtiNodes = Object.fromEntries(
  * lets the composition root add generic, non-QTI nodes (e.g. lists, tables).
  */
 export function createSchema(extraNodes: Record<string, NodeSpec> = {}): Schema {
-  // EXPERIMENT: register the lockable layout-div node alongside the QTI nodes.
   const baseNodes = {
     ...nodes,
     // Paragraph is the baseline member of the `richtext` group (the rubric
@@ -98,8 +94,7 @@ export function createSchema(extraNodes: Record<string, NodeSpec> = {}): Schema 
     // from the composition root via `extraNodes`.
     paragraph: { ...nodes.paragraph, group: 'block richtext' },
     ...extraNodes,
-    ...qtiNodes,
-    qtiLayoutDiv: qtiLayoutDivNodeSpec
+    ...qtiNodes
   };
   return new Schema({
     nodes: {
@@ -141,8 +136,6 @@ const backspaceCommand = chainCommands(...descriptors.flatMap(descriptor => desc
  */
 export const qtiPlugins: Plugin[] = [
   keymap({ Enter: enterCommand, Backspace: backspaceCommand }),
-  // EXPERIMENT: keep qti-layout-* divs immutable while their content stays editable.
-  divLockPlugin,
   ...descriptors.flatMap(descriptor => descriptor.pluginFactories?.map(factory => factory()) ?? [])
 ];
 

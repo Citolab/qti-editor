@@ -9,6 +9,13 @@
   color: #1b1f24;
 }
 
+/* The plugin sets the cursor color to red on `.ProseMirror-focused`, so override
+ * it with higher specificity so it wins regardless of CSS load order. */
+#editor-host .ProseMirror.ProseMirror-focused {
+  --prosemirror-virtual-cursor-color: #000000;
+}
+
+
 * {
   box-sizing: border-box;
 }
@@ -45,79 +52,45 @@ header h1 {
 
 #app {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-columns: minmax(0, 1fr) 320px 220px;
   gap: 1px;
   background: var(--border);
   min-height: calc(100vh - 73px);
 }
 
 #editor-pane,
-#sidebar {
+#attributes-pane,
+#item-pane {
   background: #fff;
 }
 
-/* Sidebar: an "Items" dropdown stacked above the always-visible attributes. */
-#sidebar {
+/* Attributes column: always visible, fills its column height. */
+#attributes-pane {
   display: flex;
   flex-direction: column;
-  position: relative;
+  min-width: 0;
 }
 
-/* Items dropdown: summary is the trigger; the list overlays the attributes. */
-#item-picker {
-  position: relative;
-  border-bottom: 1px solid var(--border);
+/* Items column: a small, always-visible list on the far right. */
+#item-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
-#item-picker > summary {
-  padding: 0.625rem 0.875rem;
-  font-weight: 600;
-  font-size: 0.8125rem;
-  cursor: pointer;
-  user-select: none;
-  list-style: none;
-  background: var(--bg-muted);
-  color: #57606a;
-}
-
-#item-picker > summary::-webkit-details-marker {
-  display: none;
-}
-
-#item-picker > summary::after {
-  content: '▾';
-  float: right;
-  color: #8c959f;
-}
-
-#item-picker[open] > summary {
-  color: var(--accent);
-  box-shadow: inset 0 -2px 0 var(--accent);
-}
-
-#item-picker[open] > summary::after {
-  content: '▴';
-}
-
-/* The open item list floats over the attributes panel below it. */
-#item-picker[open] > #item-list {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 5;
-  /* max-height: 90vh; */
-  background: #fff;
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-}
-
-/* Item list */
+/* Item list: fills the items column, always showing all items. */
 #item-list {
+  flex: 1 1 auto;
+  height: 100%;
   padding: 0.5rem;
   border: none;
   outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  box-shadow: none;
+  background: transparent;
   font: inherit;
+  font-size: 0.8125rem;
   overflow-y: auto;
 }
 
@@ -156,6 +129,17 @@ header h1 {
   overflow-y: auto;
 }
 
+/* Lay the menu bar out as a flex row so the spacer can push the trailing
+ * group (lift / select-parent) to the far right. */
+#editor-pane .ProseMirror-menubar {
+  display: flex;
+  align-items: center;
+}
+
+#editor-pane .ProseMirror-menubar .menu-spacer {
+  flex: 1 1 auto;
+}
+
 #editor-host .ProseMirror {
   outline: none;
   min-height: 100%;
@@ -179,7 +163,7 @@ header h1 {
   text-align: left;
 }
 
-/* Attributes panel — always visible, fills the rest of the sidebar. */
+/* Attributes panel — always visible, fills its column. */
 #attributes-panel {
   flex: 1 1 auto;
   padding: 0.75rem;
@@ -225,15 +209,15 @@ header h1 {
 }
 
 /*
- * Narrow viewports: stack the sidebar below the editor in a single column.
+ * Narrow viewports: stack the panes below the editor in a single column.
  */
 @media (max-width: 820px) {
   #app {
     grid-template-columns: 1fr;
   }
 
-  #sidebar {
-    order: 1;
+  #attributes-pane,
+  #item-pane {
     border-top: 1px solid var(--border);
   }
 }
