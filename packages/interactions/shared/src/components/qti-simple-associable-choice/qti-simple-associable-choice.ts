@@ -58,10 +58,12 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
         flex-wrap: wrap;
         gap: 4px;
         width: auto;
-        /* Pulsing border driven by the parent match set via --qti-dropslot-selecting.
-           Stays paused (invisible border) in normal state; runs when selecting. */
-        animation: dropslot-pulse 1.2s ease-in-out infinite;
-        animation-play-state: var(--qti-dropslot-selecting, paused);
+        /* The parent match set drives the pulse via --qti-dropslot-selecting,
+           which carries the animation name while a source is pending and is
+           unset otherwise. When unset the animation resolves to none, so the
+           border returns to its resting color instead of freezing on the last
+           pulse frame (which is what happens if you only pause play-state). */
+        animation: var(--qti-dropslot-selecting, none) 1.2s ease-in-out infinite;
       }
 
       @keyframes dropslot-pulse {

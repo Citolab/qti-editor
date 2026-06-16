@@ -30,8 +30,11 @@ export class QtiSimpleMatchSetEdit extends LitElement {
        * two variables are read by [part='dropslot'] inside qti-simple-associable-choice
        * to show the drop slot and start its pulse animation — without setting
        * any attributes (which would trigger ProseMirror's mutation observer).
+       * --qti-dropslot-selecting carries the animation *name*: while selecting
+       * it runs the pulse, and once it's unset the child's animation resolves
+       * to none so the border snaps back to its resting color.
        */
-      --qti-dropslot-selecting: running;
+      --qti-dropslot-selecting: dropslot-pulse;
       --qti-dropslot-empty-display: flex;
     }
 
