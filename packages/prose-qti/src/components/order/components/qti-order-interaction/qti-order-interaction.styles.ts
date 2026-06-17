@@ -61,7 +61,7 @@ const styles: CSSResultGroup = [
     /* Drop slot — clickable area that shows the assigned choice as a fake drag */
     .order-slot {
       min-height: 3rem;
-      border: 2px dashed #f59e0b;
+      border: 2px dashed var(--qti-border, #cbd5e1);
       border-radius: 0.5rem;
       background: #fffbeb;
       cursor: pointer;
@@ -89,14 +89,19 @@ const styles: CSSResultGroup = [
       background: #dcfce7;
     }
 
+    /* While a simple-choice is pending, empty drop slots pulse to invite a click.
+       Mirrors the dropslot-pulse used by qti-simple-associable-choice in match. */
+    @keyframes order-dropslot-pulse {
+      0%, 100% { border-color: var(--qti-border, #cbd5e1); }
+      50%      { border-color: var(--qti-border-active, #3b82f6); }
+    }
+
     .order-slot[data-pending-target]:not([data-filled]) {
-      border-color: #3b82f6;
-      border-style: dashed;
+      animation: order-dropslot-pulse 1.2s ease-in-out infinite;
       background: #eff6ff;
     }
 
     .order-slot[data-pending-target]:not([data-filled]):hover {
-      border-color: #2563eb;
       background: #dbeafe;
     }
 
@@ -138,7 +143,6 @@ const styles: CSSResultGroup = [
       background: rgb(0 0 0 / 0.1);
     }
   `,
-  associationPanelStyles
 ];
 
 export default styles;

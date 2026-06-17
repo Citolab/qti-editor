@@ -1,10 +1,10 @@
 import { html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
-import { InteractionPanel, QtiI18nController } from '../../../shared';
+import { Interaction, QtiI18nController } from '../../../shared';
 import styles, { LIGHT_DOM_STYLES } from './qti-order-interaction.styles.js';
 
-export class QtiOrderInteractionEdit extends InteractionPanel {
+export class QtiOrderInteractionEdit extends Interaction {
   static override styles = styles;
 
   private readonly i18n = new QtiI18nController(this);
@@ -24,7 +24,8 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
   @state()
   private _renderTrigger = 0;
 
-  private _order: string[] = [];
+  /** Positional, sparse: index = slot, value = choice id or null. */
+  private _order: (string | null)[] = [];
   private _labelCache = new Map<string, string>();
   private _setupDone = false;
   private _lightDomStyle: HTMLStyleElement | null = null;
@@ -36,13 +37,15 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
     this._injectLightDomStyles();
     this._parseCorrectResponse();
     this.addEventListener('click', this._onClick);
-    this.addEventListener('keydown', this._onKeyDown);
+    document.addEventListener('keydown', this._onKeyDown);
+    document.addEventListener('pointerdown', this._onDocumentPointerDown);
     requestAnimationFrame(() => this._trySetup());
   }
 
   override disconnectedCallback() {
     this.removeEventListener('click', this._onClick);
-    this.removeEventListener('keydown', this._onKeyDown);
+    document.removeEventListener('keydown', this._onKeyDown);
+    document.removeEventListener('pointerdown', this._onDocumentPointerDown);
     this._observer?.disconnect();
     this._observer = null;
     this._lightDomStyle?.remove();
@@ -104,14 +107,15 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
   }
 
   private _parseCorrectResponse() {
+    this._pendingChoiceId = null;
     if (!this.correctResponse) {
       this._order = [];
-      this._pendingChoiceId = null;
       return;
     }
 
     // correctResponse is a comma-separated list of identifiers (qti-components
-    // convention): "id1,id2,id3". Order is significant (ordered cardinality).
+    // convention): "id1,id2,id3". The list is dense — ordered cardinality has
+    // no gaps — so we hydrate positions 0..n in order.
     this._order = this.correctResponse
       .split(',')
       .map(id => id.trim())
@@ -120,14 +124,19 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
 
   private _syncOrderWithChoices() {
     const choiceIds = this._getChoiceIds();
+    const slotCount = choiceIds.length;
     const validIds = new Set(choiceIds);
     const seen = new Set<string>();
 
-    this._order = this._order.filter(id => {
-      if (!validIds.has(id) || seen.has(id)) return false;
-      seen.add(id);
-      return true;
+    const next: (string | null)[] = Array.from({ length: slotCount }, (_, i) => {
+      const id = this._order[i] ?? null;
+      if (id && validIds.has(id) && !seen.has(id)) {
+        seen.add(id);
+        return id;
+      }
+      return null;
     });
+    this._order = next;
 
     if (this._pendingChoiceId && !validIds.has(this._pendingChoiceId)) {
       this._pendingChoiceId = null;
@@ -169,8 +178,10 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
   }
 
   private _emitChange() {
-    // Serialize as qti-components does: a comma-separated identifier list.
-    const correctResponse = this._order.length > 0 ? this._order.join(',') : null;
+    // Serialize as qti-components does: a dense, comma-separated identifier list
+    // (ordered cardinality forbids gaps — we drop empty slots on emit).
+    const dense = this._order.filter((id): id is string => id !== null);
+    const correctResponse = dense.length > 0 ? dense.join(',') : null;
 
     this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
       detail: {
@@ -183,7 +194,7 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
     }));
 
     this.dispatchEvent(new CustomEvent('order-response-change', {
-      detail: { order: this._order, correctResponse },
+      detail: { order: dense, correctResponse },
       bubbles: true,
       composed: true,
     }));
@@ -195,6 +206,7 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
   }
 
   private _cancelPending() {
+    if (!this._pendingChoiceId) return;
     this._pendingChoiceId = null;
     this._triggerRender();
   }
@@ -209,19 +221,29 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
     if (!this._pendingChoiceId) return;
 
     const choiceId = this._pendingChoiceId;
-    const nextOrder = this._order.filter(id => id !== choiceId);
-    const insertAt = Math.max(0, Math.min(slotIndex, nextOrder.length));
-    nextOrder.splice(insertAt, 0, choiceId);
+    const slotCount = this._getChoiceIds().length;
+    if (slotIndex < 0 || slotIndex >= slotCount) return;
 
-    this._order = nextOrder;
+    // Positional placement: put the choice in the exact slot the user clicked.
+    // Clear it from any previous slot so each choice appears at most once.
+    const next: (string | null)[] = Array.from({ length: slotCount }, (_, i) => this._order[i] ?? null);
+    for (let i = 0; i < next.length; i++) {
+      if (next[i] === choiceId) next[i] = null;
+    }
+    next[slotIndex] = choiceId;
+
+    this._order = next;
     this._pendingChoiceId = null;
     this._emitChange();
     this._triggerRender();
   }
 
   private _clearSlot(slotIndex: number) {
-    if (slotIndex >= this._order.length) return;
-    this._order = this._order.filter((_, index) => index !== slotIndex);
+    if (slotIndex < 0 || slotIndex >= this._order.length) return;
+    if (this._order[slotIndex] == null) return;
+    const next = [...this._order];
+    next[slotIndex] = null;
+    this._order = next;
     this._emitChange();
     this._triggerRender();
   }
@@ -245,6 +267,17 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
       event.preventDefault();
       this._cancelPending();
     }
+  };
+
+  /**
+   * Cancel a pending choice selection when the user clicks anywhere outside this
+   * interaction, so the drop-slot pulse stops. (Escape is handled by
+   * `_onKeyDown`; clicking the same choice again toggles it off.)
+   */
+  private _onDocumentPointerDown = (e: PointerEvent) => {
+    if (!this._pendingChoiceId) return;
+    if (e.composedPath().includes(this)) return;
+    this._cancelPending();
   };
 
   private _renderSlots() {
@@ -276,47 +309,6 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
     `;
   }
 
-  private _renderOrderPanel() {
-    const filled = this._getSlots()
-      .map((choiceId, index) => ({ position: index + 1, choiceId }))
-      .filter((s): s is { position: number; choiceId: string } => s.choiceId !== null);
-
-    return html`
-      <div class="associations-panel">
-        <div class="associations-panel-title">${this.i18n.t('order.correctResponse')}</div>
-        <div class="association-list">
-          ${this._pendingChoiceId ? html`
-            <span class="pending-indicator">
-              ${this.i18n.t('order.selectPositionFor', { label: this._getLabel(this._pendingChoiceId) })}
-              <button
-                type="button"
-                class="association-chip-remove"
-                aria-label=${this.i18n.t('order.cancel')}
-                @click=${(e: Event) => { e.stopPropagation(); this._cancelPending(); }}
-              >×</button>
-            </span>
-          ` : nothing}
-          ${filled.length === 0 && !this._pendingChoiceId ? html`
-            <span class="no-associations">${this.i18n.t('order.noAssignments')}</span>
-          ` : nothing}
-          ${filled.map(({ position, choiceId }) => html`
-            <span class="association-chip">
-              <span>${position}</span>
-              <span class="association-chip-arrow">→</span>
-              <span>${this._getLabel(choiceId)}</span>
-              <button
-                type="button"
-                class="association-chip-remove"
-                aria-label=${this.i18n.t('order.remove')}
-                @click=${(e: Event) => { e.stopPropagation(); this._clearSlot(position - 1); }}
-              >×</button>
-            </span>
-          `)}
-        </div>
-      </div>
-    `;
-  }
-
   override render() {
     void this._renderTrigger;
 
@@ -330,7 +322,6 @@ export class QtiOrderInteractionEdit extends InteractionPanel {
           ${this._renderSlots()}
         </div>
       </div>
-      ${this._setupDone && this._panelOpen ? this._renderOrderPanel() : nothing}
     `;
   }
 }

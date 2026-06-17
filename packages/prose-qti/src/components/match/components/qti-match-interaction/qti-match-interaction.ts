@@ -1,7 +1,7 @@
-import { html, nothing } from 'lit';
+import { html } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
-import { InteractionPanel, MATCH_SELECTING_TARGET_EVENT, QtiI18nController } from '../../../shared';
+import { Interaction, MATCH_SELECTING_TARGET_EVENT, QtiI18nController } from '../../../shared';
 import styles from './qti-match-interaction.styles.js';
 
 import type { FakeDrag, MatchSelectingTargetDetail } from '@citolab/prose-qti/components/shared';
@@ -21,7 +21,7 @@ export interface MatchAssociationChangeDetail {
  * Renders two match sets side by side for creating associations.
  * Click source → click target to create a link.
  */
-export class QtiMatchInteractionEdit extends InteractionPanel {
+export class QtiMatchInteractionEdit extends Interaction {
   static override styles = styles;
 
   private readonly i18n = new QtiI18nController(this);
@@ -69,6 +69,7 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
     this.removeEventListener('click', this._onClick);
     this.removeEventListener('fake-drag-remove', this._onFakeDragRemove as EventListener);
     document.removeEventListener('keydown', this._onKeyDown);
+    document.removeEventListener('pointerdown', this._onDocumentPointerDown);
     this._observer?.disconnect();
     this._observer = null;
     this._setupDone = false;
@@ -99,6 +100,7 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
     this.addEventListener('click', this._onClick);
     this.addEventListener('fake-drag-remove', this._onFakeDragRemove as EventListener);
     document.addEventListener('keydown', this._onKeyDown);
+    document.addEventListener('pointerdown', this._onDocumentPointerDown);
     this._setupMutationObserver();
     this._triggerRender();
   }
@@ -319,40 +321,16 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
     this._triggerRender();
   }
 
-  // ─── Render ─────────────────────────────────────────────────────────────
-
-  private _renderAssociationsPanel() {
-    const associations = Array.from(this._associations.entries());
-
-    return html`
-      <div class="associations-panel">
-        <div class="associations-panel-title">${this.i18n.t('match.correctResponse')}</div>
-        <div class="association-list">
-          ${this._pendingSourceId
-            ? html`
-                <span class="pending-indicator">
-                  ${this.i18n.t('match.selectTargetFor', { label: this._getLabel(this._pendingSourceId) })}
-                  <button
-                    type="button"
-                    class="association-chip-remove"
-                    aria-label=${this.i18n.t('match.cancel')}
-                    @click=${(e: Event) => {
-                      e.stopPropagation();
-                      this._cancelPending();
-                    }}
-                  >
-                    ×
-                  </button>
-                </span>
-              `
-            : nothing}
-          ${associations.length === 0 && !this._pendingSourceId
-            ? html` <span class="no-associations">${this.i18n.t('match.noAssociations')}</span> `
-            : nothing}
-        </div>
-      </div>
-    `;
-  }
+  /**
+   * Cancel a pending source selection when the user clicks anywhere outside this
+   * interaction, so the drop-slot highlight stops. (Escape is handled by
+   * `_onKeyDown`; clicking the same source again toggles it off.)
+   */
+  private _onDocumentPointerDown = (e: PointerEvent) => {
+    if (!this._pendingSourceId) return;
+    if (e.composedPath().includes(this)) return;
+    this._cancelPending();
+  };
 
   override updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
@@ -369,7 +347,6 @@ export class QtiMatchInteractionEdit extends InteractionPanel {
     return html`
       <slot name="prompt"></slot>
       <slot @slotchange=${this._onSlotChange}></slot>
-      ${this._setupDone && this._panelOpen ? this._renderAssociationsPanel() : nothing}
     `;
   }
 }

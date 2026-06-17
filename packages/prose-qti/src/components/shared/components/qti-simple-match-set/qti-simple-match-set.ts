@@ -24,10 +24,18 @@ export class QtiSimpleMatchSetEdit extends LitElement {
      * element alone. Each slotted choice then reads as a clickable drop slot.
      */
     .slot-wrapper.selecting ::slotted(qti-simple-associable-choice) {
-      outline: 1px solid var(--qti-border, #cbd5e1);
-      outline-offset: 2px;
-      border-radius: 4px;
       cursor: pointer;
+      /*
+       * CSS custom properties inherit into the child's shadow DOM, so these
+       * two variables are read by [part='dropslot'] inside qti-simple-associable-choice
+       * to show the drop slot and start its pulse animation — without setting
+       * any attributes (which would trigger ProseMirror's mutation observer).
+       * --qti-dropslot-selecting carries the animation *name*: while selecting
+       * it runs the pulse, and once it's unset the child's animation resolves
+       * to none so the border snaps back to its resting color.
+       */
+      --qti-dropslot-selecting: dropslot-pulse;
+      --qti-dropslot-empty-display: flex;
     }
 
     .slot-wrapper.selecting ::slotted(qti-simple-associable-choice:hover) {

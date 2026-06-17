@@ -40,11 +40,17 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
         /* Runtime sets user-select:none for dragging; the editor needs to keep
            the choice text selectable/editable. */
         user-select: auto;
+        cursor: text !important;
       }
 
       ::slotted(p) {
         margin: 0;
         width: 100%;
+        /* qti-components' runtime styles disable pointer-events on the choice
+           content; the editor needs the text clickable so ProseMirror can map
+           a click to the correct caret position (otherwise the caret jumps to
+           the start of the paragraph). */
+        pointer-events: auto !important;
       }
 
       ::slotted(.ProseMirror-trailingBreak) {
@@ -56,10 +62,22 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
         flex-wrap: wrap;
         gap: 4px;
         width: auto;
+        /* The parent match set drives the pulse via --qti-dropslot-selecting,
+           which carries the animation name while a source is pending and is
+           unset otherwise. When unset the animation resolves to none, so the
+           border returns to its resting color instead of freezing on the last
+           pulse frame (which is what happens if you only pause play-state). */
+        animation: var(--qti-dropslot-selecting, none) 1.2s ease-in-out infinite;
+      }
+
+      @keyframes dropslot-pulse {
+        0%, 100% { border-color: var(--qti-border, #cbd5e1); }
+        50%       { border-color: var(--qti-border-active, #3b82f6); }
       }
 
       [part='dropslot']:empty {
-        display: none;
+        /* Hidden normally; shown when the parent signals selecting mode. */
+        display: var(--qti-dropslot-empty-display, none);
       }
 
       .fake-drag {
