@@ -6,7 +6,7 @@
  * the app-shell glue: Tailwind, DaisyUI, and the editor card chrome.
  */
 
-@import '@qti-editor/styles';
+@import '@citolab/prose-qti/core-css.css';
 @import "tailwindcss";
 @source "../../../packages/prose-qti-ui/src/**/*.{ts,js}";
 

@@ -33,7 +33,7 @@ import type {
   MigrationResult,
   MigrationStep,
   PreservedFragment,
-} from '@qti-editor/interfaces';
+} from '@citolab/prose-qti/interfaces';
 
 class CompatibilityContext implements MigrationContext {
   constructor(

@@ -3,7 +3,8 @@ import {
   countItemFragments,
   getItemFragmentXmls,
   formatXml,
-} from '../core/composer';
+} from "@citolab/prose-qti/core/composer";
+
 import {
   buildItemBodyContext,
   type QtiComposeContext,

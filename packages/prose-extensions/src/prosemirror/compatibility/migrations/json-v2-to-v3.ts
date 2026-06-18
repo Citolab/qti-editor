@@ -1,6 +1,6 @@
 import { composeJsonStep, jsonRenameAttr } from '../helpers.js';
 
-import type { MigrationStep } from '@qti-editor/interfaces';
+import type { MigrationStep } from '@citolab/prose-qti/interfaces';
 import type { NodeJSON } from 'prosekit/core';
 
 /**

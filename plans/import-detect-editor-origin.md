@@ -73,7 +73,7 @@ function isEditorOriginXml(xmlText: string): boolean {
 
 Add the `roundtripQtiItem` import at the top of the file:
 ```ts
-import { roundtripQtiItem } from '@qti-editor/qti3-item-import';
+import { roundtripQtiItem } from '@citolab/prose-qti/qti3-item-import';
 ```
 
 Modify `importXmlFromText` (current body at [importXml.ts:61](apps/editor/src/lib/importXml.ts#L61)):
@@ -124,13 +124,13 @@ export function importXmlFromText(xmlText: string, options: ImportXmlOptions): I
 
 ### 1c. Package dependency
 
-`@qti-editor/qti3-item-import` must be a runtime dep of `@qti-editor/app`. Check [apps/editor/package.json](apps/editor/package.json) — if missing, add it. Sister plans (`qti3-item-import.md`) have likely already done this; verify, don't duplicate.
+`@citolab/prose-qti/qti3-item-import` must be a runtime dep of `@qti-editor/app`. Check [apps/editor/package.json](apps/editor/package.json) — if missing, add it. Sister plans (`qti3-item-import.md`) have likely already done this; verify, don't duplicate.
 
 ```sh
-rg -n '"@qti-editor/qti3-item-import"' apps/editor/package.json
+rg -n '"@citolab/prose-qti/qti3-item-import"' apps/editor/package.json
 ```
 
-If absent: `pnpm --filter @qti-editor/app add @qti-editor/qti3-item-import@workspace:*`.
+If absent: `pnpm --filter @qti-editor/app add @citolab/prose-qti/qti3-item-import@workspace:*`.
 
 ---
 
@@ -156,7 +156,7 @@ Build two fixtures:
 
 Assertions:
 - Both produce a PM doc whose `qti-choice-interaction` node has `correctResponse: 'choice-a'` (or whatever the node attr is called — check the schema).
-- For editor-origin, `roundtripQtiItem` is **not** called. Stub or spy via `vi.mock('@qti-editor/qti3-item-import', ...)`.
+- For editor-origin, `roundtripQtiItem` is **not** called. Stub or spy via `vi.mock('@citolab/prose-qti/qti3-item-import', ...)`.
 - For foreign, `roundtripQtiItem` **is** called exactly once.
 
 ### 2c. Regression: round-trip on editor-origin

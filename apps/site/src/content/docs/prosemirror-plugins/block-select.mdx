@@ -1,0 +1,32 @@
+---
+title: Block Select
+description: Select whole block nodes and drag them as units.
+slug: docs/prosemirror-plugins/block-select
+---
+
+`block-select` lets authors select an entire block node with a drag handle or block-level gesture. It is useful for editors that need block reordering, block-level commands, or visual affordances around the current block selection.
+
+## Install
+
+```bash
+pnpm add @citolab/prose-extensions
+```
+
+## Usage
+
+```ts
+import { blockSelectExtension, blockSelectPlugin } from '@citolab/prose-extensions/block-select';
+
+// ProseKit
+const extensions = [blockSelectExtension];
+
+// Raw ProseMirror
+const plugins = [blockSelectPlugin];
+```
+
+`blockSelectExtension` is the ProseKit-friendly wrapper. `blockSelectPlugin` is the underlying ProseMirror plugin if you assemble the editor state yourself.
+
+## When to use
+
+Use this when users need to select or drag whole blocks instead of editing inline text only.
+

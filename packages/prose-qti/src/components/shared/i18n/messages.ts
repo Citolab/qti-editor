@@ -1,4 +1,4 @@
-import type { QtiI18nMessages } from '@qti-editor/interfaces';
+import type { QtiI18nMessages } from '@citolab/prose-qti/interfaces';
 
 export const defaultQtiMessages: Record<string, QtiI18nMessages> = {
   en: {

@@ -15,4 +15,4 @@ export type {
   QtiStringMapEntry,
   QtiStringMapping,
   ResponseProcessingKind,
-} from '@qti-editor/interfaces';
+} from '@citolab/prose-qti/interfaces';

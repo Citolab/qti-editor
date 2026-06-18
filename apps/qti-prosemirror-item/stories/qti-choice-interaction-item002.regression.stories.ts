@@ -25,13 +25,13 @@ import { baseKeymap } from 'prosemirror-commands';
 import { roundtripChoice, roundtripItemBody, reduceToItemBody } from '@citolab/prose-qti/qti3-item-import';
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
 import { buildSingleAssessmentItemXml, formatXml } from '@citolab/prose-qti/core/composer';
+import { pmToRoundtripXml } from '@citolab/prose-qti/components/shared/pm-to-roundtrip-xml';
+import { roundtripXmlToPm } from '@citolab/prose-qti/components/shared/roundtrip-xml-to-pm';
+import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
+import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
 
 import { qtiTransformItem } from '@qti-components/transformers';
 
-import { pmToRoundtripXml } from '@citolab/prose-qti/components/shared/pm-to-roundtrip-xml';
-import { roundtripXmlToPm } from '@citolab/prose-qti/components/shared/roundtrip-xml-to-pm';
-import { blockSelectPlugin, nodeAttrsSyncPlugin } from 'packages/prose-extensions/src';
-import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
 import '@citolab/prose-qti/components/choice/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-simple-choice/register.js';
@@ -48,7 +48,7 @@ const qtiNodes = Object.fromEntries(
   ])
 );
 
-const baseNodes = { ...nodes, ...qtiNodes };
+const baseNodes = { ...nodes, paragraph: { ...nodes.paragraph, group: 'block richtext' }, ...qtiNodes };
 
 /** The editor schema used for the ITEM002 roundtrip. */
 export const schema = new Schema({

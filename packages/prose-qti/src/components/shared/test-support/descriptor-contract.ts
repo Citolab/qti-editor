@@ -1,6 +1,6 @@
 import { createSchemaFromNodeSpecs } from './schema.js';
 
-import type { InteractionDescriptor } from '@qti-editor/interfaces';
+import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
 function expectRootAttributePanelMetadata(descriptor: InteractionDescriptor) {
   if (!descriptor.attributePanelMetadata) {

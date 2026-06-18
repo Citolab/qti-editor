@@ -1,10 +1,18 @@
 ---
-title: QTI Package
+title: QTI Package Export
 description: Reference for the QTI 3.0 package exporter.
 slug: docs/packages/qti-roundtrip-export
 ---
 
-`@qti-editor/qti-package-builder` exports the editor's ProseMirror document to a **standard QTI 3.0 package**.
+`@citolab/prose-qti/package-builder` exports the editor's ProseMirror document to a **standard QTI 3.0 package**.
+
+## When to use this
+
+Use this package when you need to:
+
+- generate a downloadable QTI package ZIP instead of a single item XML string
+- package one or more assessment items into an `imsmanifest.xml`-backed archive
+- keep response-declaration and response-processing generation inside the editor's export pipeline
 
 ## Scope
 
@@ -14,7 +22,7 @@ The package builder:
 - folds editor authoring state (correct responses, scores) into standard `qti-response-declaration` / `qti-response-processing`
 - emits interactions with **no editor-specific attributes** (no `data-*` mirrors, no marker attributes)
 
-The output is interchange-friendly standard QTI 3.0. On re-import, `@qti-editor/qti3-item-import` reconstructs authoring state from the native declarations (see [Itembody-only QTI Subformat](./itembody-subformat)).
+The output is interchange-friendly standard QTI 3.0. On re-import, `@citolab/prose-qti/qti3-item-import` reconstructs authoring state from the native declarations (see [Itembody-only QTI Subformat](./itembody-subformat)).
 
 ## Main exports
 
@@ -23,7 +31,7 @@ import {
   createQtiPackageFromNode,
   createQtiPackageFromProseMirrorJson,
   createQtiPackageFromItems,
-} from '@qti-editor/qti-package-builder';
+} from '@citolab/prose-qti/package-builder';
 ```
 
 ## Typical usage
@@ -31,7 +39,7 @@ import {
 Export directly from the current editor document:
 
 ```ts
-import { createQtiPackageFromNode } from '@qti-editor/qti-package-builder';
+import { createQtiPackageFromNode } from '@citolab/prose-qti/package-builder';
 
 const blob = await createQtiPackageFromNode(editor.view.state.doc, {
   identifier: 'item-1',
@@ -75,5 +83,10 @@ Authoring state is preserved through **standard QTI 3.0**, not through editor-sp
 - correct responses → `qti-correct-response` values in `qti-response-declaration`
 - scores → `qti-response-processing`
 
-On import, `@qti-editor/qti3-item-import` (`roundtripQtiItem`) hoists these back onto each interaction as canonical, unprefixed attributes. Because the export is standard QTI, the same importer can also ingest third-party QTI 3.0 items — though editor-only hints with no standard source (text-entry `case-sensitive`, select-point `area-mappings`) are only present when the source item carried them.
+On import, `@citolab/prose-qti/qti3-item-import` (`roundtripQtiItem`) hoists these back onto each interaction as canonical, unprefixed attributes. Because the export is standard QTI, the same importer can also ingest third-party QTI 3.0 items — though editor-only hints with no standard source (text-entry `case-sensitive`, select-point `area-mappings`) are only present when the source item carried them.
 
+## Related
+
+- [Itembody-only QTI Subformat](./itembody-subformat)
+- [QTI Item Roundtrip](./qti-item-roundtrip)
+- [QTI 3 Item Import](./qti3-item-import)

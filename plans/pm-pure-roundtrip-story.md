@@ -7,7 +7,7 @@ Two coupled outcomes:
 1. **Refactor** `xmlFromNode` and `qtiFromNode` so the logic lives in a pure-ProseMirror module, and `@qti-editor/prosekit-integration` becomes a thin wrapper that only injects `ListDOMSerializer`. No duplication.
 2. **Rewrite** `packages/prosemirror/interaction-choice/src/qti-choice-interaction.regression.stories.ts` to a **single minimal story** that:
    - Loads `/qti/kennisnet/ITEM001.xml` via `qtiTransformItem().load(...)`
-   - Converts the QTI XML → roundtrip HTML via `roundtripQtiItem` from `@qti-editor/qti3-item-import`
+   - Converts the QTI XML → roundtrip HTML via `roundtripQtiItem` from `@citolab/prose-qti/qti3-item-import`
    - Imports the roundtrip HTML into a pure-ProseMirror `EditorView`
    - Exports the PM doc back to QTI 3 XML via the new pure-PM `qtiFromNode` and `console.log`s it
 
@@ -22,7 +22,7 @@ Strictly **no ProseKit imports** in the story or in the new pure-PM module.
 | API | Source | Signature |
 |---|---|---|
 | `qtiTransformItem()` | `@qti-components/transformers` | `() => { load(uri, signal?): Promise<api>; parse(xml): api; xml(): string; htmlDoc(): DocumentFragment; ... }` ([qti-transform-item.ts:45](/Users/patrickklein/Projects/Edtech/QTI/QTI-Components/packages/qti-transformers/src/qti-transform-item.ts#L45)) |
-| `roundtripQtiItem(xmlString)` | `@qti-editor/qti3-item-import` | `(xml: string) => string` — hoists correct-response/score onto interactions ([roundtrip-qti-item.ts:13](/Users/patrickklein/Projects/Editor/QTI-Editor/packages/qti/qti3-item-import/src/roundtrip-qti-item.ts#L13)) |
+| `roundtripQtiItem(xmlString)` | `@citolab/prose-qti/qti3-item-import` | `(xml: string) => string` — hoists correct-response/score onto interactions ([roundtrip-qti-item.ts:13](/Users/patrickklein/Projects/Editor/QTI-Editor/packages/qti/qti3-item-import/src/roundtrip-qti-item.ts#L13)) |
 | `buildSingleAssessmentItemXml(ctx)` | `@qti-editor/core/composer` | `(ctx?: ComposerItemContext) => string` ([core/composer/index.ts:401](/Users/patrickklein/Projects/Editor/QTI-Editor/packages/qti/core/src/composer/index.ts#L401)) |
 | `buildMultipleAssessmentItemsXml`, `formatXml`, `countItemFragments`, `getItemFragmentXmls` | `@qti-editor/core/composer` | as currently used by `save-qti/index.ts` |
 | `DOMSerializer.fromSchema(schema)` | `prosemirror-model` (pure PM) | `.serializeFragment(content) => DocumentFragment` |
@@ -39,7 +39,7 @@ Everything else (`htmlToXmlString`, `htmlToXmlCompatible`, `formatXml`, `DOMPars
 ### Confirmed facts
 
 - **Static serving**: `.storybook/main.ts` has `staticDirs: ['../public']`. ITEM001 is at [public/qti/kennisnet/ITEM001.xml](public/qti/kennisnet/ITEM001.xml). URL: `/qti/kennisnet/ITEM001.xml`.
-- **`@qti-editor/qti3-item-import`** has zero prosemirror/prosekit deps.
+- **`@citolab/prose-qti/qti3-item-import`** has zero prosemirror/prosekit deps.
 - **`@qti-editor/core`** has no prosekit deps.
 
 ---
@@ -206,7 +206,7 @@ import { baseKeymap } from 'prosemirror-commands';
 import { history, undo, redo } from 'prosemirror-history';
 
 import { qtiTransformItem } from '@qti-components/transformers';
-import { roundtripQtiItem } from '@qti-editor/qti3-item-import';
+import { roundtripQtiItem } from '@citolab/prose-qti/qti3-item-import';
 import { qtiFromNode } from '@qti-editor/qti-roundtrip-export/pm-qti';
 
 import { blockSelectPlugin } from '../../extensions/src/block-select/block-select-plugin';
@@ -305,7 +305,7 @@ Add (story-only, devDeps):
 {
   "devDependencies": {
     "@qti-components/transformers": "<match version used elsewhere — check root pnpm-lock>",
-    "@qti-editor/qti3-item-import": "workspace:*",
+    "@citolab/prose-qti/qti3-item-import": "workspace:*",
     "@qti-editor/qti-roundtrip-export": "workspace:*"
   }
 }
@@ -342,7 +342,7 @@ Add (story-only, devDeps):
 ## What stays intact
 
 - `descriptor.ts`, `commands/*`, `components/*`, schema specs in `interaction-choice` — **untouched**.
-- `@qti-editor/qti3-item-import` — **untouched**.
+- `@citolab/prose-qti/qti3-item-import` — **untouched**.
 - `@qti-editor/core/composer` — **untouched**.
 - Public API of `@qti-editor/prosekit-integration` — same export names, same signatures, same runtime behavior. The editor app needs **zero changes**.
 

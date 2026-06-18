@@ -1,5 +1,5 @@
 {
-  "name": "@qti-editor/qti3-item-import",
+  "name": "@citolab/prose-qti/qti3-item-import",
   "version": "1.1.0",
   "private": true,
   "type": "module",

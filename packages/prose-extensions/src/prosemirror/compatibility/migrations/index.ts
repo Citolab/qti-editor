@@ -5,7 +5,7 @@ import { jsonV3ToV4 } from './json-v3-to-v4.js';
 import { jsonV4ToV5 } from './json-v4-to-v5.js';
 import { jsonV5ToV6 } from './json-v5-to-v6.js';
 
-import type { MigrationStep } from '@qti-editor/interfaces';
+import type { MigrationStep } from '@citolab/prose-qti/interfaces';
 import type { NodeJSON } from 'prosekit/core';
 
 /**

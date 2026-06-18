@@ -14,5 +14,5 @@
  @plugin "daisyui" {
     themes: light --default;
    }
-@import '@qti-editor/styles';
+@import '@citolab/prose-qti/core-css.css';
 @custom-variant dark (&:where(.dark, .dark *));

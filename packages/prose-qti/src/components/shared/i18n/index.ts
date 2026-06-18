@@ -1,7 +1,7 @@
 import { defaultQtiMessages } from './messages.js';
 
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
-import type { QtiI18nMessages, QtiI18nParams } from '@qti-editor/interfaces';
+import type { QtiI18nMessages, QtiI18nParams } from '@citolab/prose-qti/interfaces';
 
 const DEFAULT_QTI_LANG = 'en';
 const qtiMessages = new Map<string, QtiI18nMessages>(Object.entries(defaultQtiMessages));

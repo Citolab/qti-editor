@@ -12,7 +12,7 @@
  */
 
 import { pmToRoundtripXml } from '@citolab/prose-qti/components/shared';
-import { buildSingleAssessmentItemXml, formatXml } from '../core/composer';
+import { buildSingleAssessmentItemXml, formatXml } from "@citolab/prose-qti/core/composer";
 
 import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
 

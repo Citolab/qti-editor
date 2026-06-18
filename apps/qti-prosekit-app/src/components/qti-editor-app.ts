@@ -7,9 +7,7 @@ import './blocks/composer-metadata-form/index.js';
 import './blocks/toolbar/index.js';
 import './blocks/items-gutter/index.js';
 import './blocks/items-navigator/index.js';
-import { registerLitEditorDropIndicator } from './blocks/drop-indicator/index.js';
 
-import { registerLitEditorTableHandle } from './blocks/table-handle/index.js';
 
 import './blocks/slash-menu/index.js';
 import { provide, ContextProvider } from '@lit/context';
@@ -25,15 +23,16 @@ import {
   nodeAttrsSyncExtension,
   readPersistedStateFromLocalStorage,
   stampSchemaVersion,
-} from 'packages/prose-extensions/src/prosemirror/index.js';
+} from '@citolab/prose-extensions/prosemirror';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@citolab/prose-qti/integration/events';
 import { editorContext } from '@citolab/prose-qti/integration/editor-context';
 import { notifyQtiI18nChanged, translateQti } from '@citolab/prose-qti/components/shared';
 
+import { registerLitEditorTableHandle } from './blocks/table-handle/index.js';
+import { registerLitEditorDropIndicator } from './blocks/drop-indicator/index.js';
 import { registerLitEditorBlockHandle } from './blocks/block-handle/index.js';
-
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';

@@ -1,9 +1,10 @@
+import { Fragment } from 'prosemirror-model';
+
 import {
   parseCorrectResponseAttribute,
   serializeCorrectResponseAttribute,
   type CorrectResponseValue,
 } from '@citolab/prose-qti/components/shared';
-import { Fragment } from 'prosemirror-model';
 
 import type { DOMOutputSpec, Node as ProseMirrorNode, NodeSpec, Schema } from 'prosemirror-model';
 

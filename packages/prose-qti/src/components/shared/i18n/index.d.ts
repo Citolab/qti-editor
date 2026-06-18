@@ -1,5 +1,5 @@
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
-import type { QtiI18nMessages, QtiI18nParams } from '@qti-editor/interfaces';
+import type { QtiI18nMessages, QtiI18nParams } from '@citolab/prose-qti/interfaces';
 export declare function notifyQtiI18nChanged(): void;
 export declare function registerQtiMessages(lang: string, messages: QtiI18nMessages): void;
 export declare function subscribeQtiI18n(listener: () => void): () => void;

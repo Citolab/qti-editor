@@ -7,7 +7,7 @@
 
 import { getInteractionComposerHandler } from '../interactions/composer.js';
 
-import type { ResponseProcessingKind } from '@qti-editor/interfaces';
+import type { ResponseProcessingKind } from '@citolab/prose-qti/interfaces';
 
 export {
   getStrippedAttributeSources,

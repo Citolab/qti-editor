@@ -10,6 +10,8 @@ Under the hood, the editor is built on [ProseMirror](https://prosemirror.net/), 
 
 The ProseMirror schema is what makes QTI interactions manageable: it defines which interaction nodes are allowed, where they can appear, what they can contain, and how they may be nested. That gives the editor built-in guards against invalid structures and adds safeguards around things like unsupported nesting or placing interactions in the wrong context.
 
+`@citolab/prose-qti` keeps the core ProseMirror packages as peer dependencies. In practice, that means your application should install `prosemirror-state`, `prosemirror-view`, `prosemirror-model`, and `prosemirror-commands` explicitly when you build a pure ProseMirror editor. If you use ProseKit, those packages come in transitively through ProseKit, but the same compatibility rule still applies: keep the ProseMirror packages on one aligned release set and upgrade them together to avoid duplicate copies or version skew.
+
 ## Architecture: Pure ProseMirror with Optional ProseKit
 
 QTI Editor interaction packages are built on **pure ProseMirror** with no framework dependencies. Each interaction package exports:
@@ -18,7 +20,7 @@ QTI Editor interaction packages are built on **pure ProseMirror** with no framew
 - **Commands** - Standard ProseMirror commands for inserting and manipulating interactions
 - **Node specs** - ProseMirror schema definitions for interaction nodes
 - **Web components** - Lit-based custom elements for rendering interactions
-- **ProseKit wrappers** (optional) - Convenience extensions when using ProseKit
+- **ProseKit extension** (optional) - `defineQtiInteractionsExtension` from `@citolab/prose-qti/integration/interactions/prosekit`
 
 This means you can:
 
@@ -34,7 +36,7 @@ QTI Editor is a composable kit — it provides the QTI building blocks that slot
 
 ## Part of the Citolab QTI ecosystem
 
-QTI Editor's interaction packages are built on top of [`@qti-components`](https://github.com/Citolab/qti-components) — Citolab's library of QTI-compliant web components that handle interaction rendering and runtime behavior. Each `@qti-editor/interaction-*` package pulls in its matching `@qti-components` dependency automatically.
+QTI Editor's interaction components are built on top of [`@qti-components`](https://github.com/Citolab/qti-components) — Citolab's library of QTI-compliant web components that handle interaction rendering and runtime behavior. `@citolab/prose-qti` pulls in the required `@qti-components` dependencies automatically.
 
 QTI Editor is part of a broader set of QTI tooling maintained by Citolab. For an overview of the full toolkit, visit [qti.citolab.nl](https://qti.citolab.nl/).
 

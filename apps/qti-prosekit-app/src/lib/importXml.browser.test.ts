@@ -10,7 +10,7 @@ function wrapItem(bodyInner: string, bodyAttrs = ''): string {
 
 const roundtripSpy = vi.fn((s: string) => s);
 
-vi.mock('@qti-editor/qti3-item-import', () => ({
+vi.mock('@citolab/prose-qti/qti3-item-import', () => ({
   roundtripQtiItem: (s: string) => roundtripSpy(s),
 }));
 

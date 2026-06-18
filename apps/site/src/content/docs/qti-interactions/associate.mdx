@@ -1,6 +1,6 @@
 ---
 title: Associate Interaction
-description: Install and use the associate interaction package.
+description: Install and use the associate interaction from @citolab/prose-qti.
 slug: docs/qti-interactions/associate
 ---
 
@@ -9,10 +9,23 @@ Associate interactions let candidates create associations between options from t
 ## Install
 
 ```bash
-pnpm add @citolab/prose-qti/components/register
+pnpm add @citolab/prose-qti
 ```
 
-This package integrates with `@qti-components/associate-interaction`.
+The associate interaction is exposed as a subpath export from `@citolab/prose-qti`, so you import it from `@citolab/prose-qti/components/associate` and register the custom elements with `@citolab/prose-qti/components/associate/register`.
+
+The underlying `@qti-components/associate-interaction` dependency is already pulled in by `@citolab/prose-qti`, so you do not install anything else for the interaction itself.
+
+## Usage
+
+Use the register side effect once, then call the insert command from your editor integration:
+
+```ts
+import '@citolab/prose-qti/components/associate/register';
+import { insertAssociateInteraction } from '@citolab/prose-qti/components/associate';
+
+insertAssociateInteraction(view.state, view.dispatch, view);
+```
 
 ## What it does
 

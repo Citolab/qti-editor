@@ -1,4 +1,4 @@
-import { CURRENT_SCHEMA_VERSION, type MigrationResult } from '@qti-editor/interfaces';
+import { CURRENT_SCHEMA_VERSION, type MigrationResult } from '@citolab/prose-qti/interfaces';
 
 import { createMigrationRegistry } from './index.js';
 import { HTML_MIGRATION_STEPS } from './migrations/index.js';

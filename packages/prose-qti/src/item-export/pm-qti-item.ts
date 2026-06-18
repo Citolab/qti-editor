@@ -2,7 +2,8 @@ import {
   buildSingleAssessmentItemXml,
   formatXml,
   type ComposerItemContext,
-} from '../core/composer';
+} from "@citolab/prose-qti/core/composer";
+
 import { xmlFromNode } from './pm-xml.js';
 
 import type { DOMSerializer, Node as ProseMirrorNode } from 'prosemirror-model';

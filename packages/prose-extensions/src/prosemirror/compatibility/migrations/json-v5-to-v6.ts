@@ -1,6 +1,5 @@
 import type { JsonNode } from './shared.js';
-
-import type { CompatibilityChange, MigrationStep } from '@qti-editor/interfaces';
+import type { CompatibilityChange, MigrationStep } from '@citolab/prose-qti/interfaces';
 import type { NodeJSON } from 'prosekit/core';
 
 /**

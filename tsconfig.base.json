@@ -21,146 +21,50 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@qti-editor/core": [
-        "packages/prose-qti/src/core/index.ts"
-      ],
-      "@qti-editor/core/composer": [
-        "packages/prose-qti/src/core/composer/index.ts"
-      ],
-      "@qti-editor/core/interactions/composer": [
-        "packages/prose-qti/src/core/interactions/composer.ts"
-      ],
-      "@qti-editor/qti-item-export/pm-qti-item": [
-        "packages/prose-qti/src/item-export/pm-qti-item.ts"
-      ],
-      "@qti-editor/qti-item-export/pm-xml": [
-        "packages/prose-qti/src/item-export/pm-xml.ts"
-      ],
-      "@qti-editor/qti-test-export/pm-qti-test": [
-        "packages/prose-qti/src/test-export/pm-qti-test.ts"
-      ],
-      "@qti-editor/qti3-item-import": [
-        "packages/prose-qti/src/qti3-item-import/index.ts"
-      ],
-      "@qti-editor/qti3-item-import/*": [
-        "packages/prose-qti/src/qti3-item-import/*"
-      ],
-      "@qti-editor/qti-item-roundtrip": [
-        "packages/prose-qti/src/item-roundtrip/index.ts"
-      ],
-      "@qti-editor/qti-item-roundtrip/*": [
-        "packages/prose-qti/src/item-roundtrip/*"
-      ],
-      "@qti-editor/prosekit-integration/save-qti-item": [
-        "packages/prose-qti/src/integration/save-qti-item/index.ts"
-      ],
-      "@qti-editor/prosekit-integration/save-qti-test": [
-        "packages/prose-qti/src/integration/save-qti-test/index.ts"
-      ],
-      "@qti-editor/qti-item-export": [
-        "packages/prose-qti/src/item-export/index.ts"
-      ],
-      "@qti-editor/qti-item-export/*": [
-        "packages/prose-qti/src/item-export/*"
-      ],
-      "@qti-editor/qti-test-export": [
-        "packages/prose-qti/src/test-export/index.ts"
-      ],
-      "@qti-editor/qti-test-export/*": [
-        "packages/prose-qti/src/test-export/*"
-      ],
-      "@qti-editor/qti-package-builder": [
-        "packages/prose-qti/src/package-builder/index.ts"
-      ],
-      "@qti-editor/core/*": [
-        "packages/prose-qti/src/core/*"
-      ],
-      "@citolab/qti-editor-core": [
-        "packages/prose-qti/src/core/index.ts"
-      ],
-      "@citolab/qti-editor-core/*": [
-        "packages/prose-qti/src/core/*"
-      ],
-      "@citolab/qti-editor-plugin-slash-menu": [
-        "packages/plugin-slash-menu/src/index.ts"
-      ],
-      "@citolab/qti-editor-plugin-slash-menu/*": [
-        "packages/plugin-slash-menu/src/*"
-      ],
-      "@citolab/qti-editor-plugin-qti-import": [
-        "packages/plugin-qti-import/src/index.ts"
-      ],
-      "@citolab/qti-editor-plugin-qti-import/*": [
-        "packages/plugin-qti-import/src/*"
-      ],
-      "@qti-editor/plugin-toolbar": [
-        "packages/plugin-toolbar/src/index.ts"
-      ],
-      "@qti-editor/plugin-toolbar/*": [
-        "packages/plugin-toolbar/src/*"
-      ],
-      "@qti-editor/plugin-side-panel": [
-        "packages/plugin-side-panel/index.ts"
-      ],
-      "@qti-editor/prosemirror-plugins": [
-        "packages/extensions/prosemirror/src/index.ts"
-      ],
-      "@qti-editor/prosemirror-attributes": [
-        "packages/extensions/prosemirror/src/attributes/index.ts"
-      ],
-      "@qti-editor/prosemirror-attributes-ui": [
-        "packages/extensions/prosemirror/src/attributes-ui/index.ts"
-      ],
       "@citolab/prose-qti-ui": [
         "packages/prose-qti-ui/src/index.ts"
       ],
       "@citolab/prose-qti-ui/*": [
         "packages/prose-qti-ui/src/*"
       ],
-      "@qti-editor/prosekit-integration": [
-        "packages/prose-qti/src/integration/index.ts"
+      "@citolab/prose-extensions": [
+        "packages/prose-extensions/src/index.ts"
       ],
-      "@qti-editor/prosekit-extensions": [
-        "packages/prosekit/extensions/src/index.ts"
+      "@citolab/prose-extensions/prosemirror": [
+        "packages/prose-extensions/src/prosemirror/index.ts"
       ],
-      "@qti-editor/prosekit-extensions/marks": [
-        "packages/prosekit/extensions/src/strong-em.ts"
+      "@citolab/prose-extensions/prosekit": [
+        "packages/prose-extensions/src/prosekit/index.ts"
       ],
-      "@qti-editor/prosekit-extensions/list": [
-        "packages/prosekit/extensions/src/list.ts"
+      "@citolab/prose-extensions/prosekit/list": [
+        "packages/prose-extensions/src/prosekit/list.ts"
       ],
-      "@qti-editor/prosekit-integration/code": [
-        "packages/prose-qti/src/integration/code/index.ts"
+      "@citolab/prose-extensions/prosekit/marks": [
+        "packages/prose-extensions/src/prosekit/strong-em.ts"
       ],
-      "@qti-editor/prosekit-integration/editor-context": [
-        "packages/prose-qti/src/integration/editor-context/index.ts"
+      "@citolab/prose-extensions/attributes": [
+        "packages/prose-extensions/src/prosemirror/attributes/index.ts"
       ],
-      "@qti-editor/prosekit-integration/events": [
-        "packages/prose-qti/src/integration/events/index.ts"
+      "@citolab/prose-extensions/attributes-ui": [
+        "packages/prose-extensions/src/prosemirror/attributes-ui/index.ts"
       ],
-      "@qti-editor/prosekit-integration/interactions/prosekit": [
-        "packages/prose-qti/src/integration/interactions/prosekit.ts"
+      "@citolab/prose-extensions/compatibility": [
+        "packages/prose-extensions/src/prosemirror/compatibility/index.ts"
       ],
-      "@qti-editor/prosekit-integration/item-context": [
-        "packages/prose-qti/src/integration/item-context/index.ts"
+      "@citolab/prose-extensions/block-select": [
+        "packages/prose-extensions/src/prosemirror/block-select/index.ts"
       ],
-      "@qti-editor/prosekit-integration/save-xml": [
-        "packages/prose-qti/src/integration/save-xml/index.ts"
+      "@citolab/prose-extensions/virtual-cursor": [
+        "packages/prose-extensions/src/prosemirror/virtual-cursor/index.ts"
       ],
-      "@qti-editor/prosekit-integration/*": [
-        "packages/prose-qti/src/integration/*"
+      "@citolab/prose-extensions/node-attrs-sync": [
+        "packages/prose-extensions/src/prosemirror/node-attrs-sync/index.ts"
       ],
-      "@qti-editor/prosemirror-plugins/block-select": [
-        "packages/extensions/prosemirror/src/block-select/index.ts"
+      "@citolab/prose-extensions/paste-semantic-html": [
+        "packages/prose-extensions/src/prosemirror/paste-semantic-html/index.ts"
       ],
-      "@qti-editor/prosemirror-plugins/virtual-cursor": [
-        "packages/extensions/prosemirror/src/virtual-cursor/index.ts"
-      ],
-      "@qti-editor/prosemirror-plugins/node-attrs-sync": [
-        "packages/extensions/prosemirror/src/node-attrs-sync/index.ts"
-      ],
-      "@qti-editor/prosemirror-plugins/paste-semantic-html": [
-        "packages/extensions/prosemirror/src/paste-semantic-html/index.ts"
+      "@citolab/prose-extensions/local-storage-doc-persistence-extension": [
+        "packages/prose-extensions/src/prosemirror/local-storage-doc-persistence-extension/index.ts"
       ],
       "@citolab/prose-qti": [
         "packages/prose-qti/src/index.ts"
@@ -176,6 +80,9 @@
       ],
       "@citolab/prose-qti/core-css": [
         "packages/prose-qti/src/core-css/index.ts"
+      ],
+      "@citolab/prose-qti/core-css.css": [
+        "packages/prose-qti/src/core-css/core-css.css"
       ],
       "@citolab/prose-qti/interfaces": [
         "packages/prose-qti/src/interfaces/index.ts"
@@ -293,9 +200,6 @@
       ],
       "@citolab/prose-qti/components/text-entry/*": [
         "packages/prose-qti/src/components/text-entry/*"
-      ],
-      "@qti-editor/interfaces": [
-        "packages/prose-qti/src/interfaces/index.ts"
       ]
     }
   }

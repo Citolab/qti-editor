@@ -5,7 +5,6 @@ import '../convert-menu/index.ts'
 
 import { html, LitElement, nothing } from 'lit';
 import { ContextConsumer } from '@lit/context';
-
 import { defineUpdateHandler } from 'prosekit/core';
 import { subscribeQtiI18n, translateQti } from '@citolab/prose-qti/components/shared';
 import { editorContext } from '@citolab/prose-qti/integration/editor-context';

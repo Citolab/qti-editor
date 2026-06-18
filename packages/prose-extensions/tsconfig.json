@@ -10,11 +10,8 @@
     "allowImportingTsExtensions": false,
     "moduleResolution": "bundler",
     "paths": {
-      "@qti-editor/interfaces": ["../prose-qti/src/interfaces/index.ts"],
-      "@citolab/prose-qti/components/shared": ["../prose-qti/src/components/shared/index.ts"],
-      "@citolab/prose-qti/components/shared/*": ["../prose-qti/src/components/shared/*"],
-      "@qti-editor/prosemirror-plugins": ["src/prosemirror/index.ts"],
-      "@qti-editor/prosemirror-plugins/*": ["./src/*"]
+      "@citolab/prose-extensions": ["src/prosemirror/index.ts"],
+      "@citolab/prose-extensions/*": ["./src/*"]
     },
     "strict": false,
     "noUnusedLocals": false,

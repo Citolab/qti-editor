@@ -1,0 +1,122 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "qti-editor",
+  "homepage": "https://github.com/citolab/qti-editor",
+  "items": [
+    {
+      "name": "qti-choice-attributes-editor",
+      "type": "registry:ui",
+      "title": "QTI Choice Attributes Editor",
+      "description": "Standalone choice-interaction class editor UI used by the attributes panel host.",
+      "dependencies": ["lit", "@citolab/prose-qti", "@citolab/prose-extensions"],
+      "files": [
+        {
+          "path": "packages/prose-qti-ui/src/components/choice-attributes-editor/index.ts",
+          "type": "registry:component",
+          "target": "@components/choice-attributes-editor/index.ts"
+        },
+        {
+          "path": "packages/prose-qti-ui/src/components/choice-attributes-editor/choice-attributes-editor.ts",
+          "type": "registry:component",
+          "target": "@components/choice-attributes-editor/choice-attributes-editor.ts"
+        },
+        {
+          "path": "packages/prose-qti-ui/src/components/attributes-panel/patch-event.ts",
+          "type": "registry:component",
+          "target": "@components/attributes-panel/patch-event.ts"
+        }
+      ]
+    },
+    {
+      "name": "qti-text-entry-attributes-editor",
+      "type": "registry:ui",
+      "title": "QTI Text Entry Attributes Editor",
+      "description": "Standalone text-entry editor for width presets, case sensitivity, and accepted-answer synonyms.",
+      "dependencies": ["lit", "@citolab/prose-qti", "@citolab/prose-extensions"],
+      "files": [
+        {
+          "path": "packages/prose-qti-ui/src/components/text-entry-attributes-editor/index.ts",
+          "type": "registry:component",
+          "target": "@components/text-entry-attributes-editor/index.ts"
+        },
+        {
+          "path": "packages/prose-qti-ui/src/components/text-entry-attributes-editor/text-entry-attributes-editor.ts",
+          "type": "registry:component",
+          "target": "@components/text-entry-attributes-editor/text-entry-attributes-editor.ts"
+        },
+        {
+          "path": "packages/prose-qti-ui/src/components/attributes-panel/patch-event.ts",
+          "type": "registry:component",
+          "target": "@components/attributes-panel/patch-event.ts"
+        }
+      ]
+    },
+    {
+      "name": "qti-extended-text-attributes-editor",
+      "type": "registry:ui",
+      "title": "QTI Extended Text Attributes Editor",
+      "description": "Standalone extended-text editor for height presets and rubric/model answer configuration.",
+      "dependencies": ["lit", "@citolab/prose-qti", "@citolab/prose-extensions"],
+      "files": [
+        {
+          "path": "packages/prose-qti-ui/src/components/extended-text-attributes-editor/index.ts",
+          "type": "registry:component",
+          "target": "@components/extended-text-attributes-editor/index.ts"
+        },
+        {
+          "path": "packages/prose-qti-ui/src/components/extended-text-attributes-editor/extended-text-attributes-editor.ts",
+          "type": "registry:component",
+          "target": "@components/extended-text-attributes-editor/extended-text-attributes-editor.ts"
+        },
+        {
+          "path": "packages/prose-qti-ui/src/components/attributes-panel/patch-event.ts",
+          "type": "registry:component",
+          "target": "@components/attributes-panel/patch-event.ts"
+        }
+      ]
+    },
+    {
+      "name": "qti-attributes-panel",
+      "type": "registry:ui",
+      "title": "QTI Attributes Panel",
+      "description": "A panel component that displays and edits attributes of the selected QTI node and its ancestors.",
+      "dependencies": ["lit", "@lit/context", "prosekit", "@citolab/prose-qti", "@citolab/prose-extensions"],
+      "registryDependencies": [
+        "citolab/qti-editor/qti-choice-attributes-editor",
+        "citolab/qti-editor/qti-text-entry-attributes-editor",
+        "citolab/qti-editor/qti-extended-text-attributes-editor"
+      ],
+      "files": [
+        {
+          "path": "packages/prose-qti-ui/src/components/attributes-panel/index.ts",
+          "type": "registry:component",
+          "target": "@components/attributes-panel/index.ts"
+        },
+        {
+          "path": "packages/prose-qti-ui/src/components/attributes-panel/attributes-panel.ts",
+          "type": "registry:component",
+          "target": "@components/attributes-panel/attributes-panel.ts"
+        }
+      ]
+    },
+    {
+      "name": "qti-interaction-insert-menu",
+      "type": "registry:ui",
+      "title": "QTI Interaction Insert Menu",
+      "description": "A simple dropdown for inserting QTI interaction nodes into a ProseKit editor.",
+      "dependencies": ["lit", "prosekit", "@citolab/prose-qti"],
+      "files": [
+        {
+          "path": "packages/prose-qti-ui/src/components/interaction-insert-menu/index.ts",
+          "type": "registry:component",
+          "target": "@components/interaction-insert-menu/index.ts"
+        },
+        {
+          "path": "packages/prose-qti-ui/src/components/interaction-insert-menu/interaction-insert-menu.ts",
+          "type": "registry:component",
+          "target": "@components/interaction-insert-menu/interaction-insert-menu.ts"
+        }
+      ]
+    }
+  ]
+}

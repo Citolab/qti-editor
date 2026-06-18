@@ -1,118 +1,116 @@
-# Package Topology Plan
+# Package Topology
 
-This plan reflects the current structure of this repository.
+This document reflects the current structure of this repository.
 
-## Target Topology
+## Current Topology
 
 ```text
 packages/
-  interfaces/               ← @qti-editor/interfaces (pure TypeScript contracts)
-
-  prosemirror/
-    attributes
-    attributes-ui
-    extensions
-    interaction-shared
-    interaction-choice
-    interaction-inline-choice
-    interaction-match
-    interaction-text-entry
-    interaction-extended-text
-    interaction-select-point
-
-  qti/
-    core
-    prosekit-integration
-
-  ui/
-    src/components/editor/ui/*
-    src/components/blocks/*
-    src/lib/*
-    src/hooks/*
-    components.json
-    registry.json
+  prose-qti/           ← @citolab/prose-qti
+  prose-extensions/    ← @citolab/prose-extensions
+  prose-qti-ui/        ← @citolab/prose-qti-ui (private)
 
 apps/
-  editor/
+  qti-prosekit-app/    ← @qti-editor/prosekit-app
+  qti-prosekit-item/   ← @qti-editor/prosekit-item
+  qti-prosemirror-item/ ← @qti-editor/prosemirror-item
+  site/                ← @qti-editor/site
+  e2e/
 ```
 
 ## Ownership
 
-### `packages/interfaces`
+### `packages/prose-qti` (`@citolab/prose-qti`)
 
-Pure TypeScript — no runtime dependencies, no framework imports.
+The main package. Owns all QTI logic, the descriptor registry, integration surfaces, and shared TypeScript contracts.
 
-Owns the shared contract types consumed by all other packages:
-
-- `InteractionDescriptor` — the registration unit that every interaction package exports
+**`src/interfaces/`** — Pure TypeScript contracts, no runtime dependencies:
+- `InteractionDescriptor` — the registration unit every interaction component exports
 - `InteractionNodeSpecEntry` — node spec entries within a descriptor
 - `NodeAttributePanelMetadata`, `AttributeFieldDefinition`, `AttributeFieldOption`, `AttributeFriendlyEditorDefinition` — unified attribute panel types
 - `InteractionComposerMetadata`, `InteractionComposerHandler`, `InteractionComposeResult`, `ResponseProcessingKind`, `ComposerWarning` — QTI composition contract types
 
-### `packages/prosemirror/*`
+**`src/components/*`** — One directory per interaction type. Each owns:
+- ProseMirror node specs, insert command, enter command
+- Node views and authoring behavior
+- Per-interaction QTI compose handler and metadata
+- Per-interaction attribute panel metadata
+- `descriptor.ts` exporting a single object that `satisfies InteractionDescriptor`
 
-Generic ProseMirror plugins, utilities, and all interaction-level packages.
+Interaction types: `associate`, `choice`, `extended-text`, `gap-match`, `hottext`, `inline-choice`, `item-divider`, `match`, `order`, `rubric-block`, `select-point`, `text-entry`, `shared`.
 
-Each interaction package (`interaction-choice`, `interaction-text-entry`, etc.) owns:
-- ProseMirror node specs
-- insert/enter commands
-- node views and authoring behavior
-- per-interaction attribute panel metadata
-- per-interaction QTI compose handler
-- a `descriptor.ts` exporting a single object that `satisfies InteractionDescriptor`
-
-`attributes` owns the generic ProseMirror attributes engine (plugin, transactions, events).
-
-`attributes-ui` owns the ProseKit-oriented attributes panel UI component, built on `@qti-editor/interfaces` types.
-
-`interaction-shared` owns shared schemas, commands, and helpers used across multiple interaction packages.
-
-`extensions` owns generic ProseMirror extensions (block select, virtual cursor, node attrs sync, paste semantic HTML, local storage persistence).
-
-### `packages/qti/core`
-
-QTI composition and XML semantics.
-
-- Descriptor registry: `listInteractionDescriptors()` — returns the canonical list of all registered `InteractionDescriptor` objects
-- Derived lookup helpers: `getNodeAttributePanelMetadataByNodeTypeName`, `getComposerHandlerByTagName`, etc.
+**`src/core/`** — Descriptor registry and composition orchestration:
+- `listInteractionDescriptors()` — canonical list of all registered `InteractionDescriptor` objects
+- `listInteractionSchemaNodeSpecs()` — node spec entries from selected descriptors
+- `listSelectedInteractionPluginFactories()` — plugin factories from descriptors
 - XML composition engine, response declarations, identifier normalization
-- Composer orchestration that drives per-interaction compose handlers via descriptors
 
-### `packages/qti/prosekit-integration`
+**`src/integration/`** — ProseKit integration surfaces:
+- `events` — `qtiEditorEventsExtension`, `onQtiContentChange`, `onQtiSelectionChange`
+- `code` — `qtiCodePanelExtension`
+- `item-context` — `itemContext`, `ItemContext`, `itemContextVariables`
+- `editor-context` — `editorContext`
+- `save-xml` — `xmlFromNode`, `xmlToHTML`
+- `save-qti-item` — `qtiItemFromProsemirror`
+- `save-qti-test` — `qtiTestFromProsemirror`, `countQtiItems`, `getQtiItems`
+- `interactions` — `registerQtiInteractionElements`
 
-ProseKit integration layer for QTI editors.
+**`src/item-export/`**, **`src/item-roundtrip/`**, **`src/qti3-item-import/`**, **`src/test-export/`**, **`src/package-builder/`** — QTI serialization, import transforms, and package building.
 
-- `defineQtiInteractionsExtension()` — builds ProseKit node spec extensions and keymap by iterating descriptors from `@qti-editor/core`
-- `defineQtiExtension()` — full QTI ProseKit extension including basic editor features
-- `qtiEditorEventsExtension` — ProseKit plugin emitting `qti:content:change` and `qti:selection:change` events
-- `qtiCodePanelExtension` — ProseKit plugin emitting JSON/HTML/XML document snapshots
-- `itemContext` / `ItemContext` — Lit context for QTI assessment item state
-- `qtiEditorContext` — Lit context for coordinating editor view state across components
-- Shared document types: `QtiDocumentJson`, `QtiNodeJson`
+### `packages/prose-extensions` (`@citolab/prose-extensions`)
 
-This package does not re-export interaction package internals. Consumers who need raw interaction commands or node specs import from the interaction packages directly.
+Generic ProseMirror and ProseKit extensions. No QTI-specific logic.
 
-### `packages/ui`
+- `src/prosemirror/attributes` — generic attributes engine
+- `src/prosemirror/attributes-ui` — ProseKit-oriented attributes panel UI
+- `src/prosemirror/block-select` — block selection plugin
+- `src/prosemirror/compatibility` — schema versioning and migration pipeline
+- `src/prosemirror/local-storage-doc-persistence-extension`
+- `src/prosemirror/node-attrs-sync`
+- `src/prosemirror/paste-semantic-html`
+- `src/prosemirror/virtual-cursor`
+- `src/prosekit/` — ProseKit wrappers (`defineEm`, `defineStrong`, `defineList`, etc.)
 
-Canonical source for copyable UI and registry items.
+Exports via subpaths:
+- `@citolab/prose-extensions/prosemirror` — all ProseMirror extensions
+- `@citolab/prose-extensions/prosekit` — ProseKit-specific extensions
+- `@citolab/prose-extensions/compatibility` — migration pipeline
+- `@citolab/prose-extensions/attributes`, `/attributes-ui`, `/block-select`, etc.
 
-- Vendored ProseKit/shadcn-style UI dependencies in `src/components/editor/ui/*`
-- QTI-facing and app-facing blocks in `src/components/blocks/*`
-- Registry metadata and build flow (`registry.json`, transform/build scripts)
+### `packages/prose-qti-ui` (`@citolab/prose-qti-ui`)
 
-### `apps/editor`
+Private package. Canonical source for copyable UI components.
 
-Real integration app and smoke surface.
+- `src/components/attributes-panel/`
+- `src/components/choice-attributes-editor/`
+- `src/components/extended-text-attributes-editor/`
+- `src/components/text-entry-attributes-editor/`
+- `src/components/interaction-insert-menu/`
 
-- Consumes package APIs directly (especially `@qti-editor/ui/*`) instead of app-local copied registry source
-- Provides a realistic end-to-end wiring reference
+Registry build: `pnpm --filter @citolab/prose-qti-ui registry:build`
+
+### `apps/qti-prosekit-app`
+
+Full editor: Firebase persistence, React panels, full toolbar. Primary end-to-end integration reference. Runs via `pnpm dev`.
+
+### `apps/qti-prosekit-item`
+
+Minimal ProseKit + QTI editor example. Shows the canonical pattern for assembling `defineQtiInteractionsExtension` from descriptors, wiring item context, and saving XML. Good starting point for new integrations.
+
+### `apps/qti-prosemirror-item`
+
+Raw ProseMirror editor with QTI roundtrip. No ProseKit. Demonstrates bare-minimum setup for QTI import/export without the ProseKit integration layer.
+
+### `apps/site`
+
+Astro documentation site, served alongside Storybook and the registry under Firebase.
 
 ## The Descriptor Pattern
 
-Every interaction package exports exactly one descriptor:
+Every interaction exports exactly one descriptor:
 
 ```ts
-// packages/prosemirror/interaction-choice/src/descriptor.ts
+// packages/prose-qti/src/components/choice/descriptor.ts
 export const choiceInteractionDescriptor = {
   tagName: 'qti-choice-interaction',
   nodeTypeName: 'qtiChoiceInteraction',
@@ -130,45 +128,31 @@ export const choiceInteractionDescriptor = {
 } satisfies InteractionDescriptor;
 ```
 
-The descriptor is registered in `packages/qti/core/src/interactions/composer.ts`. After registration, it flows automatically to:
+The descriptor is registered in `packages/prose-qti/src/core/interactions/composer.ts`. After registration, it flows automatically to:
 
 - `listInteractionDescriptors()` — usable by any consumer
-- `defineQtiInteractionsExtension()` — ProseKit node specs and keymap assembled from descriptors
+- `listInteractionSchemaNodeSpecs()` — node specs assembled from descriptors
 - `getNodeAttributePanelMetadataByNodeTypeName()` — attribute panel metadata lookup
-- the XML composer — compose handlers dispatched by tag name
+- The XML composer — compose handlers dispatched by tag name
 
-Adding a new interaction means: write the interaction package, export a descriptor, register it in core. No other files need updating.
+Apps consume descriptors to assemble the ProseKit extension (see `apps/qti-prosekit-item/src/extensions/qti-extension.ts` for the canonical pattern). Adding a new interaction: write the component, export a descriptor, register it in core. No other files need updating.
 
 ## Package Dependency Flow
 
 ```
-@qti-editor/interfaces          (no deps)
+@citolab/prose-qti           (QTI + interfaces + integration)
         ↓
-@qti-editor/interaction-*       (depend on interfaces, interaction-shared)
+@citolab/prose-extensions    (generic ProseMirror/ProseKit; depends on prose-qti)
         ↓
-@qti-editor/core                (depends on all interaction packages, interfaces)
+@citolab/prose-qti-ui        (private UI; depends on both above)
         ↓
-@qti-editor/prosekit-integration (depends on core, lit, prosekit)
-        ↓
-@qti-editor/ui                  (depends on prosekit-integration, interaction packages, core)
-        ↓
-apps/editor                     (depends on ui, prosekit-integration)
+apps/*                       (consume all packages)
 ```
-
-`@qti-editor/prosemirror-attributes` and `@qti-editor/prosemirror-attributes-ui` sit alongside the interaction packages in the `prosemirror` layer and depend on `interfaces`.
 
 ## Registry Build/Hosting
 
-- Registry source of truth: `packages/ui/registry.json`
-- Registry build: `pnpm --filter @qti-editor/ui registry:build`
-- Deploy staging:
-  - app at `hosting/dist/`
-  - storybook at `hosting/dist/storybook/`
-  - registry JSON at `hosting/dist/r/`
-- Firebase serves a single site with `/`, `/storybook/`, and `/r/`.
-
-## Migration Notes
-
-- The legacy top-level `registry/` workspace is removed.
-- Any stale references to `registry/prosekit-core` or `registry/prosekit-ui` should be treated as historical and migrated to `packages/ui`.
-- The old `@qti-editor/qti-editor-kit` package was renamed to `@qti-editor/prosekit-integration` and its barrel re-export of all interaction packages was removed. Consumers import interaction commands from the individual interaction packages directly.
+- Registry source of truth: `packages/prose-qti-ui/src/`
+- Registry build: `pnpm registry:build` (delegates to `@citolab/prose-qti-ui`)
+- Firebase hosting:
+  - `hosting:site` → Astro site + Storybook + registry JSON under `/r/`
+  - `hosting:editor` → `apps/qti-prosekit-app` build

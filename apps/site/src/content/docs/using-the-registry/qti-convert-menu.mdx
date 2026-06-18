@@ -1,23 +1,17 @@
 ---
 title: QTI Convert Menu
-description: Install and use the selection conversion registry component.
+description: Demo app shell component for selection conversion.
 slug: docs/using-the-registry/qti-convert-menu
 ---
 
 `qti-convert-menu` is a dropdown for converting the current text selection into a QTI interaction. Use it in the toolbar to let authors turn existing content into QTI interactions in one click — without re-typing anything.
 
-## Install
-
-```bash
-npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-convert-menu.json
-```
-
-The registry command installs the component source and its package dependencies into your app.
+This component lives in the demo app shell in this repository. It is not part of the GitHub registry, so there is no `shadcn add` command for it.
 
 ## Usage
 
 ```ts
-import '@/components/convert-menu';
+import './components/convert-menu';
 
 const menu = document.querySelector('qti-convert-menu');
 menu.editor = editor;

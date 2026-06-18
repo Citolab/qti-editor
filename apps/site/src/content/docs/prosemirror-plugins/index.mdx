@@ -1,0 +1,43 @@
+---
+title: ProseMirror Plugins
+description: Generic ProseMirror and ProseKit plugins shipped with QTI Editor.
+slug: docs/prosemirror-plugins
+---
+
+`@citolab/prose-extensions` provides generic editor behavior that sits alongside `@citolab/prose-qti`. Use it when you need block selection, node attribute synchronization, semantic paste cleanup, persistence, or schema migration helpers that do not depend on QTI semantics.
+
+## Available plugins
+
+- [Block Select](/docs/prosemirror-plugins/block-select/) - block node selection and drag handles
+- [Virtual Cursor](/docs/prosemirror-plugins/virtual-cursor/) - cursor behavior at mark boundaries
+- [Node Attrs Sync](/docs/prosemirror-plugins/node-attrs-sync/) - keeps node attributes in sync with the DOM
+- [Semantic Paste](/docs/prosemirror-plugins/paste-semantic-html/) - normalizes pasted HTML into semantic structure
+- [Local Storage Persistence](/docs/prosemirror-plugins/local-storage-doc-persistence-extension/) - saves and restores editor state from `localStorage`
+- [Compatibility](/docs/prosemirror-plugins/compatibility/) - schema migration helpers and versioned document transforms
+
+## Install
+
+```bash
+pnpm add @citolab/prose-extensions
+```
+
+## Usage
+
+Each feature lives under its own subpath export:
+
+```ts
+import { blockSelectExtension } from '@citolab/prose-extensions/block-select';
+import { nodeAttrsSyncExtension } from '@citolab/prose-extensions/node-attrs-sync';
+import { defineSemanticPasteExtension } from '@citolab/prose-extensions/paste-semantic-html';
+import { createVirtualCursor } from '@citolab/prose-extensions/virtual-cursor';
+import {
+  defineLocalStorageDocPersistenceExtension,
+  readPersistedStateFromLocalStorage,
+} from '@citolab/prose-extensions/local-storage-doc-persistence-extension';
+```
+
+`blockSelectExtension` and `nodeAttrsSyncExtension` are ProseKit extensions. `createVirtualCursor` returns a raw ProseMirror plugin. The persistence and semantic-paste helpers are also exposed as ProseKit-ready extensions, while the compatibility chapter covers the migration helpers directly.
+
+## When to use this
+
+Use these helpers when you need editor behavior that is independent of QTI semantics. QTI-specific integration surfaces live in `@citolab/prose-qti`.

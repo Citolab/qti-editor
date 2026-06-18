@@ -24,15 +24,7 @@ QTI Editor is a composable kit — it provides the QTI building blocks that slot
 ```bash
 pnpm add prosemirror-state prosemirror-view prosemirror-model prosemirror-commands \
   @qti-components/theme \
-  @qti-editor/core \
-  @citolab/prose-qti/components/choice \
-  @citolab/prose-qti/components/extended-text \
-  @citolab/prose-qti/components/inline-choice \
-  @citolab/prose-qti/components/match \
-  @citolab/prose-qti/components/order \
-  @citolab/prose-qti/components/select-point \
-  @citolab/prose-qti/components/shared \
-  @citolab/prose-qti/components/text-entry \
+  @citolab/prose-qti \
   lit
 ```
 
@@ -41,13 +33,13 @@ pnpm add prosemirror-state prosemirror-view prosemirror-model prosemirror-comman
 ```typescript
 // src/app/services/qti-editor.service.ts
 import { Injectable } from '@angular/core';
-import { EditorState, Plugin } from 'prosemirror-state';
+import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
 import { 
   listInteractionDescriptors, 
   listInteractionPluginFactories 
-} from '@qti-editor/core/interactions/composer';
+} from '@citolab/prose-qti/core/interactions/composer';
 
 @Injectable({ providedIn: 'root' })
 export class QtiEditorService {
@@ -93,23 +85,16 @@ export class QtiEditorService {
 ```bash
 pnpm add prosekit \
   @qti-components/theme \
-  @qti-editor/core \
-  @citolab/prose-qti/components/choice \
-  @citolab/prose-qti/components/extended-text \
-  @citolab/prose-qti/components/inline-choice \
-  @citolab/prose-qti/components/match \
-  @citolab/prose-qti/components/order \
-  @citolab/prose-qti/components/select-point \
-  @citolab/prose-qti/components/shared \
-  @citolab/prose-qti/components/text-entry \
+  @citolab/prose-qti \
+  @citolab/prose-extensions \
   lit
 ```
 
 ### Notes on ProseKit Integration
 
-- `@qti-editor/ui` is registry source, not a runtime import path.
-- ProseKit integration is optional - interaction packages export pure ProseMirror plugins.
-- The intended public model is: `prosekit` (optional) + `@qti-editor/interaction-*` + `@qti-editor/core` + copied registry UI.
+- The GitHub registry in this repository is the source for copied UI components; do not treat the demo app shell components as a runtime import path.
+- ProseKit integration is optional — interaction packages export pure ProseMirror plugins.
+- The intended public model is: `prosekit` (optional) + `@citolab/prose-qti` + `@citolab/prose-extensions` + copied registry UI.
 
 ## Using the Registry (For Either Approach)
 
@@ -161,16 +146,14 @@ export function cn(...classes: Array<string | false | null | undefined>) {
 ### Install the Lit UI through the registry
 
 ```bash
-npx shadcn@latest add @prosekit/lit-example-toolbar
-npx shadcn@latest add https://qti-editor.citolab.nl/r/lit-editor-slash-menu.json
-npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-composer.json
-npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-composer-metadata-form.json
-npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-attributes-panel.json
-npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-interaction-insert-menu.json
-npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-convert-menu.json
+pnpm dlx shadcn@latest add @prosekit/lit-example-toolbar
+pnpm dlx shadcn@latest add citolab/qti-editor/qti-attributes-panel
+pnpm dlx shadcn@latest add citolab/qti-editor/qti-interaction-insert-menu
 ```
 
 These files are boilerplate templates. Once copied into your Angular app, you own them.
+
+The demo app shell components in this repository - `qti-composer`, `qti-composer-metadata-form`, `qti-code-panel`, `qti-convert-menu`, `qti-items-gutter`, `qti-items-navigator`, `lit-editor-toolbar`, and `lit-editor-slash-menu` - are local examples and are not distributed through the registry.
 
 ### Add Tailwind and DaisyUI, which are necessary to be able to use the registry components
 
@@ -208,181 +191,29 @@ pnpm add @egoist/tailwindcss-icons @iconify-json/lucide daisyui
 
 ## ProseKit-Specific Setup (Only for Approach 2)
 
-If you're using ProseKit (Approach 2), add this small local editor helper layer in your Angular app.
+If you're using ProseKit (Approach 2), wire the integration surfaces from the packages directly — no copy-paste required.
 
-### Local editor events
-
-```ts
-// src/lib/qti-editor/events.ts
-import { definePlugin, type Extension } from 'prosekit/core';
-import { ListDOMSerializer } from 'prosekit/extensions/list';
-import { Plugin, PluginKey } from 'prosekit/pm/state';
-
-export interface QtiDocumentJson {
-  type: string;
-  content?: QtiNodeJson[];
-}
-
-export interface QtiNodeJson {
-  type: string;
-  attrs?: Record<string, unknown>;
-  content?: QtiNodeJson[];
-  text?: string;
-  marks?: Array<{ type: string; attrs?: Record<string, unknown> }>;
-}
-
-export interface QtiContentChangeEventDetail {
-  json: QtiDocumentJson;
-  html: string;
-  timestamp: number;
-}
-
-export interface QtiSelectionChangeEventDetail {
-  from: number;
-  to: number;
-  empty: boolean;
-  timestamp: number;
-}
-
-export interface QtiEditorEventsOptions {
-  contentChangeEvent?: string;
-  selectionChangeEvent?: string;
-  emitContentChanges?: boolean;
-  emitSelectionChanges?: boolean;
-  eventTarget?: EventTarget;
-}
-
-const editorEventsPluginKey = new PluginKey('qti-editor-events');
-
-export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): Extension {
-  const {
-    contentChangeEvent = 'qti:content:change',
-    selectionChangeEvent = 'qti:selection:change',
-    emitContentChanges = true,
-    emitSelectionChanges = true,
-    eventTarget = document,
-  } = options;
-
-  let lastDocJson: string | undefined;
-
-  return definePlugin(
-    () =>
-      new Plugin({
-        key: editorEventsPluginKey,
-        view(view) {
-          if (emitContentChanges) {
-            const json = view.state.doc.toJSON() as QtiDocumentJson;
-            lastDocJson = JSON.stringify(json);
-
-            const serializer = ListDOMSerializer.fromSchema(view.state.schema);
-            const fragment = serializer.serializeFragment(view.state.doc.content);
-            const div = document.createElement('div');
-            div.appendChild(fragment);
-
-            eventTarget.dispatchEvent(
-              new CustomEvent(contentChangeEvent, {
-                detail: { json, html: div.innerHTML, timestamp: Date.now() },
-                bubbles: true,
-              }),
-            );
-          }
-
-          return {
-            update(updatedView, prevState) {
-              if (emitContentChanges && !prevState.doc.eq(updatedView.state.doc)) {
-                const json = updatedView.state.doc.toJSON() as QtiDocumentJson;
-                const next = JSON.stringify(json);
-
-                if (next !== lastDocJson) {
-                  lastDocJson = next;
-
-                  const serializer = ListDOMSerializer.fromSchema(updatedView.state.schema);
-                  const fragment = serializer.serializeFragment(updatedView.state.doc.content);
-                  const div = document.createElement('div');
-                  div.appendChild(fragment);
-
-                  eventTarget.dispatchEvent(
-                    new CustomEvent(contentChangeEvent, {
-                      detail: { json, html: div.innerHTML, timestamp: Date.now() },
-                      bubbles: true,
-                    }),
-                  );
-                }
-              }
-
-              if (emitSelectionChanges && !prevState.selection.eq(updatedView.state.selection)) {
-                eventTarget.dispatchEvent(
-                  new CustomEvent(selectionChangeEvent, {
-                    detail: {
-                      from: updatedView.state.selection.from,
-                      to: updatedView.state.selection.to,
-                      empty: updatedView.state.selection.empty,
-                      timestamp: Date.now(),
-                    },
-                    bubbles: true,
-                  }),
-                );
-              }
-            },
-          };
-        },
-      }),
-  );
-}
-```
-
-### Local interaction extension assembly
+### Editor events and interactions
 
 ```ts
-// src/lib/qti-editor/interactions.ts
-import { listInteractionDescriptors, listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
+// src/app/app.ts
+import '@citolab/prose-qti/components/register';
+import { defineQtiInteractionsExtension } from '@citolab/prose-qti/integration/interactions/prosekit';
+import { qtiEditorEventsExtension } from '@citolab/prose-qti/integration/events';
+import { blockSelectExtension } from '@citolab/prose-extensions/block-select';
+import { nodeAttrsSyncExtension } from '@citolab/prose-extensions/node-attrs-sync';
+import { defineSemanticPasteExtension } from '@citolab/prose-extensions/paste-semantic-html';
+import {
+  defineLocalStorageDocPersistenceExtension,
+  readPersistedStateFromLocalStorage,
+} from '@citolab/prose-extensions/local-storage-doc-persistence-extension';
 import { defineBasicExtension } from 'prosekit/basic';
-import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
-
-import type { Command } from 'prosekit/pm/state';
-
-export function defineQtiInteractionsExtension() {
-  const descriptors = listInteractionDescriptors();
-  const seenSpecs = new Set<string>();
-  const nodeSpecExtensions: Extension[] = [];
-
-  for (const descriptor of descriptors) {
-    for (const { name, spec } of descriptor.nodeSpecs) {
-      if (seenSpecs.has(name)) continue;
-      seenSpecs.add(name);
-      nodeSpecExtensions.push(defineNodeSpec({ name, ...spec }));
-    }
-  }
-
-  const keymap: Record<string, Command> = {};
-  const enterCommands = descriptors
-    .map(descriptor => descriptor.enterCommand)
-    .filter((command): command is Command => command != null);
-
-  if (enterCommands.length > 0) {
-    keymap['Enter'] = (state, dispatch, view) =>
-      enterCommands.some(command => command(state, dispatch, view));
-  }
-
-  for (const descriptor of descriptors) {
-    if (descriptor.insertCommand && descriptor.keyboardShortcut) {
-      keymap[descriptor.keyboardShortcut] = descriptor.insertCommand;
-    }
-  }
-
-  const pluginExtensions = listInteractionPluginFactories().map(pluginFactory => definePlugin(pluginFactory));
-
-  return union(...nodeSpecExtensions, defineKeymap(keymap), ...pluginExtensions);
-}
-
-export function defineQtiExtension() {
-  return union(defineBasicExtension(), defineQtiInteractionsExtension());
-}
+import { createEditor, union } from 'prosekit/core';
 ```
 
-The `listInteractionPluginFactories()` call is important. Some interactions ship runtime ProseMirror plugins for authoring behavior, such as correct-response updates or wrapping selected text as hottext. If you omit those plugins, the interaction may render but editing actions can appear to do nothing.
+`listInteractionPluginFactories()` is called internally by `defineQtiInteractionsExtension`. It registers runtime ProseMirror plugins for authoring behavior such as correct-response updates or wrapping selected text as hottext — do not omit it.
 
-## 4. Mount the editor from an Angular host component
+## Mount the editor from an Angular host component
 
 Angular owns the layout and lifecycle. The copied Lit elements receive the editor instance via refs.
 
@@ -399,13 +230,17 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { createEditor, union, type Editor } from 'prosekit/core';
+import { defineBasicExtension } from 'prosekit/basic';
+import { blockSelectExtension } from '@citolab/prose-extensions/block-select';
+import { nodeAttrsSyncExtension } from '@citolab/prose-extensions/node-attrs-sync';
+import { defineSemanticPasteExtension } from '@citolab/prose-extensions/paste-semantic-html';
 import {
-  blockSelectExtension,
   defineLocalStorageDocPersistenceExtension,
-  defineSemanticPasteExtension,
-  nodeAttrsSyncExtension,
   readPersistedStateFromLocalStorage,
-} from '@qti-editor/prosemirror-plugins';
+} from '@citolab/prose-extensions/local-storage-doc-persistence-extension';
+import { defineQtiInteractionsExtension } from '@citolab/prose-qti/integration/interactions/prosekit';
+import { qtiEditorEventsExtension } from '@citolab/prose-qti/integration/events';
+import '@citolab/prose-qti/components/register';
 
 import '../components/button';
 import '../components/image-upload-popover';
@@ -416,8 +251,6 @@ import '../components/composer-metadata-form';
 import '../components/attributes-panel';
 import '../components/interaction-insert-menu';
 import '../components/convert-menu';
-import { qtiEditorEventsExtension } from '../lib/qti-editor/events';
-import { defineQtiExtension } from '../lib/qti-editor/interactions';
 
 const STORAGE_KEY = 'qti-editor-angular:prosemirror-doc:v1';
 
@@ -464,7 +297,8 @@ export class App {
   private readonly eventTarget = new EventTarget();
   private readonly editor = createEditor({
     extension: union(
-      defineQtiExtension(),
+      defineBasicExtension(),
+      defineQtiInteractionsExtension(),
       defineSemanticPasteExtension(),
       defineLocalStorageDocPersistenceExtension({ storageKey: STORAGE_KEY }),
       blockSelectExtension,
@@ -537,4 +371,4 @@ export class App {
 - Add `CUSTOM_ELEMENTS_SCHEMA` to the host component.
 - Import the copied registry files for side effects so the custom elements register.
 - Assign `editor`, `editorView`, and `eventTarget` via refs, not HTML attributes.
-- Keep the helper layer local to your Angular app. It is intentionally app-owned glue.
+- `defineQtiInteractionsExtension` and `qtiEditorEventsExtension` come from `@citolab/prose-qti`; no local copies needed.

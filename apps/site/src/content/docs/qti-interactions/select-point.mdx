@@ -9,7 +9,20 @@ Select point interactions ask candidates to click a location or hotspot on an im
 ## Install
 
 ```bash
-pnpm add @citolab/prose-qti/components/register
+pnpm add @citolab/prose-qti
+```
+
+The select point interaction is exposed as a subpath export from `@citolab/prose-qti`, so you import it from `@citolab/prose-qti/components/select-point` and register the custom elements with `@citolab/prose-qti/components/select-point/register`.
+
+## Usage
+
+Use the register side effect once, then call the insert command from your editor integration:
+
+```ts
+import '@citolab/prose-qti/components/select-point/register';
+import { insertSelectPointInteraction } from '@citolab/prose-qti/components/select-point';
+
+insertSelectPointInteraction(view.state, view.dispatch, view);
 ```
 
 This package integrates with `@qti-components/select-point-interaction`.

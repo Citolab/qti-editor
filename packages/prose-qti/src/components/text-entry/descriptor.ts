@@ -4,7 +4,7 @@ import { qtiTextEntryInteractionNodeSpec } from './components/qti-text-entry-int
 import { textEntryInteractionComposerMetadata, textEntryNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
 import { textEntryComposerHandler } from './composer/handler.js';
 
-import type { InteractionDescriptor } from '@qti-editor/interfaces';
+import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
 export const textEntryInteractionDescriptor = {
   tagName: 'qti-text-entry-interaction',

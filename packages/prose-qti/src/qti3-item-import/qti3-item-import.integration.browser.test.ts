@@ -31,11 +31,12 @@ describe('roundtripQtiItem end-to-end via qtiTransformItem chain', () => {
     expect(interaction.getAttribute('score')).toBe('1');
   });
 
-  it('leaves source qti-response-declaration and qti-response-processing intact', () => {
+  it('reduces output to item-body (declarations and response-processing are consumed)', () => {
     const output = roundtripQtiItem(SAMPLE_QTI3);
     const doc = new DOMParser().parseFromString(output, 'text/xml');
-    expect(doc.querySelector('qti-response-declaration')).not.toBeNull();
-    expect(doc.querySelector('qti-response-processing')).not.toBeNull();
+    expect(doc.documentElement.tagName).toBe('qti-item-body');
+    expect(doc.querySelector('qti-response-declaration')).toBeNull();
+    expect(doc.querySelector('qti-response-processing')).toBeNull();
   });
 
   it('produces output whose hoisted attributes satisfy the editor schema parseDOM contract', () => {

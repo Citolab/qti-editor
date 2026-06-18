@@ -1,12 +1,12 @@
-# Plan: `@qti-editor/qti3-item-import` — transform arbitrary QTI 3.0 items to roundtrip-format
+# Plan: `@citolab/prose-qti/qti3-item-import` — transform arbitrary QTI 3.0 items to roundtrip-format
 
 ## Goal
 
-Add a new in-repo package `@qti-editor/qti3-item-import` that takes a standard QTI 3.0 **item** XML (with `qti-response-declaration` and `qti-response-processing` blocks) and hoists the correct-response and score values onto the matching interaction elements as `correct-response="..."` and `score="..."` attributes. The output is then importable by the editor's existing `parseDOM` path.
+Add a new in-repo package `@citolab/prose-qti/qti3-item-import` that takes a standard QTI 3.0 **item** XML (with `qti-response-declaration` and `qti-response-processing` blocks) and hoists the correct-response and score values onto the matching interaction elements as `correct-response="..."` and `score="..."` attributes. The output is then importable by the editor's existing `parseDOM` path.
 
 ```ts
 import { qtiTransformItem } from '@qti-components/transformers';
-import { roundtripChoice, roundtripTextEntry, roundtripExtendedText } from '@qti-editor/qti3-item-import';
+import { roundtripChoice, roundtripTextEntry, roundtripExtendedText } from '@citolab/prose-qti/qti3-item-import';
 
 const editorReady = qtiTransformItem()
   .parse(thirdPartyQti3Xml)
@@ -19,7 +19,7 @@ const editorReady = qtiTransformItem()
 Or via a convenience wrapper:
 
 ```ts
-import { roundtripQtiItem } from '@qti-editor/qti3-item-import';
+import { roundtripQtiItem } from '@citolab/prose-qti/qti3-item-import';
 const editorReady = roundtripQtiItem(thirdPartyQti3Xml);
 ```
 
@@ -148,7 +148,7 @@ The editor's importer strips this on input ([roundtrip-import/src/index.ts:299-3
 1. **`package.json`** — copy structure from `packages/qti/roundtrip-import/package.json` and slim down:
    ```json
    {
-     "name": "@qti-editor/qti3-item-import",
+     "name": "@citolab/prose-qti/qti3-item-import",
      "version": "0.0.1",
      "type": "module",
      "main": "./dist/index.js",
@@ -186,8 +186,8 @@ If the workspace `pnpm-workspace.yaml` already covers `packages/qti/*` via glob 
 ```bash
 cd /Users/patrickklein/Projects/Editor/QTI-Editor
 pnpm install 2>&1 | tail -5
-pnpm --filter @qti-editor/qti3-item-import build 2>&1 | tail -5
-pnpm --filter @qti-editor/qti3-item-import typecheck 2>&1 | tail -5
+pnpm --filter @citolab/prose-qti/qti3-item-import build 2>&1 | tail -5
+pnpm --filter @citolab/prose-qti/qti3-item-import typecheck 2>&1 | tail -5
 ```
 
 - `pnpm install` resolves `@qti-components/transformers` from npm. If the registry is unreachable in the sandbox, document the install requirement.
@@ -308,7 +308,7 @@ For `extractItemScore`:
 ### Verification
 
 ```bash
-pnpm --filter @qti-editor/qti3-item-import test 2>&1 | tail -10
+pnpm --filter @citolab/prose-qti/qti3-item-import test 2>&1 | tail -10
 ```
 
 All pass.
@@ -482,9 +482,9 @@ For each: vitest + `String.raw` XML + parse + apply + serialize + assert via str
 ### Verification
 
 ```bash
-pnpm --filter @qti-editor/qti3-item-import test 2>&1 | tail -20
-pnpm --filter @qti-editor/qti3-item-import build 2>&1 | tail -5
-pnpm --filter @qti-editor/qti3-item-import typecheck 2>&1 | tail -5
+pnpm --filter @citolab/prose-qti/qti3-item-import test 2>&1 | tail -20
+pnpm --filter @citolab/prose-qti/qti3-item-import build 2>&1 | tail -5
+pnpm --filter @citolab/prose-qti/qti3-item-import typecheck 2>&1 | tail -5
 ```
 
 All green.
@@ -545,7 +545,7 @@ The earlier plan at [plans/qti3-to-roundtrip-converter.md](plans/qti3-to-roundtr
 
 ```bash
 cd /Users/patrickklein/Projects/Editor/QTI-Editor
-pnpm --filter @qti-editor/qti3-item-import test 2>&1 | tail -15
+pnpm --filter @citolab/prose-qti/qti3-item-import test 2>&1 | tail -15
 
 # Confirm the deleted plan is gone (if option (a)) or annotated (option (b)):
 ls plans/qti3-to-roundtrip-converter.md 2>&1

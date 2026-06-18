@@ -373,9 +373,21 @@ importers:
       '@citolab/prose-qti':
         specifier: workspace:*
         version: link:../../packages/prose-qti
+      '@lit/reactive-element':
+        specifier: ^2.1.0
+        version: 2.1.2
       '@qti-components/transformers':
         specifier: ^1.7.1
         version: 1.7.1
+      lit:
+        specifier: ^3.3.2
+        version: 3.3.2
+      lit-element:
+        specifier: ^4.2.0
+        version: 4.2.2
+      lit-html:
+        specifier: ^3.3.0
+        version: 3.3.2
       prosemirror-commands:
         specifier: ^1.7.1
         version: 1.7.1
@@ -412,9 +424,6 @@ importers:
       prosemirror-view:
         specifier: ^1.41.9
         version: 1.41.9
-      prosemirror-virtual-cursor:
-        specifier: ^0.4.2
-        version: 0.4.2(prosemirror-model@1.25.9)(prosemirror-state@1.4.4)(prosemirror-view@1.41.9)
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
@@ -5933,20 +5942,6 @@ packages:
 
   prosemirror-view@1.41.9:
     resolution: {integrity: sha512-clTunTX+eaLbr87L1V1QPheRlEQJyTlL3gXe9x3jQIk3rL0RVWxviDGz8tFaydwIVm+hKhYCyr+R/zBtWr9s6A==}
-
-  prosemirror-virtual-cursor@0.4.2:
-    resolution: {integrity: sha512-pUMKnIuOhhnMcgIJUjhIQTVJruBEGxfMBVQSrK0g2qhGPDm1i12KdsVaFw15dYk+29tZcxjMeR7P5VDKwmbwJg==}
-    peerDependencies:
-      prosemirror-model: ^1.25.8
-      prosemirror-state: ^1.4.4
-      prosemirror-view: ^1.41.9
-    peerDependenciesMeta:
-      prosemirror-model:
-        optional: true
-      prosemirror-state:
-        optional: true
-      prosemirror-view:
-        optional: true
 
   proto-list@1.2.4:
     resolution: {integrity: sha512-vtK/94akxsTMhe0/cbfpR+syPuszcuwhqVjJq26CuNDgFGj682oRBXOP5MJpv2r7JtE8MsiepGIqvvOTBwn2vA==}
@@ -13606,12 +13601,6 @@ snapshots:
       prosemirror-model: 1.25.9
       prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.0
-
-  prosemirror-virtual-cursor@0.4.2(prosemirror-model@1.25.9)(prosemirror-state@1.4.4)(prosemirror-view@1.41.9):
-    optionalDependencies:
-      prosemirror-model: 1.25.9
-      prosemirror-state: 1.4.4
-      prosemirror-view: 1.41.9
 
   proto-list@1.2.4: {}
 

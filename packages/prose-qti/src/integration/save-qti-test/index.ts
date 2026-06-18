@@ -6,8 +6,8 @@ import {
   countQtiItems as countQtiItemsPure,
   getQtiItems as getQtiItemsPure,
   type QtiItemFragment,
-} from '@qti-editor/qti-test-export/pm-qti-test';
-import { type QtiComposeContext } from '@qti-editor/qti-item-export/pm-qti-item';
+} from '@citolab/prose-qti/test-export/pm-qti-test';
+import { type QtiComposeContext } from '@citolab/prose-qti/item-export/pm-qti-item';
 
 import type { ProseMirrorNode } from 'prosekit/pm/model';
 

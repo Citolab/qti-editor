@@ -13,8 +13,6 @@ const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.
 const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosekit/src', import.meta.url));
 const prosekitExtensionsSrcRoot = fileURLToPath(new URL('../../packages/prosekit/extensions/src', import.meta.url));
 const qtiPackageSrcRoot = fileURLToPath(new URL('../../packages/qti/package-builder/src', import.meta.url));
-const qtiStylesSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/core-css/core-css.css', import.meta.url));
-const qtiInterfacesSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/interfaces/index.ts', import.meta.url));
 const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/shared', import.meta.url));
 const interactionsUmbrellaSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components', import.meta.url));
 const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/choice/src', import.meta.url));
@@ -70,18 +68,6 @@ function shouldForceFullReload(file: string): boolean {
 export default defineConfig({
   resolve: {
     alias: [
-      {
-        find: /^@qti-editor\/styles$/,
-        replacement: qtiStylesSrcRoot,
-      },
-      {
-        find: /^@qti-editor\/interfaces$/,
-        replacement: qtiInterfacesSrcRoot,
-      },
-      {
-        find: /^@qti-editor\/interaction-shared\/(.*)\.js$/,
-        replacement: `${interactionsSharedSrcRoot}/$1.ts`,
-      },
       {
         find: /^@lit\/reactive-element$/,
         replacement: `${litReactiveElementRoot}/reactive-element.js`,
@@ -354,8 +340,8 @@ export default defineConfig({
       '@qti-components/interactions',
       '@citolab/prose-qti/components/register',
       '@citolab/prose-qti/components/shared',
-      '@qti-editor/prosekit-extensions',
-      '@qti-editor/qti-package-builder',
+      '@citolab/prose-extensions/prosekit',
+      '@citolab/prose-qti/package-builder',
       '@citolab/prose-qti/components/choice',
       '@citolab/prose-qti/components/extended-text',
       '@citolab/prose-qti/components/associate',
@@ -367,8 +353,8 @@ export default defineConfig({
       '@citolab/prose-qti/components/gap-match',
       '@citolab/prose-qti/components/hottext',
       '@citolab/prose-qti/components/item-divider',
-      '@qti-editor/prosemirror-attributes',
-      '@qti-editor/prosemirror-attributes-ui',
+      '@citolab/prose-extensions/attributes',
+      '@citolab/prose-extensions/attributes-ui',
       '@qti-components/theme',
       '@qti-components/utilities',
     ],

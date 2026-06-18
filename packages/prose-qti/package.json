@@ -74,7 +74,8 @@
     "./components/shared/*": "./src/components/shared/*",
     "./components/text-entry": "./src/components/text-entry/index.ts",
     "./components/text-entry/*": "./src/components/text-entry/*",
-    "./core-css": "./src/core-css/index.ts"
+    "./core-css": "./src/core-css/index.ts",
+    "./core-css.css": "./src/core-css/core-css.css"
   },
   "scripts": {
     "build": "tsc --noEmit -p ./tsconfig.json",

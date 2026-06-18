@@ -12,4 +12,4 @@ export type {
   AttributeFieldDefinition,
   AttributeFriendlyEditorDefinition,
   NodeAttributePanelMetadata,
-} from '@qti-editor/interfaces';
+} from '@citolab/prose-qti/interfaces';

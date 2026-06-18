@@ -5,7 +5,7 @@ import {
   QTI_RUBRIC_BLOCK_VIEW_VALUES,
 } from './qti-rubric-block.schema.js';
 
-import type { InteractionDescriptor } from '../../interfaces/index.js';
+import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
 /**
  * Descriptor for the QTI rubric block.
