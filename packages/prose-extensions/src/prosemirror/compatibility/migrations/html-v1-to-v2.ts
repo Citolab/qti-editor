@@ -1,4 +1,4 @@
-import type { CompatibilityChange, MigrationStep } from '@qti-editor/interfaces';
+import type { CompatibilityChange, MigrationStep } from '@citolab/prose-qti/interfaces';
 
 /**
  * v1 → v2: normalize legacy camelCase HTML attrs to canonical hyphenated attrs

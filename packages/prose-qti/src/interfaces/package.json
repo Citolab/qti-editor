@@ -1,5 +1,5 @@
 {
-  "name": "@qti-editor/interfaces",
+  "name": "@citolab/prose-qti-interfaces",
   "version": "1.0.0",
   "description": "Shared TypeScript interfaces and types for QTI Editor",
   "type": "module",

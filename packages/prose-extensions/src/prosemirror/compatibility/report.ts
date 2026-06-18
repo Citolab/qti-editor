@@ -3,7 +3,7 @@ import type {
   CompatibilityReportCounts,
   CompatibilityReportItem,
   MigrationResult,
-} from '@qti-editor/interfaces';
+} from '@citolab/prose-qti/interfaces';
 
 /** A `MigrationResult` labelled for inclusion in a `CompatibilityReport`. */
 export interface CompatibilityReportSource {

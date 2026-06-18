@@ -10,7 +10,7 @@ import { imgSelectPointNodeSpec } from './components/qti-select-point-interactio
 import { selectPointInteractionComposerMetadata, selectPointNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
 import { selectPointComposerHandler } from './composer/handler.js';
 
-import type { InteractionDescriptor } from '@qti-editor/interfaces';
+import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
 export const selectPointInteractionDescriptor = {
   tagName: 'qti-select-point-interaction',

@@ -1,6 +1,6 @@
 import { Schema } from 'prosemirror-model';
 
-import type { InteractionNodeSpecEntry } from '@qti-editor/interfaces';
+import type { InteractionNodeSpecEntry } from '@citolab/prose-qti/interfaces';
 import type { NodeSpec } from 'prosemirror-model';
 
 const baseNodes = {

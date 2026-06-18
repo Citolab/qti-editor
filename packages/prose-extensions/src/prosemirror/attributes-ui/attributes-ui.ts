@@ -11,7 +11,7 @@ import {
 import type {
   AttributeFieldDefinition,
   NodeAttributePanelMetadata,
-} from '@qti-editor/interfaces';
+} from '@citolab/prose-qti/interfaces';
 import type { EditorState } from 'prosekit/pm/state';
 
 type AttrValue = string | number | boolean | string[] | null | undefined;
@@ -26,7 +26,7 @@ export type {
   AttributeFieldDefinition,
   AttributeFriendlyEditorDefinition,
   NodeAttributePanelMetadata,
-} from '@qti-editor/interfaces';
+} from '@citolab/prose-qti/interfaces';
 
 export type AttributesMetadataResolver = (
   nodeType: string,

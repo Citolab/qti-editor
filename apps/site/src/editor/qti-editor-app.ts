@@ -20,8 +20,8 @@ import {
 } from '@citolab/prose-extensions/prosemirror';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
-import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
-import { qtiTestFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-test';
+import { qtiEditorEventsExtension } from '@citolab/prose-qti/integration/events';
+import { qtiTestFromProsemirror } from '@citolab/prose-qti/integration/save-qti-test';
 import { notifyQtiI18nChanged, translateQti } from '@citolab/prose-qti/components/shared';
 
 import { sampleUploader } from './components/blocks/sample/sample-uploader.js';

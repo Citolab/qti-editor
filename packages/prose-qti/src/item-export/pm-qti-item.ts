@@ -2,7 +2,7 @@ import {
   buildSingleAssessmentItemXml,
   formatXml,
   type ComposerItemContext,
-} from "@qti-editor/core/composer/index.js";
+} from "@citolab/prose-qti/core/composer";
 
 import { xmlFromNode } from './pm-xml.js';
 

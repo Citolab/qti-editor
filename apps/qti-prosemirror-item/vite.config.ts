@@ -10,6 +10,9 @@ const publicDir = fileURLToPath(new URL('../../public', import.meta.url));
 
 export default defineConfig({
   publicDir,
+  build: {
+    target: 'esnext',
+  },
   resolve: {
     // The QTI interaction edit components are Lit elements; dedupe Lit so a
     // single instance is used across the app and the workspace packages.
@@ -23,9 +26,9 @@ export default defineConfig({
       '@citolab/prose-qti/components/extended-text',
       '@citolab/prose-qti/components/text-entry',
       '@citolab/prose-qti/components/rubric-block',
-      '@qti-editor/prosemirror-plugins',
+      '@citolab/prose-extensions/prosemirror',
       '@citolab/prose-qti/qti3-item-import',
-      '@qti-editor/core',
+      '@citolab/prose-qti/core',
     ],
   },
   server: {

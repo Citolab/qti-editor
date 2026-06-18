@@ -7,4 +7,4 @@
  * directly — no list-aware serializer needed.
  */
 
-export { xmlFromNode, xmlToHTML } from '@qti-editor/qti-item-export/pm-xml';
+export { xmlFromNode, xmlToHTML } from '@citolab/prose-qti/item-export/pm-xml';

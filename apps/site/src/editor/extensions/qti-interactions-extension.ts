@@ -1,4 +1,4 @@
 export {
   defineQtiInteractionsExtension,
   type QtiInteractionsExtension,
-} from '@qti-editor/prosekit-integration/interactions/prosekit';
+} from '@citolab/prose-qti/integration/interactions/prosekit';

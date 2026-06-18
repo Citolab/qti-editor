@@ -9,7 +9,7 @@ import { qtiChoiceInteractionNodeSpec } from './components/qti-choice-interactio
 import { choiceInteractionComposerMetadata, choiceNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
 import { choiceComposerHandler } from './composer/handler.js';
 
-import type { InteractionDescriptor } from '@qti-editor/interfaces';
+import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
 
 export const choiceInteractionDescriptor = {

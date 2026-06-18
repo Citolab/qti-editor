@@ -10,7 +10,7 @@ import { qtiOrderInteractionNodeSpec } from './components/qti-order-interaction/
 import { orderInteractionComposerMetadata, orderNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
 import { orderComposerHandler } from './composer/handler.js';
 
-import type { InteractionDescriptor } from '@qti-editor/interfaces';
+import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
 export const orderInteractionDescriptor = {
   tagName: 'qti-order-interaction',

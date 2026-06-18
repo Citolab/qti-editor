@@ -3,7 +3,7 @@ import {
   countItemFragments,
   getItemFragmentXmls,
   formatXml,
-} from "@qti-editor/core/composer/index.js";
+} from "@citolab/prose-qti/core/composer";
 
 import {
   buildItemBodyContext,

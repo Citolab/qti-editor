@@ -4,7 +4,7 @@
 import {
   qtiItemFromProsemirror as qtiItemFromProsemirrorPure,
   type QtiComposeContext,
-} from '@qti-editor/qti-item-export/pm-qti-item';
+} from '@citolab/prose-qti/item-export/pm-qti-item';
 
 import type { ProseMirrorNode } from 'prosekit/pm/model';
 

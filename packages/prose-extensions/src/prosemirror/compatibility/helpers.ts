@@ -1,4 +1,4 @@
-import type { CompatibilityChangeCode, MigrationContext, MigrationStep } from '@qti-editor/interfaces';
+import type { CompatibilityChangeCode, MigrationContext, MigrationStep } from '@citolab/prose-qti/interfaces';
 import type { NodeJSON } from 'prosekit/core';
 
 // ── Message hook ──────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-import type { NodeAttributePanelMetadata } from '@qti-editor/interfaces';
+import type { NodeAttributePanelMetadata } from '@citolab/prose-qti/interfaces';
 
 export const SIMPLE_CHOICE_NODE_TYPE = 'qtiSimpleChoice' as const;
 

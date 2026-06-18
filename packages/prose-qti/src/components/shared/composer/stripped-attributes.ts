@@ -11,7 +11,7 @@
  * No side effects and no I/O.
  */
 
-import type { InteractionComposerMetadata, StrippedAttribute } from '@qti-editor/interfaces';
+import type { InteractionComposerMetadata, StrippedAttribute } from '@citolab/prose-qti/interfaces';
 
 export interface StrippedAttributeEntry {
   /** Canonical attribute name on the source element. */

@@ -13,7 +13,7 @@ import {
   stripAttributesFromElement,
 } from './stripped-attributes.js';
 
-import type { InteractionComposerMetadata } from '@qti-editor/interfaces';
+import type { InteractionComposerMetadata } from '@citolab/prose-qti/interfaces';
 
 
 function createElement(tagName: string, attrs: Record<string, string> = {}): Element {

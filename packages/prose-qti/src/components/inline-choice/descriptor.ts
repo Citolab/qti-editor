@@ -13,7 +13,7 @@ import {
 import { inlineChoiceComposerHandler } from './composer/handler.js';
 import { createInlineChoiceCorrectResponseClickPlugin } from './extensions/correct-response-click.js';
 
-import type { InteractionDescriptor } from '@qti-editor/interfaces';
+import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
 export const inlineChoiceInteractionDescriptor = {
   tagName: 'qti-inline-choice-interaction',

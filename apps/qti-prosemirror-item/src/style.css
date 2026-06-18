@@ -1,5 +1,5 @@
 /* Mandatory QTI component theme (qti-components item.css) + editor overrides. */
-@import '@qti-editor/styles';
+@import '@citolab/prose-qti/core-css.css';
 
 :root {
   --border: #d8dde3;
