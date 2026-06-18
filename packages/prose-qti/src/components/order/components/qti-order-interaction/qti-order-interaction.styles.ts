@@ -2,8 +2,6 @@ import { css, type CSSResultGroup } from 'lit';
 
 import externalStyles from '@qti-components/order-interaction/styles';
 
-import { associationPanelStyles } from '../../../shared';
-
 
 /** Light DOM styles injected as a <style> element (applies to slotted content) */
 export const LIGHT_DOM_STYLES = `

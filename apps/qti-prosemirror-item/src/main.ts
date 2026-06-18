@@ -67,7 +67,6 @@ import {
 } from './prosemirror-qti.js';
 // EXPERIMENT: lockable qti-layout-* div wrappers (non-QTI affordance).
 import { qtiLayoutDivNodeSpec, divLockPlugin } from './qti-layout-div.js';
-
 // Example app-level widget: edit a selected text-entry interaction's correct
 // response with a plain <textarea> (the package ships only the data model).
 import { textEntryWidgetPlugin } from './text-entry-widget.js';

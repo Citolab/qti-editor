@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
-import { Interaction, MATCH_SELECTING_TARGET_EVENT, QtiI18nController } from '../../../shared';
+import { Interaction, MATCH_SELECTING_TARGET_EVENT } from '../../../shared';
 import styles from './qti-match-interaction.styles.js';
 
 import type { FakeDrag, MatchSelectingTargetDetail } from '@citolab/prose-qti/components/shared';
@@ -24,7 +24,7 @@ export interface MatchAssociationChangeDetail {
 export class QtiMatchInteractionEdit extends Interaction {
   static override styles = styles;
 
-  private readonly i18n = new QtiI18nController(this);
+  // private readonly _i18n = new QtiI18nController(this);
 
   @property({ type: Number, attribute: 'max-associations' })
   maxAssociations: number = 1;
