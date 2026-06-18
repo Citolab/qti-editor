@@ -1,6 +1,6 @@
 {
   "name": "@citolab/prose-extensions",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Extensions for QTI Editor",
   "repository": {
     "type": "git",
@@ -75,7 +75,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@citolab/prose-qti": "workspace:*",
+    "@citolab/prose-qti": "1.0.0",
     "lit": "^3.3.2"
   },
   "peerDependencies": {
