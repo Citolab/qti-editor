@@ -1,6 +1,6 @@
 ---
 title: QTI Interaction Insert Menu
-description: Install and use the QTI interaction insertion dropdown registry component.
+description: Install and use the QTI interaction insertion dropdown GitHub registry component.
 slug: docs/using-the-registry/qti-interaction-insert-menu
 ---
 
@@ -9,15 +9,15 @@ slug: docs/using-the-registry/qti-interaction-insert-menu
 ## Install
 
 ```bash
-npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-interaction-insert-menu.json
+pnpm dlx shadcn@latest add citolab/qti-editor/qti-interaction-insert-menu
 ```
 
-The registry command installs the component source and its package dependencies into your app.
+The GitHub registry copies the component source and its package dependencies into your app.
 
 ## Usage
 
 ```ts
-import '@/components/interaction-insert-menu';
+import './components/interaction-insert-menu';
 
 const menu = document.querySelector('qti-interaction-insert-menu');
 menu.editor = editor;

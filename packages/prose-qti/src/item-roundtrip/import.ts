@@ -1,7 +1,7 @@
 /**
  * QTI 3.0 item → ProseMirror import.
  *
- * Composes the `@qti-editor/qti3-item-import` roundtrip transforms with the
+ * Composes the `@citolab/prose-qti/qti3-item-import` roundtrip transforms with the
  * `@citolab/prose-qti/components/shared` PM bridge. The transforms hoist canonical
  * authoring attributes (correct-response / score / …) onto each interaction and
  * reduce the document to a `<qti-item-body>`; `roundtripXmlToPm` then parses that
@@ -14,9 +14,6 @@
  */
 
 import { roundtripXmlToPm } from '@citolab/prose-qti/components/shared/roundtrip-xml-to-pm.js';
-
-import { qtiTransformItem } from '@qti-components/transformers';
-
 import {
   reduceToItemBody,
   roundtripChoice,
@@ -28,7 +25,10 @@ import {
   roundtripOrder,
   roundtripSelectPoint,
   roundtripTextEntry,
-} from '../qti3-item-import';
+} from "@citolab/prose-qti/qti3-item-import";
+
+import { qtiTransformItem } from '@qti-components/transformers';
+
 
 import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
 

@@ -24,7 +24,7 @@ export default defineConfig({
       '@citolab/prose-qti/components/text-entry',
       '@citolab/prose-qti/components/rubric-block',
       '@qti-editor/prosemirror-plugins',
-      '@qti-editor/qti3-item-import',
+      '@citolab/prose-qti/qti3-item-import',
       '@qti-editor/core',
     ],
   },

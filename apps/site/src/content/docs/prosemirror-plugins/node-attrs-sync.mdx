@@ -1,0 +1,32 @@
+---
+title: Node Attrs Sync
+description: Keep node attributes in sync between editor state and the DOM.
+slug: docs/prosemirror-plugins/node-attrs-sync
+---
+
+`node-attrs-sync` keeps node attributes synchronized between the editor state and the DOM. It is a good fit when a node view or custom element needs to reflect editor-side attribute changes without manual bookkeeping.
+
+## Install
+
+```bash
+pnpm add @citolab/prose-extensions
+```
+
+## Usage
+
+```ts
+import { nodeAttrsSyncExtension, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/node-attrs-sync';
+
+// ProseKit
+const extensions = [nodeAttrsSyncExtension];
+
+// Raw ProseMirror
+const plugins = [nodeAttrsSyncPlugin];
+```
+
+`nodeAttrsSyncExtension` is the ProseKit wrapper. `nodeAttrsSyncPlugin` is the raw ProseMirror plugin if you are wiring the editor by hand.
+
+## When to use
+
+Use this when the DOM representation and the ProseMirror document need to stay aligned as attributes change.
+

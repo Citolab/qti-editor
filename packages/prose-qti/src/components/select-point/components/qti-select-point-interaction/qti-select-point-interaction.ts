@@ -1,6 +1,7 @@
 import { css, html, nothing, svg } from 'lit';
 import { createRef, ref } from 'lit/directives/ref.js';
 import { property, state } from 'lit/decorators.js';
+
 import { Interaction } from '@citolab/prose-qti/components/shared/components/interaction.js';
 
 import type { CSSResultGroup, TemplateResult } from 'lit';

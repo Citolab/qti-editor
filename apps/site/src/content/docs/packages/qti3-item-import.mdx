@@ -1,0 +1,49 @@
+---
+title: QTI 3 Item Import
+description: Transform standard QTI 3.0 items into the editor's roundtrip item-body format.
+slug: docs/packages/qti3-item-import
+---
+
+`@citolab/prose-qti/qti3-item-import` normalizes standard QTI 3.0 items into the editor's roundtrip item-body format. Use it when you need to accept third-party QTI XML or prepare item bodies for the editor's ProseMirror parser.
+
+## When to use this
+
+Use this package when you need to:
+
+- ingest a third-party QTI 3.0 item and recover canonical authoring attributes
+- normalize QTI XML before feeding it into the editor's `parseDOM` path
+- customize or extend the per-interaction roundtrip transforms
+
+## What it provides
+
+The package exports the individual transform functions as well as the convenience wrapper:
+
+- `roundtripChoice`
+- `roundtripTextEntry`
+- `roundtripExtendedText`
+- `roundtripMatch`
+- `roundtripGapMatch`
+- `roundtripOrder`
+- `roundtripSelectPoint`
+- `roundtripInteractions`
+- `roundtripItemBody`
+- `reduceToItemBody`
+- `roundtripQtiItem`
+
+## Typical usage
+
+Use the convenience wrapper when you only need the final normalized XML:
+
+```ts
+import { roundtripQtiItem } from '@citolab/prose-qti/qti3-item-import';
+
+const normalizedXml = roundtripQtiItem(thirdPartyQtiXml);
+```
+
+If you need to work with the transform chain directly, compose the individual transforms yourself in the order that matches your use case.
+
+## Notes
+
+- The per-type transforms handle the interactions with specialized roundtrip rules first.
+- The generic fallback covers any remaining interaction with a `response-identifier`.
+- `reduceToItemBody` always runs last so the resulting document is ready for the editor's item-body parser.

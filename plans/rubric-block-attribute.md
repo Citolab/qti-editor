@@ -257,7 +257,7 @@ Plus interaction-specific UI/handling for the rubric content. The mirror plumbin
 ## See also
 
 - [plans/unify-non-qti-attribute-metadata.md](plans/unify-non-qti-attribute-metadata.md) — prerequisite. Establishes the unified `NonQtiAttribute` shape used here.
-- [plans/qti3-item-import.md](plans/qti3-item-import.md) — follow-up. Ships `roundtripExtendedText()` in `@qti-editor/qti3-item-import`, which hoists the source's sibling `<qti-rubric-block view="scorer" use="scoring">` onto the interaction. After this plan ships, that transform should be updated to write `rubric-block="..."` instead of `correct-response="..."`, with no overload to navigate.
+- [plans/qti3-item-import.md](plans/qti3-item-import.md) — follow-up. Ships `roundtripExtendedText()` in `@citolab/prose-qti/qti3-item-import`, which hoists the source's sibling `<qti-rubric-block view="scorer" use="scoring">` onto the interaction. After this plan ships, that transform should be updated to write `rubric-block="..."` instead of `correct-response="..."`, with no overload to navigate.
 
 ## Estimate
 

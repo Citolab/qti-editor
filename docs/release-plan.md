@@ -1,45 +1,30 @@
 # Release Plan
 
-This repository has three delivery channels and they should remain separate:
+This repository has three delivery channels that should remain separate:
 
 1. npm packages for reusable library surfaces
-2. Firebase Hosting deploys for first-party apps
-3. Firebase-hosted registry artifacts for `packages/ui`
+2. Firebase Hosting deploys for first-party apps and the documentation site
+3. Firebase-hosted registry artifacts from `packages/prose-qti-ui`
 
-## Recommended npm release surface
+## npm Release Surface
 
-Publish with Changesets:
+The publishable packages are:
 
-- `@qti-editor/interfaces`
-- `@qti-editor/interaction-shared`
-- `@qti-editor/interaction-choice`
-- `@qti-editor/interaction-inline-choice`
-- `@qti-editor/interaction-match`
-- `@qti-editor/interaction-order`
-- `@qti-editor/interaction-select-point`
-- `@qti-editor/interaction-text-entry`
-- `@qti-editor/interaction-extended-text`
-- `@qti-editor/core`
+- `@citolab/prose-qti` — QTI core, interactions, integration surfaces
+- `@citolab/prose-extensions` — generic ProseMirror/ProseKit extensions
 
-Keep private for now:
+Keep private:
 
-- `@qti-editor/prosekit-integration`
-- `@qti-editor/prosemirror`
-- `@qti-editor/prosemirror-attributes`
-- `@qti-editor/prosemirror-attributes-ui`
-- `@qti-editor/ui`
-- `apps/*`
+- `@citolab/prose-qti-ui` — distributed through the registry and Firebase hosting, not npm
+- `apps/*` — not published
 
 ## Rationale
 
-- The interaction packages already build to `dist`, declare public exports, and form the main reusable authoring API.
-- `@qti-editor/interfaces` is the contract package at the bottom of the dependency graph.
-- `@qti-editor/core` is the stable QTI semantics and composition surface above the interaction descriptors.
-- `@qti-editor/prosekit-integration` is intentionally private because it is our in-house editor assembly layer; external consumers should compose directly from `prosekit` and the public `@qti-editor/*` packages.
-- The `@qti-editor/prosemirror*` utility packages are currently treated as internal implementation details for the first-party editors.
-- `@qti-editor/ui` is distributed through the registry and Firebase-hosted artifacts, not npm package releases.
+- `@citolab/prose-qti` is the main reusable authoring API: interaction descriptors, QTI composition, XML serialization, ProseKit integration.
+- `@citolab/prose-extensions` is the stable generic editor extension surface: attributes engine, block select, virtual cursor, compatibility migrations.
+- `@citolab/prose-qti-ui` is distributed through the shadcn-style registry rather than npm — consumers install components directly from the hosted registry JSON.
 
-## Workflow split
+## Workflow Split
 
 ### Packages
 
@@ -47,28 +32,27 @@ Keep private for now:
 - When a changeset is present, GitHub Actions opens or updates a version PR.
 - Once the version PR lands on `main`, the same workflow publishes changed non-private packages to npm.
 
-### Site hosting
+### Site Hosting
 
 - Deploy Firebase target `hosting:site` on changes to `apps/site` and shared package/config paths.
 - Site deploy includes:
   - Astro site
   - Storybook
-  - UI registry under `/r`
+  - Registry JSON under `/r/`
 
-### Editor hosting
+### Editor Hosting
 
-- Deploy Firebase target `hosting:editor` on changes to `apps/editor` and shared package/config paths.
+- Deploy Firebase target `hosting:editor` on changes to `apps/qti-prosekit-app` and shared package/config paths.
 - Editor deploy is isolated from the site target.
 
-## Operational notes
+## Operational Notes
 
 - Registry changes do not create npm releases.
-- Registry changes do trigger the site hosting workflow because the registry is served from the site target.
-- If `@qti-editor/prosekit-integration` ever becomes an external contract later, convert its exports to `dist/*` first and then deliberately change the docs and release policy together.
-- If the generic `@qti-editor/prosemirror*` packages become public later, promote them deliberately with their own API review instead of publishing them incidentally.
+- Registry changes trigger the site hosting workflow because the registry is served from the site target.
+- `apps/qti-prosekit-item` and `apps/qti-prosemirror-item` are reference examples and are not deployed to Firebase.
 
-## Required secrets
+## Required Secrets
 
-- No `NPM_TOKEN` is required for npm publishing when npm trusted publishing is configured for this repository and workflow.
 - `FIREBASE_TOKEN` for Firebase Hosting deploys
-- `RELEASE_BOT_TOKEN` is optional; `GITHUB_TOKEN` is used as a fallback for GitHub release metadata
+- `RELEASE_BOT_TOKEN` is optional; `GITHUB_TOKEN` is used as fallback for GitHub release metadata
+- No `NPM_TOKEN` is required when npm trusted publishing is configured for this repository

@@ -7,7 +7,6 @@ import {
   registerBlockHandlePositionerElement,
   registerBlockHandleRootElement,
 } from 'prosekit/lit/block-handle'
-
 import { editorContext } from '@citolab/prose-qti/integration/editor-context'
 
 class LitBlockHandle extends LitElement {

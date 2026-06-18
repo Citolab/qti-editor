@@ -29,7 +29,7 @@
     "build:workspace-deps": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/interfaces\" --filter \"./packages/extensions/**\" --filter \"./packages/qti/**\" --filter \"./packages/prose-qti\" run build",
     "build:core-deps": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/interfaces\" --filter \"./packages/extensions/**\" --filter \"./packages/prose-qti\" run build",
     "deploy:build": "pnpm deploy:build:site && pnpm deploy:build:editor",
-    "deploy:build:site": "pnpm build:packages && pnpm registry:build && pnpm --filter @qti-editor/site build && pnpm build-storybook && node scripts/prepare-hosting-site.mjs",
+    "deploy:build:site": "pnpm build:packages && pnpm --filter @qti-editor/site build && pnpm build-storybook && node scripts/prepare-hosting-site.mjs",
     "deploy:build:editor": "pnpm build:packages && pnpm --filter @qti-editor/prosekit-app build && node scripts/prepare-hosting-editor.mjs",
     "preview": "pnpm --filter @qti-editor/prosekit-app preview",
     "firebase:serve": "pnpm deploy:build && firebase emulators:start --only hosting",

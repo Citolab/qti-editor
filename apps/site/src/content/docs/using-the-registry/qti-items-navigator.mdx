@@ -1,23 +1,17 @@
 ---
 title: QTI Items Navigator
-description: Install and use the registry component that navigates between item-divider-separated assessment items.
+description: Demo app shell component for navigating item-divider-separated assessment items.
 slug: docs/using-the-registry/qti-items-navigator
 ---
 
 `qti-items-navigator` displays a clickable list of assessment items derived from `qti-item-divider` nodes in the current editor document.
 
-## Install
-
-```bash
-npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-items-navigator.json
-```
-
-The registry command installs the component source and its package dependencies into your app.
+This component lives in the demo app shell in this repository. It is not part of the GitHub registry, so there is no `shadcn add` command for it.
 
 ## Usage
 
 ```ts
-import '@/components/items-navigator';
+import './components/items-navigator';
 
 const navigator = document.querySelector('qti-items-navigator');
 navigator.editor = editor;

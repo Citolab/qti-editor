@@ -6,13 +6,14 @@
 // via the package aggregate register side-effect module. The aggregate also
 // registers the item divider.
 import '@citolab/prose-qti/components/register';
+import { defineBasicExtension } from 'prosekit/basic';
+import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
+
 import {
   listInteractionDescriptors,
   listInteractionPluginFactories,
   listInteractionSchemaNodeSpecs,
 } from '@citolab/prose-qti/core/interactions/composer';
-import { defineBasicExtension } from 'prosekit/basic';
-import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
 
 import type { Command } from 'prosekit/pm/state';
 

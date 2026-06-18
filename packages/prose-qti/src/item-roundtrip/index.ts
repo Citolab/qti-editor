@@ -1,5 +1,5 @@
 /**
- * `@qti-editor/qti-item-roundtrip`
+ * `@citolab/prose-qti/item-roundtrip`
  *
  * Convenience composition of the QTI 3.0 item <-> ProseMirror roundtrip:
  *   - import: QTI item (string or URL) -> roundtrip transforms -> ProseMirror doc

@@ -1,0 +1,54 @@
+---
+title: QTI Item Roundtrip
+description: Roundtrip import and export helpers for a single QTI item.
+slug: docs/packages/qti-item-roundtrip
+---
+
+`@citolab/prose-qti/item-roundtrip` bundles the editor's item import and export bridge. Use it when you want to move a single assessment item between QTI XML and ProseMirror without wiring the transform chain together yourself.
+
+## When to use this
+
+Use this package when you need to:
+
+- import a QTI 3.0 item XML string or URL into an editor document
+- export a ProseMirror document back to a complete QTI assessment item
+- keep the import transform chain, schema parsing, and export composer in one place
+
+## What it provides
+
+The package exposes a small set of convenience helpers:
+
+- `importItemFromString`
+- `importItemFromUrl`
+- `importItemXmlDoc`
+- `exportItemXml`
+- `exportItemXmlDoc`
+
+It also exports the roundtrip transform and export option types so callers can type their integration code precisely.
+
+## Typical usage
+
+Import an item from a URL:
+
+```ts
+import { importItemFromUrl } from '@citolab/prose-qti/item-roundtrip';
+
+const node = await importItemFromUrl('https://example.com/items/item-1.xml', schema);
+```
+
+Export the current editor document:
+
+```ts
+import { exportItemXml } from '@citolab/prose-qti/item-roundtrip';
+
+const xml = exportItemXml(editor.state.doc, schema, {
+  identifier: 'item-1',
+  title: 'Sample Item',
+});
+```
+
+## Notes
+
+- The caller still supplies the ProseMirror schema, because the editor schema is application-specific.
+- Import uses the standard QTI 3.0 roundtrip transforms before parsing into ProseMirror.
+- Export produces the same canonical item-body and full assessment-item XML used by the editor's save flow.

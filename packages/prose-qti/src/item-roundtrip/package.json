@@ -1,5 +1,5 @@
 {
-  "name": "@qti-editor/qti-item-roundtrip",
+  "name": "@citolab/prose-qti/item-roundtrip",
   "version": "1.0.0",
   "private": true,
   "type": "module",

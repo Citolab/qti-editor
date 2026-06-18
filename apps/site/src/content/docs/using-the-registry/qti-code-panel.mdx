@@ -1,24 +1,18 @@
 ---
 title: QTI Code Panel
-description: Install and use the tabbed HTML, JSON, and XML panel registry component.
+description: Demo app shell component for the tabbed HTML, JSON, and XML panel.
 slug: docs/using-the-registry/qti-code-panel
 ---
 
 `qti-code-panel` displays the editor document as HTML, JSON, or QTI XML with a tab switcher. It is driven by `qti:content:change` events.
 
-## Install
-
-```bash
-npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-code-panel.json
-```
-
-The registry command installs the component source and its package dependencies into your app.
+This component lives in the demo app shell in this repository. It is not part of the GitHub registry, so there is no `shadcn add` command for it.
 
 ## Usage
 
 ```ts
-import '@/components/code-panel';
-import { qtiCodePanelExtension } from '@/components/code-panel';
+import './components/code-panel';
+import { qtiCodePanelExtension } from './components/code-panel';
 
 const codeEventTarget = new EventTarget();
 

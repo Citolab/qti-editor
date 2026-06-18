@@ -1,0 +1,28 @@
+---
+title: Semantic Paste
+description: Normalize pasted HTML into semantic list and block structure.
+slug: docs/prosemirror-plugins/paste-semantic-html
+---
+
+`paste-semantic-html` rewrites pasted HTML into a more semantic document structure. It is especially useful when content comes from Word or other rich-text sources that emit noisy markup.
+
+## Install
+
+```bash
+pnpm add @citolab/prose-extensions
+```
+
+## Usage
+
+```ts
+import { defineSemanticPasteExtension } from '@citolab/prose-extensions/paste-semantic-html';
+
+const semanticPasteExtension = defineSemanticPasteExtension();
+```
+
+Add the returned extension to your ProseKit extension composition.
+
+## When to use
+
+Use this when pasted content needs cleanup before it enters the editor document, especially for list-heavy copy/paste flows.
+

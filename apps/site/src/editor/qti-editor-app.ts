@@ -10,21 +10,21 @@ import { provide } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { LitElement, html, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
-import { itemContext, itemContextVariables, type ItemContext } from '@qti-editor/prosekit-integration/item-context';
+import { itemContext, itemContextVariables, type ItemContext } from '@citolab/prose-qti/integration/item-context';
 import {
   blockSelectExtension,
   defineLocalStorageDocPersistenceExtension,
   defineSemanticPasteExtension,
   nodeAttrsSyncExtension,
   readPersistedStateFromLocalStorage
-} from 'packages/prose-extensions/src/prosemirror/index.js';
+} from '@citolab/prose-extensions/prosemirror';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@qti-editor/prosekit-integration/events';
 import { qtiTestFromProsemirror } from '@qti-editor/prosekit-integration/save-qti-test';
 import { notifyQtiI18nChanged, translateQti } from '@citolab/prose-qti/components/shared';
-import { sampleUploader } from './components/blocks/sample/sample-uploader.js';
 
+import { sampleUploader } from './components/blocks/sample/sample-uploader.js';
 import { defineBasicExtension } from './extensions/basic-extension';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension';
 import { defineSlashMenuGuardExtension } from './extensions/slash-menu-guard-extension';

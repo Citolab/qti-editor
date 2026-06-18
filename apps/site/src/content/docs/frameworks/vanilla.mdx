@@ -21,9 +21,7 @@ QTI Editor is a composable kit — it provides the QTI building blocks that slot
 
 ```bash
 pnpm add prosemirror-state prosemirror-view prosemirror-model \
-  @qti-editor/core \
-  @citolab/prose-qti/components/choice \
-  @citolab/prose-qti/components/text-entry
+  @citolab/prose-qti
 ```
 
 ### 2. Create and mount
@@ -35,7 +33,7 @@ import { Schema } from 'prosemirror-model';
 import {
   listInteractionDescriptors,
   listInteractionPluginFactories,
-} from '@qti-editor/core/interactions/composer';
+} from '@citolab/prose-qti/core/interactions/composer';
 
 const descriptors = listInteractionDescriptors();
 const nodes: Record<string, unknown> = {
@@ -75,25 +73,17 @@ window.addEventListener('unload', () => view.destroy());
 ### 1. Install
 
 ```bash
-pnpm add prosekit @qti-editor/core \
-  @citolab/prose-qti/components/choice \
-  @citolab/prose-qti/components/text-entry
+pnpm add prosekit @citolab/prose-qti
 ```
 
-### 2. Add the local helpers
-
-Copy both helpers from the [React Integration](/docs/frameworks/react/) guide into your project:
-
-- `qti-interactions.ts` — assembles node specs, keyboard shortcuts, and runtime plugins from the descriptor registry (`defineQtiInteractionsExtension`)
-- `qti-editor-events.ts` — emits `qti:content:change` and `qti:selection:change` CustomEvents on a configurable `EventTarget` (`qtiEditorEventsExtension`)
-
-### 3. Create and mount
+### 2. Create and mount
 
 ```ts
 import { createEditor, union } from 'prosekit/core';
 import { defineBasicExtension } from 'prosekit/basic';
-import { defineQtiInteractionsExtension } from './qti-interactions';
-import { qtiEditorEventsExtension } from './qti-editor-events';
+import { defineQtiInteractionsExtension } from '@citolab/prose-qti/integration/interactions/prosekit';
+import { qtiEditorEventsExtension } from '@citolab/prose-qti/integration/events';
+import '@citolab/prose-qti/components/register';
 
 // One private EventTarget per editor instance
 const eventTarget = new EventTarget();

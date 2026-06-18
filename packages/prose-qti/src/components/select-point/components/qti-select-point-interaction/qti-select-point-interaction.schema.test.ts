@@ -1,4 +1,5 @@
 import { Schema } from 'prosemirror-model';
+
 import { qtiPromptParagraphNodeSpec, qtiPromptNodeSpec } from '@citolab/prose-qti/components/shared';
 
 import { imgSelectPointNodeSpec } from './img-select-point.schema';

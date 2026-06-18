@@ -1,5 +1,6 @@
 import { Schema } from 'prosemirror-model';
 import { AllSelection, EditorState } from 'prosemirror-state';
+
 import {
   qtiPromptNodeSpec,
   qtiPromptParagraphNodeSpec,

@@ -1,0 +1,36 @@
+---
+title: Local Storage Persistence
+description: Save and restore the editor document from localStorage.
+slug: docs/prosemirror-plugins/local-storage-doc-persistence-extension
+---
+
+`local-storage-doc-persistence-extension` stores the current editor document in `localStorage` and restores it on load. It is useful for autosave-style authoring flows and local drafts.
+
+## Install
+
+```bash
+pnpm add @citolab/prose-extensions
+```
+
+## Usage
+
+```ts
+import {
+  defineLocalStorageDocPersistenceExtension,
+  readPersistedStateFromLocalStorage,
+} from '@citolab/prose-extensions/local-storage-doc-persistence-extension';
+
+const storageKey = 'qti-editor-doc';
+const persisted = readPersistedStateFromLocalStorage(storageKey);
+
+const persistenceExtension = defineLocalStorageDocPersistenceExtension({
+  storageKey,
+});
+```
+
+Use `readPersistedStateFromLocalStorage()` before editor creation when you want to hydrate from a saved draft.
+
+## When to use
+
+Use this when you want local persistence without wiring your own save loop.
+

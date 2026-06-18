@@ -4,13 +4,13 @@ description: Install individual QTI Editor UI components into your project via t
 slug: docs/using-the-registry
 ---
 
-The QTI Editor registry is a [shadcn/ui-compatible](https://ui.shadcn.com) component registry. It gives you ready-made UI components that you can copy into your own codebase and adapt without lock-in or template indirection.
+The QTI Editor registry is a [shadcn/ui-compatible](https://ui.shadcn.com) GitHub registry. It gives you ready-made UI components that you can copy into your own codebase and adapt without lock-in or template indirection.
 
-QTI Editor has no dependency on shadcn/ui or its component library. The shadcn registry format is used purely as a delivery mechanism: its CLI is a convenient, well-established way to copy individual source files directly into a project. Each `npx shadcn@latest add` command downloads the component source into your codebase, installs any npm dependencies it needs, and leaves you with plain files you own and can modify freely. There is no runtime shadcn dependency and no abstraction layer introduced.
+QTI Editor has no dependency on shadcn/ui or its component library. The shadcn registry format is used purely as a delivery mechanism: its CLI is a convenient, well-established way to copy individual source files directly into a project. Each `pnpm dlx shadcn@latest add` command downloads the component source into your codebase, installs any npm dependencies it needs, and leaves you with plain files you own and can modify freely. There is no runtime shadcn dependency and no abstraction layer introduced.
 
-You can view this registry as a UI starter. Build the editor itself from `prosekit` and the public `@qti-editor/*` packages, then copy the components you need to cover common editor UI patterns.
+You can view this registry as a UI starter. Build the editor itself from `prosekit` and `@citolab/prose-qti`, then copy the components you need to cover common editor UI patterns.
 
-Registry base URL: `https://qti-editor.citolab.nl/r`
+Registry repo: `citolab/qti-editor`
 
 ## Prerequisites
 
@@ -30,35 +30,35 @@ This is required for Angular projects.
 
 ## Installing a component
 
-Use the shadcn CLI with the full component URL:
+Use the shadcn CLI with the GitHub item address:
 
 ```bash
-npx shadcn@latest add https://qti-editor.citolab.nl/r/<component-name>.json
+pnpm dlx shadcn@latest add citolab/qti-editor/qti-attributes-panel
 ```
 
 This copies the component source into your project and installs its npm dependencies. You can then modify the file freely.
 
-After installation, import the copied files from your own app source tree. The exact path depends on where your registry config writes components, so the examples in this chapter use placeholder paths such as `@/components/...`.
+After installation, import the copied files from your own app source tree. The exact path depends on where your registry config writes components, so the examples in this chapter use a simple relative path such as `./components/...`. Adjust it to match your project layout.
 
 ## Component catalogue
 
 - [QTI Attributes Panel](/docs/using-the-registry/qti-attributes-panel/): schema-aware attribute editor for the current node selection
-- [QTI Code Panel](/docs/using-the-registry/qti-code-panel/): HTML, JSON, and QTI XML tabs driven by content-change events
-- [QTI Composer](/docs/using-the-registry/qti-composer/): live QTI XML output panel driven by the current editor state
-- [QTI Composer Metadata Form](/docs/using-the-registry/qti-composer-metadata-form/): standalone metadata form for title and identifier editing
-- [QTI Convert Menu](/docs/using-the-registry/qti-convert-menu/): selection conversion menu for turning text into QTI structures
 - [QTI Interaction Insert Menu](/docs/using-the-registry/qti-interaction-insert-menu/): dropdown for inserting supported QTI interactions
-- [QTI Items Gutter](/docs/using-the-registry/qti-items-gutter/): gutter labels for divider-separated assessment items
-- [QTI Items Navigator](/docs/using-the-registry/qti-items-navigator/): sidebar navigator for documents split into multiple QTI items
+
+Supporting registry items are pulled in automatically when needed:
+
+- `qti-choice-attributes-editor`
+- `qti-text-entry-attributes-editor`
+- `qti-extended-text-attributes-editor`
 
 ## Notes
 
 - Each component is a Lit custom element, which makes the registry framework-agnostic and usable in any HTML context.
 - In framework hosts such as Angular or React, assign object values such as the editor instance or `eventTarget` through refs rather than HTML attributes.
-- Angular is not auto-detected by the shadcn CLI. Follow the manual setup described in the [Angular guide](/docs/frameworks/angular/) first, then run `shadcn add`.
-- When the shadcn CLI installs a component, it rewrites `@citolab/prose-qti-ui/...` imports to `@/...` using your project's path aliases. Make sure `@/` resolves to your project's `src/` directory.
+- Angular is not auto-detected by the shadcn CLI. Follow the manual setup described in the [Angular guide](/docs/frameworks/angular/) first, then run `pnpm dlx shadcn@latest add`.
+- When the shadcn CLI installs a component, it copies the source files into your app and resolves internal imports through your `components.json` aliases. Make sure those aliases point at the directories you want to own.
 - Components with `registryDependencies`, such as `qti-attributes-panel`, will automatically pull in their sub-components in a single CLI command.
-- Some registry items are app-shell utilities rather than end-user panels. `lit-editor-block-handle` and `lit-editor-drop-indicator` expect a Lit `editorContext` provider instead of a direct `.editor` assignment.
+- The demo app shell in this repository also contains components such as `qti-composer`, `qti-code-panel`, `qti-items-gutter`, `qti-items-navigator`, `qti-convert-menu`, `lit-editor-toolbar`, and `lit-editor-slash-menu`. Those are app-local examples, not registry items.
 - In Angular, import the registry files for side effects and add `CUSTOM_ELEMENTS_SCHEMA` to the host component that renders them.
 - The copied registry components are optional. The stable integration surface is the public package API plus your own app-level ProseKit assembly.
-- `@citolab/prose-qti-ui` is the canonical source for the registry, not the primary runtime import path for external apps.
+- The repository's root `registry.json` is the source of truth for the GitHub registry.

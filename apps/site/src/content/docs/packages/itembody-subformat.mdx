@@ -8,6 +8,14 @@ QTI-Editor stores authoring state in the QTI itembody itself, so the itembody is
 
 This document explains the subformat: what extra attributes the editor reads, how the final export stays valid QTI 3.0, and how to declare a new one.
 
+## When to use this
+
+Use this document when you need to:
+
+- understand the editor's save/load format for a single item body
+- add a new interaction attribute that must survive roundtrip export/import
+- debug why a canonical attribute is stripped from the final QTI 3.0 output
+
 ## The contract
 
 1. The **roundtrip item-body** (the editor's own save/load format) carries **non-QTI authoring attributes** directly on the interaction as **canonical, unprefixed** names (e.g. `correct-response`, `score`, `case-sensitive`, `area-mappings`). There are **no `data-*` mirrors** and no marker attributes.
@@ -18,7 +26,7 @@ This document explains the subformat: what extra attributes the editor reads, ho
 
 Each interaction declares its non-QTI attributes in its composer metadata:
 
-`packages/prosemirror/interaction-<name>/src/composer/metadata.ts`
+`packages/prose-qti/src/components/<name>/composer/metadata.ts`
 
 ```ts
 export const choiceInteractionComposerMetadata = {
@@ -61,7 +69,7 @@ The compose handler reads these from the source element to populate the response
 
 ## How recovery works on import
 
-Every QTI 3.0 item is treated as third-party. `roundtripQtiItem` (`@qti-editor/qti3-item-import`) runs a chain of idempotent transforms that hoist `correct-response` / `score` from native `qti-response-declaration` / `qti-response-processing` onto each interaction as canonical attributes. Per-type transforms run first (they carry type-specific behaviour such as the extended-text rubric source); a generic fallback then covers any remaining interaction with a `response-identifier`. A final `roundtripItemBody` transform copies `identifier` / `title` from the `qti-assessment-item` onto the `qti-item-body`.
+Every QTI 3.0 item is treated as third-party. `roundtripQtiItem` (`@citolab/prose-qti/qti3-item-import`) runs a chain of idempotent transforms that hoist `correct-response` / `score` from native `qti-response-declaration` / `qti-response-processing` onto each interaction as canonical attributes. Per-type transforms run first (they carry type-specific behaviour such as the extended-text rubric source); a generic fallback then covers any remaining interaction with a `response-identifier`. A final `roundtripItemBody` transform copies `identifier` / `title` from the `qti-assessment-item` onto the `qti-item-body`.
 
 ## Adding a new non-QTI attribute
 
@@ -73,4 +81,6 @@ To extend the subformat with a new attribute on an interaction:
 
 ## Related
 
-- [QTI Package](./qti-roundtrip-export)
+- [QTI Package Export](./qti-roundtrip-export)
+- [QTI Item Roundtrip](./qti-item-roundtrip)
+- [QTI 3 Item Import](./qti3-item-import)

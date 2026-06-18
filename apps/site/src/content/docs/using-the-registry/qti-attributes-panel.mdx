@@ -1,6 +1,6 @@
 ---
 title: QTI Attributes Panel
-description: Install and use the schema-aware attributes panel registry component.
+description: Install and use the schema-aware attributes panel GitHub registry component.
 slug: docs/using-the-registry/qti-attributes-panel
 ---
 
@@ -9,7 +9,7 @@ slug: docs/using-the-registry/qti-attributes-panel
 ## Install
 
 ```bash
-npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-attributes-panel.json
+pnpm dlx shadcn@latest add citolab/qti-editor/qti-attributes-panel
 ```
 
 **Registry dependencies (auto-installed):** `qti-choice-attributes-editor`, `qti-text-entry-attributes-editor`, `qti-extended-text-attributes-editor`
@@ -19,9 +19,9 @@ npx shadcn@latest add https://qti-editor.citolab.nl/r/qti-attributes-panel.json
 The panel reads the ProseKit editor from the shared `editorContext` (`@lit/context`). Provide the editor higher up in the DOM tree and the panel wires itself up automatically — no property assignment needed.
 
 ```ts
-import '@/components/attributes-panel';
+import './components/attributes-panel';
 import { ContextProvider } from '@lit/context';
-import { editorContext } from '@qti-editor/prosekit-integration/editor-context';
+import { editorContext } from '@citolab/prose-qti/integration/editor-context';
 
 // Provide the editor from a host element (e.g. in its constructor):
 new ContextProvider(host, {

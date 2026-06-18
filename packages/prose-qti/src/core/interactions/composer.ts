@@ -18,7 +18,7 @@ import type {
   InteractionComposerMetadata,
   InteractionDescriptor,
   NodeAttributePanelMetadata,
-} from '../../interfaces/index.js';
+} from '@citolab/prose-qti/interfaces';
 
 function insertItemDivider(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
   const { schema, tr } = state;

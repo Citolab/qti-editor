@@ -9,7 +9,20 @@ Extended text interactions collect longer free-text responses in a multi-line re
 ## Install
 
 ```bash
-pnpm add @citolab/prose-qti/components/register
+pnpm add @citolab/prose-qti
+```
+
+The extended text interaction is exposed as a subpath export from `@citolab/prose-qti`, so you import it from `@citolab/prose-qti/components/extended-text` and register the custom elements with `@citolab/prose-qti/components/extended-text/register`.
+
+## Usage
+
+Use the register side effect once, then call the insert command from your editor integration:
+
+```ts
+import '@citolab/prose-qti/components/extended-text/register';
+import { insertExtendedTextInteraction } from '@citolab/prose-qti/components/extended-text';
+
+insertExtendedTextInteraction(view.state, view.dispatch, view);
 ```
 
 This package integrates with `@qti-components/extended-text-interaction`.

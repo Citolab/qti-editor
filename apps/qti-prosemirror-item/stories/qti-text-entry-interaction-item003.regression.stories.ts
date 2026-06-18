@@ -25,9 +25,9 @@ import { baseKeymap } from 'prosemirror-commands';
 import { roundtripTextEntry, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
 import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-roundtrip';
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
-
-import { blockSelectPlugin } from 'packages/prose-extensions/src';
+import { blockSelectPlugin } from '@citolab/prose-extensions/prosemirror';
 import { textEntryInteractionDescriptor } from '@citolab/prose-qti/components/text-entry';
+
 import '@citolab/prose-qti/components/text-entry/register.js';
 import { attributesPanelPlugin } from '../src/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';

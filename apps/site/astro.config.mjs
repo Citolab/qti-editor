@@ -10,7 +10,7 @@ const require = createRequire(import.meta.url);
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const litReactiveElementRoot = dirname(require.resolve('@lit/reactive-element'));
 const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
-const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosekit/src', import.meta.url));
+const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/integration', import.meta.url));
 const prosekitExtensionsSrcRoot = fileURLToPath(new URL('../../packages/prosekit/extensions/src', import.meta.url));
 const qtiStylesSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/core-css/core-css.css', import.meta.url));
 const qtiInterfacesSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/interfaces/index.ts', import.meta.url));
@@ -330,28 +330,6 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Using the Registry',
-          items: [
-            { label: 'Overview', slug: 'docs/using-the-registry' },
-            { label: 'QTI Attributes Panel', slug: 'docs/using-the-registry/qti-attributes-panel' },
-            { label: 'QTI Code Panel', slug: 'docs/using-the-registry/qti-code-panel' },
-            { label: 'QTI Composer', slug: 'docs/using-the-registry/qti-composer' },
-            { label: 'QTI Composer Metadata Form', slug: 'docs/using-the-registry/qti-composer-metadata-form' },
-            { label: 'QTI Convert Menu', slug: 'docs/using-the-registry/qti-convert-menu' },
-            { label: 'QTI Interaction Insert Menu', slug: 'docs/using-the-registry/qti-interaction-insert-menu' },
-            { label: 'QTI Items Gutter', slug: 'docs/using-the-registry/qti-items-gutter' },
-            { label: 'QTI Items Navigator', slug: 'docs/using-the-registry/qti-items-navigator' },
-          ],
-        },
-        {
-          label: 'Package Reference',
-          items: [
-            { label: 'Itembody-only QTI Subformat', slug: 'docs/packages/itembody-subformat' },
-            { label: 'Prosemirror Plugins', slug: 'docs/packages/prosemirror-plugins' },
-            { label: 'QTI Roundtrip Export Package', slug: 'docs/packages/qti-roundtrip-export' },
-          ],
-        },
-        {
           label: 'QTI Interactions',
           items: [
             { label: 'Overview', slug: 'docs/qti-interactions' },
@@ -365,6 +343,35 @@ export default defineConfig({
             { label: 'Order Interaction', slug: 'docs/qti-interactions/order' },
             { label: 'Select Point Interaction', slug: 'docs/qti-interactions/select-point' },
             { label: 'Text Entry Interaction', slug: 'docs/qti-interactions/text-entry' },
+          ],
+        },
+        {
+          label: 'Package Reference',
+          items: [
+            { label: 'Itembody-only QTI Subformat', slug: 'docs/packages/itembody-subformat' },
+            { label: 'QTI 3 Item Import', slug: 'docs/packages/qti3-item-import' },
+            { label: 'QTI Item Roundtrip', slug: 'docs/packages/qti-item-roundtrip' },
+            { label: 'QTI Roundtrip Export Package', slug: 'docs/packages/qti-roundtrip-export' },
+          ],
+        },
+        {
+          label: 'ProseMirror Plugins',
+          items: [
+            { label: 'Overview', slug: 'docs/prosemirror-plugins' },
+            { label: 'Block Select', slug: 'docs/prosemirror-plugins/block-select' },
+            { label: 'Compatibility', slug: 'docs/prosemirror-plugins/compatibility' },
+            { label: 'Local Storage Persistence', slug: 'docs/prosemirror-plugins/local-storage-doc-persistence-extension' },
+            { label: 'Node Attrs Sync', slug: 'docs/prosemirror-plugins/node-attrs-sync' },
+            { label: 'Semantic Paste', slug: 'docs/prosemirror-plugins/paste-semantic-html' },
+            { label: 'Virtual Cursor', slug: 'docs/prosemirror-plugins/virtual-cursor' },
+          ],
+        },
+        {
+          label: 'Using the Registry',
+          items: [
+            { label: 'Overview', slug: 'docs/using-the-registry' },
+            { label: 'QTI Attributes Panel', slug: 'docs/using-the-registry/qti-attributes-panel' },
+            { label: 'QTI Interaction Insert Menu', slug: 'docs/using-the-registry/qti-interaction-insert-menu' },
           ],
         },
         {

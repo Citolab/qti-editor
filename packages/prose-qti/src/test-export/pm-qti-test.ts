@@ -3,7 +3,8 @@ import {
   countItemFragments,
   getItemFragmentXmls,
   formatXml,
-} from '../core/composer';
+} from "@qti-editor/core/composer/index.js";
+
 import {
   buildItemBodyContext,
   type QtiComposeContext,

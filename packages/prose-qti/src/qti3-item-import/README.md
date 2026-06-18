@@ -1,4 +1,4 @@
-# @qti-editor/qti3-item-import
+# @citolab/prose-qti/qti3-item-import
 
 Transform standard QTI 3.0 items into the editor's roundtrip-format by hoisting
 `correct-response` and `score` onto the matching interaction element. Output is
@@ -6,7 +6,7 @@ then importable by the editor's `parseDOM` path.
 
 ```ts
 import { qtiTransformItem } from '@qti-components/transformers';
-import { roundtripChoice, roundtripTextEntry, roundtripExtendedText, roundtripMatch } from '@qti-editor/qti3-item-import';
+import { roundtripChoice, roundtripTextEntry, roundtripExtendedText, roundtripMatch } from '@citolab/prose-qti/qti3-item-import';
 
 const editorReady = qtiTransformItem()
   .parse(thirdPartyQti3Xml)
@@ -20,7 +20,7 @@ const editorReady = qtiTransformItem()
 Or via the convenience wrapper:
 
 ```ts
-import { roundtripQtiItem } from '@qti-editor/qti3-item-import';
+import { roundtripQtiItem } from '@citolab/prose-qti/qti3-item-import';
 const editorReady = roundtripQtiItem(thirdPartyQti3Xml);
 ```
 

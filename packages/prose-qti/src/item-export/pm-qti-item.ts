@@ -2,7 +2,8 @@ import {
   buildSingleAssessmentItemXml,
   formatXml,
   type ComposerItemContext,
-} from '../core/composer';
+} from "@qti-editor/core/composer/index.js";
+
 import { xmlFromNode } from './pm-xml.js';
 
 import type { DOMSerializer, Node as ProseMirrorNode } from 'prosemirror-model';

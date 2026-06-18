@@ -39,18 +39,6 @@
       "@qti-editor/qti-test-export/pm-qti-test": [
         "packages/prose-qti/src/test-export/pm-qti-test.ts"
       ],
-      "@qti-editor/qti3-item-import": [
-        "packages/prose-qti/src/qti3-item-import/index.ts"
-      ],
-      "@qti-editor/qti3-item-import/*": [
-        "packages/prose-qti/src/qti3-item-import/*"
-      ],
-      "@qti-editor/qti-item-roundtrip": [
-        "packages/prose-qti/src/item-roundtrip/index.ts"
-      ],
-      "@qti-editor/qti-item-roundtrip/*": [
-        "packages/prose-qti/src/item-roundtrip/*"
-      ],
       "@qti-editor/prosekit-integration/save-qti-item": [
         "packages/prose-qti/src/integration/save-qti-item/index.ts"
       ],

@@ -19,7 +19,6 @@ import {
   registerTableHandleRowPopupElement,
   registerTableHandleRowPositionerElement,
 } from 'prosekit/lit/table-handle'
-
 import { editorContext } from '@citolab/prose-qti/integration/editor-context'
 
 function getTableHandleState(editor) {

@@ -19,12 +19,11 @@ QTI Editor is a composable kit — it provides the QTI building blocks that slot
 
 For external React apps, treat these as the stable integration surfaces:
 
-- `@qti-editor/core`
-- `@qti-editor/prosemirror-plugins`
-- `@qti-editor/interaction-*`
-- copied registry components from `/docs/using-the-registry/`
+- `@citolab/prose-qti`
+- `@citolab/prose-extensions`
+- copied registry components from the GitHub registry documented in `/docs/using-the-registry/`
 
-The examples below show the small local helper layer you should keep in your own app.
+The examples below show how to wire QTI into a React component using those surfaces.
 
 If you want to keep all toolbar, inspector, and side-panel UI in React instead of using the registry web components, see [React Custom UI](/docs/frameworks/react/custom-ui/).
 
@@ -33,21 +32,8 @@ If you want to keep all toolbar, inspector, and side-panel UI in React instead o
 ### 1. Install dependencies
 
 ```bash
-pnpm add prosemirror-state prosemirror-view prosemirror-model prosemirror-commands
-```
-
-Add the QTI packages you need:
-
-```bash
-pnpm add \
-  @qti-editor/core \
-  @citolab/prose-qti/components/choice \
-  @citolab/prose-qti/components/extended-text \
-  @citolab/prose-qti/components/inline-choice \
-  @citolab/prose-qti/components/match \
-  @citolab/prose-qti/components/order \
-  @citolab/prose-qti/components/select-point \
-  @citolab/prose-qti/components/text-entry
+pnpm add prosemirror-state prosemirror-view prosemirror-model prosemirror-commands \
+         @citolab/prose-qti
 ```
 
 ### 2. Create editor with pure ProseMirror
@@ -58,7 +44,7 @@ import { useEffect, useRef } from 'react';
 import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
-import { listInteractionDescriptors, listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
+import { listInteractionDescriptors, listInteractionPluginFactories } from '@citolab/prose-qti/core/interactions/composer';
 
 export function QtiEditor() {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -105,213 +91,29 @@ Events work with standard DOM events - no ProseKit required.
 ### 1. Install dependencies
 
 ```bash
-pnpm add prosekit @qti-editor/core @qti-editor/prosemirror-plugins
+pnpm add prosekit @citolab/prose-qti @citolab/prose-extensions
 ```
 
-Add the QTI packages you actually want to support on top of that. A typical setup includes:
+### 2. Create a `useQtiEditor` hook
 
-```bash
-pnpm add \
-  @qti-editor/core \
-  @citolab/prose-qti/components/choice \
-  @citolab/prose-qti/components/extended-text \
-  @citolab/prose-qti/components/inline-choice \
-  @citolab/prose-qti/components/match \
-  @citolab/prose-qti/components/order \
-  @citolab/prose-qti/components/select-point \
-  @citolab/prose-qti/components/text-entry
-```
-
-## 2. Add a local interaction extension helper
-
-Keep this helper in your own app. It assembles node specs, keyboard shortcuts, and runtime plugins from the public descriptor registry.
-
-```tsx
-// qti-interactions.ts
-import { listInteractionDescriptors, listInteractionPluginFactories } from '@qti-editor/core/interactions/composer';
-import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
-
-import type { Command } from 'prosekit/pm/state';
-
-export function defineQtiInteractionsExtension() {
-  const descriptors = listInteractionDescriptors();
-  const seenSpecs = new Set<string>();
-  const nodeSpecExtensions: Extension[] = [];
-
-  for (const descriptor of descriptors) {
-    for (const { name, spec } of descriptor.nodeSpecs) {
-      if (seenSpecs.has(name)) continue;
-      seenSpecs.add(name);
-      nodeSpecExtensions.push(defineNodeSpec({ name, ...spec }));
-    }
-  }
-
-  const keymap: Record<string, Command> = {};
-  const enterCommands = descriptors
-    .map(descriptor => descriptor.enterCommand)
-    .filter((command): command is Command => command != null);
-
-  if (enterCommands.length > 0) {
-    keymap['Enter'] = (state, dispatch, view) =>
-      enterCommands.some(command => command(state, dispatch, view));
-  }
-
-  for (const descriptor of descriptors) {
-    if (descriptor.insertCommand && descriptor.keyboardShortcut) {
-      keymap[descriptor.keyboardShortcut] = descriptor.insertCommand;
-    }
-  }
-
-  const pluginExtensions = listInteractionPluginFactories().map(pluginFactory =>
-    definePlugin(pluginFactory),
-  );
-
-  return union(...nodeSpecExtensions, defineKeymap(keymap), ...pluginExtensions);
-}
-```
-
-## 3. Add a small local event extension
-
-Keep this helper in your own app. It emits document and selection changes onto an `EventTarget`.
-
-```tsx
-// qti-editor-events.ts
-import { definePlugin, type Extension } from 'prosekit/core';
-import { ListDOMSerializer } from 'prosekit/extensions/list';
-import { Plugin, PluginKey } from 'prosekit/pm/state';
-
-export interface QtiDocumentJson {
-  type: string;
-  content?: QtiNodeJson[];
-}
-
-export interface QtiNodeJson {
-  type: string;
-  attrs?: Record<string, unknown>;
-  content?: QtiNodeJson[];
-  text?: string;
-  marks?: Array<{ type: string; attrs?: Record<string, unknown> }>;
-}
-
-export interface QtiContentChangeEventDetail {
-  json: QtiDocumentJson;
-  html: string;
-  timestamp: number;
-}
-
-export interface QtiSelectionChangeEventDetail {
-  from: number;
-  to: number;
-  empty: boolean;
-  timestamp: number;
-}
-
-export interface QtiEditorEventsOptions {
-  contentChangeEvent?: string;
-  selectionChangeEvent?: string;
-  emitContentChanges?: boolean;
-  emitSelectionChanges?: boolean;
-  eventTarget?: EventTarget;
-}
-
-const editorEventsPluginKey = new PluginKey('qti-editor-events');
-
-export function qtiEditorEventsExtension(options: QtiEditorEventsOptions = {}): Extension {
-  const {
-    contentChangeEvent = 'qti:content:change',
-    selectionChangeEvent = 'qti:selection:change',
-    emitContentChanges = true,
-    emitSelectionChanges = true,
-    eventTarget = document,
-  } = options;
-
-  let lastDocJson: string | undefined;
-
-  return definePlugin(
-    () =>
-      new Plugin({
-        key: editorEventsPluginKey,
-        view(view) {
-          if (emitContentChanges) {
-            const json = view.state.doc.toJSON() as QtiDocumentJson;
-            lastDocJson = JSON.stringify(json);
-
-            const serializer = ListDOMSerializer.fromSchema(view.state.schema);
-            const fragment = serializer.serializeFragment(view.state.doc.content);
-            const div = document.createElement('div');
-            div.appendChild(fragment);
-
-            eventTarget.dispatchEvent(
-              new CustomEvent(contentChangeEvent, {
-                detail: { json, html: div.innerHTML, timestamp: Date.now() },
-                bubbles: true,
-              }),
-            );
-          }
-
-          return {
-            update(updatedView, prevState) {
-              if (emitContentChanges && !prevState.doc.eq(updatedView.state.doc)) {
-                const json = updatedView.state.doc.toJSON() as QtiDocumentJson;
-                const next = JSON.stringify(json);
-
-                if (next !== lastDocJson) {
-                  lastDocJson = next;
-
-                  const serializer = ListDOMSerializer.fromSchema(updatedView.state.schema);
-                  const fragment = serializer.serializeFragment(updatedView.state.doc.content);
-                  const div = document.createElement('div');
-                  div.appendChild(fragment);
-
-                  eventTarget.dispatchEvent(
-                    new CustomEvent(contentChangeEvent, {
-                      detail: { json, html: div.innerHTML, timestamp: Date.now() },
-                      bubbles: true,
-                    }),
-                  );
-                }
-              }
-
-              if (emitSelectionChanges && !prevState.selection.eq(updatedView.state.selection)) {
-                eventTarget.dispatchEvent(
-                  new CustomEvent(selectionChangeEvent, {
-                    detail: {
-                      from: updatedView.state.selection.from,
-                      to: updatedView.state.selection.to,
-                      empty: updatedView.state.selection.empty,
-                      timestamp: Date.now(),
-                    },
-                    bubbles: true,
-                  }),
-                );
-              }
-            },
-          };
-        },
-      }),
-  );
-}
-```
-
-## 4. Create a `useQtiEditor` hook
+`defineQtiInteractionsExtension` and `qtiEditorEventsExtension` are package exports — import them directly:
 
 ```tsx
 // useQtiEditor.ts
 import { useEffect, useRef, useState } from 'react';
 import { createEditor, union } from 'prosekit/core';
-import {
-  blockSelectExtension,
-  defineSemanticPasteExtension,
-  nodeAttrsSyncExtension,
-} from '@qti-editor/prosemirror-plugins';
 import { defineBasicExtension } from 'prosekit/basic';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
+import { blockSelectExtension } from '@citolab/prose-extensions/block-select';
+import { nodeAttrsSyncExtension } from '@citolab/prose-extensions/node-attrs-sync';
+import { defineSemanticPasteExtension } from '@citolab/prose-extensions/paste-semantic-html';
+import { defineQtiInteractionsExtension } from '@citolab/prose-qti/integration/interactions/prosekit';
 import {
+  qtiEditorEventsExtension,
   type QtiContentChangeEventDetail,
   type QtiSelectionChangeEventDetail,
-  qtiEditorEventsExtension,
-} from './qti-editor-events';
-import { defineQtiInteractionsExtension } from './qti-interactions';
+} from '@citolab/prose-qti/integration/events';
+import '@citolab/prose-qti/components/register';
 
 export function useQtiEditor() {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -359,7 +161,7 @@ export function useQtiEditor() {
 }
 ```
 
-## 5. Use the hook in a component
+### 3. Use the hook in a component
 
 ```tsx
 // QtiEditorHost.tsx
@@ -392,7 +194,7 @@ export function QtiEditorHost() {
 ## Notes
 
 - Keep the `EventTarget` private to a single editor instance.
-- Build your ProseKit extension layer from `listInteractionDescriptors()` and `listInteractionPluginFactories()`.
-- Use `@qti-editor/core` when you need descriptor metadata or QTI composition helpers.
+- `defineQtiInteractionsExtension` from `@citolab/prose-qti/integration/interactions/prosekit` assembles node specs, keyboard shortcuts, and runtime plugins from the descriptor registry.
+- `qtiEditorEventsExtension` from `@citolab/prose-qti/integration/events` emits `qti:content:change` and `qti:selection:change` CustomEvents.
 - Use registry-installed components for toolbar, slash menu, composer, attributes, and insert menus.
-- `editor.view?.destroy()` is the correct cleanup call.
+- `editor.view?.destroy()` is the correct cleanup call; there is no `editor.unmount()`.

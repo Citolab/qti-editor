@@ -1,102 +1,96 @@
 # Editor Scaffolds
 
-This repository now uses two primary surfaces for learning and assembling editors:
+This repository has two primary surfaces for learning and assembling editors:
 
-- Storybook
-  The primary documentation surface for building an editor step by step.
-- Registry
-  The installable scaffold surface for copyable editor pieces and starter examples.
+- **Storybook** — documentation surface for building an editor step by step
+- **Registry** — installable scaffold surface for copyable editor pieces and starter examples
 
-The main editor app remains the realistic integration surface, but standalone example apps are no longer a maintained product surface.
+The main editor app (`apps/qti-prosekit-app`) remains the realistic integration surface.
+
+## Reference Apps
+
+| App | Description |
+|-----|-------------|
+| `apps/qti-prosekit-app` | Full editor with Firebase, React panels, full toolbar. Runs via `pnpm dev`. |
+| `apps/qti-prosekit-item` | Minimal ProseKit + QTI example. Best starting point for new integrations. |
+| `apps/qti-prosemirror-item` | Raw ProseMirror with QTI roundtrip. No ProseKit. |
+| `apps/site` | Astro documentation site. |
 
 ## How To Use These Surfaces
 
-Use Storybook when you want to understand:
-
+Use **Storybook** when you want to understand:
 - which editor-building layers exist
 - how to build an editor from scratch
 - what each panel, extension, and utility does in isolation
 - how ProseMirror-native primitives relate to ProseKit-first assembly
 
-Use the registry when you want to install:
-
-- copyable ProseKit-oriented UI pieces
+Use the **registry** when you want to install:
+- copyable ProseKit-oriented UI pieces from `@citolab/prose-qti-ui`
 - starter scaffolds similar to shadcn-style installs
-- editor examples that you want to own and customize in your own project
 
-Use the main app when you want to:
-
+Use **`apps/qti-prosekit-app`** when you want to:
 - run the supported end-to-end editor
 - inspect realistic wiring across packages
 - test product-like workflows and integration behavior
 
+Use **`apps/qti-prosekit-item`** when you want to:
+- see the minimal setup for a ProseKit + QTI editor
+- understand the descriptor-based extension assembly pattern
+
 ## Storybook Documentation Path
 
-Storybook should document how to build an editor in stages.
-
-Recommended build-up path:
+Storybook should document how to build an editor in stages:
 
 1. Start with a bare ProseMirror editor.
-2. Add the interaction packages.
+2. Add the interaction packages via the descriptor registry.
 3. Add the required styles.
-4. Add `block-select`.
-5. Add `sync-attributes`.
-6. Add the generic attributes engine.
-7. Add the ProseKit-oriented attributes panel.
+4. Add `block-select` from `@citolab/prose-extensions/block-select`.
+5. Add `node-attrs-sync` from `@citolab/prose-extensions/node-attrs-sync`.
+6. Add the generic attributes engine from `@citolab/prose-extensions/attributes`.
+7. Add the ProseKit-oriented attributes panel from `@citolab/prose-extensions/attributes-ui`.
 8. Add code and composer panels.
-9. Add QTI ProseKit assembly via `@qti-editor/prosekit-integration`.
+9. Wire QTI integration surfaces from `@citolab/prose-qti/integration/*`.
 
-For step 9, use `defineQtiExtension()` for a full setup including basic editor features, or `defineQtiInteractionsExtension()` if you are composing the extension manually:
+For step 9, use the integration exports directly:
 
 ```ts
-import {
-  defineQtiExtension,
-  qtiEditorEventsExtension,
-  qtiCodePanelExtension,
-} from '@qti-editor/prosekit-integration';
-import { createEditor } from 'prosekit/core';
+import { createEditor, union } from 'prosekit/core';
+import { qtiEditorEventsExtension, qtiCodePanelExtension } from '@citolab/prose-qti/integration';
+import { itemContext } from '@citolab/prose-qti/integration/item-context';
+import { defineQtiInteractionsExtension } from './extensions/qti-extension'; // assembled in app
 
 const editor = createEditor({
   extension: union(
-    defineQtiExtension(),
+    defineBasicExtension(),
+    defineQtiInteractionsExtension(),
     qtiEditorEventsExtension({ eventTarget: myTarget }),
     qtiCodePanelExtension({ eventTarget: myCodeTarget }),
   ),
 });
 ```
 
-`defineQtiInteractionsExtension()` iterates the descriptor registry in `@qti-editor/core` and assembles node spec extensions and a keymap automatically. Adding a new interaction to the registry is the only step required — no manual extension wiring.
-
-Storybook should also document:
-
-- which scaffold to choose
-- what each scaffold includes
-- what files a scaffold installs
-- how to extend a scaffold safely after installation
+`defineQtiInteractionsExtension` is assembled in the app from the descriptor registry — see `apps/qti-prosekit-item/src/extensions/qti-extension.ts` for the canonical pattern. It uses `listInteractionDescriptors()` and `listInteractionSchemaNodeSpecs()` from `@citolab/prose-qti/core/interactions/composer` to build node spec extensions and a keymap automatically.
 
 ## Registry Scaffolds
 
-The registry should expose installable scaffolds so consumers can install a starter example instead of manually copying app code.
+The registry exposes installable UI components from `packages/prose-qti-ui`. Build and serve locally:
 
-Target scaffold areas:
+```sh
+pnpm registry:build
+pnpm registry:serve
+```
 
-- `packages/ui/src/components/blocks/*` as installable registry blocks
-- `packages/ui/src/components/editor/ui/*` for vendored ProseKit-shaped UI dependencies
-- `packages/ui/registry.json` as the single registry index
-
-Each scaffold should describe:
-
-- intended use case
-- included packages
-- included registry components
-- required styles
-- optional next steps
+The registry source lives in `packages/prose-qti-ui/src/components/`, with a `registry.json` index. Components include:
+- `attributes-panel` — generic QTI attributes panel
+- `choice-attributes-editor` — choice interaction editor
+- `text-entry-attributes-editor` — text entry editor
+- `extended-text-attributes-editor` — extended text editor
+- `interaction-insert-menu` — interaction insertion UI
 
 ## Direction
 
 The target repository model is:
-
 - Storybook for guided editor-building documentation and regression presets
-- Registry for installable scaffolds and copyable UI
-- Packages for the reusable architecture
-- The main editor app for realistic end-to-end integration
+- Registry (`packages/prose-qti-ui`) for installable scaffolds and copyable UI
+- Packages (`@citolab/prose-qti`, `@citolab/prose-extensions`) for the reusable architecture
+- `apps/qti-prosekit-app` for realistic end-to-end integration
