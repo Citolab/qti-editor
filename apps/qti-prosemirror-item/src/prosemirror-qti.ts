@@ -1,12 +1,13 @@
 /**
- * QTI integration layer — everything that turns a plain ProseMirror editor into
- * a QTI item editor lives here. `main.ts` stays ProseMirror-only and consumes
- * this module's exports as its single QTI touchpoint.
+ * QTI integration layer — descriptors, plugins, attribute allowlist, and the
+ * QTI 3.0 item roundtrip. The schema topology (which nodes exist, what groups
+ * they join, what content they accept) is composed in `./schema.ts`, which
+ * imports `descriptors` from this module.
  *
  * What this module contributes:
- * - `createSchema`: builds an editor schema from basic prose nodes/marks + the
- *   QTI interaction node specs (with the `doc` node carrying the item's
- *   `identifier`/`title`), plus any generic nodes the caller passes in.
+ * - `descriptors`: the interaction descriptor registry. Consumed by `schema.ts`
+ *   for NodeSpecs, by `main.ts` for the Insert menu, and below for plugins and
+ *   the attribute allowlist.
  * - `qtiPlugins`: the interaction descriptors' own ProseMirror plugins plus the
  *   choice-aware Enter/Backspace keymap. These return false when no interaction
  *   applies, so compose them before the list-split and `baseKeymap` keymaps.
@@ -21,8 +22,6 @@
  * gap-match, hottext, inline-choice, match, order, select-point (+ rubric block).
  */
 
-import { Schema } from 'prosemirror-model';
-import { nodes, marks } from 'prosemirror-schema-basic';
 import { chainCommands } from 'prosemirror-commands';
 import { keymap } from 'prosemirror-keymap';
 import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
@@ -59,7 +58,7 @@ import '@citolab/prose-qti/components/shared/components/qti-gap/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-gap-text/register.js';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
-import type { Node as ProseMirrorNode, NodeSpec } from 'prosemirror-model';
+import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
 import type { Plugin } from 'prosemirror-state';
 
 /** Every descriptor this minimal editor understands. */
@@ -76,38 +75,6 @@ export const descriptors: InteractionDescriptor[] = [
   selectPointInteractionDescriptor,
   qtiRubricBlockDescriptor
 ];
-
-const qtiNodes = Object.fromEntries(
-  descriptors.flatMap(descriptor => descriptor.nodeSpecs).map(({ name, spec }) => [name, spec])
-);
-
-/**
- * Build the editor schema: basic prose nodes + the QTI interaction node specs,
- * with the `doc` node carrying the item's `identifier`/`title`. `extraNodes`
- * lets the composition root add generic, non-QTI nodes (e.g. lists, tables).
- */
-export function createSchema(extraNodes: Record<string, NodeSpec> = {}): Schema {
-  const baseNodes = {
-    ...nodes,
-    // Paragraph is the baseline member of the `richtext` group (the rubric
-    // block's content model). Generic nodes (lists, tables) opt into `richtext`
-    // from the composition root via `extraNodes`.
-    paragraph: { ...nodes.paragraph, group: 'block richtext' },
-    ...extraNodes,
-    ...qtiNodes
-  };
-  return new Schema({
-    nodes: {
-      ...baseNodes,
-      doc: {
-        ...baseNodes.doc,
-        // identifier/title are supplied from the imported item.
-        attrs: { identifier: {}, title: {} }
-      }
-    },
-    marks
-  });
-}
 
 /** Editable-attribute allowlist for the panel, keyed by node type. */
 export const editableAttrs = Object.fromEntries(

@@ -7,11 +7,11 @@
  * `<aside>`). The only non-core plugins it pulls in are the generic
  * attributes-panel and block-select plugins from `@qti-editor/prosemirror-plugins`.
  *
- * Everything QTI-specific — the interaction schema, the descriptors' plugins,
- * and the QTI 3.0 import/export roundtrip — lives in `prosemirror-qti.ts` and is
- * consumed here through a single import. That import list is the complete set of
- * touchpoints needed to add QTI interaction support (with import and export) to
- * an otherwise plain ProseMirror editor.
+ * QTI-specific concerns are split across two siblings: `prosemirror-qti.ts`
+ * owns the descriptor registry, plugins, attribute allowlist, and the QTI 3.0
+ * import/export roundtrip; `schema.ts` owns the document topology (basic prose
+ * nodes + lists/tables + interaction NodeSpecs, with per-name overrides). Both
+ * are consumed here through narrow imports.
  */
 
 import { EditorState } from 'prosemirror-state';
@@ -34,16 +34,12 @@ import {
   type MenuElement
 } from 'prosemirror-menu';
 import {
-  orderedList,
-  bulletList,
-  listItem,
   splitListItem,
   liftListItem,
   sinkListItem,
   wrapInList
 } from 'prosemirror-schema-list';
 import {
-  tableNodes,
   tableEditing,
   columnResizing,
   goToNextCell,
@@ -57,7 +53,6 @@ import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extension
 
 import { attributesPanelPlugin } from './attributes-panel-plugin.js';
 import {
-  createSchema,
   descriptors,
   editableAttrs,
   qtiPlugins,
@@ -65,8 +60,10 @@ import {
   importQtiItem,
   exportQtiItem
 } from './prosemirror-qti.js';
+import { appSchema as schema } from './schema.js';
 // EXPERIMENT: lockable qti-layout-* div wrappers (non-QTI affordance).
-import { qtiLayoutDivNodeSpec, divLockPlugin } from './qti-layout-div.js';
+// The node spec is owned by schema.ts; only the plugin is imported here.
+import { divLockPlugin } from './qti-layout-div.js';
 
 // Example app-level widget: edit a selected text-entry interaction's correct
 // response with a plain <textarea> (the package ships only the data model).
@@ -80,19 +77,6 @@ import 'prosemirror-tables/style/tables.css';
 import type { MarkType, Node as ProseMirrorNode } from 'prosemirror-model';
 import type { Command } from 'prosemirror-state';
 import type { Plugin } from 'prosemirror-state';
-
-// Generic (non-QTI) ProseMirror nodes: standard lists and tables.
-// `listNodes` mirrors prosemirror-schema-list's addListNodes(nodes, 'paragraph block*', 'block').
-// Lists and tables join the `richtext` group so they're allowed inside the rubric block.
-const listNodes = {
-  ordered_list: { ...orderedList, content: 'list_item+', group: 'block richtext' },
-  bullet_list: { ...bulletList, content: 'list_item+', group: 'block richtext' },
-  list_item: { ...listItem, content: 'paragraph (paragraph | bullet_list | ordered_list)*' }
-};
-const tableSchemaNodes = tableNodes({ tableGroup: 'block richtext', cellContent: 'block+', cellAttributes: {} });
-
-/** The editor schema: QTI nodes (from the integration layer) + generic lists/tables. */
-const schema = createSchema({ ...listNodes, ...tableSchemaNodes, qtiLayoutDiv: qtiLayoutDivNodeSpec });
 
 /**
  * Standard ProseMirror list & table editing plugins (not QTI-specific): Enter
@@ -147,6 +131,13 @@ const insertInteractionDropdown = new Dropdown(
   { label: 'Insert' }
 );
 
+const insertImage: Command = (state, dispatch) => {
+  const src = window.prompt('Image URL');
+  if (!src) return false;
+  if (dispatch) dispatch(state.tr.replaceSelectionWith(schema.nodes.image.create({ src })));
+  return true;
+};
+
 /** Insert a 3×3 table (first row as header cells) at the selection. */
 const insertTable: Command = (state, dispatch) => {
   const { table, table_row, table_cell, table_header } = schema.nodes;
@@ -167,7 +158,8 @@ const menuContent: MenuElement[][] = [
   [undoItem, redoItem],
   [
     cmdItem(wrapInList(schema.nodes.bullet_list), icons.bulletList, 'Wrap in bullet list'),
-    cmdItem(wrapInList(schema.nodes.ordered_list), icons.orderedList, 'Wrap in ordered list')
+    cmdItem(wrapInList(schema.nodes.ordered_list), icons.orderedList, 'Wrap in ordered list'),
+    cmdItem(insertImage, { text: '🖼' }, 'Insert image')
   ],
   [
     cmdItem(insertTable, { text: '\u25A6' }, 'Insert table'),
