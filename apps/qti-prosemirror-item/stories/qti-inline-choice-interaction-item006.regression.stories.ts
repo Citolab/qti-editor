@@ -42,7 +42,7 @@ const qtiNodes = Object.fromEntries(
   ])
 );
 
-const baseNodes = { ...nodes, ...qtiNodes };
+const baseNodes = { ...nodes, paragraph: { ...nodes.paragraph, group: 'block richtext' }, ...qtiNodes };
 
 /** The editor schema used for the ITEM006 roundtrip. */
 export const schema = new Schema({

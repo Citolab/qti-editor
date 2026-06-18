@@ -26,7 +26,7 @@ const editorMarks: Record<string, MarkSpec> = {
 };
 
 export const schema = new Schema({
-  nodes: { ...nodes, ...qtiNodes },
+  nodes: { ...nodes, paragraph: { ...nodes.paragraph, group: 'block richtext' }, ...qtiNodes },
   marks: editorMarks,
 });
 

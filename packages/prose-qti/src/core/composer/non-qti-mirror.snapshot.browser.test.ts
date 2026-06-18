@@ -189,7 +189,7 @@ describe('non-QTI data-* mirror snapshots — DOM compose pipeline (Phase 1 base
     const xml = exportItemXml(
       'snap-gap-match',
       `
-        <qti-gap-match-interaction response-identifier="GAP" correct-response="g1 gap-a" score="2">
+        <qti-gap-match-interaction response-identifier="GAP" correct-response='["g1 gap-a"]' score="2">
           <qti-gap-text identifier="g1" match-max="1">Word</qti-gap-text>
           <p>Fill: <qti-gap identifier="gap-a"/></p>
         </qti-gap-match-interaction>
