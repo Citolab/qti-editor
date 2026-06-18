@@ -73,7 +73,7 @@ test('pressing Enter after the last choice and typing creates a fourth qti-simpl
   host.remove();
 });
 
-test('word-deleting the typed text empties the new choice, then Enter exits into a new paragraph', async () => {
+test('deleting the typed text empties the new choice, then Enter exits into a new paragraph', async () => {
   const host = document.createElement('div');
   document.body.appendChild(host);
   const view = mountEditor(host);
@@ -85,9 +85,9 @@ test('word-deleting the typed text empties the new choice, then Enter exits into
   await userEvent.keyboard('{Enter}');
   await userEvent.keyboard('Telluur (Te)');
 
-  // Press Command+Backspace (Meta) once — on macOS this word-deletes the entire
-  // "Telluur (Te)" text in a single press, emptying the new choice.
-  await userEvent.keyboard('{Meta>}{Backspace}{/Meta}');
+  // Select all text in the choice (Shift+Home) and delete it.
+  await userEvent.keyboard('{Shift>}{Home}{/Shift}');
+  await userEvent.keyboard('{Backspace}');
 
   const choices = Array.from(
     exportAssessmentItemDoc(view.state.doc).querySelectorAll('qti-choice-interaction > qti-simple-choice'),
