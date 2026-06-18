@@ -8,7 +8,7 @@ import {
   listInteractionPluginFactories,
   listInteractionSchemaNodeSpecs,
 } from '@citolab/prose-qti/core/interactions/composer';
-import { blockSelectPlugin } from '@citolab/prose-extensions/prosemirror/block-select';
+import { blockSelectPlugin } from '@citolab/prose-extensions/block-select';
 
 const qtiNodes: Record<string, NodeSpec> = Object.fromEntries(
   listInteractionSchemaNodeSpecs().map(({ name, spec }) => [name, spec]),
