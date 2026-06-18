@@ -30,7 +30,10 @@ describe('qtiExtendedTextInteractionNodeSpec', () => {
       },
     });
 
-    const interaction = schema.node('qtiExtendedTextInteraction');
+    const prompt = schema.node('qtiPrompt', null, [
+      schema.node('qtiPromptParagraph'),
+    ]);
+    const interaction = schema.node('qtiExtendedTextInteraction', null, [prompt]);
 
     expect(interaction.attrs).toEqual({
       responseIdentifier: null,
@@ -58,6 +61,9 @@ describe('qtiExtendedTextInteractionNodeSpec', () => {
       },
     });
 
+    const prompt = schema.node('qtiPrompt', null, [
+      schema.node('qtiPromptParagraph'),
+    ]);
     const interaction = schema.node('qtiExtendedTextInteraction', {
       responseIdentifier: 'RESPONSE',
       expectedLength: 120,
@@ -71,7 +77,7 @@ describe('qtiExtendedTextInteractionNodeSpec', () => {
       minStrings: 1,
       class: 'essay',
       score: 5,
-    });
+    }, [prompt]);
 
     expect(qtiExtendedTextInteractionNodeSpec.toDOM?.(interaction)).toEqual([
       'qti-extended-text-interaction',
