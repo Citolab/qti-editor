@@ -20,9 +20,14 @@ export const extendedTextInteractionComposerMetadata = {
 export const extendedTextNodeAttributePanelMetadataByNodeTypeName = {
   [EXTENDED_TEXT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: EXTENDED_TEXT_INTERACTION_NODE_TYPE,
-    editableAttributes: ['expectedLength', 'placeholderText', 'class', 'score'],
+    editableAttributes: ['expectedLength', 'placeholderText', 'patternMask', 'class', 'score'],
     hiddenAttributes: ['class'],
     friendlyEditors: [extendedTextAttributesFriendlyEditor],
-    fields: { score: { label: 'Score', input: 'number' } },
+    fields: {
+      expectedLength: { label: 'Expected length', input: 'number' },
+      placeholderText: { label: 'Placeholder', input: 'text' },
+      patternMask: { label: 'Pattern mask (regex)', input: 'text' },
+      score: { label: 'Score', input: 'number' },
+    },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;
