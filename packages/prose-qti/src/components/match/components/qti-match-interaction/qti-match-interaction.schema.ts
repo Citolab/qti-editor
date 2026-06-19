@@ -1,5 +1,7 @@
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
+import { hasTabularMatchClass } from '../qti-match-interaction-tabular/qti-match-interaction-tabular.schema.js';
+
 export const qtiMatchInteractionNodeSpec: NodeSpec = {
   group: 'block',
   content: 'qtiPrompt? qtiSimpleMatchSet{2}',
@@ -17,6 +19,7 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
       tag: 'qti-match-interaction',
       getAttrs: (node: Node | string) => {
         if (!(node instanceof HTMLElement)) return {};
+        if (hasTabularMatchClass(node)) return false;
         const maxAssociations = node.getAttribute('max-associations');
         const minAssociations = node.getAttribute('min-associations');
         const className = node.getAttribute('class');

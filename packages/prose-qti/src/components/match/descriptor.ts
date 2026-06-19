@@ -10,8 +10,15 @@ import {
   insertSimpleAssociableChoiceOnEnter,
 } from './components/qti-match-interaction/qti-match-interaction.commands.js';
 import { qtiMatchInteractionNodeSpec } from './components/qti-match-interaction/qti-match-interaction.schema.js';
-import { matchInteractionComposerMetadata, matchNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
+import { qtiMatchInteractionTabularNodeSpec } from './components/qti-match-interaction-tabular/qti-match-interaction-tabular.schema.js';
+import {
+  matchInteractionComposerMetadata,
+  matchInteractionTabularComposerMetadata,
+  matchNodeAttributePanelMetadataByNodeTypeName,
+} from './composer/metadata.js';
 import { matchComposerHandler } from './composer/handler.js';
+import { matchTabularComposerHandler } from './composer/handler.js';
+import { createQtiMatchTabularNodeViewPlugin } from './extensions/tabular-node-view.js';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
@@ -23,6 +30,7 @@ export const matchInteractionDescriptor = {
     nodeGroups: ['qtiMedia'],
   },
   nodeSpecs: [
+    { name: 'qtiMatchInteractionTabular', spec: qtiMatchInteractionTabularNodeSpec },
     { name: 'qtiMatchInteraction', spec: qtiMatchInteractionNodeSpec },
     { name: 'qtiPrompt', spec: qtiPromptNodeSpec },
     { name: 'qtiPromptParagraph', spec: qtiPromptParagraphNodeSpec },
@@ -34,5 +42,26 @@ export const matchInteractionDescriptor = {
   enterCommand: insertSimpleAssociableChoiceOnEnter,
   composerMetadata: matchInteractionComposerMetadata,
   composerHandler: matchComposerHandler,
+  attributePanelMetadata: matchNodeAttributePanelMetadataByNodeTypeName,
+} satisfies InteractionDescriptor;
+
+export const matchInteractionTabularDescriptor = {
+  tagName: 'qti-match-interaction-tabular',
+  nodeTypeName: 'qtiMatchInteractionTabular',
+  baseSchemaDependencies: {
+    nodeGroups: ['qtiMedia'],
+  },
+  nodeSpecs: [
+    { name: 'qtiMatchInteractionTabular', spec: qtiMatchInteractionTabularNodeSpec },
+    { name: 'qtiPrompt', spec: qtiPromptNodeSpec },
+    { name: 'qtiPromptParagraph', spec: qtiPromptParagraphNodeSpec },
+    { name: 'qtiSimpleMatchSet', spec: qtiSimpleMatchSetNodeSpec },
+    { name: 'qtiSimpleAssociableChoice', spec: qtiSimpleAssociableChoiceNodeSpec },
+    { name: 'qtiSimpleAssociableChoiceParagraph', spec: qtiSimpleAssociableChoiceParagraphNodeSpec },
+  ],
+  pluginFactories: [createQtiMatchTabularNodeViewPlugin],
+  enterCommand: insertSimpleAssociableChoiceOnEnter,
+  composerMetadata: matchInteractionTabularComposerMetadata,
+  composerHandler: matchTabularComposerHandler,
   attributePanelMetadata: matchNodeAttributePanelMetadataByNodeTypeName,
 } satisfies InteractionDescriptor;

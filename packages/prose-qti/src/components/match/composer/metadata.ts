@@ -21,7 +21,9 @@ const MAP_RESPONSE_INTERNAL_TEMPLATE = `
 `;
 
 export const MATCH_INTERACTION_TAG = 'qti-match-interaction' as const;
+export const MATCH_INTERACTION_TABULAR_TAG = 'qti-match-interaction-tabular' as const;
 export const MATCH_INTERACTION_NODE_TYPE = 'qtiMatchInteraction' as const;
+export const MATCH_INTERACTION_TABULAR_NODE_TYPE = 'qtiMatchInteractionTabular' as const;
 export const SIMPLE_ASSOCIABLE_CHOICE_NODE_TYPE = 'qtiSimpleAssociableChoice' as const;
 
 export const matchInteractionComposerMetadata = {
@@ -36,16 +38,31 @@ export const matchInteractionComposerMetadata = {
   strippedAttributes: ['correct-response', 'score'],
 } satisfies InteractionComposerMetadata;
 
-export const matchNodeAttributePanelMetadataByNodeTypeName = {
+export const matchInteractionTabularComposerMetadata = {
+  ...matchInteractionComposerMetadata,
+  tagName: MATCH_INTERACTION_TABULAR_TAG,
+  nodeTypeName: MATCH_INTERACTION_TABULAR_NODE_TYPE,
+} satisfies InteractionComposerMetadata;
+
+export const matchNodeAttributePanelMetadataByNodeTypeName: Record<string, NodeAttributePanelMetadata> = {
   [MATCH_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: MATCH_INTERACTION_NODE_TYPE,
     // `correctResponse` is authored via the interaction's click-to-associate UI
     // (and shown as fake drags), not by editing raw JSON in the panel, so it is
     // intentionally read-only here.
-    editableAttributes: ['shuffle','class'],
+    editableAttributes: ['shuffle', 'class'],
     fields: {
       score: { label: 'Score', input: 'number' },
       correctResponse: { label: 'Correct response', readOnly: true },
+    },
+  },
+  [MATCH_INTERACTION_TABULAR_NODE_TYPE.toLowerCase()]: {
+    nodeTypeName: MATCH_INTERACTION_TABULAR_NODE_TYPE,
+    editableAttributes: ['shuffle', 'class', 'dataFirstColumnHeader'],
+    fields: {
+      score: { label: 'Score', input: 'number' },
+      correctResponse: { label: 'Correct response', readOnly: true },
+      dataFirstColumnHeader: { label: 'First column header', input: 'text' },
     },
   },
   [SIMPLE_ASSOCIABLE_CHOICE_NODE_TYPE.toLowerCase()]: {
@@ -55,4 +72,4 @@ export const matchNodeAttributePanelMetadataByNodeTypeName = {
     // read-only here. Only `fixed` (shuffle pinning) stays editable.
     editableAttributes: ['fixed'],
   },
-} satisfies Record<string, NodeAttributePanelMetadata>;
+};
