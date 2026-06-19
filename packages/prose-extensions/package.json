@@ -75,7 +75,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@citolab/prose-qti": "1.0.0",
+    "@citolab/prose-qti": "workspace:*",
     "lit": "^3.3.2"
   },
   "peerDependencies": {

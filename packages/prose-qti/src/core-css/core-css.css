@@ -10,7 +10,7 @@
  * Plain CSS — no Tailwind, no PostCSS plugins required at the consumer.
  */
 
-@import '@qti-components/theme/item.css';
+
 
 img {
   width: 100%;

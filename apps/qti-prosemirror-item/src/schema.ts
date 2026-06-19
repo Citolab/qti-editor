@@ -14,6 +14,7 @@ import { Schema } from 'prosemirror-model';
 import { nodes as basicNodes, marks } from 'prosemirror-schema-basic';
 import { orderedList, bulletList, listItem } from 'prosemirror-schema-list';
 import { tableNodes } from 'prosemirror-tables';
+import { defaultSettings, updateImageNode } from 'prosemirror-image-plugin';
 import { qtiChoiceInteractionNodeSpec } from '@citolab/prose-qti/components/choice';
 import { qtiExtendedTextInteractionNodeSpec } from '@citolab/prose-qti/components/extended-text';
 import { qtiTextEntryInteractionNodeSpec } from '@citolab/prose-qti/components/text-entry';
@@ -42,12 +43,15 @@ import {
 
 import { qtiLayoutDivNodeSpec } from './qti-layout-div.js';
 
-// Preserve the hand-aligned columns below — they make the topology readable
-// at a glance. Without this directive, Prettier collapses the per-node
-// alignment of `content` / `group` into a single column and the schema turns
-// back into the dense, unreadable form it used to be.
-// prettier-ignore
-export const appSchema = new Schema({
+export const imagePluginSettings = {
+  ...defaultSettings,
+  isBlock: false,
+  hasTitle: false,
+  enableResize: false,
+  defaultAlt: 'Image'
+};
+
+const baseSchema = new Schema({
   marks,
   nodes: {
     // ── Core prose ────────────────────────────────────────────────────────
@@ -64,7 +68,7 @@ export const appSchema = new Schema({
 
     // ── Generic QTI container (non-interaction) ───────────────────────────
     qtiLayoutDiv:   { ...qtiLayoutDivNodeSpec,   content: 'block+', group: 'block' },
-    qtiRubricBlock: { ...qtiRubricBlockNodeSpec, content: 'richtext+', group: 'block' },
+    qtiRubricBlock: { ...qtiRubricBlockNodeSpec },
 
     // ── QTI shared building blocks ────────────────────────────────────────
     qtiPrompt:                          { ...qtiPromptNodeSpec,                          content: 'qtiPromptParagraph' },
@@ -79,21 +83,31 @@ export const appSchema = new Schema({
 
     // ── QTI block interactions ────────────────────────────────────────────
     qtiChoiceInteraction:       { ...qtiChoiceInteractionNodeSpec,       content: 'qtiPrompt qtiSimpleChoice+',              group: 'block' },
-    qtiOrderInteraction:        { ...qtiOrderInteractionNodeSpec,        content: 'qtiPrompt qtiSimpleChoice+',             group: 'block' },
-    qtiMatchInteraction:        { ...qtiMatchInteractionNodeSpec,        content: 'qtiPrompt qtiSimpleMatchSet{2}',         group: 'block' },
-    qtiAssociateInteraction:    { ...qtiAssociateInteractionNodeSpec,    content: 'qtiPrompt qtiSimpleAssociableChoice+',   group: 'block' },
+    qtiOrderInteraction:        { ...qtiOrderInteractionNodeSpec,        content: 'qtiPrompt? qtiSimpleChoice+',            group: 'block' },
+    qtiMatchInteraction:        { ...qtiMatchInteractionNodeSpec,        content: 'qtiPrompt? qtiSimpleMatchSet{2}',        group: 'block' },
+    qtiAssociateInteraction:    { ...qtiAssociateInteractionNodeSpec,    content: 'qtiPrompt? qtiSimpleAssociableChoice+',  group: 'block' },
     qtiHottextInteraction:      { ...qtiHottextInteractionNodeSpec,      content: 'paragraph+',                              group: 'block' },
-    qtiGapMatchInteraction:     { ...qtiGapMatchInteractionNodeSpec,     content: 'qtiPrompt qtiGapText{2,} paragraph+',    group: 'block' },
+    qtiGapMatchInteraction:     { ...qtiGapMatchInteractionNodeSpec,     content: 'qtiPrompt? qtiGapText{2,} paragraph+',   group: 'block' },
     qtiExtendedTextInteraction: { ...qtiExtendedTextInteractionNodeSpec, content: 'qtiPrompt',                               group: 'block' },
     qtiSelectPointInteraction:  { ...qtiSelectPointInteractionNodeSpec,  content: 'qtiPrompt imgSelectPoint',                group: 'block' },
 
     // ── QTI inline interactions ───────────────────────────────────────────
     qtiInlineChoiceInteraction: { ...qtiInlineChoiceInteractionNodeSpec, content: 'qtiInlineChoice+', group: 'inline', inline: true },
-    qtiTextEntryInteraction:    { ...qtiTextEntryInteractionNodeSpec,    group: 'inline', inline: true, atom: true },
+    qtiTextEntryInteraction:    { ...qtiTextEntryInteractionNodeSpec },
 
     // ── Interaction-specific child nodes ──────────────────────────────────
     qtiHottext:        { ...qtiHottextNodeSpec,       content: 'text*', group: 'inline', inline: true },
     qtiInlineChoice:   { ...qtiInlineChoiceNodeSpec,  content: 'text*', group: 'inline', inline: true },
     imgSelectPoint:    { ...imgSelectPointNodeSpec,   group: 'block qtiMedia', atom: true }
   }
+});
+
+// Preserve the hand-aligned columns below — they make the topology readable
+// at a glance. Without this directive, Prettier collapses the per-node
+// alignment of `content` / `group` into a single column and the schema turns
+// back into the dense, unreadable form it used to be.
+// prettier-ignore
+export const appSchema = new Schema({
+  marks,
+  nodes: updateImageNode(baseSchema.spec.nodes, imagePluginSettings)
 });

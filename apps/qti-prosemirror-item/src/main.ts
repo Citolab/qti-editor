@@ -49,6 +49,7 @@ import {
   deleteColumn,
   deleteTable
 } from 'prosemirror-tables';
+import { imagePlugin, startImageUpload } from 'prosemirror-image-plugin';
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
 
 import { attributesPanelPlugin } from './attributes-panel-plugin.js';
@@ -60,7 +61,7 @@ import {
   importQtiItem,
   exportQtiItem
 } from './prosemirror-qti.js';
-import { appSchema as schema } from './schema.js';
+import { appSchema as schema, imagePluginSettings } from './schema.js';
 // EXPERIMENT: lockable qti-layout-* div wrappers (non-QTI affordance).
 // The node spec is owned by schema.ts; only the plugin is imported here.
 import { divLockPlugin } from './qti-layout-div.js';
@@ -72,6 +73,8 @@ import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
 import 'prosemirror-menu/style/menu.css';
 import 'prosemirror-tables/style/tables.css';
+import 'prosemirror-image-plugin/dist/styles/common.css';
+import 'prosemirror-image-plugin/dist/styles/withoutResize.css';
 
 import type { MarkType, Node as ProseMirrorNode } from 'prosemirror-model';
 import type { Command } from 'prosemirror-state';
@@ -130,10 +133,25 @@ const insertInteractionDropdown = new Dropdown(
   { label: 'Insert' }
 );
 
-const insertImage: Command = (state, dispatch) => {
-  const src = window.prompt('Image URL');
-  if (!src) return false;
-  if (dispatch) dispatch(state.tr.replaceSelectionWith(schema.nodes.image.create({ src })));
+const insertImage: Command = (_state, _dispatch, view) => {
+  if (!view) return true;
+
+  const picker = Object.assign(document.createElement('input'), {
+    type: 'file',
+    accept: 'image/*'
+  });
+
+  picker.addEventListener(
+    'change',
+    () => {
+      const file = picker.files?.[0];
+      if (!file) return;
+      startImageUpload(view, file, imagePluginSettings.defaultAlt, imagePluginSettings, schema);
+    },
+    { once: true }
+  );
+
+  picker.click();
   return true;
 };
 
@@ -186,6 +204,8 @@ const editorPlugins: Plugin[] = [
   textEntryWidgetPlugin(),
   // EXPERIMENT: keep qti-layout-* divs immutable while their content stays editable.
   divLockPlugin,
+  // Plugin-provided image upload support: toolbar picker + paste/drop image files.
+  imagePlugin(imagePluginSettings),
   ...tableListPlugins,
   keymap(baseKeymap),
   dropCursor(),
