@@ -22,8 +22,6 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
   const expectedLength = toFiniteNumber(sourceElement.getAttribute('expected-length'), null);
-  const expectedLines = toFiniteNumber(sourceElement.getAttribute('expected-lines'), null);
-  const format = toNonEmptyString(sourceElement.getAttribute('format')) || 'plain';
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
@@ -31,17 +29,8 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
   removeEmptyPrompts(normalizedElement);
   const strippedAttributes = getStrippedAttributeSources(metadata);
 
-  // Set normalized attributes
   if (expectedLength != null) {
     normalizedElement.setAttribute('expected-length', String(expectedLength));
-  }
-  if (expectedLines != null) {
-    normalizedElement.setAttribute('expected-lines', String(expectedLines));
-  }
-  if (format !== 'plain') {
-    normalizedElement.setAttribute('format', format);
-  } else {
-    normalizedElement.removeAttribute('format');
   }
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;

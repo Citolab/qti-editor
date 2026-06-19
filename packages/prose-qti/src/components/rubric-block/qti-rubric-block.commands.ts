@@ -14,7 +14,8 @@ export function insertRubricBlock(state: EditorState, dispatch?: (tr: Transactio
   if (!rubricType || !paragraphType) return false;
 
   const { $from } = state.selection;
-  const insertPos = $from.after();
+  if ($from.depth < 1) return false;
+  const insertPos = $from.after(1);
 
   if (dispatch) {
     const node = rubricType.create(undefined, paragraphType.create());

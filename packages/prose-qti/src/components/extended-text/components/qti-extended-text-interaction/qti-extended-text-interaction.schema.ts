@@ -6,14 +6,8 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
   attrs: {
     responseIdentifier: { default: null },
     expectedLength: { default: null },
-    expectedLines: { default: null },
     placeholderText: { default: null },
-    format: { default: 'plain' },
     patternMask: { default: null },
-    base: { default: 10 },
-    stringIdentifier: { default: null },
-    maxStrings: { default: null },
-    minStrings: { default: 0 },
     class: { default: null },
     score: { default: 1 },
   },
@@ -23,24 +17,13 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
       getAttrs: (node: Node | string) => {
         if (!(node instanceof HTMLElement)) return {};
         const expectedLength = node.getAttribute('expected-length');
-        const expectedLines = node.getAttribute('expected-lines');
-        const base = node.getAttribute('base');
-        const maxStrings = node.getAttribute('max-strings');
-        const minStrings = node.getAttribute('min-strings');
-        const className = node.getAttribute('class');
         const scoreAttr = node.getAttribute('score');
         return {
           responseIdentifier: node.getAttribute('response-identifier'),
           expectedLength: expectedLength ? parseInt(expectedLength, 10) : null,
-          expectedLines: expectedLines ? parseInt(expectedLines, 10) : null,
           placeholderText: node.getAttribute('placeholder-text'),
-          format: node.getAttribute('format') || 'plain',
           patternMask: node.getAttribute('pattern-mask'),
-          base: base ? parseInt(base, 10) : 10,
-          stringIdentifier: node.getAttribute('string-identifier'),
-          maxStrings: maxStrings ? parseInt(maxStrings, 10) : null,
-          minStrings: minStrings ? parseInt(minStrings, 10) : 0,
-          class: className || null,
+          class: node.getAttribute('class') || null,
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
       }
@@ -54,29 +37,11 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
     if (node.attrs.expectedLength != null) {
       attrs['expected-length'] = String(node.attrs.expectedLength);
     }
-    if (node.attrs.expectedLines != null) {
-      attrs['expected-lines'] = String(node.attrs.expectedLines);
-    }
     if (node.attrs.placeholderText) {
       attrs['placeholder-text'] = node.attrs.placeholderText;
     }
-    if (node.attrs.format && node.attrs.format !== 'plain') {
-      attrs['format'] = node.attrs.format;
-    }
     if (node.attrs.patternMask) {
       attrs['pattern-mask'] = node.attrs.patternMask;
-    }
-    if (node.attrs.base != null && node.attrs.base !== 10) {
-      attrs['base'] = String(node.attrs.base);
-    }
-    if (node.attrs.stringIdentifier) {
-      attrs['string-identifier'] = node.attrs.stringIdentifier;
-    }
-    if (node.attrs.maxStrings != null) {
-      attrs['max-strings'] = String(node.attrs.maxStrings);
-    }
-    if (node.attrs.minStrings > 0) {
-      attrs['min-strings'] = String(node.attrs.minStrings);
     }
     if (node.attrs.class) attrs.class = node.attrs.class;
     attrs.score = String(node.attrs.score ?? 1);

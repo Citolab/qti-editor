@@ -65,13 +65,3 @@ export function serializeExtendedTextClassState(state: Partial<ExtendedTextClass
 
   return tokens.length > 0 ? tokens.join(' ') : null;
 }
-
-/**
- * Get appropriate height class based on expectedLines value
- */
-export function getHeightClassFromExpectedLines(expectedLines: number | null): ExtendedTextHeightClassOption | null {
-  if (expectedLines == null) return null;
-  if (expectedLines <= 3) return 'qti-height-lines-3';
-  if (expectedLines <= 6) return 'qti-height-lines-6';
-  return 'qti-height-lines-15';
-}

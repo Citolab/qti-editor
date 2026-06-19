@@ -20,7 +20,7 @@ export const extendedTextInteractionComposerMetadata = {
 export const extendedTextNodeAttributePanelMetadataByNodeTypeName = {
   [EXTENDED_TEXT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: EXTENDED_TEXT_INTERACTION_NODE_TYPE,
-    editableAttributes: ['expectedLength', 'expectedLines', 'placeholderText', 'format', 'class', 'score'],
+    editableAttributes: ['expectedLength', 'placeholderText', 'class', 'score'],
     hiddenAttributes: ['class'],
     friendlyEditors: [extendedTextAttributesFriendlyEditor],
     fields: { score: { label: 'Score', input: 'number' } },

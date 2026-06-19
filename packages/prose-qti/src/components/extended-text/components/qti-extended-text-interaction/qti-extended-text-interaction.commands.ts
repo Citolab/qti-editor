@@ -34,8 +34,7 @@ export const insertExtendedTextInteraction: Command = (state, dispatch, view?: E
       return interactionType.create(
         {
           responseIdentifier,
-          expectedLines: 6,
-          format: 'plain'
+          class: 'qti-height-lines-6'
         },
         [prompt]
       );
