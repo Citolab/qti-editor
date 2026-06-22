@@ -22,7 +22,7 @@ export default defineConfig({
           name: 'unit',
           globals: true,
           include: ['packages/**/src/**/*.test.ts', 'apps/**/src/**/*.test.ts'],
-          exclude: ['packages/**/src/**/*.browser.test.ts', 'apps/**/*.browser.test.ts'],
+          exclude: ['**/node_modules/**', 'packages/**/src/**/*.browser.test.ts', 'apps/**/*.browser.test.ts'],
           setupFiles: ['./tools/testing/setup/vitest.js'],
           server: {
             deps: {
