@@ -73,7 +73,7 @@ function defineOrderedListSpec(): OrderedListSpecExtension {
 function defineListItemSpec(): ListItemSpecExtension {
   return defineNodeSpec({
     name: 'list_item',
-    content: 'paragraph',
+    content: 'paragraph block*',
     defining: true,
     parseDOM: listItem.parseDOM,
     toDOM: listItem.toDOM,
