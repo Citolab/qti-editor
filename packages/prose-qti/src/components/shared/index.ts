@@ -22,6 +22,7 @@ export * from './components/qti-gap-text/qti-gap-text.js';
 export * from './components/qti-gap-text/qti-gap-text.schema.js';
 
 export * from './commands/enter.js';
+export * from './commands/home-end.js';
 export * from './commands/insert.js';
 
 export * from './composer/types.js';

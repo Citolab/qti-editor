@@ -6,12 +6,11 @@
 - Package-level rules must not weaken core safety, quality, and verification requirements in this root file.
 
 ## Repository Map
-- App entrypoint: `apps/qti-prosekit-app/src/main.ts`
+- App entrypoint: `apps/qti-prosekit-app/src/main.tsx`
 - App package: `apps/qti-prosekit-app/`
 - Example apps: `apps/qti-prosekit-item/` (minimal ProseKit), `apps/qti-prosemirror-item/` (minimal pure-ProseMirror)
-- Plugin packages: `packages/plugin-*`
-- ProseMirror utility plugins: `packages/prosemirror-*`
-- UI component registry: `packages/ui/` (see Registry Pattern below)
+- QTI and editor packages: `packages/prose-qti/`, `packages/prose-extensions/`
+- UI component registry: `packages/prose-qti-ui/` (see Registry Pattern below)
 - Canonical architecture reference: `docs/architecture.md`
 - Skill catalog and definitions: `SKILLS.md`
 
@@ -30,28 +29,29 @@
 - Keep package boundaries explicit and clean.
 - Add or change shared types at plugin boundaries first.
 - Preserve event contracts (event names + payload shape) unless a deliberate breaking change is requested.
-- Keep app integration decisions in `apps/qti-prosekit-app/src/main.ts`; keep domain logic in package modules.
+- Keep app integration decisions in `apps/qti-prosekit-app/src/` composition files (`main.tsx`, `App.tsx`, `editor.tsx`, and extension wiring); keep domain logic in package modules.
 - Make focused changes and avoid opportunistic refactors unless requested.
 - Keep the base interaction rendering as close as possible to the actual runtime interaction.
 - Put editor-only affordances in popovers or similar edit-mode UI that appears only while the interaction is being edited.
+- When rendering QTI interactions, load `@qti-components/theme/item.css` for the upstream item theme. Load `@citolab/prose-qti/core-css.css` after it when editor-specific overrides are needed.
 
 ## Registry Pattern
-- **What it is**: A shadcn-style component registry in `packages/ui/` for distributing reusable UI components to external consumers.
-- **Monorepo usage**: Within this monorepo, apps import directly from `@qti-editor/ui/components/*` as normal package imports. This avoids duplication and keeps development simple.
+- **What it is**: A shadcn-style component registry in `packages/prose-qti-ui/` for distributing reusable UI components to external consumers.
+- **Monorepo usage**: Within this monorepo, apps import directly from `@citolab/prose-qti-ui/components/*` as normal package imports. This avoids duplication and keeps development simple.
 - **External consumer usage**: External apps use the registry pattern - they copy components and own their local versions.
 - **Why separate patterns**:
   - **Monorepo apps**: Import directly for easier maintenance, shared improvements, and reduced duplication
   - **External apps**: Copy components for customization without affecting others or creating breaking changes
 - **Registry structure**:
-  - `packages/ui/registry.json` - Component metadata and file paths for registry distribution
-  - `packages/ui/package.json` exports - Module paths for each component
-  - `packages/ui/src/index.ts` - Named exports for type references
-  - `packages/ui/src/components/` - Flattened component source (all components at top level)
+  - `packages/prose-qti-ui/registry.json` - Component metadata and file paths for registry distribution
+  - `packages/prose-qti-ui/package.json` exports - Module paths for each component
+  - `packages/prose-qti-ui/src/index.ts` - Named exports for type references
+  - `packages/prose-qti-ui/src/components/` - Flattened component source (all components at top level)
 - **Monorepo app imports**:
-  - Import directly: `import '@qti-editor/ui/components/attributes-panel'`
+  - Import directly: `import '@citolab/prose-qti-ui/components/attributes-panel'`
   - No local copies needed - apps share the canonical source
   - Custom components (like custom slash menus) live in app-specific directories
-- **Registry distribution**: Run `pnpm --filter @qti-editor/ui registry:build` to generate distribution files for external consumers
+- **Registry distribution**: Run `pnpm --filter @citolab/prose-qti-ui registry:build` to generate distribution files for external consumers
 
 ## Component File Organization
 - **Folder-File matching pattern**: Component files must match their folder names for easy discoverability.
@@ -61,7 +61,7 @@
   - **Why import before export**: Ensures `@customElement` decorators are executed to register custom elements
   - Additional supporting files (like `patch-event.ts`) can exist alongside
 - **Applies to**:
-  - Registry: `packages/ui/src/components/*/`
+  - Registry: `packages/prose-qti-ui/src/components/*/`
   - App custom components: `apps/*/src/components/blocks/*/` (for app-specific customizations)
 - **Why**: Makes it easy to find the main component file - it always matches the folder name. Index files provide convenient re-exports for consumers.
 
@@ -78,11 +78,11 @@
 - Surface behavioral risks, compatibility concerns, and unverified assumptions in handoff.
 
 ## QTI Item Export / Import
-- `@qti-editor/qti-item-export` and `@qti-editor/qti-package-builder` (under `packages/qti/item-export/` and `packages/qti/package-builder/`) serialize the editor's ProseMirror tree to **standard QTI 3.0**. `@qti-editor/qti3-item-import` (under `packages/qti/qti3-item-import/`) reads any QTI 3.0 item back — it is a generic importer.
+- `@citolab/prose-qti/item-export` and `@citolab/prose-qti/package-builder` (under `packages/prose-qti/src/item-export/` and `packages/prose-qti/src/package-builder/`) serialize the editor's ProseMirror tree to **standard QTI 3.0**. `@citolab/prose-qti/qti3-item-import` (under `packages/prose-qti/src/qti3-item-import/`) reads any QTI 3.0 item back — it is a generic importer.
 - The packaged QTI is standard: editor authoring state is folded into `qti-response-declaration` / `qti-response-processing`. There are **no `data-*` mirrors** and no editor-origin markers. The editor's own *roundtrip item-body* representation carries authoring attributes (`correct-response`, `score`, `case-sensitive`, `area-mappings`) as **canonical, unprefixed** attributes.
 - On import, `roundtripQtiItem` runs idempotent transforms that hoist `correct-response` / `score` from the native declarations onto each interaction as canonical attributes. A generic fallback covers any interaction with a `response-identifier`; per-type transforms add type-specific behaviour. A final `roundtripItemBody` transform copies `identifier` / `title` onto `qti-item-body`.
 - **Rules:**
-  - The non-QTI attribute set lives in exactly one place — each interaction's `strippedAttributes` in `packages/prosemirror/interaction-*/src/composer/metadata.ts` — exposed via `getStrippedAttributeSources`.
+  - The non-QTI attribute set lives in exactly one place — each interaction's `strippedAttributes` in `packages/prose-qti/src/components/*/composer/metadata.ts` — exposed via `getStrippedAttributeSources`.
   - Editor-only hints with no standard-QTI source (`case-sensitive`, `area-mappings`) are only reconstructed if the source item carried them.
 - See [Itembody-only QTI subformat](apps/site/src/content/docs/packages/itembody-subformat.mdx) and `docs/architecture.md` for the full model.
 

@@ -14,6 +14,12 @@ import {
   listInteractionPluginFactories,
   listInteractionSchemaNodeSpecs,
 } from '@citolab/prose-qti/core/interactions/composer';
+import {
+  constrainedHome,
+  constrainedShiftHome,
+  constrainedEnd,
+  constrainedShiftEnd,
+} from '@citolab/prose-qti/components/shared';
 
 import type { Command } from 'prosekit/pm/state';
 
@@ -57,6 +63,13 @@ export function defineQtiInteractionsExtension() {
     keymap['Backspace'] = (state, dispatch, view) =>
       backspaceCommands.some(cmd => cmd(state, dispatch, view));
   }
+
+  // Home/End: constrain cursor within isolating ancestors (shadow-DOM custom
+  // elements confuse the browser's native Home/End handling).
+  keymap['Home'] = constrainedHome;
+  keymap['Shift-Home'] = constrainedShiftHome;
+  keymap['End'] = constrainedEnd;
+  keymap['Shift-End'] = constrainedShiftEnd;
 
   for (const descriptor of descriptors) {
     if (descriptor.insertCommand && descriptor.keyboardShortcut) {
