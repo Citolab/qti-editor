@@ -502,8 +502,8 @@ importers:
   packages/prose-extensions:
     dependencies:
       '@citolab/prose-qti':
-        specifier: workspace:*
-        version: link:../prose-qti
+        specifier: 1.1.0
+        version: 1.1.0(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.9)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(prosemirror-commands@1.7.1)(prosemirror-model@1.25.9)(prosemirror-state@1.4.4)(prosemirror-view@1.41.9)
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -811,6 +811,19 @@ packages:
     engines: {node: '>=20.0.0', yarn: '>=1.22.18'}
     peerDependencies:
       storybook: ^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0
+
+  '@citolab/prose-qti@1.1.0':
+    resolution: {integrity: sha512-pcT0ZSb4TrTi2pmUKdJOGyGZsdVgec86GLZApnniAm+C8IOKnyiBSgdvY8yASDRVOGxn/2lGFDOntVC9jTrxyA==}
+    peerDependencies:
+      lit: ^3.3.2
+      prosekit: ^0.21.3
+      prosemirror-commands: ^1.7.1
+      prosemirror-model: ^1.25.8
+      prosemirror-state: ^1.4.4
+      prosemirror-view: ^1.41.9
+    peerDependenciesMeta:
+      prosekit:
+        optional: true
 
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
@@ -7671,6 +7684,29 @@ snapshots:
     transitivePeerDependencies:
       - '@chromatic-com/cypress'
       - '@chromatic-com/playwright'
+
+  '@citolab/prose-qti@1.1.0(lit@3.3.2)(prosekit@0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.9)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(prosemirror-commands@1.7.1)(prosemirror-model@1.25.9)(prosemirror-state@1.4.4)(prosemirror-view@1.41.9)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/associate-interaction': 1.1.5(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/choice-interaction': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/extended-text-interaction': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/hottext-interaction': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/inline-choice-interaction': 1.1.5(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/match-interaction': 1.1.5(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/order-interaction': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/text-entry-interaction': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/transformers': 1.7.1
+      jszip: 3.10.1
+      lit: 3.3.2
+      prosemirror-commands: 1.7.1
+      prosemirror-model: 1.25.9
+      prosemirror-state: 1.4.4
+      prosemirror-view: 1.41.9
+    optionalDependencies:
+      prosekit: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.9)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   '@colors/colors@1.5.0':
     optional: true

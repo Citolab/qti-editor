@@ -6,6 +6,7 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
   attrs: {
     responseIdentifier: { default: null },
     expectedLength: { default: null },
+    expectedLines: { default: null },
     placeholderText: { default: null },
     patternMask: { default: null },
     class: { default: null },
@@ -17,10 +18,12 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
       getAttrs: (node: Node | string) => {
         if (!(node instanceof HTMLElement)) return {};
         const expectedLength = node.getAttribute('expected-length');
+        const expectedLines = node.getAttribute('expected-lines');
         const scoreAttr = node.getAttribute('score');
         return {
           responseIdentifier: node.getAttribute('response-identifier'),
           expectedLength: expectedLength ? parseInt(expectedLength, 10) : null,
+          expectedLines: expectedLines ? parseInt(expectedLines, 10) : null,
           placeholderText: node.getAttribute('placeholder-text'),
           patternMask: node.getAttribute('pattern-mask'),
           class: node.getAttribute('class') || null,
@@ -36,6 +39,9 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
     }
     if (node.attrs.expectedLength != null) {
       attrs['expected-length'] = String(node.attrs.expectedLength);
+    }
+    if (node.attrs.expectedLines != null) {
+      attrs['expected-lines'] = String(node.attrs.expectedLines);
     }
     if (node.attrs.placeholderText) {
       attrs['placeholder-text'] = node.attrs.placeholderText;

@@ -25,6 +25,9 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
   @property({ type: Number, attribute: 'expected-length' })
   expectedLength: number | null = null;
 
+  @property({ type: Number, attribute: 'expected-lines' })
+  expectedLines: number | null = null;
+
   @property({ type: String, attribute: 'placeholder-text' })
   placeholderText: string | null = null;
 
@@ -35,8 +38,8 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
   classNames: string | null = null;
 
   // Mirrors @qti-components/extended-text-interaction: default 5 rows; a
-  // `qti-height-lines-N` class wins; otherwise estimate from expectedLength
-  // at ~50 chars/row.
+  // `qti-height-lines-N` class wins, then expectedLines, then an estimate from
+  // expectedLength at ~50 chars/row.
   private get _rows(): number {
     const cls = this.classNames ?? '';
     for (const c of cls.split(' ')) {
@@ -45,6 +48,7 @@ export class QtiExtendedTextInteractionEdit extends Interaction {
         if (!Number.isNaN(n)) return n;
       }
     }
+    if (this.expectedLines) return this.expectedLines;
     if (this.expectedLength) return Math.ceil(this.expectedLength / 50);
     return 5;
   }

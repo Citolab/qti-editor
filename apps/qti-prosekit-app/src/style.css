@@ -6,13 +6,14 @@
  * the app-shell glue: Tailwind, DaisyUI, and the editor card chrome.
  */
 
- @import "tailwindcss";
- @source "../../../packages/prose-qti-ui/src/**/*.{ts,js}";
+@import "tailwindcss";
+@source "../../../packages/prose-qti-ui/src/**/*.{ts,js}";
   
- @plugin "@egoist/tailwindcss-icons";
- @plugin "@tailwindcss/typography";
- @plugin "daisyui" {
-    themes: light --default;
-   }
+@plugin "@egoist/tailwindcss-icons";
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+  themes: light --default;
+}
+@import '@qti-components/theme/item.css';
 @import '@citolab/prose-qti/core-css.css';
 @custom-variant dark (&:where(.dark, .dark *));

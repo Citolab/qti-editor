@@ -27,6 +27,7 @@ import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-rou
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
 import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
+import { constrainedHome, constrainedShiftHome, constrainedEnd, constrainedShiftEnd } from '@citolab/prose-qti/components/shared';
 
 import '@citolab/prose-qti/components/choice/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
@@ -64,7 +65,13 @@ export const schema = new Schema({
 
 /** Minimal plugin set: enter/base keymaps, node-attrs sync (applies correct-response clicks) and block-select. */
 const editorPlugins: Plugin[] = [
-  keymap({ Enter: choiceInteractionDescriptor.enterCommand }),
+  keymap({
+    Enter: choiceInteractionDescriptor.enterCommand,
+    Home: constrainedHome,
+    'Shift-Home': constrainedShiftHome,
+    End: constrainedEnd,
+    'Shift-End': constrainedShiftEnd,
+  }),
   keymap(baseKeymap),
   nodeAttrsSyncPlugin,
   blockSelectPlugin

@@ -22,6 +22,7 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
   const expectedLength = toFiniteNumber(sourceElement.getAttribute('expected-length'), null);
+  const expectedLines = toFiniteNumber(sourceElement.getAttribute('expected-lines'), null);
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 
@@ -31,6 +32,9 @@ export function composeExtendedTextInteractionElement(sourceElement: Element, xm
 
   if (expectedLength != null) {
     normalizedElement.setAttribute('expected-length', String(expectedLength));
+  }
+  if (expectedLines != null) {
+    normalizedElement.setAttribute('expected-lines', String(expectedLines));
   }
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
