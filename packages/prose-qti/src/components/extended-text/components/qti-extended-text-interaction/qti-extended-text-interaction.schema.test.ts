@@ -38,6 +38,7 @@ describe('qtiExtendedTextInteractionNodeSpec', () => {
     expect(interaction.attrs).toEqual({
       responseIdentifier: null,
       expectedLength: null,
+      expectedLines: null,
       placeholderText: null,
       patternMask: null,
       class: null,
@@ -61,6 +62,7 @@ describe('qtiExtendedTextInteractionNodeSpec', () => {
     const interaction = schema.node('qtiExtendedTextInteraction', {
       responseIdentifier: 'RESPONSE',
       expectedLength: 120,
+      expectedLines: 5,
       placeholderText: 'Explain your answer',
       patternMask: '[A-Z]+',
       class: 'essay',
@@ -72,6 +74,7 @@ describe('qtiExtendedTextInteractionNodeSpec', () => {
       {
         'response-identifier': 'RESPONSE',
         'expected-length': '120',
+        'expected-lines': '5',
         'placeholder-text': 'Explain your answer',
         'pattern-mask': '[A-Z]+',
         class: 'essay',
