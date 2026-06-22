@@ -35,7 +35,7 @@ import { registerLitEditorDropIndicator } from './blocks/drop-indicator/index.js
 import { registerLitEditorBlockHandle } from './blocks/block-handle/index.js';
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
-import { defineLockedHeaderExtension, LOCKED_HEADER_DEFAULT_CONTENT } from '../extensions/locked-header-extension.js';
+import { defineLockedHeaderExtension, LOCKED_HEADER_DEFAULT_CONTENT, ensureLockedHeader } from '../extensions/locked-header-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
 import { exportItem, exportJson, exportPackage, exportRoundtripXml, importJson } from '../lib/exportXml.js';
 import { getAutoSaveKey } from '../lib/fileStore.js';
@@ -234,7 +234,7 @@ export class QtiEditorApp extends LitElement {
     try {
       this.editor = createEditor({
         extension,
-        defaultContent: restoredState.doc ?? LOCKED_HEADER_DEFAULT_CONTENT,
+        defaultContent: ensureLockedHeader(restoredState.doc),
       });
       const compat = restoredState.compatibility;
       if (compat && compat.sourceVersion < compat.targetVersion) {

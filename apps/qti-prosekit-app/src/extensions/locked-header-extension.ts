@@ -57,3 +57,29 @@ export const LOCKED_HEADER_DEFAULT_CONTENT: NodeJSON = {
     { type: 'paragraph', content: [] },
   ],
 };
+
+function hasJsonLockedPrefix(doc: NodeJSON): boolean {
+  const children = doc.content ?? [];
+  if (children.length < LOCKED_TYPES.length) return false;
+  for (let i = 0; i < LOCKED_TYPES.length; i++) {
+    if (children[i]?.type !== LOCKED_TYPES[i]) return false;
+  }
+  if (children[0]?.attrs?.level !== 1) return false;
+  return true;
+}
+
+/**
+ * One-shot migration for documents persisted before this extension existed.
+ * If the doc doesn't already start with the locked trio, prepend it so the
+ * existing user content is preserved verbatim *below* the new header.
+ */
+export function ensureLockedHeader(doc: NodeJSON | undefined): NodeJSON {
+  if (!doc || doc.type !== 'doc') return LOCKED_HEADER_DEFAULT_CONTENT;
+  if (hasJsonLockedPrefix(doc)) return doc;
+  const existing = doc.content ?? [];
+  const seeded = LOCKED_HEADER_DEFAULT_CONTENT.content ?? [];
+  return {
+    ...doc,
+    content: [...seeded.slice(0, 3), ...existing],
+  };
+}
