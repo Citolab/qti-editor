@@ -35,6 +35,7 @@ import { registerLitEditorDropIndicator } from './blocks/drop-indicator/index.js
 import { registerLitEditorBlockHandle } from './blocks/block-handle/index.js';
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
+import { defineLockedHeaderExtension, LOCKED_HEADER_DEFAULT_CONTENT } from '../extensions/locked-header-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
 import { exportItem, exportJson, exportPackage, exportRoundtripXml, importJson } from '../lib/exportXml.js';
 import { getAutoSaveKey } from '../lib/fileStore.js';
@@ -205,6 +206,7 @@ export class QtiEditorApp extends LitElement {
     const extension = union(
       defineBasicExtension(),
       defineQtiInteractionsExtension(),
+      defineLockedHeaderExtension(),
       defineSemanticPasteExtension(),
       defineSlashMenuGuardExtension(),
       // The placeholder extension is used to mark certain nodes (e.g. interaction content)
@@ -232,7 +234,7 @@ export class QtiEditorApp extends LitElement {
     try {
       this.editor = createEditor({
         extension,
-        defaultContent: restoredState.doc
+        defaultContent: restoredState.doc ?? LOCKED_HEADER_DEFAULT_CONTENT,
       });
       const compat = restoredState.compatibility;
       if (compat && compat.sourceVersion < compat.targetVersion) {
@@ -244,7 +246,7 @@ export class QtiEditorApp extends LitElement {
       }
     } catch {
       window.localStorage.removeItem(editorDocStorageKey);
-      this.editor = createEditor({ extension });
+      this.editor = createEditor({ extension, defaultContent: LOCKED_HEADER_DEFAULT_CONTENT });
     }
     this.editorRef = createRef<HTMLDivElement>();
 
