@@ -8,7 +8,9 @@
     "directory": "packages/prose-qti"
   },
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/components/**/register.ts"
+  ],
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
