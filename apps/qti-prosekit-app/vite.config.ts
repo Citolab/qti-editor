@@ -353,8 +353,6 @@ export default defineConfig({
       '@citolab/prose-qti/components/gap-match',
       '@citolab/prose-qti/components/hottext',
       '@citolab/prose-qti/components/item-divider',
-      '@citolab/prose-extensions/attributes',
-      '@citolab/prose-extensions/attributes-ui',
       '@qti-components/theme',
       '@qti-components/utilities',
     ],

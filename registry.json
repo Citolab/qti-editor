@@ -8,7 +8,7 @@
       "type": "registry:ui",
       "title": "QTI Choice Attributes Editor",
       "description": "Standalone choice-interaction class editor UI used by the attributes panel host.",
-      "dependencies": ["lit", "@citolab/prose-qti", "@citolab/prose-extensions"],
+      "dependencies": ["lit", "@citolab/prose-qti"],
       "files": [
         {
           "path": "packages/prose-qti-ui/src/components/choice-attributes-editor/index.ts",
@@ -32,7 +32,7 @@
       "type": "registry:ui",
       "title": "QTI Text Entry Attributes Editor",
       "description": "Standalone text-entry editor for width presets, case sensitivity, and accepted-answer synonyms.",
-      "dependencies": ["lit", "@citolab/prose-qti", "@citolab/prose-extensions"],
+      "dependencies": ["lit", "@citolab/prose-qti"],
       "files": [
         {
           "path": "packages/prose-qti-ui/src/components/text-entry-attributes-editor/index.ts",
@@ -56,7 +56,7 @@
       "type": "registry:ui",
       "title": "QTI Extended Text Attributes Editor",
       "description": "Standalone extended-text editor for height presets and rubric/model answer configuration.",
-      "dependencies": ["lit", "@citolab/prose-qti", "@citolab/prose-extensions"],
+      "dependencies": ["lit", "@citolab/prose-qti"],
       "files": [
         {
           "path": "packages/prose-qti-ui/src/components/extended-text-attributes-editor/index.ts",
@@ -80,7 +80,7 @@
       "type": "registry:ui",
       "title": "QTI Attributes Panel",
       "description": "A panel component that displays and edits attributes of the selected QTI node and its ancestors.",
-      "dependencies": ["lit", "@lit/context", "prosekit", "@citolab/prose-qti", "@citolab/prose-extensions"],
+      "dependencies": ["lit", "@lit/context", "prosekit", "@citolab/prose-qti"],
       "registryDependencies": [
         "citolab/qti-editor/qti-choice-attributes-editor",
         "citolab/qti-editor/qti-text-entry-attributes-editor",
@@ -96,6 +96,16 @@
           "path": "packages/prose-qti-ui/src/components/attributes-panel/attributes-panel.ts",
           "type": "registry:component",
           "target": "@components/attributes-panel/attributes-panel.ts"
+        },
+        {
+          "path": "packages/prose-qti-ui/src/components/attributes-panel/attributes-helpers.ts",
+          "type": "registry:component",
+          "target": "@components/attributes-panel/attributes-helpers.ts"
+        },
+        {
+          "path": "packages/prose-qti-ui/src/components/attributes-panel/friendly-editor-registry.ts",
+          "type": "registry:component",
+          "target": "@components/attributes-panel/friendly-editor-registry.ts"
         }
       ]
     },

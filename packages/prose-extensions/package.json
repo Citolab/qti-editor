@@ -36,14 +36,6 @@
       "types": "./dist/prosekit/strong-em.d.ts",
       "default": "./dist/prosekit/strong-em.js"
     },
-    "./attributes": {
-      "types": "./dist/prosemirror/attributes/index.d.ts",
-      "default": "./dist/prosemirror/attributes/index.js"
-    },
-    "./attributes-ui": {
-      "types": "./dist/prosemirror/attributes-ui/index.d.ts",
-      "default": "./dist/prosemirror/attributes-ui/index.js"
-    },
     "./compatibility": {
       "types": "./dist/prosemirror/compatibility/index.d.ts",
       "default": "./dist/prosemirror/compatibility/index.js"

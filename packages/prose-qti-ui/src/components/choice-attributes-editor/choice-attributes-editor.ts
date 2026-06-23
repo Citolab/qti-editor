@@ -11,7 +11,7 @@ import {
 
 import { QTI_ATTRIBUTES_PATCH_EVENT, type QtiAttributesPatchDetail } from '../attributes-panel/patch-event';
 
-import type { AttributesNodeDetail } from '@citolab/prose-extensions/attributes-ui';
+import type { AttributesNodeDetail } from '../attributes-panel/attributes-helpers.js';
 
 type ChoiceInteractionOptionPresentation = {
   label?: string;

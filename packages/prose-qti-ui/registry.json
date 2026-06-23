@@ -10,8 +10,8 @@
       "description": "A panel component that displays and edits attributes of the selected QTI node and its ancestors.",
       "dependencies": [
         "lit",
+        "@lit/context",
         "prosekit",
-        "@citolab/prose-extensions",
         "@qti-editor/core"
       ],
       "registryDependencies": ["qti-choice-attributes-editor", "qti-text-entry-attributes-editor", "qti-extended-text-attributes-editor"],
@@ -20,6 +20,21 @@
           "path": "components/attributes-panel/index.ts",
           "source": "src/components/attributes-panel/index.ts",
           "module": "@citolab/prose-qti-ui/components/attributes-panel",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/attributes-panel/attributes-panel.ts",
+          "source": "src/components/attributes-panel/attributes-panel.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/attributes-panel/attributes-helpers.ts",
+          "source": "src/components/attributes-panel/attributes-helpers.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/attributes-panel/friendly-editor-registry.ts",
+          "source": "src/components/attributes-panel/friendly-editor-registry.ts",
           "type": "registry:component"
         }
       ]

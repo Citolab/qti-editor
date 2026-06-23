@@ -10,7 +10,7 @@ import {
 
 import { QTI_ATTRIBUTES_PATCH_EVENT, type QtiAttributesPatchDetail } from '../attributes-panel/patch-event';
 
-import type { AttributesNodeDetail } from '@citolab/prose-extensions/attributes-ui';
+import type { AttributesNodeDetail } from '../attributes-panel/attributes-helpers.js';
 
 const TEXT_ENTRY_NODE_TYPE = 'qtitextentryinteraction';
 

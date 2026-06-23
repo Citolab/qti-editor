@@ -1,11 +1,6 @@
-export {
-  QtiAttributesPanel,
-  qtiAttributesExtension,
-  qtiSidePanelExtension,
-  updateQtiNodeAttrs,
-} from './components/attributes-panel/index.js';
+export { QtiAttributesPanel, updateNodeAttrs } from './components/attributes-panel/index.js';
 export type {
-  AttributesPanelExtensionOptions,
+  AttributesNodeDetail,
   ChoiceInteractionPanelPresentation,
 } from './components/attributes-panel/index.js';
 export { QtiChoiceAttributesEditor } from './components/choice-attributes-editor/index.js';

@@ -24,8 +24,6 @@ const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/prose
 const interactionsSelectPointSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/select-point/src', import.meta.url));
 const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/inline-choice/src', import.meta.url));
 const prosemirrorPluginsSrcRoot = fileURLToPath(new URL('../../packages/prose-extensions/src/prosemirror', import.meta.url));
-const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/prose-extensions/src/prosemirror/attributes', import.meta.url));
-const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/prose-extensions/src/prosemirror/attributes-ui', import.meta.url));
 
 export default defineConfig(({ command }) => ({
   resolve: {
@@ -174,14 +172,6 @@ export default defineConfig(({ command }) => ({
         replacement: `${prosemirrorPluginsSrcRoot}/node-attrs-sync/index.ts`,
       },
       {
-        find: /^@citolab\/prose-extensions\/attributes$/,
-        replacement: `${prosemirrorAttributesSrcRoot}/index.ts`,
-      },
-      {
-        find: /^@citolab\/prose-extensions\/attributes-ui$/,
-        replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/index.ts`,
-      },
-      {
         find: /^@qti-editor\/prosekit-extensions\/marks$/,
         replacement: `${prosekitExtensionsSrcRoot}/strong-em.ts`,
       },
@@ -289,8 +279,6 @@ export default defineConfig(({ command }) => ({
       '@citolab/prose-qti/components/inline-choice',
       '@citolab/prose-extensions/prosekit',
       '@citolab/prose-extensions/prosemirror',
-      '@citolab/prose-extensions/attributes',
-      '@citolab/prose-extensions/attributes-ui',
       '@qti-components/theme',
       '@qti-components/utilities',
     ],
