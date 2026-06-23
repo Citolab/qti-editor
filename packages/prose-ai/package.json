@@ -1,0 +1,22 @@
+{
+  "name": "@citolab/prose-ai",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-related extensions for ProseKit, vendored from @prosekit/ai",
+  "sideEffects": false,
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "prosemirror-changeset": "^2.4.1"
+  },
+  "peerDependencies": {
+    "prosekit": "^0.21.3"
+  }
+}

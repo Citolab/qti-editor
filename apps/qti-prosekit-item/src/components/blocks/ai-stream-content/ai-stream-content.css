@@ -1,0 +1,25 @@
+.ProseMirror .is-streaming {
+  --streaming-tint: 59, 130, 246;
+  --streaming-bg: #f0f9ff;
+  --streaming-text-opacity: 0.75;
+
+  border-radius: 2px;
+  background-color: var(--streaming-bg);
+  background-image: linear-gradient(
+    90deg,
+    rgba(var(--streaming-tint), 0) 0%,
+    rgba(var(--streaming-tint), 0.05) 40%,
+    rgba(var(--streaming-tint), 0.12) 50%,
+    rgba(var(--streaming-tint), 0.05) 60%,
+    rgba(var(--streaming-tint), 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: streaming-placeholder 1.5s ease-in-out infinite;
+  opacity: var(--streaming-text-opacity);
+  user-select: none;
+}
+
+@keyframes streaming-placeholder {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

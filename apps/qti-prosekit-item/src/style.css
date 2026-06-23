@@ -8,3 +8,24 @@
 }
 @import '@qti-components/theme/item.css';
 @custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --coco-bg: #f6f7fb;
+  --coco-fg: #252525;
+  --coco-muted: #8e8e8e;
+  --coco-border: #e5e5e5;
+  --coco-brand: #0aa550;
+}
+
+.coco-body {
+  font-family: 'PT Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background-color: var(--coco-bg);
+  color: var(--coco-fg);
+  margin: 0;
+  min-height: 100vh;
+}
+
+.coco-header {
+  height: 48px;
+}
+

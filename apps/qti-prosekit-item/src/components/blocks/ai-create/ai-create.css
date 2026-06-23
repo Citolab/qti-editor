@@ -1,0 +1,10 @@
+.ai-create-popover[popover],
+.ai-create-toolbar-menu[popover] {
+  inset: auto;
+  margin: 0;
+}
+
+.ai-create-popover[popover]:not(:popover-open),
+.ai-create-toolbar-menu[popover]:not(:popover-open) {
+  display: none;
+}

@@ -21,6 +21,9 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
+      "@citolab/prose-ai": [
+        "packages/prose-ai/src/index.ts"
+      ],
       "@citolab/prose-qti-ui": [
         "packages/prose-qti-ui/src/index.ts"
       ],

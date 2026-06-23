@@ -9,7 +9,23 @@ import { defineUpdateHandler } from 'prosekit/core';
 import { subscribeQtiI18n, translateQti } from '@citolab/prose-qti/components/shared';
 import { editorContext } from '@citolab/prose-qti/integration/editor-context';
 
+function isAlignActive(editor, value) {
+  return (
+    editor.nodes.paragraph?.isActive({ textAlign: value }) ||
+    editor.nodes.heading?.isActive({ textAlign: value }) ||
+    false
+  )
+}
+
 function getToolbarItems(editor) {
+  const alignItem = (value) => editor.commands.setTextAlign
+    ? {
+        isActive: isAlignActive(editor, value),
+        canExec: editor.commands.setTextAlign.canExec(value),
+        command: () => editor.commands.setTextAlign(value),
+      }
+    : undefined
+
   return {
     undo: editor.commands.undo
       ? {
@@ -46,27 +62,6 @@ function getToolbarItems(editor) {
           command: () => editor.commands.toggleUnderline(),
         }
       : undefined,
-    strike: editor.commands.toggleStrike
-      ? {
-          isActive: editor.marks.strike.isActive(),
-          canExec: editor.commands.toggleStrike.canExec(),
-          command: () => editor.commands.toggleStrike(),
-        }
-      : undefined,
-    code: editor.commands.toggleCode
-      ? {
-          isActive: editor.marks.code.isActive(),
-          canExec: editor.commands.toggleCode.canExec(),
-          command: () => editor.commands.toggleCode(),
-        }
-      : undefined,
-    codeBlock: editor.commands.insertCodeBlock
-      ? {
-          isActive: editor.nodes.codeBlock.isActive(),
-          canExec: editor.commands.insertCodeBlock.canExec({ language: 'javascript' }),
-          command: () => editor.commands.insertCodeBlock({ language: 'javascript' }),
-        }
-      : undefined,
     heading1: editor.commands.toggleHeading
       ? {
           isActive: editor.nodes.heading.isActive({ level: 1 }),
@@ -88,20 +83,9 @@ function getToolbarItems(editor) {
           command: () => editor.commands.toggleHeading({ level: 3 }),
         }
       : undefined,
-    horizontalRule: editor.commands.insertHorizontalRule
-      ? {
-          isActive: editor.nodes.horizontalRule.isActive(),
-          canExec: editor.commands.insertHorizontalRule.canExec(),
-          command: () => editor.commands.insertHorizontalRule(),
-        }
-      : undefined,
-    blockquote: editor.commands.toggleBlockquote
-      ? {
-          isActive: editor.nodes.blockquote.isActive(),
-          canExec: editor.commands.toggleBlockquote.canExec(),
-          command: () => editor.commands.toggleBlockquote(),
-        }
-      : undefined,
+    alignLeft: alignItem('left'),
+    alignCenter: alignItem('center'),
+    alignRight: alignItem('right'),
     bulletList: editor.commands.toggleBulletList
       ? {
           isActive: editor.nodes.bullet_list.isActive(),
@@ -278,45 +262,6 @@ class LitToolbar extends LitElement {
             : nothing
         }
         ${
-          items.strike
-            ? html`
-              <lit-editor-button
-                .pressed=${items.strike.isActive}
-                .disabled=${!items.strike.canExec}
-                .tooltip=${this.t('toolbar.strike', 'Strike')}
-                icon="i-lucide-strikethrough size-5 block"
-                @click=${items.strike.command}
-              ></lit-editor-button>
-            `
-            : nothing
-        }
-        ${
-          items.code
-            ? html`
-              <lit-editor-button
-                .pressed=${items.code.isActive}
-                .disabled=${!items.code.canExec}
-                .tooltip=${this.t('toolbar.code', 'Code')}
-                icon="i-lucide-code size-5 block"
-                @click=${items.code.command}
-              ></lit-editor-button>
-            `
-            : nothing
-        }
-        ${
-          items.codeBlock
-            ? html`
-              <lit-editor-button
-                .pressed=${items.codeBlock.isActive}
-                .disabled=${!items.codeBlock.canExec}
-                .tooltip=${this.t('toolbar.codeBlock', 'Code Block')}
-                icon="i-lucide-square-code size-5 block"
-                @click=${items.codeBlock.command}
-              ></lit-editor-button>
-            `
-            : nothing
-        }
-        ${
           items.heading1
             ? html`
               <lit-editor-button
@@ -356,27 +301,40 @@ class LitToolbar extends LitElement {
             : nothing
         }
         ${
-          items.horizontalRule
+          items.alignLeft
             ? html`
               <lit-editor-button
-                .pressed=${items.horizontalRule.isActive}
-                .disabled=${!items.horizontalRule.canExec}
-                .tooltip=${this.t('toolbar.divider', 'Divider')}
-                icon="i-lucide-minus size-5 block"
-                @click=${items.horizontalRule.command}
+                .pressed=${items.alignLeft.isActive}
+                .disabled=${!items.alignLeft.canExec}
+                .tooltip=${this.t('toolbar.alignLeft', 'Align left')}
+                icon="i-lucide-align-left size-5 block"
+                @click=${items.alignLeft.command}
               ></lit-editor-button>
             `
             : nothing
         }
         ${
-          items.blockquote
+          items.alignCenter
             ? html`
               <lit-editor-button
-                .pressed=${items.blockquote.isActive}
-                .disabled=${!items.blockquote.canExec}
-                .tooltip=${this.t('toolbar.blockquote', 'Blockquote')}
-                icon="i-lucide-text-quote size-5 block"
-                @click=${items.blockquote.command}
+                .pressed=${items.alignCenter.isActive}
+                .disabled=${!items.alignCenter.canExec}
+                .tooltip=${this.t('toolbar.alignCenter', 'Align center')}
+                icon="i-lucide-align-center size-5 block"
+                @click=${items.alignCenter.command}
+              ></lit-editor-button>
+            `
+            : nothing
+        }
+        ${
+          items.alignRight
+            ? html`
+              <lit-editor-button
+                .pressed=${items.alignRight.isActive}
+                .disabled=${!items.alignRight.canExec}
+                .tooltip=${this.t('toolbar.alignRight', 'Align right')}
+                icon="i-lucide-align-right size-5 block"
+                @click=${items.alignRight.command}
               ></lit-editor-button>
             `
             : nothing
@@ -434,6 +392,9 @@ class LitToolbar extends LitElement {
             `
             : nothing
         }
+        <span class="flex-1"></span>
+        <lit-ai-create-toolbar></lit-ai-create-toolbar>
+        <lit-ai-check-toolbar></lit-ai-check-toolbar>
       </div>
     `;
   }

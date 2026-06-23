@@ -3,14 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QTI Editor - Minimal Example</title>
-    <script type="module" defer src="./src/qti-minimal-app.ts"></script>
+    <title>Coco - AI-item-editor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    />
+    <script type="module" defer src="./src/qti-prosekit-item.ts"></script>
     <link rel="stylesheet" href="./src/style.css" />
   </head>
-  <body>
+  <body class="coco-body">
+    <header
+      class="coco-header sticky top-0 z-40 flex items-center justify-between border-b border-gray-200 bg-white px-6"
+    >
+      <h1 class="text-base font-bold text-gray-900">Construction Co-pilot</h1>
+      <img src="/coco-logo.svg" alt="Coco" class="h-12 py-2" />
+    </header>
     <main class="container mx-auto max-w-7xl px-4 py-8">
-      <h1 class="text-2xl font-bold mb-4">QTI Editor — Minimal</h1>
-      <qti-minimal-app></qti-minimal-app>
+      <qti-prosekit-item></qti-prosekit-item>
     </main>
   </body>
 </html>

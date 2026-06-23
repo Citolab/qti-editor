@@ -306,6 +306,9 @@ importers:
 
   apps/qti-prosekit-item:
     dependencies:
+      '@citolab/prose-ai':
+        specifier: workspace:*
+        version: link:../../packages/prose-ai
       '@citolab/prose-extensions':
         specifier: workspace:*
         version: link:../../packages/prose-extensions
@@ -318,6 +321,9 @@ importers:
       '@egoist/tailwindcss-icons':
         specifier: ^1.9.2
         version: 1.9.2(tailwindcss@4.2.2)
+      '@floating-ui/dom':
+        specifier: ^1.6.0
+        version: 1.7.6
       '@iconify-json/lucide':
         specifier: ^1.2.96
         version: 1.2.101
@@ -333,6 +339,9 @@ importers:
       prosekit:
         specifier: ^0.21.3
         version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.9)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      prosemirror-changeset:
+        specifier: ^2.4.1
+        version: 2.4.1
       prosemirror-schema-basic:
         specifier: ^1.2.4
         version: 1.2.4
@@ -498,6 +507,15 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
+
+  packages/prose-ai:
+    dependencies:
+      prosekit:
+        specifier: ^0.21.3
+        version: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.9)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      prosemirror-changeset:
+        specifier: ^2.4.1
+        version: 2.4.1
 
   packages/prose-extensions:
     dependencies:

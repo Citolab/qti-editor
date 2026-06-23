@@ -19,14 +19,30 @@ import { sampleUploader } from './components/blocks/sample/sample-uploader.js';
 import { registerLitEditorTableHandle } from './components/blocks/table-handle/index.js';
 import { registerLitEditorBlockHandle } from './components/blocks/block-handle/index.js';
 import { registerLitEditorDropIndicator } from './components/blocks/drop-indicator/index.js';
+import { registerLitAiChat } from './components/blocks/ai-chat/index.js';
+import { registerLitAiCheck } from './components/blocks/ai-check/index.js';
+import { registerLitAiCreate } from './components/blocks/ai-create/index.js';
+import { registerLitAiStreamContent } from './components/blocks/ai-stream-content/index.js';
+import { registerLitEditorInlineMenu } from './components/blocks/inline-menu/index.js';
+import { registerLitEditorSlashMenu } from './components/blocks/slash-menu/index.js';
 import { defineBasicExtension } from './extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-extension.js';
+import { defineAiExtension } from './extensions/ai-extension.js';
 
-export class QtiMinimalApp extends LitElement {
+const CHAT_OPEN_STORAGE_KEY = 'qti-ai-chat-open';
+
+export class QtiProsekitItem extends LitElement {
+  static override properties = {
+    chatOpen: { state: true },
+    settingsOpen: { state: true },
+  };
+
   private editor: Editor;
   private editorRef: Ref<HTMLDivElement>;
   private itemContextProvider: ContextProvider<typeof itemContext>;
   private xmlOutput = '';
+  private chatOpen = false;
+  private settingsOpen = false;
 
   get itemContext(): ItemContext {
     return this.itemContextProvider.value;
@@ -68,6 +84,19 @@ export class QtiMinimalApp extends LitElement {
     this.xmlOutput = (event.target as HTMLTextAreaElement).value;
   }
 
+  private toggleChat = () => {
+    this.chatOpen = !this.chatOpen;
+    try {
+      window.localStorage.setItem(CHAT_OPEN_STORAGE_KEY, this.chatOpen ? '1' : '0');
+    } catch {
+      // ignore
+    }
+  };
+
+  private toggleSettings = () => {
+    this.settingsOpen = !this.settingsOpen;
+  };
+
   constructor() {
     super();
 
@@ -86,7 +115,8 @@ export class QtiMinimalApp extends LitElement {
         ]
       }),
       blockSelectExtension,
-      nodeAttrsSyncExtension
+      nodeAttrsSyncExtension,
+      defineAiExtension()
     );
 
     this.editor = createEditor({ extension });
@@ -97,9 +127,23 @@ export class QtiMinimalApp extends LitElement {
       initialValue: this.editor
     });
 
+    try {
+      this.chatOpen = window.localStorage.getItem(CHAT_OPEN_STORAGE_KEY) === '1';
+    } catch {
+      // ignore
+    }
+
     registerLitEditorTableHandle();
     registerLitEditorBlockHandle();
     registerLitEditorDropIndicator();
+    registerLitAiChat();
+    registerLitAiCheck();
+    registerLitAiCreate();
+    registerLitAiStreamContent();
+    registerLitEditorInlineMenu();
+    registerLitEditorSlashMenu();
+
+    this.addEventListener('ai-chat-toggle', this.toggleChat);
   }
 
   override createRenderRoot() {
@@ -119,6 +163,18 @@ export class QtiMinimalApp extends LitElement {
         <div class="min-w-0 flex-1 rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm">
           <div class="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
             <lit-editor-toolbar .uploader=${sampleUploader}></lit-editor-toolbar>
+            <div class="flex items-center gap-2 px-2 py-1 border-t border-gray-100">
+              <span class="flex-1"></span>
+              <lit-ai-chat-toolbar .open=${this.chatOpen}></lit-ai-chat-toolbar>
+              <button
+                type="button"
+                @click=${this.toggleSettings}
+                class="px-2 py-1 rounded text-sm border border-gray-200 hover:bg-gray-100"
+                title="AI settings"
+              >
+                ⚙
+              </button>
+            </div>
           </div>
           <div class="relative overflow-auto">
             <div
@@ -129,6 +185,11 @@ export class QtiMinimalApp extends LitElement {
             <lit-editor-block-handle></lit-editor-block-handle>
             <lit-editor-drop-indicator></lit-editor-drop-indicator>
             <lit-editor-table-handle></lit-editor-table-handle>
+            <lit-ai-check-accept-toolbar></lit-ai-check-accept-toolbar>
+            <lit-ai-check-fragment-popover></lit-ai-check-fragment-popover>
+            <lit-ai-create-result></lit-ai-create-result>
+            <lit-editor-inline-menu></lit-editor-inline-menu>
+            <lit-editor-slash-menu></lit-editor-slash-menu>
           </div>
         </div>
         <div class="w-full lg:w-72 lg:shrink-0">
@@ -156,14 +217,42 @@ export class QtiMinimalApp extends LitElement {
           ></textarea>
         </div>
       </div>
+
+      <lit-ai-chat-sidebar .open=${this.chatOpen}></lit-ai-chat-sidebar>
+
+      ${this.settingsOpen
+        ? html`
+            <div
+              class="fixed inset-0 z-40 bg-black/40 flex items-center justify-center"
+              @click=${(e: MouseEvent) => {
+                if (e.target === e.currentTarget) this.toggleSettings();
+              }}
+            >
+              <div class="bg-white rounded-lg shadow-2xl w-[36rem] max-w-[92vw]">
+                <div class="flex items-center px-4 py-2 border-b border-gray-200">
+                  <div class="text-sm font-medium flex-1">AI settings & stream-content</div>
+                  <button
+                    type="button"
+                    @click=${this.toggleSettings}
+                    class="text-lg leading-none px-2 hover:bg-gray-100 rounded"
+                    title="Close"
+                  >
+                    ×
+                  </button>
+                </div>
+                <lit-ai-stream-content-toolbar></lit-ai-stream-content-toolbar>
+              </div>
+            </div>
+          `
+        : ''}
     `;
   }
 }
 
-customElements.define('qti-minimal-app', QtiMinimalApp);
+customElements.define('qti-prosekit-item', QtiProsekitItem);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'qti-minimal-app': QtiMinimalApp;
+    'qti-prosekit-item': QtiProsekitItem;
   }
 }

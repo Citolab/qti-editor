@@ -1,0 +1,10 @@
+.ai-check-fragment-popover[popover],
+.ai-check-toolbar-menu[popover] {
+  inset: auto;
+  margin: 0;
+}
+
+.ai-check-fragment-popover[popover]:not(:popover-open),
+.ai-check-toolbar-menu[popover]:not(:popover-open) {
+  display: none;
+}

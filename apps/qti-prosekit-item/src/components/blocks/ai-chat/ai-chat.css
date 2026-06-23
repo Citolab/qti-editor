@@ -1,0 +1,23 @@
+.ai-chat-thread {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.ai-chat-msg-role {
+  font-size: 0.7rem;
+  color: rgb(107 114 128);
+  text-transform: uppercase;
+}
+
+.ai-chat-msg-assistant > :first-child {
+  margin-top: 0;
+}
+
+.ai-chat-msg-assistant > :last-child {
+  margin-bottom: 0;
+}
