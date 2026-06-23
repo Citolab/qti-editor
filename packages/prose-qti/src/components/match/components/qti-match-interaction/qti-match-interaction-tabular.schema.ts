@@ -1,8 +1,26 @@
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
-import { hasTabularMatchClass } from './qti-match-interaction-tabular.schema.js';
+const TABULAR_CLASS = 'qti-match-tabular';
 
-export const qtiMatchInteractionNodeSpec: NodeSpec = {
+function splitClasses(value: string | null): string[] {
+  return (value ?? '').split(/\s+/).filter(Boolean);
+}
+
+export function hasTabularMatchClass(element: HTMLElement): boolean {
+  return splitClasses(element.getAttribute('class')).includes(TABULAR_CLASS);
+}
+
+/**
+ * Schema node for the tabular variant of qti-match-interaction.
+ *
+ * Both the tabular and non-tabular variants share the same DOM tag
+ * (`<qti-match-interaction>`); the class `qti-match-tabular` is the only
+ * discriminator. The non-tabular schema's parseDOM excludes anything carrying
+ * that class, and this schema's parseDOM requires it. The class value is
+ * stored verbatim on the node (including `qti-match-tabular`) so the
+ * attribute panel can show + edit the full class list.
+ */
+export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
   group: 'block',
   content: 'qtiPrompt? qtiSimpleMatchSet{2}',
   attrs: {
@@ -13,48 +31,47 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
     correctResponse: { default: null },
     responseIdentifier: { default: null },
     score: { default: 1 },
+    dataFirstColumnHeader: { default: null },
   },
   parseDOM: [
     {
-      tag: 'qti-match-interaction',
+      tag: 'qti-match-interaction[class~="qti-match-tabular"]',
+      priority: 80,
       getAttrs: (node: Node | string) => {
-        if (!(node instanceof HTMLElement)) return {};
-        if (hasTabularMatchClass(node)) return false;
+        if (!(node instanceof HTMLElement)) return false;
         const maxAssociations = node.getAttribute('max-associations');
         const minAssociations = node.getAttribute('min-associations');
-        const className = node.getAttribute('class');
         const scoreAttr = node.getAttribute('score');
         return {
           maxAssociations: maxAssociations ? parseInt(maxAssociations, 10) : 1,
           minAssociations: minAssociations ? parseInt(minAssociations, 10) : 0,
           shuffle: node.getAttribute('shuffle') === 'true',
-          class: className || null,
+          class: node.getAttribute('class'),
           correctResponse: node.getAttribute('correct-response') || null,
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
+          dataFirstColumnHeader: node.getAttribute('data-first-column-header'),
         };
-      }
-    }
+      },
+    },
   ],
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {
-      'max-associations': String(node.attrs.maxAssociations)
+      'max-associations': String(node.attrs.maxAssociations),
     };
     if (node.attrs.minAssociations > 0) {
       attrs['min-associations'] = String(node.attrs.minAssociations);
     }
     if (node.attrs.shuffle) {
-      attrs['shuffle'] = 'true';
+      attrs.shuffle = 'true';
     }
     if (node.attrs.class) attrs.class = node.attrs.class;
-    // correctResponse is raw JSON (e.g. '["A 1"]', qti-components' shape) —
-    // pass through as-is. The shared codec strips commas, which corrupts JSON,
-    // so we bypass it here.
     if (node.attrs.correctResponse) attrs['correct-response'] = node.attrs.correctResponse;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
+    if (node.attrs.dataFirstColumnHeader) attrs['data-first-column-header'] = node.attrs.dataFirstColumnHeader;
     attrs.score = String(node.attrs.score ?? 1);
     return ['qti-match-interaction', attrs, 0];
   },
   defining: true,
-  isolating: true
+  isolating: true,
 };

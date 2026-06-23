@@ -1,358 +1,171 @@
-import { html } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { LitElement, nothing, type PropertyValues } from 'lit';
+import { property, query } from 'lit/decorators.js';
 
-import { Interaction, MATCH_SELECTING_TARGET_EVENT } from '../../../shared';
-import styles from './qti-match-interaction.styles.js';
+import { Interaction } from '../../../shared';
 
-import type { FakeDrag, MatchSelectingTargetDetail } from '@citolab/prose-qti/components/shared';
-
-/** Association pair: [sourceIdentifier, targetIdentifier] */
-export type MatchAssociation = [string, string];
-
-/**
- * Event detail for match association changes.
- */
-export interface MatchAssociationChangeDetail {
-  associations: MatchAssociation[];
-}
+import { DragDropController, type DragDropHost } from './match-drag-drop.js';
+import { classHasTabular, type MatchAssociationChangeDetail, type TabularMatchAssociationChangeDetail } from './match-shared.js';
+import { TabularController, tabularStyles, type TabularHost } from './match-tabular.js';
+import hostBaseStyles from './qti-match-interaction.styles.js';
 
 /**
- * Editor component for qti-match-interaction.
- * Renders two match sets side by side for creating associations.
- * Click source → click target to create a link.
+ * One element, two modes:
+ *  - `<qti-match-interaction>`                          → click-to-associate (drag-drop controller)
+ *  - `<qti-match-interaction class="qti-match-tabular">` → matrix of checkboxes (tabular controller)
+ *
+ * The active controller is swapped at runtime whenever the `class` attribute
+ * gains/loses `qti-match-tabular`. Each controller owns its own observers,
+ * listeners, and shadow render template; the orchestrator just routes.
  */
-export class QtiMatchInteractionEdit extends Interaction {
-  static override styles = styles;
+export class QtiMatchInteractionEdit extends Interaction implements TabularHost, DragDropHost {
+  static override styles = [hostBaseStyles, tabularStyles];
 
-  // private readonly _i18n = new QtiI18nController(this);
+  /**
+   * Manual slot assignment — the tabular controller routes match-sets to named
+   * slots; the drag-drop controller routes them to the default slot. Either
+   * way, we never write `slot=""` onto PM's lightdom.
+   *
+   * `shadowRootOptions` (not a `createRenderRoot()` override) so Lit's default
+   * `createRenderRoot()` still adopts our static styles — lesson banked from
+   * the earlier silent-styles bug.
+   */
+  static override shadowRootOptions: ShadowRootInit = {
+    ...LitElement.shadowRootOptions,
+    slotAssignment: 'manual',
+  };
 
-  @property({ type: Number, attribute: 'max-associations' })
-  maxAssociations: number = 1;
+  /** Reactive class attribute — triggers willUpdate when toggled. */
+  @property({ attribute: 'class' }) classes: string | null = null;
 
-  @property({ type: Number, attribute: 'min-associations' })
-  minAssociations: number = 0;
+  // Shared (used by both modes)
+  @property({ attribute: 'data-first-column-header' }) dataFirstColumnHeader: string | null = null;
 
-  @property({ type: Boolean })
-  shuffle: boolean = false;
+  // (`correctResponse` + `responseIdentifier` come from the Interaction base.)
 
-  @property({ type: String, attribute: 'class' })
-  classes: string | null = null;
+  @query('slot[name="prompt"]') private promptSlot!: HTMLSlotElement;
+  @query('slot[name="rows"]') private rowsSlot!: HTMLSlotElement;
+  @query('slot[name="columns"]') private colsSlot!: HTMLSlotElement;
+  @query('slot:not([name])') private defaultSlot!: HTMLSlotElement;
 
-  @property({ type: String, attribute: 'correct-response' })
-  correctResponse: string | null = null;
+  private tabular?: TabularController;
+  private dragDrop?: DragDropController;
+  private currentMode: 'tabular' | 'drag-drop' | null = null;
 
-  /** Trigger re-render when state changes */
-  @state()
-  private _renderTrigger = 0;
-
-  /** Track if setup is done */
-  private _setupDone = false;
-
-  /** Cache of choice labels */
-  private _labelCache = new Map<string, string>();
-
-  /** Observer for DOM changes (new items added) */
-  private _observer: MutationObserver | null = null;
-
-  private _pendingSourceId: string | null = null;
-  private _associations = new Map<string, string>();
-
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
-    this._parseCorrectResponse();
-    requestAnimationFrame(() => {
-      this._trySetup();
-    });
+    this.applyMode(this.isTabular() ? 'tabular' : 'drag-drop');
   }
 
-  override disconnectedCallback() {
-    this.removeEventListener('click', this._onClick);
-    this.removeEventListener('fake-drag-remove', this._onFakeDragRemove as EventListener);
-    document.removeEventListener('keydown', this._onKeyDown);
-    document.removeEventListener('pointerdown', this._onDocumentPointerDown);
-    this._observer?.disconnect();
-    this._observer = null;
-    this._setupDone = false;
+  override disconnectedCallback(): void {
+    this.applyMode(null);
     super.disconnectedCallback();
   }
 
-  override firstUpdated() {
-    this._trySetup();
-  }
-
-  private _onSlotChange = () => {
-    this._trySetup();
-    // Also rebuild cache on slot changes
-    if (this._setupDone) {
-      this._buildLabelCache();
-      this._triggerRender();
+  protected override willUpdate(changed: PropertyValues): void {
+    super.willUpdate(changed);
+    if (changed.has('classes')) {
+      const wanted = this.isTabular() ? 'tabular' : 'drag-drop';
+      if (wanted !== this.currentMode) this.applyMode(wanted);
     }
-  };
-
-  private _trySetup() {
-    if (this._setupDone) return;
-
-    const matchSets = this.querySelectorAll('qti-simple-match-set');
-    if (matchSets.length < 2) return;
-
-    this._setupDone = true;
-    this._buildLabelCache();
-    this.addEventListener('click', this._onClick);
-    this.addEventListener('fake-drag-remove', this._onFakeDragRemove as EventListener);
-    document.addEventListener('keydown', this._onKeyDown);
-    document.addEventListener('pointerdown', this._onDocumentPointerDown);
-    this._setupMutationObserver();
-    this._triggerRender();
-  }
-
-  private _setupMutationObserver() {
-    this._observer = new MutationObserver(() => {
-      // Rebuild label cache when DOM changes (new items added/removed)
-      this._buildLabelCache();
-      this._triggerRender();
-    });
-
-    // Watch for changes to children (subtree to catch nested changes)
-    this._observer.observe(this, {
-      childList: true,
-      subtree: true,
-      characterData: true
-    });
-  }
-
-  private _parseCorrectResponse() {
-    this._associations.clear();
-    this._pendingSourceId = null;
-    if (!this.correctResponse) return;
-
-    try {
-      // Same shape as qti-components: a JSON array of `"source target"` strings.
-      const pairs: unknown = JSON.parse(this.correctResponse);
-      if (Array.isArray(pairs)) {
-        for (const pair of pairs) {
-          if (typeof pair !== 'string') continue;
-          const [sourceId, targetId] = pair.split(' ');
-          if (sourceId && targetId) {
-            this._associations.set(sourceId, targetId);
-          }
-        }
-      }
-    } catch {
-      // Invalid JSON, ignore
+    if (changed.has('correctResponse' as keyof this)) {
+      // Forward to the active controller so it can re-parse + re-render.
+      this.tabular?.rerender();
+      this.dragDrop?.rerender();
     }
   }
 
-  private _emitChange() {
-    const associations = Array.from(this._associations.entries()) as MatchAssociation[];
-    // Serialize as qti-components does: `["source target", ...]`.
-    const correctResponse =
-      associations.length > 0 ? JSON.stringify(associations.map(([source, target]) => `${source} ${target}`)) : null;
+  protected override updated(changed: PropertyValues): void {
+    super.updated(changed);
+    if (this.currentMode === 'tabular') {
+      this.tabular?.routeSlots(this.promptSlot, this.rowsSlot, this.colsSlot);
+    } else if (this.currentMode === 'drag-drop') {
+      this.dragDrop?.routeSlots(this.promptSlot, this.defaultSlot);
+    }
+  }
 
+  private isTabular(): boolean {
+    // Read live classList so the constructor's call (before any @property update)
+    // picks up class="qti-match-tabular" written by ProseMirror's nodeView.
+    return classHasTabular(this.classes) || this.classList.contains('qti-match-tabular');
+  }
+
+  private applyMode(next: 'tabular' | 'drag-drop' | null): void {
+    if (next === this.currentMode) return;
+    // Tear down current
+    if (this.currentMode === 'tabular' && this.tabular) {
+      this.removeController(this.tabular);
+      this.tabular = undefined;
+    } else if (this.currentMode === 'drag-drop' && this.dragDrop) {
+      this.removeController(this.dragDrop);
+      this.dragDrop = undefined;
+    }
+    this.currentMode = next;
+    // Spin up next (constructor calls host.addController for us)
+    if (next === 'tabular') this.tabular = new TabularController(this);
+    else if (next === 'drag-drop') this.dragDrop = new DragDropController(this);
+    // Force the new controller to re-read correctResponse from the host so its
+    // visual state matches whatever the previous mode left behind. (rerender
+    // is safe to call before render — it just re-parses + schedules update.)
+    this.tabular?.rerender();
+    this.dragDrop?.rerender();
+    this.requestUpdate();
+  }
+
+  /** Called by the ProseMirror nodeView's update() hook (legacy method name). */
+  rerender(): void {
+    this.tabular?.rerender();
+    this.dragDrop?.rerender();
+  }
+
+  // ─── Single entry point for both controllers' event dispatch ─────────────
+
+  emitNodeAttrsChange(detail: {
+    nodeType: string;
+    tagName: string;
+    attrs: Record<string, unknown>;
+  }): void {
     this.dispatchEvent(
       new CustomEvent('qti-prosemirror-node-attrs-change', {
-        detail: {
-          nodeType: 'qtiMatchInteraction',
-          tagName: 'qti-match-interaction',
-          attrs: { correctResponse }
-        },
         bubbles: true,
-        composed: true
-      })
+        composed: true,
+        detail,
+      }),
     );
+  }
 
+  emitTabularAssociationChange(detail: TabularMatchAssociationChangeDetail): void {
     this.dispatchEvent(
-      new CustomEvent<MatchAssociationChangeDetail>('match-association-change', {
-        detail: { associations },
+      new CustomEvent('tabular-match-association-change', {
         bubbles: true,
-        composed: true
-      })
+        composed: true,
+        detail,
+      }),
     );
   }
 
-  private _triggerRender() {
-    this._renderTrigger++;
-    this._syncFakeDrags();
-    this._syncSelectingTarget();
-  }
-
-  /**
-   * Tell the target match-set whether a source is pending, so it can render its
-   * slotted choices as selectable drop slots. We dispatch a DOM event instead of
-   * mutating an attribute: the set keeps the state in its own shadow DOM, which
-   * keeps ProseMirror's mutation observer from reverting it (and looping).
-   */
-  private _syncSelectingTarget() {
-    const [, targetSet] = this._getMatchSets();
-    if (!targetSet) return;
-    targetSet.dispatchEvent(
-      new CustomEvent<MatchSelectingTargetDetail>(MATCH_SELECTING_TARGET_EVENT, {
-        detail: { active: this._pendingSourceId != null }
-      })
+  emitMatchAssociationChange(detail: MatchAssociationChangeDetail): void {
+    this.dispatchEvent(
+      new CustomEvent('match-association-change', {
+        bubbles: true,
+        composed: true,
+        detail,
+      }),
     );
-  }
-
-  /**
-   * Push the assigned source choices into each target choice's drop slot as
-   * non-interactive "fake drags", so the correct response resembles the live
-   * student view. No DOM is moved — only the target's `fakeDrags` property.
-   */
-  private _syncFakeDrags() {
-    if (!this._setupDone) return;
-    for (const target of this._getTargetChoices()) {
-      const targetId = target.getAttribute('identifier');
-      const drags: FakeDrag[] = [];
-      if (targetId) {
-        for (const [sourceId, assignedTargetId] of this._associations) {
-          if (assignedTargetId === targetId) {
-            drags.push({ identifier: sourceId, label: this._getLabel(sourceId) });
-          }
-        }
-      }
-      (target as HTMLElement & { fakeDrags: FakeDrag[] }).fakeDrags = drags;
-    }
-  }
-
-  private _getMatchSets(): [HTMLElement | null, HTMLElement | null] {
-    const sets = this.querySelectorAll('qti-simple-match-set');
-    return [sets[0] as HTMLElement | null, sets[1] as HTMLElement | null];
-  }
-
-  private _getSourceChoices(): HTMLElement[] {
-    const [sourceSet] = this._getMatchSets();
-    if (!sourceSet) return [];
-    return Array.from(sourceSet.querySelectorAll('qti-simple-associable-choice'));
-  }
-
-  private _getTargetChoices(): HTMLElement[] {
-    const [, targetSet] = this._getMatchSets();
-    if (!targetSet) return [];
-    return Array.from(targetSet.querySelectorAll('qti-simple-associable-choice'));
-  }
-
-  private _isInSourceSet(element: HTMLElement): boolean {
-    const [sourceSet] = this._getMatchSets();
-    return sourceSet?.contains(element) ?? false;
-  }
-
-  private _isInTargetSet(element: HTMLElement): boolean {
-    const [, targetSet] = this._getMatchSets();
-    return targetSet?.contains(element) ?? false;
-  }
-
-  private _buildLabelCache() {
-    this._labelCache.clear();
-    for (const choice of [...this._getSourceChoices(), ...this._getTargetChoices()]) {
-      const id = choice.getAttribute('identifier');
-      if (id) {
-        const clone = choice.cloneNode(true) as HTMLElement;
-        clone.querySelectorAll('qti-simple-associable-choice').forEach(el => el.remove());
-        this._labelCache.set(id, clone.textContent?.trim() || id);
-      }
-    }
-  }
-
-  private _getLabel(id: string): string {
-    return this._labelCache.get(id) || id;
-  }
-
-  // ─── Event Handling ─────────────────────────────────────────────────────
-
-  private _onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && this._pendingSourceId) {
-      this._cancelPending();
-    }
-  };
-
-  private _onClick = (e: MouseEvent) => {
-    const path = e.composedPath();
-    const choiceIndex = path.findIndex(
-      el => el instanceof HTMLElement && el.tagName === 'QTI-SIMPLE-ASSOCIABLE-CHOICE'
-    );
-    if (choiceIndex < 0) return;
-    const choice = path[choiceIndex] as HTMLElement;
-
-    const identifier = choice.getAttribute('identifier');
-    if (!identifier) return;
-
-    e.stopPropagation();
-
-    if (this._isInSourceSet(choice)) {
-      this._handleSourceClick(identifier);
-    } else if (this._isInTargetSet(choice)) {
-      this._handleTargetClick(identifier);
-    }
-  };
-
-  private _handleSourceClick(sourceId: string) {
-    if (this._pendingSourceId === sourceId) {
-      this._pendingSourceId = null;
-    } else {
-      this._pendingSourceId = sourceId;
-    }
-    this._triggerRender();
-  }
-
-  private _handleTargetClick(targetId: string) {
-    if (!this._pendingSourceId) return;
-
-    const sourceId = this._pendingSourceId;
-    this._associations.set(sourceId, targetId);
-    this._pendingSourceId = null;
-    this._emitChange();
-    this._triggerRender();
-  }
-
-  private _removeAssociation(sourceId: string) {
-    this._associations.delete(sourceId);
-    this._emitChange();
-    this._triggerRender();
-  }
-
-  private _onFakeDragRemove = (e: CustomEvent<{ identifier: string }>) => {
-    e.stopPropagation();
-    const sourceId = e.detail?.identifier;
-    if (sourceId) {
-      this._removeAssociation(sourceId);
-    }
-  };
-
-  private _cancelPending() {
-    this._pendingSourceId = null;
-    this._triggerRender();
-  }
-
-  /**
-   * Cancel a pending source selection when the user clicks anywhere outside this
-   * interaction, so the drop-slot highlight stops. (Escape is handled by
-   * `_onKeyDown`; clicking the same source again toggles it off.)
-   */
-  private _onDocumentPointerDown = (e: PointerEvent) => {
-    if (!this._pendingSourceId) return;
-    if (e.composedPath().includes(this)) return;
-    this._cancelPending();
-  };
-
-  override updated(changedProperties: Map<string, unknown>) {
-    super.updated(changedProperties);
-    if (changedProperties.has('correctResponse')) {
-      this._parseCorrectResponse();
-      this._triggerRender();
-    }
   }
 
   override render() {
-    // Force use of _renderTrigger to ensure re-render
-    void this._renderTrigger;
-
-    return html`
-      <slot name="prompt"></slot>
-      <slot @slotchange=${this._onSlotChange}></slot>
-    `;
+    if (this.currentMode === 'tabular') return this.tabular?.render() ?? nothing;
+    if (this.currentMode === 'drag-drop') return this.dragDrop?.render() ?? nothing;
+    return nothing;
   }
 }
 
 declare global {
   interface HTMLElementEventMap {
     'match-association-change': CustomEvent<MatchAssociationChangeDetail>;
+    'tabular-match-association-change': CustomEvent<TabularMatchAssociationChangeDetail>;
+  }
+  interface HTMLElementTagNameMap {
+    'qti-match-interaction': QtiMatchInteractionEdit;
   }
 }

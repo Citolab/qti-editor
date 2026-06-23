@@ -25,7 +25,7 @@ import {
   qtiInlineChoiceInteractionNodeSpec,
   qtiInlineChoiceNodeSpec
 } from '@citolab/prose-qti/components/inline-choice';
-import { qtiMatchInteractionNodeSpec } from '@citolab/prose-qti/components/match';
+import { qtiMatchInteractionNodeSpec, qtiMatchInteractionTabularNodeSpec } from '@citolab/prose-qti/components/match';
 import { qtiOrderInteractionNodeSpec } from '@citolab/prose-qti/components/order';
 import { qtiSelectPointInteractionNodeSpec, imgSelectPointNodeSpec } from '@citolab/prose-qti/components/select-point';
 import { qtiRubricBlockNodeSpec } from '@citolab/prose-qti/components/rubric-block';
@@ -85,6 +85,7 @@ const baseSchema = new Schema({
     qtiChoiceInteraction:       { ...qtiChoiceInteractionNodeSpec,       content: 'qtiPrompt qtiSimpleChoice+',              group: 'block' },
     qtiOrderInteraction:        { ...qtiOrderInteractionNodeSpec,        content: 'qtiPrompt? qtiSimpleChoice+',            group: 'block' },
     qtiMatchInteraction:        { ...qtiMatchInteractionNodeSpec,        content: 'qtiPrompt? qtiSimpleMatchSet{2}',        group: 'block' },
+    qtiMatchInteractionTabular: { ...qtiMatchInteractionTabularNodeSpec, content: 'qtiPrompt? qtiSimpleMatchSet{2}',        group: 'block' },
     qtiAssociateInteraction:    { ...qtiAssociateInteractionNodeSpec,    content: 'qtiPrompt? qtiSimpleAssociableChoice+',  group: 'block' },
     qtiHottextInteraction:      { ...qtiHottextInteractionNodeSpec,      content: 'paragraph+',                              group: 'block' },
     qtiGapMatchInteraction:     { ...qtiGapMatchInteractionNodeSpec,     content: 'qtiPrompt? qtiGapText{2,} paragraph+',   group: 'block' },

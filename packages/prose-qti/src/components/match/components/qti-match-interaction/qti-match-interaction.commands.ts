@@ -88,6 +88,7 @@ export const insertSimpleAssociableChoiceOnEnter: Command = (state, dispatch) =>
   const paragraphType = state.schema.nodes.qtiSimpleAssociableChoiceParagraph;
   const matchSetType = state.schema.nodes.qtiSimpleMatchSet;
   const interactionType = state.schema.nodes.qtiMatchInteraction;
+  const tabularInteractionType = state.schema.nodes.qtiMatchInteractionTabular;
   if (!choiceType || !paragraphType) return false;
 
   const { selection } = state;
@@ -102,13 +103,23 @@ export const insertSimpleAssociableChoiceOnEnter: Command = (state, dispatch) =>
 
   // Determine source vs target set and locate the interaction node
   let isSourceSet = false;
+  let isTabularInteraction = false;
   let interactionDepth = -1;
-  if (matchSetType && interactionType) {
+  if (matchSetType && (interactionType || tabularInteractionType)) {
     for (let depth = selection.$from.depth; depth >= 0; depth--) {
       if (selection.$from.node(depth).type === matchSetType) {
         const parentDepth = depth - 1;
-        if (parentDepth >= 0 && selection.$from.node(parentDepth).type === interactionType) {
-          isSourceSet = selection.$from.index(parentDepth) === 0;
+        const parent = parentDepth >= 0 ? selection.$from.node(parentDepth) : null;
+        if (parent && (parent.type === interactionType || parent.type === tabularInteractionType)) {
+          const matchSetIndex = selection.$from.index(parentDepth);
+          let matchSetOrdinal = 0;
+          parent.forEach((child, _offset, index) => {
+            if (index < matchSetIndex && child.type === matchSetType) {
+              matchSetOrdinal++;
+            }
+          });
+          isSourceSet = matchSetOrdinal === 0;
+          isTabularInteraction = parent.type === tabularInteractionType;
           interactionDepth = parentDepth;
         }
         break;
@@ -119,16 +130,35 @@ export const insertSimpleAssociableChoiceOnEnter: Command = (state, dispatch) =>
   if (!dispatch) return true;
 
   const sourceInsertPos = selection.$from.after(choiceDepth);
+  const sourceCount = (() => {
+    if (!isTabularInteraction || interactionDepth < 0 || !matchSetType) return 1;
+    const interactionNode = selection.$from.node(interactionDepth);
+    let firstSetChoiceCount = 1;
+    let seenSets = 0;
+    interactionNode.forEach(child => {
+      if (child.type !== matchSetType) return;
+      if (seenSets === 0) {
+        firstSetChoiceCount = Math.max(1, child.childCount);
+      }
+      seenSets++;
+    });
+    return firstSetChoiceCount;
+  })();
   const sourceSibling = choiceType.create(
-    { identifier: `${isSourceSet ? 'SOURCE' : 'TARGET'}_${crypto.randomUUID()}`, matchMax: 1 },
+    {
+      identifier: `${isSourceSet ? 'SOURCE' : 'TARGET'}_${crypto.randomUUID()}`,
+      matchMax: isSourceSet ? 1 : sourceCount,
+    },
     paragraphType.create()
   );
 
   const tr = state.tr.insert(sourceInsertPos, sourceSibling);
   tr.setSelection(TextSelection.create(tr.doc, sourceInsertPos + 2)).scrollIntoView();
 
-  // When adding to source set, also append a matching target choice
-  if (isSourceSet && interactionDepth >= 0 && matchSetType) {
+  // Existing non-tabular match authoring keeps the two vertical lists balanced
+  // by appending a target when a source is added. Tabular rows and columns are
+  // independent, so adding a row must not create a new column.
+  if (isSourceSet && !isTabularInteraction && interactionDepth >= 0 && matchSetType) {
     const originalInteractionPos = selection.$from.before(interactionDepth);
     const mappedInteractionPos = tr.mapping.map(originalInteractionPos);
     const interactionNodeNew = tr.doc.nodeAt(mappedInteractionPos);
