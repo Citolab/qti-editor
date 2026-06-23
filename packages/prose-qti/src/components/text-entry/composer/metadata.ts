@@ -32,7 +32,6 @@ export const textEntryNodeAttributePanelMetadataByNodeTypeName = {
   [TEXT_ENTRY_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: TEXT_ENTRY_INTERACTION_NODE_TYPE,
     editableAttributes: ['class', 'caseSensitive', 'placeholderText'],
-    hiddenAttributes: ['class', 'caseSensitive', 'correctResponse'],
     friendlyEditors: [textEntryAttributesFriendlyEditor],
     fields: { score: { label: 'Score', input: 'number' } },
   },

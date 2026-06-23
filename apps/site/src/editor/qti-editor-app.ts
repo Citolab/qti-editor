@@ -2,7 +2,6 @@ import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
 import '@citolab/prose-qti-ui/components/attributes-panel';
 import './components/blocks/composer/index.js';
-import './components/blocks/composer-metadata-form/index.js';
 import './components/blocks/toolbar/index.js';
 import './components/qti-slash-menu';
 
@@ -55,15 +54,6 @@ export class QtiEditorApp extends LitElement {
   private composerEventTarget = new EventTarget();
 
   private _editorMounted = false;
-
-  private onMetadataChange(event: Event) {
-    const detail = (event as CustomEvent<{ title: string; identifier: string }>).detail;
-    this.itemContext = {
-      ...this.itemContext,
-      title: detail.title,
-      identifier: detail.identifier
-    };
-  }
 
   @provide({ context: itemContext })
   itemContext: ItemContext = {
@@ -155,10 +145,11 @@ export class QtiEditorApp extends LitElement {
 
   exportXml(fileName: string = 'item'): void {
     const safeFileName = fileName.trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9._-]/g, '') || 'item';
-    const xml = qtiTestFromProsemirror(this.editor.view.state.doc, {
-      identifier: this.itemContext.identifier,
+    const doc = this.editor.view.state.doc;
+    const xml = qtiTestFromProsemirror(doc, {
+      identifier: (doc.attrs.identifier as string) ?? '',
       lang: this.lang,
-      title: this.itemContext.title,
+      title: (doc.attrs.title as string) ?? '',
     });
     const blob = new Blob([xml], { type: 'application/xml' });
     const url = URL.createObjectURL(blob);
@@ -185,15 +176,9 @@ export class QtiEditorApp extends LitElement {
           ${this._editorMounted ? html`<qti-composer .editor=${this.editor} class="block w-full shrink-0"></qti-composer>` : ''}
         </div>
         <div class="w-full lg:w-80 lg:shrink-0 lg:max-h-[72vh] lg:overflow-y-auto">
-          <qti-composer-metadata-form
-            class="block w-full"
-            .title=${this.itemContext.title ?? ''}
-            .identifier=${this.itemContext.identifier ?? ''}
-            @metadata-change=${this.onMetadataChange}
-          ></qti-composer-metadata-form>
           ${this._editorMounted ? html`<qti-attributes-panel
             .editor=${this.editor}
-            class="block w-full sticky top-0 mt-5"
+            class="block w-full sticky top-0"
           ></qti-attributes-panel>` : ''}
         </div>
       </div>

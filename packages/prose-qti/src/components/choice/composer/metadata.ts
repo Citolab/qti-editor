@@ -41,7 +41,6 @@ export const choiceNodeAttributePanelMetadataByNodeTypeName: Record<string, Node
   [CHOICE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: CHOICE_INTERACTION_NODE_TYPE,
     editableAttributes: ['class', 'shuffle'],
-    hiddenAttributes: ['class'],
     friendlyEditors: [choiceInteractionClassFriendlyEditor],
     fields: { score: { label: 'Score', input: 'number' }, shuffle: { label: 'Shuffle', input: 'checkbox' } },
   },

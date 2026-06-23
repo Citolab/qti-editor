@@ -2,6 +2,7 @@ import {
   defineBaseCommands,
   defineBaseKeymap,
   defineHistory,
+  defineNodeAttr,
   union,
 } from 'prosekit/core'
 import { defineDoc } from 'prosekit/extensions/doc'
@@ -17,6 +18,8 @@ import { defineEm, defineList, defineStrong } from '@citolab/prose-extensions/pr
 export function defineBasicExtension() {
   return union(
     defineDoc(),
+    defineNodeAttr({ type: 'doc', attr: 'title', default: '' }),
+    defineNodeAttr({ type: 'doc', attr: 'identifier', default: '' }),
     defineText(),
     defineParagraph(),
     defineHeading(),

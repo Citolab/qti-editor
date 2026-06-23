@@ -21,7 +21,6 @@ export const extendedTextNodeAttributePanelMetadataByNodeTypeName = {
   [EXTENDED_TEXT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: EXTENDED_TEXT_INTERACTION_NODE_TYPE,
     editableAttributes: ['expectedLength', 'expectedLines', 'placeholderText', 'patternMask', 'class', 'score'],
-    hiddenAttributes: ['class'],
     friendlyEditors: [extendedTextAttributesFriendlyEditor],
     fields: {
       expectedLength: { label: 'Expected length', input: 'number' },

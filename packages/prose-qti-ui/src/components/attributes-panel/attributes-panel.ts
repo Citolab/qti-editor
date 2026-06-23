@@ -75,7 +75,6 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
       const panelMetadata: NodeAttributePanelMetadata = {
         nodeTypeName: metadata.nodeTypeName,
         editableAttributes: [...(metadata.editableAttributes ?? [])],
-        hiddenAttributes: [...(metadata.hiddenAttributes ?? [])],
         friendlyEditors: (metadata.friendlyEditors ?? []) as AttributeFriendlyEditorDefinition[],
         fields,
       };
@@ -115,12 +114,10 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
   private handleFriendlyEditorPatch(event: CustomEvent<QtiAttributesPatchDetail>) {
     event.stopPropagation();
 
-    const activeNode = this.activeNode;
     const detail = event.detail;
-    if (!activeNode || !detail) return;
-    if (detail.pos !== activeNode.pos) return;
+    if (!detail) return;
 
-    this.updateActiveNodeAttrs(detail.attrs as Record<string, any>);
+    this.updateNodeAttrsByPos(detail.pos, detail.attrs as Record<string, any>);
   }
 
   /**
@@ -141,33 +138,30 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
 
   private renderFriendlyEditor(
     editor: AttributeFriendlyEditorDefinition,
-    activeNode: AttributesNodeDetail | null,
+    node: AttributesNodeDetail,
   ): TemplateResult | typeof nothing {
-    if (!activeNode) return nothing;
-
     if (editor.kind === 'choiceInteractionClass') {
       return html`
         <qti-choice-attributes-editor
-          .activeNode=${activeNode}
+          .activeNode=${node}
           .presentation=${this.choiceInteractionPresentation}
         ></qti-choice-attributes-editor>
       `;
     }
 
     if (editor.kind === 'textEntryAttributes') {
-      return html`<qti-text-entry-attributes-editor .activeNode=${activeNode}></qti-text-entry-attributes-editor>`;
+      return html`<qti-text-entry-attributes-editor .activeNode=${node}></qti-text-entry-attributes-editor>`;
     }
 
     if (editor.kind === 'extendedTextAttributes') {
-      return html`<qti-extended-text-attributes-editor .activeNode=${activeNode}></qti-extended-text-attributes-editor>`;
+      return html`<qti-extended-text-attributes-editor .activeNode=${node}></qti-extended-text-attributes-editor>`;
     }
 
     return nothing;
   }
 
-  private renderMissingCorrectResponseWarning(activeNode: AttributesNodeDetail | null): TemplateResult | typeof nothing {
-    if (!activeNode) return nothing;
-    const attrs = activeNode.attrs ?? {};
+  private renderMissingCorrectResponseWarning(node: AttributesNodeDetail): TemplateResult | typeof nothing {
+    const attrs = node.attrs ?? {};
     if (!('correctResponse' in attrs)) return nothing;
     const cr = attrs.correctResponse;
     const isEmpty = cr == null || (Array.isArray(cr) ? cr.length === 0 : String(cr).trim().length === 0);
@@ -180,51 +174,32 @@ export class QtiAttributesPanel extends ProsekitAttributesPanel {
     `;
   }
 
-  protected override renderPanel(): TemplateResult {
-    const activeNode = this.activeNode;
-    const panelMetadata = this.getPanelMetadata(activeNode);
-    const friendlyEditors = panelMetadata?.friendlyEditors ?? [];
-    const { editable, readOnly } = this.getAttrEntriesByEditability(activeNode);
+  /**
+   * Custom node section: if the descriptor declares friendly editors for this
+   * node type, render them in place of the generic fields (per the
+   * replace-not-supplement contract enforced by the base class).
+   */
+  protected override renderCustomNodeSection(
+    node: AttributesNodeDetail,
+    metadata: NodeAttributePanelMetadata | null,
+  ): TemplateResult | typeof nothing {
+    const friendlyEditors = metadata?.friendlyEditors ?? [];
+    if (friendlyEditors.length === 0) return nothing;
 
     return html`
-      <section
-        class="card border border-base-300/50 bg-base-100"
+      ${this.renderMissingCorrectResponseWarning(node)}
+      ${friendlyEditors.map(editor => this.renderFriendlyEditor(editor, node))}
+    `;
+  }
+
+  protected override renderPanel(): TemplateResult {
+    return html`
+      <div
         @qti:attributes:patch=${this.handleFriendlyEditorPatch}
         @mousedown=${this.handlePanelMousedown}
       >
-        <div class="card-body gap-3 p-4">
-          ${this.renderHeader(activeNode)} ${this.renderNodeSwitcher()}
-          <div class="flex flex-col gap-3">
-            ${this.renderMissingCorrectResponseWarning(activeNode)}
-            ${friendlyEditors.map(editor => this.renderFriendlyEditor(editor, activeNode))}
-            ${activeNode
-              ? html`
-                  ${editable.length
-                    ? editable.map(([key, value]) =>
-                        this.renderField(key, value, this.getFieldMetadata(key, value)),
-                      )
-                    : friendlyEditors.length
-                      ? nothing
-                      : html`<p class="text-sm text-base-content/70">No editable attributes.</p>`}
-                  ${readOnly.length
-                    ? html`
-                        <details class="rounded-lg border border-base-300/50 bg-base-50 p-2">
-                          <summary class="cursor-pointer text-sm font-medium">
-                            Read-only attributes (${readOnly.length})
-                          </summary>
-                          <div class="mt-3 flex flex-col gap-3 opacity-80">
-                            ${readOnly.map(([key, value]) =>
-                              this.renderField(key, value, this.getFieldMetadata(key, value), true),
-                            )}
-                          </div>
-                        </details>
-                      `
-                    : nothing}
-                `
-              : this.renderEmptyState()}
-          </div>
-        </div>
-      </section>
+        ${super.renderPanel()}
+      </div>
     `;
   }
 }

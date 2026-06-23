@@ -27,8 +27,6 @@ export interface NodeAttributePanelMetadata {
   nodeTypeName: string;
   /** Attributes the user may edit. All others are shown as read-only. */
   editableAttributes?: readonly string[];
-  /** Attributes hidden from the panel entirely. */
-  hiddenAttributes?: readonly string[];
   /** Custom editor components to render in place of a plain text field. */
   friendlyEditors?: readonly AttributeFriendlyEditorDefinition[];
   /** Per-attribute field overrides (label, input type, options). */

@@ -1,4 +1,5 @@
 export {
+  DOC_POS,
   collectSelectionNodesWithSchemaAttrs,
   attributesExtension,
   sidePanelExtension,

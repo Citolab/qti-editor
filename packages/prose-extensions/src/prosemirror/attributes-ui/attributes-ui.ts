@@ -85,9 +85,6 @@ export class ProsekitAttributesPanel extends LitElement {
   @state()
   nodes: AttributesNodeDetail[] = [];
 
-  @state()
-  selectedIndex = 0;
-
   /**
    * When true, the panel is being interacted with and should preserve
    * its current state even if the editor selection changes.
@@ -107,29 +104,7 @@ export class ProsekitAttributesPanel extends LitElement {
     }
 
     const detail = (event as CustomEvent<AttributesEventDetail>).detail;
-    const previousSelectedNode = this.activeNode;
     this.nodes = Array.isArray(detail?.nodes) ? detail.nodes : [];
-
-    const preservedIndex =
-      previousSelectedNode != null
-        ? this.nodes.findIndex(
-            node => node.pos === previousSelectedNode.pos && node.type === previousSelectedNode.type,
-          )
-        : -1;
-
-    if (preservedIndex >= 0) {
-      this.selectedIndex = preservedIndex;
-    } else if (this.selectedIndex >= this.nodes.length) {
-      const requestedNode = detail?.activeNode;
-      if (requestedNode) {
-        const requestedIndex = this.nodes.findIndex(
-          node => node.pos === requestedNode.pos && node.type === requestedNode.type,
-        );
-        this.selectedIndex = requestedIndex >= 0 ? requestedIndex : 0;
-      } else {
-        this.selectedIndex = 0;
-      }
-    }
   };
 
   override connectedCallback() {
@@ -173,10 +148,9 @@ export class ProsekitAttributesPanel extends LitElement {
     return this;
   }
 
+  /** Innermost node in the current ancestor chain, or null when the panel is empty. */
   protected get activeNode(): AttributesNodeDetail | null {
-    if (this.nodes.length === 0) return null;
-    if (this.selectedIndex >= this.nodes.length) return this.nodes[0] ?? null;
-    return this.nodes[this.selectedIndex] ?? null;
+    return this.nodes.length === 0 ? null : (this.nodes[this.nodes.length - 1] ?? null);
   }
 
   protected getEventTarget(): EventTarget {
@@ -193,17 +167,13 @@ export class ProsekitAttributesPanel extends LitElement {
     this.currentEventTarget = nextTarget;
   }
 
-  protected setSelectedNode(index: number) {
-    this.selectedIndex = index;
-  }
-
   protected getPanelMetadata(node: AttributesNodeDetail | null): NodeAttributePanelMetadata | null {
     if (!node) return null;
     return this.metadataResolver?.(node.type, node) ?? null;
   }
 
-  protected getFieldMetadata(key: string, value: AttrValue): AttributeFieldDefinition {
-    const metadata = this.getPanelMetadata(this.activeNode);
+  protected getFieldMetadata(node: AttributesNodeDetail, key: string, value: AttrValue): AttributeFieldDefinition {
+    const metadata = this.getPanelMetadata(node);
     const fieldMetadata = metadata?.fields?.[key] ?? {};
     const inferredInput =
       fieldMetadata.input ??
@@ -236,28 +206,26 @@ export class ProsekitAttributesPanel extends LitElement {
     }
 
     const editableAttributes = new Set(metadata.editableAttributes ?? entries.map(([key]) => key));
-    const hiddenAttributes = new Set(metadata.hiddenAttributes ?? []);
 
     return {
       editable: entries.filter(([key]) => {
         const field = metadata.fields?.[key];
-        return !hiddenAttributes.has(key) && editableAttributes.has(key) && !field?.readOnly;
+        return editableAttributes.has(key) && !field?.readOnly;
       }),
       readOnly: entries.filter(([key]) => {
         const field = metadata.fields?.[key];
-        return !hiddenAttributes.has(key) && (!editableAttributes.has(key) || Boolean(field?.readOnly));
+        return !editableAttributes.has(key) || Boolean(field?.readOnly);
       }),
     };
   }
 
-  protected updateActiveNodeAttrs(attrs: Record<string, AttrValue>) {
-    const node = this.activeNode;
-    if (!node) return;
+  protected updateNodeAttrsByPos(pos: number, attrs: Record<string, AttrValue>) {
+    const index = this.nodes.findIndex(n => n.pos === pos);
+    if (index < 0) return;
+    const node = this.nodes[index];
 
     const nextAttrs = { ...node.attrs, ...attrs };
-    this.nodes = this.nodes.map((item, idx) =>
-      idx === this.selectedIndex ? { ...item, attrs: nextAttrs } : item,
-    );
+    this.nodes = this.nodes.map((item, idx) => (idx === index ? { ...item, attrs: nextAttrs } : item));
 
     this.dispatchEvent(
       new CustomEvent(this.changeEventName, {
@@ -276,6 +244,13 @@ export class ProsekitAttributesPanel extends LitElement {
     }
   }
 
+  /** @deprecated Use {@link updateNodeAttrsByPos}. Routes to the innermost node. */
+  protected updateActiveNodeAttrs(attrs: Record<string, AttrValue>) {
+    const node = this.activeNode;
+    if (!node) return;
+    this.updateNodeAttrsByPos(node.pos, attrs);
+  }
+
   protected coerceValue(
     input: HTMLInputElement | HTMLSelectElement,
     originalValue: AttrValue,
@@ -290,44 +265,22 @@ export class ProsekitAttributesPanel extends LitElement {
     return input.value;
   }
 
-  protected handleFieldChange(attrKey: string, originalValue: AttrValue, event: Event) {
+  protected handleFieldChange(node: AttributesNodeDetail, attrKey: string, originalValue: AttrValue, event: Event) {
     const input = event.currentTarget as HTMLInputElement | HTMLSelectElement;
     const nextValue = this.coerceValue(input, originalValue);
-    this.updateActiveNodeAttrs({ [attrKey]: nextValue });
+    this.updateNodeAttrsByPos(node.pos, { [attrKey]: nextValue });
   }
 
-  protected renderHeader(activeNode: AttributesNodeDetail | null): TemplateResult {
+  protected renderHeader(): TemplateResult {
     return html`
-      <header class="flex items-start justify-between gap-3">
-        <div>
-          <h3 class="text-base font-semibold">${this.i18n.t('attributes.heading')}</h3>
-          <p class="text-xs text-base-content/70">${activeNode?.type ?? this.i18n.t('attributes.noSelection')}</p>
-        </div>
+      <header>
+        <h3 class="text-base font-semibold">${this.i18n.t('attributes.heading')}</h3>
       </header>
     `;
   }
 
-  protected renderNodeSwitcher(): TemplateResult | typeof nothing {
-    if (this.nodes.length <= 1) return nothing;
-
-    return html`
-      <div class="flex flex-wrap gap-2">
-        ${this.nodes.map(
-          (node, index) => html`
-            <button
-              class="btn btn-xs ${index === this.selectedIndex ? 'btn-primary' : 'btn-ghost'}"
-              type="button"
-              @click=${() => this.setSelectedNode(index)}
-            >
-              ${node.type}
-            </button>
-          `,
-        )}
-      </div>
-    `;
-  }
-
   protected renderTextField(
+    node: AttributesNodeDetail,
     key: string,
     value: AttrValue,
     fieldMetadata: AttributeFieldDefinition,
@@ -341,13 +294,14 @@ export class ProsekitAttributesPanel extends LitElement {
           type=${fieldMetadata.input === 'number' ? 'number' : 'text'}
           .value=${String(value ?? '')}
           ?disabled=${disabled}
-          @input=${(event: Event) => this.handleFieldChange(key, value, event)}
+          @input=${(event: Event) => this.handleFieldChange(node, key, value, event)}
         />
       </label>
     `;
   }
 
   protected renderCheckboxField(
+    node: AttributesNodeDetail,
     key: string,
     value: AttrValue,
     fieldMetadata: AttributeFieldDefinition,
@@ -361,13 +315,14 @@ export class ProsekitAttributesPanel extends LitElement {
           type="checkbox"
           .checked=${Boolean(value)}
           ?disabled=${disabled}
-          @change=${(event: Event) => this.handleFieldChange(key, value, event)}
+          @change=${(event: Event) => this.handleFieldChange(node, key, value, event)}
         />
       </label>
     `;
   }
 
   protected renderSelectField(
+    node: AttributesNodeDetail,
     key: string,
     value: AttrValue,
     fieldMetadata: AttributeFieldDefinition,
@@ -380,7 +335,7 @@ export class ProsekitAttributesPanel extends LitElement {
           class="select select-sm select-bordered w-full"
           .value=${String(value ?? '')}
           ?disabled=${disabled}
-          @change=${(event: Event) => this.handleFieldChange(key, value, event)}
+          @change=${(event: Event) => this.handleFieldChange(node, key, value, event)}
         >
           <option value="">${this.i18n.t('attributes.select')}</option>
           ${(fieldMetadata.options ?? []).map(
@@ -392,57 +347,86 @@ export class ProsekitAttributesPanel extends LitElement {
   }
 
   protected renderField(
+    node: AttributesNodeDetail,
     key: string,
     value: AttrValue,
     fieldMetadata: AttributeFieldDefinition,
     disabled = false,
   ): TemplateResult {
     if (fieldMetadata.input === 'checkbox') {
-      return this.renderCheckboxField(key, value, fieldMetadata, disabled);
+      return this.renderCheckboxField(node, key, value, fieldMetadata, disabled);
     }
     if (fieldMetadata.input === 'select') {
-      return this.renderSelectField(key, value, fieldMetadata, disabled);
+      return this.renderSelectField(node, key, value, fieldMetadata, disabled);
     }
-    return this.renderTextField(key, value, fieldMetadata, disabled);
+    return this.renderTextField(node, key, value, fieldMetadata, disabled);
   }
 
   protected renderEmptyState(): TemplateResult {
     return html`<p class="text-sm text-base-content/70">${this.i18n.t('attributes.placeCursor')}</p>`;
   }
 
-  protected renderPanel(): TemplateResult {
-    const activeNode = this.activeNode;
-    const { editable, readOnly } = this.getAttrEntriesByEditability(activeNode);
+  /**
+   * Override hook: render a custom editor for `node` in place of the generic
+   * field list. Returning `nothing` falls through to generic rendering. When a
+   * custom editor IS returned, it REPLACES the entire generic section for that
+   * node (no field list rendered alongside).
+   */
+  protected renderCustomNodeSection(
+    _node: AttributesNodeDetail,
+    _metadata: NodeAttributePanelMetadata | null,
+  ): TemplateResult | typeof nothing {
+    return nothing;
+  }
 
+  /** Render one section in the stacked panel — either a custom editor (replace) or generic fields. */
+  protected renderNodeSection(node: AttributesNodeDetail): TemplateResult {
+    const metadata = this.getPanelMetadata(node);
+
+    const custom = this.renderCustomNodeSection(node, metadata);
+    if (custom !== nothing) {
+      return html`
+        <section class="flex flex-col gap-2 rounded-lg border border-base-300/50 bg-base-50/40 p-3" data-node-type=${node.type}>
+          <h4 class="text-xs font-semibold text-base-content/70">${node.type}</h4>
+          ${custom}
+        </section>
+      `;
+    }
+
+    const { editable, readOnly } = this.getAttrEntriesByEditability(node);
+
+    return html`
+      <section class="flex flex-col gap-2 rounded-lg border border-base-300/50 bg-base-50/40 p-3" data-node-type=${node.type}>
+        <h4 class="text-xs font-semibold text-base-content/70">${node.type}</h4>
+        ${editable.length
+          ? editable.map(([key, value]) => this.renderField(node, key, value, this.getFieldMetadata(node, key, value)))
+          : html`<p class="text-xs text-base-content/60">${this.i18n.t('attributes.noEditable')}</p>`}
+        ${readOnly.length
+          ? html`
+              <details class="rounded-md border border-base-300/40 bg-base-50 p-2">
+                <summary class="cursor-pointer text-xs font-medium">
+                  ${this.i18n.t('attributes.readOnlyCount', { count: readOnly.length })}
+                </summary>
+                <div class="mt-2 flex flex-col gap-2 opacity-80">
+                  ${readOnly.map(([key, value]) =>
+                    this.renderField(node, key, value, this.getFieldMetadata(node, key, value), true),
+                  )}
+                </div>
+              </details>
+            `
+          : nothing}
+      </section>
+    `;
+  }
+
+  protected renderPanel(): TemplateResult {
     return html`
       <section class="card border border-base-300/50 bg-base-100">
         <div class="card-body gap-3 p-4">
-          ${this.renderHeader(activeNode)} ${this.renderNodeSwitcher()}
-          <div class="flex flex-col gap-3">
-            ${activeNode
-              ? html`
-                  ${editable.length
-                    ? editable.map(([key, value]) =>
-                        this.renderField(key, value, this.getFieldMetadata(key, value)),
-                      )
-                    : html`<p class="text-sm text-base-content/70">${this.i18n.t('attributes.noEditable')}</p>`}
-                  ${readOnly.length
-                    ? html`
-                        <details class="rounded-lg border border-base-300/50 bg-base-50 p-2">
-                          <summary class="cursor-pointer text-sm font-medium">
-                            ${this.i18n.t('attributes.readOnlyCount', { count: readOnly.length })}
-                          </summary>
-                          <div class="mt-3 flex flex-col gap-3 opacity-80">
-                            ${readOnly.map(([key, value]) =>
-                              this.renderField(key, value, this.getFieldMetadata(key, value), true),
-                            )}
-                          </div>
-                        </details>
-                      `
-                    : nothing}
-                `
-              : this.renderEmptyState()}
-          </div>
+          ${this.renderHeader()}
+          ${this.nodes.length === 0
+            ? this.renderEmptyState()
+            : html`<div class="flex flex-col gap-3">${this.nodes.map(node => this.renderNodeSection(node))}</div>`}
         </div>
       </section>
     `;

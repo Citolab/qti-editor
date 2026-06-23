@@ -3,7 +3,6 @@ import 'prosekit/basic/typography.css';
 import './components/blocks/toolbar/index.js';
 import '@citolab/prose-qti-ui/components/interaction-insert-menu';
 import '@citolab/prose-qti-ui/components/attributes-panel';
-import './components/blocks/composer-metadata-form/index.js';
 
 import { ContextProvider } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
@@ -52,24 +51,16 @@ export class QtiProsekitItem extends LitElement {
     this.itemContextProvider.setValue(value);
   }
 
-  private onMetadataChange(event: Event) {
-    const detail = (event as CustomEvent<{ title: string; identifier: string }>).detail;
-    this.itemContext = {
-      ...this.itemContext,
-      title: detail.title,
-      identifier: detail.identifier
-    };
-  }
-
   private saveXml() {
     this.xmlOutput = xmlFromNode(this.editor.view.state.doc);
     this.requestUpdate();
   }
 
   private saveQti() {
-    this.xmlOutput = qtiTestFromProsemirror(this.editor.view.state.doc, {
-      identifier: this.itemContext.identifier,
-      title: this.itemContext.title
+    const doc = this.editor.view.state.doc;
+    this.xmlOutput = qtiTestFromProsemirror(doc, {
+      identifier: (doc.attrs.identifier as string) ?? '',
+      title: (doc.attrs.title as string) ?? '',
     });
     this.requestUpdate();
   }
@@ -197,13 +188,6 @@ export class QtiProsekitItem extends LitElement {
         </div>
       </div>
       <div class="flex gap-4 mt-4">
-        <qti-composer-metadata-form
-          class="block w-2/5"
-          .title=${this.itemContext.title ?? ''}
-          .identifier=${this.itemContext.identifier ?? ''}
-          @metadata-change=${this.onMetadataChange}
-        ></qti-composer-metadata-form>
-
         <div class="mt-4 rounded-md border border-solid border-gray-200 bg-white p-4 shadow-sm flex gap-4">
           <div class="mb-2 gap-2 flex ">
             <button class="btn btn-sm" @click=${this.saveXml}>Save XML</button>
