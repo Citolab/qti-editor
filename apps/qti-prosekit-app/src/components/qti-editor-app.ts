@@ -36,6 +36,7 @@ import { registerLitEditorBlockHandle } from './blocks/block-handle/index.js';
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 import { defineLockedHeaderExtension, LOCKED_HEADER_DEFAULT_CONTENT, ensureLockedHeader } from '../extensions/locked-header-extension.js';
+import { defineItemDividerExtension } from '../extensions/item-divider-extension.js';
 import { defineSlashMenuGuardExtension } from '../extensions/slash-menu-guard-extension.js';
 import { exportItem, exportJson, exportPackage, exportRoundtripXml, importJson } from '../lib/exportXml.js';
 import { getAutoSaveKey } from '../lib/fileStore.js';
@@ -206,6 +207,7 @@ export class QtiEditorApp extends LitElement {
     const extension = union(
       defineBasicExtension(),
       defineQtiInteractionsExtension(),
+      defineItemDividerExtension(),
       defineLockedHeaderExtension(),
       defineSemanticPasteExtension(),
       defineSlashMenuGuardExtension(),

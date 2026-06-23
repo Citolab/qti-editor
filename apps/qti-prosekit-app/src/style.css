@@ -17,3 +17,15 @@
 @import '@qti-components/theme/item.css';
 @import '@citolab/prose-qti/core-css.css';
 @custom-variant dark (&:where(.dark, .dark *));
+
+.ProseMirror>h1:first-child:has(.ProseMirror-trailingBreak):before {
+  content: "Titel";
+}
+
+.ProseMirror>p:first-of-type {
+  padding-bottom: 2rem;
+
+ &:has(.ProseMirror-trailingBreak):before {
+  content: "Inleiding";
+ }
+}

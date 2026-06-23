@@ -425,7 +425,7 @@ export class QtiItemsNavigator extends LitElement {
     return html`
       <div class="navigator-container">
         <div class="navigator-header">
-          <h3 class="navigator-title">Assessment Items</h3>
+          <h3 class="navigator-title">Vragen</h3>
           <p class="navigator-subtitle">
             ${this.items.length} ${this.items.length === 1 ? 'item' : 'items'}
           </p>
@@ -438,7 +438,7 @@ export class QtiItemsNavigator extends LitElement {
                   class="item-button ${this.currentItemIndex === item.index ? 'active' : ''}"
                   @click=${() => this.navigateToItem(item.index)}
                 >
-                  <span class="item-label">Item ${item.index + 1}</span>
+                  <span class="item-label">${item.index === 0 ? 'Inleiding' : `Vraag ${item.index}`}</span>
                   ${this.currentItemIndex === item.index
                     ? html`
                         <svg class="active-indicator" fill="none" viewBox="0 0 24 24" stroke="currentColor">

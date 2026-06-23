@@ -9,9 +9,7 @@ import { orderInteractionDescriptor } from '@citolab/prose-qti/components/order'
 import { selectPointInteractionDescriptor } from '@citolab/prose-qti/components/select-point';
 import { textEntryInteractionDescriptor } from '@citolab/prose-qti/components/text-entry';
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
-import { TextSelection, type EditorState, type Transaction } from 'prosemirror-state';
 
-import type { NodeSpec } from 'prosemirror-model';
 import type {
   InteractionNodeSpecEntry,
   InteractionComposerHandler,
@@ -19,87 +17,6 @@ import type {
   InteractionDescriptor,
   NodeAttributePanelMetadata,
 } from '@citolab/prose-qti/interfaces';
-
-function insertItemDivider(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
-  const { schema, tr } = state;
-  const dividerType = schema.nodes.qtiItemDivider;
-
-  if (!dividerType) return false;
-
-  const { $from } = state.selection;
-  const insertPos = $from.after();
-
-  if (dispatch) {
-    const divider = dividerType.create();
-    const paragraph = schema.nodes.paragraph?.create();
-
-    if (paragraph) {
-      tr.insert(insertPos, [divider, paragraph]);
-      tr.setSelection(TextSelection.create(tr.doc, insertPos + 2));
-    } else {
-      tr.insert(insertPos, divider);
-    }
-
-    dispatch(tr.scrollIntoView());
-  }
-
-  return true;
-}
-
-const qtiItemDividerNodeSpec: NodeSpec = {
-  group: 'block',
-  atom: true,
-  selectable: true,
-  attrs: {
-    title: { default: '' },
-    identifier: { default: '' },
-  },
-  parseDOM: [
-    {
-      tag: 'qti-item-divider',
-      getAttrs: (dom) => {
-        if (!(dom instanceof HTMLElement)) return false;
-        return {
-          title: dom.getAttribute('title') ?? '',
-          identifier: dom.getAttribute('identifier') ?? '',
-        };
-      },
-    },
-  ],
-  toDOM(node) {
-    const attrs: Record<string, string> = { class: 'qti-item-divider' };
-    if (node.attrs.title) attrs.title = node.attrs.title;
-    if (node.attrs.identifier) attrs.identifier = node.attrs.identifier;
-    return ['qti-item-divider', attrs];
-  },
-};
-
-const qtiItemDividerDescriptor: InteractionDescriptor = {
-  tagName: 'qti-item-divider',
-  nodeTypeName: 'qtiItemDivider',
-  nodeSpecs: [{ name: 'qtiItemDivider', spec: qtiItemDividerNodeSpec }],
-  insertCommand: insertItemDivider,
-  composerMetadata: {
-    tagName: 'qti-item-divider',
-    nodeTypeName: 'qtiItemDivider',
-    responseProcessing: {
-      templateUri: '',
-      internalSourceXml: '',
-    },
-    strippedAttributes: [],
-  },
-  composerHandler: undefined,
-  attributePanelMetadata: {
-    qtiitemdivider: {
-      nodeTypeName: 'qtiItemDivider',
-      editableAttributes: ['title', 'identifier'],
-      fields: {
-        title: { label: 'Title', input: 'text' },
-        identifier: { label: 'Identifier', input: 'text' },
-      },
-    },
-  },
-};
 
 const registeredDescriptors: InteractionDescriptor[] = [
   associateInteractionDescriptor,
@@ -112,7 +29,6 @@ const registeredDescriptors: InteractionDescriptor[] = [
   orderInteractionDescriptor,
   selectPointInteractionDescriptor,
   textEntryInteractionDescriptor,
-  qtiItemDividerDescriptor,
   qtiRubricBlockDescriptor,
 ];
 

@@ -19,6 +19,7 @@ import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
 import { listInteractionDescriptors } from '@citolab/prose-qti/core/interactions/composer';
 import { translateQti } from '@citolab/prose-qti/components/shared';
 import { insertGap } from '@citolab/prose-qti/components/gap-match';
+import { insertItemDivider } from '../../item-divider/qti-item-divider.commands.js';
 import './slash-menu-item.js';
 import './slash-menu-empty.js';
 
@@ -44,8 +45,9 @@ const TAG_TO_I18N_KEY: Record<string, string> = {
   'qti-order-interaction': 'interactionInsert.order',
   'qti-select-point-interaction': 'interactionInsert.selectPoint',
   'qti-gap-match-interaction': 'interactionInsert.gapMatch',
-  'qti-item-divider': 'interactionInsert.itemDivider',
-  'qti-rubric-block': 'interactionInsert.rubricBlock',
+  // qti-item-divider has its own static slash-menu entry below — the divider
+  // node lives locally in this app and is not part of the descriptor registry.
+  // qti-rubric-block is omitted: it's auto-attached to qti-extended-text-interaction.
 };
 
 @customElement('qti-slash-menu')
@@ -114,6 +116,11 @@ export class QtiSlashMenu extends LitElement {
           ${translateQti('slashMenu.interactions', { target: this })}
         </div>
         ${menuItems}
+        <lit-editor-slash-menu-item
+          class="contents"
+          label="Item-scheiding"
+          @select=${() => this.insertInteraction(insertItemDivider)}
+        ></lit-editor-slash-menu-item>
         ${canInsertGap ? html`
           <lit-editor-slash-menu-item
             class="contents"

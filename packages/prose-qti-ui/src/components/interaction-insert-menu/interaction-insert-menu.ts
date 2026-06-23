@@ -20,7 +20,6 @@ import { insertMatchInteraction } from '@citolab/prose-qti/components/match';
 import { insertOrderInteraction } from '@citolab/prose-qti/components/order';
 import { insertSelectPointInteraction } from '@citolab/prose-qti/components/select-point';
 import { insertInlineChoiceInteraction } from '@citolab/prose-qti/components/inline-choice';
-import { insertItemDivider } from '@citolab/prose-qti/components/item-divider';
 
 import type { EditorView } from 'prosekit/pm/view';
 
@@ -227,19 +226,6 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
         const node = nodeType.createAndFill({ responseIdentifier: `RESPONSE_${crypto.randomUUID()}` });
         if (!node) return;
         view.dispatch(view.state.tr.replaceSelectionWith(node));
-        view.focus();
-      },
-    });
-  }
-
-  // 11. Item Divider
-  if (schema.nodes.qtiItemDivider) {
-    const nodeType = schema.nodes.qtiItemDivider;
-    items.push({
-      label: translateQti('interactionInsert.itemDivider', { target: view.dom }),
-      canInsert: canInsert(view, nodeType),
-      command: () => {
-        insertItemDivider(view.state, view.dispatch);
         view.focus();
       },
     });

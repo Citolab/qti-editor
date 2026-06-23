@@ -1,12 +1,8 @@
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 /**
- * QTI Item Divider node specification.
- *
- * This block element marks the end of a QTI assessment item when editing
- * multiple items in a single editor instance. It serves as a visual and
- * structural separator between items, and carries the title and identifier
- * of the item that follows it.
+ * qtiItemDivider — block atom that separates assessment items in the editor.
+ * Local to qti-prosekit-app (relocated from packages/prose-qti).
  */
 export const qtiItemDividerNodeSpec: NodeSpec = {
   group: 'block',
@@ -25,8 +21,8 @@ export const qtiItemDividerNodeSpec: NodeSpec = {
           title: dom.getAttribute('title') ?? '',
           identifier: dom.getAttribute('identifier') ?? '',
         };
-      }
-    }
+      },
+    },
   ],
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = { class: 'qti-item-divider' };

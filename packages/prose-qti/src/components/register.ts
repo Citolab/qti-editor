@@ -8,7 +8,6 @@ import './match/register.js';
 import './order/register.js';
 import './select-point/register.js';
 import './text-entry/register.js';
-import './item-divider/register.js';
 import './shared/components/qti-prompt/register.js';
 import './shared/components/qti-simple-choice/register.js';
 import './shared/components/qti-simple-associable-choice/register.js';

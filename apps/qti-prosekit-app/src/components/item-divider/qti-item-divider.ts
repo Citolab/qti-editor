@@ -1,17 +1,12 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { translateQti } from '../shared';
-
 /**
- * QTI Item Divider component.
- * 
- * Renders as a visual separator with text indicating it marks an item boundary.
- * When editing multiple QTI items in one editor, this provides a clear
- * visual and structural separation point.
- * 
- * The item index (0-based) is set via the `itemIndex` property or `data-item-index` attribute.
- * The badge displays itemIndex + 1 (1-based for display).
+ * QTI Item Divider — local to qti-prosekit-app.
+ *
+ * Renders as a visual separator with a "Vraag {n}" label, where the index
+ * comes from the `data-item-index` attribute set by items-gutter. When the
+ * index is missing it falls back to the static "Item-scheiding" label.
  */
 export class QtiItemDivider extends LitElement {
   @property({ type: String })
@@ -19,6 +14,9 @@ export class QtiItemDivider extends LitElement {
 
   @property({ type: String })
   identifier = '';
+
+  @property({ type: Number, attribute: 'data-item-index', reflect: false })
+  itemIndex: number | null = null;
 
   static override get styles() {
     return [
@@ -49,33 +47,31 @@ export class QtiItemDivider extends LitElement {
           white-space: nowrap;
         }
 
-        svg {
-          width: 0.875rem;
-          height: 0.875rem;
-          opacity: 0.7;
-        }
-
         :host([data-selected]) {
           outline: 2px solid #3b82f6;
           outline-offset: 2px;
           border-radius: 0.25rem;
         }
-      `
+      `,
     ];
+  }
+
+  private label(): string {
+    if (this.title) return this.title;
+    if (this.itemIndex != null) return `Vraag ${this.itemIndex}`;
+    return 'Item-scheiding';
   }
 
   override render() {
     return html`
-      <div class="line"></div>
-      <div class="label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 12h18M3 6h18M3 18h18" />
-        </svg>
-        <span>${this.title || translateQti('divider.itemBoundary', { target: this })}</span>
-      </div>
+      <div class="label"><span>${this.label()}</span></div>
       <div class="line"></div>
     `;
   }
+}
+
+if (!customElements.get('qti-item-divider')) {
+  customElements.define('qti-item-divider', QtiItemDivider);
 }
 
 declare global {

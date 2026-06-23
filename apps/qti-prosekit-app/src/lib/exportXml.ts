@@ -1,5 +1,4 @@
-import { qtiItemFromProsemirror } from '@citolab/prose-qti/integration/save-qti-item';
-import { xmlFromNode } from '@citolab/prose-qti/integration/save-xml';
+import { qtiItemFromProsemirror, xmlFromNode } from './qti-export.js';
 import { createQtiPackageFromNode } from '@citolab/prose-qti/package-builder';
 
 import type { Schema } from 'prosekit/pm/model';

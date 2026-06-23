@@ -62,8 +62,6 @@
     "./components/hottext/*": "./src/components/hottext/*",
     "./components/inline-choice": "./src/components/inline-choice/index.ts",
     "./components/inline-choice/*": "./src/components/inline-choice/*",
-    "./components/item-divider": "./src/components/item-divider/index.ts",
-    "./components/item-divider/*": "./src/components/item-divider/*",
     "./components/match": "./src/components/match/index.ts",
     "./components/match/*": "./src/components/match/*",
     "./components/order": "./src/components/order/index.ts",

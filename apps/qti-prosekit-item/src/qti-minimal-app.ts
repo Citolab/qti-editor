@@ -82,8 +82,7 @@ export class QtiMinimalApp extends LitElement {
         include: [
           'qti-choice-interaction',
           'qti-extended-text-interaction',
-          'qti-text-entry-interaction',
-          'qti-item-divider'
+          'qti-text-entry-interaction'
         ]
       }),
       blockSelectExtension,
