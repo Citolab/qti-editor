@@ -21,7 +21,6 @@ const MAP_RESPONSE_INTERNAL_TEMPLATE = `
 `;
 
 export const MATCH_INTERACTION_TAG = 'qti-match-interaction' as const;
-export const MATCH_INTERACTION_TABULAR_TAG = 'qti-match-interaction-tabular' as const;
 export const MATCH_INTERACTION_NODE_TYPE = 'qtiMatchInteraction' as const;
 export const MATCH_INTERACTION_TABULAR_NODE_TYPE = 'qtiMatchInteractionTabular' as const;
 export const SIMPLE_ASSOCIABLE_CHOICE_NODE_TYPE = 'qtiSimpleAssociableChoice' as const;
@@ -36,12 +35,6 @@ export const matchInteractionComposerMetadata = {
     internalSourceXml: MAP_RESPONSE_INTERNAL_TEMPLATE,
   },
   strippedAttributes: ['correct-response', 'score'],
-} satisfies InteractionComposerMetadata;
-
-export const matchInteractionTabularComposerMetadata = {
-  ...matchInteractionComposerMetadata,
-  tagName: MATCH_INTERACTION_TABULAR_TAG,
-  nodeTypeName: MATCH_INTERACTION_TABULAR_NODE_TYPE,
 } satisfies InteractionComposerMetadata;
 
 export const matchNodeAttributePanelMetadataByNodeTypeName: Record<string, NodeAttributePanelMetadata> = {

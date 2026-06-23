@@ -10,14 +10,12 @@ import {
   insertSimpleAssociableChoiceOnEnter,
 } from './components/qti-match-interaction/qti-match-interaction.commands.js';
 import { qtiMatchInteractionNodeSpec } from './components/qti-match-interaction/qti-match-interaction.schema.js';
-import { qtiMatchInteractionTabularNodeSpec } from './components/qti-match-interaction-tabular/qti-match-interaction-tabular.schema.js';
+import { qtiMatchInteractionTabularNodeSpec } from './components/qti-match-interaction/qti-match-interaction-tabular.schema.js';
 import {
   matchInteractionComposerMetadata,
-  matchInteractionTabularComposerMetadata,
   matchNodeAttributePanelMetadataByNodeTypeName,
 } from './composer/metadata.js';
 import { matchComposerHandler } from './composer/handler.js';
-import { matchTabularComposerHandler } from './composer/handler.js';
 import { createQtiMatchTabularNodeViewPlugin } from './extensions/tabular-node-view.js';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
@@ -46,7 +44,7 @@ export const matchInteractionDescriptor = {
 } satisfies InteractionDescriptor;
 
 export const matchInteractionTabularDescriptor = {
-  tagName: 'qti-match-interaction-tabular',
+  tagName: 'qti-match-interaction',
   nodeTypeName: 'qtiMatchInteractionTabular',
   baseSchemaDependencies: {
     nodeGroups: ['qtiMedia'],
@@ -61,7 +59,7 @@ export const matchInteractionTabularDescriptor = {
   ],
   pluginFactories: [createQtiMatchTabularNodeViewPlugin],
   enterCommand: insertSimpleAssociableChoiceOnEnter,
-  composerMetadata: matchInteractionTabularComposerMetadata,
-  composerHandler: matchTabularComposerHandler,
+  composerMetadata: matchInteractionComposerMetadata,
+  composerHandler: matchComposerHandler,
   attributePanelMetadata: matchNodeAttributePanelMetadataByNodeTypeName,
 } satisfies InteractionDescriptor;

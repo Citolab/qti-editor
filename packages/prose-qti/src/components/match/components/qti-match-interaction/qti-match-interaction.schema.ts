@@ -1,6 +1,6 @@
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
-import { hasTabularMatchClass } from '../qti-match-interaction-tabular/qti-match-interaction-tabular.schema.js';
+import { hasTabularMatchClass } from './qti-match-interaction-tabular.schema.js';
 
 export const qtiMatchInteractionNodeSpec: NodeSpec = {
   group: 'block',

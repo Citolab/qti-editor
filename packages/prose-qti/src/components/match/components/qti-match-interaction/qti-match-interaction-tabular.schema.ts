@@ -10,16 +10,16 @@ export function hasTabularMatchClass(element: HTMLElement): boolean {
   return splitClasses(element.getAttribute('class')).includes(TABULAR_CLASS);
 }
 
-function removeTabularMatchClass(value: string | null): string | null {
-  const classes = splitClasses(value).filter(className => className !== TABULAR_CLASS);
-  return classes.length > 0 ? classes.join(' ') : null;
-}
-
-function withTabularMatchClass(value: string | null): string {
-  const classes = splitClasses(value).filter(className => className !== TABULAR_CLASS);
-  return [TABULAR_CLASS, ...classes].join(' ');
-}
-
+/**
+ * Schema node for the tabular variant of qti-match-interaction.
+ *
+ * Both the tabular and non-tabular variants share the same DOM tag
+ * (`<qti-match-interaction>`); the class `qti-match-tabular` is the only
+ * discriminator. The non-tabular schema's parseDOM excludes anything carrying
+ * that class, and this schema's parseDOM requires it. The class value is
+ * stored verbatim on the node (including `qti-match-tabular`) so the
+ * attribute panel can show + edit the full class list.
+ */
 export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
   group: 'block',
   content: 'qtiPrompt? qtiSimpleMatchSet{2}',
@@ -46,26 +46,7 @@ export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
           maxAssociations: maxAssociations ? parseInt(maxAssociations, 10) : 1,
           minAssociations: minAssociations ? parseInt(minAssociations, 10) : 0,
           shuffle: node.getAttribute('shuffle') === 'true',
-          class: removeTabularMatchClass(node.getAttribute('class')),
-          correctResponse: node.getAttribute('correct-response') || null,
-          responseIdentifier: node.getAttribute('response-identifier'),
-          score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
-          dataFirstColumnHeader: node.getAttribute('data-first-column-header'),
-        };
-      },
-    },
-    {
-      tag: 'qti-match-interaction-tabular',
-      getAttrs: (node: Node | string) => {
-        if (!(node instanceof HTMLElement)) return {};
-        const maxAssociations = node.getAttribute('max-associations');
-        const minAssociations = node.getAttribute('min-associations');
-        const scoreAttr = node.getAttribute('score');
-        return {
-          maxAssociations: maxAssociations ? parseInt(maxAssociations, 10) : 1,
-          minAssociations: minAssociations ? parseInt(minAssociations, 10) : 0,
-          shuffle: node.getAttribute('shuffle') === 'true',
-          class: removeTabularMatchClass(node.getAttribute('class')),
+          class: node.getAttribute('class'),
           correctResponse: node.getAttribute('correct-response') || null,
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
@@ -84,17 +65,13 @@ export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
     if (node.attrs.shuffle) {
       attrs.shuffle = 'true';
     }
-    if (node.attrs.class) attrs.class = removeTabularMatchClass(node.attrs.class) ?? '';
+    if (node.attrs.class) attrs.class = node.attrs.class;
     if (node.attrs.correctResponse) attrs['correct-response'] = node.attrs.correctResponse;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     if (node.attrs.dataFirstColumnHeader) attrs['data-first-column-header'] = node.attrs.dataFirstColumnHeader;
     attrs.score = String(node.attrs.score ?? 1);
-    return ['qti-match-interaction-tabular', attrs, 0];
+    return ['qti-match-interaction', attrs, 0];
   },
   defining: true,
   isolating: true,
 };
-
-export function exportTabularClassList(value: string | null): string {
-  return withTabularMatchClass(value);
-}
