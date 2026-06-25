@@ -1,7 +1,5 @@
 export type {
   AttributeFriendlyEditorDefinition,
-  AttributeFieldDefinition,
-  AttributeFieldOption,
   ComposerWarning,
   ComposerWarningCode,
   InteractionComposerHandler,

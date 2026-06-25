@@ -30,11 +30,8 @@ export const selectPointInteractionComposerMetadata = {
 export const selectPointNodeAttributePanelMetadataByNodeTypeName = {
   [SELECT_POINT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: SELECT_POINT_INTERACTION_NODE_TYPE,
+    // `maxChoices`, `minChoices`, `score` are managed by the editor — outside
+    // the allowlist so the panel renders them disabled as system attributes.
     editableAttributes: [],
-    fields: {
-      maxChoices: { label: 'Max choices', input: 'number', readOnly: true },
-      minChoices: { label: 'Min choices', input: 'number', readOnly: true },
-      score: { label: 'Score', input: 'number', readOnly: true },
-    },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

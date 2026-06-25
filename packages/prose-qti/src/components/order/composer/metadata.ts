@@ -40,6 +40,5 @@ export const orderNodeAttributePanelMetadataByNodeTypeName = {
   [ORDER_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: ORDER_INTERACTION_NODE_TYPE,
     editableAttributes: ['shuffle','class'],
-    fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

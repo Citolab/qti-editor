@@ -38,6 +38,5 @@ export const hottextNodeAttributePanelMetadataByNodeTypeName = {
   [HOTTEXT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: HOTTEXT_INTERACTION_NODE_TYPE,
     editableAttributes: ['class'],
-    fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

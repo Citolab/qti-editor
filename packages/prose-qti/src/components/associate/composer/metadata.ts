@@ -38,12 +38,9 @@ export const associateInteractionComposerMetadata = {
 export const associateNodeAttributePanelMetadataByNodeTypeName = {
   [ASSOCIATE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: ASSOCIATE_INTERACTION_NODE_TYPE,
-    editableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'correctResponse', 'score'],
-    fields: {
-      maxAssociations: { label: 'Max associations', input: 'number' },
-      minAssociations: { label: 'Min associations', input: 'number', readOnly: true },
-      score: { label: 'Score', input: 'number', readOnly: true },
-      correctResponse: { label: 'Correct response', readOnly: true },
-    },
+    // `minAssociations`, `score`, `correctResponse` are managed by the editor
+    // (correct-response authoring + score template) — kept out of the allowlist
+    // so the panel renders them disabled as system attributes.
+    editableAttributes: ['maxAssociations', 'shuffle'],
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

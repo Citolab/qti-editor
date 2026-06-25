@@ -4,18 +4,6 @@
  * Pure TypeScript — no runtime dependencies.
  */
 
-export interface AttributeFieldOption {
-  value: string;
-  label: string;
-}
-
-export interface AttributeFieldDefinition {
-  label?: string;
-  input?: 'text' | 'number' | 'checkbox' | 'select';
-  options?: AttributeFieldOption[];
-  readOnly?: boolean;
-}
-
 export interface AttributeFriendlyEditorDefinition {
   attribute: string;
   /** Discriminant used by the panel to select a custom editor component. */
@@ -25,10 +13,15 @@ export interface AttributeFriendlyEditorDefinition {
 
 export interface NodeAttributePanelMetadata {
   nodeTypeName: string;
-  /** Attributes the user may edit. All others are shown as read-only. */
+  /**
+   * Attributes the user may edit. Every attribute NOT listed here is shown
+   * disabled (a "system attribute" — derived, computed, or otherwise managed
+   * by the editor rather than by hand). The control type is inferred from the
+   * attribute's runtime value type: boolean → checkbox, number → number
+   * input, anything else → text input. Hosts that need richer editing for an
+   * attribute supply a {@link AttributeFriendlyEditorDefinition} instead.
+   */
   editableAttributes?: readonly string[];
-  /** Custom editor components to render in place of a plain text field. */
+  /** Custom editor components to render in place of the generic field list. */
   friendlyEditors?: readonly AttributeFriendlyEditorDefinition[];
-  /** Per-attribute field overrides (label, input type, options). */
-  fields?: Record<string, AttributeFieldDefinition>;
 }

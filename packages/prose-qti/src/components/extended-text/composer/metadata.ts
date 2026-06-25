@@ -22,12 +22,5 @@ export const extendedTextNodeAttributePanelMetadataByNodeTypeName = {
     nodeTypeName: EXTENDED_TEXT_INTERACTION_NODE_TYPE,
     editableAttributes: ['expectedLength', 'expectedLines', 'placeholderText', 'patternMask', 'class', 'score'],
     friendlyEditors: [extendedTextAttributesFriendlyEditor],
-    fields: {
-      expectedLength: { label: 'Expected length', input: 'number' },
-      expectedLines: { label: 'Expected lines', input: 'number' },
-      placeholderText: { label: 'Placeholder', input: 'text' },
-      patternMask: { label: 'Pattern mask (regex)', input: 'text' },
-      score: { label: 'Score', input: 'number' },
-    },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

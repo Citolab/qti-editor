@@ -56,7 +56,6 @@ import { attributesPanelPlugin } from './attributes-panel-plugin.js';
 import {
   descriptors,
   editableAttrs,
-  readOnlyAttrs,
   qtiPlugins,
   loadQtiItems,
   importQtiItem,
@@ -223,7 +222,7 @@ function mountEditor(container: HTMLElement, doc: ProseMirrorNode, panelEl: HTML
   const view = new EditorView(container, {
     state: EditorState.create({
       doc,
-      plugins: [...editorPlugins, attributesPanelPlugin(panelEl, { editableAttrs, readOnlyAttrs })]
+      plugins: [...editorPlugins, attributesPanelPlugin(panelEl, { editableAttrs })]
     }),
     dispatchTransaction(tr) {
       view.updateState(view.state.apply(tr));

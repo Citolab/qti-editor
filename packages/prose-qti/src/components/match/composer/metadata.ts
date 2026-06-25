@@ -44,19 +44,10 @@ export const matchNodeAttributePanelMetadataByNodeTypeName: Record<string, NodeA
     // (and shown as fake drags), not by editing raw JSON in the panel, so it is
     // intentionally read-only here.
     editableAttributes: ['shuffle', 'class'],
-    fields: {
-      score: { label: 'Score', input: 'number' },
-      correctResponse: { label: 'Correct response', readOnly: true },
-    },
   },
   [MATCH_INTERACTION_TABULAR_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: MATCH_INTERACTION_TABULAR_NODE_TYPE,
     editableAttributes: ['shuffle', 'class', 'dataFirstColumnHeader'],
-    fields: {
-      score: { label: 'Score', input: 'number' },
-      correctResponse: { label: 'Correct response', readOnly: true },
-      dataFirstColumnHeader: { label: 'First column header', input: 'text' },
-    },
   },
   [SIMPLE_ASSOCIABLE_CHOICE_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: SIMPLE_ASSOCIABLE_CHOICE_NODE_TYPE,

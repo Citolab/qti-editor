@@ -14,11 +14,7 @@ import {
 } from './attributes-helpers.js';
 import { getFriendlyEditor } from './friendly-editor-registry.js';
 
-import type {
-  AttributeFieldDefinition,
-  AttributeFriendlyEditorDefinition,
-  NodeAttributePanelMetadata,
-} from '@citolab/prose-qti/interfaces';
+import type { NodeAttributePanelMetadata } from '@citolab/prose-qti/interfaces';
 import type { ChoiceInteractionPanelPresentation } from '../choice-attributes-editor';
 import type { QtiAttributesPatchDetail } from './patch-event.js';
 
@@ -31,21 +27,8 @@ export type AttributesMetadataResolver = (
 
 const QTI_CHANGE_EVENT = 'qti:attributes:change';
 
-const defaultQtiMetadataResolver: AttributesMetadataResolver = (nodeType, node) => {
-  const metadata = getNodeAttributePanelMetadataByNodeTypeName(nodeType);
-  if (!metadata) return null;
-
-  const fields: NodeAttributePanelMetadata['fields'] = {};
-  for (const key of Object.keys(node.attrs ?? {})) {
-    fields[key] = metadata.fields?.[key] ?? { label: key };
-  }
-
-  return {
-    nodeTypeName: metadata.nodeTypeName,
-    editableAttributes: [...(metadata.editableAttributes ?? [])],
-    friendlyEditors: (metadata.friendlyEditors ?? []) as AttributeFriendlyEditorDefinition[],
-    fields,
-  };
+const defaultQtiMetadataResolver: AttributesMetadataResolver = nodeType => {
+  return getNodeAttributePanelMetadataByNodeTypeName(nodeType) ?? null;
 };
 
 @customElement('qti-attributes-panel')
@@ -179,25 +162,13 @@ export class QtiAttributesPanel extends LitElement {
     return node ? (this.metadataResolver(node.type, node) ?? null) : null;
   }
 
-  private getFieldMetadata(
-    node: AttributesNodeDetail,
-    key: string,
-    value: AttrValue,
-  ): AttributeFieldDefinition {
-    const metadata = this.getPanelMetadata(node);
-    const field = metadata?.fields?.[key] ?? {};
-    const input =
-      field.input ??
-      (field.options?.length
-        ? 'select'
-        : typeof value === 'boolean'
-          ? 'checkbox'
-          : typeof value === 'number'
-            ? 'number'
-            : 'text');
-    return { ...field, input };
-  }
-
+  /**
+   * Split attributes into editable / disabled buckets using only the
+   * `editableAttributes` allowlist. No per-field config — anything outside
+   * the allowlist is a system attribute and renders disabled. If no
+   * allowlist is declared every attribute is editable (matches the
+   * prosemirror-app panel behavior).
+   */
   private getAttrEntriesByEditability(node: AttributesNodeDetail | null): {
     editable: Array<[string, AttrValue]>;
     readOnly: Array<[string, AttrValue]>;
@@ -205,20 +176,17 @@ export class QtiAttributesPanel extends LitElement {
     if (!node) return { editable: [], readOnly: [] };
     const entries = Object.entries(node.attrs ?? {}) as Array<[string, AttrValue]>;
     const metadata = this.getPanelMetadata(node);
-    if (!metadata) return { editable: entries, readOnly: [] };
+    if (!metadata?.editableAttributes) return { editable: entries, readOnly: [] };
 
-    const editableSet = new Set(metadata.editableAttributes ?? entries.map(([k]) => k));
+    const editableSet = new Set(metadata.editableAttributes);
     return {
-      editable: entries.filter(([k]) => editableSet.has(k) && !metadata.fields?.[k]?.readOnly),
-      readOnly: entries.filter(([k]) => !editableSet.has(k) || metadata.fields?.[k]?.readOnly),
+      editable: entries.filter(([k]) => editableSet.has(k)),
+      readOnly: entries.filter(([k]) => !editableSet.has(k)),
     };
   }
 
-  private coerceValue(
-    input: HTMLInputElement | HTMLSelectElement,
-    original: AttrValue,
-  ): AttrValue {
-    if (input instanceof HTMLInputElement && input.type === 'checkbox') return input.checked;
+  private coerceValue(input: HTMLInputElement, original: AttrValue): AttrValue {
+    if (input.type === 'checkbox') return input.checked;
     if (typeof original === 'number') return input.value === '' ? null : Number(input.value);
     return input.value === '' ? null : input.value;
   }
@@ -229,55 +197,43 @@ export class QtiAttributesPanel extends LitElement {
     original: AttrValue,
     event: Event,
   ) {
-    const input = event.currentTarget as HTMLInputElement | HTMLSelectElement;
+    const input = event.currentTarget as HTMLInputElement;
     this.#updateNodeAttrsByPos(node.pos, { [key]: this.coerceValue(input, original) });
   }
 
+  /**
+   * Render an attribute as the appropriate input type, inferred from the
+   * value's runtime type: boolean → checkbox, number → number input,
+   * anything else → text input. The label is the raw attribute key —
+   * richer presentations belong in a friendly editor, not the generic field.
+   */
   private renderField(
     node: AttributesNodeDetail,
     key: string,
     value: AttrValue,
-    field: AttributeFieldDefinition,
     disabled = false,
   ): TemplateResult {
-    if (field.input === 'checkbox') {
+    if (typeof value === 'boolean') {
       return html`
         <label class="flex items-center justify-between gap-3">
-          <span class="text-sm font-medium">${field.label ?? key}</span>
+          <span class="text-sm font-medium">${key}</span>
           <input
             class="checkbox checkbox-sm"
             type="checkbox"
-            .checked=${Boolean(value)}
+            .checked=${value}
             ?disabled=${disabled}
             @change=${(e: Event) => this.handleFieldChange(node, key, value, e)}
           />
         </label>
       `;
     }
-    if (field.input === 'select') {
-      return html`
-        <label class="form-control w-full">
-          <span class="mb-1 text-sm font-medium">${field.label ?? key}</span>
-          <select
-            class="select select-sm select-bordered w-full"
-            .value=${String(value ?? '')}
-            ?disabled=${disabled}
-            @change=${(e: Event) => this.handleFieldChange(node, key, value, e)}
-          >
-            <option value="">${this.i18n.t('attributes.select')}</option>
-            ${(field.options ?? []).map(
-              o => html`<option value=${o.value}>${o.label}</option>`,
-            )}
-          </select>
-        </label>
-      `;
-    }
+    const inputType = typeof value === 'number' ? 'number' : 'text';
     return html`
       <label class="form-control w-full">
-        <span class="mb-1 text-sm font-medium">${field.label ?? key}</span>
+        <span class="mb-1 text-sm font-medium">${key}</span>
         <input
           class="input input-sm input-bordered w-full"
-          type=${field.input === 'number' ? 'number' : 'text'}
+          type=${inputType}
           .value=${String(value ?? '')}
           ?disabled=${disabled}
           @input=${(e: Event) => this.handleFieldChange(node, key, value, e)}
@@ -338,7 +294,7 @@ export class QtiAttributesPanel extends LitElement {
       >
         <h4 class="text-xs font-semibold text-base-content/70">${node.type}</h4>
         ${editable.length
-          ? editable.map(([k, v]) => this.renderField(node, k, v, this.getFieldMetadata(node, k, v)))
+          ? editable.map(([k, v]) => this.renderField(node, k, v))
           : html`<p class="text-xs text-base-content/60">${this.i18n.t('attributes.noEditable')}</p>`}
         ${readOnly.length
           ? html`
@@ -348,7 +304,7 @@ export class QtiAttributesPanel extends LitElement {
                 </summary>
                 <div class="mt-2 flex flex-col gap-2 opacity-80">
                   ${readOnly.map(([k, v]) =>
-                    this.renderField(node, k, v, this.getFieldMetadata(node, k, v), true),
+                    this.renderField(node, k, v, true),
                   )}
                 </div>
               </details>

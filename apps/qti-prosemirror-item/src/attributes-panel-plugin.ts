@@ -39,12 +39,6 @@ export interface AttributesPanelOptions {
    * node) have all of their attributes editable.
    */
   editableAttrs?: Record<string, readonly string[]>;
-  /**
-   * Per-node-type set of attributes that should be rendered as read-only even
-   * when they would otherwise be editable. Use this to surface attributes the
-   * user is allowed to *see* but not change (e.g. computed responses, scores).
-   */
-  readOnlyAttrs?: Record<string, readonly string[]>;
 }
 
 /** Does this node type define any schema attrs? */
@@ -103,7 +97,6 @@ export class AttributesPanelView {
   readonly #view: EditorView;
   readonly #panelEl: HTMLElement;
   readonly #editableAttrs: Record<string, ReadonlySet<string>>;
-  readonly #readOnlyAttrs: Record<string, ReadonlySet<string>>;
   /** Signature of the currently rendered chain; `'\u0000'` forces the first render. */
   #signature = '\u0000';
 
@@ -111,12 +104,10 @@ export class AttributesPanelView {
     view: EditorView,
     panelEl: HTMLElement,
     editableAttrs: Record<string, ReadonlySet<string>>,
-    readOnlyAttrs: Record<string, ReadonlySet<string>>,
   ) {
     this.#view = view;
     this.#panelEl = panelEl;
     this.#editableAttrs = editableAttrs;
-    this.#readOnlyAttrs = readOnlyAttrs;
     this.#sync();
   }
 
@@ -176,7 +167,6 @@ export class AttributesPanelView {
 
   #buildSection(entry: ChainEntry): HTMLElement {
     const editableAttrs = this.#editableAttrs[entry.type];
-    const readOnlyAttrs = this.#readOnlyAttrs[entry.type];
     const section = document.createElement('fieldset');
     section.dataset.nodeType = entry.type;
     section.style.cssText = 'display:grid; grid-template-columns:auto 1fr; gap:6px 10px; align-items:center;';
@@ -186,12 +176,9 @@ export class AttributesPanelView {
     section.appendChild(legend);
 
     for (const [key, value] of Object.entries(entry.attrs)) {
-      // Read-only if (a) outside the editable allowlist, or (b) explicitly
-      // listed as read-only even though allowlisted (e.g. computed responses).
       // No allowlist for this node type → every attribute is editable.
-      const notAllowlisted = editableAttrs ? !editableAttrs.has(key) : false;
-      const explicitReadOnly = readOnlyAttrs?.has(key) ?? false;
-      const readOnly = notAllowlisted || explicitReadOnly;
+      // Otherwise: attribute outside the allowlist renders disabled (system attr).
+      const readOnly = editableAttrs ? !editableAttrs.has(key) : false;
       section.appendChild(this.#buildField(entry, key, value, readOnly));
     }
     return section;
@@ -268,11 +255,7 @@ export const attributesPanelPlugin = (panelEl: HTMLElement, options: AttributesP
   const editableAttrs: Record<string, ReadonlySet<string>> = Object.fromEntries(
     Object.entries(options.editableAttrs ?? {}).map(([type, attrs]) => [type, new Set(attrs)]),
   );
-  const readOnlyAttrs: Record<string, ReadonlySet<string>> = Object.fromEntries(
-    Object.entries(options.readOnlyAttrs ?? {}).map(([type, attrs]) => [type, new Set(attrs)]),
-  );
-
   return new Plugin({
-    view: (view: EditorView) => new AttributesPanelView(view, panelEl, editableAttrs, readOnlyAttrs),
+    view: (view: EditorView) => new AttributesPanelView(view, panelEl, editableAttrs),
   });
 };

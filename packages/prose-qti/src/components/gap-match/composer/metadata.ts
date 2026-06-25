@@ -39,6 +39,5 @@ export const gapMatchNodeAttributePanelMetadataByNodeTypeName = {
   [GAP_MATCH_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: GAP_MATCH_INTERACTION_NODE_TYPE,
     editableAttributes: ['class', 'shuffle'],
-    fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

@@ -33,6 +33,5 @@ export const textEntryNodeAttributePanelMetadataByNodeTypeName = {
     nodeTypeName: TEXT_ENTRY_INTERACTION_NODE_TYPE,
     editableAttributes: ['class', 'caseSensitive', 'placeholderText'],
     friendlyEditors: [textEntryAttributesFriendlyEditor],
-    fields: { score: { label: 'Score', input: 'number' } },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

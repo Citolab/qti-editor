@@ -1,9 +1,5 @@
 import { insertRubricBlock } from './qti-rubric-block.commands.js';
-import {
-  qtiRubricBlockNodeSpec,
-  QTI_RUBRIC_BLOCK_USE_VALUES,
-  QTI_RUBRIC_BLOCK_VIEW_VALUES,
-} from './qti-rubric-block.schema.js';
+import { qtiRubricBlockNodeSpec } from './qti-rubric-block.schema.js';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
@@ -38,18 +34,12 @@ export const qtiRubricBlockDescriptor = {
     qtirubricblock: {
       nodeTypeName: 'qtiRubricBlock',
       editableAttributes: ['use', 'view'],
-      fields: {
-        use: {
-          label: 'Use',
-          input: 'select',
-          options: QTI_RUBRIC_BLOCK_USE_VALUES.map((v) => ({ value: v, label: v })),
-        },
-        view: {
-          label: 'View',
-          input: 'select',
-          options: QTI_RUBRIC_BLOCK_VIEW_VALUES.map((v) => ({ value: v, label: v })),
-        },
-      },
+      // The prosekit panel renders <qti-rubric-block-attributes-editor> for
+      // the `use`/`view` enums (see prose-qti-ui). The prosemirror panel
+      // doesn't ship a registry of friendly editors and renders the attrs
+      // as plain text — acceptable since the prosemirror-item app does not
+      // author rubric blocks.
+      friendlyEditors: [{ attribute: 'use', kind: 'rubricBlockAttributes' }],
     },
   },
 } satisfies InteractionDescriptor;

@@ -40,15 +40,13 @@ export const choiceInteractionComposerMetadata = {
 export const choiceNodeAttributePanelMetadataByNodeTypeName: Record<string, NodeAttributePanelMetadata> = {
   [CHOICE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: CHOICE_INTERACTION_NODE_TYPE,
-    editableAttributes: ['class', 'shuffle','maxChoices'],
+    editableAttributes: ['class', 'shuffle', 'maxChoices'],
     friendlyEditors: [choiceInteractionClassFriendlyEditor],
-    fields: { score: { label: 'Score', input: 'number' }, shuffle: { label: 'Shuffle', input: 'checkbox' } },
   },
   [SIMPLE_CHOICE_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: SIMPLE_CHOICE_NODE_TYPE,
-    // `fixed` is user-editable (rendered as a checkbox); `identifier` is
-    // omitted from the allowlist, so the panel renders it read-only.
+    // `fixed` is user-editable; `identifier` is omitted so the panel renders
+    // it disabled.
     editableAttributes: ['fixed'],
-    fields: { fixed: { label: 'Fixed', input: 'checkbox' }, identifier: { readOnly: true } },
   },
 };
