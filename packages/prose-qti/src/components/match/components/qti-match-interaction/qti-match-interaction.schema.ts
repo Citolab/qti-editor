@@ -1,6 +1,8 @@
-import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '../../../shared';
 
 import { hasTabularMatchClass } from './qti-match-interaction-tabular.schema.js';
+
+import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiMatchInteractionNodeSpec: NodeSpec = {
   group: 'block',
@@ -29,7 +31,7 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
           minAssociations: minAssociations ? parseInt(minAssociations, 10) : 0,
           shuffle: node.getAttribute('shuffle') === 'true',
           class: className || null,
-          correctResponse: node.getAttribute('correct-response') || null,
+          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
@@ -47,10 +49,12 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
       attrs['shuffle'] = 'true';
     }
     if (node.attrs.class) attrs.class = node.attrs.class;
-    // correctResponse is raw JSON (e.g. '["A 1"]', qti-components' shape) —
-    // pass through as-is. The shared codec strips commas, which corrupts JSON,
-    // so we bypass it here.
-    if (node.attrs.correctResponse) attrs['correct-response'] = node.attrs.correctResponse;
+    // correctResponse is the canonical comma-joined `"src tgt"` form (same
+    // convention as associate / order). The shared codec handles serialisation
+    // and the runtime `qti-match-interaction` reads `responseVariable.correctResponse`
+    // as `string | string[]` — both shapes round-trip identically.
+    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    if (cr) attrs['correct-response'] = cr;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     attrs.score = String(node.attrs.score ?? 1);
     return ['qti-match-interaction', attrs, 0];

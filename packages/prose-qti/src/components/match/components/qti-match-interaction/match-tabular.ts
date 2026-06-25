@@ -212,7 +212,7 @@ export class TabularController implements ReactiveController {
   render() {
     const cols = this.targetChoices.length;
     const rows = this.sourceChoices.length;
-    const correctResponse = parseCorrectResponseAsPairs(asString(this.host.correctResponse));
+    const correctResponse = parseCorrectResponseAsPairs(this.host.correctResponse);
     const firstColumnHeader = this.host.dataFirstColumnHeader ?? '';
 
     const gridStyle =
@@ -299,10 +299,4 @@ export class TabularController implements ReactiveController {
 
 function stopEvent(event: Event): void {
   event.stopPropagation();
-}
-
-function asString(v: string | string[] | null): string | null {
-  if (v == null) return null;
-  if (Array.isArray(v)) return JSON.stringify(v);
-  return v;
 }

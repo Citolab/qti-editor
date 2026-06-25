@@ -153,9 +153,7 @@ export class DragDropController implements ReactiveController {
   // ─── State sync ─────────────────────────────────────────────────────────
 
   private parseCorrectResponse(): void {
-    const raw = this.host.correctResponse;
-    const asStr = raw == null ? null : Array.isArray(raw) ? JSON.stringify(raw) : raw;
-    this.pairs = parseCorrectResponseAsPairs(asStr);
+    this.pairs = parseCorrectResponseAsPairs(this.host.correctResponse);
     this.selection.cancel();
   }
 

@@ -18,51 +18,75 @@ export interface TabularMatchAssociationChangeDetail {
   associations: TabularMatchAssociation[];
 }
 
-/** Parse `'["src tgt", ...]'` into a Map<sourceId, targetId>. */
-export function parseCorrectResponseAsAssociations(raw: string | null): Map<string, string> {
-  const map = new Map<string, string>();
-  if (!raw) return map;
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    if (Array.isArray(parsed)) {
-      for (const entry of parsed) {
-        if (typeof entry !== 'string') continue;
-        const [sourceId, targetId] = entry.split(' ');
-        if (sourceId && targetId) map.set(sourceId, targetId);
-      }
+/**
+ * Iterate "src tgt" entries from either the canonical comma-joined string
+ * ("A B,C D,E F") OR the codec's array form (["A B","C D","E F"], which the
+ * shared `parseCorrectResponseAttribute` returns for multi-entry values) OR
+ * the legacy JSON form (`'["A B", ...]'`) authored before this commit. Each
+ * yielded entry is trimmed; blank entries are skipped.
+ */
+function* iterPairEntries(raw: string | string[] | null | undefined): Generator<string> {
+  if (raw == null) return;
+  if (Array.isArray(raw)) {
+    for (const entry of raw) {
+      const t = typeof entry === 'string' ? entry.trim() : '';
+      if (t) yield t;
     }
-  } catch {
-    // Ignore malformed authoring JSON.
+    return;
+  }
+  const trimmed = raw.trim();
+  if (!trimmed) return;
+  if (trimmed.startsWith('[')) {
+    // Legacy JSON shape kept for backwards compat.
+    try {
+      const parsed: unknown = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        for (const entry of parsed) {
+          const t = typeof entry === 'string' ? entry.trim() : '';
+          if (t) yield t;
+        }
+        return;
+      }
+    } catch {
+      /* fall through to comma split */
+    }
+  }
+  for (const entry of trimmed.split(',')) {
+    const t = entry.trim();
+    if (t) yield t;
+  }
+}
+
+/** Parse the correct-response value into a Map<sourceId, targetId>. */
+export function parseCorrectResponseAsAssociations(raw: string | string[] | null): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const entry of iterPairEntries(raw)) {
+    const [sourceId, targetId] = entry.split(/\s+/);
+    if (sourceId && targetId) map.set(sourceId, targetId);
   }
   return map;
 }
 
-/** Parse `'["src tgt", ...]'` into a Set of `"src tgt"` strings (tabular shape). */
-export function parseCorrectResponseAsPairs(raw: string | null): Set<string> {
+/** Parse the correct-response value into a Set of `"src tgt"` strings (tabular shape). */
+export function parseCorrectResponseAsPairs(raw: string | string[] | null): Set<string> {
   const set = new Set<string>();
-  if (!raw) return set;
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    if (Array.isArray(parsed)) {
-      for (const entry of parsed) {
-        if (typeof entry === 'string' && entry.trim()) set.add(entry.trim());
-      }
-    }
-  } catch {
-    // Ignore malformed authoring JSON.
-  }
+  for (const entry of iterPairEntries(raw)) set.add(entry);
   return set;
 }
 
-/** Serialize a Map<src, tgt> back to `'["src tgt", ...]'` or null when empty. */
+/**
+ * Serialize a Map<src, tgt> to the canonical correct-response attribute value:
+ * comma-joined `"src tgt"` entries (same convention as associate / order).
+ * Returns null when empty so the schema can drop the attribute.
+ */
 export function serializeAssociations(associations: Map<string, string>): string | null {
   if (associations.size === 0) return null;
-  return JSON.stringify(Array.from(associations, ([s, t]) => `${s} ${t}`));
+  return Array.from(associations, ([s, t]) => `${s} ${t}`).join(',');
 }
 
-/** Serialize an array of `"src tgt"` strings, or null when empty. */
+/** Serialize an array of `"src tgt"` strings to the canonical comma-joined form. */
 export function serializePairs(pairs: string[]): string | null {
-  return pairs.length > 0 ? JSON.stringify(pairs) : null;
+  return pairs.length > 0 ? pairs.join(',') : null;
 }
 
 /** Returns the two direct-child match-sets of the host, in document order. */

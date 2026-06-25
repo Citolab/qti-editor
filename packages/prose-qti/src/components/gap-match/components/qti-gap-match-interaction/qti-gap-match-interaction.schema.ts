@@ -1,3 +1,5 @@
+import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '../../../shared';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
@@ -25,10 +27,7 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
           minAssociations: minAssociations ? parseInt(minAssociations, 10) : 0,
           shuffle: node.getAttribute('shuffle') === 'true',
           class: node.getAttribute('class'),
-          // correctResponse is raw JSON (qti-components' shape:
-          // '["gapText gap", ...]') — pass through as-is, the comma codec
-          // would corrupt the JSON array.
-          correctResponse: node.getAttribute('correct-response') || null,
+          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
@@ -46,8 +45,12 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
       attrs.shuffle = 'true';
     }
     if (node.attrs.class) attrs.class = node.attrs.class;
-    // correctResponse is raw JSON (qti-components' shape) — pass through as-is.
-    if (node.attrs.correctResponse) attrs['correct-response'] = node.attrs.correctResponse;
+    // correctResponse is the canonical comma-joined `"src tgt"` form (same as
+    // associate / match / order). Composer + runtime accept the codec's
+    // `string | string[]` shape; the response declaration carries one
+    // <qti-value> per entry.
+    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    if (cr) attrs['correct-response'] = cr;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     attrs.score = String(node.attrs.score ?? 1);
     return ['qti-gap-match-interaction', attrs, 0];

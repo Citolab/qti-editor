@@ -1,3 +1,5 @@
+import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '../../../shared';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 const TABULAR_CLASS = 'qti-match-tabular';
@@ -47,7 +49,7 @@ export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
           minAssociations: minAssociations ? parseInt(minAssociations, 10) : 0,
           shuffle: node.getAttribute('shuffle') === 'true',
           class: node.getAttribute('class'),
-          correctResponse: node.getAttribute('correct-response') || null,
+          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
           dataFirstColumnHeader: node.getAttribute('data-first-column-header'),
@@ -66,7 +68,8 @@ export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
       attrs.shuffle = 'true';
     }
     if (node.attrs.class) attrs.class = node.attrs.class;
-    if (node.attrs.correctResponse) attrs['correct-response'] = node.attrs.correctResponse;
+    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    if (cr) attrs['correct-response'] = cr;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     if (node.attrs.dataFirstColumnHeader) attrs['data-first-column-header'] = node.attrs.dataFirstColumnHeader;
     attrs.score = String(node.attrs.score ?? 1);

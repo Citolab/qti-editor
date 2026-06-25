@@ -10,6 +10,44 @@ function toggleState(set: CustomStateSet, name: string, on: boolean): void {
   else set.delete(name);
 }
 
+/**
+ * Iterate `"src tgt"` entries from the correct-response value. Accepts the
+ * canonical comma-joined string, the codec's array form (returned by
+ * `parseCorrectResponseAttribute` when there are multiple entries), and the
+ * legacy JSON-array shape (`'["src tgt", ...]'`) authored before this commit.
+ * Mirrors the helper in match-shared.ts so both interactions stay aligned.
+ */
+function* iterPairEntries(raw: string | string[] | null | undefined): Generator<string> {
+  if (raw == null) return;
+  if (Array.isArray(raw)) {
+    for (const entry of raw) {
+      const t = typeof entry === 'string' ? entry.trim() : '';
+      if (t) yield t;
+    }
+    return;
+  }
+  const trimmed = raw.trim();
+  if (!trimmed) return;
+  if (trimmed.startsWith('[')) {
+    try {
+      const parsed: unknown = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        for (const entry of parsed) {
+          const t = typeof entry === 'string' ? entry.trim() : '';
+          if (t) yield t;
+        }
+        return;
+      }
+    } catch {
+      /* fall through */
+    }
+  }
+  for (const entry of trimmed.split(',')) {
+    const t = entry.trim();
+    if (t) yield t;
+  }
+}
+
 export type GapAssociation = [string, string];
 
 export interface GapAssociationChangeDetail {
@@ -139,20 +177,9 @@ export class QtiGapMatchInteractionEdit extends Interaction {
   private parseCorrectResponse() {
     this.associations.clear();
     this.selection.cancel();
-    if (!this.correctResponse) return;
-
-    try {
-      // Same shape as qti-components: a JSON array of `"gapText gap"` strings
-      // (standard QTI directedPair entries, source = gap-text, target = gap).
-      const parsed: unknown = JSON.parse(this.correctResponse);
-      if (!Array.isArray(parsed)) return;
-      for (const entry of parsed) {
-        if (typeof entry !== 'string') continue;
-        const [textId, gapId] = entry.split(' ');
-        if (textId && gapId) this.associations.set(gapId, textId);
-      }
-    } catch {
-      // Ignore invalid persisted values and keep the editor interactive.
+    for (const entry of iterPairEntries(this.correctResponse)) {
+      const [textId, gapId] = entry.split(/\s+/);
+      if (textId && gapId) this.associations.set(gapId, textId);
     }
   }
 
@@ -162,10 +189,12 @@ export class QtiGapMatchInteractionEdit extends Interaction {
     const associations = Array.from(this.associations.entries()).map(
       ([gapId, textId]) => [textId, gapId] as GapAssociation,
     );
-    // Serialize as qti-components does: `["gapText gap", ...]`.
+    // Canonical comma-joined `"gapText gap"` entries — same shared codec
+    // format associate / match / order use. Composer reads this via
+    // parseCorrectResponseAttribute and emits one <qti-value> per entry.
     this.lastEmittedResponse =
       associations.length > 0
-        ? JSON.stringify(associations.map(([textId, gapId]) => `${textId} ${gapId}`))
+        ? associations.map(([textId, gapId]) => `${textId} ${gapId}`).join(',')
         : null;
 
     // Defer the event dispatch to avoid re-entrancy during click handling.

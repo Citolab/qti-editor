@@ -13,10 +13,11 @@ import { extractItemScore } from '../_shared';
  *   </qti-response-declaration>
  *
  * Each <qti-value> is a space-separated `source target` pair. The editor's
- * qti-match-interaction stores its correct-response the same way qti-components
- * does: a JSON array of space-separated `source target` strings
- * (`["SOURCE TARGET", ...]`), which is what its parseDOM / compose path
- * round-trips. This transform converts the qti-value list into that array.
+ * qti-match-interaction stores its correct-response as a comma-joined list of
+ * `source target` pairs ("SOURCE TARGET,SOURCE TARGET,…"), the canonical
+ * shared-codec format that associate and order also use. `qti-components`
+ * reads the response declaration directly as `string | string[]` so each
+ * entry round-trips identically to the JSON-array shape used previously.
  *
  * Conditions (all must hold; otherwise no-op):
  * - Exactly ONE qti-match-interaction in the item.
@@ -40,7 +41,7 @@ export const roundtripMatch = (xmlDoc: XMLDocument): void => {
   const score = extractItemScore(xmlDoc);
 
   if (!interaction.getAttribute('correct-response')) {
-    interaction.setAttribute('correct-response', JSON.stringify(pairs));
+    interaction.setAttribute('correct-response', pairs.join(','));
   }
   if (!interaction.getAttribute('score')) {
     interaction.setAttribute('score', String(score));

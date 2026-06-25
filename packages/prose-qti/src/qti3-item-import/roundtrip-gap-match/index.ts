@@ -13,10 +13,11 @@ import { extractItemScore } from '../_shared';
  *   </qti-response-declaration>
  *
  * Each <qti-value> is a space-separated `gapText gap` directed pair. The editor's
- * qti-gap-match-interaction stores its correct-response the same way
- * qti-components does: a JSON array of space-separated `gapText gap` strings
- * (`["GAPTEXT GAP", ...]`), which is what its parseDOM / compose path
- * round-trips. This transform converts the qti-value list into that array.
+ * qti-gap-match-interaction stores its correct-response as a comma-joined list
+ * of `gapText gap` pairs ("GAPTEXT GAP,GAPTEXT GAP,…") — the canonical shared
+ * codec format also used by associate, match, and order. `qti-components`
+ * reads the response declaration directly as `string | string[]`, so each
+ * entry round-trips identically to the JSON-array shape used previously.
  *
  * Conditions (all must hold; otherwise no-op):
  * - Exactly ONE qti-gap-match-interaction in the item.
@@ -40,7 +41,7 @@ export const roundtripGapMatch = (xmlDoc: XMLDocument): void => {
   const score = extractItemScore(xmlDoc);
 
   if (!interaction.getAttribute('correct-response')) {
-    interaction.setAttribute('correct-response', JSON.stringify(pairs));
+    interaction.setAttribute('correct-response', pairs.join(','));
   }
   if (!interaction.getAttribute('score')) {
     interaction.setAttribute('score', String(score));
