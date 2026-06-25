@@ -172,8 +172,8 @@ describe('non-QTI data-* mirror snapshots — DOM compose pipeline (Phase 1 base
       `,
     );
     expect(xml).toMatchInlineSnapshot(`
-      "<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="snap-match" title="snap-match" adaptive="false" time-dependent="false" xml:lang="en"><qti-response-declaration identifier="RESPONSE" cardinality="single" base-type="identifier"><qti-correct-response><qti-value>a x</qti-value></qti-correct-response></qti-response-declaration><qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float"><qti-default-value><qti-value>0</qti-value></qti-default-value></qti-outcome-declaration><qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float"><qti-default-value><qti-value>2</qti-value></qti-default-value></qti-outcome-declaration><qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
-              <qti-match-interaction response-identifier="RESPONSE" max-associations="1">
+      "<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="snap-match" title="snap-match" adaptive="false" time-dependent="false" xml:lang="en"><qti-response-declaration identifier="RESPONSE" cardinality="multiple" base-type="directedPair"><qti-correct-response><qti-value>a x</qti-value></qti-correct-response></qti-response-declaration><qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float"><qti-default-value><qti-value>0</qti-value></qti-default-value></qti-outcome-declaration><qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float"><qti-default-value><qti-value>2</qti-value></qti-default-value></qti-outcome-declaration><qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
+              <qti-match-interaction response-identifier="RESPONSE">
                 <qti-simple-match-set>
                   <qti-simple-associable-choice identifier="a" match-max="1">A</qti-simple-associable-choice>
                 </qti-simple-match-set>
@@ -181,7 +181,7 @@ describe('non-QTI data-* mirror snapshots — DOM compose pipeline (Phase 1 base
                   <qti-simple-associable-choice identifier="x" match-max="1">X</qti-simple-associable-choice>
                 </qti-simple-match-set>
               </qti-match-interaction>
-            </qti-item-body><qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/map_response"/></qti-assessment-item>"
+            </qti-item-body><qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct"/></qti-assessment-item>"
     `);
   });
 

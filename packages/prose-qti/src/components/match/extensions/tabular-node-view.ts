@@ -17,12 +17,6 @@ function syncAttribute(dom: HTMLElement, name: string, nextValue: string | null)
 }
 
 function applyAttrs(dom: HTMLElement, attrs: PmNode['attrs']): void {
-  syncAttribute(dom, 'max-associations', String(attrs.maxAssociations ?? 1));
-  syncAttribute(
-    dom,
-    'min-associations',
-    (attrs.minAssociations as number) > 0 ? String(attrs.minAssociations) : null,
-  );
   syncAttribute(dom, 'shuffle', attrs.shuffle ? 'true' : null);
   syncAttribute(dom, 'class', (attrs.class as string | null) ?? null);
   syncAttribute(dom, 'correct-response', (attrs.correctResponse as string | null) ?? null);

@@ -72,7 +72,7 @@ export const insertMatchInteraction: Command = (state, dispatch, view?: EditorVi
       ];
       const targetMatchSet = matchSetType.create(null, targetChoices);
 
-      return interactionType.create({ responseIdentifier, maxAssociations: 3 }, [prompt, sourceMatchSet, targetMatchSet]);
+      return interactionType.create({ responseIdentifier }, [prompt, sourceMatchSet, targetMatchSet]);
     },
     selectionOffset: 2,
   })(state, dispatch);

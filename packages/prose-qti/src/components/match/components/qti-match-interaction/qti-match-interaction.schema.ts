@@ -8,8 +8,6 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
   group: 'block',
   content: 'qtiPrompt? qtiSimpleMatchSet{2}',
   attrs: {
-    maxAssociations: { default: 1 },
-    minAssociations: { default: 0 },
     shuffle: { default: false },
     class: { default: null },
     correctResponse: { default: null },
@@ -22,13 +20,9 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
       getAttrs: (node: Node | string) => {
         if (!(node instanceof HTMLElement)) return {};
         if (hasTabularMatchClass(node)) return false;
-        const maxAssociations = node.getAttribute('max-associations');
-        const minAssociations = node.getAttribute('min-associations');
         const className = node.getAttribute('class');
         const scoreAttr = node.getAttribute('score');
         return {
-          maxAssociations: maxAssociations ? parseInt(maxAssociations, 10) : 1,
-          minAssociations: minAssociations ? parseInt(minAssociations, 10) : 0,
           shuffle: node.getAttribute('shuffle') === 'true',
           class: className || null,
           correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
@@ -39,12 +33,7 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
     }
   ],
   toDOM(node): DOMOutputSpec {
-    const attrs: Record<string, string> = {
-      'max-associations': String(node.attrs.maxAssociations)
-    };
-    if (node.attrs.minAssociations > 0) {
-      attrs['min-associations'] = String(node.attrs.minAssociations);
-    }
+    const attrs: Record<string, string> = {};
     if (node.attrs.shuffle) {
       attrs['shuffle'] = 'true';
     }

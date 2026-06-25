@@ -15,29 +15,41 @@ function toNonEmptyString(value: string | null): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+function parseCorrectResponseValues(raw: string | null): string[] | null {
+  if (raw == null) return null;
+  const trimmed = raw.trim();
+  if (trimmed.length === 0) return null;
+  if (trimmed.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        const tokens = parsed.map(v => String(v).trim()).filter(Boolean);
+        return tokens.length > 0 ? tokens : null;
+      }
+    } catch {
+      // fall through to comma-split
+    }
+  }
+  const tokens = trimmed.split(',').map(v => v.trim()).filter(Boolean);
+  return tokens.length > 0 ? tokens : null;
+}
+
 export function composeMatchInteractionElement(sourceElement: Element, xmlDoc: Document): InteractionComposeResult {
   const metadata = matchInteractionComposerMetadata;
   const warnings: ComposerWarning[] = [];
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
-  // correctResponse is stored as raw JSON (qti-components' shape:
-  // '["A 1","B 2"]'), not comma-separated identifiers.
+  // correctResponse on the authoring node is stored as a JSON-array string
+  // (qti-components shape: '["A 1","B 2"]'). Parse it here so it lands on the
+  // declaration as a string[] — otherwise the core composer's split-on-comma
+  // would mangle the JSON brackets.
   const correctResponseRaw = sourceElement.getAttribute('correct-response');
-  const correctResponse = correctResponseRaw || null;
-  const maxAssociations = toFiniteNumber(sourceElement.getAttribute('max-associations'), 1);
-  const minAssociations = toFiniteNumber(sourceElement.getAttribute('min-associations'), 0);
+  const correctResponse = parseCorrectResponseValues(correctResponseRaw);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
   stripAttributesFromElement(normalizedElement, metadata);
   const strippedAttributes = getStrippedAttributeSources(metadata);
-
-  normalizedElement.setAttribute('max-associations', String(maxAssociations > 0 ? maxAssociations : 1));
-  if (minAssociations > 0) {
-    normalizedElement.setAttribute('min-associations', String(minAssociations));
-  } else {
-    normalizedElement.removeAttribute('min-associations');
-  }
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
   if (!responseIdentifier) {
@@ -49,8 +61,8 @@ export function composeMatchInteractionElement(sourceElement: Element, xmlDoc: D
   } else {
     responseDeclaration = {
       identifier: responseIdentifier,
-      cardinality: maxAssociations > 1 ? 'multiple' : 'single',
-      baseType: 'identifier', // directedPair in full QTI, but using identifier for simplicity
+      cardinality: 'multiple',
+      baseType: 'directedPair',
       correctResponse: correctResponse ?? undefined,
       sourceTag: metadata.tagName,
       score,

@@ -28,8 +28,6 @@ describe('qtiMatchInteractionNodeSpec', () => {
     const interaction = schema.node('qtiMatchInteraction', null, [prompt, matchSetA, matchSetB]);
 
     expect(interaction.attrs).toEqual({
-      maxAssociations: 1,
-      minAssociations: 0,
       shuffle: false,
       class: null,
       correctResponse: null,
@@ -67,8 +65,6 @@ describe('qtiMatchInteractionNodeSpec', () => {
     ]);
     
     const interaction = schema.node('qtiMatchInteraction', {
-      maxAssociations: 2,
-      minAssociations: 1,
       shuffle: true,
       class: 'review-mode',
       correctResponse: '["source-a target-1","source-b target-1"]',
@@ -79,8 +75,6 @@ describe('qtiMatchInteractionNodeSpec', () => {
     expect(qtiMatchInteractionNodeSpec.toDOM?.(interaction)).toEqual([
       'qti-match-interaction',
       {
-        'max-associations': '2',
-        'min-associations': '1',
         shuffle: 'true',
         class: 'review-mode',
         'correct-response': '["source-a target-1","source-b target-1"]',
@@ -144,35 +138,34 @@ describe('qtiMatchInteractionNodeSpec', () => {
     expect(parsed).toEqual(['a target-x', 'b target-x', 'c target-y']);
   });
 
-  it('omits min-associations when zero', () => {
+  it('does not emit max-associations or min-associations', () => {
     const schema = createSchemaFromNodeSpecs(
       matchInteractionDescriptor.nodeSpecs,
       { baseSchemaNodeGroups: matchInteractionDescriptor.baseSchemaDependencies?.nodeGroups }
     );
-    
+
     const prompt = schema.node('qtiPrompt', null, [
       schema.node('qtiPromptParagraph', null, [schema.text('Match items.')]),
     ]);
-    
+
     const matchSetA = schema.node('qtiSimpleMatchSet', null, [
       schema.node('qtiSimpleAssociableChoice', { identifier: 'a' }, [
         schema.node('qtiSimpleAssociableChoiceParagraph', null, [schema.text('A')]),
       ]),
     ]);
-    
+
     const matchSetB = schema.node('qtiSimpleMatchSet', null, [
       schema.node('qtiSimpleAssociableChoice', { identifier: '1' }, [
         schema.node('qtiSimpleAssociableChoiceParagraph', null, [schema.text('1')]),
       ]),
     ]);
-    
-    const interaction = schema.node('qtiMatchInteraction', {
-      minAssociations: 0,
-    }, [prompt, matchSetA, matchSetB]);
+
+    const interaction = schema.node('qtiMatchInteraction', null, [prompt, matchSetA, matchSetB]);
 
     const dom = qtiMatchInteractionNodeSpec.toDOM?.(interaction);
     const [, attrs] = dom as [string, Record<string, string>, number];
-    
+
+    expect(attrs['max-associations']).toBeUndefined();
     expect(attrs['min-associations']).toBeUndefined();
   });
 });
