@@ -96,7 +96,8 @@ header h1 {
   min-width: 0;
 }
 
-#export-btn {
+#export-btn,
+#open-btn {
   padding: 0.625rem 1.5rem;
   min-width: 12rem;
   border: 1px solid var(--accent);
@@ -108,7 +109,13 @@ header h1 {
   cursor: pointer;
 }
 
-#export-btn:disabled {
+#open-btn {
+  background: #fff;
+  color: var(--accent);
+}
+
+#export-btn:disabled,
+#open-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }

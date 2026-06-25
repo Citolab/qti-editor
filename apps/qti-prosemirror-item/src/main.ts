@@ -234,6 +234,7 @@ function mountEditor(container: HTMLElement, doc: ProseMirrorNode, panelEl: HTML
 const itemList = document.querySelector<HTMLSelectElement>('#item-list')!;
 const editorHost = document.querySelector<HTMLElement>('#editor-host')!;
 const exportBtn = document.querySelector<HTMLButtonElement>('#export-btn')!;
+const openBtn = document.querySelector<HTMLButtonElement>('#open-btn')!;
 const attributesPanel = document.querySelector<HTMLElement>('#attributes-panel')!;
 
 let view: EditorView | null = null;
@@ -245,6 +246,23 @@ exportBtn.addEventListener('click', () => {
   const link = Object.assign(document.createElement('a'), { href: url, download: 'item.xml' });
   link.click();
   URL.revokeObjectURL(url);
+});
+
+/**
+ * Encode the current item as base64 and open it in qti.citolab.nl's preview
+ * with `?sharedQti=...`. Mirrors the share-link format the preview app
+ * already accepts. Uses TextEncoder→btoa so non-ASCII characters in the
+ * item (Dutch accents, em-dashes) survive the round-trip.
+ */
+openBtn.addEventListener('click', () => {
+  if (!view) return;
+  const xml = exportQtiItem(view.state.doc, schema);
+  const bytes = new TextEncoder().encode(xml);
+  let binary = '';
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  const base64 = btoa(binary);
+  const url = `https://qti.citolab.nl/preview?sharedQti=${encodeURIComponent(base64)}`;
+  window.open(url, '_blank', 'noopener');
 });
 
 const items = await loadQtiItems();
@@ -264,4 +282,5 @@ async function openItem(href: string): Promise<void> {
   editorHost.innerHTML = '';
   view = mountEditor(editorHost, doc, attributesPanel);
   exportBtn.disabled = false;
+  openBtn.disabled = false;
 }
