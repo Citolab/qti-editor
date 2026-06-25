@@ -87,6 +87,22 @@ export const editableAttrs = Object.fromEntries(
 );
 
 /**
+ * Read-only attribute allowlist for the panel, keyed by node type. Derived
+ * from each node-attribute metadata's `fields.<attr>.readOnly` flag — these
+ * attributes are shown but rendered disabled (e.g. computed responses, scores).
+ */
+export const readOnlyAttrs = Object.fromEntries(
+  descriptors.flatMap(descriptor =>
+    Object.values(descriptor.attributePanelMetadata ?? {}).map(metadata => [
+      metadata.nodeTypeName,
+      Object.entries(metadata.fields ?? {})
+        .filter(([, field]) => field.readOnly)
+        .map(([key]) => key),
+    ])
+  )
+);
+
+/**
  * Enter/Backspace insert or remove a sibling option for whichever interaction the
  * selection is in (choice, inline-choice, …); each tries in turn and returns
  * false when none applies, letting the composition root's list-split and base

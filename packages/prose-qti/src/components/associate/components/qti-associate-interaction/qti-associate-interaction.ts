@@ -44,6 +44,62 @@ function stateToPairs(containers: SlotContainer[]): AssociatePair[] {
 }
 
 /**
+ * Serialize the editor's pair state to the canonical `correct-response`
+ * attribute value used across editor interactions: a comma-separated list of
+ * space-separated identifier pairs, e.g. `"A P, C M, D L"`. Returns `null`
+ * when no complete pairs exist so the schema can drop the attribute.
+ */
+function serializePairsToCorrectResponse(containers: SlotContainer[]): string | null {
+  const pairs = stateToPairs(containers);
+  if (pairs.length === 0) return null;
+  return pairs.map(([l, r]) => `${l} ${r}`).join(', ');
+}
+
+/**
+ * Parse the canonical `correct-response` attribute value (or the array form
+ * the shared codec hands back when there are multiple entries) into the
+ * editor's container shape. Falls back to JSON for backwards compatibility
+ * with items authored before the comma format was canonicalised.
+ */
+function parsePairsFromCorrectResponse(raw: string | string[] | null | undefined): SlotContainer[] {
+  if (raw == null) return [];
+  if (Array.isArray(raw)) {
+    return raw.map(splitPair).filter((c): c is SlotContainer => c !== null);
+  }
+  const trimmed = raw.trim();
+  if (trimmed.length === 0) return [];
+  if (trimmed.startsWith('[')) {
+    // Legacy JSON form: `[["A","P"], ...]` or `["A P", ...]`.
+    try {
+      const parsed: unknown = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        return parsed
+          .map(entry => {
+            if (Array.isArray(entry) && entry.length === 2 && entry[0] && entry[1]) {
+              return { left: String(entry[0]), right: String(entry[1]) } satisfies SlotContainer;
+            }
+            if (typeof entry === 'string') return splitPair(entry);
+            return null;
+          })
+          .filter((c): c is SlotContainer => c !== null);
+      }
+    } catch {
+      /* fall through to plain comma split */
+    }
+  }
+  return trimmed
+    .split(',')
+    .map(splitPair)
+    .filter((c): c is SlotContainer => c !== null);
+}
+
+function splitPair(raw: string): SlotContainer | null {
+  const [left, right] = raw.trim().split(/\s+/);
+  if (!left || !right) return null;
+  return { left, right };
+}
+
+/**
  * Editor component for qti-associate-interaction.
  * Choices are shown in a pool; click a choice then click a drop slot to form a pair.
  */
@@ -155,26 +211,38 @@ export class QtiAssociateInteractionEdit extends Interaction {
 
   private _parseCorrectResponse() {
     const state = this._state;
-    if (!this.correctResponse) {
-      state.containers = [{ left: null, right: null }];
-      return;
+    state.containers = parsePairsFromCorrectResponse(this.correctResponse);
+    this._resizeContainersToMax();
+  }
+
+  /** Clamp `maxAssociations` to a minimum of 1 — the editor must always show
+   *  at least one association slot. Authors can edit this via the attribute
+   *  panel; we floor it at read time so a value < 1 in the XML still works. */
+  private _effectiveMaxAssociations(): number {
+    const raw = Number(this.maxAssociations);
+    return Number.isFinite(raw) && raw >= 1 ? Math.floor(raw) : 1;
+  }
+
+  /** Grow / shrink the containers array to exactly the maxAssociations count.
+   *  Pre-filled pairs at the head are preserved; the tail is padded with empty
+   *  slots. When shrinking, trailing empty slots go first, then any pairs that
+   *  spill over the cap are dropped (the response is normalized in _emitChange). */
+  private _resizeContainersToMax() {
+    const state = this._state;
+    const max = this._effectiveMaxAssociations();
+    const current = state.containers;
+    if (current.length > max) {
+      // Prefer dropping empty containers when shrinking.
+      const filled = current.filter(c => c.left !== null || c.right !== null);
+      state.containers = filled.slice(0, max);
     }
-    try {
-      const parsed: AssociatePair[] = JSON.parse(this.correctResponse);
-      if (Array.isArray(parsed)) {
-        const valid = parsed.filter(p => Array.isArray(p) && p.length === 2 && p[0] && p[1]);
-        state.containers = [...valid.map(([l, r]) => ({ left: l, right: r })), { left: null, right: null }];
-        return;
-      }
-    } catch {
-      // Invalid JSON, ignore
+    while (state.containers.length < max) {
+      state.containers.push({ left: null, right: null });
     }
-    state.containers = [{ left: null, right: null }];
   }
 
   private _serializeCurrentPairs(): string | null {
-    const pairs = stateToPairs(this._state.containers);
-    return pairs.length > 0 ? JSON.stringify(pairs) : null;
+    return serializePairsToCorrectResponse(this._state.containers);
   }
 
   private _syncStateFromCorrectResponse() {
@@ -186,7 +254,7 @@ export class QtiAssociateInteractionEdit extends Interaction {
 
   private _emitChange() {
     const pairs = stateToPairs(this._state.containers);
-    this._lastEmittedResponse = pairs.length > 0 ? JSON.stringify(pairs) : null;
+    this._lastEmittedResponse = serializePairsToCorrectResponse(this._state.containers);
 
     this.dispatchEvent(
       new CustomEvent('qti-prosemirror-node-attrs-change', {
@@ -269,14 +337,14 @@ export class QtiAssociateInteractionEdit extends Interaction {
   }
 
   /**
-   * Ensure there is always exactly one empty container at the end,
-   * and no completely empty containers in the middle.
+   * Resize containers to exactly the maxAssociations count: drop fully-empty
+   * middle slots (so filled pairs collapse to the head), then re-pad with
+   * empty trailing slots up to the cap.
    */
   private _normalizeContainers() {
     const state = this._state;
-    // Remove fully empty containers except the last one
     state.containers = state.containers.filter(c => c.left !== null || c.right !== null);
-    state.containers.push({ left: null, right: null });
+    this._resizeContainersToMax();
   }
 
   // ─── Render ─────────────────────────────────────────────────────────────
@@ -322,6 +390,26 @@ export class QtiAssociateInteractionEdit extends Interaction {
         this._syncStateFromCorrectResponse();
         this._triggerRender();
       }
+    }
+    if (changedProperties.has('maxAssociations')) {
+      const effective = this._effectiveMaxAssociations();
+      // If the author wrote a value < 1, snap the attr back to 1 so the model
+      // and the panel agree. emitChange runs after the resize so the persisted
+      // correctResponse reflects any pairs we trimmed.
+      if (this.maxAssociations !== effective) {
+        this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
+          detail: {
+            nodeType: 'qtiAssociateInteraction',
+            tagName: 'qti-associate-interaction',
+            attrs: { maxAssociations: effective },
+          },
+          bubbles: true,
+          composed: true,
+        }));
+      }
+      this._resizeContainersToMax();
+      this._emitChange();
+      this._triggerRender();
     }
   }
 

@@ -39,6 +39,11 @@ export const associateNodeAttributePanelMetadataByNodeTypeName = {
   [ASSOCIATE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: ASSOCIATE_INTERACTION_NODE_TYPE,
     editableAttributes: ['maxAssociations', 'minAssociations', 'shuffle', 'correctResponse', 'score'],
-    fields: { score: { label: 'Score', input: 'number' } },
+    fields: {
+      maxAssociations: { label: 'Max associations', input: 'number' },
+      minAssociations: { label: 'Min associations', input: 'number', readOnly: true },
+      score: { label: 'Score', input: 'number', readOnly: true },
+      correctResponse: { label: 'Correct response', readOnly: true },
+    },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

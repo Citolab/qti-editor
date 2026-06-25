@@ -40,7 +40,7 @@ export const choiceInteractionComposerMetadata = {
 export const choiceNodeAttributePanelMetadataByNodeTypeName: Record<string, NodeAttributePanelMetadata> = {
   [CHOICE_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: CHOICE_INTERACTION_NODE_TYPE,
-    editableAttributes: ['class', 'shuffle'],
+    editableAttributes: ['class', 'shuffle','maxChoices'],
     friendlyEditors: [choiceInteractionClassFriendlyEditor],
     fields: { score: { label: 'Score', input: 'number' }, shuffle: { label: 'Shuffle', input: 'checkbox' } },
   },
