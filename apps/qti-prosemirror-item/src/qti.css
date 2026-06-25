@@ -90,6 +90,14 @@ qti-hottext-interaction qti-hottext {
   border: var(--qti-border-thickness) var(--qti-border-style) var(--qti-border-color);
 }
 
+/* ─── Hottext — reveal hidden radio/checkbox on hover (authoring affordance)
+   In `qti-unselected-hidden` mode the theme hides the radio/checkbox part
+   so the runtime UI looks clean. In the editor the author still needs to
+   click that part to mark the correct response — restore it on hover. */
+qti-hottext-interaction.qti-unselected-hidden qti-hottext:hover::part(ch) {
+  display: grid;
+}
+
 /* ─── Hottext — author marked as correct response ──────────────────────────
    Editor-only signal that this hottext is part of the correct response.
    Runtime visual (the radio/checkbox fill via theme's :state(--checked))
