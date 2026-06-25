@@ -57,7 +57,7 @@ export const insertGapMatchInteraction: Command = (state, dispatch, view?: Edito
       ]);
 
       return interactionType.create(
-        { responseIdentifier, maxAssociations: 2 },
+        { responseIdentifier, maxAssociations: 0 },
         [prompt, ...texts, firstSentence, secondSentence],
       );
     },

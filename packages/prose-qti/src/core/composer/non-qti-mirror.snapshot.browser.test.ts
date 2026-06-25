@@ -197,11 +197,11 @@ describe('non-QTI data-* mirror snapshots — DOM compose pipeline (Phase 1 base
     );
     expect(xml).toMatchInlineSnapshot(`
       "<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="snap-gap-match" title="snap-gap-match" adaptive="false" time-dependent="false" xml:lang="en"><qti-response-declaration identifier="RESPONSE" cardinality="multiple" base-type="directedPair"><qti-correct-response><qti-value>g1 gap-a</qti-value></qti-correct-response></qti-response-declaration><qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float"><qti-default-value><qti-value>0</qti-value></qti-default-value></qti-outcome-declaration><qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float"><qti-default-value><qti-value>2</qti-value></qti-default-value></qti-outcome-declaration><qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
-              <qti-gap-match-interaction response-identifier="RESPONSE" max-associations="1">
+              <qti-gap-match-interaction response-identifier="RESPONSE" max-associations="0">
                 <qti-gap-text identifier="g1" match-max="1">Word</qti-gap-text>
                 <p>Fill: <qti-gap identifier="gap-a"/></p>
               </qti-gap-match-interaction>
-            </qti-item-body><qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/map_response"/></qti-assessment-item>"
+            </qti-item-body><qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct"/></qti-assessment-item>"
     `);
   });
 

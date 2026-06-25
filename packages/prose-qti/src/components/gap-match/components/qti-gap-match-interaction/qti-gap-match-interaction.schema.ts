@@ -6,8 +6,7 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
   group: 'block',
   content: 'qtiPrompt? qtiGapText{2,} paragraph+',
   attrs: {
-    maxAssociations: { default: 1 },
-    minAssociations: { default: 0 },
+    maxAssociations: { default: 0 },
     shuffle: { default: false },
     class: { default: null },
     correctResponse: { default: null },
@@ -20,11 +19,9 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
       getAttrs: (node: Node | string) => {
         if (!(node instanceof HTMLElement)) return {};
         const maxAssociations = node.getAttribute('max-associations');
-        const minAssociations = node.getAttribute('min-associations');
         const scoreAttr = node.getAttribute('score');
         return {
-          maxAssociations: maxAssociations ? parseInt(maxAssociations, 10) : 1,
-          minAssociations: minAssociations ? parseInt(minAssociations, 10) : 0,
+          maxAssociations: maxAssociations ? parseInt(maxAssociations, 10) : 0,
           shuffle: node.getAttribute('shuffle') === 'true',
           class: node.getAttribute('class'),
           correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
@@ -36,11 +33,8 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
   ],
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {
-      'max-associations': String(node.attrs.maxAssociations),
+      'max-associations': String(node.attrs.maxAssociations ?? 0),
     };
-    if (node.attrs.minAssociations > 0) {
-      attrs['min-associations'] = String(node.attrs.minAssociations);
-    }
     if (node.attrs.shuffle) {
       attrs.shuffle = 'true';
     }

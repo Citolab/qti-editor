@@ -24,8 +24,7 @@ describe('qtiGapMatchInteractionNodeSpec', () => {
     const interaction = schema.node('qtiGapMatchInteraction', null, [prompt, gapText1, gapText2, paragraph]);
 
     expect(interaction.attrs).toEqual({
-      maxAssociations: 1,
-      minAssociations: 0,
+      maxAssociations: 0,
       shuffle: false,
       class: null,
       correctResponse: null,
@@ -57,7 +56,6 @@ describe('qtiGapMatchInteractionNodeSpec', () => {
     
     const interaction = schema.node('qtiGapMatchInteraction', {
       maxAssociations: 2,
-      minAssociations: 1,
       shuffle: true,
       class: 'fill-in-blank',
       correctResponse: '["word-1 gap-1","word-2 gap-2"]',
@@ -69,7 +67,6 @@ describe('qtiGapMatchInteractionNodeSpec', () => {
       'qti-gap-match-interaction',
       {
         'max-associations': '2',
-        'min-associations': '1',
         shuffle: 'true',
         class: 'fill-in-blank',
         'correct-response': '["word-1 gap-1","word-2 gap-2"]',
@@ -117,25 +114,24 @@ describe('qtiGapMatchInteractionNodeSpec', () => {
     expect(attrs['correct-response']).toBe('["a gap-1","b gap-2","a gap-3"]');
   });
 
-  it('omits min-associations when zero', () => {
+  it('emits max-associations="0" by default and never emits min-associations', () => {
     const schema = createSchemaFromNodeSpecs(gapMatchInteractionDescriptor.nodeSpecs);
-    
+
     const prompt = schema.node('qtiPrompt', null, [
       schema.node('qtiPromptParagraph', null, [schema.text('Fill gaps.')]),
     ]);
-    
+
     const gapText1 = schema.node('qtiGapText', { identifier: 'word1' }, [schema.text('word1')]);
     const gapText2 = schema.node('qtiGapText', { identifier: 'word2' }, [schema.text('word2')]);
     const gap = schema.node('qtiGap', { identifier: 'gap' });
     const paragraph = schema.node('paragraph', null, [gap]);
-    
-    const interaction = schema.node('qtiGapMatchInteraction', {
-      minAssociations: 0,
-    }, [prompt, gapText1, gapText2, paragraph]);
+
+    const interaction = schema.node('qtiGapMatchInteraction', null, [prompt, gapText1, gapText2, paragraph]);
 
     const dom = qtiGapMatchInteractionNodeSpec.toDOM?.(interaction);
     const [, attrs] = dom as [string, Record<string, string>, number];
-    
+
+    expect(attrs['max-associations']).toBe('0');
     expect(attrs['min-associations']).toBeUndefined();
   });
 });

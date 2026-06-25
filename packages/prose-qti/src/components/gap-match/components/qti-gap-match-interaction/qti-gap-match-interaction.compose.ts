@@ -22,19 +22,14 @@ export function composeGapMatchInteractionElement(sourceElement: Element, xmlDoc
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
   const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
-  const maxAssociations = toFiniteNumber(sourceElement.getAttribute('max-associations'), 1);
-  const minAssociations = toFiniteNumber(sourceElement.getAttribute('min-associations'), 0);
+  const maxAssociations = toFiniteNumber(sourceElement.getAttribute('max-associations'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
   stripAttributesFromElement(normalizedElement, metadata);
   const strippedAttributes = getStrippedAttributeSources(metadata);
 
-  normalizedElement.setAttribute('max-associations', String(maxAssociations > 0 ? maxAssociations : 1));
-  if (minAssociations > 0) {
-    normalizedElement.setAttribute('min-associations', String(minAssociations));
-  } else {
-    normalizedElement.removeAttribute('min-associations');
-  }
+  normalizedElement.setAttribute('max-associations', String(maxAssociations >= 0 ? maxAssociations : 0));
+  normalizedElement.removeAttribute('min-associations');
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
   if (!responseIdentifier) {
