@@ -81,6 +81,18 @@ qti-associate-interaction::part(drag) {
    `packages/qti-theme/src/styles/qti-theme/interactions/qti-*-interaction.css`.
    Add overrides below only when the editor wants to diverge from runtime. */
 
+/* ─── Hottext interaction — flex container ────────────────────────────────
+   Custom-element default is `display: inline`. With a block `<p>` child,
+   browsers open empty inline line-boxes above and below the block (the
+   ~50px whitespace bands seen in hottext-multi-response). Flex layout also
+   ignores the whitespace-only text nodes Lit emits around `<slot>` in the
+   shadow root, so the host's height collapses to its real content. The
+   theme leaves this untouched, so the override lives here. */
+qti-hottext-interaction {
+  display: flex;
+  flex-direction: column;
+}
+
 /* ─── Hottext — chip border ────────────────────────────────────────────────
    The runtime theme only paints a chip border under
    `.qti-input-control-hidden`. In the editor we want the chip's "selectable"
