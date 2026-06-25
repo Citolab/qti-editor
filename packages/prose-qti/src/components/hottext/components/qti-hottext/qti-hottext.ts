@@ -12,55 +12,7 @@ export interface HottextRadioClickDetail {
 export class QtiHottextEdit extends LitElement {
   static override styles = css`
     :host {
-      display: inline-flex;
-      align-items: baseline;
-      gap: 0.25em;
-      border-radius: 0.45rem;
-      background: color-mix(in srgb, #f59e0b 10%, transparent);
-      box-shadow: inset 0 0 0 1.5px color-mix(in srgb, #f59e0b 60%, transparent);
-      cursor: pointer;
-      font-weight: 600;
-      padding: 0.35em 0.45em !important;
-      transition:
-        background 120ms ease,
-        box-shadow 120ms ease;
-    }
-
-    :host(:hover) {
-      background: color-mix(in srgb, #f59e0b 18%, transparent);
-      box-shadow: inset 0 0 0 1.5px color-mix(in srgb, #f59e0b 80%, transparent);
-    }
-
-    [part='ch'] {
-      flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 0.75em;
-      height: 0.75em;
-      border: 1.5px solid color-mix(in srgb, #f59e0b 90%, currentColor);
-      border-radius: 50%;
-      box-sizing: border-box;
-      margin-top: 0.15em;
-      transition:
-        background 120ms ease,
-        border-color 120ms ease;
-    }
-
-    [part='cha'] {
-      width: 0.4em;
-      height: 0.4em;
-      border-radius: 50%;
-      background: transparent;
-      transition: background 120ms ease;
-    }
-
-    :host([selected]) [part='ch'] {
-      border-color: #16a34a;
-    }
-
-    :host([selected]) [part='cha'] {
-      background: #16a34a;
+      white-space: nowrap;
     }
 
     [part='remove'] {
@@ -95,12 +47,22 @@ export class QtiHottextEdit extends LitElement {
     [part='remove']:hover {
       background: color-mix(in srgb, #dc2626 18%, white);
     }
-
-    :host(:focus-within) {
-      outline: 2px solid color-mix(in srgb, #2563eb 45%, transparent);
-      outline-offset: 2px;
-    }
   `;
+
+  #internals = this.attachInternals();
+
+  setChecked(checked: boolean): void {
+    if (checked) {
+      this.#internals.states.add('--checked');
+    } else {
+      this.#internals.states.delete('--checked');
+    }
+  }
+
+  setRole(role: 'radio' | 'checkbox'): void {
+    this.#internals.states.delete(role === 'radio' ? 'checkbox' : 'radio');
+    this.#internals.states.add(role);
+  }
 
   #handleRadioMousedown = (e: MouseEvent) => {
     e.preventDefault();

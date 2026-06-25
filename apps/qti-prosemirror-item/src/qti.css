@@ -13,6 +13,8 @@
   /* Drop target — idle */
   --qti-edit-drop-idle-border:    var(--qti-border-color, #c6cad0);
   --qti-edit-drop-idle-bg:        var(--qti-bg,           #fff);
+  /* Hottext — marked as correct response in the editor */
+  --qti-edit-hottext-checked-border: var(--qti-border-color-focus, #2563eb);
 }
 
 /* ─── Drop target — pending pulse ──────────────────────────────────────────
@@ -78,3 +80,23 @@ qti-associate-interaction::part(drag) {
    Styled by qti-theme via `<host>::part(drag)` rules — see
    `packages/qti-theme/src/styles/qti-theme/interactions/qti-*-interaction.css`.
    Add overrides below only when the editor wants to diverge from runtime. */
+
+/* ─── Hottext — chip border ────────────────────────────────────────────────
+   The runtime theme only paints a chip border under
+   `.qti-input-control-hidden`. In the editor we want the chip's "selectable"
+   affordance visible at rest, so mirror the bordered look unconditionally —
+   reusing the same theme tokens so the chip continues to track theming. */
+qti-hottext-interaction qti-hottext {
+  border: var(--qti-border-thickness) var(--qti-border-style) var(--qti-border-color);
+}
+
+/* ─── Hottext — author marked as correct response ──────────────────────────
+   Editor-only signal that this hottext is part of the correct response.
+   Runtime visual (the radio/checkbox fill via theme's :state(--checked))
+   stays intact; we add an extra blue outline so authors can scan a block
+   of text and pick out the "scoring" hottexts at a glance. */
+qti-hottext-interaction qti-hottext:state(--checked) {
+  outline: 2px solid var(--qti-edit-hottext-checked-border);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}

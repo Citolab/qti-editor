@@ -37,6 +37,6 @@ export const hottextInteractionComposerMetadata = {
 export const hottextNodeAttributePanelMetadataByNodeTypeName = {
   [HOTTEXT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: HOTTEXT_INTERACTION_NODE_TYPE,
-    editableAttributes: ['class'],
+    editableAttributes: ['class', 'maxChoices'],
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

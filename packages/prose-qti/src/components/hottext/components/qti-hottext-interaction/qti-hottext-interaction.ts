@@ -7,6 +7,7 @@ import { HOTTEXT_WRAP_SELECTION_EVENT } from '../../extensions/wrap-selection.js
 import {
   HOTTEXT_RADIO_CLICK_EVENT,
   type HottextRadioClickDetail,
+  type QtiHottextEdit,
 } from '../qti-hottext/qti-hottext.js';
 import styles from './qti-hottext-interaction.styles.js';
 import { parseCorrectResponse } from '../../utils/parse-correct-response.js';
@@ -38,7 +39,26 @@ export class QtiHottextInteractionEdit extends Interaction {
     this.addEventListener(HOTTEXT_RADIO_CLICK_EVENT, this.#handleClick);
     document.addEventListener('mouseup', this.#handleMouseUp);
     document.addEventListener('keyup', this.#handleKeyUp);
+    queueMicrotask(() => this.#syncHottextStates());
   }
+
+  override updated(changedProperties: Map<string, unknown>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('correctResponse') || changedProperties.has('maxChoices')) {
+      this.#syncHottextStates();
+    }
+  }
+
+  #syncHottextStates = () => {
+    const selectedIds = new Set(parseCorrectResponse(this.correctResponse));
+    const role: 'radio' | 'checkbox' = this.maxChoices === 1 ? 'radio' : 'checkbox';
+    this.querySelectorAll('qti-hottext').forEach(el => {
+      const id = el.getAttribute('identifier');
+      const hottext = el as unknown as QtiHottextEdit;
+      hottext.setRole(role);
+      hottext.setChecked(!!id && selectedIds.has(id));
+    });
+  };
 
   override disconnectedCallback() {
     this.removeEventListener(HOTTEXT_RADIO_CLICK_EVENT, this.#handleClick);
@@ -62,7 +82,7 @@ export class QtiHottextInteractionEdit extends Interaction {
             </div>
           `
         : null}
-      <slot></slot>
+      <slot @slotchange=${this.#syncHottextStates}></slot>
     `;
   }
 
@@ -86,6 +106,7 @@ export class QtiHottextInteractionEdit extends Interaction {
 
     this.correctResponse = correctResponse;
     this.maxChoices = maxChoices;
+    this.#syncHottextStates();
     this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
       bubbles: true,
       composed: true,

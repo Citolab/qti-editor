@@ -30,9 +30,9 @@ export const AuthoringFixture = {
     >
       Contract tests should protect
       <qti-hottext identifier="hottext-a">implementation trivia</qti-hottext>,
-      <qti-hottext identifier="hottext-b" selected>public descriptors</qti-hottext>,
+      <qti-hottext identifier="hottext-b">public descriptors</qti-hottext>,
       and
-      <qti-hottext identifier="hottext-c" selected>runtime assembly rules</qti-hottext>
+      <qti-hottext identifier="hottext-c">runtime assembly rules</qti-hottext>
       from drifting apart.
     </qti-hottext-interaction>
   `, 'block hottext fixture with multiple selected phrases'),
