@@ -14,3 +14,4 @@ import './shared/components/qti-simple-associable-choice/register.js';
 import './shared/components/qti-simple-match-set/register.js';
 import './shared/components/qti-gap/register.js';
 import './shared/components/qti-gap-text/register.js';
+import './shared/components/qti-fake-drag/register.js';

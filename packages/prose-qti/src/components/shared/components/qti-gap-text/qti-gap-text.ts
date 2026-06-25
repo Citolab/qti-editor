@@ -2,38 +2,19 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
 export class QtiGapTextEdit extends LitElement {
+  /**
+   * Minimal shadow-DOM styles — layout only. Per-state visuals (selected /
+   * linked / disabled) live in the host application's stylesheet via
+   * `qti-gap-text:state(selected|linked|disabled)`. Transient UI state is
+   * expressed through {@link ElementInternals.states} — never on a DOM
+   * attribute — so it can't leak into serialized XML.
+   */
   static override styles = css`
     :host {
       display: inline-flex;
       align-items: center;
       min-width: fit-content;
-      padding: 0.5rem !important;
-      border: 2px solid #c6cad0 !important;
-      border-color: var(--qti-border, #c6cad0) !important;
-      border-radius: 0.3rem !important;
-      background: var(--qti-bg, #fff) !important;
-      cursor: grab !important;
-      transition: box-shadow 200ms ease-out, transform 200ms ease-out;
       box-sizing: border-box;
-    }
-
-    :host(:hover) {
-      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-    }
-
-    :host([data-selected]) {
-      border-color: var(--qti-border-active, #2563eb);
-      background: var(--qti-bg-hover, #dbeafe);
-      box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
-    }
-
-    :host([data-linked]) {
-      background: var(--qti-bg-active, #e2e8f0);
-    }
-
-    :host([data-disabled]) {
-      opacity: 0.6;
-      cursor: not-allowed;
     }
 
     ::slotted(*) {
@@ -50,6 +31,13 @@ export class QtiGapTextEdit extends LitElement {
 
   @property({ type: Number, attribute: 'match-max' })
   matchMax = 1;
+
+  public internals: ElementInternals;
+
+  constructor() {
+    super();
+    this.internals = this.attachInternals();
+  }
 
   override connectedCallback(): void {
     super.connectedCallback();

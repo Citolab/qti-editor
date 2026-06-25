@@ -1,39 +1,26 @@
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 
+import '../qti-fake-drag/register.js';
+
 export class QtiGapEdit extends LitElement {
+  /**
+   * Minimal shadow-DOM styles — just layout for the slot box. Per-state visuals
+   * (pending / filled) are NOT defined here: the host application owns the
+   * affordance via lightdom selectors like `qti-gap:state(pending)` so authoring
+   * tools can theme it freely. Transient UI state is expressed via
+   * {@link ElementInternals.states}, not via DOM attributes — that makes it
+   * structurally impossible for editor-only state to leak into serialized XML.
+   */
   static override styles = css`
     :host {
       display: inline-flex;
+      align-items: center;
+      gap: 4px;
       min-width: 5rem;
-      margin: 0 0.2rem !important;
-      padding: 0.5rem !important;
-      border: 2px dashed #c6cad0 !important;
-      border-color: var(--qti-border, #c6cad0) !important;
-      border-radius: 0.3rem !important;
-      background: var(--qti-bg, #fff) !important;
-      color: var(--qti-text-muted, #64748b);
       vertical-align: baseline;
       line-height: 1.4;
-      cursor: pointer !important;
       box-sizing: border-box;
-    }
-
-    :host([data-pending]) {
-      border-color: var(--qti-border-error, #f86d70);
-      background: var(--qti-bg-error-subtle, #ffecec);
-    }
-
-    :host([data-filled]) {
-      border-style: solid;
-      border-color: var(--qti-border, #c6cad0);
-      color: var(--qti-text, #0f172a);
-      background: var(--qti-bg, #fff);
-      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    }
-
-    .label {
-      white-space: nowrap;
     }
   `;
 
@@ -46,7 +33,27 @@ export class QtiGapEdit extends LitElement {
   @property({ type: String, attribute: 'data-assigned-label' })
   assignedLabel: string | null = null;
 
+  public internals: ElementInternals;
+
+  constructor() {
+    super();
+    this.internals = this.attachInternals();
+  }
+
   override render() {
-    return html`<span class="label">${this.assignedLabel ?? ''}</span>`;
+    // Mirror the runtime qti-components contract: a filled <qti-gap> contains
+    // a child drag element. Here that's <qti-fake-drag part="drag"> — the same
+    // element used inside drop slots of the other three drag-drop interactions.
+    // Empty gaps render nothing so they don't reserve layout for an invisible
+    // chip. The × inside <qti-fake-drag> dispatches `fake-drag-remove`; we
+    // forward to the host interaction's existing onClickFilledGap handler via
+    // a plain click (it inspects composedPath() for the gap).
+    return this.assignedLabel
+      ? html`<qti-fake-drag
+          part="drag"
+          .identifier=${this.identifier ?? ''}
+          .label=${this.assignedLabel}
+        ></qti-fake-drag>`
+      : nothing;
   }
 }

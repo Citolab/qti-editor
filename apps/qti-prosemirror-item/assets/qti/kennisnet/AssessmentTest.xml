@@ -15,22 +15,22 @@
 
     <qti-test-part identifier="PART001" navigation-mode="linear" submission-mode="individual">
         <qti-assessment-section identifier="SECTION001" title="Section" visible="true">
-            <qti-assessment-item-ref identifier="ITEM001" href="ITEM001.xml" />
-            <qti-assessment-item-ref identifier="ITEM002" href="ITEM002.xml" />
-            <qti-assessment-item-ref identifier="ITEM003" href="ITEM003.xml" />
-            <qti-assessment-item-ref identifier="ITEM004" href="ITEM004.xml" />
-            <qti-assessment-item-ref identifier="ITEM005" href="ITEM005.xml" />
-            <qti-assessment-item-ref identifier="ITEM006" href="ITEM006.xml" />
-            <qti-assessment-item-ref identifier="ITEM007" href="ITEM007.xml" />
-            <qti-assessment-item-ref identifier="ITEM008" href="ITEM008.xml" />
-            <qti-assessment-item-ref identifier="ITEM009" href="ITEM009.xml" />
-            <qti-assessment-item-ref identifier="ITEM010" href="ITEM010.xml" />
-            <qti-assessment-item-ref identifier="ITEM011" href="ITEM011.xml" />
-            <qti-assessment-item-ref identifier="ITEM012" href="ITEM012.xml" />
-            <qti-assessment-item-ref identifier="ITEM013" href="ITEM013.xml" />
-            <qti-assessment-item-ref identifier="ITEM014" href="ITEM014.xml" />
-            <qti-assessment-item-ref identifier="ITEM015" href="ITEM015.xml" />
-            <qti-assessment-item-ref identifier="ITEM016" href="ITEM016.xml" />
+            <qti-assessment-item-ref identifier="ITEM001" href="ITEM001.xml" category="choice single" />
+            <qti-assessment-item-ref identifier="ITEM002" href="ITEM002.xml" category="choice multi" />
+            <qti-assessment-item-ref identifier="ITEM003" href="ITEM003.xml" category="text-entry length-20" />
+            <qti-assessment-item-ref identifier="ITEM004" href="ITEM004.xml" category="text-entry length-3" />
+            <qti-assessment-item-ref identifier="ITEM005" href="ITEM005.xml" category="extended-text" />
+            <qti-assessment-item-ref identifier="ITEM006" href="ITEM006.xml" category="inline-choice" />
+            <qti-assessment-item-ref identifier="ITEM007" href="ITEM007.xml" category="match one-to-one" />
+            <qti-assessment-item-ref identifier="ITEM008" href="ITEM008.xml" category="match choices-right" />
+            <qti-assessment-item-ref identifier="ITEM009" href="ITEM009.xml" category="match many-to-one" />
+            <qti-assessment-item-ref identifier="ITEM010" href="ITEM010.xml" category="match tabular" />
+            <qti-assessment-item-ref identifier="ITEM011" href="ITEM011.xml" category="hottext multi-response" />
+            <qti-assessment-item-ref identifier="ITEM012" href="ITEM012.xml" category="hottext unselected-hidden" />
+            <qti-assessment-item-ref identifier="ITEM013" href="ITEM013.xml" category="order horizontal" />
+            <qti-assessment-item-ref identifier="ITEM014" href="ITEM014.xml" category="order vertical" />
+            <qti-assessment-item-ref identifier="ITEM015" href="ITEM015.xml" category="gap-match" />
+            <qti-assessment-item-ref identifier="ITEM016" href="ITEM016.xml" category="select-point" />
         </qti-assessment-section>
     </qti-test-part>
 </qti-assessment-test>

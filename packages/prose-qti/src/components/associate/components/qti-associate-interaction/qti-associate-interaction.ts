@@ -3,7 +3,7 @@ import { property, state } from 'lit/decorators.js';
 
 import nativeStyle from '@qti-components/associate-interaction/styles';
 
-import { QtiI18nController } from '../../../shared';
+import { PendingSelectionController, renderEditChip } from '../../../shared';
 import { Interaction } from '../../../shared/components/interaction.js';
 import styles from './qti-associate-interaction.styles.js';
 
@@ -27,7 +27,6 @@ interface SlotContainer {
  * Key is response-identifier.
  */
 interface AssociateState {
-  pendingId: string | null;
   containers: SlotContainer[];
 }
 
@@ -35,7 +34,7 @@ const associateStates = new Map<string, AssociateState>();
 
 function getState(key: string): AssociateState {
   if (!associateStates.has(key)) {
-    associateStates.set(key, { pendingId: null, containers: [{ left: null, right: null }] });
+    associateStates.set(key, { containers: [{ left: null, right: null }] });
   }
   return associateStates.get(key)!;
 }
@@ -51,7 +50,12 @@ function stateToPairs(containers: SlotContainer[]): AssociatePair[] {
 export class QtiAssociateInteractionEdit extends Interaction {
   static override styles = [nativeStyle, styles];
 
-  private readonly i18n = new QtiI18nController(this);
+  public internals: ElementInternals;
+
+  constructor() {
+    super();
+    this.internals = this.attachInternals();
+  }
 
   @property({ type: Number, attribute: 'max-associations' })
   maxAssociations: number = 1;
@@ -73,6 +77,33 @@ export class QtiAssociateInteractionEdit extends Interaction {
   private _observer: MutationObserver | null = null;
   private _lastEmittedResponse: string | null = null;
 
+  private readonly _selection = new PendingSelectionController(this, {
+    resolveSource: el => {
+      if (el.tagName !== 'QTI-SIMPLE-ASSOCIABLE-CHOICE') return null;
+      const identifier = el.getAttribute('identifier');
+      return identifier ? { element: el, identifier } : null;
+    },
+    resolveTarget: el => {
+      const slot = el.dataset?.dropSlot;
+      if (!slot) return null;
+      return { element: el, identifier: slot };
+    },
+    onCommit: (sourceId, target) => {
+      const slot = target.identifier;
+      if (!slot) return;
+      const [indexRaw, side] = slot.split(':');
+      const containerIndex = Number(indexRaw);
+      if (!Number.isFinite(containerIndex) || (side !== 'left' && side !== 'right')) return;
+      this._placeIntoSlot(containerIndex, side, sourceId);
+    },
+    // Mirror pending state onto the interaction host so CSS can pulse empty
+    // drop slots via `:state(pending) ::part(drop-list):not(:has(qti-fake-drag))`.
+    onPendingChanged: pending => {
+      if (pending != null) this.internals.states.add('pending');
+      else this.internals.states.delete('pending');
+    },
+  });
+
   private get _state(): AssociateState {
     return getState(this._getInteractionKey());
   }
@@ -80,14 +111,12 @@ export class QtiAssociateInteractionEdit extends Interaction {
   override connectedCallback() {
     super.connectedCallback();
     this._syncStateFromCorrectResponse();
-    document.addEventListener('keydown', this._onKeyDown);
     requestAnimationFrame(() => this._trySetup());
+    void this._selection;
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.removeEventListener('click', this._onChoiceClick);
-    document.removeEventListener('keydown', this._onKeyDown);
     this._observer?.disconnect();
     this._observer = null;
     this._setupDone = false;
@@ -108,7 +137,6 @@ export class QtiAssociateInteractionEdit extends Interaction {
 
     this._setupDone = true;
     this._buildLabelCache();
-    this.addEventListener('click', this._onChoiceClick);
     this._setupMutationObserver();
     this._triggerRender();
   }
@@ -211,33 +239,6 @@ export class QtiAssociateInteractionEdit extends Interaction {
 
   // ─── Event Handling ─────────────────────────────────────────────────────
 
-  private _onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && this._state.pendingId) {
-      this._cancelPending();
-    }
-  };
-
-  private _onChoiceClick = (e: MouseEvent) => {
-    const path = e.composedPath();
-    const choiceIndex = path.findIndex(
-      el => el instanceof HTMLElement && el.tagName === 'QTI-SIMPLE-ASSOCIABLE-CHOICE'
-    );
-    if (choiceIndex < 0) return;
-    const choice = path[choiceIndex] as HTMLElement;
-    const identifier = choice.getAttribute('identifier');
-    if (!identifier) return;
-
-    e.stopPropagation();
-
-    const state = this._state;
-    if (state.pendingId === identifier) {
-      state.pendingId = null;
-    } else {
-      state.pendingId = identifier;
-    }
-    this._triggerRender();
-  };
-
   private _clearSlot(containerIndex: number, side: 'left' | 'right', e: Event) {
     e.stopPropagation();
     const state = this._state;
@@ -249,23 +250,19 @@ export class QtiAssociateInteractionEdit extends Interaction {
     this._triggerRender();
   }
 
-  private _placeInSlot(containerIndex: number, side: 'left' | 'right', e: Event) {
-    e.stopPropagation();
+  private _placeIntoSlot(containerIndex: number, side: 'left' | 'right', sourceId: string) {
     const state = this._state;
     const container = state.containers[containerIndex];
     if (!container) return;
-    if (container[side] !== null) return; // slot is filled — do nothing
-    if (state.pendingId === null) return;
+    if (container[side] !== null) return;
 
-    // Remove pendingId from any existing slot
+    // Remove sourceId from any existing slot so each choice appears at most once
     for (const c of state.containers) {
-      if (c.left === state.pendingId) c.left = null;
-      if (c.right === state.pendingId) c.right = null;
+      if (c.left === sourceId) c.left = null;
+      if (c.right === sourceId) c.right = null;
     }
 
-    container[side] = state.pendingId;
-    state.pendingId = null;
-
+    container[side] = sourceId;
     this._normalizeContainers();
     this._emitChange();
     this._triggerRender();
@@ -282,63 +279,33 @@ export class QtiAssociateInteractionEdit extends Interaction {
     state.containers.push({ left: null, right: null });
   }
 
-  private _cancelPending() {
-    this._state.pendingId = null;
-    this._triggerRender();
-  }
-
   // ─── Render ─────────────────────────────────────────────────────────────
 
   private _renderDropContainer() {
     const state = this._state;
-    const hasPending = state.pendingId !== null;
 
     return html`
       <div class="drop-container">
-        ${hasPending
-          ? html`
-              <div class="pending-banner">
-                <span>${this.i18n.t('associate.selectSlot', { label: this._getLabel(state.pendingId!) })}</span>
-                <button
-                  type="button"
-                  class="pending-cancel"
-                  aria-label=${this.i18n.t('associate.cancel')}
-                  @click=${(e: Event) => {
-                    e.stopPropagation();
-                    this._cancelPending();
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-            `
-          : nothing}
         ${state.containers.map(
           (container, i) => html`
             <div part="associables-container">
               <div
                 part="drop-list"
-                class="dl ${container.left !== null ? 'filled' : hasPending ? 'droppable' : ''}"
-                @click=${container.left === null ? (e: Event) => this._placeInSlot(i, 'left', e) : nothing}
+                class="dl"
+                data-drop-slot=${container.left === null ? `${i}:left` : nothing}
               >
                 ${container.left !== null
-                  ? html`<span>${this._getLabel(container.left)}</span
-                      ><button type="button" class="slot-remove" @click=${(e: Event) => this._clearSlot(i, 'left', e)}>
-                        ×
-                      </button>`
-                  : html`<span>${this.i18n.t('associate.dropHere')}</span>`}
+                  ? renderEditChip(this._getLabel(container.left), container.left, e => this._clearSlot(i, 'left', e))
+                  : nothing}
               </div>
               <div
                 part="drop-list"
-                class="dl ${container.right !== null ? 'filled' : hasPending ? 'droppable' : ''}"
-                @click=${container.right === null ? (e: Event) => this._placeInSlot(i, 'right', e) : nothing}
+                class="dl"
+                data-drop-slot=${container.right === null ? `${i}:right` : nothing}
               >
                 ${container.right !== null
-                  ? html`<span>${this._getLabel(container.right)}</span
-                      ><button type="button" class="slot-remove" @click=${(e: Event) => this._clearSlot(i, 'right', e)}>
-                        ×
-                      </button>`
-                  : html`<span>${this.i18n.t('associate.dropHere')}</span>`}
+                  ? renderEditChip(this._getLabel(container.right), container.right, e => this._clearSlot(i, 'right', e))
+                  : nothing}
               </div>
             </div>
           `

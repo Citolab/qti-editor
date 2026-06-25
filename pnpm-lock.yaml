@@ -15,6 +15,7 @@ overrides:
   prosemirror-schema-list: ^1.5.1
   prosemirror-state: ^1.4.4
   prosemirror-view: ^1.41.9
+  '@qti-components/theme': link:../../Edtech/QTI/QTI-Components/packages/qti-theme
 
 pnpmfileChecksum: sha256-5i5NCu6mIF1NFKJcXL8rPYd/wo7XIH0ZkxRjcy+xW4E=
 
@@ -29,8 +30,8 @@ importers:
         specifier: ^9.39.2
         version: 9.39.4
       '@qti-components/theme':
-        specifier: ^1.3.2
-        version: 1.3.2
+        specifier: link:../../Edtech/QTI/QTI-Components/packages/qti-theme
+        version: link:../../Edtech/QTI/QTI-Components/packages/qti-theme
       '@semantic-release/changelog':
         specifier: ^6.0.3
         version: 6.0.3(semantic-release@24.2.9(typescript@5.9.3))
@@ -182,8 +183,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/prose-qti
       '@qti-components/theme':
-        specifier: ^1.3.2
-        version: 1.3.2
+        specifier: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
+        version: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -237,8 +238,8 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6
       '@qti-components/theme':
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
+        version: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
       '@tanstack/react-query':
         specifier: ^5.95.2
         version: 5.96.2(react@18.3.1)
@@ -331,8 +332,8 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6
       '@qti-components/theme':
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
+        version: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -386,8 +387,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.2
       '@qti-components/theme':
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
+        version: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
       '@qti-components/transformers':
         specifier: ^1.7.1
         version: 1.7.1
@@ -474,8 +475,8 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6
       '@qti-components/theme':
-        specifier: 1.3.2
-        version: 1.3.2
+        specifier: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
+        version: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
       astro:
         specifier: ^5.7.2
         version: 5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.3)
@@ -2176,12 +2177,6 @@ packages:
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
-
-  '@qti-components/theme@1.3.2':
-    resolution: {integrity: sha512-esct0BTe4gamM6Dy5/iFTcdwlVlXeEf6IDEX7InO+rVYUG00CFMW62RflhRzaKasW6t4YXaEZd4Q4AYx9FvzWA==}
-
-  '@qti-components/theme@1.4.0':
-    resolution: {integrity: sha512-JOpoN9DtWHKAHu97BTzre5wq8DEZReTzARmw3CJvET2BthTry9cJik3I5Oe1NxLv5uAujL8tbSP5K0Ey2PO9iA==}
 
   '@qti-components/transformers@1.7.1':
     resolution: {integrity: sha512-Ol8s3zpzTncvfFY7YM7SNTmKODs68IkWQnDODpxKDof4PV26yqT7POg/LmLdfin8A/xTvNNOdgJ+QNEgta1VZA==}
@@ -9143,10 +9138,6 @@ snapshots:
       '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
-
-  '@qti-components/theme@1.3.2': {}
-
-  '@qti-components/theme@1.4.0': {}
 
   '@qti-components/transformers@1.7.1': {}
 

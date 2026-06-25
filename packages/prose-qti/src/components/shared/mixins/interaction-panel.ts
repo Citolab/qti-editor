@@ -18,6 +18,16 @@ export abstract class InteractionPanel extends Interaction {
     return true;
   }
 
+  /**
+   * When false, an outside pointerdown will NOT close an open panel. Default
+   * pins the panel open while the host sits inside a ProseMirror editor
+   * surface — at runtime the dropdown still auto-closes on outside click.
+   * Subclasses can override for finer control.
+   */
+  protected shouldClosePanelOnOutsidePointerDown(): boolean {
+    return !this.closest('.ProseMirror');
+  }
+
   protected panelContainsNode(node: Node | null): boolean {
     return !!node && this.contains(node);
   }
@@ -43,6 +53,7 @@ export abstract class InteractionPanel extends Interaction {
 
     if (!this._panelOpen) return;
     if (event.composedPath().includes(this)) return;
+    if (!this.shouldClosePanelOnOutsidePointerDown()) return;
     this.closePanel();
   };
 

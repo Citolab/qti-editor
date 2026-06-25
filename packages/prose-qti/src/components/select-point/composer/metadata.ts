@@ -30,7 +30,11 @@ export const selectPointInteractionComposerMetadata = {
 export const selectPointNodeAttributePanelMetadataByNodeTypeName = {
   [SELECT_POINT_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: SELECT_POINT_INTERACTION_NODE_TYPE,
-    editableAttributes: ['maxChoices', 'minChoices', 'score'],
-    fields: { score: { label: 'Score', input: 'number' } },
+    editableAttributes: [],
+    fields: {
+      maxChoices: { label: 'Max choices', input: 'number', readOnly: true },
+      minChoices: { label: 'Min choices', input: 'number', readOnly: true },
+      score: { label: 'Score', input: 'number', readOnly: true },
+    },
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

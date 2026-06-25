@@ -2,24 +2,24 @@ import { css, type CSSResultGroup } from 'lit';
 
 import externalStyles from '@qti-components/order-interaction/styles';
 
-
-/** Light DOM styles injected as a <style> element (applies to slotted content) */
+/**
+ * Light-DOM styles injected as a <style> element — applies to slotted
+ * `qti-simple-choice` elements. Minimal: per-state visuals (selected
+ * source / disabled) are owned by the host application's stylesheet via
+ * `qti-simple-choice:state(...)` selectors.
+ */
 export const LIGHT_DOM_STYLES = `
   qti-simple-choice {
-    border-radius: 4px;
-    padding: 4px 8px;
-    border: 1px solid var(--qti-border, #cbd5e1);
-    display: flex;
-    align-items: center;
-    gap: 8px;
     cursor: pointer;
-  }
-
-  qti-simple-choice:hover {
-    background: var(--qti-bg-hover, #f1f5f9);
   }
 `;
 
+/**
+ * Shadow-DOM styles. Layout only — drop-slot per-state visuals (idle,
+ * pending pulse, filled) and chip styling are app-owned via host-state
+ * selectors (`qti-order-interaction:state(pending) ::part(drop-list)`)
+ * and qti-theme's `::part(drag)` rules.
+ */
 const styles: CSSResultGroup = [
   externalStyles,
   css`
@@ -56,89 +56,34 @@ const styles: CSSResultGroup = [
       align-content: start;
     }
 
-    /* Drop slot — clickable area that shows the assigned choice as a fake drag */
     .order-slot {
-      min-height: 3rem;
-      border: 2px dashed var(--qti-border, #cbd5e1);
-      border-radius: 0.5rem;
-      background: #fffbeb;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       gap: 4px;
       padding: 4px;
+      min-height: 3rem;
     }
 
-    .order-slot:hover {
-      border-color: #d97706;
-      background: #fef3c7;
+    /* Pending pulse — only empty slots react.
+       qti-theme's outer qti-order-interaction::part(drop-list) rule wins
+       the cascade over shadow rules for ::part() selectors. We can't
+       beat it with a more-specific shadow rule, so instead we override the
+       custom properties IT reads (--qti-border-color, --qti-bg). Those
+       inherit through the shadow boundary, so setting them on the empty
+       drop-list redirects theme's own declarations. Animation lives in
+       shadow because it doesn't conflict with the theme cascade. */
+    :host(:state(pending)) [part='drop-list']:not(:has(qti-fake-drag)) {
+      --qti-border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
+      --qti-bg: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
+      animation: qti-edit-drop-pulse 1.2s ease-in-out infinite;
     }
 
-    .order-slot[data-filled] {
-      border-style: solid;
-      border-color: #22c55e;
-      background: #f0fdf4;
-    }
-
-    .order-slot[data-filled]:hover {
-      border-color: #16a34a;
-      background: #dcfce7;
-    }
-
-    /* While a simple-choice is pending, empty drop slots pulse to invite a click.
-       Mirrors the dropslot-pulse used by qti-simple-associable-choice in match. */
-    @keyframes order-dropslot-pulse {
-      0%, 100% { border-color: var(--qti-border, #cbd5e1); }
-      50%      { border-color: var(--qti-border-active, #3b82f6); }
-    }
-
-    .order-slot[data-pending-target]:not([data-filled]) {
-      animation: order-dropslot-pulse 1.2s ease-in-out infinite;
-      background: #eff6ff;
-    }
-
-    .order-slot[data-pending-target]:not([data-filled]):hover {
-      background: #dbeafe;
-    }
-
-    /* Fake drag — non-interactive preview of the assigned choice inside a slot,
-       mirroring the qti-simple-associable-choice fake drags in match. */
-    .fake-drag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 6px;
-      border: 1px solid var(--qti-correct, #22c55e);
-      border-radius: 4px;
-      background: var(--qti-bg-success, #dcfce7);
-      font-size: 0.9em;
-      line-height: 1.2;
-      user-select: none;
-      cursor: default;
-    }
-
-    .fake-drag-remove {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 14px;
-      height: 14px;
-      padding: 0;
-      border: none;
-      border-radius: 50%;
-      background: transparent;
-      color: inherit;
-      font-size: 1.1em;
-      line-height: 1;
-      cursor: pointer;
-      opacity: 0.6;
-    }
-
-    .fake-drag-remove:hover {
-      opacity: 1;
-      background: rgb(0 0 0 / 0.1);
+    @keyframes qti-edit-drop-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb,
+        var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70)) 45%, transparent); }
+      50%      { box-shadow: 0 0 0 4px color-mix(in srgb,
+        var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70)) 0%, transparent); }
     }
   `,
 ];

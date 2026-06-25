@@ -1,8 +1,14 @@
-import { html, nothing } from 'lit';
+import { html } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { InteractionPanel, QtiI18nController } from '../../../shared';
+import { Interaction, PendingSelectionController } from '../../../shared';
 import styles from './qti-gap-match-interaction.styles.js';
+
+/** Idempotent helper — diffs state set operations. */
+function toggleState(set: CustomStateSet, name: string, on: boolean): void {
+  if (on) set.add(name);
+  else set.delete(name);
+}
 
 export type GapAssociation = [string, string];
 
@@ -10,10 +16,19 @@ export interface GapAssociationChangeDetail {
   associations: GapAssociation[];
 }
 
-export class QtiGapMatchInteractionEdit extends InteractionPanel {
+/**
+ * Editor component for qti-gap-match-interaction. Authoring is inline:
+ * click a gap-text source → every empty `<qti-gap>` pulses red-dashed (via
+ * `:state(pending)` on the gap host) → click a gap to commit. Click the ×
+ * inside a filled gap's `<qti-fake-drag>` to clear it. Escape / outside
+ * click cancels pending.
+ *
+ * Selection state lives in {@link PendingSelectionController}; this class
+ * owns the association map, label cache, lightdom visual sync, and change
+ * event emission.
+ */
+export class QtiGapMatchInteractionEdit extends Interaction {
   static override styles = styles;
-
-  private readonly i18n = new QtiI18nController(this);
 
   @property({ type: Number, attribute: 'max-associations' })
   maxAssociations = 1;
@@ -35,61 +50,56 @@ export class QtiGapMatchInteractionEdit extends InteractionPanel {
   private lastEmittedResponse: string | null = null;
   private isApplyingVisualState = false;
   private isEmittingChange = false;
-  private pendingTextId: string | null = null;
   private associations = new Map<string, string>();
+
+  private readonly selection = new PendingSelectionController(this, {
+    resolveSource: el => {
+      if (el.tagName !== 'QTI-GAP-TEXT') return null;
+      const identifier = el.getAttribute('identifier');
+      return identifier ? { element: el, identifier } : null;
+    },
+    resolveTarget: el => {
+      if (el.tagName !== 'QTI-GAP') return null;
+      const identifier = el.getAttribute('identifier');
+      return identifier ? { element: el, identifier } : null;
+    },
+    onCommit: (textId, target) => {
+      const gapId = target.identifier;
+      if (!gapId) return;
+      this.commitAssociation(textId, gapId);
+    },
+    onPendingChanged: () => this.applyVisualState(),
+  });
 
   override connectedCallback(): void {
     super.connectedCallback();
     this.parseCorrectResponse();
     this.buildLabelCache();
     this.applyVisualState();
-    this.addEventListener('click', this.onClick);
-    
-    // Watch for text content changes in gap-text elements
-    this.observer = new MutationObserver((mutations) => {
+    this.addEventListener('fake-drag-remove', this.onFakeDragRemove as EventListener);
+    void this.selection;
+
+    // Watch for text content changes in gap-text elements so labels stay live.
+    this.observer = new MutationObserver(mutations => {
       if (this.isApplyingVisualState) return;
-      
-      // Check if any mutations affected gap-text content
-      const hasGapTextContentChange = mutations.some(mutation => {
-        // Text content changes (characterData)
-        if (mutation.type === 'characterData') {
-          let node: Node | null = mutation.target;
-          while (node && node !== this) {
-            if (node instanceof HTMLElement && node.tagName === 'QTI-GAP-TEXT') {
-              return true;
-            }
-            node = node.parentNode;
-          }
-        }
-        // Child nodes added/removed inside gap-text
-        if (mutation.type === 'childList') {
-          let node: Node | null = mutation.target;
-          while (node && node !== this) {
-            if (node instanceof HTMLElement && node.tagName === 'QTI-GAP-TEXT') {
-              return true;
-            }
-            node = node.parentNode;
-          }
+      const touchedGapText = mutations.some(mutation => {
+        let node: Node | null = mutation.target;
+        while (node && node !== this) {
+          if (node instanceof HTMLElement && node.tagName === 'QTI-GAP-TEXT') return true;
+          node = node.parentNode;
         }
         return false;
       });
-      
-      if (hasGapTextContentChange) {
+      if (touchedGapText) {
         this.buildLabelCache();
-        // Re-apply visual state to update labels in the UI
         this.applyVisualState();
       }
     });
-    
-    this.observer.observe(this, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-    });
+    this.observer.observe(this, { childList: true, subtree: true, characterData: true });
   }
 
   override disconnectedCallback(): void {
-    this.removeEventListener('click', this.onClick);
+    this.removeEventListener('fake-drag-remove', this.onFakeDragRemove as EventListener);
     this.observer?.disconnect();
     this.observer = null;
     super.disconnectedCallback();
@@ -128,7 +138,7 @@ export class QtiGapMatchInteractionEdit extends InteractionPanel {
 
   private parseCorrectResponse() {
     this.associations.clear();
-    this.pendingTextId = null;
+    this.selection.cancel();
     if (!this.correctResponse) return;
 
     try {
@@ -148,7 +158,7 @@ export class QtiGapMatchInteractionEdit extends InteractionPanel {
 
   private emitChange() {
     if (this.isEmittingChange) return;
-    
+
     const associations = Array.from(this.associations.entries()).map(
       ([gapId, textId]) => [textId, gapId] as GapAssociation,
     );
@@ -157,25 +167,29 @@ export class QtiGapMatchInteractionEdit extends InteractionPanel {
       associations.length > 0
         ? JSON.stringify(associations.map(([textId, gapId]) => `${textId} ${gapId}`))
         : null;
-    
-    // Defer the event dispatch to avoid re-entrancy during click handling
+
+    // Defer the event dispatch to avoid re-entrancy during click handling.
     this.isEmittingChange = true;
     queueMicrotask(() => {
       this.isEmittingChange = false;
-      this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
-        detail: {
-          nodeType: 'qtiGapMatchInteraction',
-          tagName: 'qti-gap-match-interaction',
-          attrs: { correctResponse: this.lastEmittedResponse },
-        },
-        bubbles: true,
-        composed: true,
-      }));
-      this.dispatchEvent(new CustomEvent<GapAssociationChangeDetail>('gap-association-change', {
-        detail: { associations },
-        bubbles: true,
-        composed: true,
-      }));
+      this.dispatchEvent(
+        new CustomEvent('qti-prosemirror-node-attrs-change', {
+          detail: {
+            nodeType: 'qtiGapMatchInteraction',
+            tagName: 'qti-gap-match-interaction',
+            attrs: { correctResponse: this.lastEmittedResponse },
+          },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+      this.dispatchEvent(
+        new CustomEvent<GapAssociationChangeDetail>('gap-association-change', {
+          detail: { associations },
+          bubbles: true,
+          composed: true,
+        }),
+      );
     });
   }
 
@@ -202,74 +216,70 @@ export class QtiGapMatchInteractionEdit extends InteractionPanel {
     }
   }
 
-  private onClick = (event: MouseEvent) => {
-    const path = event.composedPath();
-    const gapText = path.find(node => node instanceof HTMLElement && node.tagName === 'QTI-GAP-TEXT') as HTMLElement | undefined;
-    if (gapText) {
-      const textId = gapText.getAttribute('identifier');
-      if (!textId) return;
-      event.stopPropagation();
-      this.handleGapTextClick(textId);
-      return;
-    }
-
-    const gap = path.find(node => node instanceof HTMLElement && node.tagName === 'QTI-GAP') as HTMLElement | undefined;
-    if (gap) {
-      const gapId = gap.getAttribute('identifier');
-      if (!gapId) return;
-      event.stopPropagation();
-      this.handleGapClick(gapId);
-    }
-  };
-
-  private handleGapTextClick(textId: string) {
-    this.pendingTextId = this.pendingTextId === textId ? null : textId;
-    this.applyVisualState();
-    this.requestUpdate();
-  }
-
-  private handleGapClick(gapId: string) {
-    if (!this.pendingTextId) {
-      if (this.associations.has(gapId)) {
-        this.associations.delete(gapId);
-        this.emitChange();
-        this.applyVisualState();
-        this.requestUpdate();
-      }
-      return;
-    }
-
-    const textId = this.pendingTextId;
+  /** Called by the {@link PendingSelectionController} when a gap is clicked while a gap-text is pending. */
+  private commitAssociation(textId: string, gapId: string) {
     const limit = this.getTextMatchMax(textId);
     if (limit <= 1) {
       this.clearTextAssignments(textId);
     } else if (this.countTextUsage(textId) >= limit && this.associations.get(gapId) !== textId) {
-      this.pendingTextId = null;
       this.applyVisualState();
-      this.requestUpdate();
       return;
     }
-
     this.associations.set(gapId, textId);
-    this.pendingTextId = null;
     this.emitChange();
     this.applyVisualState();
-    this.requestUpdate();
   }
 
+  /**
+   * Remove an association when the × button inside a filled gap's
+   * `<qti-fake-drag>` is clicked. The button stops the native click event but
+   * dispatches a composed `fake-drag-remove` CustomEvent that bubbles out of
+   * the gap's shadow into the interaction host. We resolve the affected gap
+   * from the event's composedPath (the chip lives inside it).
+   *
+   * Plain clicks on a filled gap are intentionally NOT a remove gesture —
+   * that conflicted with PendingSelectionController's commit cycle (commit
+   * fired first, then a plain-click remove undid it).
+   */
+  private onFakeDragRemove = (event: CustomEvent<{ identifier: string }>): void => {
+    const gap = event
+      .composedPath()
+      .find(node => node instanceof HTMLElement && node.tagName === 'QTI-GAP') as HTMLElement | undefined;
+    if (!gap) return;
+    const gapId = gap.getAttribute('identifier');
+    if (!gapId || !this.associations.has(gapId)) return;
+    event.stopPropagation();
+    this.associations.delete(gapId);
+    this.emitChange();
+    this.applyVisualState();
+  };
+
+  /**
+   * Flush the current `associations` map + pending-source id into UI state
+   * across the lightdom gap-text and gap elements. State is expressed via
+   * `ElementInternals.states` (`:state(pending|filled|selected|linked|disabled)`)
+   * — never via attributes — so editor-only state structurally can't leak
+   * into serialized QTI XML. The one DOM attribute we still set is
+   * `data-assigned-label` because it's content (the visible label of the
+   * assigned gap-text inside the filled gap).
+   */
   private applyVisualState() {
     if (this.isApplyingVisualState) return;
     this.isApplyingVisualState = true;
-    
+
     try {
+      const pendingTextId = this.selection.pendingSourceId;
       for (const gapText of this.getGapTexts()) {
         const textId = gapText.getAttribute('identifier');
         if (!textId) continue;
         const usage = this.countTextUsage(textId);
         const limit = this.getTextMatchMax(textId);
-        gapText.toggleAttribute('data-selected', this.pendingTextId === textId);
-        gapText.toggleAttribute('data-linked', usage > 0);
-        gapText.toggleAttribute('data-disabled', usage >= limit && this.pendingTextId !== textId);
+        const states = (gapText as HTMLElement & { internals?: ElementInternals }).internals?.states;
+        if (!states) continue;
+        // `:state(selected)` is owned by PendingSelectionController — don't
+        // double-toggle it here. We still own `linked` and `disabled`.
+        toggleState(states, 'linked', usage > 0);
+        toggleState(states, 'disabled', usage >= limit && pendingTextId !== textId);
       }
 
       for (const gap of this.getGaps()) {
@@ -281,70 +291,14 @@ export class QtiGapMatchInteractionEdit extends InteractionPanel {
         } else {
           gap.removeAttribute('data-assigned-label');
         }
-        gap.toggleAttribute('data-filled', assignedTextId != null);
-        gap.toggleAttribute('data-pending', this.pendingTextId != null && assignedTextId == null);
+        const states = (gap as HTMLElement & { internals?: ElementInternals }).internals?.states;
+        if (!states) continue;
+        toggleState(states, 'filled', assignedTextId != null);
+        toggleState(states, 'pending', pendingTextId != null && assignedTextId == null);
       }
     } finally {
       this.isApplyingVisualState = false;
     }
-  }
-
-  private removeAssociation(gapId: string) {
-    this.associations.delete(gapId);
-    this.emitChange();
-    this.applyVisualState();
-    this.requestUpdate();
-  }
-
-  private cancelPending() {
-    this.pendingTextId = null;
-    this.applyVisualState();
-    this.requestUpdate();
-  }
-
-  private renderAssociationsPanel() {
-    const associations = Array.from(this.associations.entries());
-
-    return html`
-      <div class="associations-panel">
-        <div class="associations-panel-title">${this.i18n.t('gapMatch.correctResponse')}</div>
-        <div class="association-list">
-          ${this.pendingTextId ? html`
-            <span class="pending-indicator">
-              ${this.i18n.t('gapMatch.selectGapFor', { label: this.getLabel(this.pendingTextId) })}
-              <button
-                type="button"
-                class="association-chip-remove"
-                aria-label=${this.i18n.t('gapMatch.cancel')}
-                @click=${(event: Event) => {
-                  event.stopPropagation();
-                  this.cancelPending();
-                }}
-              >×</button>
-            </span>
-          ` : nothing}
-          ${associations.length === 0 && !this.pendingTextId ? html`
-            <span class="no-associations">${this.i18n.t('gapMatch.noAssociations')}</span>
-          ` : nothing}
-          ${associations.map(([gapId, textId]) => html`
-            <span class="association-chip">
-              <span>${this.getLabel(textId)}</span>
-              <span>→</span>
-              <span>${gapId}</span>
-              <button
-                type="button"
-                class="association-chip-remove"
-                aria-label=${this.i18n.t('gapMatch.remove')}
-                @click=${(event: Event) => {
-                  event.stopPropagation();
-                  this.removeAssociation(gapId);
-                }}
-              >×</button>
-            </span>
-          `)}
-        </div>
-      </div>
-    `;
   }
 
   override render() {
@@ -356,7 +310,6 @@ export class QtiGapMatchInteractionEdit extends InteractionPanel {
       <div class="body">
         <slot></slot>
       </div>
-      ${this._panelOpen ? this.renderAssociationsPanel() : nothing}
     `;
   }
 }

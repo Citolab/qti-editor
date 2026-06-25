@@ -109,9 +109,9 @@ export const qtiPlugins: Plugin[] = [
 const TEST_BASE = '/qti/kennisnet';
 
 /** Load the Kennisnet sample item refs from `AssessmentTest.xml`. */
-export async function loadQtiItems(): Promise<{ href: string; identifier: string }[]> {
+export async function loadQtiItems(): Promise<{ href: string; identifier: string; category: string }[]> {
   const test = await qtiTransformTest().load(`${TEST_BASE}/AssessmentTest.xml`);
-  return test.items().map(item => ({ href: item.href, identifier: item.identifier }));
+  return test.items().map(item => ({ href: item.href, identifier: item.identifier, category: item.category }));
 }
 
 /** Import a QTI 3.0 item from `href` into a ProseMirror document for `schema`. */

@@ -1,13 +1,13 @@
 import { html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
-import { Interaction, QtiI18nController } from '../../../shared';
+import { Interaction, PendingSelectionController, renderEditChip } from '../../../shared';
 import styles, { LIGHT_DOM_STYLES } from './qti-order-interaction.styles.js';
 
 export class QtiOrderInteractionEdit extends Interaction {
   static override styles = styles;
 
-  private readonly i18n = new QtiI18nController(this);
+  public internals: ElementInternals;
 
   @property({ type: Boolean })
   shuffle: boolean = false;
@@ -30,22 +30,48 @@ export class QtiOrderInteractionEdit extends Interaction {
   private _setupDone = false;
   private _lightDomStyle: HTMLStyleElement | null = null;
   private _observer: MutationObserver | null = null;
-  private _pendingChoiceId: string | null = null;
+
+  private readonly _selection = new PendingSelectionController(this, {
+    resolveSource: el => {
+      if (el.tagName !== 'QTI-SIMPLE-CHOICE') return null;
+      const identifier = el.getAttribute('identifier');
+      return identifier ? { element: el, identifier } : null;
+    },
+    resolveTarget: el => {
+      const raw = el.dataset?.slotIndex;
+      if (raw == null) return null;
+      return { element: el, identifier: raw };
+    },
+    onCommit: (sourceId, target) => {
+      const slotIndex = Number(target.identifier);
+      if (Number.isFinite(slotIndex)) this._placeSelectedChoice(sourceId, slotIndex);
+    },
+    // Mirror the pending state onto the interaction host so CSS can pulse
+    // empty drop slots via `:state(pending) ::part(drop-list):not(:has(qti-fake-drag))`.
+    onPendingChanged: pending => {
+      if (pending != null) this.internals.states.add('pending');
+      else this.internals.states.delete('pending');
+    },
+  });
+
+  constructor() {
+    super();
+    this.internals = this.attachInternals();
+  }
+
+  private get _pendingChoiceId(): string | null {
+    return this._selection.pendingSourceId;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
     this._injectLightDomStyles();
     this._parseCorrectResponse();
-    this.addEventListener('click', this._onClick);
-    document.addEventListener('keydown', this._onKeyDown);
-    document.addEventListener('pointerdown', this._onDocumentPointerDown);
     requestAnimationFrame(() => this._trySetup());
+    void this._selection;
   }
 
   override disconnectedCallback() {
-    this.removeEventListener('click', this._onClick);
-    document.removeEventListener('keydown', this._onKeyDown);
-    document.removeEventListener('pointerdown', this._onDocumentPointerDown);
     this._observer?.disconnect();
     this._observer = null;
     this._lightDomStyle?.remove();
@@ -107,7 +133,7 @@ export class QtiOrderInteractionEdit extends Interaction {
   }
 
   private _parseCorrectResponse() {
-    this._pendingChoiceId = null;
+    this._selection.cancel();
     if (!this.correctResponse) {
       this._order = [];
       return;
@@ -139,7 +165,7 @@ export class QtiOrderInteractionEdit extends Interaction {
     this._order = next;
 
     if (this._pendingChoiceId && !validIds.has(this._pendingChoiceId)) {
-      this._pendingChoiceId = null;
+      this._selection.cancel();
     }
   }
 
@@ -200,27 +226,7 @@ export class QtiOrderInteractionEdit extends Interaction {
     }));
   }
 
-  private _toggleChoiceSelection(choiceId: string) {
-    this._pendingChoiceId = this._pendingChoiceId === choiceId ? null : choiceId;
-    this._triggerRender();
-  }
-
-  private _cancelPending() {
-    if (!this._pendingChoiceId) return;
-    this._pendingChoiceId = null;
-    this._triggerRender();
-  }
-
-  private _handleSlotClick(slotIndex: number) {
-    if (this._pendingChoiceId) {
-      this._placeSelectedChoice(slotIndex);
-    }
-  }
-
-  private _placeSelectedChoice(slotIndex: number) {
-    if (!this._pendingChoiceId) return;
-
-    const choiceId = this._pendingChoiceId;
+  private _placeSelectedChoice(choiceId: string, slotIndex: number) {
     const slotCount = this._getChoiceIds().length;
     if (slotIndex < 0 || slotIndex >= slotCount) return;
 
@@ -233,7 +239,6 @@ export class QtiOrderInteractionEdit extends Interaction {
     next[slotIndex] = choiceId;
 
     this._order = next;
-    this._pendingChoiceId = null;
     this._emitChange();
     this._triggerRender();
   }
@@ -248,64 +253,26 @@ export class QtiOrderInteractionEdit extends Interaction {
     this._triggerRender();
   }
 
-  private _onClick = (event: MouseEvent) => {
-    const choice = event.composedPath().find(item =>
-      item instanceof HTMLElement && item.tagName === 'QTI-SIMPLE-CHOICE',
-    ) as HTMLElement | undefined;
-
-    if (!choice || !this.contains(choice)) return;
-
-    const identifier = choice.getAttribute('identifier');
-    if (!identifier) return;
-
-    event.stopPropagation();
-    this._toggleChoiceSelection(identifier);
-  };
-
-  private _onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && this._pendingChoiceId) {
-      event.preventDefault();
-      this._cancelPending();
-    }
-  };
-
-  /**
-   * Cancel a pending choice selection when the user clicks anywhere outside this
-   * interaction, so the drop-slot pulse stops. (Escape is handled by
-   * `_onKeyDown`; clicking the same choice again toggles it off.)
-   */
-  private _onDocumentPointerDown = (e: PointerEvent) => {
-    if (!this._pendingChoiceId) return;
-    if (e.composedPath().includes(this)) return;
-    this._cancelPending();
-  };
-
   private _renderSlots() {
-    const pendingTarget = this._pendingChoiceId !== null;
+    // Plain `<drop-list role="region" part="drop-list">` mirrors the runtime
+    // qti-components shape (qti-order-interaction.ts:60 in the runtime). It
+    // is NOT a registered custom element — just a styling/role hook. Pending
+    // and filled visuals are driven by:
+    //   - `:state(pending)` on the interaction host (set by PendingSelectionController)
+    //   - `:has(qti-fake-drag)` to detect filled slots in CSS
     return html`
-      ${this._getSlots().map((choiceId, index) => {
-        return html`
-          <div
-            class="order-slot"
-            part="drop-list"
-            ?data-filled=${choiceId !== null}
-            ?data-pending-target=${pendingTarget}
-            @click=${(e: Event) => { e.stopPropagation(); this._handleSlotClick(index); }}
-          >
-            ${choiceId !== null ? html`
-              <span class="fake-drag" data-identifier=${choiceId}>
-                ${this._getLabel(choiceId)}
-                <button
-                  type="button"
-                  class="fake-drag-remove"
-                  aria-label=${this.i18n.t('order.remove')}
-                  @click=${(e: Event) => { e.stopPropagation(); this._clearSlot(index); }}
-                >×</button>
-              </span>
-            ` : nothing}
-          </div>
-        `;
-      })}
+      ${this._getSlots().map((choiceId, index) => html`
+        <drop-list
+          role="region"
+          class="order-slot"
+          part="drop-list"
+          data-slot-index=${index}
+        >
+          ${choiceId !== null
+            ? renderEditChip(this._getLabel(choiceId), choiceId, () => this._clearSlot(index))
+            : nothing}
+        </drop-list>
+      `)}
     `;
   }
 

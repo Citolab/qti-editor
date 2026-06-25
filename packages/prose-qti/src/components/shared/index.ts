@@ -21,6 +21,8 @@ export * from './components/qti-gap/qti-gap.schema.js';
 export * from './components/qti-gap-text/qti-gap-text.js';
 export * from './components/qti-gap-text/qti-gap-text.schema.js';
 
+export * from './components/qti-fake-drag/qti-fake-drag.js';
+
 export * from './commands/enter.js';
 export * from './commands/home-end.js';
 export * from './commands/insert.js';
@@ -32,6 +34,8 @@ export * from './correct-response/codec.js';
 export * from './i18n/index.js';
 
 export * from './mixins/index.js';
+export * from './controllers/pending-selection-controller.js';
+export * from './render/chip.js';
 export * from './styles/panel.js';
 export * from './pm-to-roundtrip-xml.js';
 export * from './roundtrip-xml-to-pm.js';

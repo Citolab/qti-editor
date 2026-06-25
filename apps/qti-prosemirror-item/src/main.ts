@@ -249,7 +249,7 @@ exportBtn.addEventListener('click', () => {
 
 const items = await loadQtiItems();
 
-itemList.innerHTML = items.map(item => `<option value="${item.href}">${item.identifier}</option>`).join('');
+itemList.innerHTML = items.map(item => `<option value="${item.href}">${item.category || item.identifier}</option>`).join('');
 
 itemList.addEventListener('change', () => {
   if (itemList.value) void openItem(itemList.value);

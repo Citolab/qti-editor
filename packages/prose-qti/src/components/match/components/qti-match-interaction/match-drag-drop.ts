@@ -1,6 +1,6 @@
 import { html, type LitElement, type ReactiveController } from 'lit';
 
-import { MATCH_SELECTING_TARGET_EVENT } from '../../../shared';
+import { MATCH_SELECTING_TARGET_EVENT, PendingSelectionController } from '../../../shared';
 import {
   getChoices,
   getMatchSets,
@@ -35,7 +35,7 @@ export class DragDropController implements ReactiveController {
   private observer: MutationObserver | null = null;
   private setupDone = false;
 
-  private pendingSourceId: string | null = null;
+  private readonly selection: PendingSelectionController;
   /**
    * Internal state for both modes is now the same `Set<"src tgt">` shape used
    * by tabular mode. This guarantees a lossless round-trip when the mode
@@ -46,6 +46,42 @@ export class DragDropController implements ReactiveController {
 
   constructor(host: DragDropHost) {
     this.host = host;
+    this.selection = new PendingSelectionController(host, {
+      resolveSource: el => {
+        if (el.tagName !== 'QTI-SIMPLE-ASSOCIABLE-CHOICE') return null;
+        const [sourceSet] = getMatchSets(this.host);
+        if (!sourceSet?.contains(el)) return null;
+        const identifier = el.getAttribute('identifier');
+        return identifier ? { element: el, identifier } : null;
+      },
+      resolveTarget: el => {
+        if (el.tagName !== 'QTI-SIMPLE-ASSOCIABLE-CHOICE') return null;
+        const [, targetSet] = getMatchSets(this.host);
+        if (!targetSet?.contains(el)) return null;
+        return { element: el, identifier: el.getAttribute('identifier') };
+      },
+      onCommit: (sourceId, target) => {
+        if (target.identifier) this.commitPair(sourceId, target.identifier);
+      },
+      onPendingChanged: pending => {
+        const [, targetSet] = getMatchSets(this.host);
+        // 1. Cross-host event (kept for runtime-mode consumers).
+        targetSet?.dispatchEvent(
+          new CustomEvent<MatchSelectingTargetDetail>(MATCH_SELECTING_TARGET_EVENT, {
+            detail: { active: pending != null },
+          }),
+        );
+        // 2. `:state(pending)` on each target choice — drives the shared
+        // `qti-simple-associable-choice:state(pending)` CSS rule.
+        const active = pending != null;
+        for (const target of getChoices(targetSet)) {
+          const internals = (target as HTMLElement & { internals?: ElementInternals }).internals;
+          if (!internals) continue;
+          if (active) internals.states.add('pending');
+          else internals.states.delete('pending');
+        }
+      },
+    });
     host.addController(this);
   }
 
@@ -56,10 +92,14 @@ export class DragDropController implements ReactiveController {
   }
 
   hostDisconnected(): void {
-    this.host.removeEventListener('click', this.onClick);
     this.host.removeEventListener('fake-drag-remove', this.onFakeDragRemove as EventListener);
-    document.removeEventListener('keydown', this.onKeyDown);
-    document.removeEventListener('pointerdown', this.onDocumentPointerDown);
+    // Clear any lingering :state(pending|filled) on target choices so a
+    // switch to tabular mode doesn't leave drag-drop's affordances behind.
+    for (const target of getChoices(getMatchSets(this.host)[1])) {
+      const internals = (target as HTMLElement & { internals?: ElementInternals }).internals;
+      internals?.states.delete('pending');
+      internals?.states.delete('filled');
+    }
     this.observer?.disconnect();
     this.observer = null;
     this.setupDone = false;
@@ -90,10 +130,7 @@ export class DragDropController implements ReactiveController {
 
     this.setupDone = true;
     this.buildLabelCache();
-    this.host.addEventListener('click', this.onClick);
     this.host.addEventListener('fake-drag-remove', this.onFakeDragRemove as EventListener);
-    document.addEventListener('keydown', this.onKeyDown);
-    document.addEventListener('pointerdown', this.onDocumentPointerDown);
     this.setupMutationObserver();
     this.triggerRender();
   }
@@ -119,7 +156,7 @@ export class DragDropController implements ReactiveController {
     const raw = this.host.correctResponse;
     const asStr = raw == null ? null : Array.isArray(raw) ? JSON.stringify(raw) : raw;
     this.pairs = parseCorrectResponseAsPairs(asStr);
-    this.pendingSourceId = null;
+    this.selection.cancel();
   }
 
   private emitChange(): void {
@@ -139,17 +176,6 @@ export class DragDropController implements ReactiveController {
   private triggerRender(): void {
     this.host.requestUpdate();
     this.syncFakeDrags();
-    this.syncSelectingTarget();
-  }
-
-  private syncSelectingTarget(): void {
-    const [, targetSet] = getMatchSets(this.host);
-    if (!targetSet) return;
-    targetSet.dispatchEvent(
-      new CustomEvent<MatchSelectingTargetDetail>(MATCH_SELECTING_TARGET_EVENT, {
-        detail: { active: this.pendingSourceId != null },
-      }),
-    );
   }
 
   private syncFakeDrags(): void {
@@ -165,7 +191,17 @@ export class DragDropController implements ReactiveController {
           }
         }
       }
-      (target as HTMLElement & { fakeDrags: FakeDrag[] }).fakeDrags = drags;
+      const typed = target as HTMLElement & {
+        fakeDrags: FakeDrag[];
+        internals?: ElementInternals;
+      };
+      typed.fakeDrags = drags;
+      // Mirror filled state into the choice's internals so the shared
+      // `:state(filled)` CSS rule applies uniformly with the other interactions.
+      if (typed.internals) {
+        if (drags.length > 0) typed.internals.states.add('filled');
+        else typed.internals.states.delete('filled');
+      }
     }
   }
 
@@ -184,39 +220,12 @@ export class DragDropController implements ReactiveController {
 
   // ─── Interaction ────────────────────────────────────────────────────────
 
-  private onKeyDown = (e: KeyboardEvent): void => {
-    if (e.key === 'Escape' && this.pendingSourceId) this.cancelPending();
-  };
-
-  private onClick = (e: MouseEvent): void => {
-    const path = e.composedPath();
-    const choiceIdx = path.findIndex(
-      el => el instanceof HTMLElement && el.tagName === 'QTI-SIMPLE-ASSOCIABLE-CHOICE',
-    );
-    if (choiceIdx < 0) return;
-    const choice = path[choiceIdx] as HTMLElement;
-    const identifier = choice.getAttribute('identifier');
-    if (!identifier) return;
-
-    e.stopPropagation();
-
-    const [sourceSet, targetSet] = getMatchSets(this.host);
-    if (sourceSet?.contains(choice)) this.handleSourceClick(identifier);
-    else if (targetSet?.contains(choice)) this.handleTargetClick(identifier);
-  };
-
-  private handleSourceClick(sourceId: string): void {
-    this.pendingSourceId = this.pendingSourceId === sourceId ? null : sourceId;
-    this.triggerRender();
-  }
-
-  private handleTargetClick(targetId: string): void {
-    if (!this.pendingSourceId) return;
-    const sourceId = this.pendingSourceId;
-
-    // Respect the source choice's `match-max` (1 = single target per source,
-    // anything else = multiple allowed). When matchMax === 1, replace any
-    // existing pair starting with this source.
+  /**
+   * Called by the {@link PendingSelectionController} when the user clicks a
+   * drop target while a source is pending. Respects the source choice's
+   * `match-max` (1 = single target per source, anything else = multiple).
+   */
+  private commitPair(sourceId: string, targetId: string): void {
     const matchMax = this.getSourceMatchMax(sourceId);
     if (matchMax === 1) {
       for (const pair of Array.from(this.pairs)) {
@@ -224,7 +233,6 @@ export class DragDropController implements ReactiveController {
       }
     }
     this.pairs.add(`${sourceId} ${targetId}`);
-    this.pendingSourceId = null;
     this.emitChange();
     this.triggerRender();
   }
@@ -266,17 +274,6 @@ export class DragDropController implements ReactiveController {
     const n = Number(raw);
     return Number.isFinite(n) ? n : 1;
   }
-
-  private cancelPending(): void {
-    this.pendingSourceId = null;
-    this.triggerRender();
-  }
-
-  private onDocumentPointerDown = (e: PointerEvent): void => {
-    if (!this.pendingSourceId) return;
-    if (e.composedPath().includes(this.host)) return;
-    this.cancelPending();
-  };
 
   // ─── Render ─────────────────────────────────────────────────────────────
 

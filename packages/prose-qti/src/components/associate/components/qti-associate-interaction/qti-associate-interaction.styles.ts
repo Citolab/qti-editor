@@ -10,62 +10,23 @@ const styles: CSSResultGroup = [
       white-space: normal;
     }
 
-    .slot-remove {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 16px;
-      height: 16px;
-      margin-left: auto;
-      padding: 0;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      border-radius: 50%;
-      font-size: 13px;
-      line-height: 1;
-      color: inherit;
-      opacity: 0.6;
-      flex-shrink: 0;
+    /* Pending pulse — only empty slots react.
+       qti-theme's outer qti-associate-interaction::part(drop-list) rule
+       wins the cascade over shadow rules for ::part() selectors. We
+       redirect by overriding the custom properties IT reads (which inherit
+       through the shadow boundary). Animation lives in shadow because it
+       doesn't conflict with the theme cascade. */
+    :host(:state(pending)) [part='drop-list']:not(:has(qti-fake-drag)) {
+      --qti-border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
+      --qti-bg: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
+      animation: qti-edit-drop-pulse 1.2s ease-in-out infinite;
     }
 
-    .slot-remove:hover {
-      opacity: 1;
-      background: rgba(0, 0, 0, 0.1);
-    }
-
-    .pending-banner {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 10px;
-      background: var(--qti-bg-warning, #fef3c7);
-      border: 1px dashed var(--qti-border-warning, #f59e0b);
-      border-radius: 4px;
-      font-size: 0.85em;
-      color: var(--qti-text-warning, #92400e);
-    }
-
-    .pending-cancel {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 18px;
-      height: 18px;
-      padding: 0;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      border-radius: 50%;
-      font-size: 14px;
-      line-height: 1;
-      color: inherit;
-      opacity: 0.6;
-    }
-
-    .pending-cancel:hover {
-      opacity: 1;
-      background: rgba(0, 0, 0, 0.1);
+    @keyframes qti-edit-drop-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb,
+        var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70)) 45%, transparent); }
+      50%      { box-shadow: 0 0 0 4px color-mix(in srgb,
+        var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70)) 0%, transparent); }
     }
   `
 ];
