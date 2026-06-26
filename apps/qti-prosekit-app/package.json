@@ -10,13 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@citolab/prose-extensions": "workspace:*",
+    "@citolab/prose-qti": "workspace:*",
+    "@citolab/prose-qti-ui": "workspace:*",
     "@egoist/tailwindcss-icons": "^1.9.2",
     "@iconify-json/lucide": "^1.2.96",
     "@lit/context": "^1.1.6",
-    "@citolab/prose-qti-ui": "workspace:*",
     "@qti-components/theme": "^1.4.0",
-    "@citolab/prose-qti": "workspace:*",
-    "@citolab/prose-extensions": "workspace:*",
     "@tanstack/react-query": "^5.95.2",
     "firebase": "^12.11.0",
     "i18next": "^23.16.8",

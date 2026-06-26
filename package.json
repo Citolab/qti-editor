@@ -55,7 +55,12 @@
     "qti-components:update": "pnpm -r up --latest @qti-components/interactions-core @qti-components/base @qti-components/theme @qti-components/base @qti-components/utilities @qti-components/choice-interaction @qti-components/inline-choice-interaction @qti-components/extended-text-interaction @qti-components/hottext-interaction @qti-components/choice-interaction @qti-components/extended-text-interaction @qti-components/match-interaction",
     "qti-overrides:status": "node scripts/qti-local-overrides-sync.mjs status",
     "qti-overrides:sync": "node scripts/qti-local-overrides-sync.mjs sync",
-    "qti-overrides:install": "node scripts/qti-local-overrides-sync.mjs sync && pnpm install"
+    "qti-overrides:install": "node scripts/qti-local-overrides-sync.mjs sync && pnpm install",
+    "prepare": "husky",
+    "yalc:add": "pnpm -r exec yalc restore",
+    "yalc:remove-all": "pnpm -r exec yalc retreat --all",
+    "dev:linked": "node scripts/dev-linked.mjs",
+    "yalc:init": "node scripts/yalc-init.mjs"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.0.1",
@@ -87,6 +92,7 @@
     "eslint-plugin-wc": "^3.1.0",
     "fast-xml-parser": "^5.8.0",
     "globals": "^17.4.0",
+    "husky": "^9.1.7",
     "lit": "^3.3.2",
     "multi-semantic-release": "^3.0.0",
     "playwright": "^1.58.2",
@@ -107,6 +113,7 @@
     "typescript-eslint": "^8.56.1",
     "vite": "^6.4.1",
     "vite-tsconfig-paths": "^6.0.5",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "yalc": "1.0.0-pre.53"
   }
 }

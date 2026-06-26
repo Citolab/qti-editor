@@ -43,8 +43,8 @@ export class QtiMatchInteractionEdit extends Interaction implements TabularHost,
   // (`correctResponse` + `responseIdentifier` come from the Interaction base.)
 
   @query('slot[name="prompt"]') private promptSlot!: HTMLSlotElement;
-  @query('slot[name="rows"]') private rowsSlot!: HTMLSlotElement;
-  @query('slot[name="columns"]') private colsSlot!: HTMLSlotElement;
+  @query('slot[name="match-rows"]') private rowsSlot!: HTMLSlotElement;
+  @query('slot[name="match-cols"]') private colsSlot!: HTMLSlotElement;
   @query('slot:not([name])') private defaultSlot!: HTMLSlotElement;
 
   private tabular?: TabularController;

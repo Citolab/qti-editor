@@ -1,6 +1,8 @@
 node_modules
 dist
 **/build/custom-elements.json
+.yalc
+yalc.lock
 
 .DS_Store
 .astro

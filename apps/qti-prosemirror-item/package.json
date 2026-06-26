@@ -10,14 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@citolab/prose-extensions": "workspace:*",
+    "@citolab/prose-qti": "workspace:*",
     "@lit/reactive-element": "^2.1.0",
+    "@qti-components/theme": "^1.5.0",
+    "@qti-components/transformers": "^1.7.1",
     "lit": "^3.3.2",
     "lit-element": "^4.2.0",
     "lit-html": "^3.3.0",
-    "@qti-components/theme": "^1.5.0",
-    "@qti-components/transformers": "^1.7.1",
-    "@citolab/prose-extensions": "workspace:*",
-    "@citolab/prose-qti": "workspace:*",
     "prosemirror-commands": "^1.7.1",
     "prosemirror-dropcursor": "^1.8.2",
     "prosemirror-gapcursor": "^1.4.1",

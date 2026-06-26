@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+# Strip yalc deps from staged package.json files before they enter a commit.
+# After the commit, run `pnpm yalc:add` to restore yalc dev mode.
+
+staged_pkg_jsons=$(git diff --cached --name-only --diff-filter=ACM -- '*package.json')
+yalc_in_index=false
+for f in $staged_pkg_jsons; do
+  if git show ":$f" 2>/dev/null | grep -q '"file:\.yalc/'; then
+    yalc_in_index=true
+    break
+  fi
+done
+
+if [ "$yalc_in_index" = "true" ]; then
+  echo ""
+  echo "🧹 pre-commit: yalc file: deps detected in staged package.json files."
+  echo "   Running 'pnpm yalc:remove-all' and re-staging clean versions..."
+  pnpm yalc:remove-all || exit 1
+  modified=$(git diff --name-only -- '*package.json')
+  if [ -n "$modified" ]; then
+    echo "$modified" | xargs git add
+  fi
+  echo "✅ yalc removed from index. Commit will proceed with clean package.json."
+  echo "   To restore yalc dev mode after commit: pnpm yalc:add"
+  echo ""
+fi

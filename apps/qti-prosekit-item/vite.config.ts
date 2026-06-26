@@ -264,11 +264,36 @@ export default defineConfig(({ command }) => ({
   plugins: [
     tailwindcss(),
     tsconfigPaths({ ignoreConfigErrors: true }),
+    {
+      name: 'watch-node-modules',
+      handleHotUpdate({ file, server }) {
+        if (
+          file.includes('node_modules/@qti-components/') ||
+          file.includes('node_modules/@citolab/') ||
+          file.includes('node_modules/@qti-editor/')
+        ) {
+          server.ws.send({ type: 'full-reload' });
+          return [];
+        }
+      },
+    },
   ],
   optimizeDeps: {
     exclude: [
+      '@qti-components/associate-interaction',
       '@qti-components/base',
+      '@qti-components/choice-interaction',
+      '@qti-components/extended-text-interaction',
+      '@qti-components/hottext-interaction',
+      '@qti-components/inline-choice-interaction',
       '@qti-components/interactions',
+      '@qti-components/interactions-core',
+      '@qti-components/match-interaction',
+      '@qti-components/order-interaction',
+      '@qti-components/text-entry-interaction',
+      '@qti-components/theme',
+      '@qti-components/transformers',
+      '@qti-components/utilities',
       '@citolab/prose-qti/components/register',
       '@citolab/prose-qti/components/shared',
       '@citolab/prose-qti/components/choice',
@@ -279,8 +304,6 @@ export default defineConfig(({ command }) => ({
       '@citolab/prose-qti/components/inline-choice',
       '@citolab/prose-extensions/prosekit',
       '@citolab/prose-extensions/prosemirror',
-      '@qti-components/theme',
-      '@qti-components/utilities',
     ],
     force: true,
   },
@@ -288,6 +311,11 @@ export default defineConfig(({ command }) => ({
     port: 5174,
     fs: {
       allow: [workspaceRoot],
+    },
+    watch: {
+      ignored: ['!**/node_modules/@qti-components/**', '!**/node_modules/@qti-editor/**'],
+      usePolling: true,
+      interval: 100,
     },
   },
 }));

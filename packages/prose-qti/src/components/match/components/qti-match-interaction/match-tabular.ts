@@ -41,10 +41,15 @@ export interface TabularHost extends LitElement {
 }
 
 /**
- * Tabular CSS — inlined (NOT a separate styles module). Cross-module `css`
- * template literals are unreliable in this monorepo: the CSSResult constructor
- * identity check in LitElement.elementStyles can fail and the styles
- * silently don't adopt. Keep this `css` adjacent to the consumer.
+ * Tabular shadow CSS — kept inline (NOT a separate styles module). Cross-module
+ * `css` template literals are unreliable in this monorepo: the CSSResult
+ * constructor identity check in LitElement.elementStyles can fail and the
+ * styles silently don't adopt. Keep this `css` adjacent to the consumer.
+ *
+ * Visual styling (borders, colors, header background, indicator look, hover)
+ * comes from the shared lightdom theme via `::part(…)` selectors — see
+ * @qti-components/theme/.../qti-match-interaction-tabular.css. This shadow
+ * sheet only handles the subgrid layout primitives that ::part() can't reach.
  */
 export const tabularStyles = css`
   :host(.qti-match-tabular) {
@@ -52,76 +57,37 @@ export const tabularStyles = css`
     margin: 0.5rem 0;
     white-space: normal;
   }
-
-  :host(.qti-match-tabular) .grid {
-    /* grid-template-columns/rows set inline on .grid from render(); NEVER on
-       the host — mutating host's style attribute makes ProseMirror destroy
-       and recreate the nodeView, which freezes the browser. */
+  :host(.qti-match-tabular) slot:not([hidden]) {
+    display: contents;
+  }
+  :host(.qti-match-tabular) [part='grid'] {
     display: grid;
-    border: 1px solid var(--qti-border-color, #ddd6c7);
-    border-radius: 10px;
-    overflow: hidden;
-    background: var(--qti-background, #fff);
-    font-size: 0.92rem;
+    width: fit-content;
+    max-width: 100%;
+    grid-template-columns: minmax(min-content, max-content) repeat(var(--qti-match-cols, 1), auto);
+    grid-template-rows: auto repeat(var(--qti-match-rows, 1), auto);
   }
-
-  :host(.qti-match-tabular) .corner {
-    grid-column: 1;
-    grid-row: 1;
-    display: flex;
-    align-items: center;
-    padding: 0 0.75rem;
-    color: var(--qti-muted-foreground, #6b4226);
-    font-weight: 600;
-    border-bottom: 1px solid var(--qti-subtle-border, #ece6d8);
-    border-right: 1px solid var(--qti-subtle-border, #ece6d8);
-  }
-
-  :host(.qti-match-tabular) .cols-wrap {
+  :host(.qti-match-tabular) [part='cols-wrap'] {
     grid-column: 2 / -1;
     grid-row: 1;
     display: grid;
     grid-template-columns: subgrid;
   }
-
-  :host(.qti-match-tabular) .rows-wrap {
+  :host(.qti-match-tabular) [part='rows-wrap'] {
     grid-column: 1;
     grid-row: 2 / -1;
     display: grid;
     grid-template-rows: subgrid;
   }
-
-  :host(.qti-match-tabular) slot {
-    display: contents;
+  :host(.qti-match-tabular) [part='checkbox-grid'] {
+    grid-column: 2 / -1;
+    grid-row: 2 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: subgrid;
   }
-
   :host(.qti-match-tabular) ::slotted(qti-simple-match-set) {
     display: contents;
-  }
-
-  :host(.qti-match-tabular) .checkbox-grid {
-    grid-column: 2 / -1;
-    grid-row: 2 / -1;
-    display: grid;
-    grid-template-columns: subgrid;
-    grid-template-rows: subgrid;
-  }
-
-  :host(.qti-match-tabular) .cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid var(--qti-subtle-border, #ece6d8);
-    border-right: 1px solid var(--qti-subtle-border, #ece6d8);
-  }
-
-  :host(.qti-match-tabular) input[type='radio'],
-  :host(.qti-match-tabular) input[type='checkbox'] {
-    width: 17px;
-    height: 17px;
-    accent-color: var(--qti-border-active, #7a4a2f);
-    cursor: pointer;
-    margin: 0;
   }
 `;
 
@@ -215,24 +181,20 @@ export class TabularController implements ReactiveController {
     const correctResponse = parseCorrectResponseAsPairs(this.host.correctResponse);
     const firstColumnHeader = this.host.dataFirstColumnHeader ?? '';
 
-    const gridStyle =
-      `grid-template-columns: minmax(150px, auto) repeat(${cols}, minmax(110px, 1fr));` +
-      ` grid-template-rows: minmax(46px, auto) repeat(${rows}, 46px);`;
-
     return html`
       <slot name="prompt"></slot>
       <div
-        class="grid"
-        style=${gridStyle}
+        part="grid"
+        style="--qti-match-rows: ${rows}; --qti-match-cols: ${cols};"
         contenteditable="false"
         @change=${this.onCellChange}
         @click=${stopEvent}
         @mousedown=${stopEvent}
       >
-        <div class="corner">${firstColumnHeader}</div>
-        <div class="cols-wrap"><slot name="columns"></slot></div>
-        <div class="rows-wrap"><slot name="rows"></slot></div>
-        <div class="checkbox-grid">
+        <div part="corner">${firstColumnHeader}</div>
+        <div part="cols-wrap"><slot name="match-cols"></slot></div>
+        <div part="rows-wrap"><slot name="match-rows"></slot></div>
+        <div part="checkbox-grid">
           ${rows === 0 || cols === 0
             ? html``
             : this.sourceChoices.flatMap((source, r) =>
@@ -248,21 +210,32 @@ export class TabularController implements ReactiveController {
     const matchMaxAttr = source.getAttribute('match-max');
     const matchMax = matchMaxAttr == null ? 1 : Number(matchMaxAttr);
     const type: 'radio' | 'checkbox' = matchMax === 1 ? 'radio' : 'checkbox';
+    const typeBase = type === 'radio' ? 'rb' : 'cb';
 
     return this.targetChoices.map((target, c) => {
       const targetId = target.getAttribute('identifier') ?? '';
       const pair = `${sourceId} ${targetId}`;
       const checked = correctResponse.has(pair);
+      const checkedPart = checked ? `${typeBase}-checked` : '';
+      const chPart = `ch ${typeBase}`;
+      const chaPart = `cha ${checkedPart}`.trim();
       return html`
-        <div class="cell" style="grid-column: ${c + 1}; grid-row: ${r + 1};">
+        <label
+          part="input-cell"
+          style="grid-column: ${c + 1}; grid-row: ${r + 1}; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+        >
           <input
             type=${type}
+            hidden
             name=${sourceId}
             .value=${pair}
             .checked=${checked}
             data-pair=${pair}
           />
-        </div>
+          <span part=${chPart}>
+            <span part=${chaPart}></span>
+          </span>
+        </label>
       `;
     });
   }
