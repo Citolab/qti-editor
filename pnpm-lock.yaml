@@ -396,8 +396,8 @@ importers:
         specifier: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
         version: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
       '@qti-components/transformers':
-        specifier: file:.yalc/@qti-components/transformers
-        version: file:apps/qti-prosemirror-item/.yalc/@qti-components/transformers
+        specifier: ^1.7.1
+        version: 1.7.1
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -564,41 +564,38 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6
       '@qti-components/associate-interaction':
-        specifier: file:.yalc/@qti-components/associate-interaction
-        version: file:packages/prose-qti/.yalc/@qti-components/associate-interaction(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: ^1.0.1
+        version: 1.1.5(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/base':
-        specifier: file:.yalc/@qti-components/base
-        version: file:packages/prose-qti/.yalc/@qti-components/base(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: ^1.4.3
+        version: 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/choice-interaction':
-        specifier: file:.yalc/@qti-components/choice-interaction
-        version: file:packages/prose-qti/.yalc/@qti-components/choice-interaction(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: ^1.1.4
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/extended-text-interaction':
-        specifier: file:.yalc/@qti-components/extended-text-interaction
-        version: file:packages/prose-qti/.yalc/@qti-components/extended-text-interaction(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: ^1.0.1
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/hottext-interaction':
-        specifier: file:.yalc/@qti-components/hottext-interaction
-        version: file:packages/prose-qti/.yalc/@qti-components/hottext-interaction(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: ^1.1.3
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/inline-choice-interaction':
-        specifier: file:.yalc/@qti-components/inline-choice-interaction
-        version: file:packages/prose-qti/.yalc/@qti-components/inline-choice-interaction(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: ^1.1.3
+        version: 1.1.5(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions-core':
-        specifier: file:.yalc/@qti-components/interactions-core
-        version: file:packages/prose-qti/.yalc/@qti-components/interactions-core(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: ^1.1.4
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/match-interaction':
-        specifier: file:.yalc/@qti-components/match-interaction
-        version: file:packages/prose-qti/.yalc/@qti-components/match-interaction(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: ^1.0.0
+        version: 1.1.5(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/order-interaction':
-        specifier: file:.yalc/@qti-components/order-interaction
-        version: file:packages/prose-qti/.yalc/@qti-components/order-interaction(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: ^1.1.2
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/text-entry-interaction':
-        specifier: file:.yalc/@qti-components/text-entry-interaction
-        version: file:packages/prose-qti/.yalc/@qti-components/text-entry-interaction(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: ^1.0.0
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/transformers':
-        specifier: file:.yalc/@qti-components/transformers
-        version: file:packages/prose-qti/.yalc/@qti-components/transformers
-      '@qti-components/utilities':
-        specifier: file:.yalc/@qti-components/utilities
-        version: file:packages/prose-qti/.yalc/@qti-components/utilities(lit@3.3.2)
+        specifier: ^1.6.4
+        version: 1.7.1
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
@@ -2133,20 +2130,8 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/associate-interaction@file:packages/prose-qti/.yalc/@qti-components/associate-interaction':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/associate-interaction, type: directory}
-    peerDependencies:
-      '@lit/context': ^1.1.6
-      lit: ^3.3.1
-
   '@qti-components/base@1.5.1':
     resolution: {integrity: sha512-SNdC/k8fxHiw7YtRkkb0niatPbvOKvzTL+HGLXp/5jFhzOIBIn+We9lmzLFGME90Fp3kiz20SZvERmIxpVZ3Dg==}
-    peerDependencies:
-      '@lit/context': ^1.1.6
-      lit: ^3.3.1
-
-  '@qti-components/base@file:packages/prose-qti/.yalc/@qti-components/base':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/base, type: directory}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2157,20 +2142,8 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/choice-interaction@file:packages/prose-qti/.yalc/@qti-components/choice-interaction':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/choice-interaction, type: directory}
-    peerDependencies:
-      '@lit/context': ^1.1.6
-      lit: ^3.3.1
-
   '@qti-components/extended-text-interaction@1.1.4':
     resolution: {integrity: sha512-n7GoZfI1I/ABN+YtEqa6klPjAtdUg+WNgOeH23Ykei7QDHdZzmT/YdQoqlNAIn2WcjxNL5ioA9HRpKNvfvnh4Q==}
-    peerDependencies:
-      '@lit/context': ^1.1.6
-      lit: ^3.3.1
-
-  '@qti-components/extended-text-interaction@file:packages/prose-qti/.yalc/@qti-components/extended-text-interaction':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/extended-text-interaction, type: directory}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2181,20 +2154,8 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/hottext-interaction@file:packages/prose-qti/.yalc/@qti-components/hottext-interaction':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/hottext-interaction, type: directory}
-    peerDependencies:
-      '@lit/context': ^1.1.6
-      lit: ^3.3.1
-
   '@qti-components/inline-choice-interaction@1.1.5':
     resolution: {integrity: sha512-dMSWAtH3NI1nJRxFO+pFoGt72gne7J7hk8rZi5kIdWMfvqqNSTFyOoEnYoiO0cneqHosaImeSUs4YstskBVMHg==}
-    peerDependencies:
-      '@lit/context': ^1.1.6
-      lit: ^3.3.1
-
-  '@qti-components/inline-choice-interaction@file:packages/prose-qti/.yalc/@qti-components/inline-choice-interaction':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/inline-choice-interaction, type: directory}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2205,20 +2166,8 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/interactions-core@file:packages/prose-qti/.yalc/@qti-components/interactions-core':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/interactions-core, type: directory}
-    peerDependencies:
-      '@lit/context': ^1.1.6
-      lit: ^3.3.1
-
   '@qti-components/match-interaction@1.1.5':
     resolution: {integrity: sha512-k3uppYHHuUWO4Fwxnhf0T3rNSTr15HEmQDtsiYxBRXUQmQ7/T86dK/sfyw7K5WXQgV3bEDPfODmDGa0NlH3LlQ==}
-    peerDependencies:
-      '@lit/context': ^1.1.6
-      lit: ^3.3.1
-
-  '@qti-components/match-interaction@file:packages/prose-qti/.yalc/@qti-components/match-interaction':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/match-interaction, type: directory}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2229,20 +2178,8 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/order-interaction@file:packages/prose-qti/.yalc/@qti-components/order-interaction':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/order-interaction, type: directory}
-    peerDependencies:
-      '@lit/context': ^1.1.6
-      lit: ^3.3.1
-
   '@qti-components/text-entry-interaction@1.1.4':
     resolution: {integrity: sha512-ZwflgxLjyxEGa+9qdDds8huuJTHidJD7oEnlNrFPz+cb6Z8jQhIVhQ06dnBPa13Sg+Xih8++YUDAfQhki/jGWQ==}
-    peerDependencies:
-      '@lit/context': ^1.1.6
-      lit: ^3.3.1
-
-  '@qti-components/text-entry-interaction@file:packages/prose-qti/.yalc/@qti-components/text-entry-interaction':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/text-entry-interaction, type: directory}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2250,19 +2187,8 @@ packages:
   '@qti-components/transformers@1.7.1':
     resolution: {integrity: sha512-Ol8s3zpzTncvfFY7YM7SNTmKODs68IkWQnDODpxKDof4PV26yqT7POg/LmLdfin8A/xTvNNOdgJ+QNEgta1VZA==}
 
-  '@qti-components/transformers@file:apps/qti-prosemirror-item/.yalc/@qti-components/transformers':
-    resolution: {directory: apps/qti-prosemirror-item/.yalc/@qti-components/transformers, type: directory}
-
-  '@qti-components/transformers@file:packages/prose-qti/.yalc/@qti-components/transformers':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/transformers, type: directory}
-
   '@qti-components/utilities@1.3.3':
     resolution: {integrity: sha512-7IQDh3liBDsiGPcvJAW5UPU5ZdhwOEHimQNW8Cq/0NcAUup8fFn3WZL1XY3FvkhmZr9XOUAhb596Lxna4W/dGw==}
-    peerDependencies:
-      lit: ^3.3.1
-
-  '@qti-components/utilities@file:packages/prose-qti/.yalc/@qti-components/utilities':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/utilities, type: directory}
     peerDependencies:
       lit: ^3.3.1
 
@@ -9191,35 +9117,13 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/associate-interaction@file:packages/prose-qti/.yalc/@qti-components/associate-interaction(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@lit/context': 1.1.6
-      '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
-      lit: 3.3.2
-
   '@qti-components/base@1.5.1(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/base@file:packages/prose-qti/.yalc/@qti-components/base(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@lit/context': 1.1.6
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
-      lit: 3.3.2
-
   '@qti-components/choice-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@lit/context': 1.1.6
-      '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
-      lit: 3.3.2
-
-  '@qti-components/choice-interaction@file:packages/prose-qti/.yalc/@qti-components/choice-interaction(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -9235,23 +9139,7 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/extended-text-interaction@file:packages/prose-qti/.yalc/@qti-components/extended-text-interaction(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@lit/context': 1.1.6
-      '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
-      lit: 3.3.2
-
   '@qti-components/hottext-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@lit/context': 1.1.6
-      '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
-      lit: 3.3.2
-
-  '@qti-components/hottext-interaction@file:packages/prose-qti/.yalc/@qti-components/hottext-interaction(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -9267,23 +9155,7 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/inline-choice-interaction@file:packages/prose-qti/.yalc/@qti-components/inline-choice-interaction(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@lit/context': 1.1.6
-      '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
-      lit: 3.3.2
-
   '@qti-components/interactions-core@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@lit/context': 1.1.6
-      '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
-      lit: 3.3.2
-      observable-polyfill: 0.0.29
-
-  '@qti-components/interactions-core@file:packages/prose-qti/.yalc/@qti-components/interactions-core(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -9299,23 +9171,7 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/match-interaction@file:packages/prose-qti/.yalc/@qti-components/match-interaction(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@lit/context': 1.1.6
-      '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
-      lit: 3.3.2
-
   '@qti-components/order-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@lit/context': 1.1.6
-      '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
-      lit: 3.3.2
-
-  '@qti-components/order-interaction@file:packages/prose-qti/.yalc/@qti-components/order-interaction(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
@@ -9331,25 +9187,9 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/text-entry-interaction@file:packages/prose-qti/.yalc/@qti-components/text-entry-interaction(@lit/context@1.1.6)(lit@3.3.2)':
-    dependencies:
-      '@lit/context': 1.1.6
-      '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
-      lit: 3.3.2
-
   '@qti-components/transformers@1.7.1': {}
 
-  '@qti-components/transformers@file:apps/qti-prosemirror-item/.yalc/@qti-components/transformers': {}
-
-  '@qti-components/transformers@file:packages/prose-qti/.yalc/@qti-components/transformers': {}
-
   '@qti-components/utilities@1.3.3(lit@3.3.2)':
-    dependencies:
-      lit: 3.3.2
-
-  '@qti-components/utilities@file:packages/prose-qti/.yalc/@qti-components/utilities(lit@3.3.2)':
     dependencies:
       lit: 3.3.2
 
