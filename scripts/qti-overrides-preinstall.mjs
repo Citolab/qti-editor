@@ -14,7 +14,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-const rootDir = path.dirname(fileURLToPath(new URL('..', import.meta.url)));
+const rootDir = fileURLToPath(new URL('..', import.meta.url));
 const configPath = path.join(rootDir, 'pnpm-local-overrides.json');
 
 if (!fs.existsSync(configPath)) process.exit(0);
