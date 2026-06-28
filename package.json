@@ -60,7 +60,9 @@
     "yalc:add": "pnpm -r exec yalc restore",
     "yalc:remove-all": "pnpm -r exec yalc retreat --all",
     "dev:linked": "node scripts/dev-linked.mjs",
-    "yalc:init": "node scripts/yalc-init.mjs"
+    "yalc:init": "node scripts/yalc-init.mjs",
+    "qti-overrides:snapshot": "node scripts/qti-local-overrides-sync.mjs snapshot",
+    "preinstall": "node scripts/qti-overrides-preinstall.mjs"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.0.1",

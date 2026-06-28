@@ -13,7 +13,6 @@ coverage
 *.log
 .firebase
 .vscode
-pnpm-local-overrides.json
 .qti-components-packs
 .pnpm-store
 .vitest-attachments
