@@ -1,7 +1,5 @@
-import { css, html, LitElement, nothing } from 'lit';
+import { html, LitElement, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
-
-import styles from '@qti-components/inline-choice-interaction/styles';
 
 import {
   InteractionPanel,
@@ -10,6 +8,8 @@ import {
   type QtiCorrectResponseToggleDetail,
 } from '../../../shared';
 
+import styles from './qti-inline-choice-interaction.styles.js';
+
 
 export class QtiInlineChoiceInteraction extends InteractionPanel {
   static override shadowRootOptions = {
@@ -17,23 +17,7 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
     delegatesFocus: true
   };
 
-  static override get styles() {
-    return [
-      styles,
-      css`
-        :host {
-          position: relative; /* anchor for the absolute menu */
-          white-space: nowrap;
-        }
-        [part='menu'] {
-          position: absolute;
-          top: 100%;
-          left: 0;
-          z-index: 10;
-        }
-      `
-    ];
-  }
+  static override styles = styles;
 
   @state()
   private _correctChoiceText: string | null = null;

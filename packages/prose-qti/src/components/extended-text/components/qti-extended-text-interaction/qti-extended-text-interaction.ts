@@ -1,26 +1,12 @@
-import { css, html } from 'lit';
+import { html } from 'lit';
 import { property } from 'lit/decorators.js';
-
-import styles from '@qti-components/extended-text-interaction/styles';
 
 import { Interaction } from '../../../shared/components/interaction.js';
 
-export class QtiExtendedTextInteractionEdit extends Interaction {
-  static override get styles() {
-    return [
-      styles,
-      css`
-        :host {
-          display: block;
-        }
+import styles from './qti-extended-text-interaction.styles.js';
 
-        [part="textarea"]::placeholder {
-          color: hsl(var(--muted-foreground, 220 9% 56%));
-          font-style: italic;
-        }
-      `
-    ];
-  }
+export class QtiExtendedTextInteractionEdit extends Interaction {
+  static override styles = styles;
 
   @property({ type: Number, attribute: 'expected-length' })
   expectedLength: number | null = null;

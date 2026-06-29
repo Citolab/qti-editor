@@ -333,12 +333,8 @@ export class QtiGapMatchInteractionEdit extends Interaction {
   override render() {
     return html`
       <slot name="prompt"></slot>
-      <div class="choices">
-        <slot name="drags"></slot>
-      </div>
-      <div class="body">
-        <slot></slot>
-      </div>
+      <slot part="drags" name="drags"></slot>
+      <slot part="drops"></slot>
     `;
   }
 }

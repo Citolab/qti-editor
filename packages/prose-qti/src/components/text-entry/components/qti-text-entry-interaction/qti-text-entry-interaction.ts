@@ -1,26 +1,12 @@
-import { css, html } from 'lit';
+import { html } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import { Interaction } from '@citolab/prose-qti/components/shared/components/interaction.js';
-import styles from '@citolab/prose-qti/core-css';
 
-import type { CSSResultGroup } from 'lit';
+import styles from './qti-text-entry-interaction.styles.js';
 
 export class QtiTextEntryInteractionEdit extends Interaction {
-  static override styles: CSSResultGroup = [
-    styles,
-    css`
-      :host {
-        white-space: nowrap;
-        position: relative;
-      }
-
-      [part="input"]::placeholder {
-        color: hsl(var(--muted-foreground, 220 9% 56%));
-        font-style: italic;
-      }
-    `
-  ];
+  static override styles = styles;
 
   @property({ type: String, attribute: 'pattern-mask' }) patternMask = '';
 

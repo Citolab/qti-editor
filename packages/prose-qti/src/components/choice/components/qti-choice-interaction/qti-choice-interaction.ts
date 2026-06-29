@@ -1,28 +1,19 @@
-import { css, html } from 'lit';
+import { html } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import styles from '@qti-components/choice-interaction/styles';
 import { VocabularyMixin } from '@qti-components/interactions-core';
 
 import { Interaction } from '@citolab/prose-qti/components/shared/components/interaction.js';
 import { QTI_CORRECT_RESPONSE_TOGGLE_EVENT } from '@citolab/prose-qti/components/shared';
+
+import styles from './qti-choice-interaction.styles.js';
 
 
 export type Orientation = 'horizontal' | 'vertical' | undefined;
 const ChoiceInteractionBase = VocabularyMixin(Interaction, 'qti-simple-choice') as typeof Interaction;
 
 export class QtiChoiceInteractionEdit extends ChoiceInteractionBase {
-  static override get styles() {
-    return [
-      styles,
-      css`
-        :host {
-          word-wrap: break-word;
-          white-space: normal;
-        }
-      `
-    ];
-  }
+  static override styles = styles;
 
   @property({ type: Number, attribute: 'min-choices' })
   minChoices = 0;

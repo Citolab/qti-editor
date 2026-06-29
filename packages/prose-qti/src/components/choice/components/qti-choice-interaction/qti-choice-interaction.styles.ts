@@ -1,8 +1,6 @@
 import { css, type CSSResultGroup } from 'lit';
 
-import externalStyles from '@qti-components/gap-match-interaction/styles';
-
-import { associationPanelStyles } from '../../../shared';
+import externalStyles from '@qti-components/choice-interaction/styles';
 
 const styles: CSSResultGroup = [
   externalStyles,
@@ -12,7 +10,6 @@ const styles: CSSResultGroup = [
       white-space: normal;
     }
   `,
-  associationPanelStyles,
 ];
 
 export default styles;
