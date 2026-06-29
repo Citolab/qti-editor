@@ -3,6 +3,7 @@ dist
 **/build/custom-elements.json
 .yalc
 yalc.lock
+public/qti-runtime
 
 .DS_Store
 .astro

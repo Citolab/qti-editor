@@ -6,6 +6,26 @@ import {
   importItem006,
   mountEditor,
 } from './qti-inline-choice-interaction-item006.regression.stories';
+import { mountQtiRuntime } from './runtime-harness';
+import snapshotXml from './__file_snapshots__/ITEM006-editor.xml?raw';
+
+test('exported QTI matches the ITEM006-editor.xml snapshot', async () => {
+  const exported = exportAssessmentItemDoc(importItem006());
+  const exportedXml = new XMLSerializer().serializeToString(exported);
+  await expect(exportedXml).toMatchFileSnapshot('./__file_snapshots__/ITEM006-editor.xml');
+});
+
+test('ITEM006 snapshot scores 1 in the runtime when the correct response is staged', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+  const ai = harness.assessmentItem as any;
+
+  // ITEM006 correct response is choice_hoger (single inline-choice).
+  ai.updateResponseVariable('RESPONSE', 'choice_hoger');
+  ai.processResponse();
+  expect(+ai.getOutcome('SCORE').value).toBe(1);
+
+  harness.destroy();
+});
 
 test('importing ITEM006 renders exactly three qti-inline-choice options', async () => {
   // Regression guard: the interaction and its choices are inline, so the

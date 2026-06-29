@@ -309,7 +309,7 @@ function collectYalcLinkedPackages() {
   for (const rel of found) {
     const lock = readJson(path.join(rootDir, rel));
     for (const name of Object.keys(lock.packages || {})) {
-      if (name.startsWith('@qti-components/')) names.add(name);
+      if (name.startsWith('@qti-components/') || name === '@citolab/qti-components') names.add(name);
     }
   }
   return Array.from(names).sort();
@@ -325,7 +325,7 @@ function scanQtiComponentsPackagePaths() {
     if (fs.existsSync(manifestPath)) {
       try {
         const manifest = readJson(manifestPath);
-        if (manifest.name?.startsWith('@qti-components/')) {
+        if (manifest.name?.startsWith('@qti-components/') || manifest.name === '@citolab/qti-components') {
           out[manifest.name] = `/${relDir}`;
           return;
         }

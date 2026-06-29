@@ -1,9 +1,9 @@
 /**
- * Pure-ProseMirror QTI roundtrip regression.
+ * Pure-ProseMirror QTI roundtrip regression for ITEM005 (extended text).
  *
- *   ITEM006.xml (raw import)
+ *   ITEM005.xml (raw import)
  *     → qtiTransformItem().parse  (parse XML)
- *     → roundtripInteractions    (hoist correct-response/score onto interactions)
+ *     → roundtripExtendedText     (hoist correct-response/score onto interactions)
  *     → roundtripXmlToPm   (import item-body + doc attrs into the PM doc)
  *     → pmToRoundtripXml   (export PM doc back to the editor-origin item-body)
  *     → buildSingleAssessmentItemXml (compose the complete QTI assessment item)
@@ -22,21 +22,22 @@ import { EditorView } from 'prosemirror-view';
 import { nodes, marks } from 'prosemirror-schema-basic';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
-import { roundtripInteractions, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
+import { roundtripExtendedText, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
 import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-roundtrip';
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
-import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
-import { inlineChoiceInteractionDescriptor } from '@citolab/prose-qti/components/inline-choice';
+import { blockSelectPlugin } from '@citolab/prose-extensions/prosemirror';
+import { extendedTextInteractionDescriptor } from '@citolab/prose-qti/components/extended-text';
 
-import '@citolab/prose-qti/components/inline-choice/register.js';
-import { attributesPanelPlugin } from '../src/components/attributes-panel-plugin';
+import '@citolab/prose-qti/components/extended-text/register.js';
+import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
+import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';
-import sourceXML from '@qti-editor/example-items/ITEM006.xml?raw';
+import sourceXML from '@qti-editor/example-items/ITEM005.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 const qtiNodes = Object.fromEntries(
-  [...inlineChoiceInteractionDescriptor.nodeSpecs, ...qtiRubricBlockDescriptor.nodeSpecs].map(({ name, spec }) => [
+  [...extendedTextInteractionDescriptor.nodeSpecs, ...qtiRubricBlockDescriptor.nodeSpecs].map(({ name, spec }) => [
     name,
     spec
   ])
@@ -44,7 +45,7 @@ const qtiNodes = Object.fromEntries(
 
 const baseNodes = { ...nodes, paragraph: { ...nodes.paragraph, group: 'block richtext' }, ...qtiNodes };
 
-/** The editor schema used for the ITEM006 roundtrip. */
+/** The editor schema used for the ITEM005 roundtrip. */
 export const schema = new Schema({
   nodes: {
     ...baseNodes,
@@ -60,31 +61,14 @@ export const schema = new Schema({
   marks
 });
 
-/** Minimal plugin set: enter/base keymaps, the inline-choice interaction plugins, node-attrs sync and block-select. */
-const editorPlugins: Plugin[] = [
-  keymap({ Enter: inlineChoiceInteractionDescriptor.enterCommand }),
-  keymap(baseKeymap),
-  ...inlineChoiceInteractionDescriptor.pluginFactories.map(factory => factory()),
-  nodeAttrsSyncPlugin,
-  blockSelectPlugin
-];
+/** Minimal plugin set: base keymap and block-select. */
+const editorPlugins: Plugin[] = [keymap(baseKeymap), blockSelectPlugin];
 
-// Editable-attribute allowlist for the panel, sourced from the interaction's
-// attribute-panel metadata (`editableAttributes`), keyed by node type. Attributes
-// outside a node type's list are rendered disabled. Node types without an entry
-// stay fully editable.
-const EDITABLE_ATTRS = Object.fromEntries(
-  Object.values(inlineChoiceInteractionDescriptor.attributePanelMetadata ?? {}).map(metadata => [
-    metadata.nodeTypeName,
-    metadata.editableAttributes ?? []
-  ])
-);
-
-/** Import ITEM006.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
-export const importItem006 = (): ProseMirrorNode =>
+/** Import ITEM005.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
+export const importItem005 = (): ProseMirrorNode =>
   importItemFromString(sourceXML, schema, {
     assetBasePath: '/qti/kennisnet',
-    transforms: [roundtripInteractions, roundtripItemBody]
+    transforms: [roundtripExtendedText, roundtripItemBody]
   });
 
 /**
@@ -95,14 +79,14 @@ export const importItem006 = (): ProseMirrorNode =>
 export const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document =>
   new DOMParser().parseFromString(exportItemXml(doc, schema), 'application/xml');
 
-/** Mount the ITEM006 editor into `container`, optionally wiring the attributes panel. */
+/** Mount the ITEM005 editor into `container`, optionally wiring the attributes panel. */
 export const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLElement } = {}): EditorView => {
   const plugins = options.panelEl
-    ? [...editorPlugins, attributesPanelPlugin(options.panelEl, { editableAttrs: EDITABLE_ATTRS })]
+    ? [...editorPlugins, attributesPanelPlugin(options.panelEl)]
     : editorPlugins;
 
   const view = new EditorView(container, {
-    state: EditorState.create({ doc: importItem006(), schema, plugins }),
+    state: EditorState.create({ doc: importItem005(), schema, plugins }),
     dispatchTransaction(tr) {
       view.updateState(view.state.apply(tr));
     }
@@ -114,11 +98,11 @@ const meta: Meta = {
   title: 'QTI ProseMirror/Roundtrip Regression',
   // These exports are the reusable import/export pipeline (consumed by the
   // regression test), not stories.
-  excludeStories: ['schema', 'importItem006', 'exportAssessmentItemDoc', 'mountEditor']
+  excludeStories: ['schema', 'importItem005', 'exportAssessmentItemDoc', 'mountEditor']
 };
 export default meta;
 
-export const RoundtripItem006: StoryObj = {
+export const RoundtripItem005: StoryObj = {
   render: () => {
     let panelEl: HTMLElement | null = null;
     return html`

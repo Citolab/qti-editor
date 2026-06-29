@@ -7,14 +7,31 @@ import {
   importItem001,
   mountEditor,
 } from './qti-choice-interaction-item001.regression.stories';
-import assertedXML from '@qti-editor/example-items/ITEM001-editor.xml?raw';
+import { mountQtiRuntime } from './runtime-harness';
+import snapshotXml from './__file_snapshots__/ITEM001-editor.xml?raw';
 
-test('exported QTI matches the imported ITEM001-editor.xml', () => {
-  // Pure pipeline — no rendering needed: import ITEM001 → export → compare.
+test('exported QTI matches the ITEM001-editor.xml snapshot', async () => {
+  // Editor pipeline: import ITEM001 → export → must equal the frozen snapshot.
   const exported = exportAssessmentItemDoc(importItem001());
-  const expected = new DOMParser().parseFromString(assertedXML, 'application/xml');
+  const exportedXml = new XMLSerializer().serializeToString(exported);
+  await expect(exportedXml).toMatchFileSnapshot('./__file_snapshots__/ITEM001-editor.xml');
+});
 
-  expect(exported).toEqualXmlDoc(expected);
+test('ITEM001 snapshot scores 1 in the runtime when the correct choice is clicked', async () => {
+  // Load the frozen snapshot directly — what the editor IS supposed to produce.
+  // The previous test catches any pipeline drift; this one proves the
+  // authoritative output is actually playable.
+  const harness = await mountQtiRuntime(snapshotXml);
+  const ai = harness.assessmentItem as any;
+
+  // ITEM001 correct response is choice3 (single cardinality).
+  const correct = harness.doc.querySelector('qti-simple-choice[identifier="choice3"]')!;
+  correct.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+
+  ai.processResponse();
+  expect(+ai.getOutcome('SCORE').value).toBe(1);
+
+  harness.destroy();
 });
 
 test('clicking a second choice exports cardinality=multiple with both correct values', async () => {
