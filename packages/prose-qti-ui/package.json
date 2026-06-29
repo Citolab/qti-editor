@@ -11,7 +11,8 @@
     "./components/choice-attributes-editor": "./src/components/choice-attributes-editor/index.ts",
     "./components/text-entry-attributes-editor": "./src/components/text-entry-attributes-editor/index.ts",
     "./components/extended-text-attributes-editor": "./src/components/extended-text-attributes-editor/index.ts",
-    "./components/interaction-insert-menu": "./src/components/interaction-insert-menu/index.ts"
+    "./components/interaction-insert-menu": "./src/components/interaction-insert-menu/index.ts",
+    "./editor-context": "./src/editor-context/index.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",

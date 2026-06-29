@@ -18,7 +18,7 @@ import {
   countQtiItems as countQtiItemsPure,
   getQtiItems as getQtiItemsPure,
   type QtiItemFragment,
-} from '@citolab/prose-qti/test-export/pm-qti-test';
+} from '../components/test-export/pm-qti-test.js';
 
 import type { ProseMirrorNode } from 'prosekit/pm/model';
 

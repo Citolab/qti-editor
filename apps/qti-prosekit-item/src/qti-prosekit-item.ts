@@ -10,9 +10,9 @@ import { LitElement, html, type PropertyValues } from 'lit';
 import { createEditor, union, jsonFromHTML, type Editor } from 'prosekit/core';
 import { itemContext, itemContextVariables, type ItemContext } from '@citolab/prose-qti/integration/item-context';
 import { xmlFromNode, xmlToHTML } from '@citolab/prose-qti/integration/save-xml';
-import { qtiTestFromProsemirror } from '@citolab/prose-qti/integration/save-qti-test';
+import { qtiItemFromProsemirror } from '@citolab/prose-qti/integration/save-qti-item';
 import { blockSelectExtension, nodeAttrsSyncExtension } from '@citolab/prose-extensions/prosemirror';
-import { editorContext } from '@citolab/prose-qti/integration/editor-context';
+import { editorContext } from '@citolab/prose-qti-ui/editor-context';
 
 import { sampleUploader } from './components/blocks/sample/sample-uploader.js';
 import { registerLitEditorTableHandle } from './components/blocks/table-handle/index.js';
@@ -58,7 +58,7 @@ export class QtiProsekitItem extends LitElement {
 
   private saveQti() {
     const doc = this.editor.view.state.doc;
-    this.xmlOutput = qtiTestFromProsemirror(doc, {
+    this.xmlOutput = qtiItemFromProsemirror(doc, {
       identifier: (doc.attrs.identifier as string) ?? '',
       title: (doc.attrs.title as string) ?? '',
     });

@@ -1,5 +1,5 @@
 import { qtiItemFromProsemirror, xmlFromNode } from './qti-export.js';
-import { createQtiPackageFromNode } from '@citolab/prose-qti/package-builder';
+import { createQtiPackageFromNode } from '../components/package-builder/index.js';
 
 import type { Schema } from 'prosekit/pm/model';
 import type { ProseMirrorNode } from 'prosekit/pm/model';

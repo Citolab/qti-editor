@@ -20,6 +20,7 @@
     "@tanstack/react-query": "^5.95.2",
     "firebase": "^12.11.0",
     "i18next": "^23.16.8",
+    "jszip": "^3.10.1",
     "lit": "^3.3.2",
     "prosekit": "^0.21.3",
     "prosemirror-state": "^1.4.4",

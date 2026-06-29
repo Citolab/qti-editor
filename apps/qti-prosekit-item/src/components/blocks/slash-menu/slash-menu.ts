@@ -9,7 +9,7 @@ import {
   registerAutocompletePositionerElement,
   registerAutocompleteRootElement,
 } from 'prosekit/lit/autocomplete'
-import { editorContext } from '@citolab/prose-qti/integration/editor-context'
+import { editorContext } from '@citolab/prose-qti-ui/editor-context'
 
 import { SlashMenuEmptyElement } from './slash-menu-empty'
 import { SlashMenuItemElement } from './slash-menu-item'

@@ -264,6 +264,9 @@ importers:
       i18next:
         specifier: ^23.16.8
         version: 23.16.8
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -585,8 +588,8 @@ importers:
         specifier: file:/Users/patrickklein/Projects/Editor/QTI-Editor/.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-extended-text-interaction-1.1.4.tgz
         version: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-extended-text-interaction-1.1.4.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/gap-match-interaction':
-        specifier: file:.yalc/@qti-components/gap-match-interaction
-        version: file:packages/prose-qti/.yalc/@qti-components/gap-match-interaction(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: ^1.1.4
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/hottext-interaction':
         specifier: file:/Users/patrickklein/Projects/Editor/QTI-Editor/.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-hottext-interaction-1.1.4.tgz
         version: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-hottext-interaction-1.1.4.tgz(@lit/context@1.1.6)(lit@3.3.2)
@@ -603,20 +606,14 @@ importers:
         specifier: file:/Users/patrickklein/Projects/Editor/QTI-Editor/.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-order-interaction-1.1.4.tgz
         version: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-order-interaction-1.1.4.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/select-point-interaction':
-        specifier: file:.yalc/@qti-components/select-point-interaction
-        version: file:packages/prose-qti/.yalc/@qti-components/select-point-interaction(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: ^1.1.4
+        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/text-entry-interaction':
         specifier: file:/Users/patrickklein/Projects/Editor/QTI-Editor/.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-text-entry-interaction-1.1.4.tgz
         version: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-text-entry-interaction-1.1.4.tgz(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/transformers':
         specifier: file:/Users/patrickklein/Projects/Editor/QTI-Editor/.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-transformers-1.7.1.tgz
         version: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-transformers-1.7.1.tgz
-      '@qti-components/utilities':
-        specifier: file:/Users/patrickklein/Projects/Editor/QTI-Editor/.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-utilities-1.3.3.tgz
-        version: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-utilities-1.3.3.tgz(lit@3.3.2)
-      jszip:
-        specifier: ^3.10.1
-        version: 3.10.1
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -2180,8 +2177,8 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/gap-match-interaction@file:packages/prose-qti/.yalc/@qti-components/gap-match-interaction':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/gap-match-interaction, type: directory}
+  '@qti-components/gap-match-interaction@1.1.4':
+    resolution: {integrity: sha512-HT3WNijebBo0McsHV9ueyGDItcqOXmkzAyHQi7aJfUellFja4MWcx3OuImY+YY7FmPAs+bdeF+OD9bGEpD1ZNQ==}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2221,8 +2218,8 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/select-point-interaction@file:packages/prose-qti/.yalc/@qti-components/select-point-interaction':
-    resolution: {directory: packages/prose-qti/.yalc/@qti-components/select-point-interaction, type: directory}
+  '@qti-components/select-point-interaction@1.1.4':
+    resolution: {integrity: sha512-ntyyRP57NWMCPj9tzxzR2nmdUFnxaXX2zpKY9+GJf722NFSZHeS6RlLNFKOvyMiZ51l0TWDtOaGLhB9aYSkuOg==}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -9230,7 +9227,7 @@ snapshots:
       '@qti-components/utilities': file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-utilities-1.3.3.tgz(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/gap-match-interaction@file:packages/prose-qti/.yalc/@qti-components/gap-match-interaction(@lit/context@1.1.6)(lit@3.3.2)':
+  '@qti-components/gap-match-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-base-1.5.1.tgz(@lit/context@1.1.6)(lit@3.3.2)
@@ -9278,7 +9275,7 @@ snapshots:
       '@qti-components/utilities': file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-utilities-1.3.3.tgz(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/select-point-interaction@file:packages/prose-qti/.yalc/@qti-components/select-point-interaction(@lit/context@1.1.6)(lit@3.3.2)':
+  '@qti-components/select-point-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-base-1.5.1.tgz(@lit/context@1.1.6)(lit@3.3.2)

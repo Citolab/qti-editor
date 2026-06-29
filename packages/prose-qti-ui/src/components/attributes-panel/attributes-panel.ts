@@ -5,7 +5,7 @@ import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { QtiI18nController } from '@citolab/prose-qti/components/shared/i18n/index.js';
 import { translateQti } from '@citolab/prose-qti/components/shared';
 import { getNodeAttributePanelMetadataByNodeTypeName } from '@citolab/prose-qti/core/interactions/composer';
-import { editorContext } from '@citolab/prose-qti/integration/editor-context';
+import { editorContext } from '../../editor-context/index.js';
 
 import {
   collectSelectionNodesWithSchemaAttrs,

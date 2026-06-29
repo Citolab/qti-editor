@@ -9,7 +9,7 @@ import {
   type OpenChangeEvent,
 } from 'prosekit/lit/inline-popover'
 import type { EditorState } from 'prosekit/pm/state'
-import { editorContext } from '@citolab/prose-qti/integration/editor-context'
+import { editorContext } from '@citolab/prose-qti-ui/editor-context'
 
 import '../button/index.js'
 

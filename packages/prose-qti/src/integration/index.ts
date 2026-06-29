@@ -10,7 +10,6 @@ export {
   type QtiCodePanelOptions,
   type QtiCodeUpdateDetail,
 } from './code/index.js';
-export * from './editor-context/index.js';
 export {
   onQtiContentChange,
   onQtiSelectionChange,
@@ -25,11 +24,4 @@ export {
   qtiItemFromProsemirror,
   type QtiComposeContext,
 } from './save-qti-item/index.js';
-
-export {
-  qtiTestFromProsemirror,
-  countQtiItems,
-  getQtiItems,
-  type QtiItemFragment,
-} from './save-qti-test/index.js';
 export { registerQtiInteractionElements } from './interactions/prosekit.js';

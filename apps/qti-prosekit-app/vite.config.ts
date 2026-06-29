@@ -12,7 +12,6 @@ const litReactiveElementRoot = dirname(require.resolve('@lit/reactive-element'))
 const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
 const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosekit/src', import.meta.url));
 const prosekitExtensionsSrcRoot = fileURLToPath(new URL('../../packages/prosekit/extensions/src', import.meta.url));
-const qtiPackageSrcRoot = fileURLToPath(new URL('../../packages/qti/package-builder/src', import.meta.url));
 const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/shared', import.meta.url));
 const interactionsUmbrellaSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components', import.meta.url));
 const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/choice/src', import.meta.url));
@@ -37,7 +36,6 @@ const appCustomElementRoots = [
 const fullReloadRoots = [
   coreSrcRoot,
   prosekitIntegrationSrcRoot,
-  qtiPackageSrcRoot,
   interactionsUmbrellaSrcRoot,
   interactionsSharedSrcRoot,
   prosekitExtensionsSrcRoot,
@@ -105,10 +103,6 @@ export default defineConfig({
         replacement: `${prosekitIntegrationSrcRoot}/code/index.ts`,
       },
       {
-        find: /^@qti-editor\/prosekit-integration\/editor-context$/,
-        replacement: `${prosekitIntegrationSrcRoot}/editor-context/index.ts`,
-      },
-      {
         find: /^@qti-editor\/prosekit-integration\/events$/,
         replacement: `${prosekitIntegrationSrcRoot}/events/index.ts`,
       },
@@ -135,10 +129,6 @@ export default defineConfig({
       {
         find: /^@qti-editor\/prosekit-extensions$/,
         replacement: `${prosekitExtensionsSrcRoot}/index.ts`,
-      },
-      {
-        find: /^@qti-editor\/qti-package-builder$/,
-        replacement: `${qtiPackageSrcRoot}/index.ts`,
       },
       {
         find: /^@qti-editor\/interactions$/,
@@ -352,7 +342,6 @@ export default defineConfig({
       '@citolab/prose-qti/components/register',
       '@citolab/prose-qti/components/shared',
       '@citolab/prose-extensions/prosekit',
-      '@citolab/prose-qti/package-builder',
       '@citolab/prose-qti/components/choice',
       '@citolab/prose-qti/components/extended-text',
       '@citolab/prose-qti/components/associate',

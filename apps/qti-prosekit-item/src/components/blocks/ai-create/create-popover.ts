@@ -12,7 +12,7 @@ import {
   parseHtmlToSlice,
   serializeRangeToHtml,
 } from '@citolab/prose-ai';
-import { editorContext } from '@citolab/prose-qti/integration/editor-context';
+import { editorContext } from '@citolab/prose-qti-ui/editor-context';
 import { html, LitElement, nothing, type PropertyDeclaration } from 'lit';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import type { Editor } from 'prosekit/core';

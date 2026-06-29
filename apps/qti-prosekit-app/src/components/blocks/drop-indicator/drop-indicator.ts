@@ -1,7 +1,7 @@
 import { ContextConsumer } from '@lit/context'
 import { html, LitElement } from 'lit'
 import { registerDropIndicatorElement } from 'prosekit/lit/drop-indicator'
-import { editorContext } from '@citolab/prose-qti/integration/editor-context'
+import { editorContext } from '@citolab/prose-qti-ui/editor-context'
 
 class LitDropIndicator extends LitElement {
   private _editorConsumer = new ContextConsumer(this, {

@@ -10,7 +10,6 @@ const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const litReactiveElementRoot = dirname(require.resolve('@lit/reactive-element'));
 const coreSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/core', import.meta.url));
 const qtiItemExportSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/item-export', import.meta.url));
-const qtiTestExportSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/test-export', import.meta.url));
 const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/integration', import.meta.url));
 const prosekitExtensionsSrcRoot = fileURLToPath(new URL('../../packages/prose-extensions/src/prosekit', import.meta.url));
 const qtiStylesSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/core-css/core-css.css', import.meta.url));
@@ -138,10 +137,6 @@ export default defineConfig(({ command }) => ({
       {
         find: /^@qti-editor\/qti-item-export\/pm-xml$/,
         replacement: `${qtiItemExportSrcRoot}/pm-xml.ts`,
-      },
-      {
-        find: /^@qti-editor\/qti-test-export\/pm-qti-test$/,
-        replacement: `${qtiTestExportSrcRoot}/pm-qti-test.ts`,
       },
       {
         find: /^@qti-editor\/prosekit-integration\/item-context$/,

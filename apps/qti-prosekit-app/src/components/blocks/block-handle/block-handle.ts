@@ -7,7 +7,7 @@ import {
   registerBlockHandlePositionerElement,
   registerBlockHandleRootElement,
 } from 'prosekit/lit/block-handle'
-import { editorContext } from '@citolab/prose-qti/integration/editor-context'
+import { editorContext } from '@citolab/prose-qti-ui/editor-context'
 
 class LitBlockHandle extends LitElement {
   dir: 'ltr' | 'rtl' | 'auto' = 'ltr'

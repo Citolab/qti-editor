@@ -26,7 +26,7 @@ import {
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@citolab/prose-qti/integration/events';
-import { editorContext } from '@citolab/prose-qti/integration/editor-context';
+import { editorContext } from '@citolab/prose-qti-ui/editor-context';
 import { notifyQtiI18nChanged, translateQti } from '@citolab/prose-qti/components/shared';
 
 import { registerLitEditorTableHandle } from './blocks/table-handle/index.js';

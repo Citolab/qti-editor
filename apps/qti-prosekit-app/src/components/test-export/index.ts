@@ -7,4 +7,4 @@ export {
 
 // Re-export from item-export for convenience so consumers of the test package
 // don't need to take a second dependency just for the context type.
-export { type QtiComposeContext } from '../item-export';
+export { type QtiComposeContext } from '@citolab/prose-qti/item-export';

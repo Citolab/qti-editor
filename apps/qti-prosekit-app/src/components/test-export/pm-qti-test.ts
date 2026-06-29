@@ -8,8 +8,8 @@ import {
 import {
   buildItemBodyContext,
   type QtiComposeContext,
-} from '../item-export/pm-qti-item';
-import { xmlFromNode } from '../item-export/pm-xml';
+} from '@citolab/prose-qti/item-export/pm-qti-item';
+import { xmlFromNode } from '@citolab/prose-qti/item-export/pm-xml';
 
 import type { DOMSerializer, Node as ProseMirrorNode } from 'prosemirror-model';
 

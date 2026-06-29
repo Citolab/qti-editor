@@ -1,6 +1,6 @@
 import { ContextConsumer } from '@lit/context';
 import { streamContent } from '@citolab/prose-ai';
-import { editorContext } from '@citolab/prose-qti/integration/editor-context';
+import { editorContext } from '@citolab/prose-qti-ui/editor-context';
 import { html, LitElement, nothing } from 'lit';
 import type { Editor } from 'prosekit/core';
 
