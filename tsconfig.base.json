@@ -21,6 +21,9 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
+      "@qti-editor/example-items/*": [
+        "public/qti/kennisnet/*"
+      ],
       "@citolab/prose-ai": [
         "packages/prose-ai/src/index.ts"
       ],

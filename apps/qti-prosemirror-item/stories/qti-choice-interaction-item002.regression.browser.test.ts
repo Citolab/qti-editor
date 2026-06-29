@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 
 import { exportAssessmentItemDoc, importItem002 } from './qti-choice-interaction-item002.regression.stories';
-import assertedXML from '../assets/qti/kennisnet/ITEM002-editor.xml?raw';
+import assertedXML from '@qti-editor/example-items/ITEM002-editor.xml?raw';
 
 test('exported QTI matches the imported ITEM002-editor.xml', () => {
   // Pure pipeline — no rendering needed: import ITEM002 → export → compare.

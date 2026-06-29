@@ -31,7 +31,7 @@ import { inlineChoiceInteractionDescriptor } from '@citolab/prose-qti/components
 import '@citolab/prose-qti/components/inline-choice/register.js';
 import { attributesPanelPlugin } from '../src/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';
-import sourceXML from '../assets/qti/kennisnet/ITEM006.xml?raw';
+import sourceXML from '@qti-editor/example-items/ITEM006.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 

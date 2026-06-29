@@ -31,7 +31,7 @@ import { textEntryInteractionDescriptor } from '@citolab/prose-qti/components/te
 import '@citolab/prose-qti/components/text-entry/register.js';
 import { attributesPanelPlugin } from '../src/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';
-import sourceXML from '../assets/qti/kennisnet/ITEM004.xml?raw';
+import sourceXML from '@qti-editor/example-items/ITEM004.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 

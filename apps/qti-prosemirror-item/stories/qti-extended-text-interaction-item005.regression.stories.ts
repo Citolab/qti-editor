@@ -32,7 +32,7 @@ import '@citolab/prose-qti/components/extended-text/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
 import { attributesPanelPlugin } from '../src/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';
-import sourceXML from '../assets/qti/kennisnet/ITEM005.xml?raw';
+import sourceXML from '@qti-editor/example-items/ITEM005.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
