@@ -351,7 +351,6 @@ export default defineConfig({
             { label: 'Itembody-only QTI Subformat', slug: 'docs/packages/itembody-subformat' },
             { label: 'QTI 3 Item Import', slug: 'docs/packages/qti3-item-import' },
             { label: 'QTI Item Roundtrip', slug: 'docs/packages/qti-item-roundtrip' },
-            { label: 'QTI Roundtrip Export Package', slug: 'docs/packages/qti-roundtrip-export' },
           ],
         },
         {
@@ -375,16 +374,10 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Framework Guides',
+          label: 'Integration Guide',
           items: [
             { label: 'Overview', slug: 'docs/frameworks/overview' },
-            { label: 'React Integration', slug: 'docs/frameworks/react' },
-            { label: 'React Custom UI', slug: 'docs/frameworks/react/custom-ui' },
-            { label: 'Angular Integration', slug: 'docs/frameworks/angular' },
-            { label: 'Angular Custom UI', slug: 'docs/frameworks/angular/custom-ui' },
-            { label: 'Vue Integration', slug: 'docs/frameworks/vue' },
-            { label: 'Svelte Integration', slug: 'docs/frameworks/svelte' },
-            { label: 'Vanilla JS / TypeScript', slug: 'docs/frameworks/vanilla' },
+            { label: 'TypeScript', slug: 'docs/frameworks/vanilla' },
           ],
         },
       ],

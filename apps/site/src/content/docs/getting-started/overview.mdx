@@ -10,28 +10,22 @@ Under the hood, the editor is built on [ProseMirror](https://prosemirror.net/), 
 
 The ProseMirror schema is what makes QTI interactions manageable: it defines which interaction nodes are allowed, where they can appear, what they can contain, and how they may be nested. That gives the editor built-in guards against invalid structures and adds safeguards around things like unsupported nesting or placing interactions in the wrong context.
 
-`@citolab/prose-qti` keeps the core ProseMirror packages as peer dependencies. In practice, that means your application should install `prosemirror-state`, `prosemirror-view`, `prosemirror-model`, and `prosemirror-commands` explicitly when you build a pure ProseMirror editor. If you use ProseKit, those packages come in transitively through ProseKit, but the same compatibility rule still applies: keep the ProseMirror packages on one aligned release set and upgrade them together to avoid duplicate copies or version skew.
+## Reference shape
 
-## Architecture: Pure ProseMirror with Optional ProseKit
+The canonical integration shape lives in this repository as [`qti-prosemirror-item`](https://github.com/Citolab/qti-editor/tree/main/apps/qti-prosemirror-item) — a minimal pure-ProseMirror QTI roundtrip editor. The [TypeScript Integration](/docs/frameworks/vanilla/) guide walks through that shape file by file. Use it as the template for your own integration.
 
-QTI Editor interaction packages are built on **pure ProseMirror** with no framework dependencies. Each interaction package exports:
+## Architecture
 
-- **ProseMirror plugins** - Pure ProseMirror Plugin factories that work in any ProseMirror setup
-- **Commands** - Standard ProseMirror commands for inserting and manipulating interactions
-- **Node specs** - ProseMirror schema definitions for interaction nodes
-- **Web components** - Lit-based custom elements for rendering interactions
-- **ProseKit extension** (optional) - `defineQtiInteractionsExtension` from `@citolab/prose-qti/integration/interactions/prosekit`
+QTI Editor interaction packages are built on **pure ProseMirror** with no framework dependencies. Each interaction package exposes:
 
-This means you can:
+- **`*InteractionDescriptor`** — `insertCommand`, optional `enterCommand`/`backspaceCommand`, `pluginFactories`, `attributePanelMetadata`, `nodeSpecs`
+- **`qti*InteractionNodeSpec`** — ProseMirror node spec
+- **Lit custom element** — registered via a side-effect `register.js` module
 
-- **Use pure ProseMirror** - Build a barebones ProseMirror editor using only the core ProseMirror APIs
-- **Use ProseKit** - Leverage [ProseKit](https://prosekit.dev) for pre-built UI components and convenience wrappers
-- **Use any JavaScript-based framework** - Embed the result in React, Angular, Vue, Svelte, or plain JavaScript/TypeScript
-
-In practice, this means you can assemble an editor from focused packages, register only the interactions you need, and embed the result in your own application without tying yourself to a specific editor framework or UI library.
+Your application imports the descriptors and node specs explicitly for the interactions it supports, spreads them into a ProseMirror schema, and composes a plugin stack. There is no required runtime framework.
 
 :::note
-QTI Editor is a composable kit — it provides the QTI building blocks that slot into an existing ProseMirror instance. It does not ship integration packages for specific frameworks or third-party libraries, and dedicated integration support is outside its scope. The guides in this documentation illustrate one way to wire things together; how you integrate the kit into your application is up to you. 
+QTI Editor is a composable kit — it provides the QTI building blocks that slot into an existing ProseMirror instance. It does not ship integration packages for specific frameworks or third-party libraries, and dedicated integration support is outside its scope. The guides in this documentation illustrate one way to wire things together; how you integrate the kit into your application is up to you.
 :::
 
 ## Part of the Citolab QTI ecosystem
@@ -43,7 +37,6 @@ QTI Editor is part of a broader set of QTI tooling maintained by Citolab. For an
 ## What's next?
 
 - I'd like a basic [installation guide](/docs/getting-started/installation/).
-- I'd like to install components from the [registry](/docs/using-the-registry/).
+- I'd like to follow the [integration guide](/docs/frameworks/vanilla/).
 - I'd like to browse the available [QTI interactions](/docs/qti-interactions/).
-- I'd like to use the editor in [React](/docs/frameworks/react/).
-- I'd like to use the editor in [Angular](/docs/frameworks/angular/).
+- I'd like to install components from the [registry](/docs/using-the-registry/).

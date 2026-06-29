@@ -1,125 +1,230 @@
 ---
-title: Vanilla JS / TypeScript
-description: Embed QTI Editor in a plain JavaScript or TypeScript project without a component framework.
+title: TypeScript Integration
+description: Embed QTI Editor in a TypeScript project using pure ProseMirror.
 slug: docs/frameworks/vanilla
 ---
 
-This guide shows two approaches for integrating QTI Editor without a component framework.
-
-- **Pure ProseMirror** — minimal dependencies, direct DOM control
-- **ProseKit** — declarative extension assembly with a private event bus
-
-Both use the same QTI interaction packages and can use the same registry UI components.
+This guide mirrors the [`qti-prosemirror-item`](https://github.com/Citolab/qti-editor/tree/main/apps/qti-prosemirror-item) boilerplate — a minimal pure-ProseMirror QTI roundtrip editor. Use it as the reference shape for your own integration.
 
 :::note
-QTI Editor is a composable kit — it provides the QTI building blocks that slot into an existing ProseMirror instance. It does not ship integration packages for specific frameworks or third-party libraries, and dedicated integration support is outside its scope. The guides in this documentation illustrate one way to wire things together; how you integrate the kit into your application is up to you. 
+QTI Editor is a composable kit — it provides the QTI building blocks that slot into an existing ProseMirror instance. It does not ship integration packages for specific frameworks or third-party libraries. The pattern below is one way to wire things together; how you integrate the kit into your application is up to you.
 :::
 
-## Approach 1: Pure ProseMirror
-
-### 1. Install
+## Install
 
 ```bash
-pnpm add prosemirror-state prosemirror-view prosemirror-model \
-  @citolab/prose-qti
+pnpm add prosemirror-state prosemirror-view prosemirror-model prosemirror-commands \
+         prosemirror-keymap prosemirror-history prosemirror-dropcursor prosemirror-gapcursor \
+         prosemirror-menu prosemirror-schema-basic prosemirror-schema-list prosemirror-tables \
+         @citolab/prose-qti @citolab/prose-extensions
 ```
 
-### 2. Create and mount
+## File split
+
+The boilerplate splits its editor across three files. Each file has a single concern:
+
+| File | Owns |
+|---|---|
+| `schema.ts` | Document topology — node specs, content/group rules |
+| `prosemirror-qti.ts` | Descriptors, plugins, attribute allowlist, item roundtrip |
+| `main.ts` | Composition root — view, state, plugin stack, menu bar |
+
+## 1. Schema
+
+`schema.ts` is one literal — every interaction's `qti*InteractionNodeSpec` is spread in alongside core prose nodes. `content` and `group` are restated inline so the whole topology is visible in one file.
+
+```ts
+import { Schema } from 'prosemirror-model';
+import { nodes as basicNodes, marks } from 'prosemirror-schema-basic';
+import { orderedList, bulletList, listItem } from 'prosemirror-schema-list';
+import { tableNodes } from 'prosemirror-tables';
+import { qtiChoiceInteractionNodeSpec } from '@citolab/prose-qti/components/choice';
+import { qtiTextEntryInteractionNodeSpec } from '@citolab/prose-qti/components/text-entry';
+import {
+  qtiPromptNodeSpec,
+  qtiPromptParagraphNodeSpec,
+  qtiSimpleChoiceNodeSpec,
+  qtiSimpleChoiceParagraphNodeSpec,
+} from '@citolab/prose-qti/components/shared';
+
+export const appSchema = new Schema({
+  marks,
+  nodes: {
+    doc:       { content: 'block+', attrs: { identifier: {}, title: {} } },
+    paragraph: { ...basicNodes.paragraph, content: 'inline*', group: 'block richtext' },
+    text:      basicNodes.text,
+    ordered_list: { ...orderedList, content: 'list_item+', group: 'block richtext' },
+    bullet_list:  { ...bulletList,  content: 'list_item+', group: 'block richtext' },
+    list_item:    { ...listItem,    content: 'paragraph (paragraph | bullet_list | ordered_list)*' },
+    ...tableNodes({ tableGroup: 'block richtext', cellContent: 'richtext+', cellAttributes: {} }),
+
+    // QTI shared building blocks
+    qtiPrompt:                { ...qtiPromptNodeSpec,                content: 'qtiPromptParagraph' },
+    qtiPromptParagraph:       { ...qtiPromptParagraphNodeSpec,       content: 'text*', group: 'block' },
+    qtiSimpleChoice:          { ...qtiSimpleChoiceNodeSpec,          content: 'qtiSimpleChoiceParagraph' },
+    qtiSimpleChoiceParagraph: { ...qtiSimpleChoiceParagraphNodeSpec, content: 'text*', group: 'block' },
+
+    // QTI interactions
+    qtiChoiceInteraction:    { ...qtiChoiceInteractionNodeSpec },
+    qtiTextEntryInteraction: { ...qtiTextEntryInteractionNodeSpec },
+  },
+});
+```
+
+Add the other interactions (`extended-text`, `associate`, `gap-match`, `hottext`, `inline-choice`, `match`, `order`, `select-point`, `rubric-block`) the same way — import their `qti*InteractionNodeSpec` and spread into the literal.
+
+## 2. QTI integration
+
+`prosemirror-qti.ts` owns descriptors, plugins, the attribute allowlist, and the roundtrip helpers.
+
+```ts
+import { chainCommands } from 'prosemirror-commands';
+import { keymap } from 'prosemirror-keymap';
+import { choiceInteractionDescriptor }      from '@citolab/prose-qti/components/choice';
+import { extendedTextInteractionDescriptor } from '@citolab/prose-qti/components/extended-text';
+import { textEntryInteractionDescriptor }    from '@citolab/prose-qti/components/text-entry';
+// …import the rest the same way
+import { exportItemXml, importItemFromUrl } from '@citolab/prose-qti/item-roundtrip';
+
+// Side-effect imports register the Lit custom elements used by the node views.
+import '@citolab/prose-qti/components/choice/register.js';
+import '@citolab/prose-qti/components/text-entry/register.js';
+// …one per interaction, plus the shared elements you use
+import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
+import '@citolab/prose-qti/components/shared/components/qti-simple-choice/register.js';
+
+import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
+import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
+import type { Plugin } from 'prosemirror-state';
+
+export const descriptors: InteractionDescriptor[] = [
+  choiceInteractionDescriptor,
+  extendedTextInteractionDescriptor,
+  textEntryInteractionDescriptor,
+  // …
+];
+
+// Per-node-type allowlist of editable attributes (used by the attributes panel).
+export const editableAttrs = Object.fromEntries(
+  descriptors.flatMap(descriptor =>
+    Object.values(descriptor.attributePanelMetadata ?? {}).map(metadata => [
+      metadata.nodeTypeName,
+      metadata.editableAttributes ?? [],
+    ])
+  )
+);
+
+// Enter/Backspace chain across every interaction. Each descriptor's command
+// returns false when it doesn't apply, so unhandled keys fall through to the
+// list-split and base keymaps that come later in the plugin stack.
+const enterCommand     = chainCommands(...descriptors.flatMap(d => d.enterCommand     ?? []));
+const backspaceCommand = chainCommands(...descriptors.flatMap(d => d.backspaceCommand ?? []));
+
+export const qtiPlugins: Plugin[] = [
+  keymap({ Enter: enterCommand, Backspace: backspaceCommand }),
+  ...descriptors.flatMap(d => d.pluginFactories?.map(factory => factory()) ?? []),
+];
+
+export function importQtiItem(href: string, schema: Schema): Promise<ProseMirrorNode> {
+  return importItemFromUrl(href, schema);
+}
+
+export function exportQtiItem(doc: ProseMirrorNode, schema: Schema): string {
+  return exportItemXml(doc, schema);
+}
+```
+
+Each `InteractionDescriptor` exposes:
+
+| Field | What it carries |
+|---|---|
+| `tagName` | `qti-choice-interaction`, `qti-text-entry-interaction`, … — used by the Insert menu |
+| `insertCommand` | ProseMirror command that inserts the interaction at the selection |
+| `enterCommand` / `backspaceCommand` | Optional interaction-aware key commands |
+| `pluginFactories` | Plugin factories the interaction needs at runtime |
+| `attributePanelMetadata` | Per-node-type metadata: `nodeTypeName`, `editableAttributes` |
+| `nodeSpecs` | The ProseMirror node specs the interaction contributes (also re-exported as `qti*InteractionNodeSpec`) |
+
+## 3. Composition root
+
+`main.ts` assembles the editor and mounts it. The plugin order matters: `qtiPlugins` come before the list/table keymaps so the QTI Enter/Backspace overrides win, and `keymap(baseKeymap)` sits at the end so unhandled keys fall through.
 
 ```ts
 import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
-import { Schema } from 'prosemirror-model';
-import {
-  listInteractionDescriptors,
-  listInteractionPluginFactories,
-} from '@citolab/prose-qti/core/interactions/composer';
+import { keymap } from 'prosemirror-keymap';
+import { baseKeymap } from 'prosemirror-commands';
+import { history, undo, redo } from 'prosemirror-history';
+import { dropCursor } from 'prosemirror-dropcursor';
+import { gapCursor } from 'prosemirror-gapcursor';
+import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
 
-const descriptors = listInteractionDescriptors();
-const nodes: Record<string, unknown> = {
-  doc: { content: 'block+' },
-  text: {},
-  paragraph: { content: 'inline*', group: 'block' },
-};
-const seen = new Set<string>();
-for (const descriptor of descriptors) {
-  for (const { name, spec } of descriptor.nodeSpecs) {
-    if (!seen.has(name)) { nodes[name] = spec; seen.add(name); }
-  }
-}
+import { appSchema as schema } from './schema.js';
+import { qtiPlugins, importQtiItem, exportQtiItem } from './prosemirror-qti.js';
 
-const schema = new Schema({ nodes, marks: {} });
-const plugins = listInteractionPluginFactories().map(f => f());
+const editorPlugins = [
+  history(),
+  keymap({ 'Mod-z': undo, 'Mod-y': redo, 'Shift-Mod-z': redo }),
+  ...qtiPlugins,
+  keymap(baseKeymap),
+  dropCursor(),
+  gapCursor(),
+  blockSelectPlugin,    // selecting whole interaction nodes
+  nodeAttrsSyncPlugin,  // applies inline attr edits dispatched as DOM events
+];
 
-let latestJson = '';
+const doc = await importQtiItem('/items/item-1.xml', schema);
 
-const view = new EditorView(document.getElementById('editor')!, {
-  state: EditorState.create({ schema, plugins }),
+const view = new EditorView(document.querySelector('#editor')!, {
+  state: EditorState.create({ doc, plugins: editorPlugins }),
   dispatchTransaction(tr) {
-    const next = view.state.apply(tr);
-    view.updateState(next);
-    if (tr.docChanged) {
-      latestJson = JSON.stringify(next.doc.toJSON());
-    }
+    view.updateState(view.state.apply(tr));
   },
 });
 
-// Cleanup
-window.addEventListener('unload', () => view.destroy());
+document.querySelector('#export-btn')!.addEventListener('click', () => {
+  const xml = exportQtiItem(view.state.doc, schema);
+  const url = URL.createObjectURL(new Blob([xml], { type: 'application/xml' }));
+  Object.assign(document.createElement('a'), { href: url, download: 'item.xml' }).click();
+  URL.revokeObjectURL(url);
+});
 ```
 
-## Approach 2: ProseKit
+## Toolbar
 
-### 1. Install
-
-```bash
-pnpm add prosekit @citolab/prose-qti
-```
-
-### 2. Create and mount
+Use `prosemirror-menu` for an Insert dropdown built from the descriptors:
 
 ```ts
-import { createEditor, union } from 'prosekit/core';
-import { defineBasicExtension } from 'prosekit/basic';
-import { defineQtiInteractionsExtension } from '@citolab/prose-qti/integration/interactions/prosekit';
-import { qtiEditorEventsExtension } from '@citolab/prose-qti/integration/events';
-import '@citolab/prose-qti/components/register';
+import { menuBar, MenuItem, Dropdown } from 'prosemirror-menu';
+import { descriptors } from './prosemirror-qti.js';
 
-// One private EventTarget per editor instance
-const eventTarget = new EventTarget();
+const insertInteractionDropdown = new Dropdown(
+  descriptors.map(descriptor => new MenuItem({
+    run:    descriptor.insertCommand!,
+    enable: state => descriptor.insertCommand!(state),
+    label:  descriptor.tagName,
+    title:  `Insert ${descriptor.tagName} interaction`,
+  })),
+  { label: 'Insert' }
+);
 
-const editor = createEditor({
-  extension: union(
-    defineBasicExtension(),
-    defineQtiInteractionsExtension(),
-    qtiEditorEventsExtension({ eventTarget }),
-  ),
-});
-
-editor.mount(document.getElementById('editor')!);
-
-eventTarget.addEventListener('qti:content:change', (e) => {
-  const { html, json } = (e as CustomEvent).detail;
-  console.log(html);
-});
-
-eventTarget.addEventListener('qti:selection:change', (e) => {
-  const { from, to, empty } = (e as CustomEvent).detail;
-});
-
-// Cleanup
-window.addEventListener('unload', () => (editor as any).view?.destroy());
+// Add `menuBar({ content: [[insertInteractionDropdown], …] })` to your plugin stack.
 ```
 
-## Registry UI
+## Attributes panel
 
-Registry components are Lit web components and work the same way in vanilla projects as in framework apps. Mount the editor, then assign the `editor` instance to the component:
+The boilerplate ships its own local attributes-panel ProseMirror plugin — a small file that renders the selected node's attribute chain into a side panel and applies edits via transactions. See [`attributes-panel-plugin.ts`](https://github.com/Citolab/qti-editor/blob/main/apps/qti-prosemirror-item/src/components/attributes-panel-plugin.ts) in the boilerplate; it consumes the `editableAttrs` allowlist exported from `prosemirror-qti.ts`.
 
 ```ts
-import './components/toolbar';
+import { attributesPanelPlugin } from './components/attributes-panel-plugin.js';
+import { editableAttrs } from './prosemirror-qti.js';
 
-const toolbar = document.querySelector('lit-editor-toolbar')!;
-toolbar.editor = editor;
+const view = new EditorView(host, {
+  state: EditorState.create({
+    doc,
+    plugins: [...editorPlugins, attributesPanelPlugin(panelEl, { editableAttrs })],
+  }),
+});
 ```
 
-See the [registry guides](/docs/using-the-registry/) for available components and their install commands.
+For a pre-built Lit-based attributes panel, see the [registry's `qti-attributes-panel`](/docs/using-the-registry/qti-attributes-panel/).

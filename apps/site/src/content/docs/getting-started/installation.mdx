@@ -4,148 +4,71 @@ description: Add QTI Editor to your project from npm.
 slug: docs/getting-started/installation
 ---
 
-QTI Editor is split into focused packages so you only install what you need. For framework apps, there are two delivery models:
+QTI Editor is split into focused packages so you only install what you need. The [`qti-prosemirror-item`](https://github.com/Citolab/qti-editor/tree/main/apps/qti-prosemirror-item) boilerplate is the reference shape; this page lists the packages it uses and how to install them.
 
-- published npm packages for the editor engine and pure [ProseMirror](https://prosemirror.net/) helpers
-- registry-installed Lit UI components that are copied into your app source from the GitHub registry in this repository
-
-## Choose Your Editor Foundation
-
-QTI Editor supports two integration approaches:
-
-### Option 1: Pure ProseMirror (minimal dependencies)
-
-Use this for full control with minimal dependencies:
+## Install
 
 ```bash
 pnpm add prosemirror-state prosemirror-view prosemirror-model prosemirror-commands \
-         @citolab/prose-qti
+         prosemirror-keymap prosemirror-history prosemirror-dropcursor prosemirror-gapcursor \
+         prosemirror-menu prosemirror-schema-basic prosemirror-schema-list prosemirror-tables \
+         @citolab/prose-qti @citolab/prose-extensions
 ```
 
 | Package | Purpose |
 |---|---|
-| `prosemirror-*` | Core ProseMirror packages (no framework) |
-| `@citolab/prose-qti` | QTI semantics, descriptor registry, XML export |
+| `prosemirror-*` | Core ProseMirror runtime, keymaps, history, cursors, menu bar, lists, tables |
+| `@citolab/prose-qti` | QTI descriptors, node specs, plugins, item roundtrip |
+| `@citolab/prose-extensions` | Generic ProseMirror plugins (block select, node attrs sync, semantic paste, …) |
 
-`@citolab/prose-qti` treats the ProseMirror packages as peer dependencies rather than bundled runtime dependencies. That keeps your host editor in control of the ProseMirror stack and avoids duplicate copies when your app already depends on ProseMirror or ProseKit.
+`@citolab/prose-qti` treats the ProseMirror packages as peer dependencies. Keep the ProseMirror packages on one aligned release set and upgrade them together; reuse versions your app already has rather than introducing a second copy.
 
-Versioning guidance:
+## QTI interactions
 
-- install the full `prosemirror-*` set alongside `@citolab/prose-qti` when starting from scratch
-- keep the ProseMirror packages on one compatible release set and upgrade them together
-- if your app already uses ProseMirror, reuse those versions instead of introducing a second copy through another editor wrapper
-- use the versions declared in `packages/prose-qti/package.json` as the compatibility baseline
-
-### Option 2: ProseKit (recommended for rapid development)
-
-Use this for a ProseKit-based editor shell and copied registry UI:
-
-```bash
-pnpm add prosekit @citolab/prose-qti
-```
-
-| Package | Purpose |
-|---|---|
-| `prosekit` | ProseMirror wrapper with editor utilities |
-| `@citolab/prose-qti` | QTI semantics, descriptor registry, XML export |
-
-**Note:** ProseKit includes ProseMirror as a dependency, so you don't need to install ProseMirror packages separately.
-
-More precisely: ProseKit brings the ProseMirror runtime stack in transitively, so a ProseKit-based app usually only needs `prosekit` plus `@citolab/prose-qti`. If your app also imports ProseMirror APIs directly, keep those imports aligned with the ProseMirror version set that ProseKit resolves.
-
-## Adding QTI interactions
-
-Each interaction has its own package subpath. If you only need one interaction, install that subpath and import its `register` module. Use the umbrella register only when you want all interactions at once.
+Each interaction has its own subpath. Import the descriptor and node spec explicitly per interaction — see the [TypeScript Integration](/docs/frameworks/vanilla/) guide for the full shape.
 
 | Subpath | Interaction type |
 |---|---|
 | `@citolab/prose-qti/components/choice` | `<qti-choice-interaction>` |
-| `@citolab/prose-qti/components/hottext` | `<qti-hottext-interaction>` |
-| `@citolab/prose-qti/components/inline-choice` | `<qti-inline-choice-interaction>` |
+| `@citolab/prose-qti/components/extended-text` | `<qti-extended-text-interaction>` |
 | `@citolab/prose-qti/components/text-entry` | `<qti-text-entry-interaction>` |
+| `@citolab/prose-qti/components/inline-choice` | `<qti-inline-choice-interaction>` |
+| `@citolab/prose-qti/components/hottext` | `<qti-hottext-interaction>` |
+| `@citolab/prose-qti/components/order` | `<qti-order-interaction>` |
+| `@citolab/prose-qti/components/match` | `<qti-match-interaction>` |
+| `@citolab/prose-qti/components/associate` | `<qti-associate-interaction>` |
+| `@citolab/prose-qti/components/gap-match` | `<qti-gap-match-interaction>` |
 | `@citolab/prose-qti/components/select-point` | `<qti-select-point-interaction>` |
+| `@citolab/prose-qti/components/rubric-block` | `<qti-rubric-block>` |
+| `@citolab/prose-qti/components/shared` | Shared building blocks (`qti-prompt`, `qti-simple-choice`, …) |
 
 Each interaction subpath exports:
 
-- **Pure ProseMirror plugins** - Plugin factories that return standard ProseMirror `Plugin` objects
-- **ProseMirror commands** - Standard command functions for inserting and manipulating nodes
-- **Node specs** - ProseMirror schema definitions
-- **Web components** - Lit-based custom elements for rendering
-- **Descriptor metadata** - Enough information to assemble your own ProseKit extension layer
+- **`*InteractionDescriptor`** — `tagName`, `insertCommand`, `enterCommand`, `backspaceCommand`, `pluginFactories`, `attributePanelMetadata`, `nodeSpecs`
+- **`qti*InteractionNodeSpec`** — ProseMirror node spec (also reachable via `descriptor.nodeSpecs`)
+- **`register.js`** — side-effect module that defines the interaction's Lit custom element
 
-### Using with Pure ProseMirror
+Custom elements are registered through side-effect imports per interaction (`@citolab/prose-qti/components/<name>/register.js`) plus the shared elements you use (`@citolab/prose-qti/components/shared/components/qti-simple-choice/register.js`, …).
 
-Get plugin factories from the descriptor registry:
+## Item roundtrip
 
-```typescript
-import { listInteractionPluginFactories } from '@citolab/prose-qti/core/interactions/composer';
+`@citolab/prose-qti/item-roundtrip` exposes the import/export bridge:
 
-const plugins = listInteractionPluginFactories().map(factory => factory());
+```ts
+import { importItemFromUrl, exportItemXml } from '@citolab/prose-qti/item-roundtrip';
+
+const doc = await importItemFromUrl(href, schema);
+const xml = exportItemXml(view.state.doc, schema);
 ```
 
-Some interactions also write their attributes through the shared
-`nodeAttrsSyncPlugin`, so include it alongside the interaction plugins:
-
-```typescript
-import { nodeAttrsSyncPlugin } from '@citolab/prose-extensions/node-attrs-sync';
-
-const plugins = [nodeAttrsSyncPlugin, ...listInteractionPluginFactories().map(factory => factory())];
-```
-
-### Using with ProseKit
-
-`defineQtiInteractionsExtension` is available as a package export:
-
-```typescript
-import '@citolab/prose-qti/components/choice/register';
-import { defineQtiInteractionsExtension } from '@citolab/prose-qti/integration/interactions/prosekit';
-```
-
-Pass it directly to `union()` when creating the editor:
-
-```typescript
-import { createEditor, union } from 'prosekit/core';
-import { defineQtiInteractionsExtension } from '@citolab/prose-qti/integration/interactions/prosekit';
-
-const editor = createEditor({
-  extension: union(
-    defineBasicExtension(),
-    defineQtiInteractionsExtension(),
-  ),
-});
-```
-
-Custom elements are registered through side-effect imports. Import `@citolab/prose-qti/components/<name>/register` when you only need one interaction, or import `@citolab/prose-qti/components/register` to register every interaction at once.
-
-## Adding the full UI
-
-For the registry-installed Lit components, use the GitHub registry instead of an npm runtime import:
-
-```bash
-pnpm dlx shadcn@latest add citolab/qti-editor/qti-attributes-panel
-```
-
-Then add the other registry-managed UI piece:
-
-```bash
-pnpm dlx shadcn@latest add citolab/qti-editor/qti-interaction-insert-menu
-```
-
-The registry copies Lit source files into your project so you can modify them freely. After installation, import those copied files from your own app source tree.
-
-The app-shell components shown elsewhere in this repository - `qti-composer`, `qti-composer-metadata-form`, `qti-code-panel`, `qti-convert-menu`, `qti-items-gutter`, `qti-items-navigator`, `lit-editor-toolbar`, and `lit-editor-slash-menu` - are local demo components, not registry items.
-
-For Angular, do the manual shadcn setup first (`components.json`, `@/*` path alias, `src/lib/utils.ts`) because the CLI does not auto-detect Angular projects.
+See the [QTI Item Roundtrip](/docs/packages/qti-item-roundtrip/) reference for the full surface.
 
 ## Package overview
 
 | Package | What it provides | When to use this |
 |---|---|---|
-| `prosemirror-*` | Core ProseMirror packages (pure editor foundation) | When you are assembling the editor from the lowest-level ProseMirror APIs yourself. |
-| `prosekit` | Optional ProseMirror wrapper with editor utilities | When you want a ProseKit shell and convenience APIs around the ProseMirror stack. |
-| `@citolab/prose-qti` | QTI semantics, descriptor registry, interactions, XML export, integration surfaces | When you need the main QTI editor runtime and its interaction packages. |
-| `@citolab/prose-extensions` | Generic ProseMirror/ProseKit extensions (block selection, node attr sync, etc.) | When you need editor behaviors that are useful outside QTI-specific semantics. |
-| `@citolab/prose-qti/qti3-item-import` | Standard QTI 3.0 item normalization into the editor's roundtrip item-body format | When you need to ingest third-party QTI XML or normalize item bodies before parsing them into the editor. |
-| `@citolab/prose-qti/item-roundtrip` | One-call import/export bridge between ProseMirror and QTI item XML | When you want a single helper for roundtripping an item between editor state and QTI XML. |
-| `@citolab/prose-qti/package-builder` | Full IMS content package ZIP export | When you need a downloadable QTI package rather than a single item XML string. |
-| Registry-installed Lit components | Components copied into your app and owned by you | When you want editable editor UI instead of npm runtime components. |
+| `prosemirror-*` | Core ProseMirror runtime | Always — QTI Editor is built on ProseMirror. |
+| `@citolab/prose-qti` | Descriptors, interactions, node specs, plugins, item roundtrip | The main runtime. |
+| `@citolab/prose-extensions` | Generic ProseMirror plugins | When you want block selection, node attribute sync, semantic paste, etc. |
+| `@citolab/prose-qti/qti3-item-import` | Standard QTI 3.0 item normalization | When you need to ingest third-party QTI XML before parsing into the editor. |
+| `@citolab/prose-qti/item-roundtrip` | One-call import/export between ProseMirror and QTI item XML | When you want a single helper for the full QTI item roundtrip. |

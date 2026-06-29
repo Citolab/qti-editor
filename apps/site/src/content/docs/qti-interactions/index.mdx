@@ -27,72 +27,72 @@ When you install `@citolab/prose-qti`, the matching `@qti-components/*` dependen
 
 ## Installing interactions
 
-Install `@citolab/prose-qti`, then import the interaction subpath and its `register` module:
+Install `@citolab/prose-qti`, then import each interaction's descriptor, node spec, and `register.js` module explicitly:
 
 ```bash
 pnpm add @citolab/prose-qti
 ```
 
-Each interaction subpath exports [ProseMirror](https://prosemirror.net/) commands, schema pieces, and web components. Interactions that need runtime behavior (like click-to-mark-correct-response or wrapping selected text as hottext) include their ProseMirror plugins in the subpath.
-
-**Each interaction package provides:**
-
-- **Pure ProseMirror plugins** - Plugin factory functions that return standard ProseMirror `Plugin` objects
-- **ProseMirror commands** - Standard command functions for inserting and manipulating interactions
-- **Node specs** - ProseMirror schema definitions
-- **Web components** - Lit-based UI elements for rendering
-- **Descriptor metadata** - Enough information to assemble your own ProseKit extension layer
-
-**Pure ProseMirror setup:**
-
-Use `listInteractionDescriptors()` for node specs and commands, and `listInteractionPluginFactories()` for the runtime plugin factory functions:
-
-```typescript
-import { listInteractionDescriptors, listInteractionPluginFactories } from '@citolab/prose-qti/core/interactions/composer';
-
-const descriptors = listInteractionDescriptors();
-const plugins = listInteractionPluginFactories().map(factory => factory());
+```ts
+import { choiceInteractionDescriptor, qtiChoiceInteractionNodeSpec } from '@citolab/prose-qti/components/choice';
+import '@citolab/prose-qti/components/choice/register.js';
 ```
 
-**ProseKit setup:**
+Each interaction subpath exports:
 
-`defineQtiInteractionsExtension` is a package export — import it directly:
+- **`*InteractionDescriptor`** — `tagName`, `insertCommand`, `enterCommand`, `backspaceCommand`, `pluginFactories`, `attributePanelMetadata`, `nodeSpecs`
+- **`qti*InteractionNodeSpec`** — ProseMirror node spec (also reachable via `descriptor.nodeSpecs`)
+- **`register.js`** — side-effect module that defines the Lit custom element used by the node view
 
-```typescript
-import '@citolab/prose-qti/components/choice/register';
-import { defineQtiInteractionsExtension } from '@citolab/prose-qti/integration/interactions/prosekit';
+Shared building blocks (`qti-prompt`, `qti-simple-choice`, `qti-simple-associable-choice`, `qti-simple-match-set`, `qti-gap`, `qti-gap-text`) live under `@citolab/prose-qti/components/shared` and have their own per-component `register.js` modules.
+
+## Assembling
+
+Collect the descriptors you want to support into a list and derive the schema, plugins, and attribute allowlist from them. See the [TypeScript Integration](/docs/frameworks/vanilla/) guide for the full pattern.
+
+```ts
+import { chainCommands } from 'prosemirror-commands';
+import { keymap } from 'prosemirror-keymap';
+import { choiceInteractionDescriptor }   from '@citolab/prose-qti/components/choice';
+import { textEntryInteractionDescriptor } from '@citolab/prose-qti/components/text-entry';
+// …import the rest
+
+const descriptors = [
+  choiceInteractionDescriptor,
+  textEntryInteractionDescriptor,
+  // …
+];
+
+const enterCommand     = chainCommands(...descriptors.flatMap(d => d.enterCommand     ?? []));
+const backspaceCommand = chainCommands(...descriptors.flatMap(d => d.backspaceCommand ?? []));
+
+const qtiPlugins = [
+  keymap({ Enter: enterCommand, Backspace: backspaceCommand }),
+  ...descriptors.flatMap(d => d.pluginFactories?.map(factory => factory()) ?? []),
+];
 ```
-
-Custom elements are registered through side-effect imports, not a runtime helper. Import `@citolab/prose-qti/components/<name>/register` for a single interaction, or import `@citolab/prose-qti/components/register` to register every interaction at once.
 
 ## Inserting an interaction
 
-In the editor UI, use the **Interactions** toolbar button to open the insert menu. Only interactions whose schema nodes are registered in your editor extension are listed. Each item is disabled when the cursor is in a position where that node cannot be inserted.
-
-Interactions can also be inserted programmatically using the command functions exported from each package:
+Each descriptor exposes an `insertCommand` — a standard ProseMirror command. Use it from your toolbar or programmatically:
 
 ```ts
-import { insertChoiceInteraction } from '@citolab/prose-qti/components/choice';
-import { insertHottextInteraction } from '@citolab/prose-qti/components/hottext';
-import { insertTextEntryInteraction } from '@citolab/prose-qti/components/text-entry';
-import { insertInlineChoiceInteraction } from '@citolab/prose-qti/components/inline-choice';
-import { insertSelectPointInteraction } from '@citolab/prose-qti/components/select-point';
+import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
 
-// Call as a command:
-insertChoiceInteraction(view.state, view.dispatch, view);
+choiceInteractionDescriptor.insertCommand!(view.state, view.dispatch, view);
 ```
 
-## Attributes panel
+The [TypeScript Integration](/docs/frameworks/vanilla/) guide shows how to build an Insert dropdown from the full `descriptors` list using `prosemirror-menu`.
 
-When the cursor is inside any interaction node, the **Attributes** panel shows the schema-defined attributes for that node and its ancestors. Changes are applied live to the editor document.
+## Attributes
 
-Attributes vary by interaction type but commonly include:
+Each descriptor's `attributePanelMetadata` declares which attributes are user-editable per node type. Common attributes:
 
 | Attribute | Description |
 |---|---|
-| `responseIdentifier` | Links the interaction to a response declaration |
-| `maxChoices` | Maximum number of selectable options (choice interaction) |
-| `expectedLength` | Character limit hint (text entry / extended text) |
-| `caseSensitive` | Whether the response match is case-sensitive (text entry) |
+| `response-identifier` | Links the interaction to a response declaration |
+| `max-choices` | Maximum number of selectable options (choice interaction) |
+| `expected-length` | Character limit hint (text entry / extended text) |
+| `case-sensitive` | Whether the response match is case-sensitive (text entry) |
 
-The [framework guides](/docs/frameworks/react/) and [framework guides](/docs/frameworks/angular/) show complete integration examples.
+The boilerplate ships a small [`attributesPanelPlugin`](https://github.com/Citolab/qti-editor/blob/main/apps/qti-prosemirror-item/src/components/attributes-panel-plugin.ts) that renders these into a side panel; the [TypeScript Integration](/docs/frameworks/vanilla/) guide walks through it.

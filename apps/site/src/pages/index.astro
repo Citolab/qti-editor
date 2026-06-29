@@ -29,7 +29,7 @@ import '../style.css';
         </h1>
         <h2 class="mt-2 text-[1.25rem] font-semibold text-slate-700 dark:text-slate-200">For modern assessment authoring</h2>
         <p class="mt-5 text-slate-600 leading-relaxed dark:text-slate-300">
-          A composable authoring experience for QTI interactions. Usable as a standalone editor or integrated into your stack of choice. Check out the docs for more details and framework-specific guides to get started.
+          A composable authoring experience for QTI interactions. Usable as a standalone editor or integrated into your stack of choice. Check out the docs for more details and the integration guide to get started.
         </p>
         <div class="mt-6 flex flex-wrap gap-3">
           <a
@@ -38,25 +38,16 @@ import '../style.css';
           >
           <a
             class="inline-block rounded-full border border-[#e5ddd1] bg-white px-[1.2rem] py-[0.72rem] font-semibold text-[#449b44] no-underline dark:border-slate-700 dark:bg-slate-800 dark:text-emerald-300"
-            href="/docs/frameworks/react">See React guide</a
-          >
-          <a
-            class="inline-block rounded-full border border-[#e5ddd1] bg-white px-[1.2rem] py-[0.72rem] font-semibold text-[#449b44] no-underline dark:border-slate-700 dark:bg-slate-800 dark:text-emerald-300"
-            href="/docs/frameworks/angular">See Angular guide</a
+            href="/docs/frameworks/vanilla">See integration guide</a
           >
         </div>
       </section>
 
-      <section class="mt-8 rounded-2xl border border-[#e5ddd1] bg-white p-4 dark:border-slate-700 dark:bg-slate-900" aria-label="Interactive editor demo">
-        <h2 class="mt-0 mb-3 text-[1.05rem] dark:text-slate-100">Live Editor Demo</h2>
-        <qti-editor-app class="block max-h-[80vh] overflow-y-auto"></qti-editor-app>
-      </section>
-
       <section class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4" aria-label="Highlights">
         <article class="rounded-2xl border border-[#e5ddd1] bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
-          <h2 class="mt-0 text-[1.05rem] dark:text-slate-100">Framework examples</h2>
+          <h2 class="mt-0 text-[1.05rem] dark:text-slate-100">Integration guide</h2>
           <p class="mb-0 text-slate-600 leading-relaxed dark:text-slate-300">
-            Start from React and Angular integration pages with package setup and component wiring.
+            A single TypeScript integration page covers package setup and ProseMirror wiring.
           </p>
         </article>
         <article class="rounded-2xl border border-[#e5ddd1] bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
@@ -73,8 +64,5 @@ import '../style.css';
         </article>
       </section>
     </main>
-    <script>
-      import '../lib/register-qti-editor.ts';
-    </script>
   </body>
 </html>

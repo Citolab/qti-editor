@@ -15,16 +15,10 @@ pnpm add @citolab/prose-extensions
 ## Usage
 
 ```ts
-import { blockSelectExtension, blockSelectPlugin } from '@citolab/prose-extensions/block-select';
+import { blockSelectPlugin } from '@citolab/prose-extensions/block-select';
 
-// ProseKit
-const extensions = [blockSelectExtension];
-
-// Raw ProseMirror
 const plugins = [blockSelectPlugin];
 ```
-
-`blockSelectExtension` is the ProseKit-friendly wrapper. `blockSelectPlugin` is the underlying ProseMirror plugin if you assemble the editor state yourself.
 
 ## When to use
 

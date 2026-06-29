@@ -4,7 +4,9 @@ description: Install and use the schema-aware attributes panel GitHub registry c
 slug: docs/using-the-registry/qti-attributes-panel
 ---
 
-`qti-attributes-panel` displays and edits the schema attributes for the currently selected QTI node and its ancestors.
+`qti-attributes-panel` is a pre-built Lit-based attributes panel — an alternative to writing your own ProseMirror plugin. It displays and edits the schema attributes for the currently selected QTI node and its ancestors.
+
+For the plain-ProseMirror approach used by [`qti-prosemirror-item`](https://github.com/Citolab/qti-editor/tree/main/apps/qti-prosemirror-item), see the attributes-panel section of the [TypeScript Integration](/docs/frameworks/vanilla/) guide.
 
 ## Install
 
@@ -16,12 +18,12 @@ pnpm dlx shadcn@latest add citolab/qti-editor/qti-attributes-panel
 
 ## Usage
 
-The panel reads the ProseKit editor from the shared `editorContext` (`@lit/context`). Provide the editor higher up in the DOM tree and the panel wires itself up automatically — no property assignment needed.
+The panel reads the editor instance from the shared `editorContext` (`@lit/context`). Provide the editor higher up in the DOM tree and the panel wires itself up automatically — no property assignment needed.
 
 ```ts
 import './components/attributes-panel';
 import { ContextProvider } from '@lit/context';
-import { editorContext } from '@citolab/prose-qti/integration/editor-context';
+import { editorContext } from '@citolab/prose-qti-ui/editor-context';
 
 // Provide the editor from a host element (e.g. in its constructor):
 new ContextProvider(host, {
@@ -33,7 +35,7 @@ new ContextProvider(host, {
 // <qti-attributes-panel></qti-attributes-panel>
 ```
 
-The panel manages its own attribute event wiring once it receives the ProseKit editor from context.
+The panel manages its own attribute event wiring once it receives the editor from context.
 
 ## How it works
 

@@ -1,6 +1,6 @@
 ---
 title: ProseMirror Plugins
-description: Generic ProseMirror and ProseKit plugins shipped with QTI Editor.
+description: Generic ProseMirror plugins shipped with QTI Editor.
 slug: docs/prosemirror-plugins
 ---
 
@@ -36,7 +36,7 @@ import {
 } from '@citolab/prose-extensions/local-storage-doc-persistence-extension';
 ```
 
-`blockSelectExtension` and `nodeAttrsSyncExtension` are ProseKit extensions. `createVirtualCursor` returns a raw ProseMirror plugin. The persistence and semantic-paste helpers are also exposed as ProseKit-ready extensions, while the compatibility chapter covers the migration helpers directly.
+`createVirtualCursor` returns a raw ProseMirror plugin. The other modules expose plugin factories and extension wrappers — see each plugin's page for the exact shapes. The compatibility chapter covers the migration helpers directly.
 
 ## When to use this
 

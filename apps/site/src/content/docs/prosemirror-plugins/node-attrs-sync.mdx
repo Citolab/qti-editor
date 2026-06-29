@@ -15,16 +15,10 @@ pnpm add @citolab/prose-extensions
 ## Usage
 
 ```ts
-import { nodeAttrsSyncExtension, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/node-attrs-sync';
+import { nodeAttrsSyncPlugin } from '@citolab/prose-extensions/node-attrs-sync';
 
-// ProseKit
-const extensions = [nodeAttrsSyncExtension];
-
-// Raw ProseMirror
 const plugins = [nodeAttrsSyncPlugin];
 ```
-
-`nodeAttrsSyncExtension` is the ProseKit wrapper. `nodeAttrsSyncPlugin` is the raw ProseMirror plugin if you are wiring the editor by hand.
 
 ## When to use
 
