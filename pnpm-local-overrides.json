@@ -1,6 +1,7 @@
 {
   "enabled": true,
   "sourceOverrides": {
+    "@citolab/qti-components": "github:Citolab/qti-components#82857af3ac6356bc8f4a95b519fe719a66166f71&path:/packages/qti-components",
     "@qti-components/associate-interaction": "github:Citolab/qti-components#82857af3ac6356bc8f4a95b519fe719a66166f71&path:/packages/interactions/associate-interaction",
     "@qti-components/base": "github:Citolab/qti-components#82857af3ac6356bc8f4a95b519fe719a66166f71&path:/packages/qti-base",
     "@qti-components/choice-interaction": "github:Citolab/qti-components#82857af3ac6356bc8f4a95b519fe719a66166f71&path:/packages/interactions/choice-interaction",
@@ -16,6 +17,7 @@
     "@qti-components/utilities": "github:Citolab/qti-components#82857af3ac6356bc8f4a95b519fe719a66166f71&path:/packages/qti-utilities"
   },
   "overrides": {
+    "@citolab/qti-components": "file:/Users/patrickklein/Projects/Editor/QTI-Editor/.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/citolab-qti-components-7.28.1.tgz",
     "@qti-components/associate-interaction": "file:/Users/patrickklein/Projects/Editor/QTI-Editor/.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-associate-interaction-1.1.5.tgz",
     "@qti-components/base": "file:/Users/patrickklein/Projects/Editor/QTI-Editor/.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-base-1.5.1.tgz",
     "@qti-components/choice-interaction": "file:/Users/patrickklein/Projects/Editor/QTI-Editor/.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-choice-interaction-1.1.4.tgz",
