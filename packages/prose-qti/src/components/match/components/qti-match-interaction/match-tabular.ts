@@ -1,24 +1,5 @@
 import { css, html, type LitElement, type ReactiveController } from 'lit';
 
-/**
- * Adopted into document.adoptedStyleSheets exactly once. Reaches across the
- * <qti-simple-associable-choice> shadow boundary via ::part() to hide the
- * drag-drop dropslot when the choice is projected into a tabular header —
- * shadow styles in the merged element can't reach there (two shadow hops).
- */
-let lightdomSheetAdopted = false;
-function adoptTabularLightdomStyles(): void {
-  if (lightdomSheetAdopted) return;
-  const sheet = new CSSStyleSheet();
-  sheet.replaceSync(/* css */ `
-    qti-match-interaction.qti-match-tabular qti-simple-associable-choice::part(dropslot) {
-      display: none;
-    }
-  `);
-  document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
-  lightdomSheetAdopted = true;
-}
-
 import {
   getChoices,
   getMatchSets,
@@ -109,7 +90,6 @@ export class TabularController implements ReactiveController {
 
   constructor(host: TabularHost) {
     this.host = host;
-    adoptTabularLightdomStyles();
     host.addController(this);
   }
 

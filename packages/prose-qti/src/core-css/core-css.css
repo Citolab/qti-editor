@@ -34,40 +34,14 @@ qti-match-interaction:not(.qti-match-tabular) {
   }
 }
 
-/* --- Interaction backgrounds + spacing -------------------------------------- */
-
-/* qti-prompt {
-  background: #fff;
+/* Tabular match: header choices are projected into row/col headers; the
+   drag-drop dropslot baked into qti-simple-associable-choice's shadow must
+   not show in tabular mode. Reaches across the choice's shadow via ::part(). */
+qti-match-interaction.qti-match-tabular qti-simple-associable-choice::part(dropslot) {
+  display: none;
 }
 
-qti-choice-interaction:hover,
-qti-gap-match-interaction:hover,
-qti-associate-interaction:hover,
-qti-inline-choice-interaction:hover,
-qti-hottext-interaction:hover,
-qti-match-interaction:hover,
-qti-order-interaction:hover,
-qti-select-point-interaction:hover,
-qti-text-entry-interaction:hover,
-qti-extended-text-interaction:hover {
-
-  outline: 2px solid rgb(241 245 249);
-  outline-offset: 4px;
-  border-radius: 0.2rem;
+/* Order interaction: slotted choices act as drag sources in the editor. */
+qti-order-interaction qti-simple-choice {
+  cursor: pointer;
 }
-
-qti-hottext-interaction > * {
-  background: #fff;
-}
-
-qti-simple-choice,
-qti-simple-associable-choice {
-  background: #fff;
-}
-
-qti-gap-text.prosekit-placeholder::before {
-  position: static !important;
-  height: auto !important;
-  line-height: 1.5;
-  vertical-align: baseline;
-} */

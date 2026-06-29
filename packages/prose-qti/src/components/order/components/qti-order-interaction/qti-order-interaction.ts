@@ -2,7 +2,7 @@ import { html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
 import { Interaction, PendingSelectionController, renderEditChip } from '../../../shared';
-import styles, { LIGHT_DOM_STYLES } from './qti-order-interaction.styles.js';
+import styles from './qti-order-interaction.styles.js';
 
 export class QtiOrderInteractionEdit extends Interaction {
   static override styles = styles;
@@ -28,7 +28,6 @@ export class QtiOrderInteractionEdit extends Interaction {
   private _order: (string | null)[] = [];
   private _labelCache = new Map<string, string>();
   private _setupDone = false;
-  private _lightDomStyle: HTMLStyleElement | null = null;
   private _observer: MutationObserver | null = null;
 
   private readonly _selection = new PendingSelectionController(this, {
@@ -65,7 +64,6 @@ export class QtiOrderInteractionEdit extends Interaction {
 
   override connectedCallback() {
     super.connectedCallback();
-    this._injectLightDomStyles();
     this._parseCorrectResponse();
     requestAnimationFrame(() => this._trySetup());
     void this._selection;
@@ -74,17 +72,8 @@ export class QtiOrderInteractionEdit extends Interaction {
   override disconnectedCallback() {
     this._observer?.disconnect();
     this._observer = null;
-    this._lightDomStyle?.remove();
-    this._lightDomStyle = null;
     this._setupDone = false;
     super.disconnectedCallback();
-  }
-
-  private _injectLightDomStyles() {
-    if (this._lightDomStyle) return;
-    this._lightDomStyle = document.createElement('style');
-    this._lightDomStyle.textContent = LIGHT_DOM_STYLES;
-    this.prepend(this._lightDomStyle);
   }
 
   override firstUpdated() {

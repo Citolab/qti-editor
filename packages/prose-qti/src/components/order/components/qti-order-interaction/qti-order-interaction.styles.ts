@@ -3,18 +3,6 @@ import { css, type CSSResultGroup } from 'lit';
 import externalStyles from '@qti-components/order-interaction/styles';
 
 /**
- * Light-DOM styles injected as a <style> element — applies to slotted
- * `qti-simple-choice` elements. Minimal: per-state visuals (selected
- * source / disabled) are owned by the host application's stylesheet via
- * `qti-simple-choice:state(...)` selectors.
- */
-export const LIGHT_DOM_STYLES = `
-  qti-simple-choice {
-    cursor: pointer;
-  }
-`;
-
-/**
  * Shadow-DOM styles. Layout only — drop-slot per-state visuals (idle,
  * pending pulse, filled) and chip styling are app-owned via host-state
  * selectors (`qti-order-interaction:state(pending) ::part(drop-list)`)
