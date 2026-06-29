@@ -5,6 +5,8 @@
  * No Lit/UI dependencies - these can be used in any environment.
  */
 
+import { iterCorrectResponseValues } from '../../components/shared/correct-response/codec.js';
+
 import { getInteractionComposerHandler } from '../interactions/composer.js';
 
 import type { ResponseProcessingKind } from '@citolab/prose-qti/interfaces';
@@ -94,15 +96,10 @@ function createAutoIdentifier(options: {
 function parseCorrectResponseValues(
   declaration: Pick<ResponseDeclaration, 'cardinality' | 'correctResponse'>,
 ): string[] {
-  const value = declaration.correctResponse;
-  if (value == null) return [];
-  if (Array.isArray(value)) {
-    return value.map(v => v.trim()).filter(Boolean);
-  }
-  if (declaration.cardinality === 'single') {
-    return value.length > 0 ? [value] : [];
-  }
-  return value.split(',').map(v => v.trim()).filter(Boolean);
+  // Defers to the canonical codec from @qti-components/base via the shared
+  // re-export at components/shared/correct-response/codec — same parsing
+  // rule as the runtime base Interaction class.
+  return Array.from(iterCorrectResponseValues(declaration.correctResponse ?? null));
 }
 
 export function extractResponseDeclarations(itemBodyRoot?: Element | null): ResponseDeclaration[] {

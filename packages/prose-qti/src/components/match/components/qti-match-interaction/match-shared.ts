@@ -4,6 +4,8 @@
  * controllers import from here.
  */
 
+import { iterCorrectResponseValues, serializePair } from '../../../shared/correct-response/codec.js';
+
 /** Drag-drop mode pair: [sourceIdentifier, targetIdentifier]. */
 export type MatchAssociation = [string, string];
 
@@ -19,27 +21,17 @@ export interface TabularMatchAssociationChangeDetail {
 }
 
 /**
- * Iterate "src tgt" entries from either the canonical comma-joined string
- * ("A B,C D,E F") OR the codec's array form (["A B","C D","E F"], which the
- * shared `parseCorrectResponseAttribute` returns for multi-entry values) OR
- * the legacy JSON form (`'["A B", ...]'`) authored before this commit. Each
- * yielded entry is trimmed; blank entries are skipped.
+ * Iterate "src tgt" entries from any correct-response shape:
+ *  - canonical comma-joined string ("A B,C D,E F") — via shared codec
+ *  - array form (["A B","C D","E F"]) — via shared codec
+ *  - legacy JSON form (`'["A B", ...]'`) — local fallback below, kept for
+ *    backwards compat with older PM docs
+ * Each yielded entry is trimmed; blank entries are skipped.
  */
 function* iterPairEntries(raw: string | string[] | null | undefined): Generator<string> {
-  if (raw == null) return;
-  if (Array.isArray(raw)) {
-    for (const entry of raw) {
-      const t = typeof entry === 'string' ? entry.trim() : '';
-      if (t) yield t;
-    }
-    return;
-  }
-  const trimmed = raw.trim();
-  if (!trimmed) return;
-  if (trimmed.startsWith('[')) {
-    // Legacy JSON shape kept for backwards compat.
+  if (typeof raw === 'string' && raw.trim().startsWith('[')) {
     try {
-      const parsed: unknown = JSON.parse(trimmed);
+      const parsed: unknown = JSON.parse(raw.trim());
       if (Array.isArray(parsed)) {
         for (const entry of parsed) {
           const t = typeof entry === 'string' ? entry.trim() : '';
@@ -48,13 +40,10 @@ function* iterPairEntries(raw: string | string[] | null | undefined): Generator<
         return;
       }
     } catch {
-      /* fall through to comma split */
+      /* fall through to canonical parsing */
     }
   }
-  for (const entry of trimmed.split(',')) {
-    const t = entry.trim();
-    if (t) yield t;
-  }
+  yield* iterCorrectResponseValues(raw ?? null);
 }
 
 /** Parse the correct-response value into a Map<sourceId, targetId>. */
@@ -81,7 +70,7 @@ export function parseCorrectResponseAsPairs(raw: string | string[] | null): Set<
  */
 export function serializeAssociations(associations: Map<string, string>): string | null {
   if (associations.size === 0) return null;
-  return Array.from(associations, ([s, t]) => `${s} ${t}`).join(',');
+  return Array.from(associations, ([s, t]) => serializePair(s, t)).join(',');
 }
 
 /** Serialize an array of `"src tgt"` strings to the canonical comma-joined form. */
