@@ -14,6 +14,8 @@
 import { pmToRoundtripXml } from '@citolab/prose-qti/components/shared';
 import { buildSingleAssessmentItemXml, formatXml } from "@citolab/prose-qti/core/composer";
 
+import { defaultRoundtripExportTransforms, type RoundtripExportTransform } from './strip-empty-prompts.js';
+
 import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
 
 export interface RoundtripExportContext {
@@ -31,6 +33,24 @@ function resolveContext(doc: ProseMirrorNode, context?: Partial<RoundtripExportC
   };
 }
 
+export interface RoundtripExportOptions {
+  /**
+   * Transforms run on the parsed `<qti-item-body>` XMLDocument BEFORE it is
+   * wrapped in `<qti-assessment-item>`. Defaults to
+   * {@link defaultRoundtripExportTransforms} (currently just empty-prompt
+   * stripping). Pass an empty array to disable, or append your own.
+   */
+  transforms?: readonly RoundtripExportTransform[];
+}
+
+/** Apply the item-body export transforms to `itemBodyDoc` in place. */
+function applyExportTransforms(itemBodyDoc: XMLDocument, options: RoundtripExportOptions): void {
+  const transforms = options.transforms ?? defaultRoundtripExportTransforms;
+  for (const transform of transforms) {
+    transform(itemBodyDoc);
+  }
+}
+
 /**
  * Export a ProseMirror document to a complete QTI 3.0 assessment item, parsed
  * as an XML `Document`. This is the editor's "save" output in document form.
@@ -39,15 +59,17 @@ export function exportItemXmlDoc(
   doc: ProseMirrorNode,
   schema: Schema,
   context?: Partial<RoundtripExportContext>,
+  options: RoundtripExportOptions = {},
 ): XMLDocument {
   const resolved = resolveContext(doc, context);
   const itemBodyXml = pmToRoundtripXml(doc, resolved, schema);
   const itemBodyDoc = new DOMParser().parseFromString(itemBodyXml, 'application/xml');
+  applyExportTransforms(itemBodyDoc, options);
   const xml = buildSingleAssessmentItemXml({ ...resolved, itemBody: itemBodyDoc });
   return new DOMParser().parseFromString(xml, 'application/xml');
 }
 
-export interface RoundtripExportXmlOptions {
+export interface RoundtripExportXmlOptions extends RoundtripExportOptions {
   /** Pretty-print the output with 2-space indentation. Defaults to `true`. */
   format?: boolean;
 }
@@ -62,6 +84,7 @@ export function exportItemXml(
   const resolved = resolveContext(doc, context);
   const itemBodyXml = pmToRoundtripXml(doc, resolved, schema);
   const itemBodyDoc = new DOMParser().parseFromString(itemBodyXml, 'application/xml');
+  applyExportTransforms(itemBodyDoc, options);
   const xml = buildSingleAssessmentItemXml({ ...resolved, itemBody: itemBodyDoc });
   return options.format === false ? xml : formatXml(xml);
 }

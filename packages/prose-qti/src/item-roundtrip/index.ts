@@ -23,7 +23,13 @@ export {
   exportItemXml,
   exportItemXmlDoc,
   type RoundtripExportContext,
+  type RoundtripExportOptions,
   type RoundtripExportXmlOptions,
 } from './export.js';
 
 export { ensureInteractionPrompts } from './ensure-interaction-prompts.js';
+export {
+  defaultRoundtripExportTransforms,
+  stripEmptyPrompts,
+  type RoundtripExportTransform,
+} from './strip-empty-prompts.js';
