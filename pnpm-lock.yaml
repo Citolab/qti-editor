@@ -86,6 +86,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(@vitest/browser@4.1.9)(vitest@4.1.9)
+      '@vitest/ui':
+        specifier: ^4.1.9
+        version: 4.1.9(vitest@4.1.9)
       concurrently:
         specifier: ^9.2.0
         version: 9.2.1
@@ -178,7 +181,7 @@ importers:
         version: 6.1.1(typescript@5.9.3)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
       vitest:
         specifier: ^4.1.9
-        version: 4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
       yalc:
         specifier: 1.0.0-pre.53
         version: 1.0.0-pre.53
@@ -191,6 +194,9 @@ importers:
       '@citolab/prose-qti':
         specifier: workspace:*
         version: link:../../packages/prose-qti
+      '@citolab/qti-components':
+        specifier: file:/Users/patrickklein/Projects/Editor/QTI-Editor/.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/citolab-qti-components-7.28.1.tgz
+        version: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/citolab-qti-components-7.28.1.tgz
       '@qti-components/theme':
         specifier: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
         version: link:../../../../Edtech/QTI/QTI-Components/packages/qti-theme
@@ -855,6 +861,10 @@ packages:
     peerDependenciesMeta:
       prosekit:
         optional: true
+
+  '@citolab/qti-components@file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/citolab-qti-components-7.28.1.tgz':
+    resolution: {integrity: sha512-AuYhvY/h/3zqODKva5a0b3PUE90EUq01WFTvg7yJt4FH8z4WSjwr2A9LZ4ij5AQXWRKrNAL+JadeUVTd9SW+oQ==, tarball: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/citolab-qti-components-7.28.1.tgz}
+    version: 7.28.1
 
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
@@ -1627,6 +1637,12 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
+  '@heximal/expressions@0.1.5':
+    resolution: {integrity: sha512-QdWz9vNrdzi24so9KGEM9w4UYLg1yk+LVvYBEDbw9EY1BzKHITWdtYc55xJ3Zuio0/9Naz/D1YtYlCnfsycNDQ==}
+
+  '@heximal/templates@0.1.5':
+    resolution: {integrity: sha512-5Py8269TAxHS9uInCblMBjs5K1t7BEY/kVfxFnLeIwZAKegjZplNXfh47vbxr1S1AmUVsUW05TvbdEVsAjEo5Q==}
+
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
     engines: {node: '>=18.18.0'}
@@ -2159,7 +2175,7 @@ packages:
       lit: ^3.3.1
 
   '@qti-components/hottext-interaction@file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-hottext-interaction-1.1.4.tgz':
-    resolution: {integrity: sha512-a7z8l60iqbM1UAE4KYYKF3G2Wm5q/LW+1bRSg6WM+0u7iMRt0JEn9v3eDkOGz1P/QW58qbmKPiZZ59mrB4PwQA==, tarball: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-hottext-interaction-1.1.4.tgz}
+    resolution: {integrity: sha512-oMcgLCZzTZ0Wtuk1uUPO4z9bDPDgZ+RpstFjj26TT37wpOes/JkRGJjOqRJnIvffhc6M5TpvrPEiqMHEND2IfA==, tarball: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-hottext-interaction-1.1.4.tgz}
     version: 1.1.4
     peerDependencies:
       '@lit/context': ^1.1.6
@@ -2173,28 +2189,28 @@ packages:
       lit: ^3.3.1
 
   '@qti-components/interactions-core@file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-interactions-core-1.1.4.tgz':
-    resolution: {integrity: sha512-82Zc7FlQoqWK6iN4sSd04QLO7dAUoHI8CG0ElQxGq7wpzrM8lQzkA6YQVKatVi/TnvnmIZtgpUQ2obY1LGQhHg==, tarball: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-interactions-core-1.1.4.tgz}
+    resolution: {integrity: sha512-HYy0r1WQp8M6U3aFlpcVnbDiVMhxntRHlx4chzMvdfDNACYiYf65SpX2IxSNgynwT8lRgKP7jUgiONPsIwJ0LQ==, tarball: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-interactions-core-1.1.4.tgz}
     version: 1.1.4
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
   '@qti-components/match-interaction@file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-match-interaction-1.1.5.tgz':
-    resolution: {integrity: sha512-DUcVYVj7rzEMvuYh3MJKdgCz9oPW5X4nsa5vVUKR63jz6BbvaSXlEJ7H4SA6F1AK/iPxINMxKuGkIQYEEASMmg==, tarball: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-match-interaction-1.1.5.tgz}
+    resolution: {integrity: sha512-pxj7E4tdDvZErO40MiuCxR/DdMmmPDUQV17lqIzCVpnFwPTXdfbXM6VUGLQh+TpdShG1rdhFUguYrUL4YgPlQQ==, tarball: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-match-interaction-1.1.5.tgz}
     version: 1.1.5
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
   '@qti-components/order-interaction@file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-order-interaction-1.1.4.tgz':
-    resolution: {integrity: sha512-7tplM3FClySJIRT3gBnvg/k/hU20U07Ouu+50A02AONoY3N6GyD7JZXmQ56jWwhqPr/kdWbOUNcgq29fkDxZfg==, tarball: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-order-interaction-1.1.4.tgz}
+    resolution: {integrity: sha512-T8KrOpry8XOQqOUp2tZMq7idPGuJZyMhM+5XXXC2F8QK280f0O0/zRcmqtcaCPpEGVkw/oZstS7WrQEJsuKXvA==, tarball: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-order-interaction-1.1.4.tgz}
     version: 1.1.4
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
   '@qti-components/text-entry-interaction@file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-text-entry-interaction-1.1.4.tgz':
-    resolution: {integrity: sha512-pyNNPJy9Q/3DPmE9BJ5x0D1bdX+g2bGft00zAhYg1Wyfv3Wj8rteAZQBarE5UytJNx/jr0ZWN+Vl+KDi9/gJmg==, tarball: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-text-entry-interaction-1.1.4.tgz}
+    resolution: {integrity: sha512-bgS39VyL90WjSDcaAnIFXYmmyjD/lT+jwrbZ9wgw4sK14EiQ9ZU7ti4qoMgQOJEFh176JaeS4xMUAbUukBl6SA==, tarball: file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/qti-components-text-entry-interaction-1.1.4.tgz}
     version: 1.1.4
     peerDependencies:
       '@lit/context': ^1.1.6
@@ -3022,6 +3038,11 @@ packages:
 
   '@vitest/spy@4.1.9':
     resolution: {integrity: sha512-fHpsS6mIi+PiEW+vcRVOMkX1oSaPKne3VOclSFICPcGOmfKgXPU5iAah+wcNcj2xPrCCmfq99IDGf+EojhhvhA==}
+
+  '@vitest/ui@4.1.9':
+    resolution: {integrity: sha512-U/cRvtqfEPj27FI1n9cyUvi4vXXdcLhjJiI+InYKdk8hP4VrS6RXOjGL7rfFaeBc37iRKANsR6eEzIoC7lmgBQ==}
+    peerDependencies:
+      vitest: 4.1.9
 
   '@vitest/utils@3.2.4':
     resolution: {integrity: sha512-fB2V0JFrQSMsCo9HiSq3Ezpdv4iYaXRG1Sx8edX3MwxfyNn83mKiGzOcH+Fkxt4MHxr3y42fQi1oeAInqgX2QA==}
@@ -4143,6 +4164,9 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fflate@0.8.3:
+    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
 
   figures@2.0.0:
     resolution: {integrity: sha512-Oa2M9atig69ZkfwiApY8F2Yy+tzMbazyvqv21R0NsSC8floSOC09BbT1ITWAdoMGQvJ/aZnR1KMwdx9tvHnTNA==}
@@ -6738,6 +6762,9 @@ packages:
   trough@2.2.0:
     resolution: {integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==}
 
+  trusted-types@2.0.0:
+    resolution: {integrity: sha512-Eam+AUp6lg04YjmYkuLNhEJX+6ByocrKTpY/TtfRK/gV6OmxeN0OwkIasor28SUJ606snArpPLGtPMGbqdaaUA==}
+
   ts-api-utils@2.5.0:
     resolution: {integrity: sha512-OJ/ibxhPlqrMM0UiNHJ/0CKQkoKF243/AEmplt3qpRgkW8VG7IfOS41h7V8TjITqdByHzrjcS/2si+y4lIh8NA==}
     engines: {node: '>=18.12'}
@@ -7799,6 +7826,12 @@ snapshots:
     optionalDependencies:
       prosekit: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.9)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
+  '@citolab/qti-components@file:.qti-components-packs/82857af3ac6356bc8f4a95b519fe719a66166f71/citolab-qti-components-7.28.1.tgz':
+    dependencies:
+      '@heximal/templates': 0.1.5
+      '@lit/context': 1.1.6
+      lit: 3.3.2
+
   '@colors/colors@1.5.0':
     optional: true
 
@@ -8484,6 +8517,16 @@ snapshots:
       long: 5.3.2
       protobufjs: 7.5.4
       yargs: 17.7.2
+
+  '@heximal/expressions@0.1.5':
+    dependencies:
+      tslib: 2.8.1
+
+  '@heximal/templates@0.1.5':
+    dependencies:
+      '@heximal/expressions': 0.1.5
+      lit-html: 3.3.2
+      trusted-types: 2.0.0
 
   '@humanfs/core@0.19.1': {}
 
@@ -9563,7 +9606,7 @@ snapshots:
       '@vitest/browser': 4.1.9(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))(vitest@4.1.9)
       '@vitest/browser-playwright': 4.1.9(playwright@1.59.1)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))(vitest@4.1.9)
       '@vitest/runner': 4.1.9
-      vitest: 4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
     transitivePeerDependencies:
       - react
       - react-dom
@@ -10045,7 +10088,7 @@ snapshots:
       '@vitest/mocker': 4.1.9(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
       playwright: 1.59.1
       tinyrainbow: 3.1.0
-      vitest: 4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
     transitivePeerDependencies:
       - bufferutil
       - msw
@@ -10061,7 +10104,7 @@ snapshots:
       pngjs: 7.0.0
       sirv: 3.0.2
       tinyrainbow: 3.1.0
-      vitest: 4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
       ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
@@ -10081,7 +10124,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.0.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
     optionalDependencies:
       '@vitest/browser': 4.1.9(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))(vitest@4.1.9)
 
@@ -10135,6 +10178,17 @@ snapshots:
       tinyspy: 4.0.4
 
   '@vitest/spy@4.1.9': {}
+
+  '@vitest/ui@4.1.9(vitest@4.1.9)':
+    dependencies:
+      '@vitest/utils': 4.1.9
+      fflate: 0.8.3
+      flatted: 3.4.2
+      pathe: 2.0.3
+      sirv: 3.0.2
+      tinyglobby: 0.2.15
+      tinyrainbow: 3.1.0
+      vitest: 4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
 
   '@vitest/utils@3.2.4':
     dependencies:
@@ -11558,6 +11612,8 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.4):
     optionalDependencies:
       picomatch: 4.0.4
+
+  fflate@0.8.3: {}
 
   figures@2.0.0:
     dependencies:
@@ -14726,6 +14782,8 @@ snapshots:
 
   trough@2.2.0: {}
 
+  trusted-types@2.0.0: {}
+
   ts-api-utils@2.5.0(typescript@5.9.3):
     dependencies:
       typescript: 5.9.3
@@ -15080,7 +15138,7 @@ snapshots:
     optionalDependencies:
       vite: 6.4.2(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3)
 
-  vitest@4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3)):
+  vitest@4.1.9(@types/node@20.19.39)(@vitest/browser-playwright@4.1.9)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       '@vitest/expect': 4.1.9
       '@vitest/mocker': 4.1.9(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
@@ -15106,6 +15164,7 @@ snapshots:
       '@types/node': 20.19.39
       '@vitest/browser-playwright': 4.1.9(playwright@1.59.1)(vite@6.4.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))(vitest@4.1.9)
       '@vitest/coverage-v8': 4.1.9(@vitest/browser@4.1.9)(vitest@4.1.9)
+      '@vitest/ui': 4.1.9(vitest@4.1.9)
     transitivePeerDependencies:
       - msw
 

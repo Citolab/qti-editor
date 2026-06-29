@@ -1,0 +1,62 @@
+<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="ITEM009" title="Sleepvraag – meerdere antwoorden per categorie" adaptive="false" time-dependent="false" xml:lang="en">
+  <qti-response-declaration identifier="RESPONSE" cardinality="multiple" base-type="directedPair">
+    <qti-correct-response>
+      <qti-value>enzym biologie</qti-value>
+      <qti-value>mitochondrion biologie</qti-value>
+      <qti-value>isotoop scheikunde</qti-value>
+      <qti-value>katalysator scheikunde</qti-value>
+      <qti-value>molmassa scheikunde</qti-value>
+    </qti-correct-response>
+  </qti-response-declaration>
+  <qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>0</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>1</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
+    <p>Sleep de onderstaande begrippen naar het juiste vak: <strong>Biologie</strong> of <strong>Scheikunde</strong>.</p>
+    <qti-match-interaction response-identifier="RESPONSE">
+      <qti-simple-match-set>
+        <qti-simple-associable-choice identifier="enzym" match-max="1">
+          <p>enzym</p>
+        </qti-simple-associable-choice>
+        <qti-simple-associable-choice identifier="isotoop" match-max="1">
+          <p>isotoop</p>
+        </qti-simple-associable-choice>
+        <qti-simple-associable-choice identifier="katalysator" match-max="1">
+          <p>katalysator</p>
+        </qti-simple-associable-choice>
+        <qti-simple-associable-choice identifier="mitochondrion" match-max="1">
+          <p>mitochondrion</p>
+        </qti-simple-associable-choice>
+        <qti-simple-associable-choice identifier="molmassa" match-max="1">
+          <p>molmassa</p>
+        </qti-simple-associable-choice>
+      </qti-simple-match-set>
+      <qti-simple-match-set>
+        <qti-simple-associable-choice identifier="biologie" match-max="5">
+          <p>Biologie</p>
+        </qti-simple-associable-choice>
+        <qti-simple-associable-choice identifier="scheikunde" match-max="5">
+          <p>Scheikunde</p>
+        </qti-simple-associable-choice>
+      </qti-simple-match-set>
+    </qti-match-interaction>
+    <p>
+      <img src="/qti/kennisnet/resources/physics-chemistry.png" alt="Natuur- en scheikunde"/>
+    </p>
+    <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
+      <qti-content-body>
+        <p>Biologie: enzym, mitochondrion</p>
+        <p>Scheikunde: isotoop, katalysator, molmassa</p>
+        <p>Toelichting: een katalysator komt ook in biologie voor, maar als algemeen begrip past het primair bij chemie.</p>
+      </qti-content-body>
+    </qti-rubric-block>
+  </qti-item-body>
+  <qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct"/>
+</qti-assessment-item>

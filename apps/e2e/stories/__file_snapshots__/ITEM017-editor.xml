@@ -1,0 +1,45 @@
+<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="ITEM017" title="Koppelvraag - stripduo's" adaptive="false" time-dependent="false" xml:lang="en">
+  <qti-response-declaration identifier="RESPONSE" cardinality="multiple" base-type="identifier">
+    <qti-correct-response>
+      <qti-value>A O</qti-value>
+      <qti-value>S W</qti-value>
+      <qti-value>T B</qti-value>
+    </qti-correct-response>
+  </qti-response-declaration>
+  <qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>0</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>1</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
+    <qti-associate-interaction max-associations="3" response-identifier="RESPONSE">
+      <qti-prompt>
+        <p>Hieronder staan zes striphelden door elkaar. Vorm de drie beroemde duo's door iedere held aan zijn vaste maatje te koppelen.</p>
+      </qti-prompt>
+      <qti-simple-associable-choice identifier="A" match-max="1">
+        <p>Asterix</p>
+      </qti-simple-associable-choice>
+      <qti-simple-associable-choice identifier="O" match-max="1">
+        <p>Obelix</p>
+      </qti-simple-associable-choice>
+      <qti-simple-associable-choice identifier="S" match-max="1">
+        <p>Suske</p>
+      </qti-simple-associable-choice>
+      <qti-simple-associable-choice identifier="W" match-max="1">
+        <p>Wiske</p>
+      </qti-simple-associable-choice>
+      <qti-simple-associable-choice identifier="T" match-max="1">
+        <p>Tom Poes</p>
+      </qti-simple-associable-choice>
+      <qti-simple-associable-choice identifier="B" match-max="1">
+        <p>Heer Bommel</p>
+      </qti-simple-associable-choice>
+    </qti-associate-interaction>
+  </qti-item-body>
+  <qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct"/>
+</qti-assessment-item>

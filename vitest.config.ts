@@ -59,7 +59,11 @@ export default defineConfig({
           globalSetup: ['./tools/testing/setup/vendor-qti-runtime.global.js'],
           browser: {
             enabled: true,
-            headless: true,
+            // Headed by default — Playwright opens a visible Chrome for Testing
+            // window so the test author can watch the editor + runtime render.
+            // CI / non-interactive runs override via `--browser.headless=true`.
+            headless: false,
+            viewport: { width: 1280, height: 800 },
             provider: playwright({}),
             instances: [{ browser: 'chromium' }],
           },

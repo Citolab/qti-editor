@@ -1,0 +1,34 @@
+<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="ITEM013" title="Volgordevraag (horizontaal)" adaptive="false" time-dependent="false" xml:lang="en">
+  <qti-response-declaration identifier="RESPONSE" cardinality="ordered" base-type="identifier">
+    <qti-correct-response>
+      <qti-value>step_hypothese</qti-value>
+      <qti-value>step_data</qti-value>
+      <qti-value>step_conclusies</qti-value>
+    </qti-correct-response>
+  </qti-response-declaration>
+  <qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>0</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>1</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
+    <p>Zet de volgende stappen van het wetenschappelijke proces in de juiste volgorde (van links naar rechts):</p>
+    <qti-order-interaction response-identifier="RESPONSE" class="qti-horizontal">
+      <qti-simple-choice identifier="step_hypothese">
+        <p>Hypothese formuleren</p>
+      </qti-simple-choice>
+      <qti-simple-choice identifier="step_conclusies">
+        <p>Conclusies trekken</p>
+      </qti-simple-choice>
+      <qti-simple-choice identifier="step_data">
+        <p>Data verzamelen</p>
+      </qti-simple-choice>
+    </qti-order-interaction>
+  </qti-item-body>
+  <qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct"/>
+</qti-assessment-item>

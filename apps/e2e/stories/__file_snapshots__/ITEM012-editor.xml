@@ -1,0 +1,25 @@
+<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="ITEM012" title="Woorden selecteren (woorden niet herkenbaar)" adaptive="false" time-dependent="false" xml:lang="en">
+  <qti-response-declaration identifier="RESPONSE" cardinality="multiple" base-type="identifier">
+    <qti-correct-response>
+      <qti-value>ht_onderzocht</qti-value>
+      <qti-value>ht_verving</qti-value>
+    </qti-correct-response>
+  </qti-response-declaration>
+  <qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>0</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>1</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
+    <p>Selecteer alle werkwoorden in de volgende zin (de woorden zijn niet herkenbaar gemarkeerd):</p>
+    <qti-hottext-interaction max-choices="0" response-identifier="RESPONSE" class="qti-unselected-hidden">
+      <p>“De <qti-hottext identifier="ht_technicus">technicus</qti-hottext> <qti-hottext identifier="ht_onderzocht">onderzocht</qti-hottext> het <qti-hottext identifier="ht_apparaat">apparaat</qti-hottext> en <qti-hottext identifier="ht_verving">verving</qti-hottext> uiteindelijk de <qti-hottext identifier="ht_defecte">defecte</qti-hottext> <qti-hottext identifier="ht_sensor">sensor</qti-hottext> .”</p>
+    </qti-hottext-interaction>
+  </qti-item-body>
+  <qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct"/>
+</qti-assessment-item>

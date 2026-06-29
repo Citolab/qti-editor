@@ -1,0 +1,52 @@
+<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="ITEM010" title="Matrixvraag" adaptive="false" time-dependent="false" xml:lang="en">
+  <qti-response-declaration identifier="RESPONSE" cardinality="multiple" base-type="directedPair">
+    <qti-correct-response>
+      <qti-value>evenaar juist</qti-value>
+      <qti-value>helium juist</qti-value>
+      <qti-value>pluto onjuist</qti-value>
+    </qti-correct-response>
+  </qti-response-declaration>
+  <qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>0</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>1</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
+    <p>Geef voor elk van de onderstaande stellingen aan of ze juist of onjuist zijn.</p>
+    <qti-match-interaction class="qti-match-tabular" response-identifier="RESPONSE">
+      <qti-simple-match-set>
+        <qti-simple-associable-choice identifier="evenaar" match-max="1">
+          <p>De evenaar loopt door drie continenten</p>
+        </qti-simple-associable-choice>
+        <qti-simple-associable-choice identifier="helium" match-max="1">
+          <p>Helium is lichter dan lucht</p>
+        </qti-simple-associable-choice>
+        <qti-simple-associable-choice identifier="pluto" match-max="1">
+          <p>Pluto wordt officieel beschouwd als een planeet</p>
+        </qti-simple-associable-choice>
+      </qti-simple-match-set>
+      <qti-simple-match-set>
+        <qti-simple-associable-choice identifier="juist" match-max="3">
+          <p>Juist</p>
+        </qti-simple-associable-choice>
+        <qti-simple-associable-choice identifier="onjuist" match-max="3">
+          <p>Onjuist</p>
+        </qti-simple-associable-choice>
+      </qti-simple-match-set>
+    </qti-match-interaction>
+    <p>
+      <img src="/qti/kennisnet/resources/question-marks.png" alt="Vragen"/>
+    </p>
+    <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
+      <qti-content-body>
+        <p>StellingAntwoordToelichting Evenaar door drie continentenJuistZuid-Amerika, Afrika, Azië Helium is lichter dan luchtJuistHelium heeft een lagere dichtheid dan lucht Pluto officieel planeetOnjuistPluto is sinds 2006 geclassificeerd als dwergplaneet</p>
+      </qti-content-body>
+    </qti-rubric-block>
+  </qti-item-body>
+  <qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct"/>
+</qti-assessment-item>

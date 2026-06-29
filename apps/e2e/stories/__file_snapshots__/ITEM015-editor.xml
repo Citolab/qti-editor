@@ -1,0 +1,36 @@
+<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="ITEM015" title="Gatentekst" adaptive="false" time-dependent="false" xml:lang="en">
+  <qti-response-declaration identifier="RESPONSE" cardinality="multiple" base-type="directedPair">
+    <qti-correct-response>
+      <qti-value>ht_zuur gap_low</qti-value>
+      <qti-value>ht_basisch gap_high</qti-value>
+    </qti-correct-response>
+  </qti-response-declaration>
+  <qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>0</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>1</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
+    <p>
+      <img src="/qti/kennisnet/resources/chemistry.png" alt="Vragen"/>
+    </p>
+    <p>Vul de juiste termen in:</p>
+    <qti-gap-match-interaction max-associations="0" response-identifier="RESPONSE">
+      <qti-gap-text identifier="ht_basisch">basisch</qti-gap-text>
+      <qti-gap-text identifier="ht_zuur">zuur</qti-gap-text>
+      <p>“Een oplossing met een pH lager dan 7 noemen we <qti-gap identifier="gap_low"/> , terwijl een oplossing met een pH hoger dan 7 <qti-gap identifier="gap_high"/> is.”</p>
+    </qti-gap-match-interaction>
+    <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
+      <qti-content-body>
+        <p>pH &lt; 7 → zuur</p>
+        <p>pH &gt; 7 → basisch</p>
+      </qti-content-body>
+    </qti-rubric-block>
+  </qti-item-body>
+  <qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct"/>
+</qti-assessment-item>

@@ -1,0 +1,57 @@
+<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="ITEM008" title="Sleepvraag - opties rechts" adaptive="false" time-dependent="false" xml:lang="en">
+  <qti-response-declaration identifier="RESPONSE" cardinality="multiple" base-type="directedPair">
+    <qti-correct-response>
+      <qti-value>left_diamond right_ggs</qti-value>
+      <qti-value>left_harari right_sapiens</qti-value>
+      <qti-value>left_arendt right_thc</qti-value>
+    </qti-correct-response>
+  </qti-response-declaration>
+  <qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>0</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>1</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
+    <p>Koppel de historicus/auteur aan het bijbehorende werk:</p>
+    <qti-match-interaction class="qti-choices-right" response-identifier="RESPONSE">
+      <qti-simple-match-set>
+        <qti-simple-associable-choice identifier="left_diamond" match-max="1">
+          <p>Jared Diamond</p>
+        </qti-simple-associable-choice>
+        <qti-simple-associable-choice identifier="left_harari" match-max="1">
+          <p>Yuval Noah Harari</p>
+        </qti-simple-associable-choice>
+        <qti-simple-associable-choice identifier="left_arendt" match-max="1">
+          <p>Hannah Arendt</p>
+        </qti-simple-associable-choice>
+      </qti-simple-match-set>
+      <qti-simple-match-set>
+        <qti-simple-associable-choice identifier="right_sapiens" match-max="1">
+          <p>Sapiens</p>
+        </qti-simple-associable-choice>
+        <qti-simple-associable-choice identifier="right_ggs" match-max="1">
+          <p>Guns, Germs and Steel</p>
+        </qti-simple-associable-choice>
+        <qti-simple-associable-choice identifier="right_thc" match-max="1">
+          <p>The Human Condition</p>
+        </qti-simple-associable-choice>
+      </qti-simple-match-set>
+    </qti-match-interaction>
+    <p>
+      <img src="/qti/kennisnet/resources/books.png" alt="Boeken"/>
+    </p>
+    <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
+      <qti-content-body>
+        <p>Diamond → Guns, Germs and Steel</p>
+        <p>Harari → Sapiens</p>
+        <p>Arendt → The Human Condition</p>
+      </qti-content-body>
+    </qti-rubric-block>
+  </qti-item-body>
+  <qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct"/>
+</qti-assessment-item>
