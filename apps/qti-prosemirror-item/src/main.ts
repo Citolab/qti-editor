@@ -52,7 +52,7 @@ import {
 import { imagePlugin, startImageUpload } from 'prosemirror-image-plugin';
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
 
-import { attributesPanelPlugin } from './attributes-panel-plugin.js';
+import { attributesPanelPlugin } from './components/attributes-panel-plugin.js';
 import {
   descriptors,
   editableAttrs,
@@ -64,10 +64,10 @@ import {
 import { appSchema as schema, imagePluginSettings } from './schema.js';
 // EXPERIMENT: lockable qti-layout-* div wrappers (non-QTI affordance).
 // The node spec is owned by schema.ts; only the plugin is imported here.
-import { divLockPlugin } from './qti-layout-div.js';
+import { divLockPlugin } from './components/qti-layout-div.js';
 // Example app-level widget: edit a selected text-entry interaction's correct
 // response with a plain <textarea> (the package ships only the data model).
-import { textEntryWidgetPlugin } from './text-entry-widget.js';
+import { textEntryWidgetPlugin } from './components/text-entry-widget.js';
 
 import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';

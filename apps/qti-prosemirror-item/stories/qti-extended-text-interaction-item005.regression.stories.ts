@@ -30,7 +30,7 @@ import { extendedTextInteractionDescriptor } from '@citolab/prose-qti/components
 
 import '@citolab/prose-qti/components/extended-text/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
-import { attributesPanelPlugin } from '../src/attributes-panel-plugin';
+import { attributesPanelPlugin } from '../src/components/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';
 import sourceXML from '@qti-editor/example-items/ITEM005.xml?raw';
 

@@ -29,7 +29,7 @@ import { blockSelectPlugin } from '@citolab/prose-extensions/prosemirror';
 import { textEntryInteractionDescriptor } from '@citolab/prose-qti/components/text-entry';
 
 import '@citolab/prose-qti/components/text-entry/register.js';
-import { attributesPanelPlugin } from '../src/attributes-panel-plugin';
+import { attributesPanelPlugin } from '../src/components/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';
 import sourceXML from '@qti-editor/example-items/ITEM004.xml?raw';
 

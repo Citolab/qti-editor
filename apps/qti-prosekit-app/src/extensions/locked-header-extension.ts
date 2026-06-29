@@ -8,7 +8,7 @@
  * but they cannot be removed, replaced, or reordered. Everything below is
  * free-form `block+` content.
  *
- * Pattern adapted from apps/qti-prosemirror-item/src/qti-layout-div.ts
+ * Pattern adapted from apps/qti-prosemirror-item/src/components/qti-layout-div.ts
  * (`divLockPlugin`): a `filterTransaction` that rejects any transaction which
  * would change the locked prefix.
  */

@@ -29,7 +29,7 @@ import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extension
 import { inlineChoiceInteractionDescriptor } from '@citolab/prose-qti/components/inline-choice';
 
 import '@citolab/prose-qti/components/inline-choice/register.js';
-import { attributesPanelPlugin } from '../src/attributes-panel-plugin';
+import { attributesPanelPlugin } from '../src/components/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';
 import sourceXML from '@qti-editor/example-items/ITEM006.xml?raw';
 

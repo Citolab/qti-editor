@@ -35,7 +35,7 @@ import { qtiTransformItem } from '@qti-components/transformers';
 import '@citolab/prose-qti/components/choice/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-simple-choice/register.js';
-import { attributesPanelPlugin } from '../src/attributes-panel-plugin';
+import { attributesPanelPlugin } from '../src/components/attributes-panel-plugin';
 import 'prosemirror-view/style/prosemirror.css';
 import sourceXML from '@qti-editor/example-items/ITEM002.xml?raw';
 
