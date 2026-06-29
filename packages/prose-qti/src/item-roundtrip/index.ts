@@ -25,3 +25,5 @@ export {
   type RoundtripExportContext,
   type RoundtripExportXmlOptions,
 } from './export.js';
+
+export { ensureInteractionPrompts } from './ensure-interaction-prompts.js';

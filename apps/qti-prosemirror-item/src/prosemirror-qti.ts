@@ -35,7 +35,12 @@ import { matchInteractionDescriptor } from '@citolab/prose-qti/components/match'
 import { orderInteractionDescriptor } from '@citolab/prose-qti/components/order';
 import { selectPointInteractionDescriptor } from '@citolab/prose-qti/components/select-point';
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
-import { exportItemXml, importItemFromUrl } from '@citolab/prose-qti/item-roundtrip';
+import {
+  defaultRoundtripTransforms,
+  ensureInteractionPrompts,
+  exportItemXml,
+  importItemFromUrl
+} from '@citolab/prose-qti/item-roundtrip';
 
 import { qtiTransformTest } from '@qti-components/transformers';
 
@@ -115,9 +120,22 @@ export async function loadQtiItems(): Promise<{ href: string; identifier: string
   return test.items().map(item => ({ href: item.href, identifier: item.identifier, category: item.category }));
 }
 
-/** Import a QTI 3.0 item from `href` into a ProseMirror document for `schema`. */
+/**
+ * Import a QTI 3.0 item from `href` into a ProseMirror document for `schema`.
+ *
+ * The editor's schema requires `<qti-prompt>` on interactions that QTI 3.0
+ * marks optional. ProseMirror's `DOMParser` only inserts *wrapping* parents to
+ * recover misplaced children; it does not auto-insert required leading
+ * siblings, so a prompt-less interaction in the source would close on its
+ * first child and leak the rest of the interaction up to the doc level. The
+ * `ensureInteractionPrompts` transform — driven by the schema, no hardcoded
+ * tag list — injects an empty prompt where one is missing so the parser sees
+ * the required first child in place.
+ */
 export function importQtiItem(href: string, schema: Schema): Promise<ProseMirrorNode> {
-  return importItemFromUrl(href, schema);
+  return importItemFromUrl(href, schema, {
+    transforms: [...defaultRoundtripTransforms, ensureInteractionPrompts(schema)]
+  });
 }
 
 /** Serialize a ProseMirror document back to a QTI 3.0 item XML string. */
