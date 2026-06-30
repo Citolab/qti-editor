@@ -30,7 +30,7 @@ import { roundtripXmlToPm } from '@citolab/prose-qti/components/shared/roundtrip
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
 import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
 
-import { qtiTransformItem } from '@qti-components/transformers';
+import { qtiTransformItem } from '@citolab/qti-components/qti-transformers';
 
 import '@citolab/prose-qti/components/choice/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
