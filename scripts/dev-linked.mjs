@@ -14,8 +14,8 @@
  *     `pnpm yalc:add` to restore it.
  */
 import { execSync, spawn } from 'node:child_process';
-import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -28,17 +28,57 @@ if (!existsSync(qtiPath)) {
   process.exit(1);
 }
 
-const yalcLock = resolve(root, 'packages/prose-qti/yalc.lock');
-const pkgJson = resolve(root, 'packages/prose-qti/package.json');
-const hasLock = existsSync(yalcLock);
-const hasYalcLink = hasLock && /"file:\.yalc\//.test(execSync(`cat ${JSON.stringify(pkgJson)}`).toString());
+/**
+ * Find every `yalc.lock` in the workspace (skipping `node_modules`, `.yalc`,
+ * `.git`). Each lock pairs with a sibling `package.json` whose dep specs must
+ * reference `file:.yalc/<name>` for every linked package; otherwise the lock
+ * and the manifest have drifted (typically because a hook or pnpm install
+ * rewrote the spec back to the registry version).
+ */
+function findYalcLocks(dir, found = []) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === 'node_modules' || entry.name === '.yalc' || entry.name.startsWith('.')) continue;
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) findYalcLocks(full, found);
+    else if (entry.name === 'yalc.lock') found.push(full);
+  }
+  return found;
+}
 
-if (!hasLock) {
+/** Returns the names of packages declared linked in the lock whose sibling
+ *  package.json does NOT reference `file:.yalc/<name>` (drift). */
+function driftedPackages(lockPath) {
+  const pkgJsonPath = join(dirname(lockPath), 'package.json');
+  if (!existsSync(pkgJsonPath)) return [];
+  const lock = JSON.parse(readFileSync(lockPath, 'utf8'));
+  const pkg = JSON.parse(readFileSync(pkgJsonPath, 'utf8'));
+  const allDeps = { ...(pkg.dependencies ?? {}), ...(pkg.devDependencies ?? {}), ...(pkg.peerDependencies ?? {}) };
+  const drifted = [];
+  for (const [name, entry] of Object.entries(lock.packages ?? {})) {
+    if (!entry.file) continue;
+    const spec = allDeps[name];
+    if (typeof spec !== 'string' || !spec.startsWith('file:.yalc/')) drifted.push(name);
+  }
+  return drifted;
+}
+
+const lockPaths = findYalcLocks(root);
+
+if (lockPaths.length === 0) {
   console.log('⚙️  No yalc state — running pnpm yalc:init (first-time link)...');
   execSync('pnpm yalc:init', { cwd: root, stdio: 'inherit' });
-} else if (!hasYalcLink) {
-  console.log('⚙️  yalc state retreated (e.g. by pre-commit) — running pnpm yalc:add to restore...');
-  execSync('pnpm yalc:add', { cwd: root, stdio: 'inherit' });
+} else {
+  const driftReport = lockPaths
+    .map(lockPath => ({ lockPath, drifted: driftedPackages(lockPath) }))
+    .filter(({ drifted }) => drifted.length > 0);
+
+  if (driftReport.length > 0) {
+    console.log('⚙️  yalc state drift detected — running pnpm yalc:add to restore...');
+    for (const { lockPath, drifted } of driftReport) {
+      console.log(`   ${relative(root, dirname(lockPath))}: ${drifted.join(', ')}`);
+    }
+    execSync('pnpm yalc:add', { cwd: root, stdio: 'inherit' });
+  }
 }
 
 console.log(`🚀 Starting linked dev mode`);

@@ -27,8 +27,6 @@ const interactionsHottextSrcRoot = fileURLToPath(new URL('../../packages/prose-q
 const qtiItemDividerSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/item-divider/src', import.meta.url));
 const qtiRubricBlockSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/rubric-block/src', import.meta.url));
 const prosemirrorPluginsSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src', import.meta.url));
-const prosemirrorAttributesSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src/attributes', import.meta.url));
-const prosemirrorAttributesUiProseKitSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src/attributes-ui', import.meta.url));
 const appCustomElementRoots = [
   fileURLToPath(new URL('./src/components/qti-editor-app.ts', import.meta.url)),
   fileURLToPath(new URL('./src/components/qti-slash-menu.ts', import.meta.url)),
@@ -51,8 +49,6 @@ const fullReloadRoots = [
   interactionsHottextSrcRoot,
   qtiItemDividerSrcRoot,
   prosemirrorPluginsSrcRoot,
-  prosemirrorAttributesSrcRoot,
-  prosemirrorAttributesUiProseKitSrcRoot,
 ];
 
 function shouldForceFullReload(file: string): boolean {
@@ -285,22 +281,6 @@ export default defineConfig({
       {
         find: /^@qti-editor\/prosemirror-plugins$/,
         replacement: `${prosemirrorPluginsSrcRoot}/index.ts`,
-      },
-      {
-        find: /^@qti-editor\/prosemirror-attributes\/(.*)\.js$/,
-        replacement: `${prosemirrorAttributesSrcRoot}/$1.ts`,
-      },
-      {
-        find: /^@qti-editor\/prosemirror-attributes$/,
-        replacement: `${prosemirrorAttributesSrcRoot}/index.ts`,
-      },
-      {
-        find: /^@qti-editor\/prosemirror-attributes-ui\/(.*)\.js$/,
-        replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/$1.ts`,
-      },
-      {
-        find: /^@qti-editor\/prosemirror-attributes-ui$/,
-        replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/index.ts`,
       },
     ],
   },

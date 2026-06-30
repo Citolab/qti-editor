@@ -238,22 +238,6 @@ export default defineConfig(({ command }) => ({
         find: /^@qti-editor\/prosemirror-plugins$/,
         replacement: `${prosemirrorPluginsSrcRoot}/index.ts`,
       },
-      {
-        find: /^@qti-editor\/prosemirror-attributes\/(.*)\.js$/,
-        replacement: `${prosemirrorAttributesSrcRoot}/$1.ts`,
-      },
-      {
-        find: /^@qti-editor\/prosemirror-attributes$/,
-        replacement: `${prosemirrorAttributesSrcRoot}/index.ts`,
-      },
-      {
-        find: /^@qti-editor\/prosemirror-attributes-ui\/(.*)\.js$/,
-        replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/$1.ts`,
-      },
-      {
-        find: /^@qti-editor\/prosemirror-attributes-ui$/,
-        replacement: `${prosemirrorAttributesUiProseKitSrcRoot}/index.ts`,
-      },
     ],
   },
   plugins: [
