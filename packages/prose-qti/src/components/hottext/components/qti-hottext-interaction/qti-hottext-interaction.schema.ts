@@ -1,4 +1,4 @@
-import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '../../../shared';
+import { parseResponseAttribute, serializeResponseAttribute } from '../../../shared';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
@@ -26,7 +26,7 @@ export const qtiHottextInteractionNodeSpec: NodeSpec = {
           maxChoices: maxChoices ? parseInt(maxChoices, 10) : 1,
           minChoices: minChoices ? parseInt(minChoices, 10) : 0,
           class: node.getAttribute('class'),
-          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
+          correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
       },
@@ -46,7 +46,7 @@ export const qtiHottextInteractionNodeSpec: NodeSpec = {
     if (node.attrs.class) {
       attrs.class = node.attrs.class;
     }
-    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    const cr = serializeResponseAttribute(node.attrs.correctResponse);
     if (cr) {
       attrs['correct-response'] = cr;
     }

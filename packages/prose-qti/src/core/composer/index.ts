@@ -5,7 +5,7 @@
  * No Lit/UI dependencies - these can be used in any environment.
  */
 
-import { iterCorrectResponseValues } from '../../components/shared/correct-response/codec.js';
+import { iterResponseValues } from '../../components/shared/response/codec.js';
 
 import { getInteractionComposerHandler } from '../interactions/composer.js';
 
@@ -93,13 +93,13 @@ function createAutoIdentifier(options: {
   return `${base}-${suffix}`;
 }
 
-function parseCorrectResponseValues(
+function parseResponseValues(
   declaration: Pick<ResponseDeclaration, 'cardinality' | 'correctResponse'>,
 ): string[] {
   // Defers to the canonical codec from @qti-components/base via the shared
-  // re-export at components/shared/correct-response/codec — same parsing
+  // re-export at components/shared/response/codec — same parsing
   // rule as the runtime base Interaction class.
-  return Array.from(iterCorrectResponseValues(declaration.correctResponse ?? null));
+  return Array.from(iterResponseValues(declaration.correctResponse ?? null));
 }
 
 export function extractResponseDeclarations(itemBodyRoot?: Element | null): ResponseDeclaration[] {
@@ -237,7 +237,7 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
 
     if (declaration.correctResponse) {
       const correctResponse = xmlDoc.createElementNS(QTI_NS, 'qti-correct-response');
-      const values = parseCorrectResponseValues(declaration);
+      const values = parseResponseValues(declaration);
       values.forEach(v => {
         const value = xmlDoc.createElementNS(QTI_NS, 'qti-value');
         value.textContent = v;

@@ -2,13 +2,14 @@
 // truth across both the runtime and the editor. Local code keeps importing
 // from this file; the implementation lives upstream.
 export {
-  parseCorrectResponseAttribute,
-  serializeCorrectResponseAttribute,
-  type CorrectResponseValue,
+  parseResponseAttribute,
+  serializeResponseAttribute,
+  responseAttributeConverter,
+  type ResponseValue,
   type Identifier,
   type DirectedPair,
   type Point,
-  iterCorrectResponseValues,
+  iterResponseValues,
   parsePair,
   serializePair,
   parsePoint,

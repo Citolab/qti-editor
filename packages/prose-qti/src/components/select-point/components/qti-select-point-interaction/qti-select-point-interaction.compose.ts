@@ -1,4 +1,4 @@
-import { getStrippedAttributeSources, parseCorrectResponseAttribute, stripAttributesFromElement } from '@citolab/prose-qti/components/shared';
+import { getStrippedAttributeSources, parseResponseAttribute, stripAttributesFromElement } from '@citolab/prose-qti/components/shared';
 
 import { selectPointInteractionComposerMetadata, SELECT_POINT_INTERACTION_TAG } from '../../composer/metadata.js';
 
@@ -158,7 +158,7 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
       tagName: metadata.tagName,
     });
   } else {
-    const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
+    const correctResponse = parseResponseAttribute(sourceElement.getAttribute('correct-response'));
     responseDeclaration = {
       identifier: responseIdentifier,
       cardinality: maxChoices > 1 ? 'multiple' : 'single',

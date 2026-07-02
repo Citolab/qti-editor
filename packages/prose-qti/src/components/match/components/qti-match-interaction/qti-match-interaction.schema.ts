@@ -1,4 +1,4 @@
-import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '../../../shared';
+import { parseResponseAttribute, serializeResponseAttribute } from '../../../shared';
 
 import { hasTabularMatchClass } from './qti-match-interaction-tabular.schema.js';
 
@@ -25,7 +25,7 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
         return {
           shuffle: node.getAttribute('shuffle') === 'true',
           class: className || null,
-          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
+          correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
@@ -42,7 +42,7 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
     // convention as associate / order). The shared codec handles serialisation
     // and the runtime `qti-match-interaction` reads `responseVariable.correctResponse`
     // as `string | string[]` — both shapes round-trip identically.
-    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    const cr = serializeResponseAttribute(node.attrs.correctResponse);
     if (cr) attrs['correct-response'] = cr;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     attrs.score = String(node.attrs.score ?? 1);

@@ -1,4 +1,4 @@
-import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '../../../shared';
+import { parseResponseAttribute, serializeResponseAttribute } from '../../../shared';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
@@ -28,7 +28,7 @@ export const qtiAssociateInteractionNodeSpec: NodeSpec = {
           minAssociations: minAssociations ? parseInt(minAssociations, 10) : 0,
           shuffle: node.getAttribute('shuffle') === 'true',
           class: className || null,
-          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
+          correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
@@ -46,7 +46,7 @@ export const qtiAssociateInteractionNodeSpec: NodeSpec = {
       attrs['shuffle'] = 'true';
     }
     if (node.attrs.class) attrs.class = node.attrs.class;
-    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    const cr = serializeResponseAttribute(node.attrs.correctResponse);
     if (cr) attrs['correct-response'] = cr;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     attrs.score = String(node.attrs.score ?? 1);

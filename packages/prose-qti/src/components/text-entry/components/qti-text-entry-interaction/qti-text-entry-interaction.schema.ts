@@ -1,4 +1,4 @@
-import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '@citolab/prose-qti/components/shared';
+import { parseResponseAttribute, serializeResponseAttribute } from '@citolab/prose-qti/components/shared';
 
 import {
   parseTextEntryCaseSensitiveAttribute,
@@ -26,7 +26,7 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
         const scoreAttr = node.getAttribute('score');
         return {
           responseIdentifier: node.getAttribute('response-identifier'),
-          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
+          correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
           caseSensitive: parseTextEntryCaseSensitiveAttribute(node.getAttribute('case-sensitive')),
           class: serializeTextEntryClassState(
             parseTextEntryClassState(node.getAttribute('class')),
@@ -53,7 +53,7 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
       attrs['case-sensitive'] = 'true';
     }
 
-    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    const cr = serializeResponseAttribute(node.attrs.correctResponse);
     if (cr) {
       attrs['correct-response'] = cr;
     }

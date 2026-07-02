@@ -1,4 +1,4 @@
-import { getStrippedAttributeSources, parseCorrectResponseAttribute, stripAttributesFromElement } from '@citolab/prose-qti/components/shared';
+import { getStrippedAttributeSources, parseResponseAttribute, stripAttributesFromElement } from '@citolab/prose-qti/components/shared';
 
 import { parseTextEntryCaseSensitiveAttribute } from '../../attributes/text-entry-attributes-editor.js';
 import { textEntryInteractionComposerMetadata } from '../../composer/metadata.js';
@@ -17,7 +17,7 @@ export function composeTextEntryInteractionElement(sourceElement: Element, xmlDo
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
-  const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
+  const correctResponse = parseResponseAttribute(sourceElement.getAttribute('correct-response'));
   const correctResponses = correctResponse == null
     ? []
     : Array.isArray(correctResponse) ? correctResponse : [correctResponse];

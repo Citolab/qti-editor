@@ -13,7 +13,7 @@ function toggleState(set: CustomStateSet, name: string, on: boolean): void {
 /**
  * Iterate `"src tgt"` entries from the correct-response value. Accepts the
  * canonical comma-joined string, the codec's array form (returned by
- * `parseCorrectResponseAttribute` when there are multiple entries), and the
+ * `parseResponseAttribute` when there are multiple entries), and the
  * legacy JSON-array shape (`'["src tgt", ...]'`) authored before this commit.
  * Mirrors the helper in match-shared.ts so both interactions stay aligned.
  */
@@ -191,7 +191,7 @@ export class QtiGapMatchInteractionEdit extends Interaction {
     );
     // Canonical comma-joined `"gapText gap"` entries — same shared codec
     // format associate / match / order use. Composer reads this via
-    // parseCorrectResponseAttribute and emits one <qti-value> per entry.
+    // parseResponseAttribute and emits one <qti-value> per entry.
     this.lastEmittedResponse =
       associations.length > 0
         ? associations.map(([textId, gapId]) => `${textId} ${gapId}`).join(',')

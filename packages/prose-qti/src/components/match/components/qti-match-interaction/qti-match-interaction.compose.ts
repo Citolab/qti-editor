@@ -15,7 +15,7 @@ function toNonEmptyString(value: string | null): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
-function parseCorrectResponseValues(raw: string | null): string[] | null {
+function parseResponseValues(raw: string | null): string[] | null {
   if (raw == null) return null;
   const trimmed = raw.trim();
   if (trimmed.length === 0) return null;
@@ -45,7 +45,7 @@ export function composeMatchInteractionElement(sourceElement: Element, xmlDoc: D
   // declaration as a string[] — otherwise the core composer's split-on-comma
   // would mangle the JSON brackets.
   const correctResponseRaw = sourceElement.getAttribute('correct-response');
-  const correctResponse = parseCorrectResponseValues(correctResponseRaw);
+  const correctResponse = parseResponseValues(correctResponseRaw);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
   stripAttributesFromElement(normalizedElement, metadata);

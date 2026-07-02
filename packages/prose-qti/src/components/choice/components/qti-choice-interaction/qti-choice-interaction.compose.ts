@@ -1,5 +1,5 @@
 import { getStrippedAttributeSources, stripAttributesFromElement } from '../../../shared/composer/stripped-attributes.js';
-import { parseCorrectResponseAttribute } from '../../../shared/correct-response/codec.js';
+import { parseResponseAttribute } from '../../../shared/response/codec.js';
 import { removeEmptyPrompts } from '../../../shared/components/qti-prompt/qti-prompt.compose.js';
 import { choiceInteractionComposerMetadata } from '../../composer/metadata.js';
 
@@ -23,7 +23,7 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
-  const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
+  const correctResponse = parseResponseAttribute(sourceElement.getAttribute('correct-response'));
   const maxChoices = toFiniteNumber(sourceElement.getAttribute('max-choices'), 1);
   const minChoices = toFiniteNumber(sourceElement.getAttribute('min-choices'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);

@@ -1,4 +1,4 @@
-import { getStrippedAttributeSources, parseCorrectResponseAttribute, stripAttributesFromElement } from '../../../shared';
+import { getStrippedAttributeSources, parseResponseAttribute, stripAttributesFromElement } from '../../../shared';
 import { orderInteractionComposerMetadata } from '../../composer/metadata.js';
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '../../../shared/composer/types.js';
@@ -15,7 +15,7 @@ export function composeOrderInteractionElement(sourceElement: Element, xmlDoc: D
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
-  const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
+  const correctResponse = parseResponseAttribute(sourceElement.getAttribute('correct-response'));
   const scoreAttr = sourceElement.getAttribute('score');
   const score = scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1;
 

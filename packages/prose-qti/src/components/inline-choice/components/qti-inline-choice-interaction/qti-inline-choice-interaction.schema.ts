@@ -1,4 +1,4 @@
-import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '../../../shared';
+import { parseResponseAttribute, serializeResponseAttribute } from '../../../shared';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
@@ -24,7 +24,7 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
           responseIdentifier: node.getAttribute('response-identifier'),
           shuffle: node.getAttribute('shuffle') === 'true',
           class: node.getAttribute('class') || null,
-          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
+          correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
           dataPrompt: node.getAttribute('data-prompt') || null,
         };
@@ -51,7 +51,7 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
     if (node.attrs.responseIdentifier) {
       attrs['response-identifier'] = node.attrs.responseIdentifier;
     }
-    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    const cr = serializeResponseAttribute(node.attrs.correctResponse);
     if (cr) {
       attrs['correct-response'] = cr;
     }

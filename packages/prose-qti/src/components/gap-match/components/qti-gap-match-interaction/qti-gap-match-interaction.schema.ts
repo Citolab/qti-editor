@@ -1,4 +1,4 @@
-import { parseCorrectResponseAttribute, serializeCorrectResponseAttribute } from '../../../shared';
+import { parseResponseAttribute, serializeResponseAttribute } from '../../../shared';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
@@ -24,7 +24,7 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
           maxAssociations: maxAssociations ? parseInt(maxAssociations, 10) : 0,
           shuffle: node.getAttribute('shuffle') === 'true',
           class: node.getAttribute('class'),
-          correctResponse: parseCorrectResponseAttribute(node.getAttribute('correct-response')),
+          correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
         };
@@ -43,7 +43,7 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
     // associate / match / order). Composer + runtime accept the codec's
     // `string | string[]` shape; the response declaration carries one
     // <qti-value> per entry.
-    const cr = serializeCorrectResponseAttribute(node.attrs.correctResponse);
+    const cr = serializeResponseAttribute(node.attrs.correctResponse);
     if (cr) attrs['correct-response'] = cr;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     attrs.score = String(node.attrs.score ?? 1);

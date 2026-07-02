@@ -30,7 +30,7 @@ export * from './commands/insert.js';
 export * from './composer/types.js';
 export * from './composer/metadata.js';
 export * from './composer/stripped-attributes.js';
-export * from './correct-response/codec.js';
+export * from './response/codec.js';
 export * from './i18n/index.js';
 
 export * from './mixins/index.js';

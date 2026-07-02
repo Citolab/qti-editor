@@ -4,7 +4,7 @@
  * controllers import from here.
  */
 
-import { iterCorrectResponseValues, serializePair } from '../../../shared/correct-response/codec.js';
+import { iterResponseValues, serializePair } from '../../../shared/response/codec.js';
 
 /** Drag-drop mode pair: [sourceIdentifier, targetIdentifier]. */
 export type MatchAssociation = [string, string];
@@ -43,7 +43,7 @@ function* iterPairEntries(raw: string | string[] | null | undefined): Generator<
       /* fall through to canonical parsing */
     }
   }
-  yield* iterCorrectResponseValues(raw ?? null);
+  yield* iterResponseValues(raw ?? null);
 }
 
 /** Parse the correct-response value into a Map<sourceId, targetId>. */

@@ -1,4 +1,4 @@
-import { getStrippedAttributeSources, parseCorrectResponseAttribute, stripAttributesFromElement } from '../../../shared';
+import { getStrippedAttributeSources, parseResponseAttribute, stripAttributesFromElement } from '../../../shared';
 import { associateInteractionComposerMetadata } from '../../composer/metadata.js';
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@citolab/prose-qti/components/shared/composer/types.js';
@@ -21,7 +21,7 @@ export function composeAssociateInteractionElement(sourceElement: Element, xmlDo
   const normalizedElement = xmlDoc.importNode(sourceElement, true) as Element;
 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
-  const correctResponse = parseCorrectResponseAttribute(sourceElement.getAttribute('correct-response'));
+  const correctResponse = parseResponseAttribute(sourceElement.getAttribute('correct-response'));
   const maxAssociations = toFiniteNumber(sourceElement.getAttribute('max-associations'), 1);
   const minAssociations = toFiniteNumber(sourceElement.getAttribute('min-associations'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
