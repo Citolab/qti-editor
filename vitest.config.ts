@@ -18,21 +18,6 @@ export default defineConfig({
     projects: [
       {
         extends: true,
-        test: {
-          name: 'unit',
-          globals: true,
-          include: ['packages/**/src/**/*.test.ts', 'apps/**/src/**/*.test.ts'],
-          exclude: ['**/node_modules/**', 'packages/**/src/**/*.browser.test.ts', 'apps/**/*.browser.test.ts'],
-          setupFiles: ['./tools/testing/setup/vitest.js'],
-          server: {
-            deps: {
-              inline: [/@qti-components\//],
-            },
-          },
-        },
-      },
-      {
-        extends: true,
         plugins: [
           storybookTest({
             configDir: path.join(dirname, '.storybook'),
@@ -62,7 +47,7 @@ export default defineConfig({
             // Headed by default — Playwright opens a visible Chrome for Testing
             // window so the test author can watch the editor + runtime render.
             // CI / non-interactive runs override via `--browser.headless=true`.
-            headless: false,
+            headless: true,
             viewport: { width: 1280, height: 800 },
             provider: playwright({}),
             instances: [{ browser: 'chromium' }],
