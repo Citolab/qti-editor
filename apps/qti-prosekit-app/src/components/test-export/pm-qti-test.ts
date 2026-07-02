@@ -4,7 +4,6 @@ import {
   getItemFragmentXmls,
   formatXml,
 } from "@citolab/prose-qti/core/composer";
-
 import {
   buildItemBodyContext,
   type QtiComposeContext,

@@ -2,7 +2,6 @@ import { LitElement, nothing, type PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js';
 
 import { Interaction } from '../../../shared';
-
 import { DragDropController, type DragDropHost } from './match-drag-drop.js';
 import { classHasTabular, type MatchAssociationChangeDetail, type TabularMatchAssociationChangeDetail } from './match-shared.js';
 import { TabularController, tabularStyles, type TabularHost } from './match-tabular.js';

@@ -16,7 +16,6 @@
  * is matched back to its `parseDOM` tag.
  */
 import type { NodeSpec, Schema } from 'prosemirror-model';
-
 import type { RoundtripTransform } from './import.js';
 
 function requiresPromptAtStart(spec: NodeSpec): boolean {

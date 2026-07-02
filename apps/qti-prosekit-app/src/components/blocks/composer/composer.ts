@@ -3,9 +3,10 @@ import { html, LitElement, nothing } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { QtiI18nController } from '@citolab/prose-qti/components/shared';
 import { defineDocChangeHandler, defineMountHandler, union, type Editor } from 'prosekit/core';
-import { qtiItemFromProsemirror, countQtiItems, getQtiItems, type QtiItemFragment } from '../../../lib/qti-export.js';
 import { formatXml } from '@citolab/prose-qti/core/composer';
 import { itemContext, type ItemContext } from '@citolab/prose-qti/integration/item-context';
+
+import { qtiItemFromProsemirror, countQtiItems, getQtiItems, type QtiItemFragment } from '../../../lib/qti-export.js';
 
 const DEBOUNCE_MS = 300;
 const consumeItemContext = consume({ context: itemContext, subscribe: true }) as any;

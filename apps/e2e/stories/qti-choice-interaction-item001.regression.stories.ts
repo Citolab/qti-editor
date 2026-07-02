@@ -28,13 +28,14 @@ import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-b
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
 import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
 import { constrainedHome, constrainedShiftHome, constrainedEnd, constrainedShiftEnd } from '@citolab/prose-qti/components/shared';
+import sourceXML from '@qti-editor/example-items/ITEM001.xml?raw';
 
 import '@citolab/prose-qti/components/choice/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-simple-choice/register.js';
 import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
+
 import 'prosemirror-view/style/prosemirror.css';
-import sourceXML from '@qti-editor/example-items/ITEM001.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 

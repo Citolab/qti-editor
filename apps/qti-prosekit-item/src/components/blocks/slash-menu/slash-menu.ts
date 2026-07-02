@@ -1,6 +1,5 @@
 import { ContextConsumer } from '@lit/context'
 import { html, LitElement, nothing } from 'lit'
-import type { Editor } from 'prosekit/core'
 import { canUseRegexLookbehind } from 'prosekit/core'
 import {
   registerAutocompleteEmptyElement,
@@ -13,6 +12,8 @@ import { editorContext } from '@citolab/prose-qti-ui/editor-context'
 
 import { SlashMenuEmptyElement } from './slash-menu-empty'
 import { SlashMenuItemElement } from './slash-menu-item'
+
+import type { Editor } from 'prosekit/core'
 
 // Match inputs like "/", "/table", "/heading 1" etc. Do not match "/ heading".
 const regex = canUseRegexLookbehind() ? /(?<!\S)\/(\S.*)?$/u : /\/(\S.*)?$/u
@@ -37,7 +38,7 @@ class SlashMenuElement extends LitElement {
   }
 
   override render() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const editor = this.editorConsumer.value as Editor<any> | undefined
     if (!editor) {
       return html``
@@ -99,7 +100,7 @@ class SlashMenuElement extends LitElement {
                   <lit-editor-slash-menu-item
                     class="contents"
                     label="Toggle list"
-                    kbd=">>"
+                    kbd="&gt;&gt;"
                     @select=${() => commands.wrapInList?.({ kind: 'toggle' })}
                   ></lit-editor-slash-menu-item>`
               : nothing}
@@ -107,7 +108,7 @@ class SlashMenuElement extends LitElement {
               ? html`<lit-editor-slash-menu-item
                   class="contents"
                   label="Quote"
-                  kbd=">"
+                  kbd="&gt;"
                   @select=${() => commands.setBlockquote?.()}
                 ></lit-editor-slash-menu-item>`
               : nothing}

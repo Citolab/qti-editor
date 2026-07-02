@@ -27,11 +27,12 @@ import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-rou
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
 import { inlineChoiceInteractionDescriptor } from '@citolab/prose-qti/components/inline-choice';
+import sourceXML from '@qti-editor/example-items/ITEM006.xml?raw';
 
 import '@citolab/prose-qti/components/inline-choice/register.js';
 import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
+
 import 'prosemirror-view/style/prosemirror.css';
-import sourceXML from '@qti-editor/example-items/ITEM006.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 

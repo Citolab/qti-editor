@@ -1,8 +1,10 @@
 import { DOMParser } from 'prosekit/pm/model';
-import type { Command, EditorState, Transaction } from 'prosekit/pm/state';
 import { Plugin, PluginKey, Selection } from 'prosekit/pm/state';
-import type { EditorView } from 'prosekit/pm/view';
 import { Decoration, DecorationSet } from 'prosekit/pm/view';
+
+import type { Command, EditorState, Transaction } from 'prosekit/pm/state';
+import type { EditorView } from 'prosekit/pm/view';
+
 
 interface StreamRange {
   from: number;

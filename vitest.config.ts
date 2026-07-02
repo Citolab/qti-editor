@@ -56,7 +56,7 @@ export default defineConfig({
           name: 'browser',
           include: ['packages/**/src/**/*.browser.test.ts', 'apps/**/*.browser.test.ts'],
           setupFiles: ['./tools/testing/setup/vitest.js'],
-          globalSetup: ['./tools/testing/setup/vendor-qti-runtime.global.js'],
+          globalSetup: ['./tools/testing/setup/vendor-qti-runtime.global.mjs'],
           browser: {
             enabled: true,
             // Headed by default — Playwright opens a visible Chrome for Testing

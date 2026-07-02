@@ -2,10 +2,12 @@ import { ContextConsumer } from '@lit/context';
 import { streamContent } from '@citolab/prose-ai';
 import { editorContext } from '@citolab/prose-qti-ui/editor-context';
 import { html, LitElement, nothing } from 'lit';
-import type { Editor } from 'prosekit/core';
+
 
 import { aiSettings, DEFAULT_MODEL } from '../../../ai/settings';
 import { streamFromOpenAI } from '../../../ai/client';
+
+import type { Editor } from 'prosekit/core';
 
 export class LitAiStreamContentToolbar extends LitElement {
   static override properties = {
@@ -37,6 +39,9 @@ export class LitAiStreamContentToolbar extends LitElement {
     this.apiKey = aiSettings.getApiKey();
     this.model = aiSettings.getModel();
     this.endpoint = aiSettings.getEndpoint();
+    // Light-DOM element: apply `display: contents` via a self-class so the
+    // Tailwind utility flows without introducing a shadow root.
+    // eslint-disable-next-line wc/no-self-class
     this.classList.add('contents');
   }
 

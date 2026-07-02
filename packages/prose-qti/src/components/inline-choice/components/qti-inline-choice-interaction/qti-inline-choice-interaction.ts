@@ -7,7 +7,6 @@ import {
   QTI_CORRECT_RESPONSE_TOGGLE_EVENT,
   type QtiCorrectResponseToggleDetail,
 } from '../../../shared';
-
 import styles from './qti-inline-choice-interaction.styles.js';
 
 

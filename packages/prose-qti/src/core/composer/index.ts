@@ -5,7 +5,7 @@
  * No Lit/UI dependencies - these can be used in any environment.
  */
 
-import { iterResponseValues } from '../../components/shared/response/codec.js';
+import { iterResponseValues } from '@citolab/prose-qti/components/shared';
 
 import { getInteractionComposerHandler } from '../interactions/composer.js';
 

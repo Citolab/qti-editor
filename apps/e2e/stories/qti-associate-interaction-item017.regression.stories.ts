@@ -27,12 +27,13 @@ import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-rou
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
 import { blockSelectPlugin } from '@citolab/prose-extensions/prosemirror';
 import { associateInteractionDescriptor } from '@citolab/prose-qti/components/associate';
+import sourceXML from '@qti-editor/example-items/ITEM017.xml?raw';
 
 import '@citolab/prose-qti/components/associate/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
 import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
+
 import 'prosemirror-view/style/prosemirror.css';
-import sourceXML from '@qti-editor/example-items/ITEM017.xml?raw';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
@@ -51,14 +52,14 @@ const qtiMediaStub = {
   atom: true,
   selectable: true,
   parseDOM: [{ tag: 'qti-media-stub' }],
-  toDOM: () => ['qti-media-stub'] as const,
+  toDOM: () => ['qti-media-stub'] as const
 };
 
 const baseNodes = {
   ...nodes,
   paragraph: { ...nodes.paragraph, group: 'block richtext' },
   qtiMediaStub,
-  ...qtiNodes,
+  ...qtiNodes
 };
 
 export const schema = new Schema({
@@ -87,9 +88,7 @@ export const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document =>
   new DOMParser().parseFromString(exportItemXml(doc, schema), 'application/xml');
 
 export const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLElement } = {}): EditorView => {
-  const plugins = options.panelEl
-    ? [...editorPlugins, attributesPanelPlugin(options.panelEl)]
-    : editorPlugins;
+  const plugins = options.panelEl ? [...editorPlugins, attributesPanelPlugin(options.panelEl)] : editorPlugins;
 
   const view = new EditorView(container, {
     state: EditorState.create({ doc: importItem017(), schema, plugins }),

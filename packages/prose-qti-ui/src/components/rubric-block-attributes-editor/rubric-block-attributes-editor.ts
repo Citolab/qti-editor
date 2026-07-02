@@ -1,6 +1,5 @@
 import { html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-
 import {
   QTI_RUBRIC_BLOCK_USE_VALUES,
   QTI_RUBRIC_BLOCK_VIEW_VALUES,

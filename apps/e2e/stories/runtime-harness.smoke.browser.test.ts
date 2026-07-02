@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest';
+
 import { mountQtiRuntime } from './runtime-harness';
 
 const MINIMAL_ITEM = `<qti-assessment-item identifier="smoke" title="smoke" adaptive="false" time-dependent="false">

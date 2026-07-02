@@ -3,9 +3,10 @@
 // Sourced from upstream @prosekit/extensions/src/commit/index.ts.
 
 import { DOMSerializer, Fragment, Slice, type ProseMirrorNode } from 'prosekit/pm/model';
-import type { Step } from 'prosekit/pm/transform';
 import { Decoration, type EditorView } from 'prosekit/pm/view';
 import { ChangeSet, type Change } from 'prosemirror-changeset';
+
+import type { Step } from 'prosekit/pm/transform';
 
 export function getChanges(
   doc: ProseMirrorNode,

@@ -5,8 +5,8 @@ import { defineUpdateHandler, type Editor } from 'prosekit/core';
 import { QtiI18nController } from '@citolab/prose-qti/components/shared/i18n/index.js';
 import { translateQti } from '@citolab/prose-qti/components/shared';
 import { getNodeAttributePanelMetadataByNodeTypeName } from '@citolab/prose-qti/core/interactions/composer';
-import { editorContext } from '../../editor-context/index.js';
 
+import { editorContext } from '../../editor-context/index.js';
 import {
   collectSelectionNodesWithSchemaAttrs,
   updateNodeAttrs,
@@ -335,10 +335,6 @@ export class QtiAttributesPanel extends LitElement {
   }
 }
 
-export { collectSelectionNodesWithSchemaAttrs, updateNodeAttrs, DOC_POS } from './attributes-helpers.js';
-export { registerFriendlyEditor, getFriendlyEditor } from './friendly-editor-registry.js';
-export type { FriendlyEditorRenderer } from './friendly-editor-registry.js';
-export type { AttributesNodeDetail } from './attributes-helpers.js';
 export type { ChoiceInteractionPanelPresentation } from '../choice-attributes-editor';
 
 declare global {

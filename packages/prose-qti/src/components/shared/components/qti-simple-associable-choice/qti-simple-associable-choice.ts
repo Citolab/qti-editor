@@ -4,6 +4,7 @@ import { property } from 'lit/decorators.js';
 import { QtiSimpleAssociableChoice } from '@qti-components/interactions-core';
 
 import { renderEditChip } from '../../render/chip.js';
+
 import type { CSSResult, CSSResultGroup } from 'lit';
 
 // Reuse the runtime qti-components associable-choice styles so the editor host

@@ -9,9 +9,6 @@ import {
   union,
   type Extension,
 } from 'prosekit/core';
-import type { Commit } from 'prosekit/extensions/commit';
-import { decorateDeletion, getChanges } from './commit-helpers';
-import type { Node as ProseMirrorNode, Schema } from 'prosekit/pm/model';
 import {
   PluginKey,
   ProseMirrorPlugin,
@@ -20,6 +17,11 @@ import {
 import { Step } from 'prosekit/pm/transform';
 import { Decoration, DecorationSet } from 'prosekit/pm/view';
 import { simplifyChanges } from 'prosemirror-changeset';
+
+import { decorateDeletion, getChanges } from './commit-helpers';
+
+import type { Node as ProseMirrorNode, Schema } from 'prosekit/pm/model';
+import type { Commit } from 'prosekit/extensions/commit';
 
 interface CheckFragment {
   index: number;

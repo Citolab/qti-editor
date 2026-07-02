@@ -2,7 +2,6 @@ import { Plugin, PluginKey } from 'prosemirror-state';
 
 import type { Node as PmNode } from 'prosemirror-model';
 import type { ViewMutationRecord } from 'prosemirror-view';
-
 import type { QtiMatchInteractionEdit } from '../components/qti-match-interaction/qti-match-interaction.js';
 
 const tabularNodeViewPluginKey = new PluginKey('qti-match-interaction.tabular.node-view');

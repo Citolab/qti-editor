@@ -1,19 +1,21 @@
 import { ContextConsumer } from '@lit/context'
 import { html, LitElement, nothing, type PropertyDeclaration, type PropertyValues } from 'lit'
 import { defineUpdateHandler, type Editor } from 'prosekit/core'
-import type { LinkAttrs } from 'prosekit/extensions/link'
 import {
   registerInlinePopoverPopupElement,
   registerInlinePopoverPositionerElement,
   registerInlinePopoverRootElement,
   type OpenChangeEvent,
 } from 'prosekit/lit/inline-popover'
-import type { EditorState } from 'prosekit/pm/state'
 import { editorContext } from '@citolab/prose-qti-ui/editor-context'
+
+import type { LinkAttrs } from 'prosekit/extensions/link'
+import type { EditorState } from 'prosekit/pm/state'
+
 
 import '../button/index.js'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type AnyEditor = Editor<any>
 
 function getInlineMenuItems(editor: AnyEditor) {
@@ -121,6 +123,9 @@ class LitInlineMenu extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback()
+    // Light-DOM element: apply `display: contents` via a self-class so the
+    // Tailwind utility flows without introducing a shadow root.
+    // eslint-disable-next-line wc/no-self-class
     this.classList.add('contents')
     this.attachEditorListener()
   }

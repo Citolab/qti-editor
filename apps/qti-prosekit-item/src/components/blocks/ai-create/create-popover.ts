@@ -15,11 +15,12 @@ import {
 import { editorContext } from '@citolab/prose-qti-ui/editor-context';
 import { html, LitElement, nothing, type PropertyDeclaration } from 'lit';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
-import type { Editor } from 'prosekit/core';
 import { Selection as PmSelection } from 'prosekit/pm/state';
 
 import { aiSettings, ensureConfigured } from '../../../ai/settings';
 import { streamFromOpenAI } from '../../../ai/client';
+
+import type { Editor } from 'prosekit/core';
 import type { AiCreateRequestDetail, AiPrompt } from '../../../ai/prompts';
 
 interface CreateState {

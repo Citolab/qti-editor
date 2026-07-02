@@ -19,6 +19,7 @@ import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
 import { listInteractionDescriptors } from '@citolab/prose-qti/core/interactions/composer';
 import { translateQti } from '@citolab/prose-qti/components/shared';
 import { insertGap } from '@citolab/prose-qti/components/gap-match';
+
 import { insertItemDivider } from '../../item-divider/qti-item-divider.commands.js';
 import './slash-menu-item.js';
 import './slash-menu-empty.js';

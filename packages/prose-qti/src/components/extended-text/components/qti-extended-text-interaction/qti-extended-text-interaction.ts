@@ -2,7 +2,6 @@ import { html } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import { Interaction } from '../../../shared/components/interaction.js';
-
 import styles from './qti-extended-text-interaction.styles.js';
 
 export class QtiExtendedTextInteractionEdit extends Interaction {

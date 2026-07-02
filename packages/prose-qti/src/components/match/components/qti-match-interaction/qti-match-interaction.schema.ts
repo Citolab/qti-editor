@@ -1,5 +1,4 @@
 import { parseResponseAttribute, serializeResponseAttribute } from '../../../shared';
-
 import { hasTabularMatchClass } from './qti-match-interaction-tabular.schema.js';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';

@@ -24,3 +24,13 @@ if [ "$yalc_in_index" = "true" ]; then
   echo "   To restore yalc dev mode after commit: pnpm yalc:add"
   echo ""
 fi
+
+# Run the same lint check CI runs so drift can't sneak past a local commit.
+# Mirrors `.github/workflows/ci.yml` (Lint step: `pnpm lint:check`).
+echo "🔍 pre-commit: running pnpm lint:check..."
+if ! pnpm lint:check; then
+  echo ""
+  echo "❌ Lint failed. Fix errors above (or run 'pnpm lint' for autofix), then re-commit."
+  echo "   To bypass in an emergency: git commit --no-verify"
+  exit 1
+fi
