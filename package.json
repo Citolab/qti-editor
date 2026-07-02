@@ -11,8 +11,7 @@
       "prosemirror-schema-basic": "^1.2.4",
       "prosemirror-schema-list": "^1.5.1",
       "prosemirror-state": "^1.4.4",
-      "prosemirror-view": "^1.41.9",
-      "@qti-components/theme": "link:../../Edtech/QTI/QTI-Components/packages/qti-theme"
+      "prosemirror-view": "^1.41.9"
     }
   },
   "version": "0.1.0",

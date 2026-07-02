@@ -69,7 +69,6 @@
     "./components/shared/*": "./src/components/shared/*",
     "./components/text-entry": "./src/components/text-entry/index.ts",
     "./components/text-entry/*": "./src/components/text-entry/*",
-    "./core-css": "./src/core-css/index.ts",
     "./core-css.css": "./src/core-css/core-css.css"
   },
   "scripts": {
@@ -79,15 +78,19 @@
   },
   "dependencies": {
     "@lit/context": "^1.1.6",
-    "@qti-components/associate-interaction": "file:.yalc/@qti-components/associate-interaction",
-    "@qti-components/base": "file:.yalc/@qti-components/base",
-    "@qti-components/gap-match-interaction": "file:.yalc/@qti-components/gap-match-interaction",
-    "@qti-components/hottext-interaction": "file:.yalc/@qti-components/hottext-interaction",
-    "@qti-components/inline-choice-interaction": "file:.yalc/@qti-components/inline-choice-interaction",
-    "@qti-components/interactions-core": "file:.yalc/@qti-components/interactions-core",
-    "@qti-components/match-interaction": "file:.yalc/@qti-components/match-interaction",
-    "@qti-components/transformers": "file:.yalc/@qti-components/transformers",
-    "@qti-components/utilities": "file:.yalc/@qti-components/utilities"
+    "@qti-components/associate-interaction": "^1.0.1",
+    "@qti-components/base": "^1.4.3",
+    "@qti-components/choice-interaction": "^1.1.4",
+    "@qti-components/extended-text-interaction": "^1.0.1",
+    "@qti-components/gap-match-interaction": "^1.1.4",
+    "@qti-components/hottext-interaction": "^1.1.3",
+    "@qti-components/inline-choice-interaction": "^1.1.3",
+    "@qti-components/interactions-core": "^1.1.4",
+    "@qti-components/match-interaction": "^1.0.0",
+    "@qti-components/order-interaction": "^1.1.2",
+    "@qti-components/select-point-interaction": "^1.1.4",
+    "@qti-components/text-entry-interaction": "^1.0.0",
+    "@qti-components/transformers": "^1.6.4"
   },
   "peerDependencies": {
     "lit": "^3.3.2",

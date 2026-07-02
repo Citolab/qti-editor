@@ -1,6 +1,8 @@
-// Re-export the canonical codec from @qti-components/base — single source of
-// truth across both the runtime and the editor. Local code keeps importing
-// from this file; the implementation lives upstream.
+// Re-export the response codec. Temporarily sourced from a local vendored copy
+// (`./response.ts`) so the editor can consume the latest published
+// `@qti-components/*` packages from npm without waiting on an upstream release.
+// Once the upstream package publishes these symbols, delete `./response.ts` and
+// change the source below back to `@qti-components/base`.
 export {
   parseResponseAttribute,
   serializeResponseAttribute,
@@ -14,4 +16,4 @@ export {
   serializePair,
   parsePoint,
   serializePoint,
-} from '@qti-components/base';
+} from './response.js';
