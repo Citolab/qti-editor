@@ -47,7 +47,7 @@ jobs:
         if: ${{ steps.filter.outputs.changed == 'true' }}
         with:
           openai-api-key: ${{ secrets.AZURE_OPENAI_API_KEY }}
-          responses-api-endpoint: ${{ secrets.AZURE_OPENAI_ENDPOINT }}/openai/v1/responses
+          responses-api-endpoint: ${{ secrets.AZURE_OPENAI_ENDPOINT }}/openai/deployments/${{ vars.AZURE_OPENAI_DOCS_DEPLOYMENT }}/responses?api-version=2025-08-07
           model: ${{ vars.AZURE_OPENAI_DOCS_DEPLOYMENT }}
           permission-profile: ":workspace"
           prompt: |
