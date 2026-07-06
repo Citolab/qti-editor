@@ -14,7 +14,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      id-token: write
     steps:
       - name: Checkout triggering commit
         uses: actions/checkout@v4
@@ -42,13 +41,23 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: anthropics/claude-code-action@v1
+      - uses: openai/codex-action@v1
         if: ${{ steps.filter.outputs.changed == 'true' }}
         with:
+          openai-api-key: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          responses-api-endpoint: ${{ secrets.AZURE_OPENAI_ENDPOINT }}/openai/v1/responses
+          model: ${{ vars.AZURE_OPENAI_DOCS_DEPLOYMENT }}
+          permission-profile: ":workspace"
           prompt: |
             Code in packages changed. Update the Astro docs in
-            apps/site/src/content/docs to match, and open a PR.
-        env:
-          CLAUDE_CODE_USE_FOUNDRY: "1"
-          ANTHROPIC_FOUNDRY_RESOURCE: ${{ secrets.AZURE_FOUNDRY_RESOURCE }}
-          ANTHROPIC_FOUNDRY_API_KEY: ${{ secrets.AZURE_FOUNDRY_API_KEY }}
+            apps/site/src/content/docs to match.
+
+      - name: Open PR with doc updates
+        if: ${{ steps.filter.outputs.changed == 'true' }}
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "docs: update Astro docs"
+          title: "docs: update Astro docs"
+          body: Automated update from the docs workflow after a change under `packages/` on `main`.
+          branch: docs/auto-update
+          delete-branch: true
