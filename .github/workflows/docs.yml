@@ -56,8 +56,13 @@ jobs:
           use_foundry: "true"
           claude_args: |
             --model claude-sonnet-5
+            --allowedTools "Bash(git checkout:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(gh pr create:*),Bash(gh pr list:*)"
           prompt: |
             Code in packages changed. Update the Astro docs in
-            apps/site/src/content/docs to match, and open a PR.
+            apps/site/src/content/docs to match. Create a new branch,
+            commit your changes, push the branch, and open a pull
+            request against main with `gh pr create` describing what
+            changed and why.
         env:
           ANTHROPIC_FOUNDRY_RESOURCE: ${{ secrets.AZURE_FOUNDRY_RESOURCE }}
+          GH_TOKEN: ${{ github.token }}
