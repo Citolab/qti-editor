@@ -29,8 +29,8 @@ importers:
         specifier: ^9.39.2
         version: 9.39.4
       '@qti-components/theme':
-        specifier: ^1.3.2
-        version: 1.6.0
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release
       '@semantic-release/changelog':
         specifier: ^6.0.3
         version: 6.0.3(semantic-release@24.2.9(typescript@5.9.3))
@@ -194,11 +194,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/prose-qti
       '@citolab/qti-components':
-        specifier: ^7.28.1
-        version: 7.28.1
+        specifier: https://pkg.pr.new/Citolab/qti-components/@citolab/qti-components@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@citolab/qti-components@breaking-changes-for-editor-release
       '@qti-components/theme':
-        specifier: ^1.3.2
-        version: 1.6.0
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -252,8 +252,8 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6
       '@qti-components/theme':
-        specifier: ^1.4.0
-        version: 1.6.0
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release
       '@tanstack/react-query':
         specifier: ^5.95.2
         version: 5.96.2(react@18.3.1)
@@ -349,8 +349,8 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6
       '@qti-components/theme':
-        specifier: ^1.4.0
-        version: 1.6.0
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -404,11 +404,11 @@ importers:
         specifier: ^2.1.0
         version: 2.1.2
       '@qti-components/theme':
-        specifier: ^1.5.0
-        version: 1.6.0
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release
       '@qti-components/transformers':
-        specifier: ^1.7.1
-        version: 1.7.1
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@breaking-changes-for-editor-release
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -492,8 +492,8 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6
       '@qti-components/theme':
-        specifier: 1.3.2
-        version: 1.3.2
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release
       astro:
         specifier: ^5.7.2
         version: 5.18.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.3)
@@ -575,44 +575,44 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6
       '@qti-components/associate-interaction':
-        specifier: ^1.0.1
-        version: 1.1.5(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/base':
-        specifier: ^1.4.3
-        version: 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/base@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/base@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/choice-interaction':
-        specifier: ^1.1.4
-        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/choice-interaction@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/choice-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/extended-text-interaction':
-        specifier: ^1.0.1
-        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/extended-text-interaction@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/extended-text-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/gap-match-interaction':
-        specifier: ^1.1.4
-        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/gap-match-interaction@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/gap-match-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/hottext-interaction':
-        specifier: ^1.1.3
-        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/hottext-interaction@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/hottext-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/inline-choice-interaction':
-        specifier: ^1.1.3
-        version: 1.1.5(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/inline-choice-interaction@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/inline-choice-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/interactions-core':
-        specifier: ^1.1.4
-        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/match-interaction':
-        specifier: ^1.0.0
-        version: 1.1.5(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/match-interaction@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/match-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/order-interaction':
-        specifier: ^1.1.2
-        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/order-interaction@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/order-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/select-point-interaction':
-        specifier: ^1.1.4
-        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/select-point-interaction@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/select-point-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/text-entry-interaction':
-        specifier: ^1.0.0
-        version: 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/transformers':
-        specifier: ^1.6.4
-        version: 1.7.1
+        specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@breaking-changes-for-editor-release
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@breaking-changes-for-editor-release
       lit:
         specifier: ^3.3.2
         version: 3.3.2
@@ -864,8 +864,9 @@ packages:
       prosekit:
         optional: true
 
-  '@citolab/qti-components@7.28.1':
-    resolution: {integrity: sha512-xqcRYNosQqy6hFK08Vn+9a/MO+z8guG65NiwI/n46qvZ7neOapPjTxOk/iDBNdee3LxX+nKrvObUBZ9cEHnFTg==}
+  '@citolab/qti-components@https://pkg.pr.new/Citolab/qti-components/@citolab/qti-components@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-4ZsOUPrp5jcl8L0LU+h8BseA7Q7Ktt3jWiTpzSu99W4hN7UZYczeCWEYqTMnEmF+soWv8KhxPPVDX4SPH3pRCA==, tarball: https://pkg.pr.new/Citolab/qti-components/@citolab/qti-components@breaking-changes-for-editor-release}
+    version: 7.28.1
 
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
@@ -2401,8 +2402,29 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
+  '@qti-components/associate-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-3kQ+sLRzeHL/e1L6iZuKrTzNZTPqD/r5GC2JpZm7W8QwNEV6D3+8DsM6xmW28cX9I27Qhruj4XzOjspfkzkZtQ==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@breaking-changes-for-editor-release}
+    version: 1.1.5
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
+
   '@qti-components/base@1.5.1':
     resolution: {integrity: sha512-SNdC/k8fxHiw7YtRkkb0niatPbvOKvzTL+HGLXp/5jFhzOIBIn+We9lmzLFGME90Fp3kiz20SZvERmIxpVZ3Dg==}
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
+
+  '@qti-components/base@https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68':
+    resolution: {integrity: sha512-91xCga33mRp4oIZQfZJgUvOyEoGKDci3Ne9IeN9RYuoJRukd7JU54GXLUtRmg3mnNIfhzI+CMcha8cgSXlFXpw==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68}
+    version: 1.5.1
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
+
+  '@qti-components/base@https://pkg.pr.new/Citolab/qti-components/@qti-components/base@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-91xCga33mRp4oIZQfZJgUvOyEoGKDci3Ne9IeN9RYuoJRukd7JU54GXLUtRmg3mnNIfhzI+CMcha8cgSXlFXpw==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/base@breaking-changes-for-editor-release}
+    version: 1.5.1
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2413,14 +2435,29 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
+  '@qti-components/choice-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/choice-interaction@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-3GZJgRqbKEfteHexQjaMPuVg2BebhNDfhUWZScNBlDOClsBGUNvUY9ALvz/x7AaLR0JkAcXL2cK4Lp5GX2ztbg==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/choice-interaction@breaking-changes-for-editor-release}
+    version: 1.1.4
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
+
   '@qti-components/extended-text-interaction@1.1.4':
     resolution: {integrity: sha512-n7GoZfI1I/ABN+YtEqa6klPjAtdUg+WNgOeH23Ykei7QDHdZzmT/YdQoqlNAIn2WcjxNL5ioA9HRpKNvfvnh4Q==}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/gap-match-interaction@1.1.4':
-    resolution: {integrity: sha512-HT3WNijebBo0McsHV9ueyGDItcqOXmkzAyHQi7aJfUellFja4MWcx3OuImY+YY7FmPAs+bdeF+OD9bGEpD1ZNQ==}
+  '@qti-components/extended-text-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/extended-text-interaction@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-UIBGlIDuOVPNnlRLuQCqXYIORfK2i4oHa+wmujeilYbxiUsyUr0AeMWn/vMaTo3036lJjCrR/HyZQqPDPZMw2w==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/extended-text-interaction@breaking-changes-for-editor-release}
+    version: 1.1.4
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
+
+  '@qti-components/gap-match-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/gap-match-interaction@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-EccTyyMYaL00gxDkaNLwAZYzFeD9eWiQa1kZUPOSPGEWctDsH7rEjyyen63ZADftNVjtC+6vXy4waq5W4vtgxQ==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/gap-match-interaction@breaking-changes-for-editor-release}
+    version: 1.1.4
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2431,8 +2468,22 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
+  '@qti-components/hottext-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/hottext-interaction@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-57Jec4a+Nh5MPaVmx4Ls6tZKqQ4cEiq+vF4He2BKdx8JzRtN3d8qzEsBLhCAil8EmFrmmEDGdxq9AcTjO9xQ7w==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/hottext-interaction@breaking-changes-for-editor-release}
+    version: 1.1.4
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
+
   '@qti-components/inline-choice-interaction@1.1.5':
     resolution: {integrity: sha512-dMSWAtH3NI1nJRxFO+pFoGt72gne7J7hk8rZi5kIdWMfvqqNSTFyOoEnYoiO0cneqHosaImeSUs4YstskBVMHg==}
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
+
+  '@qti-components/inline-choice-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/inline-choice-interaction@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-zTnLnkBrbSo2R3dgwPzWR3VSBE9HNNxqenGTph6lUgoLbeQ0KEczpVltY81mopxzsgSSgPv9KiVlEOYegFLEvg==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/inline-choice-interaction@breaking-changes-for-editor-release}
+    version: 1.1.5
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2443,8 +2494,29 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
+  '@qti-components/interactions-core@https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68':
+    resolution: {integrity: sha512-4fhFy1UnpF+yLoGbU0Up/ejTJ6iod6wJnnh3Cj/49yQmdOdl6W/2l/FO3d0QdlWMKlhGguNACZjmoQYiC8WL4g==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68}
+    version: 1.1.4
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
+
+  '@qti-components/interactions-core@https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-4fhFy1UnpF+yLoGbU0Up/ejTJ6iod6wJnnh3Cj/49yQmdOdl6W/2l/FO3d0QdlWMKlhGguNACZjmoQYiC8WL4g==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@breaking-changes-for-editor-release}
+    version: 1.1.4
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
+
   '@qti-components/match-interaction@1.1.5':
     resolution: {integrity: sha512-k3uppYHHuUWO4Fwxnhf0T3rNSTr15HEmQDtsiYxBRXUQmQ7/T86dK/sfyw7K5WXQgV3bEDPfODmDGa0NlH3LlQ==}
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
+
+  '@qti-components/match-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/match-interaction@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-R3qUzGx/hVF+wgmbLa9xUtKQuhKuhQSkh2xhu7LMRFuOedP2jjt7EEFpA0mcrwZ/WLS5E+QRwOShBLe/st1t7Q==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/match-interaction@breaking-changes-for-editor-release}
+    version: 1.1.5
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2455,8 +2527,16 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/select-point-interaction@1.1.4':
-    resolution: {integrity: sha512-ntyyRP57NWMCPj9tzxzR2nmdUFnxaXX2zpKY9+GJf722NFSZHeS6RlLNFKOvyMiZ51l0TWDtOaGLhB9aYSkuOg==}
+  '@qti-components/order-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/order-interaction@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-NhDGyAKuzGkbaSwv/o4n2Ri8GjhNVMVnUEyEYVKvwNRl5UauJPcgRM8PqMmtGb50ItLfxsPxg8K6I/nMrwI2YQ==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/order-interaction@breaking-changes-for-editor-release}
+    version: 1.1.4
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
+
+  '@qti-components/select-point-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/select-point-interaction@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-VTO04s2tB2ZjuaA1tNWiLiL802G5PpkALg5qkdWt+Sq2dqTIocgJHjm1AZjPg1u4LCqFTnDI4oB5GQUxvh+TAA==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/select-point-interaction@breaking-changes-for-editor-release}
+    version: 1.1.4
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2467,17 +2547,32 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/theme@1.3.2':
-    resolution: {integrity: sha512-esct0BTe4gamM6Dy5/iFTcdwlVlXeEf6IDEX7InO+rVYUG00CFMW62RflhRzaKasW6t4YXaEZd4Q4AYx9FvzWA==}
+  '@qti-components/text-entry-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-VasGbPsRudIzFcPjUZXqKrYzQV7ji5G14fuHvnXiylxC4Wg9w4PUtiYh6xLothut9WeRs2yPqCrsrsto6itmCQ==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@breaking-changes-for-editor-release}
+    version: 1.1.4
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
 
-  '@qti-components/theme@1.6.0':
-    resolution: {integrity: sha512-UQWu1//mwRnATASSKgaYBX47E0D3v/JP6nao0mCPe9N/k+jJbe3MQemi0pxdue0Nt1ASmRdLztR97zW9yVApVQ==}
+  '@qti-components/theme@https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-wilJC3EtJcUgLoTfCu0d5x/Aj39kyXzBemcycSwOlCbPXxgtXGPIyClglX48uYamTJzfOiWj5BCFQ+OWKdMEdQ==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release}
+    version: 1.5.0
 
   '@qti-components/transformers@1.7.1':
     resolution: {integrity: sha512-Ol8s3zpzTncvfFY7YM7SNTmKODs68IkWQnDODpxKDof4PV26yqT7POg/LmLdfin8A/xTvNNOdgJ+QNEgta1VZA==}
 
+  '@qti-components/transformers@https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@breaking-changes-for-editor-release':
+    resolution: {integrity: sha512-PQfl8k+Z+XWRXtqx802j9Hp2s7rOon8QDVSnzTkb4u6q1c+ytGXWYZdhLeXmtMitzi+EUUfBRY/ZOJp9FNPczw==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@breaking-changes-for-editor-release}
+    version: 1.7.1
+
   '@qti-components/utilities@1.3.3':
     resolution: {integrity: sha512-7IQDh3liBDsiGPcvJAW5UPU5ZdhwOEHimQNW8Cq/0NcAUup8fFn3WZL1XY3FvkhmZr9XOUAhb596Lxna4W/dGw==}
+    peerDependencies:
+      lit: ^3.3.1
+
+  '@qti-components/utilities@https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68':
+    resolution: {integrity: sha512-V7DHjEV2FKBTyx+EGBZF1eBPKxoyCYJjbou8GACgfc2liD4QX5xh8+SWQCYKPIkHIjwtgY0wJrRLmwAShaVsFQ==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68}
+    version: 1.3.3
     peerDependencies:
       lit: ^3.3.1
 
@@ -8095,7 +8190,7 @@ snapshots:
     optionalDependencies:
       prosekit: 0.21.3(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.9)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  '@citolab/qti-components@7.28.1':
+  '@citolab/qti-components@https://pkg.pr.new/Citolab/qti-components/@citolab/qti-components@breaking-changes-for-editor-release':
     dependencies:
       '@heximal/templates': 0.1.5
       '@lit/context': 1.1.6
@@ -9616,10 +9711,30 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
+  '@qti-components/associate-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/base': https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
+      lit: 3.3.2
+
   '@qti-components/base@1.5.1(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
+      lit: 3.3.2
+
+  '@qti-components/base@https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
+      lit: 3.3.2
+
+  '@qti-components/base@https://pkg.pr.new/Citolab/qti-components/@qti-components/base@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
       lit: 3.3.2
 
   '@qti-components/choice-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
@@ -9630,6 +9745,14 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
+  '@qti-components/choice-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/choice-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/base': https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
+      lit: 3.3.2
+
   '@qti-components/extended-text-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
@@ -9638,12 +9761,20 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/gap-match-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
+  '@qti-components/extended-text-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/extended-text-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
-      '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
+      '@qti-components/base': https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
+      lit: 3.3.2
+
+  '@qti-components/gap-match-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/gap-match-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/base': https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
       lit: 3.3.2
 
   '@qti-components/hottext-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
@@ -9654,6 +9785,14 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
+  '@qti-components/hottext-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/hottext-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/base': https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
+      lit: 3.3.2
+
   '@qti-components/inline-choice-interaction@1.1.5(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
@@ -9662,11 +9801,35 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
+  '@qti-components/inline-choice-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/inline-choice-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/base': https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
+      lit: 3.3.2
+
   '@qti-components/interactions-core@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
+      lit: 3.3.2
+      observable-polyfill: 0.0.29
+
+  '@qti-components/interactions-core@https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/base': https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
+      lit: 3.3.2
+      observable-polyfill: 0.0.29
+
+  '@qti-components/interactions-core@https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/base': https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
       lit: 3.3.2
       observable-polyfill: 0.0.29
 
@@ -9678,6 +9841,14 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
+  '@qti-components/match-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/match-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/base': https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
+      lit: 3.3.2
+
   '@qti-components/order-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
@@ -9686,12 +9857,20 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/select-point-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
+  '@qti-components/order-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/order-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)':
     dependencies:
       '@lit/context': 1.1.6
-      '@qti-components/base': 1.5.1(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/interactions-core': 1.1.4(@lit/context@1.1.6)(lit@3.3.2)
-      '@qti-components/utilities': 1.3.3(lit@3.3.2)
+      '@qti-components/base': https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
+      lit: 3.3.2
+
+  '@qti-components/select-point-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/select-point-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/base': https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
       lit: 3.3.2
 
   '@qti-components/text-entry-interaction@1.1.4(@lit/context@1.1.6)(lit@3.3.2)':
@@ -9702,13 +9881,25 @@ snapshots:
       '@qti-components/utilities': 1.3.3(lit@3.3.2)
       lit: 3.3.2
 
-  '@qti-components/theme@1.3.2': {}
+  '@qti-components/text-entry-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@breaking-changes-for-editor-release(@lit/context@1.1.6)(lit@3.3.2)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/base': https://pkg.pr.new/Citolab/qti-components/@qti-components/base@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/interactions-core': https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(@lit/context@1.1.6)(lit@3.3.2)
+      '@qti-components/utilities': https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)
+      lit: 3.3.2
 
-  '@qti-components/theme@1.6.0': {}
+  '@qti-components/theme@https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release': {}
 
   '@qti-components/transformers@1.7.1': {}
 
+  '@qti-components/transformers@https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@breaking-changes-for-editor-release': {}
+
   '@qti-components/utilities@1.3.3(lit@3.3.2)':
+    dependencies:
+      lit: 3.3.2
+
+  '@qti-components/utilities@https://pkg.pr.new/Citolab/qti-components/@qti-components/utilities@b26bcc3d7bd689fb88a09dddc105dd704fb5cf68(lit@3.3.2)':
     dependencies:
       lit: 3.3.2
 
