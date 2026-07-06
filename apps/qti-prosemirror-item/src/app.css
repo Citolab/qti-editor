@@ -1,5 +1,6 @@
 /* App chrome — header, panes, layout, scrollbars. NOT QTI-element styling. */
 @import '@qti-components/theme/item.css';
+@import '@qti-components/theme/kennisnet-override.css';
 @import '@citolab/prose-qti/core-css.css';
 
 :root {
