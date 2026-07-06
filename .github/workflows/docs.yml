@@ -12,7 +12,7 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main') }}
     runs-on: ubuntu-latest
     env:
-      RUST_LOG: codex_api=debug,codex_core=debug
+      RUST_LOG: codex_api=trace,codex_core=debug
     permissions:
       contents: write
       pull-requests: write
@@ -47,7 +47,7 @@ jobs:
         if: ${{ steps.filter.outputs.changed == 'true' }}
         with:
           openai-api-key: ${{ secrets.AZURE_OPENAI_API_KEY }}
-          responses-api-endpoint: ${{ secrets.AZURE_OPENAI_ENDPOINT }}/openai/deployments/${{ vars.AZURE_OPENAI_DOCS_DEPLOYMENT }}/responses?api-version=2025-08-07
+          responses-api-endpoint: ${{ secrets.AZURE_OPENAI_ENDPOINT }}/openai/v1/responses
           model: ${{ vars.AZURE_OPENAI_DOCS_DEPLOYMENT }}
           permission-profile: ":workspace"
           prompt: |
