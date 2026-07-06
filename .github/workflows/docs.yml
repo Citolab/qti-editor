@@ -1,0 +1,29 @@
+name: Update Astro Docs
+on:
+  workflow_run:
+    workflows:
+      - "CI: push-quality"
+    types:
+      - completed
+  push:
+    branches: [main]
+    paths:
+      - 'packages/**'
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: anthropics/claude-code-action@v1
+        with:
+          prompt: |
+            Code in packages changed. Update the Astro docs in
+            apps/site/src/content/docs to match, and open a PR.
+        env:
+          CLAUDE_CODE_USE_FOUNDRY: "1"
+          ANTHROPIC_FOUNDRY_RESOURCE: ${{ secrets.AZURE_FOUNDRY_RESOURCE }}
+          ANTHROPIC_FOUNDRY_API_KEY: ${{ secrets.AZURE_FOUNDRY_API_KEY }}

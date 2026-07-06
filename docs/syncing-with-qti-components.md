@@ -92,11 +92,13 @@ cd editor
 pnpm install
 ```
 
-That's it. The `preinstall` script (`scripts/qti-overrides-preinstall.mjs`)
-detects that `pnpm-local-overrides.json#enabled` is true and that the pinned
-tarballs don't exist locally yet, then automatically runs `qti-overrides:sync`
-to generate them. `pnpm install` then proceeds and `.pnpmfile.cjs` rewires the
-workspace's deps to use those tarballs.
+That's it. `.pnpmfile.cjs`'s `readPackage` hook — which pnpm runs *before* the
+`preinstall` lifecycle script — self-heals inline: if `pnpm-local-overrides.json#enabled`
+is true and a pinned tarball is missing locally, it synchronously runs
+`qti-overrides:sync` to generate the tarballs, then re-reads the json before
+rewiring the workspace's deps to point at them. The `preinstall` script
+(`scripts/qti-overrides-preinstall.mjs`) does the same detection/sync as a
+redundant safety net, for the (normally unreachable) case where it runs first.
 
 They do **not** need:
 - a qti-components checkout
@@ -115,7 +117,7 @@ fallback — yalc takes precedence while active.
 | File | Role |
 |---|---|
 | [`pnpm-local-overrides.json`](../pnpm-local-overrides.json) | Single source of truth for pinned overrides. Committed. |
-| [`.pnpmfile.cjs`](../.pnpmfile.cjs) | pnpm hook that reads the json and rewrites deps at install time. Committed. |
+| [`.pnpmfile.cjs`](../.pnpmfile.cjs) | pnpm hook that reads the json, self-heals missing tarballs inline, and rewrites deps at install time. Committed. |
 | [`scripts/qti-local-overrides-sync.mjs`](../scripts/qti-local-overrides-sync.mjs) | `sync` / `status` / `snapshot` subcommands. |
 | [`scripts/qti-overrides-preinstall.mjs`](../scripts/qti-overrides-preinstall.mjs) | Self-heals missing tarballs before `pnpm install`. |
 | [`scripts/yalc-init.mjs`](../scripts/yalc-init.mjs) | First-time yalc link for the developer. |

@@ -46,8 +46,9 @@ The main QTI package. Contains all QTI-specific logic and the integration layer 
 `src/interfaces/` owns:
 - Shared TypeScript contracts with no runtime dependencies
 - `InteractionDescriptor` — the registration unit every interaction implements
-- `NodeAttributePanelMetadata`, `AttributeFieldDefinition`, `AttributeFriendlyEditorDefinition` — unified attribute panel types
-- Composer types: `InteractionComposerMetadata`, `InteractionComposerHandler`, etc.
+- `InteractionNodeSpecEntry` — node spec entries within a descriptor
+- `NodeAttributePanelMetadata`, `AttributeFieldDefinition`, `AttributeFieldOption`, `AttributeFriendlyEditorDefinition` — unified attribute panel types
+- Composer types: `InteractionComposerMetadata`, `InteractionComposerHandler`, `InteractionComposeResult`, `ResponseProcessingKind`, `ComposerWarning`
 
 `src/components/*` owns (one directory per interaction type):
 - ProseMirror node specs, insert commands, enter commands
@@ -56,7 +57,7 @@ The main QTI package. Contains all QTI-specific logic and the integration layer 
 - Per-interaction attribute panel metadata
 - A `descriptor.ts` exporting a single object that `satisfies InteractionDescriptor`
 
-Interaction components: `associate`, `choice`, `extended-text`, `gap-match`, `hottext`, `inline-choice`, `item-divider`, `match`, `order`, `rubric-block`, `select-point`, `text-entry`, plus `shared/` for cross-interaction schemas and helpers.
+Interaction components: `associate`, `choice`, `extended-text`, `gap-match`, `hottext`, `inline-choice`, `match`, `order`, `rubric-block`, `select-point`, `text-entry`, plus `shared/` for cross-interaction schemas and helpers.
 
 `src/core/` owns:
 - Descriptor registry: `listInteractionDescriptors()` — canonical list of all registered interactions
@@ -68,22 +69,18 @@ Interaction components: `associate`, `choice`, `extended-text`, `gap-match`, `ho
 - `events` — `qtiEditorEventsExtension`, `onQtiContentChange`, `onQtiSelectionChange`
 - `code` — `qtiCodePanelExtension`
 - `item-context` — `itemContext`, `ItemContext`, `itemContextVariables`
-- `editor-context` — `editorContext`
 - `save-xml` — `xmlFromNode`, `xmlToHTML`
 - `save-qti-item` — `qtiItemFromProsemirror`
-- `save-qti-test` — `qtiTestFromProsemirror`
-- `interactions` — `registerQtiInteractionElements`
+- `interactions/prosekit` — `defineQtiInteractionsExtension`, `defineQtiExtension`; `registerQtiInteractionElements` is a deprecated no-op kept for backwards compatibility
 - Shared document types: `QtiDocumentJson`, `QtiNodeJson`
 
-`src/item-export/`, `src/item-roundtrip/`, `src/qti3-item-import/`, `src/test-export/`, `src/package-builder/` own QTI serialization, import transforms, and package building.
+`src/item-export/`, `src/item-roundtrip/`, `src/qti3-item-import/` own QTI serialization and import transforms. `editorContext`/`qtiEditorContext` and multi-item/package-building support were moved out of this package (see `packages/prose-qti-ui`) — this package's export surface is single-item only.
 
 ### `packages/prose-extensions` (`@citolab/prose-extensions`)
 
 Generic ProseMirror and ProseKit extensions with no QTI-specific logic.
 
 Owns:
-- `src/prosemirror/attributes` — generic ProseMirror attributes engine (plugin, transactions, events)
-- `src/prosemirror/attributes-ui` — ProseKit-oriented attributes panel UI
 - `src/prosemirror/block-select` — block selection plugin
 - `src/prosemirror/compatibility` — schema versioning and migration pipeline
 - `src/prosemirror/local-storage-doc-persistence-extension` — local storage persistence
@@ -99,11 +96,13 @@ Does not own QTI composition logic, interaction-specific behavior, or app wiring
 Private package. Canonical source for copyable UI components distributed via the shadcn-style registry.
 
 Owns:
-- `src/components/attributes-panel/` — generic attributes panel web component
+- `src/components/attributes-panel/` — generic attributes panel web component, resolving each selected node's fields via `getNodeAttributePanelMetadataByNodeTypeName` (`@citolab/prose-qti/core/interactions/composer`)
 - `src/components/choice-attributes-editor/` — choice interaction attribute editor
 - `src/components/extended-text-attributes-editor/` — extended text attribute editor
 - `src/components/text-entry-attributes-editor/` — text entry attribute editor
+- `src/components/rubric-block-attributes-editor/` — rubric block attribute editor (not independently registry-published; bundled via this package's root entry)
 - `src/components/interaction-insert-menu/` — interaction insertion UI
+- `src/editor-context/` — `editorContext` (generic ProseKit editor context) and `qtiEditorContext` (`QtiEditorContextValue`), the Lit contexts the above components consume. This replaced `@citolab/prose-qti/integration/editor-context`, which no longer exists.
 
 Does not own generic editor engine behavior or QTI composition logic.
 
@@ -307,7 +306,7 @@ The **roundtrip-QTI** format is a lossless XML serialization of the editor's Pro
 
 ## QTI Item Export / Import
 
-`@citolab/prose-qti/item-export` and `@citolab/prose-qti/package-builder` serialize the editor's ProseMirror tree to standard QTI 3.0, and `@citolab/prose-qti/qti3-item-import` reads any QTI 3.0 item back. The output is interchange-friendly standard QTI with no `data-*` mirrors.
+`@citolab/prose-qti/item-export` and `@citolab/prose-qti/item-roundtrip/export` serialize the editor's ProseMirror tree to a single standard QTI 3.0 assessment item, and `@citolab/prose-qti/item-roundtrip/import` / `@citolab/prose-qti/qti3-item-import` read a QTI 3.0 item back. The output is interchange-friendly standard QTI with no `data-*` mirrors. There is currently no multi-item test/package-building surface in this package.
 
 The non-QTI attribute set lives in each interaction's component directory within `packages/prose-qti/src/components/`.
 
