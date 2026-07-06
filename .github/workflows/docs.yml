@@ -57,7 +57,7 @@ jobs:
           show_full_output: "true"
           claude_args: |
             --model claude-sonnet-5
-            --allowedTools "Bash(git:*),Bash(gh:*)"
+            --allowedTools "Edit,Write,Bash(git:*),Bash(gh:*)"
           prompt: |
             Code in packages changed. Update the Astro docs in
             apps/site/src/content/docs to match. Create a new branch,
