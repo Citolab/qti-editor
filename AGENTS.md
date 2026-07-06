@@ -9,9 +9,11 @@
 - App entrypoint: `apps/qti-prosekit-app/src/main.tsx`
 - App package: `apps/qti-prosekit-app/`
 - Example apps: `apps/qti-prosekit-item/` (minimal ProseKit), `apps/qti-prosemirror-item/` (minimal pure-ProseMirror)
+- Docs site app: `apps/site/` (Astro). Its rendered content lives in `apps/site/src/content/docs/` — this is what docs-sync automation updates, and it is distinct from the `docs/` folder below.
 - QTI and editor packages: `packages/prose-qti/`, `packages/prose-extensions/`
 - UI component registry: `packages/prose-qti-ui/` (see Registry Pattern below)
-- Canonical architecture reference: `docs/architecture.md`
+- AI extensions package: `packages/prose-ai/` (private, vendored from `@prosekit/ai`)
+- Canonical architecture reference: `docs/architecture.md`. Also see `docs/cookbook.md` (editor-building patterns) and `docs/syncing-with-qti-components.md` (local qti-components dependency workflow).
 - Skill catalog and definitions: `SKILLS.md`
 
 ## Canonical Commands
