@@ -1,0 +1,63 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Authenticate to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          use_foundry: "true"
+          show_full_output: "true"
+          claude_args: |
+            --model claude-sonnet-5
+            --allowedTools "Bash(git:*),Bash(gh:*)"
+          prompt: |
+            Review pull request #${{ github.event.pull_request.number }} in
+            this repository. Fetch the diff with `gh pr diff
+            ${{ github.event.pull_request.number }}` and look for
+            correctness bugs, missed edge cases, and opportunities for
+            simplification or reuse.
+
+            Before writing feedback, fetch this PR's existing comments
+            with `gh pr view ${{ github.event.pull_request.number }}
+            --comments` (and `gh api` for review comments if needed) to
+            see what you already flagged in earlier reviews. This PR may
+            have been updated since then, so only comment on things that
+            are new, unresolved, or changed — don't repeat a point you've
+            already made unless it's still unaddressed in the latest
+            diff and wasn't covered in a prior comment.
+
+            Leave your feedback as suggestions using
+            `gh pr comment ${{ github.event.pull_request.number }}
+            --body "..."` (a single summary comment is fine, or inline
+            comments via `gh api` if you find specific lines worth
+            flagging). Do not push commits or modify files. If there's
+            nothing new to say since your last review, skip commenting
+            entirely rather than posting a redundant "looks good".
+        env:
+          ANTHROPIC_FOUNDRY_RESOURCE: ${{ secrets.AZURE_FOUNDRY_RESOURCE }}
+          GH_TOKEN: ${{ github.token }}
