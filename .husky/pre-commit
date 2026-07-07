@@ -14,8 +14,8 @@ done
 if [ "$yalc_in_index" = "true" ]; then
   echo ""
   echo "🧹 pre-commit: yalc file: deps detected in staged package.json files."
-  echo "   Running 'pnpm yalc:remove-all' and re-staging clean versions..."
-  pnpm yalc:remove-all || exit 1
+  echo "   Running 'yalc retreat --all' and re-staging clean versions..."
+  yalc retreat --all || exit 1
   modified=$(git diff --name-only -- '*package.json')
   if [ -n "$modified" ]; then
     echo "$modified" | xargs git add
@@ -27,8 +27,8 @@ fi
 
 # Run the same lint check CI runs so drift can't sneak past a local commit.
 # Mirrors `.github/workflows/ci.yml` (Lint step: `pnpm lint:check`).
-echo "🔍 pre-commit: running pnpm lint:check..."
-if ! pnpm lint:check; then
+echo "🔍 pre-commit: running eslint ."
+if ! eslint .; then
   echo ""
   echo "❌ Lint failed. Fix errors above (or run 'pnpm lint' for autofix), then re-commit."
   echo "   To bypass in an emergency: git commit --no-verify"
