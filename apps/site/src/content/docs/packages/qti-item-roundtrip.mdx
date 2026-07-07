@@ -24,7 +24,7 @@ The package exposes a small set of convenience helpers:
 - `exportItemXml`
 - `exportItemXmlDoc`
 
-It also exports the roundtrip transform and export option types so callers can type their integration code precisely.
+It also exports the roundtrip transform and export option types so callers can type their integration code precisely, plus two prompt-handling helpers: `ensureInteractionPrompts` and `stripEmptyPrompts` (see [Prompt handling](#prompt-handling) below).
 
 ## Typical usage
 
@@ -46,6 +46,22 @@ const xml = exportItemXml(editor.state.doc, schema, {
   title: 'Sample Item',
 });
 ```
+
+## Prompt handling
+
+Some editor schemas require a `qti-prompt` as the first child of block interactions such as `order`, `match` (including its tabular variant), `associate`, and `gap-match` — so authors always see a prompt slot to fill in, even though QTI 3.0 itself makes `qti-prompt` optional on these interactions. That mismatch needs a transform on both sides of the roundtrip:
+
+- **On import**, `ensureInteractionPrompts(schema)` derives the set of interaction tags that require a leading prompt from the supplied schema, and injects an empty `<qti-prompt><p/></qti-prompt>` into any matching interaction whose source XML omits one. This is opt-in — append it to `RoundtripImportOptions.transforms` yourself, since only your schema knows whether a prompt is required:
+
+  ```ts
+  import { importItemFromString, defaultRoundtripTransforms, ensureInteractionPrompts } from '@citolab/prose-qti/item-roundtrip';
+
+  const node = importItemFromString(xml, schema, {
+    transforms: [...defaultRoundtripTransforms, ensureInteractionPrompts(schema)],
+  });
+  ```
+
+- **On export**, `stripEmptyPrompts` removes any `<qti-prompt>` whose text content is empty or whitespace-only before the item-body is wrapped in `<qti-assessment-item>` — since `qti-prompt` is `0..1` in QTI 3.0, dropping an empty one is lossless. It's part of `defaultRoundtripExportTransforms` and runs automatically; pass `{ transforms: [] }` to disable it, or your own list to customize.
 
 ## Notes
 
