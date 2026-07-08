@@ -143,96 +143,96 @@
       "default": "./dist/components/associate/index.js"
     },
     "./components/associate/*": {
-      "types": "./dist/components/associate/*.d.ts",
-      "default": "./dist/components/associate/*.js"
+      "types": "./dist/components/associate/*",
+      "default": "./dist/components/associate/*"
     },
     "./components/choice": {
       "types": "./dist/components/choice/index.d.ts",
       "default": "./dist/components/choice/index.js"
     },
     "./components/choice/*": {
-      "types": "./dist/components/choice/*.d.ts",
-      "default": "./dist/components/choice/*.js"
+      "types": "./dist/components/choice/*",
+      "default": "./dist/components/choice/*"
     },
     "./components/extended-text": {
       "types": "./dist/components/extended-text/index.d.ts",
       "default": "./dist/components/extended-text/index.js"
     },
     "./components/extended-text/*": {
-      "types": "./dist/components/extended-text/*.d.ts",
-      "default": "./dist/components/extended-text/*.js"
+      "types": "./dist/components/extended-text/*",
+      "default": "./dist/components/extended-text/*"
     },
     "./components/gap-match": {
       "types": "./dist/components/gap-match/index.d.ts",
       "default": "./dist/components/gap-match/index.js"
     },
     "./components/gap-match/*": {
-      "types": "./dist/components/gap-match/*.d.ts",
-      "default": "./dist/components/gap-match/*.js"
+      "types": "./dist/components/gap-match/*",
+      "default": "./dist/components/gap-match/*"
     },
     "./components/hottext": {
       "types": "./dist/components/hottext/index.d.ts",
       "default": "./dist/components/hottext/index.js"
     },
     "./components/hottext/*": {
-      "types": "./dist/components/hottext/*.d.ts",
-      "default": "./dist/components/hottext/*.js"
+      "types": "./dist/components/hottext/*",
+      "default": "./dist/components/hottext/*"
     },
     "./components/inline-choice": {
       "types": "./dist/components/inline-choice/index.d.ts",
       "default": "./dist/components/inline-choice/index.js"
     },
     "./components/inline-choice/*": {
-      "types": "./dist/components/inline-choice/*.d.ts",
-      "default": "./dist/components/inline-choice/*.js"
+      "types": "./dist/components/inline-choice/*",
+      "default": "./dist/components/inline-choice/*"
     },
     "./components/match": {
       "types": "./dist/components/match/index.d.ts",
       "default": "./dist/components/match/index.js"
     },
     "./components/match/*": {
-      "types": "./dist/components/match/*.d.ts",
-      "default": "./dist/components/match/*.js"
+      "types": "./dist/components/match/*",
+      "default": "./dist/components/match/*"
     },
     "./components/order": {
       "types": "./dist/components/order/index.d.ts",
       "default": "./dist/components/order/index.js"
     },
     "./components/order/*": {
-      "types": "./dist/components/order/*.d.ts",
-      "default": "./dist/components/order/*.js"
+      "types": "./dist/components/order/*",
+      "default": "./dist/components/order/*"
     },
     "./components/rubric-block": {
       "types": "./dist/components/rubric-block/index.d.ts",
       "default": "./dist/components/rubric-block/index.js"
     },
     "./components/rubric-block/*": {
-      "types": "./dist/components/rubric-block/*.d.ts",
-      "default": "./dist/components/rubric-block/*.js"
+      "types": "./dist/components/rubric-block/*",
+      "default": "./dist/components/rubric-block/*"
     },
     "./components/select-point": {
       "types": "./dist/components/select-point/index.d.ts",
       "default": "./dist/components/select-point/index.js"
     },
     "./components/select-point/*": {
-      "types": "./dist/components/select-point/*.d.ts",
-      "default": "./dist/components/select-point/*.js"
+      "types": "./dist/components/select-point/*",
+      "default": "./dist/components/select-point/*"
     },
     "./components/shared": {
       "types": "./dist/components/shared/index.d.ts",
       "default": "./dist/components/shared/index.js"
     },
     "./components/shared/*": {
-      "types": "./dist/components/shared/*.d.ts",
-      "default": "./dist/components/shared/*.js"
+      "types": "./dist/components/shared/*",
+      "default": "./dist/components/shared/*"
     },
     "./components/text-entry": {
       "types": "./dist/components/text-entry/index.d.ts",
       "default": "./dist/components/text-entry/index.js"
     },
     "./components/text-entry/*": {
-      "types": "./dist/components/text-entry/*.d.ts",
-      "default": "./dist/components/text-entry/*.js"
+      "types": "./dist/components/text-entry/*",
+      "default": "./dist/components/text-entry/*"
     },
     "./core-css.css": "./dist/core-css/core-css.css"
   },
