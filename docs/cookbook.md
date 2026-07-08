@@ -49,11 +49,12 @@ Storybook should document how to build an editor in stages:
 6. Add code and composer panels.
 7. Wire QTI integration surfaces from `@citolab/prose-qti/integration/*`.
 
-For step 7, use the integration exports directly:
+For step 7, use the integration exports directly. `prosekit` is an optional peer dependency of `@citolab/prose-qti`, so `events`, `code`, and `interactions/prosekit` are published as their own subpaths rather than re-exported from `@citolab/prose-qti/integration` — importing the bare barrel must not force-evaluate `prosekit/core` for consumers who don't have it installed:
 
 ```ts
 import { createEditor, union } from 'prosekit/core';
-import { qtiEditorEventsExtension, qtiCodePanelExtension } from '@citolab/prose-qti/integration';
+import { qtiEditorEventsExtension } from '@citolab/prose-qti/integration/events';
+import { qtiCodePanelExtension } from '@citolab/prose-qti/integration/code';
 import { itemContext } from '@citolab/prose-qti/integration/item-context';
 import { defineQtiInteractionsExtension } from './extensions/qti-extension'; // assembled in app
 
