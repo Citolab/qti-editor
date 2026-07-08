@@ -65,14 +65,14 @@ Interaction components: `associate`, `choice`, `extended-text`, `gap-match`, `ho
 - XML composition engine, response declarations, identifier normalization
 - Composer orchestration that drives per-interaction compose handlers via descriptors
 
-`src/integration/` owns:
-- `events` — `qtiEditorEventsExtension`, `onQtiContentChange`, `onQtiSelectionChange`
-- `code` — `qtiCodePanelExtension`
-- `item-context` — `itemContext`, `ItemContext`, `itemContextVariables`
-- `save-xml` — `xmlFromNode`, `xmlToHTML`
-- `save-qti-item` — `qtiItemFromProsemirror`
-- `interactions/prosekit` — `defineQtiInteractionsExtension`, `defineQtiExtension`; `registerQtiInteractionElements` is a deprecated no-op kept for backwards compatibility
-- Shared document types: `QtiDocumentJson`, `QtiNodeJson`
+`src/integration/` owns. `prosekit` is an optional peer dependency of this package, and `src/integration/index.ts` is reachable from the package root, so the barrel re-exports only the prosekit-free surfaces; the prosekit-dependent surfaces (`events`, `code`, `interactions/prosekit`) are published as their own subpaths and must be imported directly:
+- `events` (subpath only, not re-exported from `./integration`) — `qtiEditorEventsExtension`, `onQtiContentChange`, `onQtiSelectionChange`
+- `code` (subpath only, not re-exported from `./integration`) — `qtiCodePanelExtension`
+- `item-context` (re-exported from `./integration`) — `itemContext`, `ItemContext`, `itemContextVariables`
+- `save-xml` (re-exported from `./integration`) — `xmlFromNode`, `xmlToHTML`
+- `save-qti-item` (re-exported from `./integration`) — `qtiItemFromProsemirror`
+- `interactions/prosekit` (subpath only, not re-exported from `./integration`) — `defineQtiInteractionsExtension`, `defineQtiExtension`, `registerQtiInteractionElements` (deprecated no-op kept for backwards compatibility)
+- Shared document types: `QtiDocumentJson`, `QtiNodeJson` (re-exported from `./integration`)
 
 `src/item-export/`, `src/item-roundtrip/`, `src/qti3-item-import/` own QTI serialization and import transforms. `editorContext`/`qtiEditorContext` and multi-item/package-building support were moved out of this package (see `packages/prose-qti-ui`) — this package's export surface is single-item only.
 
