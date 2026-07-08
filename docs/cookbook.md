@@ -44,13 +44,12 @@ Storybook should document how to build an editor in stages:
 1. Start with a bare ProseMirror editor.
 2. Add the interaction packages via the descriptor registry.
 3. Add the required styles.
-4. Add `block-select` from `@citolab/prose-extensions/block-select`.
-5. Add `node-attrs-sync` from `@citolab/prose-extensions/node-attrs-sync`.
-6. Add the QTI attributes panel: `<qti-attributes-panel>` from `@citolab/prose-qti-ui/components/attributes-panel`, wired to the editor via `editorContext` from `@citolab/prose-qti-ui/editor-context`. It resolves each selected node's fields via `getNodeAttributePanelMetadataByNodeTypeName` (`@citolab/prose-qti/core/interactions/composer`), falling back to a per-node "friendly editor" (`choice-attributes-editor`, `text-entry-attributes-editor`, `extended-text-attributes-editor`, `rubric-block-attributes-editor`) when one is registered for that node type.
-7. Add code and composer panels.
-8. Wire QTI integration surfaces from `@citolab/prose-qti/integration/*`.
+4. Add the `blockSelectExtension` and `nodeAttrsSyncExtension` ProseKit extensions from `@citolab/prose-extensions/prosekit-extensions` (requires the `prosekit` peer dependency; the underlying plugins are also available prosekit-free from `@citolab/prose-extensions/block-select` and `@citolab/prose-extensions/node-attrs-sync`).
+5. Add the QTI attributes panel: `<qti-attributes-panel>` from `@citolab/prose-qti-ui/components/attributes-panel`, wired to the editor via `editorContext` from `@citolab/prose-qti-ui/editor-context`. It resolves each selected node's fields via `getNodeAttributePanelMetadataByNodeTypeName` (`@citolab/prose-qti/core/interactions/composer`), falling back to a per-node "friendly editor" (`choice-attributes-editor`, `text-entry-attributes-editor`, `extended-text-attributes-editor`, `rubric-block-attributes-editor`) when one is registered for that node type.
+6. Add code and composer panels.
+7. Wire QTI integration surfaces from `@citolab/prose-qti/integration/*`.
 
-For step 8, use the integration exports directly:
+For step 7, use the integration exports directly:
 
 ```ts
 import { createEditor, union } from 'prosekit/core';

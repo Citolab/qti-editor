@@ -20,6 +20,14 @@ import { nodeAttrsSyncPlugin } from '@citolab/prose-extensions/node-attrs-sync';
 const plugins = [nodeAttrsSyncPlugin];
 ```
 
+### ProseKit
+
+If your app is built on ProseKit, use the extension wrapper instead. It requires the `prosekit` peer dependency:
+
+```ts
+import { nodeAttrsSyncExtension } from '@citolab/prose-extensions/prosekit-extensions';
+```
+
 ## When to use
 
 Use this when the DOM representation and the ProseMirror document need to stay aligned as attributes change.
