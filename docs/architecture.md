@@ -130,6 +130,12 @@ Does not own reusable editor primitives, interaction behavior, or canonical comp
 apps/*                      (consume all packages)
 ```
 
+## Package Exports
+
+`packages/prose-qti` and `packages/prose-extensions` are published to npm, so their `package.json` `exports` map (`main`, `types`, and every subpath) must resolve to built `dist/**` output, never raw `src/**/*.ts` — consumers do not compile this repo's TypeScript. Wildcard subpath entries (e.g. `"./components/choice/*": "./dist/components/choice/*"`) must map directly to the already-extensioned build output; do not append `.js`/`.d.ts` in the exports map yourself, since the glob match already includes the extension and doing so produces duplicate-extension paths that fail to resolve. Run each package's `build` script and spot-check `dist/` before changing its `exports` map.
+
+Cross-package dependencies within this repo (e.g. `prose-extensions` depending on `prose-qti`) use the pnpm `workspace:*` protocol rather than a pinned version — see [release-plan.md](release-plan.md#internal-package-dependencies).
+
 ## Placement Decision Rules
 
 Use these rules before adding code.
