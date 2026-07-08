@@ -11,7 +11,7 @@ import { createEditor, union, jsonFromHTML, type Editor } from 'prosekit/core';
 import { itemContext, itemContextVariables, type ItemContext } from '@citolab/prose-qti/integration/item-context';
 import { xmlFromNode, xmlToHTML } from '@citolab/prose-qti/integration/save-xml';
 import { qtiItemFromProsemirror } from '@citolab/prose-qti/integration/save-qti-item';
-import { blockSelectExtension, nodeAttrsSyncExtension } from '@citolab/prose-extensions/prosemirror';
+import { blockSelectExtension, nodeAttrsSyncExtension } from '@citolab/prose-extensions/prosekit-extensions';
 import { editorContext } from '@citolab/prose-qti-ui/editor-context';
 
 import { sampleUploader } from './components/blocks/sample/sample-uploader.js';

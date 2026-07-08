@@ -36,6 +36,10 @@
       "types": "./dist/prosekit/strong-em.d.ts",
       "default": "./dist/prosekit/strong-em.js"
     },
+    "./prosekit-extensions": {
+      "types": "./dist/prosemirror/prosekit-extensions.d.ts",
+      "default": "./dist/prosemirror/prosekit-extensions.js"
+    },
     "./compatibility": {
       "types": "./dist/prosemirror/compatibility/index.d.ts",
       "default": "./dist/prosemirror/compatibility/index.js"

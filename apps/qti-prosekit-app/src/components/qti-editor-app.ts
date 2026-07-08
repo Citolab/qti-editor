@@ -15,14 +15,16 @@ import { LitElement, html, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { itemContext, itemContextVariables, type ItemContext, type PerItemMetadata } from '@citolab/prose-qti/integration/item-context';
 import {
-  blockSelectExtension,
   buildCompatibilityReport,
-  defineLocalStorageDocPersistenceExtension,
-  defineSemanticPasteExtension,
-  nodeAttrsSyncExtension,
   readPersistedStateFromLocalStorage,
   stampSchemaVersion,
 } from '@citolab/prose-extensions/prosemirror';
+import {
+  blockSelectExtension,
+  defineLocalStorageDocPersistenceExtension,
+  defineSemanticPasteExtension,
+  nodeAttrsSyncExtension,
+} from '@citolab/prose-extensions/prosekit-extensions';
 import { createEditor, union, type Editor } from 'prosekit/core';
 import { definePlaceholder } from 'prosekit/extensions/placeholder';
 import { qtiEditorEventsExtension } from '@citolab/prose-qti/integration/events';
