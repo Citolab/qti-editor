@@ -16,19 +16,29 @@ pnpm add @citolab/prose-extensions
 
 ```ts
 import {
-  defineLocalStorageDocPersistenceExtension,
+  createLocalStorageDocPersistencePlugin,
   readPersistedStateFromLocalStorage,
 } from '@citolab/prose-extensions/local-storage-doc-persistence-extension';
 
 const storageKey = 'qti-editor-doc';
 const persisted = readPersistedStateFromLocalStorage(storageKey);
 
+const plugins = [createLocalStorageDocPersistencePlugin({ storageKey })];
+```
+
+Use `readPersistedStateFromLocalStorage()` before editor creation when you want to hydrate from a saved draft.
+
+### ProseKit
+
+If your app is built on ProseKit, use the extension wrapper instead. It requires the `prosekit` peer dependency:
+
+```ts
+import { defineLocalStorageDocPersistenceExtension } from '@citolab/prose-extensions/prosekit-extensions';
+
 const persistenceExtension = defineLocalStorageDocPersistenceExtension({
   storageKey,
 });
 ```
-
-Use `readPersistedStateFromLocalStorage()` before editor creation when you want to hydrate from a saved draft.
 
 ## When to use
 

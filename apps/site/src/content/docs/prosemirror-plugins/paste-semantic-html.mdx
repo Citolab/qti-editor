@@ -15,12 +15,22 @@ pnpm add @citolab/prose-extensions
 ## Usage
 
 ```ts
-import { defineSemanticPasteExtension } from '@citolab/prose-extensions/paste-semantic-html';
+import { createSemanticPastePlugin } from '@citolab/prose-extensions/paste-semantic-html';
+
+const plugins = [createSemanticPastePlugin()];
+```
+
+### ProseKit
+
+If your app is built on ProseKit, use the extension wrapper instead. It requires the `prosekit` peer dependency:
+
+```ts
+import { defineSemanticPasteExtension } from '@citolab/prose-extensions/prosekit-extensions';
 
 const semanticPasteExtension = defineSemanticPasteExtension();
 ```
 
-Add the returned extension to your editor's plugin composition.
+Add the returned extension to your editor's extension composition.
 
 ## When to use
 

@@ -78,7 +78,7 @@ Interaction components: `associate`, `choice`, `extended-text`, `gap-match`, `ho
 
 ### `packages/prose-extensions` (`@citolab/prose-extensions`)
 
-Generic ProseMirror and ProseKit extensions with no QTI-specific logic.
+Generic ProseMirror and ProseKit extensions with no QTI-specific logic. `prosekit` is an optional peer dependency (`peerDependenciesMeta.prosekit.optional: true`) — feature subpaths (e.g. `./block-select`, `./node-attrs-sync`) export only plain ProseMirror plugins and never import `prosekit`, so raw-ProseMirror consumers don't need it installed.
 
 Owns:
 - `src/prosemirror/block-select` — block selection plugin
@@ -87,7 +87,8 @@ Owns:
 - `src/prosemirror/node-attrs-sync` — node attribute synchronization
 - `src/prosemirror/paste-semantic-html` — paste HTML handling
 - `src/prosemirror/virtual-cursor` — virtual cursor plugin
-- `src/prosekit/` — ProseKit-specific wrappers (`defineEm`, `defineStrong`, `defineList`, etc.)
+- `src/prosemirror/prosekit-extensions.ts` — ProseKit extension wrappers (`blockSelectExtension`, `nodeAttrsSyncExtension`, `defineSemanticPasteExtension`, `defineLocalStorageDocPersistenceExtension`) for the plugins above, published as the `./prosekit-extensions` subpath; importing from here requires the `prosekit` peer dependency
+- `src/prosekit/` — ProseKit-specific wrappers for marks/lists (`defineEm`, `defineStrong`, `defineList`, etc.)
 
 Does not own QTI composition logic, interaction-specific behavior, or app wiring.
 
