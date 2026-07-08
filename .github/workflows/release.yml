@@ -76,8 +76,8 @@ jobs:
 
       - name: Build publishable packages
         run: |
-          pnpm --filter @citolab/prose-extensions build
           pnpm --filter @citolab/prose-qti build
+          pnpm --filter @citolab/prose-extensions build
 
       - name: Configure git
         run: |
