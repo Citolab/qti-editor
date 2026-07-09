@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@citolab/prose-extensions": "workspace:*",
-    "@citolab/prose-qti": "workspace:*",
+    "@citolab/prose-extensions": "^1.2.0",
+    "@citolab/prose-qti": "^1.3.0",
     "@lit/reactive-element": "^2.1.0",
     "@qti-components/theme": "https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@breaking-changes-for-editor-release",
     "@qti-components/transformers": "https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@breaking-changes-for-editor-release",
