@@ -49,6 +49,17 @@ import {
 
 See each plugin's page for the exact shape of its plugin factory and, where available, its ProseKit extension. The compatibility chapter covers the migration helpers directly.
 
+## ProseKit marks and lists
+
+`@citolab/prose-extensions/prosekit` publishes standalone ProseKit wrappers for basic rich-text marks and lists, for apps that don't already define them. Importing this subpath requires the `prosekit` peer dependency:
+
+```ts
+import { defineStrong, defineEm, defineList } from '@citolab/prose-extensions/prosekit';
+```
+
+- **`defineStrong()`** / **`defineEm()`** — mark specs reusing `prosemirror-schema-basic`'s `strong`/`em` (so document JSON stays compatible with that schema), plus a `toggleStrong` / `toggleEm` command and `Mod-b` / `Mod-i` keymap binding.
+- **`defineList(options?: ListOptions)`** — `bullet_list` / `ordered_list` / `list_item` node specs reusing `prosemirror-schema-list`'s parse/toDOM, a `toggleBulletList` / `toggleOrderedList` command pair, and a keymap (`Enter` splits the current item; `Backspace` is restored to ProseMirror's standard join/lift chain). Pass `{ inputRules: true }` to enable markdown-style `- `/`1. ` input rules.
+
 ## When to use this
 
 Use these helpers when you need editor behavior that is independent of QTI semantics. QTI-specific integration surfaces live in `@citolab/prose-qti`.

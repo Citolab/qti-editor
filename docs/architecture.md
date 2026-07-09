@@ -76,6 +76,8 @@ Interaction components: `associate`, `choice`, `extended-text`, `gap-match`, `ho
 
 `src/item-export/`, `src/item-roundtrip/`, `src/qti3-item-import/` own QTI serialization and import transforms. `editorContext`/`qtiEditorContext` and multi-item/package-building support were moved out of this package (see `packages/prose-qti-ui`) — this package's export surface is single-item only.
 
+`src/core-css/core-css.css` — the mandatory stylesheet for rendering the editor's PM document (interaction element backgrounds/spacing plus the rubric-block boundary and ProseKit placeholder fix), published as the `./core-css.css` subpath (`@citolab/prose-qti/core-css.css`). Every app that renders the editor must import it alongside `@qti-components/theme`.
+
 ### `packages/prose-extensions` (`@citolab/prose-extensions`)
 
 Generic ProseMirror and ProseKit extensions with no QTI-specific logic. `prosekit` is an optional peer dependency (`peerDependenciesMeta.prosekit.optional: true`) — feature subpaths (e.g. `./block-select`, `./node-attrs-sync`) export only plain ProseMirror plugins and never import `prosekit`, so raw-ProseMirror consumers don't need it installed.
@@ -88,7 +90,7 @@ Owns:
 - `src/prosemirror/paste-semantic-html` — paste HTML handling
 - `src/prosemirror/virtual-cursor` — virtual cursor plugin
 - `src/prosemirror/prosekit-extensions.ts` — ProseKit extension wrappers (`blockSelectExtension`, `nodeAttrsSyncExtension`, `defineSemanticPasteExtension`, `defineLocalStorageDocPersistenceExtension`) for the plugins above, published as the `./prosekit-extensions` subpath; importing from here requires the `prosekit` peer dependency
-- `src/prosekit/` — ProseKit-specific wrappers for marks/lists (`defineEm`, `defineStrong`, `defineList`, etc.)
+- `src/prosekit/` — ProseKit-specific wrappers for marks/lists (`defineEm`, `defineStrong`, `defineList`, etc.), published as the `./prosekit` subpath; like `./prosekit-extensions`, importing it requires the `prosekit` peer dependency
 
 Does not own QTI composition logic, interaction-specific behavior, or app wiring.
 

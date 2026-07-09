@@ -13,7 +13,7 @@ The main editor app (`apps/qti-prosekit-app`) remains the realistic integration 
 |-----|-------------|
 | `apps/qti-prosekit-app` | Full editor with Firebase, React panels, full toolbar. Runs via `pnpm dev`. |
 | `apps/qti-prosekit-item` | Minimal ProseKit + QTI example. Best starting point for new integrations. |
-| `apps/qti-prosemirror-item` | Raw ProseMirror with QTI roundtrip. No ProseKit. |
+| `apps/qti-prosemirror-item` | Raw ProseMirror with QTI roundtrip. No ProseKit. Installs `@citolab/prose-qti`/`@citolab/prose-extensions` as pinned npm ranges rather than `workspace:*`, so it also exercises the packages the way an external consumer would. |
 | `apps/site` | Astro documentation site. |
 
 ## How To Use These Surfaces
@@ -43,7 +43,7 @@ Storybook should document how to build an editor in stages:
 
 1. Start with a bare ProseMirror editor.
 2. Add the interaction packages via the descriptor registry.
-3. Add the required styles.
+3. Add the required styles: `@qti-components/theme` for the underlying QTI web components plus the mandatory `@citolab/prose-qti/core-css.css` for editor-specific element backgrounds, spacing, and affordances.
 4. Add the `blockSelectExtension` and `nodeAttrsSyncExtension` ProseKit extensions from `@citolab/prose-extensions/prosekit-extensions` (requires the `prosekit` peer dependency; the underlying plugins are also available prosekit-free from `@citolab/prose-extensions/block-select` and `@citolab/prose-extensions/node-attrs-sync`).
 5. Add the QTI attributes panel: `<qti-attributes-panel>` from `@citolab/prose-qti-ui/components/attributes-panel`, wired to the editor via `editorContext` from `@citolab/prose-qti-ui/editor-context`. It resolves each selected node's fields via `getNodeAttributePanelMetadataByNodeTypeName` (`@citolab/prose-qti/core/interactions/composer`), falling back to a per-node "friendly editor" (`choice-attributes-editor`, `text-entry-attributes-editor`, `extended-text-attributes-editor`, `rubric-block-attributes-editor`) when one is registered for that node type.
 6. Add code and composer panels.
