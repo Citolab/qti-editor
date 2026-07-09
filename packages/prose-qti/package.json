@@ -1,6 +1,6 @@
 {
   "name": "@citolab/prose-qti",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "QTI functionality for ProseMirror-based editors.",
   "repository": {
     "type": "git",
