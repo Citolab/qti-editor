@@ -102,7 +102,7 @@ no consumers.
 
 ### `packages/prose-qti-ui` (`@citolab/prose-qti-ui`)
 
-Private package. Canonical source for copyable UI components distributed via the shadcn-style registry.
+Private package. Canonical source for copyable UI components distributed via the shadcn-style registry. Unlike `prose-qti` and `prose-extensions`, `prosekit` is a required (non-optional) peer dependency here — the attributes panel and interaction insert menu import it directly rather than behind an optional subpath.
 
 Owns:
 - `src/components/attributes-panel/` — generic attributes panel web component, resolving each selected node's fields via `getNodeAttributePanelMetadataByNodeTypeName` (`@citolab/prose-qti/core/interactions/composer`)
