@@ -23,20 +23,31 @@ pnpm add @citolab/prose-extensions
 
 ## Usage
 
-Each feature lives under its own subpath export:
+Each feature lives under its own subpath export. These subpaths only ever export plain ProseMirror plugins, so `@citolab/prose-extensions` works without ProseKit installed:
 
 ```ts
-import { blockSelectExtension } from '@citolab/prose-extensions/block-select';
-import { nodeAttrsSyncExtension } from '@citolab/prose-extensions/node-attrs-sync';
-import { defineSemanticPasteExtension } from '@citolab/prose-extensions/paste-semantic-html';
+import { blockSelectPlugin } from '@citolab/prose-extensions/block-select';
+import { nodeAttrsSyncPlugin } from '@citolab/prose-extensions/node-attrs-sync';
+import { createSemanticPastePlugin } from '@citolab/prose-extensions/paste-semantic-html';
 import { createVirtualCursor } from '@citolab/prose-extensions/virtual-cursor';
 import {
-  defineLocalStorageDocPersistenceExtension,
+  createLocalStorageDocPersistencePlugin,
   readPersistedStateFromLocalStorage,
 } from '@citolab/prose-extensions/local-storage-doc-persistence-extension';
 ```
 
-`createVirtualCursor` returns a raw ProseMirror plugin. The other modules expose plugin factories and extension wrappers — see each plugin's page for the exact shapes. The compatibility chapter covers the migration helpers directly.
+If your app is built on ProseKit, import the extension wrappers from `@citolab/prose-extensions/prosekit-extensions` instead. Importing from this subpath requires the `prosekit` peer dependency to be installed — it is optional everywhere else in the package:
+
+```ts
+import {
+  blockSelectExtension,
+  nodeAttrsSyncExtension,
+  defineSemanticPasteExtension,
+  defineLocalStorageDocPersistenceExtension,
+} from '@citolab/prose-extensions/prosekit-extensions';
+```
+
+See each plugin's page for the exact shape of its plugin factory and, where available, its ProseKit extension. The compatibility chapter covers the migration helpers directly.
 
 ## When to use this
 

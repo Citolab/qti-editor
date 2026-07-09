@@ -20,6 +20,14 @@ import { blockSelectPlugin } from '@citolab/prose-extensions/block-select';
 const plugins = [blockSelectPlugin];
 ```
 
+### ProseKit
+
+If your app is built on ProseKit, use the extension wrapper instead. It requires the `prosekit` peer dependency:
+
+```ts
+import { blockSelectExtension } from '@citolab/prose-extensions/prosekit-extensions';
+```
+
 ## When to use
 
 Use this when users need to select or drag whole blocks instead of editing inline text only.

@@ -48,6 +48,9 @@
       "@citolab/prose-extensions/prosekit/marks": [
         "packages/prose-extensions/src/prosekit/strong-em.ts"
       ],
+      "@citolab/prose-extensions/prosekit-extensions": [
+        "packages/prose-extensions/src/prosemirror/prosekit-extensions.ts"
+      ],
       "@citolab/prose-extensions/compatibility": [
         "packages/prose-extensions/src/prosemirror/compatibility/index.ts"
       ],

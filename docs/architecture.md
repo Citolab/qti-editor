@@ -65,20 +65,20 @@ Interaction components: `associate`, `choice`, `extended-text`, `gap-match`, `ho
 - XML composition engine, response declarations, identifier normalization
 - Composer orchestration that drives per-interaction compose handlers via descriptors
 
-`src/integration/` owns:
-- `events` — `qtiEditorEventsExtension`, `onQtiContentChange`, `onQtiSelectionChange`
-- `code` — `qtiCodePanelExtension`
-- `item-context` — `itemContext`, `ItemContext`, `itemContextVariables`
-- `save-xml` — `xmlFromNode`, `xmlToHTML`
-- `save-qti-item` — `qtiItemFromProsemirror`
-- `interactions/prosekit` — `defineQtiInteractionsExtension`, `defineQtiExtension`; `registerQtiInteractionElements` is a deprecated no-op kept for backwards compatibility
-- Shared document types: `QtiDocumentJson`, `QtiNodeJson`
+`src/integration/` owns. `prosekit` is an optional peer dependency of this package, and `src/integration/index.ts` is reachable from the package root, so the barrel re-exports only the prosekit-free surfaces; the prosekit-dependent surfaces (`events`, `code`, `interactions/prosekit`) are published as their own subpaths and must be imported directly:
+- `events` (subpath only, not re-exported from `./integration`) — `qtiEditorEventsExtension`, `onQtiContentChange`, `onQtiSelectionChange`
+- `code` (subpath only, not re-exported from `./integration`) — `qtiCodePanelExtension`
+- `item-context` (re-exported from `./integration`) — `itemContext`, `ItemContext`, `itemContextVariables`
+- `save-xml` (re-exported from `./integration`) — `xmlFromNode`, `xmlToHTML`
+- `save-qti-item` (re-exported from `./integration`) — `qtiItemFromProsemirror`
+- `interactions/prosekit` (subpath only, not re-exported from `./integration`) — `defineQtiInteractionsExtension`, `defineQtiExtension`, `registerQtiInteractionElements` (deprecated no-op kept for backwards compatibility)
+- Shared document types: `QtiDocumentJson`, `QtiNodeJson` (re-exported from `./integration`)
 
 `src/item-export/`, `src/item-roundtrip/`, `src/qti3-item-import/` own QTI serialization and import transforms. `editorContext`/`qtiEditorContext` and multi-item/package-building support were moved out of this package (see `packages/prose-qti-ui`) — this package's export surface is single-item only.
 
 ### `packages/prose-extensions` (`@citolab/prose-extensions`)
 
-Generic ProseMirror and ProseKit extensions with no QTI-specific logic.
+Generic ProseMirror and ProseKit extensions with no QTI-specific logic. `prosekit` is an optional peer dependency (`peerDependenciesMeta.prosekit.optional: true`) — feature subpaths (e.g. `./block-select`, `./node-attrs-sync`) export only plain ProseMirror plugins and never import `prosekit`, so raw-ProseMirror consumers don't need it installed.
 
 Owns:
 - `src/prosemirror/block-select` — block selection plugin
@@ -87,7 +87,8 @@ Owns:
 - `src/prosemirror/node-attrs-sync` — node attribute synchronization
 - `src/prosemirror/paste-semantic-html` — paste HTML handling
 - `src/prosemirror/virtual-cursor` — virtual cursor plugin
-- `src/prosekit/` — ProseKit-specific wrappers (`defineEm`, `defineStrong`, `defineList`, etc.)
+- `src/prosemirror/prosekit-extensions.ts` — ProseKit extension wrappers (`blockSelectExtension`, `nodeAttrsSyncExtension`, `defineSemanticPasteExtension`, `defineLocalStorageDocPersistenceExtension`) for the plugins above, published as the `./prosekit-extensions` subpath; importing from here requires the `prosekit` peer dependency
+- `src/prosekit/` — ProseKit-specific wrappers for marks/lists (`defineEm`, `defineStrong`, `defineList`, etc.)
 
 Does not own QTI composition logic, interaction-specific behavior, or app wiring.
 
@@ -129,6 +130,12 @@ Does not own reusable editor primitives, interaction behavior, or canonical comp
          ↓
 apps/*                      (consume all packages)
 ```
+
+## Package Exports
+
+`packages/prose-qti` and `packages/prose-extensions` are published to npm, so their `package.json` `exports` map (`main`, `types`, and every subpath) must resolve to built `dist/**` output, never raw `src/**/*.ts` — consumers do not compile this repo's TypeScript. Wildcard subpath entries (e.g. `"./components/choice/*": "./dist/components/choice/*"`) must map directly to the already-extensioned build output; do not append `.js`/`.d.ts` in the exports map yourself, since the glob match already includes the extension and doing so produces duplicate-extension paths that fail to resolve. Run each package's `build` script and spot-check `dist/` before changing its `exports` map.
+
+Cross-package dependencies within this repo (e.g. `prose-extensions` depending on `prose-qti`) use the pnpm `workspace:*` protocol rather than a pinned version — see [release-plan.md](release-plan.md#internal-package-dependencies).
 
 ## Placement Decision Rules
 

@@ -4,7 +4,14 @@
     "allowJs": true,
     "checkJs": false,
     "useDefineForClassFields": false,
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"],
+    "outDir": "dist",
+    "rootDir": "src",
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "allowImportingTsExtensions": false
   },
-  "include": ["src/**/*.ts", "src/**/*.js", "../../tools/testing/vitest.d.ts"]
+  "include": ["src/**/*.ts", "src/**/*.js", "../../tools/testing/vitest.d.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.stories.ts", "node_modules", "dist"]
 }

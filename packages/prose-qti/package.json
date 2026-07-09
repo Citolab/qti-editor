@@ -1,6 +1,6 @@
 {
   "name": "@citolab/prose-qti",
-  "version": "1.3.0",
+  "version": "1.3.3",
   "description": "QTI functionality for ProseMirror-based editors.",
   "repository": {
     "type": "git",
@@ -9,88 +9,253 @@
   },
   "type": "module",
   "sideEffects": [
-    "./src/components/**/register.ts"
+    "./dist/components/**/register.js"
   ],
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./core": "./src/core/index.ts",
-    "./core/composer": "./src/core/composer/index.ts",
-    "./core/interactions/composer": "./src/core/interactions/composer.ts",
-    "./interfaces": "./src/interfaces/index.ts",
-    "./integration": "./src/integration/index.ts",
-    "./integration/code": "./src/integration/code/index.ts",
-    "./integration/events": "./src/integration/events/index.ts",
-    "./integration/interactions/prosekit": "./src/integration/interactions/prosekit.ts",
-    "./integration/item-context": "./src/integration/item-context/index.ts",
-    "./integration/save-xml": "./src/integration/save-xml/index.ts",
-    "./integration/save-qti-item": "./src/integration/save-qti-item/index.ts",
-    "./item-export": "./src/item-export/index.ts",
-    "./item-export/pm-qti-item": "./src/item-export/pm-qti-item.ts",
-    "./item-export/pm-xml": "./src/item-export/pm-xml.ts",
-    "./item-roundtrip": "./src/item-roundtrip/index.ts",
-    "./item-roundtrip/import": "./src/item-roundtrip/import.ts",
-    "./item-roundtrip/export": "./src/item-roundtrip/export.ts",
-    "./qti3-item-import": "./src/qti3-item-import/index.ts",
-    "./qti3-item-import/roundtrip-choice": "./src/qti3-item-import/roundtrip-choice/index.ts",
-    "./qti3-item-import/roundtrip-text-entry": "./src/qti3-item-import/roundtrip-text-entry/index.ts",
-    "./qti3-item-import/roundtrip-extended-text": "./src/qti3-item-import/roundtrip-extended-text/index.ts",
-    "./qti3-item-import/roundtrip-match": "./src/qti3-item-import/roundtrip-match/index.ts",
-    "./qti3-item-import/roundtrip-gap-match": "./src/qti3-item-import/roundtrip-gap-match/index.ts",
-    "./qti3-item-import/roundtrip-order": "./src/qti3-item-import/roundtrip-order/index.ts",
-    "./qti3-item-import/roundtrip-select-point": "./src/qti3-item-import/roundtrip-select-point/index.ts",
-    "./qti3-item-import/roundtrip-interactions": "./src/qti3-item-import/roundtrip-interactions/index.ts",
-    "./qti3-item-import/roundtrip-item-body": "./src/qti3-item-import/roundtrip-item-body/index.ts",
-    "./qti3-item-import/reduce-to-item-body": "./src/qti3-item-import/reduce-to-item-body/index.ts",
-    "./qti3-item-import/roundtrip-qti-item": "./src/qti3-item-import/roundtrip-qti-item.ts",
-    "./components/register": "./src/components/register.ts",
-    "./components/associate": "./src/components/associate/index.ts",
-    "./components/associate/*": "./src/components/associate/*",
-    "./components/choice": "./src/components/choice/index.ts",
-    "./components/choice/*": "./src/components/choice/*",
-    "./components/extended-text": "./src/components/extended-text/index.ts",
-    "./components/extended-text/*": "./src/components/extended-text/*",
-    "./components/gap-match": "./src/components/gap-match/index.ts",
-    "./components/gap-match/*": "./src/components/gap-match/*",
-    "./components/hottext": "./src/components/hottext/index.ts",
-    "./components/hottext/*": "./src/components/hottext/*",
-    "./components/inline-choice": "./src/components/inline-choice/index.ts",
-    "./components/inline-choice/*": "./src/components/inline-choice/*",
-    "./components/match": "./src/components/match/index.ts",
-    "./components/match/*": "./src/components/match/*",
-    "./components/order": "./src/components/order/index.ts",
-    "./components/order/*": "./src/components/order/*",
-    "./components/rubric-block": "./src/components/rubric-block/index.ts",
-    "./components/rubric-block/*": "./src/components/rubric-block/*",
-    "./components/select-point": "./src/components/select-point/index.ts",
-    "./components/select-point/*": "./src/components/select-point/*",
-    "./components/shared": "./src/components/shared/index.ts",
-    "./components/shared/*": "./src/components/shared/*",
-    "./components/text-entry": "./src/components/text-entry/index.ts",
-    "./components/text-entry/*": "./src/components/text-entry/*",
-    "./core-css.css": "./src/core-css/core-css.css"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "default": "./dist/core/index.js"
+    },
+    "./core/composer": {
+      "types": "./dist/core/composer/index.d.ts",
+      "default": "./dist/core/composer/index.js"
+    },
+    "./core/interactions/composer": {
+      "types": "./dist/core/interactions/composer.d.ts",
+      "default": "./dist/core/interactions/composer.js"
+    },
+    "./interfaces": {
+      "types": "./dist/interfaces/index.d.ts",
+      "default": "./dist/interfaces/index.js"
+    },
+    "./integration": {
+      "types": "./dist/integration/index.d.ts",
+      "default": "./dist/integration/index.js"
+    },
+    "./integration/code": {
+      "types": "./dist/integration/code/index.d.ts",
+      "default": "./dist/integration/code/index.js"
+    },
+    "./integration/events": {
+      "types": "./dist/integration/events/index.d.ts",
+      "default": "./dist/integration/events/index.js"
+    },
+    "./integration/interactions/prosekit": {
+      "types": "./dist/integration/interactions/prosekit.d.ts",
+      "default": "./dist/integration/interactions/prosekit.js"
+    },
+    "./integration/item-context": {
+      "types": "./dist/integration/item-context/index.d.ts",
+      "default": "./dist/integration/item-context/index.js"
+    },
+    "./integration/save-xml": {
+      "types": "./dist/integration/save-xml/index.d.ts",
+      "default": "./dist/integration/save-xml/index.js"
+    },
+    "./integration/save-qti-item": {
+      "types": "./dist/integration/save-qti-item/index.d.ts",
+      "default": "./dist/integration/save-qti-item/index.js"
+    },
+    "./item-export": {
+      "types": "./dist/item-export/index.d.ts",
+      "default": "./dist/item-export/index.js"
+    },
+    "./item-export/pm-qti-item": {
+      "types": "./dist/item-export/pm-qti-item.d.ts",
+      "default": "./dist/item-export/pm-qti-item.js"
+    },
+    "./item-export/pm-xml": {
+      "types": "./dist/item-export/pm-xml.d.ts",
+      "default": "./dist/item-export/pm-xml.js"
+    },
+    "./item-roundtrip": {
+      "types": "./dist/item-roundtrip/index.d.ts",
+      "default": "./dist/item-roundtrip/index.js"
+    },
+    "./item-roundtrip/import": {
+      "types": "./dist/item-roundtrip/import.d.ts",
+      "default": "./dist/item-roundtrip/import.js"
+    },
+    "./item-roundtrip/export": {
+      "types": "./dist/item-roundtrip/export.d.ts",
+      "default": "./dist/item-roundtrip/export.js"
+    },
+    "./qti3-item-import": {
+      "types": "./dist/qti3-item-import/index.d.ts",
+      "default": "./dist/qti3-item-import/index.js"
+    },
+    "./qti3-item-import/roundtrip-choice": {
+      "types": "./dist/qti3-item-import/roundtrip-choice/index.d.ts",
+      "default": "./dist/qti3-item-import/roundtrip-choice/index.js"
+    },
+    "./qti3-item-import/roundtrip-text-entry": {
+      "types": "./dist/qti3-item-import/roundtrip-text-entry/index.d.ts",
+      "default": "./dist/qti3-item-import/roundtrip-text-entry/index.js"
+    },
+    "./qti3-item-import/roundtrip-extended-text": {
+      "types": "./dist/qti3-item-import/roundtrip-extended-text/index.d.ts",
+      "default": "./dist/qti3-item-import/roundtrip-extended-text/index.js"
+    },
+    "./qti3-item-import/roundtrip-match": {
+      "types": "./dist/qti3-item-import/roundtrip-match/index.d.ts",
+      "default": "./dist/qti3-item-import/roundtrip-match/index.js"
+    },
+    "./qti3-item-import/roundtrip-gap-match": {
+      "types": "./dist/qti3-item-import/roundtrip-gap-match/index.d.ts",
+      "default": "./dist/qti3-item-import/roundtrip-gap-match/index.js"
+    },
+    "./qti3-item-import/roundtrip-order": {
+      "types": "./dist/qti3-item-import/roundtrip-order/index.d.ts",
+      "default": "./dist/qti3-item-import/roundtrip-order/index.js"
+    },
+    "./qti3-item-import/roundtrip-select-point": {
+      "types": "./dist/qti3-item-import/roundtrip-select-point/index.d.ts",
+      "default": "./dist/qti3-item-import/roundtrip-select-point/index.js"
+    },
+    "./qti3-item-import/roundtrip-interactions": {
+      "types": "./dist/qti3-item-import/roundtrip-interactions/index.d.ts",
+      "default": "./dist/qti3-item-import/roundtrip-interactions/index.js"
+    },
+    "./qti3-item-import/roundtrip-item-body": {
+      "types": "./dist/qti3-item-import/roundtrip-item-body/index.d.ts",
+      "default": "./dist/qti3-item-import/roundtrip-item-body/index.js"
+    },
+    "./qti3-item-import/reduce-to-item-body": {
+      "types": "./dist/qti3-item-import/reduce-to-item-body/index.d.ts",
+      "default": "./dist/qti3-item-import/reduce-to-item-body/index.js"
+    },
+    "./qti3-item-import/roundtrip-qti-item": {
+      "types": "./dist/qti3-item-import/roundtrip-qti-item.d.ts",
+      "default": "./dist/qti3-item-import/roundtrip-qti-item.js"
+    },
+    "./components/register": {
+      "types": "./dist/components/register.d.ts",
+      "default": "./dist/components/register.js"
+    },
+    "./components/associate": {
+      "types": "./dist/components/associate/index.d.ts",
+      "default": "./dist/components/associate/index.js"
+    },
+    "./components/associate/*": {
+      "types": "./dist/components/associate/*",
+      "default": "./dist/components/associate/*"
+    },
+    "./components/choice": {
+      "types": "./dist/components/choice/index.d.ts",
+      "default": "./dist/components/choice/index.js"
+    },
+    "./components/choice/*": {
+      "types": "./dist/components/choice/*",
+      "default": "./dist/components/choice/*"
+    },
+    "./components/extended-text": {
+      "types": "./dist/components/extended-text/index.d.ts",
+      "default": "./dist/components/extended-text/index.js"
+    },
+    "./components/extended-text/*": {
+      "types": "./dist/components/extended-text/*",
+      "default": "./dist/components/extended-text/*"
+    },
+    "./components/gap-match": {
+      "types": "./dist/components/gap-match/index.d.ts",
+      "default": "./dist/components/gap-match/index.js"
+    },
+    "./components/gap-match/*": {
+      "types": "./dist/components/gap-match/*",
+      "default": "./dist/components/gap-match/*"
+    },
+    "./components/hottext": {
+      "types": "./dist/components/hottext/index.d.ts",
+      "default": "./dist/components/hottext/index.js"
+    },
+    "./components/hottext/*": {
+      "types": "./dist/components/hottext/*",
+      "default": "./dist/components/hottext/*"
+    },
+    "./components/inline-choice": {
+      "types": "./dist/components/inline-choice/index.d.ts",
+      "default": "./dist/components/inline-choice/index.js"
+    },
+    "./components/inline-choice/*": {
+      "types": "./dist/components/inline-choice/*",
+      "default": "./dist/components/inline-choice/*"
+    },
+    "./components/match": {
+      "types": "./dist/components/match/index.d.ts",
+      "default": "./dist/components/match/index.js"
+    },
+    "./components/match/*": {
+      "types": "./dist/components/match/*",
+      "default": "./dist/components/match/*"
+    },
+    "./components/order": {
+      "types": "./dist/components/order/index.d.ts",
+      "default": "./dist/components/order/index.js"
+    },
+    "./components/order/*": {
+      "types": "./dist/components/order/*",
+      "default": "./dist/components/order/*"
+    },
+    "./components/rubric-block": {
+      "types": "./dist/components/rubric-block/index.d.ts",
+      "default": "./dist/components/rubric-block/index.js"
+    },
+    "./components/rubric-block/*": {
+      "types": "./dist/components/rubric-block/*",
+      "default": "./dist/components/rubric-block/*"
+    },
+    "./components/select-point": {
+      "types": "./dist/components/select-point/index.d.ts",
+      "default": "./dist/components/select-point/index.js"
+    },
+    "./components/select-point/*": {
+      "types": "./dist/components/select-point/*",
+      "default": "./dist/components/select-point/*"
+    },
+    "./components/shared": {
+      "types": "./dist/components/shared/index.d.ts",
+      "default": "./dist/components/shared/index.js"
+    },
+    "./components/shared/*": {
+      "types": "./dist/components/shared/*",
+      "default": "./dist/components/shared/*"
+    },
+    "./components/text-entry": {
+      "types": "./dist/components/text-entry/index.d.ts",
+      "default": "./dist/components/text-entry/index.js"
+    },
+    "./components/text-entry/*": {
+      "types": "./dist/components/text-entry/*",
+      "default": "./dist/components/text-entry/*"
+    },
+    "./core-css.css": "./dist/core-css/core-css.css"
   },
   "scripts": {
-    "build": "tsc --noEmit -p ./tsconfig.json",
+    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css && cp src/core-css/core-css.css dist/core-css/core-css.css",
     "typecheck": "tsc --noEmit -p ./tsconfig.json",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@lit/context": "^1.1.6",
-    "@qti-components/associate-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@breaking-changes-for-editor-release",
-    "@qti-components/base": "https://pkg.pr.new/Citolab/qti-components/@qti-components/base@breaking-changes-for-editor-release",
-    "@qti-components/choice-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/choice-interaction@breaking-changes-for-editor-release",
-    "@qti-components/extended-text-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/extended-text-interaction@breaking-changes-for-editor-release",
-    "@qti-components/gap-match-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/gap-match-interaction@breaking-changes-for-editor-release",
-    "@qti-components/hottext-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/hottext-interaction@breaking-changes-for-editor-release",
-    "@qti-components/inline-choice-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/inline-choice-interaction@breaking-changes-for-editor-release",
-    "@qti-components/interactions-core": "https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@breaking-changes-for-editor-release",
-    "@qti-components/match-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/match-interaction@breaking-changes-for-editor-release",
-    "@qti-components/order-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/order-interaction@breaking-changes-for-editor-release",
-    "@qti-components/select-point-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/select-point-interaction@breaking-changes-for-editor-release",
-    "@qti-components/text-entry-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@breaking-changes-for-editor-release",
-    "@qti-components/transformers": "https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@breaking-changes-for-editor-release"
+    "@qti-components/associate-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/base": "https://pkg.pr.new/Citolab/qti-components/@qti-components/base@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/choice-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/choice-interaction@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/extended-text-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/extended-text-interaction@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/gap-match-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/gap-match-interaction@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/hottext-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/hottext-interaction@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/inline-choice-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/inline-choice-interaction@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/interactions-core": "https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/match-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/match-interaction@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/order-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/order-interaction@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/select-point-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/select-point-interaction@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/text-entry-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/transformers": "https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@9f4841882b6b7239fcd72bada3ae4461fa46c6ce"
   },
   "peerDependencies": {
     "lit": "^3.3.2",
@@ -109,7 +274,7 @@
     "typescript": "^5.0.0"
   },
   "files": [
-    "src"
+    "dist"
   ],
   "publishConfig": {
     "access": "public"
