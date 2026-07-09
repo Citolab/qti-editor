@@ -16,6 +16,7 @@ The publishable packages are:
 Keep private:
 
 - `@citolab/prose-qti-ui` — distributed through the registry and Firebase hosting, not npm
+- `@citolab/prose-ai` — app-only AI extensions vendored from `@prosekit/ai`, consumed directly by `apps/qti-prosekit-item`, not published
 - `apps/*` — not published
 
 ## Rationale
@@ -23,6 +24,7 @@ Keep private:
 - `@citolab/prose-qti` is the main reusable authoring API: interaction descriptors, QTI composition, XML serialization, ProseKit integration.
 - `@citolab/prose-extensions` is the stable generic editor extension surface: attributes engine, block select, node-attrs sync, semantic paste.
 - `@citolab/prose-qti-ui` is distributed through the shadcn-style registry rather than npm — consumers install components directly from the hosted registry JSON.
+- `@citolab/prose-ai` is vendored, app-only AI tooling with no stable public API of its own; it has no reason to be an npm surface.
 
 ## Workflow Split
 
