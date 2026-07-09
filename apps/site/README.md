@@ -23,9 +23,8 @@ src/
     getting-started/
     packages/             # Package reference docs
     qti-interactions/     # Per-interaction docs
-    frameworks/           # Integration guides (React, Angular, Vue, Svelte, Vanilla)
-  components/     # Astro components used by the landing page and custom Starlight overrides
-  editor/         # Live editor instances embedded in docs pages
+    frameworks/           # Integration guide (TypeScript / pure ProseMirror)
+  components/     # Astro components used by the landing page and custom Starlight overrides, including the qti-demo/ live editor preview
 ```
 
 ## Docs sections
@@ -35,8 +34,8 @@ src/
 | Getting Started | Overview and installation |
 | Package Reference | Docs for published packages (prosemirror-plugins, roundtrip import/export) |
 | QTI Interactions | Per-interaction reference (choice, text entry, gap match, …) |
-| Framework Guides | React, Angular, Vue, Svelte, and Vanilla JS integration guides |
+| Framework Guides | TypeScript / pure ProseMirror integration guide |
 
-## Live editor in docs
+## Live editor on the landing page
 
-The site embeds a working editor inside docs pages (see `src/editor/`). This editor is built from source via Vite aliases in [astro.config.mjs](astro.config.mjs) — no pre-built packages needed during development.
+The landing page embeds a working editor (see `src/components/qti-demo/`), mirroring the pattern taught in the [TypeScript Integration](src/content/docs/frameworks/vanilla.mdx) guide. It's built from source via Vite aliases in [astro.config.mjs](astro.config.mjs) — no pre-built packages needed during development.
