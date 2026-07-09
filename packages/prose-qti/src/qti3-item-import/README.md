@@ -24,12 +24,22 @@ import { roundtripQtiItem } from '@citolab/prose-qti/qti3-item-import';
 const editorReady = roundtripQtiItem(thirdPartyQti3Xml);
 ```
 
-## Scope (v1)
+## Scope
 
-Each per-type transform runs only if the item contains exactly **one** matching
-interaction (`qti-choice-interaction`, `qti-text-entry-interaction`,
-`qti-extended-text-interaction`, `qti-match-interaction`). Multi-interaction
-items pass through untouched.
+`roundtripQtiItem` runs every per-type transform (`roundtripChoice`,
+`roundtripTextEntry`, `roundtripExtendedText`, `roundtripAssociate`,
+`roundtripMatch`, `roundtripGapMatch`, `roundtripOrder`,
+`roundtripSelectPoint`, `roundtripInteractions`, `roundtripItemBody`)
+followed by `reduceToItemBody`. All transforms are idempotent and
+independent — order doesn't affect correctness, only which source wins when
+an attribute is expressed more than one way.
+
+Each transform except `roundtripAssociate` is also exported individually from
+this barrel (`roundtripChoice`, `roundtripTextEntry`, `roundtripExtendedText`,
+`roundtripMatch`, `roundtripGapMatch`, `roundtripOrder`,
+`roundtripSelectPoint`, `roundtripInteractions`, `roundtripItemBody`,
+`reduceToItemBody`) for callers that need to run a subset;
+`roundtripAssociate` is currently only reachable via `roundtripQtiItem`.
 
 `roundtripMatch` converts the standard `directedPair` correct response
 (`<qti-value>SOURCE TARGET</qti-value>`) into the same shape `qti-components`
@@ -39,7 +49,7 @@ that format differs from the generic comma-joined hoist, `qti-match-interaction`
 is excluded from the generic `roundtripInteractions` fallback.
 
 See
-[plans/qti3-item-import.md](../../../plans/qti3-item-import.md) for the full
-contract, and
-[apps/site/src/content/docs/packages/itembody-subformat.mdx](../../../apps/site/src/content/docs/packages/itembody-subformat.mdx)
+[apps/site/src/content/docs/packages/qti3-item-import.mdx](../../../../apps/site/src/content/docs/packages/qti3-item-import.mdx)
+for the public-facing overview, and
+[apps/site/src/content/docs/packages/itembody-subformat.mdx](../../../../apps/site/src/content/docs/packages/itembody-subformat.mdx)
 for the roundtrip-format spec.

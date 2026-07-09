@@ -1,194 +1,98 @@
-# Syncing the editor with a local `qti-components` checkout
+# Syncing the editor with `qti-components`
 
 > **Status:** temporary documentation while the editor consumes the
-> `breaking-changes-for-editor-release` branch of qti-components. Once
-> qti-components ships a release with those breaking changes, this whole
-> workflow collapses back into "install from npm" and this doc can be removed.
+> `breaking-changes-for-editor-release` branch of qti-components via
+> [pkg.pr.new](https://pkg.pr.new) commit builds. Once qti-components ships a
+> stable release containing those changes, every `@qti-components/*` (and
+> `@citolab/qti-components`) dependency goes back to a normal npm semver
+> range and this doc can be removed.
 
-This editor depends on packages from a sibling repo, **qti-components**. There
-are two states you'll encounter:
+This editor depends on packages from a sibling repo, **qti-components**,
+which hasn't shipped a stable release with the breaking changes the editor
+needs yet. Instead of npm ranges, the relevant dependencies are pinned
+directly to a pkg.pr.new build of a specific `qti-components` commit:
 
-- **Local development:** you want the editor to pick up live changes from your
-  local qti-components checkout as you save files.
-- **Committed state:** when you `git push` the editor, your teammates and CI
-  must be able to clone, run `pnpm install`, and get **byte-identical**
-  dependency contents — without having qti-components on their machine.
-
-We solve both with one workflow.
-
----
-
-## TL;DR — the three commands you actually run
-
-```sh
-# 1. Start dev mode
-pnpm dev:linked
-
-# 2. Make changes in qti-components, save. The editor reloads automatically.
-
-# 3. When ready to commit on the editor side:
-cd /path/to/qti-components && git push      # push qti-components first
-cd /path/to/QTI-Editor
-pnpm qti-overrides:snapshot                 # pin to that SHA + generate tarballs
-git commit -m "..." && git push             # commit + push the editor
+```json
+"@qti-components/base": "https://pkg.pr.new/Citolab/qti-components/@qti-components/base@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
 ```
 
-That's it. Everything else is automated.
+pkg.pr.new builds and publishes a real npm tarball for every commit pushed to
+qti-components, so these URLs install exactly like any other npm dependency
+— no yalc, linking, or local qti-components checkout required for teammates
+or CI.
 
----
+## Where the pins live
 
-## What the three commands actually do
+Every package/app that consumes `@qti-components/*` pins the same commit SHA
+in its own `dependencies`/`devDependencies`:
 
-### `pnpm dev:linked`
+- `packages/prose-qti/package.json` — the interaction components
+  (`@qti-components/choice-interaction`, `@qti-components/base`, …)
+- root `package.json` — `@qti-components/theme` (dev-only, used by apps for styling)
+- `apps/e2e/package.json` — `@citolab/qti-components` (end-to-end test fixtures)
+- `apps/qti-prosekit-app`, `apps/qti-prosekit-item`, `apps/qti-prosemirror-item`,
+  `apps/site` — re-declare the same pinned packages where needed
 
-Runs two processes in parallel:
+## Bumping to a newer qti-components commit
 
-- In `qti-components`: a watcher that rebuilds each affected package on save
-  and pushes the new build into the editor's `.yalc/` directories.
-- In `qti-prosemirror-item`: the Vite dev server on
-  [http://localhost:5175](http://localhost:5175).
+Push your changes to the `breaking-changes-for-editor-release` branch on
+qti-components first. Every dependency spec is pinned to an exact commit SHA
+(`specifier` and `version` are identical in `pnpm-lock.yaml`), so there's no
+semver range for `pnpm up` to move within — replace the old SHA with the new
+commit's SHA in every `https://pkg.pr.new/Citolab/qti-components/...@<sha>`
+occurrence (`packages/prose-qti/package.json`, root `package.json`,
+`apps/e2e/package.json`, and the other app `package.json` files listed
+above), then run `pnpm install` to update `pnpm-lock.yaml`.
 
-A preflight step ensures yalc state is set up. On a fresh checkout it runs
-`pnpm yalc:init` once; otherwise it restores yalc state (`pnpm yalc:add` →
-`pnpm -r exec yalc restore`).
+Commit the updated `package.json` files and `pnpm-lock.yaml` together so
+teammates and CI pick up the same pinned commit on their next `pnpm install`.
 
-### `pnpm qti-overrides:snapshot`
+There's also a `pnpm qti-components:update` script
+(`pnpm -r up "@qti-components/*" "@citolab/qti-components"`) left over from
+when these dependencies were pinned to a floating branch URL instead of a
+commit SHA. It's a no-op against today's SHA-pinned specifiers — use the
+manual SHA replacement above instead.
 
-The bridge between dev mode and committed state. Reads which
-`@qti-components/*` packages you've yalc-linked, captures `qti-components`'
-current HEAD commit SHA, verifies that SHA is pushed to a remote, then writes:
+## Local development against an unpushed qti-components checkout
 
-- `pnpm-local-overrides.json#enabled` → `true`
-- `pnpm-local-overrides.json#sourceOverrides` → one entry per linked package,
-  pointing at `github:Citolab/qti-components#<sha>&path:/packages/...`
+There's no supported "live link" workflow anymore — pushing to qti-components
+and re-pinning the SHA (above) is the whole loop. If you need to iterate
+against local qti-components changes before pushing, use `pnpm link` /
+`file:` dependencies temporarily in your own checkout, but don't commit that;
+revert to the pinned pkg.pr.new URL before pushing the editor.
 
-It then calls `pnpm qti-overrides:sync` which clones qti-components at that
-SHA, runs `pnpm pack` on each package, drops the `.tgz` files into
-`.qti-components-packs/<sha>/`, and writes the `file:` paths back into
-`pnpm-local-overrides.json#overrides`. Finally it `git add`s the json so it
-ships with your next commit.
+## Leftover files from the previous (yalc) workflow
 
-After this runs, the committed state contains exactly one piece of
-qti-components-related metadata: the json file with the SHA. Tarballs are
-gitignored.
+This repo previously synced qti-components through a yalc-linking + pinned
+local-tarball workflow (`pnpm dev:linked`, `pnpm-local-overrides.json`,
+`.pnpmfile.cjs`, `qti-overrides:*`). That workflow was replaced by the
+pkg.pr.new SHA pinning described above, but some of its files are still
+present and effectively dormant:
 
-### `git commit`
+- `.pnpmfile.cjs` — its `readPackage` hook no-ops as soon as it can't find
+  `pnpm-local-overrides.json` (deleted), which is always, today.
+- `scripts/qti-local-overrides-sync.mjs`, `scripts/qti-overrides-preinstall.mjs`,
+  `scripts/dev-linked.mjs`, `scripts/yalc-init.mjs`, and the root
+  `package.json` scripts `qti-overrides:*`, `yalc:*`, `dev:linked` — unused
+  by the current workflow.
 
-A pre-commit hook strips any `file:.yalc/...` entries from staged
-`package.json` files (so the npm-version specs you see in `dependencies` look
-the same as they always did). The hook does **not** touch
-`pnpm-local-overrides.json` — that's the file that carries the pinned SHA into
-the commit.
-
----
-
-## What teammates and CI do
-
-Just clone and install:
-
-```sh
-git clone <editor-repo>
-cd editor
-pnpm install
-```
-
-That's it. `.pnpmfile.cjs`'s `readPackage` hook — which pnpm runs *before* the
-`preinstall` lifecycle script — self-heals inline: if `pnpm-local-overrides.json#enabled`
-is true and a pinned tarball is missing locally, it synchronously runs
-`qti-overrides:sync` to generate the tarballs, then re-reads the json before
-rewiring the workspace's deps to point at them. The `preinstall` script
-(`scripts/qti-overrides-preinstall.mjs`) does the same detection/sync as a
-redundant safety net, for the (normally unreachable) case where it runs first.
-
-They do **not** need:
-- a qti-components checkout
-- yalc
-- to know any of this exists
-
-If they want to *also* develop against a local qti-components, they run
-`pnpm yalc:init` once and then `pnpm dev:linked`. That layers their local
-yalc state on top of the committed packs state. The packs state is the
-fallback — yalc takes precedence while active.
-
----
-
-## File guide
-
-| File | Role |
-|---|---|
-| [`pnpm-local-overrides.json`](../pnpm-local-overrides.json) | Single source of truth for pinned overrides. Committed. |
-| [`.pnpmfile.cjs`](../.pnpmfile.cjs) | pnpm hook that reads the json, self-heals missing tarballs inline, and rewrites deps at install time. Committed. |
-| [`scripts/qti-local-overrides-sync.mjs`](../scripts/qti-local-overrides-sync.mjs) | `sync` / `status` / `snapshot` subcommands. |
-| [`scripts/qti-overrides-preinstall.mjs`](../scripts/qti-overrides-preinstall.mjs) | Self-heals missing tarballs before `pnpm install`. |
-| [`scripts/yalc-init.mjs`](../scripts/yalc-init.mjs) | First-time yalc link for the developer. |
-| [`scripts/dev-linked.mjs`](../scripts/dev-linked.mjs) | Backs `pnpm dev:linked`. |
-| `.qti-components-packs/<sha>/` | Generated tarball cache. Gitignored. Safe to delete; will be regenerated. |
-| `**/yalc.lock`, `**/.yalc/` | Per-consumer yalc state. Gitignored. |
-
----
-
-## Common situations
-
-### "I forgot to push qti-components before snapshot"
-
-Snapshot will refuse with a clear error:
-
-```
-qti-components HEAD <sha> is not pushed to any remote.
-Push the qti-components branch first, then re-run snapshot.
-```
-
-Push qti-components and re-run snapshot.
-
-### "Teammate's `pnpm install` failed with ENOENT on a .tgz"
-
-The preinstall self-heal should prevent this. If it didn't, manually run
-`pnpm qti-overrides:install` once — that forces the sync and then installs.
-Then file an issue: the preinstall should have caught it.
-
-### "I want to switch back to plain npm versions for everyone"
-
-Edit `pnpm-local-overrides.json` and set `"enabled": false`. Commit + push.
-Run `pnpm install`. Teammates run `pnpm install` after pulling. Everything
-resolves from npm again.
-
-### "I want to test a different qti-components SHA without changing my checkout"
-
-Edit `pnpm-local-overrides.json#sourceOverrides` by hand, pasting the desired
-SHA into each entry. Run `pnpm qti-overrides:sync` (or `:install`). The
-snapshot command is just a convenience that automates this for the
-"snapshot whatever's at HEAD" case.
-
-### "How do I know what's pinned right now?"
-
-```sh
-pnpm qti-overrides:status
-```
-
-Prints the `enabled` flag, the source overrides (with their SHAs), and the
-resolved tarball paths.
-
----
+None of this needs to be run, and running it does nothing useful without a
+committed `pnpm-local-overrides.json` to drive it.
 
 ## Why this design
 
-Three competing requirements:
-
-1. **Live updates from local qti-components during dev.** yalc handles this.
-2. **Reproducibility across machines on commit.** packs (SHA-pinned tarballs)
-   handle this — the SHA is the same on every clone, the tarballs are
-   regenerated from the same git tree, byte-identical results.
-3. **Don't expose either to teammates as part of the daily flow.**
-   `preinstall` self-heals, the pre-commit hook strips yalc state, and the
-   pnpmfile rewires deps transparently.
-
-The snapshot command exists because (1) and (2) need different kinds of
-state, and the natural transition from one to the other is "I'm done with
-this round of changes, capture them." Without snapshot you'd be hand-editing
-SHAs into json before every commit.
+- **Reproducibility across machines.** A pkg.pr.new URL pinned to a commit
+  SHA resolves to the exact same tarball on every machine and in CI — no
+  local qti-components checkout, no generated tarball cache, nothing
+  gitignored to go stale.
+- **No extra tooling.** pnpm installs a pkg.pr.new URL like any other
+  dependency URL. Resolving it doesn't depend on the pnpm hook or scripts
+  above.
+- **Simple to bump.** Moving to a newer qti-components commit is a normal,
+  reviewable `package.json` + `pnpm-lock.yaml` change (hand-edit the SHA, then
+  `pnpm install`).
 
 When qti-components ships a stable release containing the editor's required
-changes, this whole layer becomes unnecessary — every consumer just installs
-the published version from npm. Delete `pnpm-local-overrides.json`,
-`.pnpmfile.cjs`, the `qti-overrides:*` scripts, the yalc plumbing, and this
+changes, replace every `https://pkg.pr.new/...@<sha>` dependency with a
+normal npm semver range, delete the leftover files above, and delete this
 document.
