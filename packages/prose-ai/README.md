@@ -40,20 +40,24 @@ const extension = union(defineCommitRecorder(commitRecorder), defineAiDiff());
 
 `defineAiDiff()` registers a ProseMirror plugin plus five commands for
 rendering an AI-produced `Commit` (from `prosekit/extensions/commit`) as a
-per-fragment diff, and resolving it fragment-by-fragment or all at once:
+per-fragment diff, and resolving it fragment-by-fragment or all at once.
+These five are ProseKit commands, not standalone exports — call them as
+`editor.commands.<name>(...)`:
 
-- `addAiDiff(commit, options?)` — hydrate a `Commit` into decorations
-  (insertions tagged `.prosekit-commit-addition`, deletions rendered as
-  widget decorations tagged `.prosekit-commit-deletion`), word-boundary
-  expanded so partial-word diffs read cleanly. `options.id` sets a custom
-  diff id; otherwise one is generated.
-- `acceptAiDiff(id?)` — drop the diff's decorations, keeping the new content.
-  Omit `id` to accept every active diff.
-- `rejectAiDiff(id?)` — revert the diff's fragments back to the original
-  content and drop its decorations. Omit `id` to reject every active diff.
-- `acceptAiDiffFragment(id, changeIndex)` / `rejectAiDiffFragment(id, changeIndex)`
-  — accept or revert a single changed fragment within a diff, leaving the
-  rest of that diff active.
+- `editor.commands.addAiDiff(commit, options?)` — hydrate a `Commit` into
+  decorations (insertions tagged `.prosekit-commit-addition`, deletions
+  rendered as widget decorations tagged `.prosekit-commit-deletion`),
+  word-boundary expanded so partial-word diffs read cleanly. `options.id`
+  sets a custom diff id; otherwise one is generated.
+- `editor.commands.acceptAiDiff(id?)` — drop the diff's decorations, keeping
+  the new content. Omit `id` to accept every active diff.
+- `editor.commands.rejectAiDiff(id?)` — revert the diff's fragments back to
+  the original content and drop its decorations. Omit `id` to reject every
+  active diff.
+- `editor.commands.acceptAiDiffFragment(id, changeIndex)` /
+  `editor.commands.rejectAiDiffFragment(id, changeIndex)` — accept or revert
+  a single changed fragment within a diff, leaving the rest of that diff
+  active.
 
 Each fragment carries `data-ai-diff-id` / `data-ai-diff-change-index`
 attributes (`AI_DIFF_ID_ATTR` / `AI_DIFF_CHANGE_INDEX_ATTR`) so host UI (e.g.
