@@ -1,11 +1,12 @@
 # Editor Scaffolds
 
-This repository has two primary surfaces for learning and assembling editors:
+This repository's primary surface for learning and assembling editors is:
 
 - **Storybook** — documentation surface for building an editor step by step
-- **Registry** — installable scaffold surface for copyable editor pieces and starter examples
 
 The main editor app (`apps/qti-prosekit-app`) remains the realistic integration surface.
+
+(`packages/prose-qti-ui` also ships an installable, shadcn-style registry of copyable UI pieces, but it's an in-house build/scaffolding tool rather than a documented product surface — see "Registry Scaffolds" below for the raw build commands.)
 
 ## Reference Apps
 
@@ -23,10 +24,6 @@ Use **Storybook** when you want to understand:
 - how to build an editor from scratch
 - what each panel, extension, and utility does in isolation
 - how ProseMirror-native primitives relate to ProseKit-first assembly
-
-Use the **registry** when you want to install:
-- copyable ProseKit-oriented UI pieces from `@citolab/prose-qti-ui`
-- starter scaffolds similar to shadcn-style installs
 
 Use **`apps/qti-prosekit-app`** when you want to:
 - run the supported end-to-end editor
@@ -70,9 +67,9 @@ const editor = createEditor({
 
 `defineQtiInteractionsExtension` is assembled in the app from the descriptor registry — see `apps/qti-prosekit-item/src/extensions/qti-extension.ts` for the canonical pattern. It uses `listInteractionDescriptors()` and `listInteractionSchemaNodeSpecs()` from `@citolab/prose-qti/core/interactions/composer` to build node spec extensions and a keymap automatically.
 
-## Registry Scaffolds
+## Registry Scaffolds (internal)
 
-The registry exposes installable UI components from `packages/prose-qti-ui`. Build and serve locally:
+`packages/prose-qti-ui` exposes installable UI components through an in-house registry. Build and serve locally:
 
 ```sh
 pnpm registry:build
@@ -90,6 +87,6 @@ The registry source lives in `packages/prose-qti-ui/src/components/`, with a `re
 
 The target repository model is:
 - Storybook for guided editor-building documentation and regression presets
-- Registry (`packages/prose-qti-ui`) for installable scaffolds and copyable UI
 - Packages (`@citolab/prose-qti`, `@citolab/prose-extensions`) for the reusable architecture
 - `apps/qti-prosekit-app` for realistic end-to-end integration
+- `packages/prose-qti-ui`'s registry remains an internal scaffolding tool, not a documented product surface

@@ -287,9 +287,7 @@ export function defineQtiInteractionsExtension(options?: { include?: string[] })
 }
 ```
 
-## Storybook And Registry Roles
-
-### Storybook
+## Storybook's Role
 
 Primary documentation surface for:
 - Isolated editor behavior
@@ -297,14 +295,7 @@ Primary documentation surface for:
 - Regression fixtures
 - Step-by-step editor assembly guidance
 
-### Registry
-
-`packages/prose-qti-ui` is the registry source. Built via:
-```
-pnpm registry:build   # → pnpm --filter @citolab/prose-qti-ui registry:build
-```
-
-The registry exposes installable UI components for consumers who want to own and customize editor UI.
+(`packages/prose-qti-ui` also builds an installable component registry via `pnpm registry:build`, but this is an in-house scaffolding tool, not a documented product surface.)
 
 ## Tests
 

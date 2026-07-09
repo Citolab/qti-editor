@@ -29,7 +29,7 @@ import '../style.css';
         </h1>
         <h2 class="mt-2 text-[1.25rem] font-semibold text-slate-700 dark:text-slate-200">For modern assessment authoring</h2>
         <p class="mt-5 text-slate-600 leading-relaxed dark:text-slate-300">
-          A composable authoring experience for QTI interactions. Usable as a standalone editor or integrated into your stack of choice. Check out the docs for more details and the integration guide to get started.
+          A composable authoring experience for QTI interactions. Intended as a kit complimenting the ProseMirror editor, to be integrated within your stack of choice. Check out the docs for more details and the integration guide to get started.
         </p>
         <div class="mt-6 flex flex-wrap gap-3">
           <a
@@ -45,24 +45,108 @@ import '../style.css';
 
       <section class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4" aria-label="Highlights">
         <article class="rounded-2xl border border-[#e5ddd1] bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
-          <h2 class="mt-0 text-[1.05rem] dark:text-slate-100">Integration guide</h2>
+          <h2 class="mt-0 text-[1.05rem] dark:text-slate-100">ProseMirror-based</h2>
           <p class="mb-0 text-slate-600 leading-relaxed dark:text-slate-300">
-            A single TypeScript integration page covers package setup and ProseMirror wiring.
+            Rely on the tried and tested ProseMirror editor with added QTI interactions.
           </p>
         </article>
         <article class="rounded-2xl border border-[#e5ddd1] bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
           <h2 class="mt-0 text-[1.05rem] dark:text-slate-100">QTI focused</h2>
           <p class="mb-0 text-slate-600 leading-relaxed dark:text-slate-300">
-            Build authoring workflows around QTI interactions with a shared package architecture.
+            Author assessments with a shared package architecture, built around QTI interactions.
           </p>
         </article>
         <article class="rounded-2xl border border-[#e5ddd1] bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
-          <h2 class="mt-0 text-[1.05rem] dark:text-slate-100">Docs-first onboarding</h2>
+          <h2 class="mt-0 text-[1.05rem] dark:text-slate-100">WYSIWYG</h2>
           <p class="mb-0 text-slate-600 leading-relaxed dark:text-slate-300">
-            Keep implementation and API guidance close to examples to speed up adoption.
+            Enjoy WYSIWYG authoring, within a live preview of the QTI interactions as they will appear to learners.
           </p>
         </article>
+      </section>
+
+      <section class="mt-8 rounded-3xl border border-[#e5ddd1] bg-[#fffdf8] p-6 shadow-[0_18px_55px_rgba(15,118,110,0.08)] dark:border-slate-700 dark:bg-slate-900 dark:shadow-[0_20px_65px_rgba(0,0,0,0.45)]" aria-label="Live demo">
+        <h2 class="mt-0 text-[1.25rem] font-semibold text-slate-700 dark:text-slate-200">Try it live</h2>
+        <p class="mt-2 mb-4 text-slate-600 leading-relaxed dark:text-slate-300">
+          A real <a class="underline text-[#449b44] dark:text-emerald-400" href="/docs/frameworks/vanilla">pure-ProseMirror</a> QTI editor, running in this page — the same shape as <a class="underline text-[#449b44] dark:text-emerald-400" href="https://github.com/Citolab/qti-editor/tree/main/apps/qti-prosemirror-item"><code>qti-prosemirror-item</code></a>.
+        </p>
+        <div id="qti-demo" class="qti-demo">
+          <div class="qti-demo-toolbar">
+            <button type="button" data-qti-demo-insert-choice>Insert choice</button>
+            <button type="button" data-qti-demo-insert-text-entry>Insert text entry</button>
+            <button type="button" data-qti-demo-download>Download item.xml</button>
+          </div>
+          <div class="qti-demo-editor" data-qti-demo-editor></div>
+        </div>
       </section>
     </main>
   </body>
 </html>
+
+<style>
+  .qti-demo-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .qti-demo-toolbar button {
+    border: 1px solid #e5ddd1;
+    background: white;
+    color: #449b44;
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .qti-demo-toolbar button:hover {
+    background: #f3f9f2;
+  }
+
+  /*
+   * The QTI web components inside the editor (simple-choice, prompt, …) paint
+   * their own background from @qti-components/theme's --qti-bg (fixed white)
+   * but don't set their own text color, so they inherit whatever ambient
+   * color the page sets. Since the theme has no dark variant, letting dark
+   * mode's light body text bleed in here produces light text on a white
+   * chip. Reference: apps/qti-prosemirror-item has no dark mode at all — its
+   * editor pane is always a fixed light island. Do the same here instead of
+   * trying to re-theme every QTI component for dark backgrounds.
+   */
+  .qti-demo-editor {
+    border: 1px solid #e5ddd1;
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    min-height: 220px;
+    background: white;
+    color: #1b1f24;
+  }
+
+  .qti-demo-editor .ProseMirror {
+    outline: none;
+    min-height: 200px;
+  }
+
+  :global(html.dark) .qti-demo-toolbar button {
+    border-color: #334155;
+    background: #1e293b;
+    color: #34d399;
+  }
+
+  :global(html.dark) .qti-demo-toolbar button:hover {
+    background: #253449;
+  }
+
+  :global(html.dark) .qti-demo-editor {
+    border-color: #334155;
+  }
+</style>
+
+<script>
+  import { mountQtiDemo } from '../components/qti-demo/mount.js';
+
+  const root = document.querySelector('#qti-demo');
+  if (root) mountQtiDemo(root);
+</script>

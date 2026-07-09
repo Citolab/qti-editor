@@ -1,0 +1,131 @@
+/*
+ * QTI element styling — every selector that targets a `qti-*` element lives
+ * here. Alias the canonical @qti-components/theme palette into editor-local
+ * variable names so the editor visually tracks runtime theming. NEVER
+ * replicate theme values inline — always go through the alias with the theme
+ * value as the var fallback. One source of truth.
+ *
+ * Mirrored from apps/qti-prosemirror-item/src/qti.css — kept in sync by hand
+ * since neither app currently shares a common editor-chrome package.
+ */
+
+:root {
+  /* Drop target — pending */
+  --qti-edit-drop-pending-border: var(--qti-border-active, #f86d70);
+  --qti-edit-drop-pending-bg:     var(--qti-bg-active,    #ffecec);
+  /* Drop target — idle */
+  --qti-edit-drop-idle-border:    var(--qti-border-color, #c6cad0);
+  --qti-edit-drop-idle-bg:        var(--qti-bg,           #fff);
+  /* Hottext — marked as correct response in the editor */
+  --qti-edit-hottext-checked-border: var(--qti-border-color-focus, #2563eb);
+}
+
+/* ─── Drop target — pending pulse ──────────────────────────────────────────
+   Light-DOM drop targets (gap-match's `<qti-gap>`, match's
+   `<qti-simple-associable-choice>`) are styled directly here via `:state()`.
+   Shadow-DOM drop slots (order's `<drop-list>`, associate's `<div>`) own
+   their pulse inside the component's own shadow CSS — `::part()` from
+   outside doesn't allow the `:not(:has(...))` filter we need to only pulse
+   empty slots, but a regular descendant selector inside the shadow does.
+   See qti-order-interaction.styles.ts and qti-associate-interaction.styles.ts.
+
+   Rules are kept SEPARATE per target type — a comma-listed selector group
+   gets dropped entirely if any one selector is invalid in the parser. */
+
+qti-gap:state(pending) {
+  border-color: var(--qti-edit-drop-pending-border);
+  background: var(--qti-edit-drop-pending-bg);
+  animation: qti-edit-drop-pulse 1.2s ease-in-out infinite;
+}
+
+qti-simple-associable-choice:state(pending)::part(dropslot) {
+  border-color: var(--qti-edit-drop-pending-border);
+  background: var(--qti-edit-drop-pending-bg);
+  animation: qti-edit-drop-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes qti-edit-drop-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--qti-edit-drop-pending-border) 45%, transparent); }
+  50%      { box-shadow: 0 0 0 4px color-mix(in srgb, var(--qti-edit-drop-pending-border) 0%, transparent); }
+}
+
+/* ─── Drag source — picked / "selected" ────────────────────────────────────
+   Unified across all four drag-drop interactions: PendingSelectionController
+   toggles `:state(selected)` on whatever source the user clicked. The visual
+   is a primary-color outline ring, intentionally distinct from the dashed
+   pending-target pulse (red). Per-state visuals use :state() on the host —
+   never data-* attributes — so editor-only UI state can't leak into XML. */
+
+qti-gap-text:state(selected),
+qti-simple-choice:state(selected),
+qti-simple-associable-choice:state(selected) {
+  outline: 2px solid var(--accent, #2563eb);
+  outline-offset: 2px;
+}
+
+/* `qti-gap-text:state(linked)` and `:state(disabled)` are emitted by the
+   gap-match interaction but not visually distinct in the editor. Hosts can
+   add rules here if they want to differentiate. */
+
+/* ─── Example: app-level override for placed fake-drag chips ───────────────
+   qti-theme owns the default chip look (border, bg, padding). Hosts can
+   diverge per drop target by targeting `<host>::part(drag)`. This block
+   tints every placed chip with the app's primary color — replace or remove
+   to taste. */
+qti-gap::part(drag),
+qti-simple-associable-choice::part(drag),
+qti-order-interaction::part(drag),
+qti-associate-interaction::part(drag) {
+  border-color: var(--accent, #2563eb);
+}
+
+/* ─── Fake-drag (qti-fake-drag) ─────────────────────────────────────────────
+   Styled by qti-theme via `<host>::part(drag)` rules — see
+   `packages/qti-theme/src/styles/qti-theme/interactions/qti-*-interaction.css`.
+   Add overrides below only when the editor wants to diverge from runtime. */
+
+/* ─── Hottext interaction — flex container ────────────────────────────────
+   Custom-element default is `display: inline`. With a block `<p>` child,
+   browsers open empty inline line-boxes above and below the block (the
+   ~50px whitespace bands seen in hottext-multi-response). Flex layout also
+   ignores the whitespace-only text nodes Lit emits around `<slot>` in the
+   shadow root, so the host's height collapses to its real content. The
+   theme leaves this untouched, so the override lives here. */
+qti-hottext-interaction {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Hottext — chip border ────────────────────────────────────────────────
+   The runtime theme only paints a chip border under
+   `.qti-input-control-hidden`. In the editor we want the chip's "selectable"
+   affordance visible at rest, so mirror the bordered look unconditionally —
+   reusing the same theme tokens so the chip continues to track theming. */
+qti-hottext-interaction qti-hottext {
+  border: var(--qti-border-thickness) var(--qti-border-style) var(--qti-border-color);
+}
+
+/* ─── Hottext — reveal hidden radio/checkbox on hover (authoring affordance)
+   In `qti-unselected-hidden` mode the theme hides the radio/checkbox part
+   so the runtime UI looks clean. In the editor the author still needs to
+   click that part to mark the correct response — restore it on hover. */
+qti-hottext-interaction.qti-unselected-hidden qti-hottext:hover::part(ch) {
+  display: grid;
+}
+
+/* ─── Hottext — author marked as correct response ──────────────────────────
+   Editor-only signal that this hottext is part of the correct response.
+   Runtime visual (the radio/checkbox fill via theme's :state(--checked))
+   stays intact; we add an extra blue outline so authors can scan a block
+   of text and pick out the "scoring" hottexts at a glance. */
+qti-hottext-interaction qti-hottext:state(--checked) {
+  outline: 2px solid var(--qti-edit-hottext-checked-border);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+qti-prompt p:has(> br.ProseMirror-trailingBreak:only-child)::before {
+  content: "Prompt text goes here";
+  color: var(--qti-text-color-muted, #6b7280);
+  pointer-events: none;
+}

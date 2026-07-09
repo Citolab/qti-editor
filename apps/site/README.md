@@ -21,7 +21,6 @@ src/
   pages/          # Landing page (index.astro)
   content/docs/   # Starlight docs — MDX files organized by section
     getting-started/
-    using-the-registry/   # UI component docs (toolbar, attributes panel, etc.)
     packages/             # Package reference docs
     qti-interactions/     # Per-interaction docs
     frameworks/           # Integration guides (React, Angular, Vue, Svelte, Vanilla)
@@ -34,7 +33,6 @@ src/
 | Section | Content |
 |---|---|
 | Getting Started | Overview and installation |
-| Using the Registry | Docs for each UI component in `@qti-editor/ui` |
 | Package Reference | Docs for published packages (prosemirror-plugins, roundtrip import/export) |
 | QTI Interactions | Per-interaction reference (choice, text entry, gap match, …) |
 | Framework Guides | React, Angular, Vue, Svelte, and Vanilla JS integration guides |

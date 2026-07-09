@@ -21,7 +21,15 @@
     "@qti-components/theme": "https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
     "astro": "^5.7.2",
     "lit": "^3.3.2",
-    "prosekit": "^0.21.3"
+    "prosemirror-commands": "^1.7.1",
+    "prosemirror-dropcursor": "^1.8.2",
+    "prosemirror-gapcursor": "^1.4.1",
+    "prosemirror-history": "^1.5.0",
+    "prosemirror-keymap": "^1.2.3",
+    "prosemirror-model": "^1.25.8",
+    "prosemirror-schema-basic": "^1.2.4",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.41.9"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
