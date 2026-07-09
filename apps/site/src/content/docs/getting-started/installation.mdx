@@ -23,6 +23,16 @@ pnpm add prosemirror-state prosemirror-view prosemirror-model prosemirror-comman
 
 `@citolab/prose-qti` treats the ProseMirror packages as peer dependencies. Keep the ProseMirror packages on one aligned release set and upgrade them together; reuse versions your app already has rather than introducing a second copy.
 
+## Stylesheet
+
+Import `@citolab/prose-qti/core-css.css` wherever your app renders the editor's document — it is a mandatory plain-CSS stylesheet (no Tailwind or PostCSS plugins required) that styles interaction element backgrounds, spacing, the rubric-block boundary, and a ProseKit placeholder fix:
+
+```css
+@import '@citolab/prose-qti/core-css.css';
+```
+
+Pair it with the upstream `@qti-components/theme` stylesheet that styles the QTI web components themselves. See `apps/qti-prosemirror-item/src/app.css` for the reference import order.
+
 ## QTI interactions
 
 Each interaction has its own subpath. Import the descriptor and node spec explicitly per interaction — see the [TypeScript Integration](/docs/frameworks/vanilla/) guide for the full shape.
