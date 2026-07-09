@@ -4,16 +4,13 @@ description: Generic ProseMirror plugins shipped with QTI Editor.
 slug: docs/prosemirror-plugins
 ---
 
-`@citolab/prose-extensions` provides generic editor behavior that sits alongside `@citolab/prose-qti`. Use it when you need block selection, node attribute synchronization, semantic paste cleanup, persistence, or schema migration helpers that do not depend on QTI semantics.
+`@citolab/prose-extensions` provides generic editor behavior that sits alongside `@citolab/prose-qti`. Use it when you need block selection, node attribute synchronization, or semantic paste cleanup that does not depend on QTI semantics.
 
 ## Available plugins
 
 - [Block Select](/docs/prosemirror-plugins/block-select/) - block node selection and drag handles
-- [Virtual Cursor](/docs/prosemirror-plugins/virtual-cursor/) - cursor behavior at mark boundaries
 - [Node Attrs Sync](/docs/prosemirror-plugins/node-attrs-sync/) - keeps node attributes in sync with the DOM
 - [Semantic Paste](/docs/prosemirror-plugins/paste-semantic-html/) - normalizes pasted HTML into semantic structure
-- [Local Storage Persistence](/docs/prosemirror-plugins/local-storage-doc-persistence-extension/) - saves and restores editor state from `localStorage`
-- [Compatibility](/docs/prosemirror-plugins/compatibility/) - schema migration helpers and versioned document transforms
 
 ## Install
 
@@ -29,11 +26,6 @@ Each feature lives under its own subpath export. These subpaths only ever export
 import { blockSelectPlugin } from '@citolab/prose-extensions/block-select';
 import { nodeAttrsSyncPlugin } from '@citolab/prose-extensions/node-attrs-sync';
 import { createSemanticPastePlugin } from '@citolab/prose-extensions/paste-semantic-html';
-import { createVirtualCursor } from '@citolab/prose-extensions/virtual-cursor';
-import {
-  createLocalStorageDocPersistencePlugin,
-  readPersistedStateFromLocalStorage,
-} from '@citolab/prose-extensions/local-storage-doc-persistence-extension';
 ```
 
 If your app is built on ProseKit, import the extension wrappers from `@citolab/prose-extensions/prosekit-extensions` instead. Importing from this subpath requires the `prosekit` peer dependency to be installed — it is optional everywhere else in the package:
@@ -43,11 +35,16 @@ import {
   blockSelectExtension,
   nodeAttrsSyncExtension,
   defineSemanticPasteExtension,
-  defineLocalStorageDocPersistenceExtension,
 } from '@citolab/prose-extensions/prosekit-extensions';
 ```
 
-See each plugin's page for the exact shape of its plugin factory and, where available, its ProseKit extension. The compatibility chapter covers the migration helpers directly.
+See each plugin's page for the exact shape of its plugin factory and, where available, its ProseKit extension.
+
+The schema-version compatibility/migration pipeline and local-storage doc
+persistence used to be documented here, but they now live inside
+`apps/qti-prosekit-app` (not published) since only that app persists raw
+ProseMirror JSON. The virtual cursor plugin was removed — it had no
+consumers.
 
 ## ProseKit marks and lists
 

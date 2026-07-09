@@ -51,23 +51,14 @@
       "@citolab/prose-extensions/prosekit-extensions": [
         "packages/prose-extensions/src/prosemirror/prosekit-extensions.ts"
       ],
-      "@citolab/prose-extensions/compatibility": [
-        "packages/prose-extensions/src/prosemirror/compatibility/index.ts"
-      ],
       "@citolab/prose-extensions/block-select": [
         "packages/prose-extensions/src/prosemirror/block-select/index.ts"
-      ],
-      "@citolab/prose-extensions/virtual-cursor": [
-        "packages/prose-extensions/src/prosemirror/virtual-cursor/index.ts"
       ],
       "@citolab/prose-extensions/node-attrs-sync": [
         "packages/prose-extensions/src/prosemirror/node-attrs-sync/index.ts"
       ],
       "@citolab/prose-extensions/paste-semantic-html": [
         "packages/prose-extensions/src/prosemirror/paste-semantic-html/index.ts"
-      ],
-      "@citolab/prose-extensions/local-storage-doc-persistence-extension": [
-        "packages/prose-extensions/src/prosemirror/local-storage-doc-persistence-extension/index.ts"
       ],
       "@citolab/prose-qti": [
         "packages/prose-qti/src/index.ts"

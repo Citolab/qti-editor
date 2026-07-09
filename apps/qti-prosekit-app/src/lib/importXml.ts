@@ -1,7 +1,8 @@
 import { jsonFromHTML } from 'prosekit/core';
-import { buildCompatibilityReport, migrateHtmlFragment } from '@citolab/prose-extensions/prosemirror';
 import { roundtripQtiItem } from '@citolab/prose-qti/qti3-item-import';
 import { xmlToHTML } from '@citolab/prose-qti/item-export/pm-xml';
+
+import { buildCompatibilityReport, migrateHtmlFragment } from './compatibility/index.js';
 
 import type { CompatibilityReport, MigrationResult } from '@citolab/prose-qti/interfaces';
 import type { Node, Schema } from 'prosekit/pm/model';

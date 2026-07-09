@@ -21,7 +21,7 @@ Keep private:
 ## Rationale
 
 - `@citolab/prose-qti` is the main reusable authoring API: interaction descriptors, QTI composition, XML serialization, ProseKit integration.
-- `@citolab/prose-extensions` is the stable generic editor extension surface: attributes engine, block select, virtual cursor, compatibility migrations.
+- `@citolab/prose-extensions` is the stable generic editor extension surface: attributes engine, block select, node-attrs sync, semantic paste.
 - `@citolab/prose-qti-ui` is distributed through the shadcn-style registry rather than npm — consumers install components directly from the hosted registry JSON.
 
 ## Workflow Split

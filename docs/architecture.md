@@ -84,15 +84,20 @@ Generic ProseMirror and ProseKit extensions with no QTI-specific logic. `proseki
 
 Owns:
 - `src/prosemirror/block-select` — block selection plugin
-- `src/prosemirror/compatibility` — schema versioning and migration pipeline
-- `src/prosemirror/local-storage-doc-persistence-extension` — local storage persistence
 - `src/prosemirror/node-attrs-sync` — node attribute synchronization
 - `src/prosemirror/paste-semantic-html` — paste HTML handling
-- `src/prosemirror/virtual-cursor` — virtual cursor plugin
-- `src/prosemirror/prosekit-extensions.ts` — ProseKit extension wrappers (`blockSelectExtension`, `nodeAttrsSyncExtension`, `defineSemanticPasteExtension`, `defineLocalStorageDocPersistenceExtension`) for the plugins above, published as the `./prosekit-extensions` subpath; importing from here requires the `prosekit` peer dependency
-- `src/prosekit/` — ProseKit-specific wrappers for marks/lists (`defineEm`, `defineStrong`, `defineList`, etc.), published as the `./prosekit` subpath; like `./prosekit-extensions`, importing it requires the `prosekit` peer dependency
+- `src/prosemirror/prosekit-extensions.ts` — ProseKit extension wrappers (`blockSelectExtension`, `nodeAttrsSyncExtension`, `defineSemanticPasteExtension`) for the plugins above, published as the `./prosekit-extensions` subpath; importing from here requires the `prosekit` peer dependency
+- `src/prosekit/` — ProseKit-specific wrappers for marks/lists (`defineEm`, `defineStrong`, `defineList`, etc.)
 
 Does not own QTI composition logic, interaction-specific behavior, or app wiring.
+
+The schema-version compatibility/migration pipeline (`compatibility`) and
+local-storage doc persistence (`local-storage-doc-persistence-extension`)
+used to live here but were moved into `apps/qti-prosekit-app` (`src/lib/compatibility`,
+`src/extensions/local-storage-doc-persistence-extension`) — they're only
+needed by the app that persists raw ProseMirror JSON, not by the public
+extension surface. The `virtual-cursor` plugin was removed outright; it had
+no consumers.
 
 ### `packages/prose-qti-ui` (`@citolab/prose-qti-ui`)
 
@@ -296,7 +301,7 @@ export const CURRENT_SCHEMA_VERSION = 6;
 
 ### The migration pipeline
 
-Migrations live in `packages/prose-extensions/src/prosemirror/compatibility/migrations/`, one file per transition, named `json-vN-to-vM.ts` / `html-vN-to-vM.ts`:
+Migrations live in `apps/qti-prosekit-app/src/lib/compatibility/migrations/`, one file per transition, named `json-vN-to-vM.ts` / `html-vN-to-vM.ts`:
 
 | Step | Transition | What it does |
 | --- | --- | --- |

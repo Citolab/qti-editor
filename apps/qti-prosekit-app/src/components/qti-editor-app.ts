@@ -15,13 +15,7 @@ import { LitElement, html, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { itemContext, itemContextVariables, type ItemContext, type PerItemMetadata } from '@citolab/prose-qti/integration/item-context';
 import {
-  buildCompatibilityReport,
-  readPersistedStateFromLocalStorage,
-  stampSchemaVersion,
-} from '@citolab/prose-extensions/prosemirror';
-import {
   blockSelectExtension,
-  defineLocalStorageDocPersistenceExtension,
   defineSemanticPasteExtension,
   nodeAttrsSyncExtension,
 } from '@citolab/prose-extensions/prosekit-extensions';
@@ -31,6 +25,9 @@ import { qtiEditorEventsExtension } from '@citolab/prose-qti/integration/events'
 import { editorContext } from '@citolab/prose-qti-ui/editor-context';
 import { notifyQtiI18nChanged, translateQti } from '@citolab/prose-qti/components/shared';
 
+import { defineLocalStorageDocPersistenceExtension } from '../extensions/local-storage-doc-persistence-extension/extension.js';
+import { readPersistedStateFromLocalStorage } from '../extensions/local-storage-doc-persistence-extension/index.js';
+import { buildCompatibilityReport, stampSchemaVersion } from '../lib/compatibility/index.js';
 import { registerLitEditorTableHandle } from './blocks/table-handle/index.js';
 import { registerLitEditorDropIndicator } from './blocks/drop-indicator/index.js';
 import { registerLitEditorBlockHandle } from './blocks/block-handle/index.js';

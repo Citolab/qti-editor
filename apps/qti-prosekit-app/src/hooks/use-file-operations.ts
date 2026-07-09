@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { buildCompatibilityReport } from '@citolab/prose-extensions/prosemirror';
 
+import { buildCompatibilityReport } from '../lib/compatibility/index.js';
 import {
   clearCurrentSession,
   deleteFile,

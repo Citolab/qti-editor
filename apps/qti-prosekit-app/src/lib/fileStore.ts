@@ -1,7 +1,7 @@
 import {
   readPersistedDoc,
   stampSchemaVersion,
-} from '@citolab/prose-extensions/prosemirror';
+} from './compatibility/index.js';
 
 import type { NodeJSON } from 'prosekit/core';
 import type { MigrationResult } from '@citolab/prose-qti/interfaces';

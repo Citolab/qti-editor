@@ -10,4 +10,3 @@
 export { blockSelectExtension } from './block-select/extension.js';
 export { nodeAttrsSyncExtension } from './node-attrs-sync/extension.js';
 export { defineSemanticPasteExtension } from './paste-semantic-html/extension.js';
-export { defineLocalStorageDocPersistenceExtension } from './local-storage-doc-persistence-extension/extension.js';

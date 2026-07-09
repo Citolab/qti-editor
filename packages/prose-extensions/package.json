@@ -40,17 +40,9 @@
       "types": "./dist/prosemirror/prosekit-extensions.d.ts",
       "default": "./dist/prosemirror/prosekit-extensions.js"
     },
-    "./compatibility": {
-      "types": "./dist/prosemirror/compatibility/index.d.ts",
-      "default": "./dist/prosemirror/compatibility/index.js"
-    },
     "./block-select": {
       "types": "./dist/prosemirror/block-select/index.d.ts",
       "default": "./dist/prosemirror/block-select/index.js"
-    },
-    "./virtual-cursor": {
-      "types": "./dist/prosemirror/virtual-cursor/index.d.ts",
-      "default": "./dist/prosemirror/virtual-cursor/index.js"
     },
     "./node-attrs-sync": {
       "types": "./dist/prosemirror/node-attrs-sync/index.d.ts",
@@ -59,10 +51,6 @@
     "./paste-semantic-html": {
       "types": "./dist/prosemirror/paste-semantic-html/index.d.ts",
       "default": "./dist/prosemirror/paste-semantic-html/index.js"
-    },
-    "./local-storage-doc-persistence-extension": {
-      "types": "./dist/prosemirror/local-storage-doc-persistence-extension/index.d.ts",
-      "default": "./dist/prosemirror/local-storage-doc-persistence-extension/index.js"
     }
   },
   "scripts": {

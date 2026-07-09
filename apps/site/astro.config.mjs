@@ -358,11 +358,8 @@ export default defineConfig({
           items: [
             { label: 'Overview', slug: 'docs/prosemirror-plugins' },
             { label: 'Block Select', slug: 'docs/prosemirror-plugins/block-select' },
-            { label: 'Compatibility', slug: 'docs/prosemirror-plugins/compatibility' },
-            { label: 'Local Storage Persistence', slug: 'docs/prosemirror-plugins/local-storage-doc-persistence-extension' },
             { label: 'Node Attrs Sync', slug: 'docs/prosemirror-plugins/node-attrs-sync' },
             { label: 'Semantic Paste', slug: 'docs/prosemirror-plugins/paste-semantic-html' },
-            { label: 'Virtual Cursor', slug: 'docs/prosemirror-plugins/virtual-cursor' },
           ],
         },
         {
