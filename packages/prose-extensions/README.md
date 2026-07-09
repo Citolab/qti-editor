@@ -28,7 +28,7 @@ ProseMirror `Plugin`/class exports work without it.
 | `prosemirror` | Barrel for all ProseMirror plugins below |
 | `block-select` | `blockSelectPlugin` / `NodeRangeSelection` — select entire block nodes |
 | `node-attrs-sync` | `nodeAttrsSyncPlugin` — sync a Lit component's attrs back into its PM node |
-| `paste-semantic-html` | `defineSemanticPasteExtension` — normalize pasted Word/HTML + clipboard images |
+| `paste-semantic-html` | `createSemanticPastePlugin` — normalize pasted Word/HTML + clipboard images |
 | `prosekit` | `defineStrong`, `defineEm`, `defineList` |
 | `prosekit/list` | `defineList` only |
 | `prosekit/marks` | `defineStrong` / `defineEm` only |
@@ -38,7 +38,7 @@ ProseMirror `Plugin`/class exports work without it.
 ```ts
 import { blockSelectPlugin, NodeRangeSelection } from '@citolab/prose-extensions/block-select';
 // or, for ProseKit:
-import { blockSelectExtension } from '@citolab/prose-extensions/block-select';
+import { blockSelectExtension } from '@citolab/prose-extensions/prosekit-extensions';
 ```
 
 `NodeRangeSelection` is a custom `Selection` subclass spanning one or more
@@ -50,7 +50,9 @@ produces it; `blockSelectExtension` is the same plugin wrapped in
 ## `node-attrs-sync`
 
 ```ts
-import { nodeAttrsSyncPlugin, nodeAttrsSyncExtension } from '@citolab/prose-extensions/node-attrs-sync';
+import { nodeAttrsSyncPlugin } from '@citolab/prose-extensions/node-attrs-sync';
+// or, for ProseKit:
+import { nodeAttrsSyncExtension } from '@citolab/prose-extensions/prosekit-extensions';
 ```
 
 Listens for a `CustomEvent` dispatched by a Lit interaction component (detail:
@@ -63,12 +65,16 @@ attrs — skipped if nothing actually changed. `nodeAttrsSyncExtension` is the
 ## `paste-semantic-html`
 
 ```ts
-import { defineSemanticPasteExtension, makeHtmlSemantic, hydrateSemanticPasteImages } from '@citolab/prose-extensions/paste-semantic-html';
+import { createSemanticPastePlugin, makeHtmlSemantic, hydrateSemanticPasteImages } from '@citolab/prose-extensions/paste-semantic-html';
+// or, for ProseKit:
+import { defineSemanticPasteExtension } from '@citolab/prose-extensions/prosekit-extensions';
 ```
 
-ProseKit-only (imports `prosekit/core` directly — no raw-plugin variant).
+`createSemanticPastePlugin` is a plain ProseMirror `Plugin` (no `prosekit` peer
+dependency required); `defineSemanticPasteExtension` is the same plugin
+wrapped in `definePlugin(...)` for a ProseKit `union(...)`.
 
-#### defineSemanticPasteExtension(): Extension
+#### createSemanticPastePlugin(): Plugin / defineSemanticPasteExtension(): Extension
 
 Installs a paste-handling plugin that:
 - Runs pasted HTML through `makeHtmlSemantic` (`transformPastedHTML`) before
