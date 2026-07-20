@@ -55,7 +55,7 @@ export function FileActions({
 
       <DropdownMenu
         isDev={isDev}
-        label={<><IconUpload /> {t('fileImport')} <IconChevronDown /></>}
+        label={<><IconDownload /> {t('fileImport')} <IconChevronDown /></>}
         items={[
           { label: t('fileImportQti'),       title: t('fileImportQtiTitle'),       onClick: onImport },
           { label: t('fileImportJson'),       title: t('fileImportJsonTitle'),      onClick: onImportJson,        devOnly: true },
@@ -65,7 +65,7 @@ export function FileActions({
 
       <DropdownMenu
         isDev={isDev}
-        label={<><IconDownload /> {t('fileExport')} <IconChevronDown /></>}
+        label={<><IconUpload /> {t('fileExport')} <IconChevronDown /></>}
         items={[
           { label: `${t('fileExportQtiItem')} (${xmlName})`, title: `${t('fileExportQtiItemTitle')} — ${xmlName}`, onClick: onExportItem },
           { label: `${t('fileExportQtiTest')} (${zipName})`, title: `${t('fileExportQtiTestTitle')} — ${zipName}`, onClick: onExportPackage },
