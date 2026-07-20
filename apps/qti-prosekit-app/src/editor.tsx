@@ -38,6 +38,7 @@ export default function App() {
     syncStatus,
     lastSyncedAt,
     setFileName,
+    applyAutoFileName,
     commitSave,
     handleFileNameBlur,
     handleNew,
@@ -139,12 +140,13 @@ export default function App() {
   const [metadataTitle, setMetadataTitle] = useState('');
   useEffect(() => {
     const handler = (event: Event) => {
-      const detail = (event as CustomEvent<{ title: string }>).detail;
+      const detail = (event as CustomEvent<{ title: string; lockedHeadingTitle?: string }>).detail;
       setMetadataTitle(detail?.title ?? '');
+      applyAutoFileName(detail?.lockedHeadingTitle ?? '');
     };
     document.addEventListener('qti:metadata:change', handler);
     return () => document.removeEventListener('qti:metadata:change', handler);
-  }, []);
+  }, [applyAutoFileName]);
 
   const exportName = metadataTitle || fileName || 'item';
 
