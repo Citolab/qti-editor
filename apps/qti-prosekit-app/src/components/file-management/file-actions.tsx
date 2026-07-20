@@ -63,24 +63,16 @@ export function FileActions({
         ]}
       />
 
-      <ToolbarButton onClick={onExportItem} title={`${t('fileExportQtiItemTitle')} — ${xmlName}`}>
-        <IconDownload /> {t('fileExportQtiItem')} <span style={{ opacity: 0.6 }}>({xmlName})</span>
-      </ToolbarButton>
-
-      <ToolbarButton onClick={onExportPackage} title={`${t('fileExportQtiTestTitle')} — ${zipName}`}>
-        <IconDownload /> {t('fileExportQtiTest')} <span style={{ opacity: 0.6 }}>({zipName})</span>
-      </ToolbarButton>
-
-      {isDev && (
-        <DropdownMenu
-          isDev={isDev}
-          label={<><IconDownload /> {t('fileExport')} <IconChevronDown /></>}
-          items={[
-            { label: t('fileExportRoundtrip'),  title: t('fileExportRoundtripTitle'),  onClick: onExportRoundtripXml, devOnly: true },
-            { label: t('fileExportJson'),       title: t('fileExportJsonTitle'),       onClick: onExportJson,         devOnly: true },
-          ]}
-        />
-      )}
+      <DropdownMenu
+        isDev={isDev}
+        label={<><IconDownload /> {t('fileExport')} <IconChevronDown /></>}
+        items={[
+          { label: `${t('fileExportQtiItem')} (${xmlName})`, title: `${t('fileExportQtiItemTitle')} — ${xmlName}`, onClick: onExportItem },
+          { label: `${t('fileExportQtiTest')} (${zipName})`, title: `${t('fileExportQtiTestTitle')} — ${zipName}`, onClick: onExportPackage },
+          { label: t('fileExportRoundtrip'),                 title: t('fileExportRoundtripTitle'),                 onClick: onExportRoundtripXml, devOnly: true },
+          { label: t('fileExportJson'),                      title: t('fileExportJsonTitle'),                      onClick: onExportJson,         devOnly: true },
+        ]}
+      />
     </>
   );
 }

@@ -329,8 +329,9 @@ export class QtiEditorApp extends LitElement {
   async importJson(): Promise<void> {
     try {
       const pmDoc = await importJson(this.editor.schema);
-      this.editor.setContent(pmDoc.toJSON());
-      localStorage.setItem(getAutoSaveKey(), JSON.stringify(stampSchemaVersion(pmDoc.toJSON())));
+      const doc = ensureLockedHeader(pmDoc.toJSON());
+      this.editor.setContent(doc);
+      localStorage.setItem(getAutoSaveKey(), JSON.stringify(stampSchemaVersion(doc)));
       document.dispatchEvent(new CustomEvent('qti:content:change', { bubbles: true }));
     } catch (error) {
       console.error('Failed to import JSON:', error);
@@ -345,8 +346,9 @@ export class QtiEditorApp extends LitElement {
   async importRoundtripXml(): Promise<void> {
     try {
       const pmDoc = await importRoundtripXml(this.editor.schema);
-      this.editor.setContent(pmDoc.toJSON());
-      localStorage.setItem(getAutoSaveKey(), JSON.stringify(stampSchemaVersion(pmDoc.toJSON())));
+      const doc = ensureLockedHeader(pmDoc.toJSON());
+      this.editor.setContent(doc);
+      localStorage.setItem(getAutoSaveKey(), JSON.stringify(stampSchemaVersion(doc)));
       document.dispatchEvent(new CustomEvent('qti:content:change', { bubbles: true }));
     } catch (error) {
       console.error('Failed to import roundtrip XML:', error);
@@ -357,12 +359,12 @@ export class QtiEditorApp extends LitElement {
   async importXml(): Promise<void> {
     try {
       const result = await openXmlFilePicker({ schema: this.editor.schema });
-      this.editor.setContent(result.json);
+      const importedDoc = ensureLockedHeader(result.json);
+      this.editor.setContent(importedDoc);
 
       // Write the imported doc to localStorage immediately so saveFile() reads
       // the correct content without waiting for the persistence plugin's debounce.
-      const doc = this.editor.view.state.doc.toJSON();
-      localStorage.setItem(getAutoSaveKey(), JSON.stringify(stampSchemaVersion(doc)));
+      localStorage.setItem(getAutoSaveKey(), JSON.stringify(stampSchemaVersion(importedDoc)));
 
       // Notify the React layer (dirty state, auto-save status) that content changed.
       document.dispatchEvent(new CustomEvent('qti:content:change', { bubbles: true }));
@@ -403,7 +405,7 @@ export class QtiEditorApp extends LitElement {
         <div class="editor-card relative flex min-w-0 flex-1 flex-col rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden">
           ${this._editorMounted ? html`<qti-items-gutter .editor=${this.editor}></qti-items-gutter>` : ''}
           <div class="relative flex-1 min-h-0 overflow-auto" style="padding-left: 3rem;">
-            <div ${ref(this.editorRef)} class="card min-h-full px-6 py-6 prose" style="padding-left: 1rem;"></div>
+            <div ${ref(this.editorRef)} class="card min-h-full w-full max-w-none px-6 py-6 prose" style="padding-left: 1rem;"></div>
             <lit-editor-block-handle></lit-editor-block-handle>
             <lit-editor-drop-indicator></lit-editor-drop-indicator>
             <lit-editor-table-handle></lit-editor-table-handle>

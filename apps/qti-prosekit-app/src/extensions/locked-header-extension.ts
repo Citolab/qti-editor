@@ -6,7 +6,7 @@
  *
  * Their content remains editable (text in title/subtitle, attrs on the divider),
  * but they cannot be removed, replaced, or reordered. Everything below is
- * free-form `block+` content.
+ * free-form `block*` content.
  *
  * Pattern adapted from apps/qti-prosemirror-item/src/components/qti-layout-div.ts
  * (`divLockPlugin`): a `filterTransaction` that rejects any transaction which
@@ -42,7 +42,7 @@ export function defineLockedHeaderExtension(): Extension {
     defineNodeSpec({
       name: 'doc',
       topNode: true,
-      content: 'heading paragraph qtiItemDivider block+',
+      content: 'heading paragraph qtiItemDivider block*',
     }),
     definePlugin(() => lockPlugin),
   );
@@ -68,6 +68,14 @@ function hasJsonLockedPrefix(doc: NodeJSON): boolean {
   return true;
 }
 
+function removeAdjacentItemDividersAfterLockedPrefix(content: NodeJSON[]): NodeJSON[] {
+  const normalized = [...content];
+  while (normalized[LOCKED_TYPES.length]?.type === 'qtiItemDivider') {
+    normalized.splice(LOCKED_TYPES.length, 1);
+  }
+  return normalized;
+}
+
 /**
  * One-shot migration for documents persisted before this extension existed.
  * If the doc doesn't already start with the locked trio, prepend it so the
@@ -75,11 +83,19 @@ function hasJsonLockedPrefix(doc: NodeJSON): boolean {
  */
 export function ensureLockedHeader(doc: NodeJSON | undefined): NodeJSON {
   if (!doc || doc.type !== 'doc') return LOCKED_HEADER_DEFAULT_CONTENT;
-  if (hasJsonLockedPrefix(doc)) return doc;
+  if (hasJsonLockedPrefix(doc)) {
+    const content = doc.content ?? [];
+    const normalizedContent = removeAdjacentItemDividersAfterLockedPrefix(content);
+    if (normalizedContent.length === content.length) return doc;
+    return {
+      ...doc,
+      content: normalizedContent,
+    };
+  }
   const existing = doc.content ?? [];
   const seeded = LOCKED_HEADER_DEFAULT_CONTENT.content ?? [];
   return {
     ...doc,
-    content: [...seeded.slice(0, 3), ...existing],
+    content: removeAdjacentItemDividersAfterLockedPrefix([...seeded.slice(0, 3), ...existing]),
   };
 }
