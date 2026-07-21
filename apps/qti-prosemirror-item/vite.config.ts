@@ -1,3 +1,5 @@
+import { utimesSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -22,6 +24,8 @@ export default defineConfig({
     tsconfigPaths({ projects: ['../../tsconfig.json'], ignoreConfigErrors: true }),
     {
       name: 'watch-node-modules',
+      // JS deps (transformers, component packages) ARE tracked modules in Vite's
+      // graph, so a full reload on their change propagates the yalc push.
       handleHotUpdate({ file, server }) {
         if (
           file.includes('node_modules/@qti-components/') ||
@@ -31,6 +35,29 @@ export default defineConfig({
           server.ws.send({ type: 'full-reload' });
           return [];
         }
+      },
+      // The theme is pulled into app.css via `@import '@qti-components/theme/…'`
+      // and INLINED at transform time, so its node_modules file is NOT a tracked
+      // module — handleHotUpdate never fires for it and app.css's transform stays
+      // cached (you keep seeing the OLD theme after a `yalc push`). Watch the
+      // linked package dir directly and bump app.css's mtime on any linked CSS
+      // change so Vite re-inlines the @import and hot-updates the stylesheet.
+      configureServer(server) {
+        const appDir = fileURLToPath(new URL('.', import.meta.url));
+        const entryCss = resolve(appDir, 'src/app.css');
+        server.watcher.add(resolve(appDir, 'node_modules/@qti-components'));
+        const onLinkedCss = (file: string) => {
+          if (!file.endsWith('.css')) return;
+          if (!file.includes('/@qti-components/') && !file.includes('/@citolab/')) return;
+          const now = new Date();
+          try {
+            utimesSync(entryCss, now, now); // touch → Vite re-transforms app.css
+          } catch {
+            /* entry css may be mid-write; the next push will retrigger */
+          }
+        };
+        server.watcher.on('change', onLinkedCss);
+        server.watcher.on('add', onLinkedCss);
       },
     },
   ],

@@ -59,7 +59,7 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
         display: inline;
       }
 
-      [part='dropslot'] {
+      [part='drop'] {
         display: flex;
         flex-wrap: wrap;
         gap: 4px;
@@ -67,11 +67,11 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
       }
 
       /* Show empty dropslot only when this choice is a pending drop target. */
-      [part='dropslot']:empty {
+      [part='drop']:empty {
         display: none;
       }
 
-      :host(:state(pending)) [part='dropslot']:empty {
+      :host(:state(pending)) [part='drop']:empty {
         display: flex;
       }
     `,
@@ -114,8 +114,9 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
 
   override render() {
     return html`
-      <slot part="slot"></slot>
-      <div part="dropslot">
+      <div part="control"></div>
+      <slot part="label"></slot>
+      <div part="drop">
         ${this.fakeDrags.map(drag => renderEditChip(drag.label, drag.identifier, () => this._onRemoveFakeDrag(drag.identifier)))}
       </div>
     `;

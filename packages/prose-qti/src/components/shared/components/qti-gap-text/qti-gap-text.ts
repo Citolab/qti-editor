@@ -48,6 +48,7 @@ export class QtiGapTextEdit extends LitElement {
   }
 
   override render() {
-    return html`<slot></slot>`;
+    return html`<div part="control"></div>
+      <slot part="label"></slot>`;
   }
 }

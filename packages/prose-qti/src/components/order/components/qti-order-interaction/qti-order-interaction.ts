@@ -46,7 +46,7 @@ export class QtiOrderInteractionEdit extends Interaction {
       if (Number.isFinite(slotIndex)) this._placeSelectedChoice(sourceId, slotIndex);
     },
     // Mirror the pending state onto the interaction host so CSS can pulse
-    // empty drop slots via `:state(pending) ::part(drop-list):not(:has(qti-fake-drag))`.
+    // empty drop slots via `:state(pending) ::part(drop):not(:has(qti-fake-drag))`.
     onPendingChanged: pending => {
       if (pending != null) this.internals.states.add('pending');
       else this.internals.states.delete('pending');
@@ -243,10 +243,11 @@ export class QtiOrderInteractionEdit extends Interaction {
   }
 
   private _renderSlots() {
-    // Plain `<drop-list role="region" part="drop-list">` mirrors the runtime
-    // qti-components shape (qti-order-interaction.ts:60 in the runtime). It
-    // is NOT a registered custom element — just a styling/role hook. Pending
-    // and filled visuals are driven by:
+    // Plain `<drop-list role="region" part="drop">` mirrors the runtime
+    // qti-components shape (runtime renders `<div role="region" part="drop">`
+    // inside `part="drops"`). The `<drop-list>` tag is NOT a registered custom
+    // element — just a styling/role hook; the theme reaches it via ::part(drop).
+    // Pending and filled visuals are driven by:
     //   - `:state(pending)` on the interaction host (set by PendingSelectionController)
     //   - `:has(qti-fake-drag)` to detect filled slots in CSS
     return html`
@@ -254,7 +255,7 @@ export class QtiOrderInteractionEdit extends Interaction {
         <drop-list
           role="region"
           class="order-slot"
-          part="drop-list"
+          part="drop"
           data-slot-index=${index}
         >
           ${choiceId !== null

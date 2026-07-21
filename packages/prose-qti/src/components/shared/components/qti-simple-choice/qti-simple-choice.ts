@@ -39,7 +39,7 @@ export class QtiSimpleChoiceEdit extends CorrectResponseClickMixin(QtiSimpleChoi
         cursor: unset !important;
       }
       /* Style the control as clickable */
-      [part="ch"] {
+      [part="control"] {
         cursor: pointer;
       }
     `
@@ -50,10 +50,10 @@ export class QtiSimpleChoiceEdit extends CorrectResponseClickMixin(QtiSimpleChoi
   marker = '';
 
   override render() {
-    return html`<div part="ch" @click=${this.handleControlClick}>
-        <div part="cha"></div>
+    return html`<div part="control" @click=${this.handleControlClick}>
+        <div part="control-mark"></div>
       </div>
-      ${this.marker ? html`<div id="label">${this.marker}</div>` : nothing}
-      <slot part="slot"></slot>`;
+      ${this.marker ? html`<div id="label" part="marker">${this.marker}</div>` : nothing}
+      <slot part="label"></slot>`;
   }
 }

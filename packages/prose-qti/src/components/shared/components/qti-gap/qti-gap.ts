@@ -48,12 +48,14 @@ export class QtiGapEdit extends LitElement {
     // chip. The × inside <qti-fake-drag> dispatches `fake-drag-remove`; we
     // forward to the host interaction's existing onClickFilledGap handler via
     // a plain click (it inspects composedPath() for the gap).
-    return this.assignedLabel
-      ? html`<qti-fake-drag
-          part="drag"
-          .identifier=${this.identifier ?? ''}
-          .label=${this.assignedLabel}
-        ></qti-fake-drag>`
-      : nothing;
+    return html`<div part="drop">
+      ${this.assignedLabel
+        ? html`<qti-fake-drag
+            part="drag"
+            .identifier=${this.identifier ?? ''}
+            .label=${this.assignedLabel}
+          ></qti-fake-drag>`
+        : nothing}
+    </div>`;
   }
 }

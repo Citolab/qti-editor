@@ -53,9 +53,9 @@ export class QtiHottextEdit extends LitElement {
 
   setChecked(checked: boolean): void {
     if (checked) {
-      this.#internals.states.add('--checked');
+      this.#internals.states.add('checked');
     } else {
-      this.#internals.states.delete('--checked');
+      this.#internals.states.delete('checked');
     }
   }
 
@@ -93,10 +93,10 @@ export class QtiHottextEdit extends LitElement {
 
   override render() {
     return html`
-      <div part="ch" @mousedown=${this.#handleRadioMousedown} @click=${this.#handleRadioClick}>
-        <div part="cha"></div>
+      <div part="control" @mousedown=${this.#handleRadioMousedown} @click=${this.#handleRadioClick}>
+        <div part="control-mark"></div>
       </div>
-      <slot></slot>
+      <slot part="label"></slot>
       <button
         part="remove"
         type="button"

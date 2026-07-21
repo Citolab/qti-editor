@@ -35,7 +35,7 @@ qti-gap:state(pending) {
   animation: qti-edit-drop-pulse 1.2s ease-in-out infinite;
 }
 
-qti-simple-associable-choice:state(pending)::part(dropslot) {
+qti-simple-associable-choice:state(pending)::part(drop) {
   border-color: var(--qti-edit-drop-pending-border);
   background: var(--qti-edit-drop-pending-bg);
   animation: qti-edit-drop-pulse 1.2s ease-in-out infinite;
@@ -112,10 +112,10 @@ qti-hottext-interaction.qti-unselected-hidden qti-hottext:hover::part(ch) {
 
 /* ─── Hottext — author marked as correct response ──────────────────────────
    Editor-only signal that this hottext is part of the correct response.
-   Runtime visual (the radio/checkbox fill via theme's :state(--checked))
+   Runtime visual (the radio/checkbox fill via theme's :state(checked))
    stays intact; we add an extra blue outline so authors can scan a block
    of text and pick out the "scoring" hottexts at a glance. */
-qti-hottext-interaction qti-hottext:state(--checked) {
+qti-hottext-interaction qti-hottext:state(checked) {
   outline: 2px solid var(--qti-edit-hottext-checked-border);
   outline-offset: 2px;
   border-radius: 0.25rem;

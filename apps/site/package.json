@@ -18,7 +18,7 @@
     "@citolab/prose-qti-ui": "workspace:*",
     "@egoist/tailwindcss-icons": "^1.9.2",
     "@lit/context": "^1.1.6",
-    "@qti-components/theme": "https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+    "@qti-components/theme": "https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@6e2486ee2587932fcacf7f27182c994010d6c8a0",
     "astro": "^5.7.2",
     "lit": "^3.3.2",
     "prosemirror-commands": "^1.7.1",

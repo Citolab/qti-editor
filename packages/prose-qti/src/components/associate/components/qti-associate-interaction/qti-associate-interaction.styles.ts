@@ -11,12 +11,12 @@ const styles: CSSResultGroup = [
     }
 
     /* Pending pulse — only empty slots react.
-       qti-theme's outer qti-associate-interaction::part(drop-list) rule
+       qti-theme's outer qti-associate-interaction::part(drop) rule
        wins the cascade over shadow rules for ::part() selectors. We
        redirect by overriding the custom properties IT reads (which inherit
        through the shadow boundary). Animation lives in shadow because it
        doesn't conflict with the theme cascade. */
-    :host(:state(pending)) [part='drop-list']:not(:has(qti-fake-drag)) {
+    :host(:state(pending)) [part='drop']:not(:has(qti-fake-drag)) {
       --qti-border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
       --qti-bg: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
       animation: qti-edit-drop-pulse 1.2s ease-in-out infinite;

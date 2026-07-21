@@ -153,7 +153,7 @@ export class QtiAssociateInteractionEdit extends Interaction {
       this._placeIntoSlot(containerIndex, side, sourceId);
     },
     // Mirror pending state onto the interaction host so CSS can pulse empty
-    // drop slots via `:state(pending) ::part(drop-list):not(:has(qti-fake-drag))`.
+    // drop slots via `:state(pending) ::part(drop):not(:has(qti-fake-drag))`.
     onPendingChanged: pending => {
       if (pending != null) this.internals.states.add('pending');
       else this.internals.states.delete('pending');
@@ -353,12 +353,12 @@ export class QtiAssociateInteractionEdit extends Interaction {
     const state = this._state;
 
     return html`
-      <div class="drop-container">
+      <div class="drop-container" part="drops">
         ${state.containers.map(
           (container, i) => html`
-            <div part="associables-container">
+            <div part="drop-row">
               <div
-                part="drop-list"
+                part="drop"
                 class="dl"
                 data-drop-slot=${container.left === null ? `${i}:left` : nothing}
               >
@@ -367,7 +367,7 @@ export class QtiAssociateInteractionEdit extends Interaction {
                   : nothing}
               </div>
               <div
-                part="drop-list"
+                part="drop"
                 class="dl"
                 data-drop-slot=${container.right === null ? `${i}:right` : nothing}
               >
@@ -418,7 +418,7 @@ export class QtiAssociateInteractionEdit extends Interaction {
 
     return html`
       <slot name="prompt"></slot>
-      <slot part="associable-choices" @slotchange=${this._onSlotChange}></slot>
+      <slot part="drags" @slotchange=${this._onSlotChange}></slot>
       ${this._setupDone ? this._renderDropContainer() : nothing}
     `;
   }

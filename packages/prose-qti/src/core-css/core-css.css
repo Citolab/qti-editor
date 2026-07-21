@@ -27,7 +27,7 @@ qti-match-interaction:not(.qti-match-tabular) {
 
       cursor: text !important;
 
-      &::part(dropslot) {
+      &::part(drop) {
         height: 10rem;
       }
     }
@@ -35,9 +35,9 @@ qti-match-interaction:not(.qti-match-tabular) {
 }
 
 /* Tabular match: header choices are projected into row/col headers; the
-   drag-drop dropslot baked into qti-simple-associable-choice's shadow must
+   drag-drop drop region baked into qti-simple-associable-choice's shadow must
    not show in tabular mode. Reaches across the choice's shadow via ::part(). */
-qti-match-interaction.qti-match-tabular qti-simple-associable-choice::part(dropslot) {
+qti-match-interaction.qti-match-tabular qti-simple-associable-choice::part(drop) {
   display: none;
 }
 

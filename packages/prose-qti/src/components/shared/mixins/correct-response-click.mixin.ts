@@ -92,14 +92,14 @@ export const CorrectResponseClickMixin = <T extends Constructor<LitElement & { i
     }
 
     /**
-     * Update the :state(--checked) CSS state on this element.
-     * Uses --checked to match the CSS selectors in qti-simple-choice styles.
+     * Update the :state(checked) CSS state on this element.
+     * Uses `checked` to match the theme's `:state(checked)` selectors.
      */
     private _updateCheckedState() {
       if (this.selected) {
-        this.internals.states.add('--checked');
+        this.internals.states.add('checked');
       } else {
-        this.internals.states.delete('--checked');
+        this.internals.states.delete('checked');
       }
     }
 

@@ -27,7 +27,7 @@ export class QtiInlineChoice extends CorrectResponseClickMixin(QtiInlineChoiceBa
       align-items: center;
       gap: 0.25rem;
     }
-    [part='ch'] {
+    [part='control'] {
       cursor: pointer;
       flex-shrink: 0;
       display: inline-flex;
@@ -39,13 +39,13 @@ export class QtiInlineChoice extends CorrectResponseClickMixin(QtiInlineChoiceBa
       border-radius: 50%;
       box-sizing: border-box;
     }
-    [part='cha'] {
+    [part='control-mark'] {
       width: 0.5em;
       height: 0.5em;
       border-radius: 50%;
       background: transparent;
     }
-    :host(:state(--checked)) [part='cha'] {
+    :host(:state(checked)) [part='control-mark'] {
       background: currentColor;
     }
     [part='label'] {
@@ -79,11 +79,11 @@ export class QtiInlineChoice extends CorrectResponseClickMixin(QtiInlineChoiceBa
 
   override render() {
     return html`
-      <div part="ch" @mousedown=${(e: MouseEvent) => e.preventDefault()} @click=${this.handleControlClick}>
-        <div part="cha"></div>
+      <div part="control" @mousedown=${(e: MouseEvent) => e.preventDefault()} @click=${this.handleControlClick}>
+        <div part="control-mark"></div>
       </div>
       <div part="label" @mousedown=${this.handleLabelMousedown}>
-        <slot part="slot"></slot>
+        <slot></slot>
       </div>
     `;
   }

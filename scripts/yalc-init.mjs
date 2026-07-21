@@ -46,6 +46,9 @@ for (const { dir, packages } of consumers) {
   execSync(`yalc add ${packages.join(' ')}`, { cwd, stdio: 'inherit' });
 }
 
+// Also pin transitive @qti-components/* resolutions onto the yalc copies.
+execSync('node scripts/yalc-overrides.mjs add', { cwd: root, stdio: 'inherit' });
+
 console.log('\nResolving file: deps via pnpm install...');
 execSync('pnpm install', { cwd: root, stdio: 'inherit' });
 

@@ -5,7 +5,7 @@ import externalStyles from '@qti-components/order-interaction/styles';
 /**
  * Shadow-DOM styles. Layout only — drop-slot per-state visuals (idle,
  * pending pulse, filled) and chip styling are app-owned via host-state
- * selectors (`qti-order-interaction:state(pending) ::part(drop-list)`)
+ * selectors (`qti-order-interaction:state(pending) ::part(drop)`)
  * and qti-theme's `::part(drag)` rules.
  */
 const styles: CSSResultGroup = [
@@ -54,14 +54,14 @@ const styles: CSSResultGroup = [
     }
 
     /* Pending pulse — only empty slots react.
-       qti-theme's outer qti-order-interaction::part(drop-list) rule wins
+       qti-theme's outer qti-order-interaction::part(drop) rule wins
        the cascade over shadow rules for ::part() selectors. We can't
        beat it with a more-specific shadow rule, so instead we override the
        custom properties IT reads (--qti-border-color, --qti-bg). Those
        inherit through the shadow boundary, so setting them on the empty
-       drop-list redirects theme's own declarations. Animation lives in
+       drop region redirects theme's own declarations. Animation lives in
        shadow because it doesn't conflict with the theme cascade. */
-    :host(:state(pending)) [part='drop-list']:not(:has(qti-fake-drag)) {
+    :host(:state(pending)) [part='drop']:not(:has(qti-fake-drag)) {
       --qti-border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
       --qti-bg: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
       animation: qti-edit-drop-pulse 1.2s ease-in-out infinite;

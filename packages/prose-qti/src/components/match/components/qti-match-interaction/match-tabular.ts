@@ -190,15 +190,14 @@ export class TabularController implements ReactiveController {
     const matchMaxAttr = source.getAttribute('match-max');
     const matchMax = matchMaxAttr == null ? 1 : Number(matchMaxAttr);
     const type: 'radio' | 'checkbox' = matchMax === 1 ? 'radio' : 'checkbox';
-    const typeBase = type === 'radio' ? 'rb' : 'cb';
 
     return this.targetChoices.map((target, c) => {
       const targetId = target.getAttribute('identifier') ?? '';
       const pair = `${sourceId} ${targetId}`;
       const checked = correctResponse.has(pair);
-      const checkedPart = checked ? `${typeBase}-checked` : '';
-      const chPart = `ch ${typeBase}`;
-      const chaPart = `cha ${checkedPart}`.trim();
+      const checkedToken = checked ? 'checked' : '';
+      const controlPart = `control ${type} ${checkedToken}`.trim();
+      const controlMarkPart = `control-mark ${type} ${checkedToken}`.trim();
       return html`
         <label
           part="input-cell"
@@ -212,8 +211,8 @@ export class TabularController implements ReactiveController {
             .checked=${checked}
             data-pair=${pair}
           />
-          <span part=${chPart}>
-            <span part=${chaPart}></span>
+          <span part=${controlPart}>
+            <span part=${controlMarkPart}></span>
           </span>
         </label>
       `;
