@@ -30,9 +30,10 @@ const config: StorybookConfig = {
   ],
   staticDirs: ['../public'],
   "framework": "@storybook/web-components-vite",
-  async viteFinal(config: any, { configType }: { configType?: string }) {
+  async viteFinal(config: any) {
     return {
       ...config,
+      publicDir: false,
       plugins: [
         ...(config.plugins || []),
         tailwindcss(),

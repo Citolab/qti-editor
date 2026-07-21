@@ -24,66 +24,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      editor: ${{ steps.filter.outputs.editor }}
-      site: ${{ steps.filter.outputs.site }}
-    steps:
-      - name: Checkout triggering commit
-        if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' }}
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-          fetch-depth: 0
-
-      - name: Resolve diff base
-        id: base
-        if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' }}
-        shell: bash
-        run: |
-          base_sha="$(git rev-parse \"${{ github.event.workflow_run.head_sha }}^\" 2>/dev/null || true)"
-          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
-
-      - name: Detect relevant changes
-        id: filter
-        shell: bash
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "editor=${{ inputs.deploy_editor }}" >> "$GITHUB_OUTPUT"
-            echo "site=${{ inputs.deploy_site }}" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          base_sha="${{ steps.base.outputs.base_sha }}"
-          head_sha="${{ github.event.workflow_run.head_sha }}"
-
-          if [[ -z "$base_sha" ]]; then
-            echo "editor=false" >> "$GITHUB_OUTPUT"
-            echo "site=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          changed=$(git diff --name-only "$base_sha" "$head_sha")
-
-          editor_re="^(apps/qti-prosekit-app/|packages/prose-qti/|packages/prose-extensions/|packages/prose-qti-ui/|firebase\.json|\.firebaserc|scripts/prepare-hosting-editor\.mjs|package\.json|pnpm-lock\.yaml|\.github/workflows/deploy\.yml)"
-          site_re="^(apps/site/|packages/prose-qti/|packages/prose-extensions/|packages/prose-qti-ui/|firebase\.json|\.firebaserc|scripts/prepare-hosting-site\.mjs|package\.json|pnpm-lock\.yaml|\.github/workflows/deploy\.yml)"
-
-          if echo "$changed" | grep -qE "$editor_re"; then
-            echo "editor=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "editor=false" >> "$GITHUB_OUTPUT"
-          fi
-
-          if echo "$changed" | grep -qE "$site_re"; then
-            echo "site=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "site=false" >> "$GITHUB_OUTPUT"
-          fi
-
   deploy-editor:
-    needs: changes
-    if: ${{ needs.changes.outputs.editor == 'true' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.deploy_editor) || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -118,8 +60,7 @@ jobs:
         run: npx firebase-tools@latest deploy --only hosting:editor --token "${{ secrets.FIREBASE_TOKEN }}"
 
   deploy-site:
-    needs: changes
-    if: ${{ needs.changes.outputs.site == 'true' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.deploy_site) || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

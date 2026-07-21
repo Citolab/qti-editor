@@ -25,9 +25,21 @@ export function useFileOperations(untitledLabel: string) {
   useEffect(() => { userRef.current = user; }, [user]);
 
   const [currentFile, setCurrentFile] = useState<SavedFile | null>(() => getCurrentFile(storageScope));
-  const [fileName, setFileName] = useState(() => getCurrentFile(storageScope)?.name ?? untitledLabel);
+  const [fileName, setFileNameState] = useState(() => getCurrentFile(storageScope)?.name ?? untitledLabel);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
+  const fileNameManuallyEditedRef = useRef(getCurrentFile(storageScope) != null);
+
+  const setFileName = useCallback((value: string) => {
+    fileNameManuallyEditedRef.current = true;
+    setFileNameState(value);
+  }, []);
+
+  const applyAutoFileName = useCallback((value: string) => {
+    const trimmed = value.trim();
+    if (fileNameManuallyEditedRef.current || !trimmed) return;
+    setFileNameState(trimmed);
+  }, []);
 
   const runSync = useCallback(async (op: () => Promise<void>) => {
     setSyncStatus('syncing');
@@ -44,7 +56,8 @@ export function useFileOperations(untitledLabel: string) {
   useEffect(() => {
     const scopedCurrentFile = getCurrentFile(storageScope);
     setCurrentFile(scopedCurrentFile);
-    setFileName(scopedCurrentFile?.name ?? untitledLabel);
+    setFileNameState(scopedCurrentFile?.name ?? untitledLabel);
+    fileNameManuallyEditedRef.current = scopedCurrentFile != null;
     setSyncStatus('idle');
     setLastSyncedAt(null);
   }, [storageScope, untitledLabel]);
@@ -69,7 +82,7 @@ export function useFileOperations(untitledLabel: string) {
       Promise.resolve(saveFile(storageScope, name, id)),
     onSuccess: (file) => {
       setCurrentFile(file);
-      setFileName(file.name);
+      setFileNameState(file.name);
       queryClient.invalidateQueries({ queryKey: ['files', storageScope] });
       const u = userRef.current;
       if (u) runSync(() => syncSaveFile(u.uid, file));
@@ -91,15 +104,15 @@ export function useFileOperations(untitledLabel: string) {
   const commitSave = useCallback(
     (name?: string) => {
       const resolvedName = (name ?? fileName).trim() || untitledLabel;
-      setFileName(resolvedName);
+      setFileNameState(resolvedName);
       saveMutation.mutate({ name: resolvedName, id: currentFile?.id });
     },
-    [fileName, currentFile?.id, saveMutation]
+    [fileName, untitledLabel, currentFile?.id, saveMutation]
   );
 
   const handleFileNameBlur = useCallback(() => {
     const trimmed = fileName.trim() || untitledLabel;
-    setFileName(trimmed);
+    setFileNameState(trimmed);
     if (!currentFile || trimmed !== currentFile.name) {
       saveMutation.mutate({ name: trimmed, id: currentFile?.id });
     }
@@ -108,7 +121,8 @@ export function useFileOperations(untitledLabel: string) {
   const handleNew = useCallback(() => {
     clearCurrentSession(storageScope);
     setCurrentFile(null);
-    setFileName(untitledLabel);
+    setFileNameState(untitledLabel);
+    fileNameManuallyEditedRef.current = false;
   }, [storageScope, untitledLabel]);
 
   const handleLoad = useCallback(
@@ -117,7 +131,8 @@ export function useFileOperations(untitledLabel: string) {
       if (!result) return null;
       const { file, compatibility } = result;
       setCurrentFile(file);
-      setFileName(file.name);
+      setFileNameState(file.name);
+      fileNameManuallyEditedRef.current = true;
       queryClient.invalidateQueries({ queryKey: ['files', storageScope] });
       if (compatibility) {
         const report = buildCompatibilityReport([{
@@ -141,7 +156,8 @@ export function useFileOperations(untitledLabel: string) {
       if (currentFile?.id === id) {
         clearCurrentSession(storageScope);
         setCurrentFile(null);
-        setFileName(untitledLabel);
+        setFileNameState(untitledLabel);
+        fileNameManuallyEditedRef.current = false;
       }
     },
     [currentFile?.id, deleteMutation, storageScope, untitledLabel]
@@ -154,6 +170,7 @@ export function useFileOperations(untitledLabel: string) {
     syncStatus,
     lastSyncedAt,
     setFileName,
+    applyAutoFileName,
     commitSave,
     handleFileNameBlur,
     handleNew,
