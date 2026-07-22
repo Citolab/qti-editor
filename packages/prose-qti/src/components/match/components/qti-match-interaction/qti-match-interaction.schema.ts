@@ -5,7 +5,7 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiMatchInteractionNodeSpec: NodeSpec = {
   group: 'block',
-  content: 'qtiPrompt? qtiSimpleMatchSet{2}',
+  content: 'qtiPrompt qtiSimpleMatchSet{2}',
   attrs: {
     shuffle: { default: false },
     class: { default: null },

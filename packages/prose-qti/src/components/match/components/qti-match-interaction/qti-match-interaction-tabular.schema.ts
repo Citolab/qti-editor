@@ -24,7 +24,7 @@ export function hasTabularMatchClass(element: HTMLElement): boolean {
  */
 export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
   group: 'block',
-  content: 'qtiPrompt? qtiSimpleMatchSet{2}',
+  content: 'qtiPrompt qtiSimpleMatchSet{2}',
   attrs: {
     shuffle: { default: false },
     class: { default: null },

@@ -4,7 +4,7 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
   group: 'block',
-  content: 'qtiPrompt? qtiGapText{2,} paragraph+',
+  content: 'qtiPrompt qtiGapText{2,} paragraph+',
   attrs: {
     maxAssociations: { default: 0 },
     shuffle: { default: false },

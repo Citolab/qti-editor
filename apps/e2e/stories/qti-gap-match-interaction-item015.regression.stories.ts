@@ -23,7 +23,7 @@ import { nodes, marks } from 'prosemirror-schema-basic';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { roundtripGapMatch, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
-import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-roundtrip';
+import { ensureInteractionPrompts, exportItemXml, importItemFromString } from '@citolab/prose-qti/item-roundtrip';
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
 import { blockSelectPlugin } from '@citolab/prose-extensions/prosemirror';
 import { gapMatchInteractionDescriptor } from '@citolab/prose-qti/components/gap-match';
@@ -81,7 +81,7 @@ const editorPlugins: Plugin[] = [keymap(baseKeymap), blockSelectPlugin];
 export const importItem015 = (): ProseMirrorNode =>
   importItemFromString(sourceXML, schema, {
     assetBasePath: '/qti/kennisnet',
-    transforms: [roundtripGapMatch, roundtripItemBody]
+    transforms: [roundtripGapMatch, roundtripItemBody, ensureInteractionPrompts(schema)]
   });
 
 export const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document =>
