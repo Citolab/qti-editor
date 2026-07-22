@@ -84,7 +84,7 @@ import { choiceInteractionDescriptor }      from '@citolab/prose-qti/components/
 import { extendedTextInteractionDescriptor } from '@citolab/prose-qti/components/extended-text';
 import { textEntryInteractionDescriptor }    from '@citolab/prose-qti/components/text-entry';
 // …import the rest the same way
-import { exportItemXml, importItemFromUrl } from '@citolab/prose-qti/item-roundtrip';
+import { defaultRoundtripTransforms, ensureInteractionPrompts, exportItemXml, importItemFromUrl } from '@citolab/prose-qti/item-roundtrip';
 
 // Side-effect imports register the Lit custom elements used by the node views.
 import '@citolab/prose-qti/components/choice/register.js';
@@ -126,7 +126,13 @@ export const qtiPlugins: Plugin[] = [
 ];
 
 export function importQtiItem(href: string, schema: Schema): Promise<ProseMirrorNode> {
-  return importItemFromUrl(href, schema);
+  // The schema above requires `qtiPrompt` on interactions that QTI 3.0 itself
+  // marks optional, so source XML that omits a prompt needs one injected
+  // before parsing — see the "Prompt handling" section of the QTI Item
+  // Roundtrip reference.
+  return importItemFromUrl(href, schema, {
+    transforms: [...defaultRoundtripTransforms, ensureInteractionPrompts(schema)],
+  });
 }
 
 export function exportQtiItem(doc: ProseMirrorNode, schema: Schema): string {

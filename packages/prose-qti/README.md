@@ -323,9 +323,9 @@ to `doc.attrs.identifier` / `doc.attrs.title`. `exportItemXml`'s
 `options.format` (default `true`) controls pretty-printing.
 
 Also exported from `item-roundtrip`: `ensureInteractionPrompts` (fills in
-missing `<qti-prompt>` elements before export) and `stripEmptyPrompts` /
+missing `<qti-prompt>` elements before import parsing) and `stripEmptyPrompts` /
 `defaultRoundtripExportTransforms` (the reverse — drop prompts that ended up
-empty).
+empty on export).
 
 ### `qti3-item-import`
 
