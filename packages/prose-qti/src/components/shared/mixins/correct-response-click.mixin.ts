@@ -31,7 +31,7 @@ export interface CorrectResponseClickInterface {
 /**
  * Mixin that adds correct response click behavior to choice elements.
  * 
- * When the user clicks on the checkbox/radio control (part="ch"), 
+ * When the user clicks on the checkbox/radio control (part="control"),
  * this mixin toggles the selection state and dispatches an event
  * that bubbles up to the parent interaction.
  * 
@@ -75,7 +75,7 @@ export const CorrectResponseClickMixin = <T extends Constructor<LitElement & { i
 
     /**
      * Handle clicks on the checkbox/radio control area.
-     * Call this from the template's @click handler on part="ch".
+     * Call this from the template's @click handler on part="control".
      * This runs inside the shadow DOM so ProseMirror won't intercept it.
      */
     public handleControlClick(event: MouseEvent) {

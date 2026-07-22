@@ -3,8 +3,6 @@ import { html } from 'lit';
 import '../associate';
 import '../../components/register';
 
-import '@qti-components/theme/item.css';
-
 export default {
   title: 'Interactions/Associate',
   parameters: {

@@ -3,5 +3,5 @@
   "compilerOptions": {
     "types": ["vite/client", "vitest/globals"]
   },
-  "include": ["src", "apps/*/src", "apps/*/stories", "packages/*/src", "packages/*/*/src", "stories", "tools/testing/vitest.d.ts"]
+  "include": ["src", "apps/*/src", "apps/*/stories", "packages/*/src", "packages/*/*/src", "stories", ".storybook", "tools/testing/vitest.d.ts"]
 }

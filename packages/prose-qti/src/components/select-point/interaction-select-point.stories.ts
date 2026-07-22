@@ -1,4 +1,3 @@
-import '@qti-components/theme/item.css';
 import '@citolab/prose-qti/components/select-point';
 import '@citolab/prose-qti/components/shared';
 import { html } from 'lit';

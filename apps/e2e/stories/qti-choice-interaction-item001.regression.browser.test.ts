@@ -44,7 +44,7 @@ test('clicking a second choice exports cardinality=multiple with both correct va
   // response. choice3 is already correct in the fixture; adding choice2 makes
   // the response multiple-cardinality.
   const choice2 = await findByShadowText(host, 'Jodium (I)');
-  const control = choice2.closest('qti-simple-choice')!.shadowRoot!.querySelector<HTMLElement>('[part="ch"]')!;
+  const control = choice2.closest('qti-simple-choice')!.shadowRoot!.querySelector<HTMLElement>('[part="control"]')!;
   control.click();
 
   const responseDeclaration = exportAssessmentItemDoc(view.state.doc).querySelector(

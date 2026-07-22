@@ -3,8 +3,6 @@ import { html } from 'lit';
 import '../extended-text';
 import '../../components/register';
 
-import '@qti-components/theme/item.css';
-
 export default {
   title: 'Interactions/Extended Text',
   parameters: {

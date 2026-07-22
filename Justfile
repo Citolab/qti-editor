@@ -13,6 +13,16 @@ default:
 dev:
 	pnpm run dev:prosemirror-item
 
+# Run the test suite. Extra args pass through to vitest: `just test qti-gap`, `just test --project browser`
+[group('primary')]
+test *args:
+	pnpm run test {{args}}
+
+# Same, but re-runs on change: `just test-watch qti-gap`
+[group('primary')]
+test-watch *args:
+	pnpm run test:watch {{args}}
+
 # Linked dev: yalc-couple local qti-components + run its build→yalc:push watcher alongside the qti-prosemirror-item app (HMR / full refresh on push)
 [group('primary')]
 yalc:

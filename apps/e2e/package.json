@@ -19,7 +19,7 @@
     "prosemirror-view": "^1.38.1"
   },
   "devDependencies": {
-    "@storybook/web-components-vite": "^10.4.6",
+    "@storybook/web-components-vite": "^10.5.3",
     "typescript": "^5.0.0"
   }
 }

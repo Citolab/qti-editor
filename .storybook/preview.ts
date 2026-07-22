@@ -4,6 +4,9 @@ import { toEqualXml } from './../tools/testing/setup/toEqualXml';
 
 import type { Preview } from '@storybook/web-components-vite';
 
+// Same order the apps use (see apps/*/src/app.css): the canonical theme
+// palette first, then the editor's core-css layered on top.
+import '@qti-components/theme/item.css';
 import './../packages/prose-qti/src/core-css/core-css.css';
 
 // Make the `toEqualXml` matcher available to story `play` functions.

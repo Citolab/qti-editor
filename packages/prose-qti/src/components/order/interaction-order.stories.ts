@@ -1,4 +1,3 @@
-import '@qti-components/theme/item.css';
 import { html } from 'lit';
 import { expect, userEvent, waitFor } from 'storybook/test';
 

@@ -4,8 +4,6 @@ import { expect, userEvent, waitFor } from 'storybook/test';
 
 import '../../components/register';
 
-import '@qti-components/theme/item.css';
-
 export default {
   title: 'Interactions/Match',
   parameters: {

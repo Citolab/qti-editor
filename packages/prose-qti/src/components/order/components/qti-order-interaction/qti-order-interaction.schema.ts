@@ -2,7 +2,7 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiOrderInteractionNodeSpec: NodeSpec = {
   group: 'block',
-  content: 'qtiPrompt? qtiSimpleChoice+',
+  content: 'qtiPrompt qtiSimpleChoice+',
   attrs: {
     shuffle: { default: false },
     orientation: { default: 'vertical' },

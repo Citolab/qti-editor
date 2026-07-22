@@ -1,4 +1,3 @@
-import '@qti-components/theme/item.css';
 import '@citolab/prose-qti/components/text-entry';
 import { html } from 'lit';
 
