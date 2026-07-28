@@ -36,6 +36,9 @@ apps/
   qti-prosemirror-item/ ← @qti-editor/prosemirror-item  (raw ProseMirror example)
   site/                ← @qti-editor/site  (Astro documentation site)
   e2e/                 (end-to-end tests)
+
+schema/
+  content-model.mjs    (authored data file: the roundtrip content model — see below)
 ```
 
 ## Layer Ownership
@@ -332,6 +335,12 @@ Migrations live in `apps/qti-prosekit-app/src/lib/compatibility/migrations/`, on
 | `html-v1-to-v2` | 1 → 2 | normalise legacy camelCase HTML attrs |
 
 To add a migration: bump `CURRENT_SCHEMA_VERSION`, add a `json-vN-to-vM.ts` file, register it in `compatibility/migrations/index.ts`, and add a test.
+
+## Content Model Manifest (`schema/`)
+
+`schema/content-model.mjs` is a standalone, authored data file (not code any package imports today) describing the roundtrip content model: which nodes may contain which, and in what number, expressed as DTD-shaped content expressions keyed by QTI tag name. It exists because `cem generate` can describe a component's class shape but not its document grammar — a content model has to be written down by hand and kept closed (every name used must resolve to a node, a group, or `text`).
+
+It is not derived from `packages/prose-qti`'s ProseMirror node specs and does not replace them; it is a portable, DOM-import-free mirror intended for tooling that needs the grammar without instantiating an editor (e.g. a future QTI MCP server or validator). Nothing in the repo consumes it yet. Treat it as a spec to keep in sync by hand when an interaction's allowed children change, not as generated output.
 
 ## Roundtrip-QTI Format
 
