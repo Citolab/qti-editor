@@ -1,202 +1,595 @@
 /**
- * The QTI roundtrip content model: which nodes may contain which, and in what number.
+ * The editor's document model: every node the QTI editor schema defines, what it may contain,
+ * and the flags that govern how it behaves.
  *
- * Consumed by tools/build/cem-interactions-mcp.mjs, which merges these expressions into
- * custom-elements.interactions.json as a `content` field per element plus top-level `groups`
- * and `marks`. The QTI MCP server reads only that manifest — it contains no QTI knowledge of
- * its own, so anything the generator must know has to be expressible here.
+ * ## What this is
  *
- * ## Why this file exists
+ * A declarative mirror of the ProseMirror schema the editor actually builds at runtime. It is
+ * data, not code — nothing imports ProseKit or ProseMirror to read it — but every `content`
+ * string here is a valid ProseMirror content expression and every node name is a real PM node
+ * name, so `NODES` can be fed to `new Schema()` after dropping `tagName` and supplying
+ * `parseDOM` / `toDOM`.
  *
- * `cem generate` cannot produce it. The analyzer describes a JavaScript class; a content model
- * is a document grammar. Nothing in `QtiChoiceInteraction` states that it needs at least one
- * `qti-simple-choice`, so no amount of static analysis can recover it. It is authored.
+ * ## What consumes it
  *
- * It lives in one block rather than as a `@content` JSDoc tag per element for two reasons:
- * the grammar has to CLOSE (every name used must be defined, and that is far easier to verify
- * when the whole thing is visible at once), and a third of the nodes below — `p`, `li`, `td`,
- * `text` — have no component to hang a JSDoc block on.
+ * Nothing, yet. It exists so that a generator, validator, importer or MCP server can reason
+ * about the editor's grammar without instantiating an editor — which today requires a DOM,
+ * custom-element registration and the whole ProseKit stack. Its contract is simply: this file
+ * says what the editor's schema says.
  *
- * ## Syntax
+ * ## Where the real schema lives
  *
- * DTD-shaped, the same notation ProseMirror uses for `content`:
+ * There is no single schema file. It is composed:
  *
- *   a b        sequence — a then b          a?     zero or one
- *   a | b      alternatives                 a*     zero or more
- *   (a b)      grouping                     a+     one or more
- *   a{2}       exactly two                  a{2,}  two or more
+ *   1. `listInteractionSchemaNodeSpecs()` in packages/prose-qti/src/core/interactions/composer.ts
+ *      flattens 12 interaction descriptors into a deduped (first-wins) list of NodeSpecs.
+ *   2. Each descriptor's `nodeSpecs` entry points at a `*.schema.ts` file under
+ *      packages/prose-qti/src/components/ — those are the authoritative `content` values.
+ *   3. The base prose nodes come from ProseKit's `defineBasicExtension()` (doc, text, paragraph,
+ *      heading, image, hardBreak, table) plus `defineList()` in
+ *      packages/prose-extensions/src/prosekit/list.ts.
  *
- * Names are TAG names, hyphenated, matching `tagName` in the manifest exactly, so the engine
- * needs no mapping between grammar and markup. (ProseMirror conventionally uses `snake_case`
- * node names; if prose-qti consumes this, that is a mechanical rename in one place.)
+ * This file mirrors that **portable core** — the schema any consumer of `@citolab/prose-qti`
+ * gets. It deliberately omits app-local nodes: `qtiItemDivider` and the `doc` override in
+ * apps/qti-prosekit-app, and `qtiLayoutDiv` in apps/qti-prosemirror-item.
  *
- * `text` is the only built-in. Everything else — including `p`, `br` and `img` — is declared
- * below, because the engine must not carry a private list of what HTML is.
+ * ## Names
+ *
+ * Keys are ProseMirror node names — camelCase for QTI nodes, ProseKit's own names for the base
+ * ones (`paragraph`, `hardBreak`, `tableRow`, `bullet_list`). `tagName` carries the markup name
+ * where the two differ.
+ *
+ * This is not cosmetic. ProseMirror tokenizes content expressions with
+ * `string.split(/\s*(?=\b|\W|$)/)`, so a hyphen terminates a name and `parseExprAtom` throws
+ * `Unexpected token '-'`. Hyphenated tag names cannot appear in a content expression at all.
  *
  * ## Provenance
  *
  * Seeded by compiling the QTI 3 XSD's element declarations into content expressions, then
- * curated. The XSD was right about structure and useless about content: `qti-simple-choice`
- * came back with 40+ alternatives spanning the whole HTML flow model. Rows marked `corrected`
- * below are ones where these components deviate from the standard.
+ * reconciled against the editor. The XSD was right about structure and far too permissive about
+ * content: `qti-simple-choice` came back with 40+ alternatives spanning the whole HTML flow
+ * model, where the editor allows exactly one paragraph of text. Where the editor narrows or
+ * departs from the standard, an `XSD:` comment on the node records what the standard permits
+ * and why the editor does not.
  */
 
 /**
- * Named sets of nodes, referenced by the expressions in CONTENT. Groups may reference other
- * groups; the engine expands them transitively.
+ * One entry per node, keyed by ProseMirror node name.
  *
- * The static / non-static split is QTI's own. `ItemBodyDType` admits block interactions
- * directly, while a prompt is static content only — so `inline` and `block` are the full sets,
- * and `*_static` are the same sets minus anything a candidate can respond to.
+ * Fields mirror `NodeSpec` one-to-one — `content`, `group`, `inline`, `atom`, `marks`,
+ * `defining`, `isolating`, `selectable`, `draggable`, `topNode`, `attrs` — minus `parseDOM` and
+ * `toDOM`, which are serialization concerns and not part of the grammar. `tagName` and
+ * `placeholder` are the two additions: the markup name, and the editor's empty-node hint.
  *
- * This split earns its keep in exactly one place: `qti-prompt` is static, which makes an
- * interaction nested inside a prompt ungrammatical. That is a mistake a generator makes
- * readily, and it is worth catching structurally rather than in prose.
+ * A node with no `content` is a leaf. `atom: true` says the editor treats it as an opaque unit.
  *
- * The QTI XSD has no named groups — it inlines every alternative at every use site, which is
- * why compiling it produced those 40+ branches. Naming them is what keeps CONTENT readable.
+ * Closure obligation: every bare name appearing in any `content` expression must be a key of
+ * this object, a key of `GROUPS`, or the built-in `text`.
  */
-export const GROUPS = {
-  inline_static: 'text | br | img',
-
-  inline:
-    'inline_static | qti-text-entry-interaction | qti-inline-choice-interaction ' +
-    '| qti-hottext | qti-gap',
-
-  block_static: 'p | ul | ol | table',
-
-  block:
-    'block_static | qti-choice-interaction | qti-order-interaction | qti-match-interaction ' +
-    '| qti-gap-match-interaction | qti-hottext-interaction | qti-extended-text-interaction ' +
-    '| qti-select-point-interaction'
-};
-
-/**
- * Inline formatting, carried as ProseMirror-style marks rather than as alternatives in the
- * expressions. A mark wraps text without taking part in the node model, so these need no
- * entries in CONTENT and no closure obligation.
- *
- * Marks are available wherever `text` is. `sub` / `sup` are here because chemistry and maths
- * items cannot do without them.
- */
-export const MARKS = ['em', 'strong', 'sub', 'sup'];
-
-/**
- * One entry per node. An empty string means the node is empty (void).
- *
- * Every name appearing in any expression — here or in GROUPS — must be a key of this object,
- * or the literal `text`. cem-interactions-mcp.mjs asserts that closure before writing the
- * manifest; a dangling name fails the build rather than surfacing later as an MCP tool that
- * cannot generate one particular element.
- */
-export const CONTENT = {
-  // ── document ───────────────────────────────────────────────────────────────
+export const NODES = {
+  // ── base: document ─────────────────────────────────────────────────────────
   //
-  // `ItemBodyDType` verbatim. With `doc` present the roundtrip "fragment" needs no definition
-  // of its own: a fragment is any single `block`, a whole item body is `doc`, and the engine
-  // has one code path for both.
-  doc: 'block+',
+  // apps/qti-prosekit-app narrows this to `heading paragraph qtiItemDivider block*` to pin a
+  // locked title/intro header. That is an app decision, not part of the portable core.
+  doc: {
+    content: 'block+',
+    topNode: true,
+    attrs: { title: { default: '' }, identifier: { default: '' } }
+  },
 
-  // ── block interactions ─────────────────────────────────────────────────────
-  'qti-choice-interaction': 'qti-prompt? qti-simple-choice+',
-  'qti-order-interaction': 'qti-prompt? qti-simple-choice+',
+  // ── base: prose ────────────────────────────────────────────────────────────
+  text: { group: 'inline' },
+
+  // `richtext` is not declared by any base node. It is patched on at composition time —
+  // qti-interactions-extension.ts appends `defineNodeSpec({name:'paragraph', group:'block
+  // richtext'})` and the same for `table`, but only when qtiRubricBlock is included. Recorded
+  // here in its patched form because that is what every real editor sees.
+  paragraph: { tagName: 'p', content: 'inline*', group: 'block richtext' },
+
+  heading: {
+    tagName: 'h1..h6',
+    content: 'inline*',
+    group: 'block',
+    defining: true,
+    attrs: { level: { default: 1 } }
+  },
+
+  // Block, not inline. Worth stating plainly: a bare `<img>` in running text does not survive
+  // as inline content — it is lifted out of the paragraph.
+  //
+  // XSD: no `alt`. The standard requires a text alternative and the editor does not model one
+  // here. (imgSelectPoint does, as `imageAlt`.)
+  image: {
+    tagName: 'img',
+    group: 'block',
+    defining: true,
+    draggable: true,
+    attrs: { src: {}, width: { default: null }, height: { default: null } }
+  },
+
+  hardBreak: { tagName: 'br', group: 'inline', inline: true, selectable: false },
+
+  // ── base: lists ────────────────────────────────────────────────────────────
+  bullet_list: { tagName: 'ul', content: 'list_item+', group: 'block richtext' },
+
+  // XSD: `start` and `type`. ProseMirror's list package models only the start number, as
+  // `order`; list-marker style is left to CSS.
+  ordered_list: {
+    tagName: 'ol',
+    content: 'list_item+',
+    group: 'block richtext',
+    attrs: { order: { default: 1 } }
+  },
+
+  list_item: { tagName: 'li', content: 'paragraph block*', defining: true },
+
+  // ── base: tables ───────────────────────────────────────────────────────────
+  //
+  // No `caption` node exists. `thead` / `tbody` / `colgroup` are likewise absent, as
+  // prosemirror-tables omits them — `th` carries the accessibility weight.
+  table: { content: 'tableRow+', group: 'block richtext', isolating: true },
+  tableRow: { tagName: 'tr', content: '(tableCell | tableHeaderCell)*' },
+
+  // XSD: `th` also carries `scope`. Not modelled — screen-reader table navigation currently
+  // relies on the th/td distinction alone.
+  tableCell: {
+    tagName: 'td',
+    content: 'block+',
+    isolating: true,
+    attrs: { colspan: { default: 1 }, rowspan: { default: 1 }, colwidth: { default: null } }
+  },
+  tableHeaderCell: {
+    tagName: 'th',
+    content: 'block+',
+    isolating: true,
+    attrs: { colspan: { default: 1 }, rowspan: { default: 1 }, colwidth: { default: null } }
+  },
+
+  // ── QTI: block interactions ────────────────────────────────────────────────
+  //
+  // All of them are `defining` and `isolating`: an interaction is a unit that paste must not
+  // dissolve and that selection must not escape by accident.
+  //
+  // XSD: every one of these has `qti-prompt?` — optional. The editor requires it, so an
+  // interaction always has a stable first child to land the cursor in and a place for the
+  // question text to live. An empty prompt renders as its placeholder, not as nothing.
+
+  qtiChoiceInteraction: {
+    tagName: 'qti-choice-interaction',
+    content: 'qtiPrompt qtiSimpleChoice+',
+    group: 'block',
+    defining: true,
+    isolating: true,
+    attrs: {
+      maxChoices: { default: 0 },
+      class: { default: null },
+      correctResponse: { default: null },
+      responseIdentifier: { default: null },
+      score: { default: 1 },
+      shuffle: { default: false }
+    }
+  },
+
+  qtiOrderInteraction: {
+    tagName: 'qti-order-interaction',
+    content: 'qtiPrompt qtiSimpleChoice+',
+    group: 'block',
+    defining: true,
+    isolating: true,
+    attrs: {
+      shuffle: { default: false },
+      orientation: { default: 'vertical' },
+      class: { default: null },
+      correctResponse: { default: null },
+      responseIdentifier: { default: null },
+      score: { default: 1 }
+    }
+  },
+
+  qtiAssociateInteraction: {
+    tagName: 'qti-associate-interaction',
+    content: 'qtiPrompt qtiSimpleAssociableChoice+',
+    group: 'block',
+    defining: true,
+    isolating: true,
+    attrs: {
+      maxAssociations: { default: 1 },
+      minAssociations: { default: 0 },
+      shuffle: { default: false },
+      class: { default: null },
+      correctResponse: { default: null },
+      responseIdentifier: { default: null },
+      score: { default: 1 }
+    }
+  },
 
   // Exactly two match sets: sources first, then targets. The direction is what makes a
   // `correct-response` pair mean anything.
-  'qti-match-interaction': 'qti-prompt? qti-simple-match-set{2}',
+  //
+  // XSD: permits an empty match set (`minOccurs="0"`) — see qtiSimpleMatchSet.
+  qtiMatchInteraction: {
+    tagName: 'qti-match-interaction',
+    content: 'qtiPrompt qtiSimpleMatchSet{2}',
+    group: 'block',
+    defining: true,
+    isolating: true,
+    attrs: {
+      shuffle: { default: false },
+      class: { default: null },
+      correctResponse: { default: null },
+      responseIdentifier: { default: null },
+      score: { default: 1 }
+    }
+  },
+
+  // Same tag as qtiMatchInteraction. The only discriminator is `class~="qti-match-tabular"`:
+  // the tabular parse rule requires it at priority 80, and the non-tabular rule returns false
+  // when it is present. Two PM nodes, one markup element.
+  qtiMatchInteractionTabular: {
+    tagName: 'qti-match-interaction',
+    content: 'qtiPrompt qtiSimpleMatchSet{2}',
+    group: 'block',
+    defining: true,
+    isolating: true,
+    attrs: {
+      shuffle: { default: false },
+      class: { default: null },
+      correctResponse: { default: null },
+      responseIdentifier: { default: null },
+      score: { default: 1 },
+      dataFirstColumnHeader: { default: null }
+    }
+  },
 
   // The draggable sources come first as a flat list, then the prose holding the gaps.
-  'qti-gap-match-interaction': 'qti-prompt? qti-gap-text+ p+',
-
-  // corrected: the XSD nests hottexts inside the full block model. Collapsed to `p`, which is
-  // where they actually go — the choices are embedded in running text, not siblings of it.
-  'qti-hottext-interaction': 'qti-prompt? p+',
-
-  'qti-extended-text-interaction': 'qti-prompt?',
-
-  // corrected: the XSD allows `object | img | picture`. These components render an image.
-  'qti-select-point-interaction': 'qti-prompt? img',
-
-  // ── inline interactions ────────────────────────────────────────────────────
   //
-  // corrected: the XSD has a leading `qti-label?`. These components use the `data-prompt`
-  // attribute instead, so the element has none.
-  'qti-inline-choice-interaction': 'qti-inline-choice+',
+  // XSD: `qti-gap-text` is `+`. The editor requires two — a single-source gap match is a
+  // degenerate interaction with only one possible answer.
+  qtiGapMatchInteraction: {
+    tagName: 'qti-gap-match-interaction',
+    content: 'qtiPrompt qtiGapText{2,} paragraph+',
+    group: 'block',
+    defining: true,
+    isolating: true,
+    attrs: {
+      maxAssociations: { default: 0 },
+      shuffle: { default: false },
+      class: { default: null },
+      correctResponse: { default: null },
+      responseIdentifier: { default: null },
+      score: { default: 1 }
+    }
+  },
 
-  // Void: the input is the interaction. It sits inside a `p`, between text.
-  'qti-text-entry-interaction': '',
-
-  // ── interaction children ───────────────────────────────────────────────────
+  // The exception to the prompt rule: no prompt at all. Hottext choices are embedded in
+  // running text, so the instruction and the answerable content are the same paragraphs —
+  // a separate prompt would have nothing to say.
   //
-  // corrected: the XSD permits an empty match set (`minOccurs="0"`). Valid, and never what
-  // anyone means.
-  'qti-simple-match-set': 'qti-simple-associable-choice+',
+  // XSD: nests hottexts inside the full block model. Collapsed to `paragraph+`.
+  qtiHottextInteraction: {
+    tagName: 'qti-hottext-interaction',
+    content: 'paragraph+',
+    group: 'block',
+    defining: true,
+    isolating: true,
+    attrs: {
+      responseIdentifier: { default: null },
+      maxChoices: { default: 1 },
+      minChoices: { default: 0 },
+      class: { default: null },
+      correctResponse: { default: null },
+      score: { default: 1 }
+    }
+  },
 
-  'qti-simple-choice': 'inline_static*',
-  'qti-simple-associable-choice': 'inline_static*',
-  'qti-gap-text': 'inline_static*',
-  'qti-hottext': 'inline_static*',
-  'qti-inline-choice': 'inline_static*',
+  // Prompt only — the response is a textarea the runtime supplies, with no authored content.
+  qtiExtendedTextInteraction: {
+    tagName: 'qti-extended-text-interaction',
+    content: 'qtiPrompt',
+    group: 'block',
+    defining: true,
+    isolating: true,
+    attrs: {
+      responseIdentifier: { default: null },
+      expectedLength: { default: null },
+      expectedLines: { default: null },
+      placeholderText: { default: null },
+      patternMask: { default: null },
+      class: { default: null },
+      score: { default: 1 }
+    }
+  },
 
-  // Void: a drop target. Its content is whatever the candidate puts there.
-  'qti-gap': '',
-
-  // ── static content ─────────────────────────────────────────────────────────
+  // XSD: allows `object | img | picture`. The editor uses a dedicated `imgSelectPoint` node
+  // rather than the generic `image`, because the image here is the response surface — its
+  // coordinates are the answer key — and it must not be draggable, liftable or replaceable
+  // the way a decorative image is.
   //
-  // Mixed on purpose. A one-line prompt emits bare text with no `p` wrapper, and a prompt that
-  // needs a table can have one. Static, so no interaction may be a direct child.
-  'qti-prompt': '(inline_static | block_static)*',
+  // Note this one is `isolating` but not `defining`.
+  qtiSelectPointInteraction: {
+    tagName: 'qti-select-point-interaction',
+    content: 'qtiPrompt imgSelectPoint',
+    group: 'block',
+    selectable: true,
+    isolating: true,
+    attrs: {
+      responseIdentifier: { default: null },
+      maxChoices: { default: 0 },
+      minChoices: { default: 0 },
+      class: { default: null },
+      areaMappings: { default: '[]' },
+      correctResponse: { default: null },
+      score: { default: 1 }
+    }
+  },
 
-  p: 'inline*',
+  // ── QTI: inline interactions ───────────────────────────────────────────────
+  //
+  // XSD: has a leading `qti-label?`. The editor uses the `data-prompt` attribute instead, so
+  // the element has no child prompt.
+  qtiInlineChoiceInteraction: {
+    tagName: 'qti-inline-choice-interaction',
+    content: 'qtiInlineChoice+',
+    group: 'inline',
+    inline: true,
+    selectable: true,
+    isolating: true,
+    attrs: {
+      responseIdentifier: { default: null },
+      shuffle: { default: false },
+      class: { default: null },
+      correctResponse: { default: null },
+      score: { default: 1 },
+      dataPrompt: { default: null }
+    }
+  },
 
-  ul: 'li+',
-  ol: 'li+',
-  li: '(inline | block)*',
+  // Leaf: the input is the interaction. It sits inside a paragraph, between text.
+  // `marks: '_'` so it survives inside emphasised or bold runs.
+  qtiTextEntryInteraction: {
+    tagName: 'qti-text-entry-interaction',
+    group: 'inline',
+    inline: true,
+    atom: true,
+    marks: '_',
+    selectable: true,
+    attrs: {
+      responseIdentifier: { default: null },
+      correctResponse: { default: null },
+      caseSensitive: { default: false },
+      class: { default: null },
+      placeholderText: { default: null },
+      score: { default: 1 }
+    }
+  },
 
-  // `thead` / `tbody` / `colgroup` omitted, as prosemirror-tables omits them: the XSD allows
-  // `tr` directly under `table`, and `th` + `scope` carries the accessibility weight.
-  table: 'caption? tr+',
-  tr: '(td | th)+',
+  // ── QTI: interaction children ──────────────────────────────────────────────
+  //
+  // XSD: permits an empty match set (`minOccurs="0"`). Valid, and never what anyone means.
+  qtiSimpleMatchSet: {
+    tagName: 'qti-simple-match-set',
+    content: 'qtiSimpleAssociableChoice+',
+    group: 'block'
+  },
 
-  // Non-static: a table of gaps to fill in is a real and common item shape.
-  td: '(inline | block)*',
-  th: '(inline | block)*',
-  caption: 'inline_static*',
+  // The `*Paragraph` wrappers below are the editor's central narrowing of the standard.
+  //
+  // XSD: these choice bodies admit the whole HTML flow model. The editor pins each to exactly
+  // one paragraph of plain text. That is what makes a choice a single editable line with a
+  // stable cursor target, a working placeholder, and predictable Enter behaviour — Enter
+  // creates the next choice rather than a second paragraph inside the current one.
+  //
+  // The cost is real and worth naming: no images, line breaks or lists inside a choice.
+  // qtiSimpleAssociableChoice is the one exception, and it takes media as an alternative to
+  // its paragraph, never alongside it.
 
-  br: '',
-  img: ''
+  qtiSimpleChoice: {
+    tagName: 'qti-simple-choice',
+    content: 'qtiSimpleChoiceParagraph',
+    placeholder: 'Enter answer option…',
+    attrs: { identifier: { default: 'A' }, fixed: { default: false } }
+  },
+  qtiSimpleChoiceParagraph: { tagName: 'p', content: 'text*', group: 'block' },
+
+  qtiSimpleAssociableChoice: {
+    tagName: 'qti-simple-associable-choice',
+    content: 'qtiSimpleAssociableChoiceParagraph | qtiMedia',
+    group: 'block',
+    placeholder: 'Enter matching option…',
+    attrs: {
+      identifier: { default: 'A' },
+      matchMax: { default: 1 },
+      matchMin: { default: 0 },
+      fixed: { default: false }
+    }
+  },
+  // The one choice body that is `inline*` rather than `text*`, so marks and hard breaks
+  // survive here. It belongs to no group — reachable only through its parent.
+  qtiSimpleAssociableChoiceParagraph: { tagName: 'p', content: 'inline*' },
+
+  qtiGapText: {
+    tagName: 'qti-gap-text',
+    content: 'text*',
+    group: 'block',
+    placeholder: 'Enter gap text…',
+    attrs: { identifier: { default: null }, matchMax: { default: 1 } }
+  },
+
+  qtiHottext: {
+    tagName: 'qti-hottext',
+    content: 'text*',
+    group: 'inline',
+    inline: true,
+    marks: '_',
+    selectable: true,
+    attrs: { identifier: { default: null } }
+  },
+
+  qtiInlineChoice: {
+    tagName: 'qti-inline-choice',
+    content: 'text*',
+    group: 'inline',
+    inline: true,
+    selectable: true,
+    placeholder: 'Enter option…',
+    attrs: { identifier: { default: 'A' } }
+  },
+
+  // Leaf: a drop target. Its content is whatever the candidate puts there.
+  qtiGap: {
+    tagName: 'qti-gap',
+    group: 'inline',
+    inline: true,
+    atom: true,
+    selectable: true,
+    attrs: { identifier: { default: null }, matchMax: { default: 1 } }
+  },
+
+  // ── QTI: shared static content ─────────────────────────────────────────────
+  //
+  // XSD: a prompt is static content — inline and block, no interactions. The editor is
+  // stricter still: exactly one paragraph of text. The static/non-static split the standard
+  // needs to keep interactions out of prompts is therefore unnecessary here; `text*` already
+  // admits nothing to nest.
+  //
+  // Belongs to no group — reachable only as a named child of an interaction.
+  qtiPrompt: {
+    tagName: 'qti-prompt',
+    content: 'qtiPromptParagraph',
+    placeholder: 'Enter the question or instruction…'
+  },
+  qtiPromptParagraph: { tagName: 'p', content: 'text*', group: 'block' },
+
+  // ── QTI: media ─────────────────────────────────────────────────────────────
+  //
+  // The response surface of a select-point interaction. A leaf: its coordinates are the answer
+  // key, so it is selected and replaced whole, never edited in place.
+  imgSelectPoint: {
+    tagName: 'img',
+    group: 'block qtiMedia',
+    atom: true,
+    selectable: true,
+    attrs: {
+      imageSrc: { default: null },
+      imageAlt: { default: null },
+      imageWidth: { default: null },
+      imageHeight: { default: null }
+    }
+  },
+
+  // Not declared by any descriptor. Injected by the composer from
+  // `baseSchemaDependencyNodeSpecs.qtiMedia` when a descriptor declares
+  // `baseSchemaDependencies.nodeGroups: ['qtiMedia']` — associate, match and matchTabular do.
+  // It exists so `qtiSimpleAssociableChoice`'s `| qtiMedia` branch resolves in schemas that
+  // include those interactions but not select-point.
+  qtiMediaStub: {
+    tagName: 'qti-media-stub',
+    group: 'block qtiMedia',
+    atom: true,
+    selectable: true
+  },
+
+  // ── QTI: rubric ────────────────────────────────────────────────────────────
+  //
+  // Author-facing instructions / scoring / navigation guidance. `richtext+` deliberately
+  // excludes interactions: a rubric is prose about the item, never part of it.
+  //
+  // On the wire the body is wrapped in a `qti-content-body` element. That wrapper is pure
+  // serialization framing and has no PM node.
+  qtiRubricBlock: {
+    tagName: 'qti-rubric-block',
+    content: 'richtext+',
+    group: 'block',
+    defining: true,
+    createGapCursor: true,
+    attrs: {
+      use: { default: 'instructions', values: ['instructions', 'scoring', 'navigation'] },
+      view: {
+        default: 'author',
+        values: ['author', 'candidate', 'proctor', 'scorer', 'testConstructor', 'tutor']
+      }
+    }
+  }
 };
 
 /**
- * Attributes these nodes need that no CEM analysis will ever produce, because they are HTML,
- * not custom elements. Merged into the manifest so the engine can validate them like any
- * other attribute — without them it would reject `colspan` as unknown.
+ * Inline formatting, carried as ProseMirror marks. A mark wraps text without taking part in the
+ * node model, so these need no entries in NODES and no closure obligation.
+ *
+ * Two, and only two. An earlier revision of this file listed `sub` and `sup` on the grounds
+ * that chemistry and maths items cannot do without them — true, and they are still not in the
+ * editor. If they are added, they belong here and in prose-extensions/src/prosekit/strong-em.ts.
+ *
+ * The pure-ProseMirror apps (apps/qti-prosemirror-item, apps/site) pass `marks` from
+ * prosemirror-schema-basic wholesale and therefore also carry `link` and `code`. Those are not
+ * part of the portable core.
+ *
+ * Marks are available wherever `text` is, except where a node restricts them. `marks: '_'` on
+ * qtiHottext and qtiTextEntryInteraction means "all marks", so that those nodes survive inside
+ * an emphasised or bold run rather than splitting it.
  */
-export const HTML_ATTRIBUTES = {
-  img: [
-    { name: 'src', required: true, type: 'string' },
-    { name: 'alt', type: 'string', description: 'Text alternative. Required for accessibility.' },
-    { name: 'width', type: 'number' },
-    { name: 'height', type: 'number' }
+export const MARKS = {
+  em: { tagName: 'em' },
+  strong: { tagName: 'strong' }
+};
+
+/**
+ * Group membership, derived from the `group` fields in NODES.
+ *
+ * This is a reverse index for reading convenience, **not** a definition. ProseMirror groups are
+ * plain space-separated labels declared on each node; they cannot be defined as expressions and
+ * cannot reference one another. NODES is the source of truth — if these disagree, NODES wins.
+ *
+ * `richtext` is the odd one: no base node declares it. It is patched onto `paragraph` and
+ * `table` at composition time, and only when qtiRubricBlock is in the schema. See the note on
+ * `paragraph` in NODES.
+ *
+ * Note what is absent. The QTI XSD's static / non-static split — `inline_static` and
+ * `block_static`, the sets a candidate cannot respond to — has no counterpart here. The
+ * standard needs it to keep interactions out of prompts; the editor gets the same guarantee
+ * from concrete node types, because `qtiPrompt` admits only `qtiPromptParagraph`, which admits
+ * only `text`.
+ */
+export const GROUPS = {
+  block: [
+    'paragraph',
+    'heading',
+    'image',
+    'bullet_list',
+    'ordered_list',
+    'table',
+    'qtiChoiceInteraction',
+    'qtiOrderInteraction',
+    'qtiAssociateInteraction',
+    'qtiMatchInteraction',
+    'qtiMatchInteractionTabular',
+    'qtiGapMatchInteraction',
+    'qtiHottextInteraction',
+    'qtiExtendedTextInteraction',
+    'qtiSelectPointInteraction',
+    'qtiSimpleMatchSet',
+    'qtiSimpleAssociableChoice',
+    'qtiSimpleChoiceParagraph',
+    'qtiPromptParagraph',
+    'qtiGapText',
+    'imgSelectPoint',
+    'qtiMediaStub',
+    'qtiRubricBlock'
   ],
-  ol: [
-    { name: 'start', type: 'number' },
-    { name: 'type', type: "'1'|'a'|'A'|'i'|'I'", values: ['1', 'a', 'A', 'i', 'I'] }
+
+  inline: [
+    'text',
+    'hardBreak',
+    'qtiInlineChoiceInteraction',
+    'qtiTextEntryInteraction',
+    'qtiHottext',
+    'qtiInlineChoice',
+    'qtiGap'
   ],
-  td: [
-    { name: 'colspan', type: 'number' },
-    { name: 'rowspan', type: 'number' }
-  ],
-  th: [
-    { name: 'colspan', type: 'number' },
-    { name: 'rowspan', type: 'number' },
-    {
-      name: 'scope',
-      type: "'row'|'col'|'rowgroup'|'colgroup'",
-      values: ['row', 'col', 'rowgroup', 'colgroup'],
-      description: 'Which cells this header describes. Needed for screen-reader table navigation.'
-    }
-  ]
+
+  richtext: ['paragraph', 'table', 'bullet_list', 'ordered_list'],
+
+  qtiMedia: ['imgSelectPoint', 'qtiMediaStub']
 };
 
 /**
@@ -208,16 +601,20 @@ export const HTML_ATTRIBUTES = {
  * candidate is marked wrong. DTDs carry ID/IDREF as a separate mechanism for exactly this
  * reason; ProseMirror has no equivalent at all.
  *
- * The manifest already types the answer keys machine-readably (`identifier`,
- * `identifier[]`, `directedPair[]`, `point[]`, `string`), so the engine can resolve references
- * generically — reading the type, never the tag name. This list is the other half: what a
- * reference may resolve TO.
+ * The interactions type their answer keys machine-readably (`identifier`, `identifier[]`,
+ * `directedPair[]`, `point[]`, `string`), so a consumer can resolve references generically —
+ * reading the type, never the tag name. This list is the other half: what a reference may
+ * resolve TO.
+ *
+ * Not every `identifier` attribute is one of these. `doc.identifier` is the item's own
+ * identifier, and the app-local `qtiItemDivider.identifier` names an item within a package.
+ * Neither is a response-reference target.
  */
 export const IDENTIFIED = [
-  'qti-simple-choice',
-  'qti-simple-associable-choice',
-  'qti-gap',
-  'qti-gap-text',
-  'qti-hottext',
-  'qti-inline-choice'
+  'qtiSimpleChoice',
+  'qtiSimpleAssociableChoice',
+  'qtiGap',
+  'qtiGapText',
+  'qtiHottext',
+  'qtiInlineChoice'
 ];
