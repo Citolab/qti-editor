@@ -15,14 +15,54 @@ test('exported QTI matches the ITEM006-editor.xml snapshot', async () => {
   await expect(exportedXml).toMatchFileSnapshot('./__file_snapshots__/ITEM006-editor.xml');
 });
 
-test('ITEM006 snapshot scores 1 in the runtime when the correct response is staged', async () => {
-  const harness = await mountQtiRuntime(snapshotXml);
-  const ai = harness.assessmentItem as any;
+// ITEM006 is a single inline-choice dropdown: lager / hoger / onveranderd.
+// correct = choice_hoger
+//
+// The runtime renders a combobox: button[aria-haspopup=listbox] opens a
+// [role=listbox] popover. Two gestures, exactly as a candidate performs them.
+//
+// The options are matched by TEXT, not by role: only the placeholder button
+// carries role="option"; the real choices are slotted <qti-inline-choice>
+// elements with no role at all. See finding #12 in docs/testing-findings.md.
+type Frame = Awaited<ReturnType<typeof mountQtiRuntime>>['frame'];
 
-  // ITEM006 correct response is choice_hoger (single inline-choice).
-  ai.updateResponseVariable('RESPONSE', 'choice_hoger');
-  ai.processResponse();
-  expect(+ai.getOutcome('SCORE').value).toBe(1);
+const pick = async (frame: Frame, option: string) => {
+  await frame.getByRole('button').first().click(); // opens the popover
+  await frame.getByText(option, { exact: true }).click();
+};
+
+test('ITEM006 scores 1 when the candidate picks the correct option from the dropdown', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  await pick(harness.frame, 'hoger');
+
+  expect(harness.response()).toBe('choice_hoger');
+  expect(harness.score()).toBe(1);
+
+  harness.destroy();
+});
+
+test('ITEM006 scores 0 when the candidate picks a wrong option', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  await pick(harness.frame, 'lager');
+
+  expect(harness.response()).toBe('choice_lager');
+  expect(harness.score()).toBe(0);
+
+  harness.destroy();
+});
+
+test('ITEM006 is single-cardinality: picking again replaces the previous answer', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  await pick(harness.frame, 'onveranderd');
+  expect(harness.score()).toBe(0);
+
+  await pick(harness.frame, 'hoger');
+
+  expect(harness.response()).toBe('choice_hoger');
+  expect(harness.score()).toBe(1);
 
   harness.destroy();
 });

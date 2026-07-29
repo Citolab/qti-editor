@@ -25,7 +25,7 @@ import { baseKeymap } from 'prosemirror-commands';
 import { roundtripSelectPoint, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
 import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-roundtrip';
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
-import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
+import { blockSelectPlugin } from '@citolab/prose-extensions/prosemirror';
 import { selectPointInteractionDescriptor } from '@citolab/prose-qti/components/select-point';
 import sourceXML from '@qti-editor/example-items/ITEM016.xml?raw';
 
@@ -33,6 +33,11 @@ import '@citolab/prose-qti/components/select-point/register.js';
 import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
 
 import 'prosemirror-view/style/prosemirror.css';
+// The same stylesheets the shipping editors load (see apps/*/src/style.css).
+// Without the item theme the interaction controls compute to 0x0, so they are
+// invisible to real pointer events — see finding #10 in docs/testing-findings.md.
+import '@qti-components/theme/item.css';
+import '@citolab/prose-qti/core-css.css';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 

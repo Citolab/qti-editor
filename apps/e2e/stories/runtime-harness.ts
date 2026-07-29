@@ -13,20 +13,115 @@
  * `scripts/vendor-qti-runtime.mjs` (runs as vitest globalSetup before tests).
  */
 
+import { page, userEvent } from 'vitest/browser';
+
+import type { FrameLocator } from 'vitest/browser';
+
 export interface RuntimeHarness {
   iframe: HTMLIFrameElement;
   assessmentItem: HTMLElement;
   doc: Document;
   win: Window;
+  /**
+   * Locator scoped to the runtime iframe. Use this for ALL interaction — it
+   * dispatches trusted CDP events, unlike `element.click()` / `dispatchEvent`.
+   * See "Testing Architecture" in AGENTS.md.
+   */
+  frame: FrameLocator;
+  /** Runs response processing and returns the SCORE outcome as a number. */
+  score(): number;
+  /** The currently staged value of a response variable. */
+  response(identifier?: string): unknown;
   destroy(): void;
+}
+
+/** Runtime API surface we drive; the components are untyped from here. */
+interface AssessmentItemApi extends HTMLElement {
+  processResponse(): void;
+  getOutcome(identifier: string): { value: unknown };
+  getResponse?(identifier: string): { value: unknown } | undefined;
+  updateResponseVariable(identifier: string, value: unknown): void;
 }
 
 const TIMEOUT_MS = 5000;
 
-export async function mountQtiRuntime(itemXml: string): Promise<RuntimeHarness> {
-  const body = itemXml.replace(/^<\?xml[^?]*\?>\s*/i, '');
+/** Distinguishes concurrently mounted harnesses for `frameLocator`. */
+let harnessSeq = 0;
 
+/**
+ * Places a draggable onto a drop target using the component's KEYBOARD
+ * placement protocol — real trusted key events, no staging.
+ *
+ * Implemented by `drag-drop-core.mixin.ts` in @citolab/qti-components:
+ *   focus a draggable, `Space` grabs it (drop index 0), `ArrowRight` advances
+ *   the drop target, `Space` drops and saves the response.
+ *
+ * This is the accessible path, and the only drag path Playwright can drive —
+ * pointer dragging hangs on its actionability check (finding #14).
+ *
+ * @param label      visible text of the chip to place
+ * @param slotIndex  zero-based index into the interaction's drop targets
+ */
+export async function placeByKeyboard(
+  harness: RuntimeHarness,
+  label: string,
+  slotIndex: number,
+): Promise<void> {
+  await harness.frame.getByText(label, { exact: true }).first().click(); // focus the chip
+  await userEvent.keyboard('{Space}'); // grab
+  for (let i = 0; i < slotIndex; i++) {
+    await userEvent.keyboard('{ArrowRight}');
+  }
+  await userEvent.keyboard('{Space}'); // drop + saveResponse()
+}
+
+/**
+ * Stages a response value directly, bypassing the UI.
+ *
+ * PREFER REAL INTERACTION. Use this ONLY for the drag-based interactions
+ * (order, match, gap-match, associate), which cannot currently be driven by
+ * Playwright — see finding #14 in docs/testing-findings.md. Every other
+ * interaction type must be exercised through `harness.frame` locators so the
+ * gesture itself is covered.
+ *
+ * Tests using this helper verify SCORING, not the drag gesture: a regression
+ * that broke dragging entirely would still leave them green.
+ */
+export function stageResponse(
+  harness: Pick<RuntimeHarness, 'assessmentItem'>,
+  value: unknown,
+  identifier = 'RESPONSE',
+): void {
+  (harness.assessmentItem as AssessmentItemApi).updateResponseVariable(identifier, value);
+}
+
+/**
+ * Rewrites `<qti-foo ... />` to `<qti-foo ...></qti-foo>`.
+ *
+ * The item is injected into an HTML `srcdoc`, and HTML has no self-closing
+ * syntax for non-void elements: the parser treats `<qti-x/>` as an OPEN tag and
+ * nests every following sibling inside it. The editor legitimately self-closes
+ * empty elements in its XML output, so without this the runtime receives a
+ * different tree than the XML describes — e.g. ITEM005's sibling
+ * `qti-rubric-block[view=scorer]` became a CHILD of the interaction, and the
+ * runtime hid the interaction along with the scorer-only rubric.
+ *
+ * Only hyphenated (custom) elements are rewritten; real void elements such as
+ * `<img/>` and `<br/>` must keep their self-closing form.
+ */
+function expandSelfClosingCustomElements(xml: string): string {
+  return xml.replace(
+    /<([a-z][a-z0-9]*-[a-z0-9-]*)((?:[^>"']|"[^"]*"|'[^']*')*?)\/>/gi,
+    '<$1$2></$1>',
+  );
+}
+
+export async function mountQtiRuntime(itemXml: string): Promise<RuntimeHarness> {
+  const body = expandSelfClosingCustomElements(itemXml.replace(/^<\?xml[^?]*\?>\s*/i, ''));
+
+  const testId = `qti-runtime-${++harnessSeq}`;
   const iframe = document.createElement('iframe');
+  iframe.setAttribute('data-testid', testId);
   iframe.style.border = '0';
   iframe.style.width = '800px';
   iframe.style.height = '600px';
@@ -78,11 +173,21 @@ export async function mountQtiRuntime(itemXml: string): Promise<RuntimeHarness> 
   // Microtask for Lit's first render.
   await Promise.resolve();
 
+  const api = assessmentItem as AssessmentItemApi;
+
   return {
     iframe,
     assessmentItem,
     doc,
     win,
+    frame: page.frameLocator(page.getByTestId(testId)),
+    score() {
+      api.processResponse();
+      return Number(api.getOutcome('SCORE').value);
+    },
+    response(identifier = 'RESPONSE') {
+      return api.getResponse?.(identifier)?.value ?? null;
+    },
     destroy() {
       iframe.remove();
     },

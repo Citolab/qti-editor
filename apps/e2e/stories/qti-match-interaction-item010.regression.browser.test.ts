@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 
 import { exportAssessmentItemDoc, importItem010 } from './qti-match-interaction-item010.regression.stories';
-import { mountQtiRuntime } from './runtime-harness';
+import { mountQtiRuntime, stageResponse } from './runtime-harness';
 import snapshotXml from './__file_snapshots__/ITEM010-editor.xml?raw';
 
 test('exported QTI matches the ITEM010-editor.xml snapshot', async () => {
@@ -10,17 +10,45 @@ test('exported QTI matches the ITEM010-editor.xml snapshot', async () => {
   await expect(exportedXml).toMatchFileSnapshot('./__file_snapshots__/ITEM010-editor.xml');
 });
 
-test('ITEM010 snapshot scores 1 in the runtime when the correct pairs are staged', async () => {
-  const harness = await mountQtiRuntime(snapshotXml);
-  const ai = harness.assessmentItem as any;
+// ITEM010 is a true/false grid: three statements, each filed under juist/onjuist.
+const CORRECT = ['evenaar juist', 'helium juist', 'pluto onjuist'];
 
-  ai.updateResponseVariable('RESPONSE', [
-    'evenaar juist',
-    'helium juist',
-    'pluto onjuist',
-  ]);
-  ai.processResponse();
-  expect(+ai.getOutcome('SCORE').value).toBe(1);
+test('ITEM010 scores 1 when all three statements are judged correctly', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  stageResponse(harness, CORRECT);
+
+  expect(harness.score()).toBe(1);
+
+  harness.destroy();
+});
+
+test('ITEM010 scores 0 when a single statement is judged wrongly', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  stageResponse(harness, ['evenaar juist', 'helium juist', 'pluto juist']);
+
+  expect(harness.score()).toBe(0);
+
+  harness.destroy();
+});
+
+test('ITEM010 scores 0 when every statement is judged wrongly', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  stageResponse(harness, ['evenaar onjuist', 'helium onjuist', 'pluto juist']);
+
+  expect(harness.score()).toBe(0);
+
+  harness.destroy();
+});
+
+test('ITEM010 scores 0 when a statement is left unjudged', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  stageResponse(harness, CORRECT.slice(0, 2));
+
+  expect(harness.score()).toBe(0);
 
   harness.destroy();
 });

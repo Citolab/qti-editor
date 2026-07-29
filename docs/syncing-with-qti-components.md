@@ -13,7 +13,7 @@ needs yet. Instead of npm ranges, the relevant dependencies are pinned
 directly to a pkg.pr.new build of a specific `qti-components` commit:
 
 ```json
-"@qti-components/base": "https://pkg.pr.new/Citolab/qti-components/@qti-components/base@9f4841882b6b7239fcd72bada3ae4461fa46c6ce",
+"@qti-components/base": "https://pkg.pr.new/Citolab/qti-components/@qti-components/base@60f8b03",
 ```
 
 pkg.pr.new builds and publishes a real npm tarball for every commit pushed to

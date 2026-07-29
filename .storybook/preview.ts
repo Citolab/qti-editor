@@ -4,8 +4,19 @@ import { toEqualXml } from './../tools/testing/setup/toEqualXml';
 
 import type { Preview } from '@storybook/web-components-vite';
 
-// Same order the apps use (see apps/*/src/app.css): the canonical theme
-// palette first, then the editor's core-css layered on top.
+/*
+ * Shared CSS reset, matching qti-components' own Storybook preview so stories
+ * render on the same substrate here as they do upstream. modern-normalize =
+ * normalize + the universal `box-sizing: border-box` rule. Imported from the
+ * local dependency, not a CDN.
+ *
+ * It resets browser inconsistencies only. The *opinions* — paragraph/heading/
+ * list margins, body typography — belong to the theme, imported after it.
+ */
+import 'modern-normalize/modern-normalize.css';
+
+// Then the same order the apps use (see apps/*/src/app.css): the canonical
+// theme palette, then the editor's core-css layered on top.
 import '@qti-components/theme/item.css';
 import './../packages/prose-qti/src/core-css/core-css.css';
 

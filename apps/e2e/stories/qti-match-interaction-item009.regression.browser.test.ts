@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 
 import { exportAssessmentItemDoc, importItem009 } from './qti-match-interaction-item009.regression.stories';
-import { mountQtiRuntime } from './runtime-harness';
+import { mountQtiRuntime, stageResponse } from './runtime-harness';
 import snapshotXml from './__file_snapshots__/ITEM009-editor.xml?raw';
 
 test('exported QTI matches the ITEM009-editor.xml snapshot', async () => {
@@ -10,19 +10,56 @@ test('exported QTI matches the ITEM009-editor.xml snapshot', async () => {
   await expect(exportedXml).toMatchFileSnapshot('./__file_snapshots__/ITEM009-editor.xml');
 });
 
-test('ITEM009 snapshot scores 1 in the runtime when the correct pairs are staged', async () => {
-  const harness = await mountQtiRuntime(snapshotXml);
-  const ai = harness.assessmentItem as any;
+// ITEM009 sorts five terms into two subjects — a many-to-one match, so the
+// same target legitimately appears in several pairs.
+const CORRECT = [
+  'enzym biologie',
+  'mitochondrion biologie',
+  'isotoop scheikunde',
+  'katalysator scheikunde',
+  'molmassa scheikunde',
+];
 
-  ai.updateResponseVariable('RESPONSE', [
-    'enzym biologie',
+test('ITEM009 scores 1 when every term is filed under the right subject', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  stageResponse(harness, CORRECT);
+
+  expect(harness.score()).toBe(1);
+
+  harness.destroy();
+});
+
+test('ITEM009 scores 0 when one term is filed under the wrong subject', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  stageResponse(harness, [
+    'enzym scheikunde', // belongs to biologie
     'mitochondrion biologie',
     'isotoop scheikunde',
     'katalysator scheikunde',
     'molmassa scheikunde',
   ]);
-  ai.processResponse();
-  expect(+ai.getOutcome('SCORE').value).toBe(1);
+
+  expect(harness.score()).toBe(0);
+
+  harness.destroy();
+});
+
+test('ITEM009 scores 0 when a term is left unfiled', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  stageResponse(harness, CORRECT.slice(0, 4));
+
+  expect(harness.score()).toBe(0);
+
+  harness.destroy();
+});
+
+test('ITEM009 scores 0 when nothing is matched', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  expect(harness.score()).toBe(0);
 
   harness.destroy();
 });

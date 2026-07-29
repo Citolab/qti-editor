@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest';
+import { userEvent } from 'vitest/browser';
 
 import { exportAssessmentItemDoc, importItem004 } from './qti-text-entry-interaction-item004.regression.stories';
 import { mountQtiRuntime } from './runtime-harness';
@@ -10,14 +11,56 @@ test('exported QTI matches the ITEM004-editor.xml snapshot', async () => {
   await expect(exportedXml).toMatchFileSnapshot('./__file_snapshots__/ITEM004-editor.xml');
 });
 
-test('ITEM004 snapshot scores 1 in the runtime when the correct response is staged', async () => {
-  const harness = await mountQtiRuntime(snapshotXml);
-  const ai = harness.assessmentItem as any;
+type Frame = Awaited<ReturnType<typeof mountQtiRuntime>>['frame'];
 
-  // ITEM004 correct response is the string '44' (text-entry).
-  ai.updateResponseVariable('RESPONSE', '44');
-  ai.processResponse();
-  expect(+ai.getOutcome('SCORE').value).toBe(1);
+/** Tab commits the value — see finding #4 in docs/testing-findings.md. */
+const answer = async (frame: Frame, text: string) => {
+  await frame.getByRole('textbox').fill(text);
+  await userEvent.tab();
+};
+
+// ITEM004 is a numeric text-entry; the correct response is the string '44'.
+test('ITEM004 scores 1 when the candidate types the correct number', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  await answer(harness.frame, '44');
+
+  expect(harness.response()).toBe('44');
+  expect(harness.score()).toBe(1);
+
+  harness.destroy();
+});
+
+test('ITEM004 scores 0 for a wrong number', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  await answer(harness.frame, '45');
+
+  expect(harness.score()).toBe(0);
+
+  harness.destroy();
+});
+
+test('ITEM004 scores 0 for an empty answer', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  await answer(harness.frame, '');
+
+  expect(harness.score()).toBe(0);
+
+  harness.destroy();
+});
+
+test('ITEM004 lets the candidate correct a wrong answer before submitting', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  await answer(harness.frame, '45');
+  expect(harness.score()).toBe(0);
+
+  await answer(harness.frame, '44');
+
+  expect(harness.response()).toBe('44');
+  expect(harness.score()).toBe(1);
 
   harness.destroy();
 });

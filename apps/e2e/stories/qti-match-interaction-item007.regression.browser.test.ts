@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 
 import { exportAssessmentItemDoc, importItem007 } from './qti-match-interaction-item007.regression.stories';
-import { mountQtiRuntime } from './runtime-harness';
+import { mountQtiRuntime, stageResponse } from './runtime-harness';
 import snapshotXml from './__file_snapshots__/ITEM007-editor.xml?raw';
 
 test('exported QTI matches the ITEM007-editor.xml snapshot', async () => {
@@ -10,19 +10,47 @@ test('exported QTI matches the ITEM007-editor.xml snapshot', async () => {
   await expect(exportedXml).toMatchFileSnapshot('./__file_snapshots__/ITEM007-editor.xml');
 });
 
-test('ITEM007 snapshot scores 1 in the runtime when the correct pairs are staged', async () => {
-  const harness = await mountQtiRuntime(snapshotXml);
-  const ai = harness.assessmentItem as any;
+// ITEM007 matches physical quantities to their SI units (directedPair).
+const CORRECT = ['left_vermogen right_watt', 'left_druk right_pascal', 'left_frequentie right_hertz'];
 
-  // ITEM007 is a directedPair match — response is an array of
-  // "source target" pair strings. Three correct pairs:
-  ai.updateResponseVariable('RESPONSE', [
-    'left_vermogen right_watt',
-    'left_druk right_pascal',
+test('ITEM007 scores 1 for all three correct pairs', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  stageResponse(harness, CORRECT);
+
+  expect(harness.score()).toBe(1);
+
+  harness.destroy();
+});
+
+test('ITEM007 scores 0 when two units are swapped', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  stageResponse(harness, [
+    'left_vermogen right_pascal',
+    'left_druk right_watt',
     'left_frequentie right_hertz',
   ]);
-  ai.processResponse();
-  expect(+ai.getOutcome('SCORE').value).toBe(1);
+
+  expect(harness.score()).toBe(0);
+
+  harness.destroy();
+});
+
+test('ITEM007 scores 0 for a partially completed match', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  stageResponse(harness, CORRECT.slice(0, 2));
+
+  expect(harness.score()).toBe(0);
+
+  harness.destroy();
+});
+
+test('ITEM007 scores 0 when nothing is matched', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  expect(harness.score()).toBe(0);
 
   harness.destroy();
 });

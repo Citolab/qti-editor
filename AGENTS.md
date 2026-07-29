@@ -67,6 +67,16 @@
   - App custom components: `apps/*/src/components/blocks/*/` (for app-specific customizations)
 - **Why**: Makes it easy to find the main component file - it always matches the folder name. Index files provide convenient re-exports for consumers.
 
+## Testing Architecture
+- **Stories render. Tests interact.** `apps/e2e/stories/*.stories.ts` exist only to build a schema, mount an editor, and expose the import/export pipeline. They must contain **no interaction logic and no `play` functions**. All interaction lives in the sibling `*.browser.test.ts`.
+- **Drive the UI with real Playwright events, never synthetic ones.** Use vitest browser-mode `page` locators and `userEvent` (CDP-backed, trusted events). Do **not** use `element.click()`, `dispatchEvent(new MouseEvent(...))`, or any hand-built event.
+  - **Why**: ProseMirror reads selection and composition state that only trusted events produce. Synthetic events appear to work, then silently diverge from real editing behaviour.
+- **Querying**: pierce shadow DOM with `shadow-dom-testing-library` (`*ByShadowText`, `*ByShadowLabelText`). Prefer text/label queries over CSS. Do not drill through `.shadowRoot.querySelector('[part="…"]')` in tests — `part` is a styling contract, not a test contract.
+  - Role queries (`getByRole`) work only where a component renders a **native** control (e.g. `qti-text-entry-interaction` renders a real `<input>` → implicit `textbox`). Custom-element controls currently expose no roles; see `docs/testing-findings.md`.
+- **Runtime (scoring) assertions** run against the frozen `__file_snapshots__/*.xml` inside the iframe harness (`apps/e2e/stories/runtime-harness.ts`), reached with `page.frameLocator(...)`. Assert **both** a correct and an incorrect response so scoring is pinned in both directions.
+- **Test file placement**: `*.browser.test.ts`, colocated. The `browser` vitest project globs `packages/**/src/**/*.browser.test.ts` and `apps/**/*.browser.test.ts`.
+- Record any product bug or upstream gap found while writing tests in `docs/testing-findings.md` rather than silently working around it.
+
 ## Verification Defaults
 - Validate with the narrowest useful command first (changed package).
 - Validate app build second when package behavior surfaces in UI.

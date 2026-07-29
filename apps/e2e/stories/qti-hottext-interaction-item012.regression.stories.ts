@@ -33,6 +33,11 @@ import '@citolab/prose-qti/components/hottext/register.js';
 import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
 
 import 'prosemirror-view/style/prosemirror.css';
+// The same stylesheets the shipping editors load (see apps/*/src/style.css).
+// Without the item theme the interaction controls compute to 0x0, so they are
+// invisible to real pointer events — see finding #10 in docs/testing-findings.md.
+import '@qti-components/theme/item.css';
+import '@citolab/prose-qti/core-css.css';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
@@ -61,9 +66,11 @@ export const schema = new Schema({
   marks
 });
 
-/** Minimal plugin set: enter/base keymaps, the hottext interaction plugins, node-attrs sync and block-select. */
+// Hottext has no `enterCommand`: unlike choice/match/gap-match/inline-choice,
+// its children wrap existing text rather than forming a list of items, so there
+// is no "insert a sibling on Enter" affordance. Base keymap handles Enter.
+/** Minimal plugin set: base keymap, the hottext interaction plugins, node-attrs sync and block-select. */
 const editorPlugins: Plugin[] = [
-  keymap({ Enter: hottextInteractionDescriptor.enterCommand }),
   keymap(baseKeymap),
   ...hottextInteractionDescriptor.pluginFactories.map(factory => factory()),
   nodeAttrsSyncPlugin,

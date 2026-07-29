@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { findByShadowText } from 'shadow-dom-testing-library';
-import { userEvent } from 'vitest/browser';
+import { page, userEvent } from 'vitest/browser';
 
 import {
   exportAssessmentItemDoc,
@@ -17,19 +17,44 @@ test('exported QTI matches the ITEM001-editor.xml snapshot', async () => {
   await expect(exportedXml).toMatchFileSnapshot('./__file_snapshots__/ITEM001-editor.xml');
 });
 
-test('ITEM001 snapshot scores 1 in the runtime when the correct choice is clicked', async () => {
+test('ITEM001 scores 1 when the candidate clicks the correct choice', async () => {
   // Load the frozen snapshot directly — what the editor IS supposed to produce.
-  // The previous test catches any pipeline drift; this one proves the
-  // authoritative output is actually playable.
+  // The snapshot test above catches pipeline drift; this one proves the
+  // authoritative output is actually playable by a real candidate.
   const harness = await mountQtiRuntime(snapshotXml);
-  const ai = harness.assessmentItem as any;
 
-  // ITEM001 correct response is choice3 (single cardinality).
-  const correct = harness.doc.querySelector('qti-simple-choice[identifier="choice3"]')!;
-  correct.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+  // ITEM001 is single-cardinality; the correct response is choice3.
+  await harness.frame.getByText('Xenon (Xe)').click();
 
-  ai.processResponse();
-  expect(+ai.getOutcome('SCORE').value).toBe(1);
+  expect(harness.response()).toBe('choice3');
+  expect(harness.score()).toBe(1);
+
+  harness.destroy();
+});
+
+test('ITEM001 scores 0 when the candidate clicks a wrong choice', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  await harness.frame.getByText('Tin (Sn)').click();
+
+  expect(harness.response()).toBe('choice1');
+  expect(harness.score()).toBe(0);
+
+  harness.destroy();
+});
+
+test('ITEM001 is single-cardinality: a second click replaces the first answer', async () => {
+  const harness = await mountQtiRuntime(snapshotXml);
+
+  // Answer wrong, then correct it — max-choices="1" means the second click
+  // must REPLACE the first, not accumulate into a multiple response.
+  await harness.frame.getByText('Tin (Sn)').click();
+  expect(harness.score()).toBe(0);
+
+  await harness.frame.getByText('Xenon (Xe)').click();
+
+  expect(harness.response()).toBe('choice3');
+  expect(harness.score()).toBe(1);
 
   harness.destroy();
 });
@@ -40,12 +65,16 @@ test('clicking a second choice exports cardinality=multiple with both correct va
   const view = mountEditor(host);
 
   // Find the second choice by its rendered text (pierces shadow DOM) and click
-  // its checkbox/radio control — the same action a user takes to mark a correct
-  // response. choice3 is already correct in the fixture; adding choice2 makes
-  // the response multiple-cardinality.
+  // its control — the same action an author takes to mark a correct response.
+  // choice3 is already correct in the fixture; adding choice2 makes the
+  // response multiple-cardinality.
+  //
+  // The control is addressed by `part` because qti-simple-choice exposes no
+  // role and no accessible name — see finding #3 in docs/testing-findings.md.
+  // The click itself is a real (trusted) event via the locator.
   const choice2 = await findByShadowText(host, 'Jodium (I)');
   const control = choice2.closest('qti-simple-choice')!.shadowRoot!.querySelector<HTMLElement>('[part="control"]')!;
-  control.click();
+  await page.elementLocator(control).click();
 
   const responseDeclaration = exportAssessmentItemDoc(view.state.doc).querySelector(
     'qti-response-declaration[identifier="RESPONSE"]',
