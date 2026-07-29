@@ -80,10 +80,16 @@ export const NODES = {
   // ── base: prose ────────────────────────────────────────────────────────────
   text: { group: 'inline' },
 
-  // `richtext` is not declared by any base node. It is patched on at composition time —
-  // qti-interactions-extension.ts appends `defineNodeSpec({name:'paragraph', group:'block
-  // richtext'})` and the same for `table`, but only when qtiRubricBlock is included. Recorded
-  // here in its patched form because that is what every real editor sees.
+  // The `richtext` membership cannot be patched on from an extension: ProseKit's
+  // `defineParagraph()` wraps its spec in `withPriority(spec, 4)` — the highest — so
+  // paragraph's payload reduces last and `mergeSpecs` lets its own `group: 'block'` overwrite
+  // any later patch. A `defineNodeSpec({name:'paragraph', group:'block richtext'})` from an
+  // extension is silently discarded, with no error and no warning.
+  //
+  // So the group is declared on the spec itself. `defineBasicExtension` in
+  // prose-extensions/src/prosekit/basic.ts composes paragraph from ProseKit's exported
+  // commands and keymap plus a spec of its own, never admitting the priority-4 spec to the
+  // union. qtiRubricBlock's `richtext+` depends on this.
   paragraph: { tagName: 'p', content: 'inline*', group: 'block richtext' },
 
   heading: {
@@ -104,7 +110,7 @@ export const NODES = {
     group: 'block',
     defining: true,
     draggable: true,
-    attrs: { src: {}, width: { default: null }, height: { default: null } }
+    attrs: { src: { default: null }, width: { default: null }, height: { default: null } }
   },
 
   hardBreak: { tagName: 'br', group: 'inline', inline: true, selectable: false },
@@ -127,6 +133,9 @@ export const NODES = {
   //
   // No `caption` node exists. `thead` / `tbody` / `colgroup` are likewise absent, as
   // prosemirror-tables omits them — `th` carries the accessibility weight.
+  // `richtext` is patched on by `defineBasicExtension`, not declared by prosekit's
+  // `defineTable()`. Unlike paragraph, table's spec carries no priority override, so an
+  // ordinary `defineNodeSpec` patch reaches it.
   table: { content: 'tableRow+', group: 'block richtext', isolating: true },
   tableRow: { tagName: 'tr', content: '(tableCell | tableHeaderCell)*' },
 
@@ -496,6 +505,19 @@ export const NODES = {
   //
   // On the wire the body is wrapped in a `qti-content-body` element. That wrapper is pure
   // serialization framing and has no PM node.
+  //
+  // A group, not the four node types spelled out. Spelling them out looks like it removes a
+  // coordination requirement and in fact tightens one: a group reference resolves as long as
+  // *some* node carries the group, whereas a name reference obliges every host schema to
+  // define that exact node. The pure-ProseMirror hosts — the e2e story harnesses among them,
+  // built on `prosemirror-schema-basic` — have no table or list nodes, and naming those makes
+  // `new Schema()` throw outright.
+  //
+  // What was genuinely broken before was paragraph's membership, patched on from an extension
+  // and silently dropped (see the note on `paragraph`), leaving the group as tables and lists
+  // only. A rubric block came out holding a table, and qti-rubric-block.commands.ts — which
+  // builds one around a paragraph — produced a document that failed `.check()`. Paragraph now
+  // declares `richtext` on its own spec, so the group is whole.
   qtiRubricBlock: {
     tagName: 'qti-rubric-block',
     content: 'richtext+',
@@ -540,9 +562,12 @@ export const MARKS = {
  * plain space-separated labels declared on each node; they cannot be defined as expressions and
  * cannot reference one another. NODES is the source of truth — if these disagree, NODES wins.
  *
- * `richtext` is the odd one: no base node declares it. It is patched onto `paragraph` and
- * `table` at composition time, and only when qtiRubricBlock is in the schema. See the note on
- * `paragraph` in NODES.
+ * `richtext` is prose a candidate cannot respond to — block content minus every interaction.
+ * `qtiRubricBlock` is its consumer here (`richtext+`), and the pure-ProseMirror app uses it a
+ * second time as `tableNodes({ cellContent: 'richtext+' })`. Membership is declared in three
+ * places: paragraph and table in `prose-extensions/src/prosekit/basic.ts`, the two list nodes
+ * in `prose-extensions/src/prosekit/list.ts`. Hosts outside ProseKit tag their own prose nodes
+ * — the e2e story harnesses do it with `group: 'block richtext'` on paragraph alone.
  *
  * Note what is absent. The QTI XSD's static / non-static split — `inline_static` and
  * `block_static`, the sets a candidate cannot respond to — has no counterpart here. The
@@ -587,7 +612,8 @@ export const GROUPS = {
     'qtiGap'
   ],
 
-  richtext: ['paragraph', 'table', 'bullet_list', 'ordered_list'],
+  // Vestigial — declared by the list nodes, referenced by nothing. See the note above.
+  richtext: ['bullet_list', 'ordered_list', 'paragraph', 'table'],
 
   qtiMedia: ['imgSelectPoint', 'qtiMediaStub']
 };

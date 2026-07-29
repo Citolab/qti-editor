@@ -23,6 +23,17 @@ test *args:
 test-watch *args:
 	pnpm run test:watch {{args}}
 
+# Regenerate schema/content-model.json from the editor's real schema, then verify content-model.mjs still agrees with it. Run after any *.schema.ts change.
+[group('primary')]
+schema:
+	pnpm run schema:build
+	pnpm run schema:check
+
+# Verify only — fails if content-model.mjs has drifted or content-model.json is stale. For CI.
+[group('primary')]
+schema-check:
+	pnpm run schema:check
+
 # Linked dev: yalc-couple local qti-components + run its build→yalc:push watcher alongside the qti-prosemirror-item app (HMR / full refresh on push)
 [group('primary')]
 yalc:

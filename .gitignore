@@ -31,3 +31,5 @@ apps/qti-prosekit-app/public/r
 .claude/claude-debug.log
 
 *.code-workspace
+# TypeScript incremental build state (emitted by composite projects)
+*.tsbuildinfo

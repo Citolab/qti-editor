@@ -242,6 +242,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@citolab/prose-extensions": "workspace:*",
     "@lit/context": "^1.1.6",
     "@qti-components/associate-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@6e2486ee2587932fcacf7f27182c994010d6c8a0",
     "@qti-components/base": "https://pkg.pr.new/Citolab/qti-components/@qti-components/base@6e2486ee2587932fcacf7f27182c994010d6c8a0",

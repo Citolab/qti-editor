@@ -1,74 +1,32 @@
-import {
-  defineBaseCommands,
-  defineBaseKeymap,
-  defineHistory,
-  defineNodeAttr,
-  union,
-  type BaseCommandsExtension,
-  type BaseKeymapExtension,
-  type HistoryExtension,
-  type Union,
-} from 'prosekit/core'
-import { defineDoc, type DocExtension } from 'prosekit/extensions/doc'
-import { defineGapCursor, type GapCursorExtension } from 'prosekit/extensions/gap-cursor'
+import { union, type Union } from 'prosekit/core'
 import { defineHardBreak, type HardBreakExtension } from 'prosekit/extensions/hard-break'
-import { defineHeading, type HeadingExtension } from 'prosekit/extensions/heading'
-import { defineImage, type ImageExtension } from 'prosekit/extensions/image'
 import { defineModClickPrevention, type ModClickPreventionExtension } from 'prosekit/extensions/mod-click-prevention'
-import { defineParagraph, type ParagraphExtension } from 'prosekit/extensions/paragraph'
-import { defineTable, type TableExtension } from 'prosekit/extensions/table'
-import { defineText, type TextExtension } from 'prosekit/extensions/text'
 import { defineVirtualSelection, type VirtualSelectionExtension } from 'prosekit/extensions/virtual-selection'
-import { defineList, defineEm, defineStrong, type EmExtension, type ListExtension, type StrongExtension } from '@citolab/prose-extensions/prosekit'
+import {
+  defineBasicExtension as defineSharedBasicExtension,
+  type BasicExtension as SharedBasicExtension,
+} from '@citolab/prose-extensions/prosekit'
 
 /**
+ * This app's editor base: the shared QTI base plus what only this app adds.
+ *
+ * The shared base is what makes the schema QTI-shaped rather than ProseKit-shaped —
+ * `ul` / `ol` / `li` rather than ProseKit's flat `<div class="prosemirror-flat-list">`,
+ * and marks named `strong` / `em`. See `defineBasicExtension` in
+ * `@citolab/prose-extensions/prosekit` for why that is not optional.
+ *
  * @internal
  */
 export type BasicExtension = Union<
-  [
-    // Nodes
-    DocExtension,
-    TextExtension,
-    ParagraphExtension,
-    HeadingExtension,
-    ListExtension,
-    ImageExtension,
-    HardBreakExtension,
-    TableExtension,
-    // Marks
-    EmExtension,
-    StrongExtension,
-    // Others
-    BaseKeymapExtension,
-    BaseCommandsExtension,
-    HistoryExtension,
-    GapCursorExtension,
-    VirtualSelectionExtension,
-    ModClickPreventionExtension,
-  ]
+  [SharedBasicExtension, HardBreakExtension, VirtualSelectionExtension, ModClickPreventionExtension]
 >
 
 export function defineBasicExtension(): BasicExtension {
   return union(
+    defineSharedBasicExtension(),
     // Nodes
-    defineDoc(),
-    defineNodeAttr({ type: 'doc', attr: 'title', default: '' }),
-    defineNodeAttr({ type: 'doc', attr: 'identifier', default: '' }),
-    defineText(),
-    defineParagraph(),
-    defineHeading(),
-    defineList(),
-    defineImage(),
     defineHardBreak(),
-    defineTable(),
-    // Marks
-    defineEm(),
-    defineStrong(),
-    // Others
-    defineBaseKeymap(),
-    defineBaseCommands(),
-    defineHistory(),
-    defineGapCursor(),
+    // Behaviour
     defineVirtualSelection(),
     defineModClickPrevention(),
   )

@@ -12,6 +12,10 @@
     "declarationMap": true,
     "allowImportingTsExtensions": false
   },
+  // tsconfig.base.json path-maps @citolab/prose-extensions to its *source*, which
+  // `rootDir: src` above would reject. The reference makes TypeScript resolve it to
+  // that project's declaration output instead.
+  "references": [{ "path": "../prose-extensions" }],
   "include": ["src/**/*.ts", "src/**/*.js", "../../tools/testing/vitest.d.ts"],
   "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.stories.ts", "node_modules", "dist"]
 }
