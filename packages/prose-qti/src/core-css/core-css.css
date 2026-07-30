@@ -39,8 +39,12 @@
     --qti-edit-selected-outline-color: var(--accent, #2563eb);
     --qti-edit-selected-outline-width: 2px;
 
-    /* Hottext the author marked as part of the correct response. */
-    --qti-edit-hottext-checked-border: var(--qti-border-color-focus, #2563eb);
+    /*
+     * The only editor-only mark on a hottext: the dotted hint under a .qti-unselected-hidden word,
+     * which the candidate sees as plain text. Muted on purpose — it says "there is something here"
+     * without competing with the theme's own selected paint.
+     */
+    --qti-edit-hottext-hint-color: var(--qti-border-color, #c6cad0);
 
     /* Empty-prompt placeholder. The text is a variable so hosts can translate it. */
     --qti-edit-placeholder-color: var(--qti-text-color-muted, #6b7280);
@@ -203,32 +207,30 @@ qti-order-interaction qti-simple-choice {
   }
 
   /*
-   * Hottext — chip border at rest. The runtime theme only paints one under
-   * .qti-input-control-hidden; authoring wants the "selectable" affordance visible always. Reuses
-   * the theme tokens so it keeps tracking theming.
+   * Hottext — the ONE place the editor may look unlike delivery.
+   *
+   * At rest an item in the editor should look the way the candidate will see it, and for hottext the
+   * theme already does that per variant: it borders a hottext for every class EXCEPT
+   * .qti-unselected-hidden, and repaints a checked one with --qti-selected-bg / --qti-selected-color.
+   * Three editor rules used to sit on top of that and all three are gone:
+   *
+   *   a blanket "qti-hottext { border }"  — redundant where the theme already borders, and WRONG on
+   *       .qti-unselected-hidden, whose whole point is that the candidate cannot tell which words
+   *       are hot ("de woorden zijn niet herkenbaar gemarkeerd"). It forced a box onto exactly the
+   *       item that must not have one.
+   *   a blue outline on :state(checked)   — a third signal for one fact, after the theme's own
+   *       repaint and the radio, and the only blue in a purple brand.
+   *   a :hover::part(ch) reveal           — targeted a part no element emits. Dead since the rename
+   *       to part="control"; the reveal now lives in qti-hottext.ts against the real part.
+   *
+   * What is left is the one thing the principle genuinely cannot cover. On .qti-unselected-hidden the
+   * candidate sees nothing at all, so a faithful editor would leave the hottexts unfindable. A dotted
+   * underline is the least that says "something is here" — deliberately not a box, so it cannot be
+   * mistaken for what the candidate sees.
    */
-  qti-hottext-interaction qti-hottext {
-    border: var(--qti-border-thickness) var(--qti-border-style) var(--qti-border-color);
-  }
-
-  /*
-   * Hottext — reveal the hidden radio/checkbox on hover. In qti-unselected-hidden mode the theme
-   * hides that part for a clean runtime look, but the author still has to click it to mark the
-   * correct response.
-   */
-  qti-hottext-interaction.qti-unselected-hidden qti-hottext:hover::part(ch) {
-    display: grid;
-  }
-
-  /*
-   * Hottext — author marked as correct response. The runtime visual (radio fill via the theme's
-   * :state(checked)) stays intact; this adds an outline so authors can scan a block of text and
-   * pick out the scoring hottexts at a glance.
-   */
-  qti-hottext-interaction qti-hottext:state(checked) {
-    outline: 2px solid var(--qti-edit-hottext-checked-border);
-    outline-offset: 2px;
-    border-radius: 0.25rem;
+  qti-hottext-interaction.qti-unselected-hidden qti-hottext {
+    text-decoration: underline dotted var(--qti-edit-hottext-hint-color);
+    text-underline-offset: 0.2em;
   }
 
   /* Empty prompt — placeholder text so an unfilled prompt is not an invisible target. */
