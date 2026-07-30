@@ -4,6 +4,8 @@ import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
+import { getQtiComponentsSourceLinkConfig } from './qti-components-source-link.mjs';
+
 const rootDir = fileURLToPath(new URL('..', import.meta.url));
 const defaultComponentsPath = path.resolve(rootDir, '..', 'QTI-Components');
 const qtiComponentsRoot = path.resolve(process.env.QTI_COMPONENTS_PATH || defaultComponentsPath);
@@ -240,8 +242,26 @@ function sourceLinkOn(skipInstall) {
   };
 
   writeJson(stateFilePath, sourceState);
+
+  /*
+   * Record the bindings this mode installs, so the file that appears and disappears IS the manifest
+   * of what changed. `bindings` is written for reading, not for loading: .storybook/main.ts derives
+   * the real aliases from `qtiComponentsRoot` at boot, so a stale list here can never mis-resolve a
+   * module. Written second, after the state above, because getQtiComponentsSourceLinkConfig reads
+   * the state file to decide it is enabled at all.
+   */
+  const resolved = getQtiComponentsSourceLinkConfig(rootDir);
+  writeJson(stateFilePath, {
+    ...sourceState,
+    bindings: resolved.aliases.map(alias => ({
+      specifier: String(alias.find).replace(/^\/\^|\$\/$/g, '').replace(/\\/g, ''),
+      resolvesTo: toPosix(path.relative(qtiComponentsRoot, alias.replacement)),
+    })),
+  });
+
   console.log(`Enabled qti-components source-link mode at ${qtiComponentsRoot}.`);
-  console.log(`State file: ${relFromRoot(stateFilePath)}`);
+  console.log(`State file: ${relFromRoot(stateFilePath)} (${resolved.aliases.length} source bindings)`);
+  console.log('Restart storybook for this to take effect — Vite resolves the aliases once, at boot.');
 
   console.log('Building qti-components theme CSS for source-link mode...');
   buildThemeForSourceLink();
@@ -264,6 +284,7 @@ function sourceLinkOff(skipInstall) {
 
   fs.rmSync(stateFilePath, { force: true });
   console.log('Disabled qti-components source-link mode.');
+  console.log('Restart storybook for this to take effect — a running server keeps the aliases it booted with.');
   clearEditorCaches();
 
   if (!skipInstall) {
@@ -289,6 +310,12 @@ function status() {
   console.log(`qti-components workspace: ${qtiComponentsRoot}`);
   console.log(`mode: ${mode}`);
   console.log(`local-link state file: ${fs.existsSync(stateFilePath) ? 'present' : 'absent'}`);
+  /*
+   * This reports the state on disk, which is not necessarily what a running storybook is serving:
+   * .storybook/main.ts resolves the aliases once, when the dev server boots. Link or unlink while a
+   * server is up and the two disagree until it restarts — the case that reads as "link does nothing".
+   */
+  console.log('(a running storybook keeps the mode it booted with — restart it after link/unlink)');
   let themeWatchPid = null;
   if (fs.existsSync(themeWatchPidFilePath)) {
     try {

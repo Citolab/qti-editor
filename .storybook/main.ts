@@ -35,6 +35,22 @@ const config: StorybookConfig = {
   async viteFinal(config: any) {
     const editorRoot = process.cwd();
     const sourceLink = getQtiComponentsSourceLinkConfig(editorRoot);
+
+    /*
+     * Say which qti-components this storybook is serving, because the answer is invisible otherwise.
+     *
+     * Source-link mode leaves no tracked artifact on purpose — the whole point is that a local
+     * setup cannot ride along into a commit — so the only evidence is a gitignored state file. And
+     * this function runs ONCE, when the dev server boots: `just link` / `just unlink` cannot reach
+     * a storybook that is already running, which reads as "link does nothing" when it is really
+     * "link needs a restart". One line at startup settles both questions.
+     */
+    console.log(
+      sourceLink.enabled
+        ? `[qti-components] LOCAL SOURCE — ${sourceLink.aliases.length} aliases from ${sourceLink.qtiComponentsRoot}\n` +
+            `[qti-components] run "just unlink" AND restart storybook to go back to the published packages`
+        : `[qti-components] published packages (source-link off) — "just link" then restart storybook to develop against local source`,
+    );
     const existingAliases = Array.isArray(config.resolve?.alias) ? config.resolve.alias : [];
     const existingAllow = Array.isArray(config.server?.fs?.allow) ? config.server.fs.allow : [];
     const existingExclude = Array.isArray(config.optimizeDeps?.exclude) ? config.optimizeDeps.exclude : [];

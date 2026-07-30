@@ -2,14 +2,16 @@
 # Strip yalc deps from staged package.json files before they enter a commit.
 # After the commit, run `pnpm yalc:add` to restore yalc dev mode.
 
-if [ -f .qti-components-local-link-state.json ]; then
-  echo ""
-  echo "❌ pre-commit: qti-components local link mode is still active."
-  echo "   Run: pnpm unlink"
-  echo "   Then re-stage and commit."
-  echo ""
-  exit 1
-fi
+# There is deliberately no check for .qti-components-local-link-state.json here.
+#
+# Source-link mode cannot reach a commit. Its state file is gitignored, and .storybook/main.ts is
+# its only consumer — it turns into Vite aliases for the Storybook dev server and nothing else.
+# node_modules/@qti-components holds published packages either way, so eslint, tsc, vitest and every
+# build resolve identically whether the mode is on or off.
+#
+# Blocking the commit therefore protected nothing, while costing a `pnpm unlink` (full install and
+# cache clear) and a relink around every commit. The two checks below are different: `link:` and
+# `file:.yalc/` deps are written INTO tracked package.json files, so those can genuinely go live.
 
 linked_qti_in_index=false
 staged_pkg_jsons=$(git diff --cached --name-only --diff-filter=ACM -- '*package.json')

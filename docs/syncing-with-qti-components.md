@@ -74,6 +74,24 @@ In source-link mode, JS/TS imports resolve directly to qti-components source fil
 Theme CSS imports resolve to `@qti-components/theme/dist/*.css` because qti-theme
 source CSS requires PostCSS mixin expansion.
 
+**The mode reaches the Storybook dev server and nothing else.** `.storybook/main.ts` is the state
+file's only consumer, and it turns it into Vite aliases. `node_modules/@qti-components` still holds
+the published packages, so eslint, tsc, vitest and every build resolve the same either way — which
+is worth knowing in both directions: nothing local can leak into a commit, and a green local
+storybook is not evidence that CI will build.
+
+Two things follow from Vite resolving those aliases once, when the dev server boots:
+
+- `pnpm link` / `pnpm unlink` cannot reach a storybook that is already running. Restart it, or the
+  server keeps serving the mode it booted with while `pnpm link:status` reports the new one.
+- Storybook prints the active mode at startup (`[qti-components] LOCAL SOURCE — N aliases from …`),
+  which is the quickest way to see which qti-components you are actually looking at.
+
+While linked, the state file also lists every binding it installed, so `cat
+.qti-components-local-link-state.json` shows exactly which specifiers were redirected where. That
+list is written for reading only — `main.ts` re-derives the real aliases from `qtiComponentsRoot`,
+so a stale entry cannot mis-resolve a module.
+
 The qti-theme watcher runs from qti-editor and rebuilds only `@qti-components/theme`
 when qti-theme source CSS changes. It is managed by the same
 `scripts/qti-components-local-link.mjs` script (single-script workflow).
@@ -88,9 +106,13 @@ Optional environment override:
 
 Safety guard:
 
-- commits are blocked while local link mode is active (`.qti-components-local-link-state.json` present)
 - commits are blocked if staged `package.json` files still contain `link:` specs for `@qti-components/*` or `@citolab/qti-components`
-- run `pnpm unlink` before committing
+- staged `file:.yalc/` deps are retreated and re-staged automatically
+
+You do **not** need to unlink before committing. The pre-commit hook used to block commits while
+source-link mode was active; that check was removed because the mode writes nothing tracked (see
+above) — it only cost an unlink/relink cycle around every commit. The two guards that remain cover
+`link:` and `file:.yalc/` deps, which are written into tracked `package.json` files and can go live.
 
 ## Leftover files from the previous (yalc) workflow
 
