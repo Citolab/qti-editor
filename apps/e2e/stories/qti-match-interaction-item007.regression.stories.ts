@@ -19,7 +19,7 @@ import { ref } from 'lit/directives/ref.js';
 import { Schema, type Node as ProseMirrorNode } from 'prosemirror-model';
 import { EditorState, type Plugin } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
-import { nodes, marks } from 'prosemirror-schema-basic';
+import { qtiBasicMarks, qtiBasicNodes } from '@citolab/prose-qti';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { roundtripMatch, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
@@ -27,8 +27,8 @@ import { ensureInteractionPrompts, exportItemXml, importItemFromString } from '@
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
 import { blockSelectPlugin } from '@citolab/prose-extensions/prosemirror';
 import { matchInteractionDescriptor } from '@citolab/prose-qti/components/match';
-import sourceXML from '@qti-editor/example-items/ITEM007.xml?raw';
 
+import sourceXML from './fixtures/ITEM007.xml?raw';
 import '@citolab/prose-qti/components/match/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
 import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
@@ -39,6 +39,7 @@ import 'prosemirror-view/style/prosemirror.css';
 // invisible to real pointer events — see finding #10 in docs/testing-findings.md.
 import '@qti-components/theme/item.css';
 import '@citolab/prose-qti/core-css.css';
+import './kennisnet.css';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
@@ -61,8 +62,8 @@ const qtiMediaStub = {
 };
 
 const baseNodes = {
-  ...nodes,
-  paragraph: { ...nodes.paragraph, group: 'block richtext' },
+  ...qtiBasicNodes,
+  paragraph: { ...qtiBasicNodes.paragraph, group: 'block richtext' },
   qtiMediaStub,
   ...qtiNodes,
 };
@@ -78,7 +79,7 @@ export const schema = new Schema({
       }
     }
   },
-  marks
+  marks: qtiBasicMarks
 });
 
 const editorPlugins: Plugin[] = [keymap(baseKeymap), blockSelectPlugin];
@@ -107,7 +108,7 @@ export const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLEle
 };
 
 const meta: Meta = {
-  title: 'QTI ProseMirror/Roundtrip Regression',
+  title: 'QTI Kennisnet/Regression',
   excludeStories: ['schema', 'importItem007', 'exportAssessmentItemDoc', 'mountEditor']
 };
 export default meta;

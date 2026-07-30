@@ -76,7 +76,13 @@ const config: StorybookConfig = {
         ...(config.server || {}),
         fs: {
           ...(config.server?.fs || {}),
-          allow: sourceLink.enabled ? Array.from(new Set([...existingAllow, editorRoot, ...sourceLink.fsAllow])) : existingAllow,
+          // editorRoot must be allowed in BOTH modes: the stories live in apps/e2e/stories, which is
+          // outside .storybook. Assigning `allow` at all opts out of Vite's default (the workspace
+          // root), so the disabled branch previously narrowed it to `[]` and 403'd every story
+          // module. Source-link only adds the linked qti-components paths on top.
+          allow: Array.from(
+            new Set([...existingAllow, editorRoot, ...(sourceLink.enabled ? sourceLink.fsAllow : [])])
+          ),
         },
       },
     };

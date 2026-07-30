@@ -43,7 +43,7 @@
       </qti-simple-match-set>
     </qti-match-interaction>
     <p>
-      <img src="/qti/kennisnet/resources/books.png" alt="Boeken"/>
+      <img src="/qti/kennisnet/resources/books.png" alt="Boeken" width="250"/>
     </p>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>

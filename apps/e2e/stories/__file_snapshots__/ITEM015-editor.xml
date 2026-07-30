@@ -17,7 +17,7 @@
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
     <p>
-      <img src="/qti/kennisnet/resources/chemistry.png" alt="Vragen"/>
+      <img src="/qti/kennisnet/resources/chemistry.png" alt="Vragen" width="300"/>
     </p>
     <p>Vul de juiste termen in:</p>
     <qti-gap-match-interaction max-associations="0" response-identifier="RESPONSE">

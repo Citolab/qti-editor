@@ -16,7 +16,7 @@
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
     <p>
-      <img src="/qti/kennisnet/resources/doppler.png" alt="Doppler"/>
+      <img src="/qti/kennisnet/resources/doppler.png" alt="Doppler" width="250"/>
     </p>
     <p>De Doppler-verschuiving treedt op wanneer een geluidsbron en een waarnemer zich ten opzichte van elkaar bewegen.</p>
     <p> Het waargenomen geluid wordt dan <qti-inline-choice-interaction response-identifier="RESPONSE" shuffle="false" data-prompt="kies het juiste antwoord…">

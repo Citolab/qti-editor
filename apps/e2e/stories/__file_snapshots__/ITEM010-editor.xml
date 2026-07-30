@@ -40,7 +40,7 @@
       </qti-simple-match-set>
     </qti-match-interaction>
     <p>
-      <img src="/qti/kennisnet/resources/question-marks.png" alt="Vragen"/>
+      <img src="/qti/kennisnet/resources/question-marks.png" alt="Vragen" width="130"/>
     </p>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>

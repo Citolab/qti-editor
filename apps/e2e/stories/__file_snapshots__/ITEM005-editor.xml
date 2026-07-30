@@ -12,7 +12,7 @@
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
     <p>
-      <img src="/qti/kennisnet/resources/solarpark-wind-park.jpg" alt="Wereldkaart"/>
+      <img src="/qti/kennisnet/resources/solarpark-wind-park.jpg" alt="Wereldkaart" width="100%"/>
     </p>
     <p>Leg in 3–5 zinnen uit waarom veel landen overstappen op een mix van zonne- en windenergie in plaats van op één enkele bron te vertrouwen.</p>
     <qti-extended-text-interaction response-identifier="RESPONSE" expected-lines="5"/>
