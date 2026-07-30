@@ -1,40 +1,21 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-type AliasEntry = {
-  find: RegExp;
-  replacement: string;
-};
-
-type SourceLinkState = {
-  version?: number;
-  mode?: string;
-  qtiComponentsRoot?: string;
-};
-
-type SourceLinkConfig = {
-  enabled: boolean;
-  qtiComponentsRoot: string | null;
-  aliases: AliasEntry[];
-  optimizeDepsExclude: string[];
-  fsAllow: string[];
-};
-
 const SOURCE_LINK_STATE_FILE = '.qti-components-local-link-state.json';
 
-function escapeRegExp(text: string): string {
+function escapeRegExp(text) {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function exists(filePath: string): boolean {
+function exists(filePath) {
   return fs.existsSync(filePath);
 }
 
-function findQtiPackageDirs(qtiComponentsRoot: string): Record<string, string> {
+function findQtiPackageDirs(qtiComponentsRoot) {
   const packagesRoot = path.join(qtiComponentsRoot, 'packages');
-  const result: Record<string, string> = {};
+  const result = {};
 
-  function walk(absDir: string) {
+  function walk(absDir) {
     const entries = fs.readdirSync(absDir, { withFileTypes: true });
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
@@ -43,7 +24,7 @@ function findQtiPackageDirs(qtiComponentsRoot: string): Record<string, string> {
       const manifestPath = path.join(absPath, 'package.json');
       if (exists(manifestPath)) {
         try {
-          const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')) as { name?: string };
+          const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
           if (typeof manifest.name === 'string' && (manifest.name.startsWith('@qti-components/') || manifest.name === '@citolab/qti-components')) {
             result[manifest.name] = absPath;
             continue;
@@ -63,7 +44,7 @@ function findQtiPackageDirs(qtiComponentsRoot: string): Record<string, string> {
   return result;
 }
 
-function resolveStyleEntry(srcDir: string, packageName: string): string | null {
+function resolveStyleEntry(srcDir, packageName) {
   const shortName = packageName.replace(/^@qti-components\//, '').replace(/^@citolab\//, '');
   const candidates = [
     path.join(srcDir, 'styles.ts'),
@@ -80,12 +61,12 @@ function resolveStyleEntry(srcDir: string, packageName: string): string | null {
   return null;
 }
 
-function readSourceLinkState(editorRoot: string): SourceLinkState | null {
+function readSourceLinkState(editorRoot) {
   const statePath = path.join(editorRoot, SOURCE_LINK_STATE_FILE);
   if (!exists(statePath)) return null;
 
   try {
-    const state = JSON.parse(fs.readFileSync(statePath, 'utf8')) as SourceLinkState;
+    const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
     if (state.mode !== 'source-link') return null;
     if (!state.qtiComponentsRoot || typeof state.qtiComponentsRoot !== 'string') return null;
     return state;
@@ -94,8 +75,8 @@ function readSourceLinkState(editorRoot: string): SourceLinkState | null {
   }
 }
 
-function buildAliases(qtiPackageDirs: Record<string, string>): AliasEntry[] {
-  const aliases: AliasEntry[] = [];
+function buildAliases(qtiPackageDirs) {
+  const aliases = [];
 
   for (const packageName of Object.keys(qtiPackageDirs).sort()) {
     const pkgDir = qtiPackageDirs[packageName];
@@ -137,7 +118,7 @@ function buildAliases(qtiPackageDirs: Record<string, string>): AliasEntry[] {
       ['qti-test', 'test.ts'],
       ['qti-loader', 'loader.ts'],
       ['qti-transformers', 'transformers.ts'],
-    ] as const;
+    ];
 
     for (const [subpath, sourceFile] of subpaths) {
       const target = path.join(srcDir, sourceFile);
@@ -163,7 +144,7 @@ function buildAliases(qtiPackageDirs: Record<string, string>): AliasEntry[] {
   return aliases;
 }
 
-export function getQtiComponentsSourceLinkConfig(editorRoot: string): SourceLinkConfig {
+export function getQtiComponentsSourceLinkConfig(editorRoot) {
   const state = readSourceLinkState(editorRoot);
   if (!state || !state.qtiComponentsRoot || !exists(state.qtiComponentsRoot)) {
     return {

@@ -1,11 +1,9 @@
 
-import { fileURLToPath } from 'node:url';
-
 import tailwindcss from '@tailwindcss/vite';
 import remarkGfm from 'remark-gfm';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-import { getQtiComponentsSourceLinkConfig } from '../tools/vite/qti-components-source-link.ts';
+import { getQtiComponentsSourceLinkConfig } from '../scripts/qti-components-source-link.mjs';
 
 import type { StorybookConfig } from '@storybook/web-components-vite';
 
@@ -36,7 +34,7 @@ const config: StorybookConfig = {
   staticDirs: ['../public'],
   "framework": "@storybook/web-components-vite",
   async viteFinal(config: any) {
-    const editorRoot = fileURLToPath(new URL('..', import.meta.url));
+    const editorRoot = process.cwd();
     const sourceLink = getQtiComponentsSourceLinkConfig(editorRoot);
     const existingAliases = Array.isArray(config.resolve?.alias) ? config.resolve.alias : [];
     const existingAllow = Array.isArray(config.server?.fs?.allow) ? config.server.fs.allow : [];
