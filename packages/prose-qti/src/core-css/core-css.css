@@ -10,10 +10,6 @@
  * Plain CSS — no Tailwind, no PostCSS plugins required at the consumer.
  */
 
-qti-simple-choice p {
-  margin: 0;
-}
-
 qti-rubric-block {
   display: block !important;
 }

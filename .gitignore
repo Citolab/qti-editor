@@ -15,6 +15,11 @@ coverage
 .firebase
 .vscode
 .qti-components-packs
+.qti-components-local-link-state.json
+.qti-components-watch.pid
+.qti-components-watch.log
+.qti-components-theme-watch.pid
+.qti-components-theme-watch.log
 .pnpm-store
 .vitest-attachments
 **/__screenshots__/

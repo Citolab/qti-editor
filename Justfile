@@ -39,6 +39,21 @@ schema-check:
 yalc:
 	pnpm run dev:linked
 
+# Deterministic local qti-components source-link mode (no yalc). Run from QTI-Editor root.
+[group('primary')]
+link:
+	pnpm run link
+
+# Restore pinned pkg.pr.new qti-components dependencies before commit.
+[group('primary')]
+unlink:
+	pnpm run unlink
+
+# Show whether local qti-components link mode is active.
+[group('primary')]
+link-status:
+	pnpm run link:status
+
 # Undo the yalc coupling: retreat local links, drop the root .yalc pnpm overrides, reinstall from the registry (keeps .yalc/ + yalc.lock for a fast `just yalc`)
 [group('primary')]
 unyalc:

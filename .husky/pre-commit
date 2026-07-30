@@ -2,7 +2,33 @@
 # Strip yalc deps from staged package.json files before they enter a commit.
 # After the commit, run `pnpm yalc:add` to restore yalc dev mode.
 
+if [ -f .qti-components-local-link-state.json ]; then
+  echo ""
+  echo "❌ pre-commit: qti-components local link mode is still active."
+  echo "   Run: pnpm unlink"
+  echo "   Then re-stage and commit."
+  echo ""
+  exit 1
+fi
+
+linked_qti_in_index=false
 staged_pkg_jsons=$(git diff --cached --name-only --diff-filter=ACM -- '*package.json')
+for f in $staged_pkg_jsons; do
+  if git show ":$f" 2>/dev/null | grep -Eq '"@qti-components/.+": "link:|"@citolab/qti-components": "link:'; then
+    linked_qti_in_index=true
+    break
+  fi
+done
+
+if [ "$linked_qti_in_index" = "true" ]; then
+  echo ""
+  echo "❌ pre-commit: staged package.json files still contain qti-components link: deps."
+  echo "   Run: pnpm unlink"
+  echo "   Then re-stage and commit."
+  echo ""
+  exit 1
+fi
+
 yalc_in_index=false
 for f in $staged_pkg_jsons; do
   if git show ":$f" 2>/dev/null | grep -q '"file:\.yalc/'; then

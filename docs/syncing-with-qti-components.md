@@ -61,6 +61,37 @@ against local qti-components changes before pushing, use `pnpm link` /
 `file:` dependencies temporarily in your own checkout, but don't commit that;
 revert to the pinned pkg.pr.new URL before pushing the editor.
 
+## Deterministic local link workflow (no yalc)
+
+For fast local iteration, this repo includes deterministic link/unlink commands
+managed entirely by qti-editor.
+
+- `pnpm link` - enables source-link mode via `.qti-components-local-link-state.json`, builds `@qti-components/theme` CSS output, starts an editor-owned qti-theme CSS watcher, clears editor caches, and runs `pnpm install`
+- `pnpm unlink` - disables source-link mode, stops the qti-theme watcher, and runs `pnpm install`
+- `pnpm link:status` - reports whether local link mode is active
+
+In source-link mode, JS/TS imports resolve directly to qti-components source files.
+Theme CSS imports resolve to `@qti-components/theme/dist/*.css` because qti-theme
+source CSS requires PostCSS mixin expansion.
+
+The qti-theme watcher runs from qti-editor and rebuilds only `@qti-components/theme`
+when qti-theme source CSS changes. It is managed by the same
+`scripts/qti-components-local-link.mjs` script (single-script workflow).
+Log file: `.qti-components-theme-watch.log`.
+
+`pnpm link` is idempotent: when already linked, rerun it to refresh the local setup
+(rebuilds qti-theme CSS, clears Vite + Storybook caches, and re-runs install).
+
+Optional environment override:
+
+- `QTI_COMPONENTS_PATH=/absolute/path/to/QTI-Components pnpm link`
+
+Safety guard:
+
+- commits are blocked while local link mode is active (`.qti-components-local-link-state.json` present)
+- commits are blocked if staged `package.json` files still contain `link:` specs for `@qti-components/*` or `@citolab/qti-components`
+- run `pnpm unlink` before committing
+
 ## Leftover files from the previous (yalc) workflow
 
 This repo previously synced qti-components through a yalc-linking + pinned
