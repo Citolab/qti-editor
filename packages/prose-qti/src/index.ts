@@ -1,5 +1,6 @@
 export * from "@citolab/prose-qti/core";
 export * from "@citolab/prose-qti/interfaces";
+export * from './schema';
 export * from './integration';
 export { buildItemBodyContext } from './item-export';
 export type { QtiComposeContext as QtiItemComposeContext } from './item-export';

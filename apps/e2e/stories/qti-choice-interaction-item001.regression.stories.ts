@@ -19,7 +19,6 @@ import { ref } from 'lit/directives/ref.js';
 import { Schema, type Node as ProseMirrorNode } from 'prosemirror-model';
 import { EditorState, type Plugin } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
-import { nodes, marks } from 'prosemirror-schema-basic';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { roundtripChoice, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
@@ -27,13 +26,20 @@ import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-rou
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
 import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
-import { constrainedHome, constrainedShiftHome, constrainedEnd, constrainedShiftEnd } from '@citolab/prose-qti/components/shared';
-import sourceXML from '@qti-editor/example-items/ITEM001.xml?raw';
+import { qtiBasicMarks, qtiBasicNodes } from '@citolab/prose-qti';
+import {
+  constrainedHome,
+  constrainedShiftHome,
+  constrainedEnd,
+  constrainedShiftEnd
+} from '@citolab/prose-qti/components/shared';
 
+import sourceXML from './fixtures/ITEM001.xml?raw';
 import '@citolab/prose-qti/components/choice/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-simple-choice/register.js';
 import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
+import { divLockPlugin, qtiLayoutDivNodeSpec } from '../../qti-prosemirror-item/src/components/qti-layout-div';
 
 import 'prosemirror-view/style/prosemirror.css';
 // The same stylesheets the shipping editors load (see apps/*/src/style.css).
@@ -41,6 +47,7 @@ import 'prosemirror-view/style/prosemirror.css';
 // invisible to real pointer events — see finding #10 in docs/testing-findings.md.
 import '@qti-components/theme/item.css';
 import '@citolab/prose-qti/core-css.css';
+import './kennisnet.css';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
@@ -51,7 +58,12 @@ const qtiNodes = Object.fromEntries(
   ])
 );
 
-const baseNodes = { ...nodes, paragraph: { ...nodes.paragraph, group: 'block richtext' }, ...qtiNodes };
+const baseNodes = {
+  ...qtiBasicNodes,
+  paragraph: { ...qtiBasicNodes.paragraph, group: 'block richtext' },
+  qtiLayoutDiv: { ...qtiLayoutDivNodeSpec, content: 'block+', group: 'block' },
+  ...qtiNodes
+};
 
 /** The editor schema used for the ITEM001 roundtrip. */
 export const schema = new Schema({
@@ -66,7 +78,7 @@ export const schema = new Schema({
       }
     }
   },
-  marks
+  marks: qtiBasicMarks
 });
 
 /** Minimal plugin set: enter/base keymaps, node-attrs sync (applies correct-response clicks) and block-select. */
@@ -76,11 +88,12 @@ const editorPlugins: Plugin[] = [
     Home: constrainedHome,
     'Shift-Home': constrainedShiftHome,
     End: constrainedEnd,
-    'Shift-End': constrainedShiftEnd,
+    'Shift-End': constrainedShiftEnd
   }),
   keymap(baseKeymap),
   nodeAttrsSyncPlugin,
-  blockSelectPlugin
+  blockSelectPlugin,
+  divLockPlugin
 ];
 
 // Editable-attribute allowlist for the panel, sourced from the interaction's
@@ -126,7 +139,7 @@ export const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLEle
 };
 
 const meta: Meta = {
-  title: 'QTI ProseMirror/Roundtrip Regression',
+  title: 'QTI Kennisnet/Regression',
   // These exports are the reusable import/export pipeline (consumed by the
   // regression test), not stories.
   excludeStories: ['schema', 'importItem001', 'exportAssessmentItemDoc', 'mountEditor']
@@ -137,20 +150,15 @@ export const RoundtripItem001: StoryObj = {
   render: () => {
     let panelEl: HTMLElement | null = null;
     return html`
-      <div style="display: flex; gap: 20px; align-items: flex-start;">
-        <aside
-          ${ref(el => {
-            if (el) panelEl = el as HTMLElement;
-          })}
-        ></aside>
-        <div
-          class="editor-container"
-          style="flex: 1 1 auto; min-width: 0;"
-          ${ref(el => {
-            if (el) mountEditor(el as HTMLElement, { panelEl: panelEl ?? undefined });
-          })}
-        ></div>
-      </div>
+      <div
+        ${ref(el => {
+          if (el) mountEditor(el as HTMLElement, { panelEl: panelEl ?? undefined });
+        })}
+      ></div>
+
+      ${ref(el => {
+        if (el) panelEl = el as HTMLElement;
+      })}
     `;
   }
 };

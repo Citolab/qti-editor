@@ -63,6 +63,9 @@
       "@citolab/prose-qti": [
         "packages/prose-qti/src/index.ts"
       ],
+      "@citolab/prose-qti/*": [
+        "packages/prose-qti/src/*"
+      ],
       "@citolab/prose-qti/core": [
         "packages/prose-qti/src/core/index.ts"
       ],
@@ -80,6 +83,12 @@
       ],
       "@citolab/prose-qti/interfaces": [
         "packages/prose-qti/src/interfaces/index.ts"
+      ],
+      "@citolab/prose-qti/schema": [
+        "packages/prose-qti/src/schema/index.ts"
+      ],
+      "@citolab/prose-qti/schema/*": [
+        "packages/prose-qti/src/schema/*"
       ],
       "@citolab/prose-qti/integration": [
         "packages/prose-qti/src/integration/index.ts"

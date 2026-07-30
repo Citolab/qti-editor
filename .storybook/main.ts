@@ -45,6 +45,14 @@ const config: StorybookConfig = {
           ignoreConfigErrors: true,
         }),
       ],
+      css: {
+        ...(config.css || {}),
+        devSourcemap: true,
+      },
+      build: {
+        ...(config.build || {}),
+        sourcemap: true,
+      },
       resolve: {
         ...config.resolve
       }

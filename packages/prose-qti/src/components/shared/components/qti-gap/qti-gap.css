@@ -1,0 +1,9 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 5rem;
+  vertical-align: baseline;
+  line-height: 1.4;
+  box-sizing: border-box;
+}

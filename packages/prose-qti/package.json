@@ -34,6 +34,14 @@
       "types": "./dist/interfaces/index.d.ts",
       "default": "./dist/interfaces/index.js"
     },
+    "./schema": {
+      "types": "./dist/schema/index.d.ts",
+      "default": "./dist/schema/index.js"
+    },
+    "./schema/*": {
+      "types": "./dist/schema/*",
+      "default": "./dist/schema/*"
+    },
     "./integration": {
       "types": "./dist/integration/index.d.ts",
       "default": "./dist/integration/index.js"

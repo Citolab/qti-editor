@@ -1,7 +1,8 @@
-import { css, html, LitElement, nothing } from 'lit';
+import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import '../qti-fake-drag/register.js';
+import gapCss from './qti-gap.css?inline';
 
 export class QtiGapEdit extends LitElement {
   /**
@@ -12,16 +13,9 @@ export class QtiGapEdit extends LitElement {
    * {@link ElementInternals.states}, not via DOM attributes — that makes it
    * structurally impossible for editor-only state to leak into serialized XML.
    */
+  // Keep stylesheet in a dedicated CSS file so DevTools can show source-file provenance.
   static override styles = css`
-    :host {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      min-width: 5rem;
-      vertical-align: baseline;
-      line-height: 1.4;
-      box-sizing: border-box;
-    }
+    ${unsafeCSS(gapCss)}
   `;
 
   @property({ type: String })
