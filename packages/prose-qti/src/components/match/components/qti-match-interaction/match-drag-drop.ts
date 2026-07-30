@@ -176,8 +176,38 @@ export class DragDropController implements ReactiveController {
     this.syncFakeDrags();
   }
 
+  /**
+   * Give the source choices the runtime's own `:state(drag)`, which is what qti-theme keys on for
+   * both halves of a chip's look: `qti-match-interaction :state(drag)` paints it through the
+   * --drag-* contract (so a brand overlay like kennisnet.css wins with no specificity contest), and
+   * `:state(drag)::part(control)::before` draws the grip icon. Without it the editor drew plain
+   * outlined boxes with no grip while the runtime drew branded chips.
+   *
+   * ElementInternals states only — NEVER an attribute. ProseMirror's mutation observer reverts any
+   * attribute it does not know from the schema, and reverting re-triggers the observer that set it,
+   * which is an infinite loop that hard-freezes the tab. The same reason `:state(pending)` and
+   * `:state(filled)` below are states rather than markers, and why the drop region is centred from
+   * CSS in qti-simple-associable-choice rather than by stamping the runtime's [qti-droppable].
+   */
+  private applyRuntimeDragDropHooks(): void {
+    const [sourceSet, targetSet] = getMatchSets(this.host);
+
+    for (const source of getChoices(sourceSet)) {
+      const internals = (source as HTMLElement & { internals?: ElementInternals }).internals;
+      internals?.states.add('drag');
+    }
+
+    // The runtime stamps [qti-droppable]; qti-simple-associable-choice.styles.ts accepts
+    // :state(droppable) as the same opt-in precisely so a ProseMirror host can use it.
+    for (const target of getChoices(targetSet)) {
+      const internals = (target as HTMLElement & { internals?: ElementInternals }).internals;
+      internals?.states.add('droppable');
+    }
+  }
+
   private syncFakeDrags(): void {
     if (!this.setupDone) return;
+    this.applyRuntimeDragDropHooks();
     for (const target of getChoices(getMatchSets(this.host)[1])) {
       const targetId = target.getAttribute('identifier');
       const drags: FakeDrag[] = [];
