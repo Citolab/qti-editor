@@ -38,3 +38,80 @@ qti-match-interaction.qti-match-tabular qti-simple-associable-choice::part(drop)
 qti-order-interaction qti-simple-choice {
   cursor: pointer;
 }
+
+/*
+ * Drop-slot pulse — "which drop can this drag go into?"
+ *
+ * Click-to-associate affordance for match: clicking a source makes every eligible empty drop slot
+ * pulse. The driver already exists and never stopped working — qti-simple-match-set sets
+ * `--qti-dropslot-selecting: dropslot-pulse` on its slotted choices while the parent interaction is
+ * waiting for a target (see qti-simple-match-set.ts). What went missing was the consumer: the
+ * `[part='dropslot']` rule that read the variable was dropped when qti-simple-associable-choice moved
+ * to `:state(pending)`, and `@keyframes dropslot-pulse` went with it. The variable has been
+ * dangling ever since — set by one component, read by nobody.
+ *
+ * Reviving it here rather than back inside the shadow, for two reasons:
+ *   - `::part(drop)` from the document beats the component's own shadow rules, so this cannot be
+ *     out-cascaded by the theme's `::part(drop)` declarations the way a shadow rule would be (the
+ *     order/associate components had to resort to redirecting custom properties to work around
+ *     exactly that — see their .styles.ts).
+ *   - `qti-components.overrides` is the theme's last declared layer and is otherwise empty, so this
+ *     sits on top of the whole theme by construction instead of by specificity accident.
+ *
+ * Custom properties inherit through the shadow boundary, which is what lets the match-set drive a
+ * grandchild's animation without touching an attribute — deliberate, because ProseMirror's mutation
+ * observer watches attributes and would fight any DOM-visible state.
+ *
+ * Only the animation is revived. Revealing the empty slot is already handled by
+ * `:host(:state(pending)) [part='drop']:empty` inside the choice's shadow; overriding `display`
+ * through `::part()` would clobber that for associate, which has no match-set to set the variable.
+ *
+ * COVERAGE — which drop target pulses, and from where:
+ *
+ *   match      qti-simple-associable-choice::part(drop)   here (both rules below)
+ *   gap-match  qti-gap                                    here (light-DOM target)
+ *   order      qti-order-interaction ::part(drop)         its OWN shadow CSS
+ *   associate  qti-associate-interaction ::part(drop)     its OWN shadow CSS
+ *
+ * Order and associate are deliberately NOT duplicated here. Their slots must pulse only while
+ * EMPTY, which their shadow rules express as `[part='drop']:not(:has(qti-fake-drag))`. A structural
+ * filter cannot be applied after `::part()` from outside, so a blanket
+ * `qti-order-interaction::part(drop)` rule here would pulse filled slots too — a regression. Both
+ * were verified pulsing (`qti-edit-drop-pulse`) as soon as a slot is emptied. If you ever unify
+ * them, the filter has to move with them.
+ *
+ * Selectors are kept as SEPARATE rules on purpose: one invalid selector in a comma-separated group
+ * drops the whole group at parse time, and `:state()` support is not universal.
+ */
+@layer qti-components.overrides {
+  @keyframes dropslot-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70)) 45%, transparent);
+    }
+    50% {
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70)) 0%, transparent);
+    }
+  }
+
+  /* match — driven by the match-set's inherited variable. Resolves to `none` until a match-set
+     sets it, so this rule is inert for associate, which reuses the same element as a SOURCE. */
+  qti-simple-associable-choice::part(drop) {
+    animation: var(--qti-dropslot-selecting, none) 1.2s ease-in-out infinite;
+  }
+
+  /* match — state-driven, for the drop targets match-drag-drop marks directly. */
+  qti-simple-associable-choice:state(pending)::part(drop) {
+    border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
+    background: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
+    animation: dropslot-pulse 1.2s ease-in-out infinite;
+  }
+
+  /* gap-match — the gap IS the drop target and lives in the light DOM, so no ::part() needed.
+     `:state(pending)` is set per gap by qti-gap-match-interaction's applyVisualState(). */
+  qti-gap:state(pending) {
+    border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
+    background: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
+    animation: dropslot-pulse 1.2s ease-in-out infinite;
+  }
+}
