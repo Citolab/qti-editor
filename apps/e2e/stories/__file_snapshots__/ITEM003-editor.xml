@@ -33,8 +33,14 @@
     </div>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
-        <p>Goede antwoorden: "breking" of "refractie" (hoofdletterongevoelig).</p>
-        <p>"refractie" is de officiële term; "breking" wordt ook goed gerekend.</p>
+        <ul>
+          <li>
+            <p>Goede antwoorden: "breking" of "refractie" (hoofdletterongevoelig).</p>
+          </li>
+          <li>
+            <p>"refractie" is de officiële term; "breking" wordt ook goed gerekend.</p>
+          </li>
+        </ul>
       </qti-content-body>
     </qti-rubric-block>
   </qti-item-body>

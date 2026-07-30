@@ -1,5 +1,4 @@
 
-import tailwindcss from '@tailwindcss/vite';
 import remarkGfm from 'remark-gfm';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -43,9 +42,19 @@ const config: StorybookConfig = {
     return {
       ...config,
       publicDir: false,
+      /*
+       * No tailwindcss() here on purpose. Tailwind and daisyUI belong to the ProseKit app examples
+       * (apps/qti-prosekit-app, apps/qti-prosekit-item), apps/site and packages/prose-qti-ui — each
+       * of which imports "tailwindcss" from its own style.css and runs the plugin in its own Vite
+       * config. Nothing Storybook loads does: preview.ts pulls modern-normalize, the qti-components
+       * theme and prose-qti's core-css, and the regression stories add only their own CSS.
+       *
+       * Running it here meant every stylesheet in the storybook went through Tailwind's parser for
+       * no benefit — it emitted nothing, but it did reject valid CSS (a "*\/" sequence inside a
+       * comment took the whole storybook down with "Missing opening (").
+       */
       plugins: [
         ...(config.plugins || []),
-        tailwindcss(),
         tsconfigPaths({
           projects: [
             './tsconfig.json',

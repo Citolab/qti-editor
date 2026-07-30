@@ -17,11 +17,13 @@
  * interaction extension.
  */
 
-import { baseKeymap } from 'prosemirror-commands';
+import { baseKeymap, chainCommands } from 'prosemirror-commands';
 import { history, redo, undo } from 'prosemirror-history';
 import { keymap } from 'prosemirror-keymap';
 import { Schema, type Node as ProseMirrorNode, type NodeSpec } from 'prosemirror-model';
+import { bulletList, listItem, liftListItem, orderedList, sinkListItem, splitListItem } from 'prosemirror-schema-list';
 import { EditorState, type Plugin } from 'prosemirror-state';
+import { columnResizing, goToNextCell, tableEditing, tableNodes } from 'prosemirror-tables';
 import { EditorView } from 'prosemirror-view';
 import { qtiBasicMarks, qtiBasicNodes } from '@citolab/prose-qti';
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
@@ -63,6 +65,9 @@ import '@citolab/prose-qti/components/shared/components/qti-simple-match-set/reg
 import '@citolab/prose-qti/components/shared/components/qti-gap/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-gap-text/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-fake-drag/register.js';
+
+/* Column-resize handle and cell-selection styling for the table plugin. */
+import 'prosemirror-tables/style/tables.css';
 
 /*
  * Editor-only half of the Kennisnet brand. The runtime half (kennisnet.css) is imported per story
@@ -126,6 +131,19 @@ export function createRegressionEditor({
     paragraph: { ...qtiBasicNodes.paragraph, group: 'block richtext' },
     // Keeps <div class="qti-layout-row"> / <div class="qti-layout-colN"> alive across the roundtrip.
     qtiLayoutDiv: { ...qtiLayoutDivNodeSpec, content: 'block+', group: 'block' },
+
+    /*
+     * Lists and tables, copied from apps/qti-prosemirror-item/src/schema.ts so the stories carry the
+     * same rich-text vocabulary the shipping editor does. Both are plain ProseMirror, not QTI: an
+     * item body is HTML, and rubric blocks in particular already contain <ul>/<li>.
+     *
+     * cellContent is the richtext group, which is why paragraph above joins it.
+     */
+    ordered_list: { ...orderedList, content: 'list_item+', group: 'block richtext' },
+    bullet_list: { ...bulletList, content: 'list_item+', group: 'block richtext' },
+    list_item: { ...listItem, content: 'paragraph (paragraph | bullet_list | ordered_list)*' },
+    ...tableNodes({ tableGroup: 'block richtext', cellContent: 'richtext+', cellAttributes: {} }),
+
     ...extraNodes,
     ...contributedNodes
   };
@@ -158,6 +176,24 @@ export function createRegressionEditor({
       'Mod-y': redo,
       'Shift-Mod-z': redo
     }),
+    /*
+     * Standard ProseMirror list & table editing — not QTI-specific. Enter splits a list item,
+     * Tab / Shift-Tab indents list items or moves between table cells, plus column resizing and
+     * cell selection. Mirrors tableListPlugins in apps/qti-prosemirror-item/src/main.ts.
+     *
+     * Sits after the interaction keymap and before baseKeymap, so an interaction's own Enter wins
+     * inside an interaction and unhandled keys still fall through to the base bindings.
+     */
+    keymap({
+      Enter: splitListItem(schema.nodes.list_item),
+      Tab: chainCommands(sinkListItem(schema.nodes.list_item), goToNextCell(1)),
+      'Shift-Tab': chainCommands(liftListItem(schema.nodes.list_item), goToNextCell(-1)),
+      'Mod-[': liftListItem(schema.nodes.list_item),
+      'Mod-]': sinkListItem(schema.nodes.list_item)
+    }),
+    columnResizing(),
+    tableEditing(),
+
     keymap(baseKeymap),
     ...(descriptor.pluginFactories ?? []).map(factory => factory()),
     nodeAttrsSyncPlugin,

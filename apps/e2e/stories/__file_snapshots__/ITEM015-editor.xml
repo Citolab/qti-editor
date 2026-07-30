@@ -33,8 +33,14 @@
     </div>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
-        <p>pH &lt; 7 → zuur</p>
-        <p>pH &gt; 7 → basisch</p>
+        <ul>
+          <li>
+            <p>pH &lt; 7 → zuur</p>
+          </li>
+          <li>
+            <p>pH &gt; 7 → basisch</p>
+          </li>
+        </ul>
       </qti-content-body>
     </qti-rubric-block>
   </qti-item-body>

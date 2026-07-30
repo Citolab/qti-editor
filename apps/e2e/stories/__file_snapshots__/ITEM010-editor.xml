@@ -50,7 +50,54 @@
     </div>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
-        <p>StellingAntwoordToelichting Evenaar door drie continentenJuistZuid-Amerika, Afrika, Azië Helium is lichter dan luchtJuistHelium heeft een lagere dichtheid dan lucht Pluto officieel planeetOnjuistPluto is sinds 2006 geclassificeerd als dwergplaneet</p>
+        <table>
+          <tbody>
+            <tr>
+              <th>
+                <p>Stelling</p>
+              </th>
+              <th>
+                <p>Antwoord</p>
+              </th>
+              <th>
+                <p>Toelichting</p>
+              </th>
+            </tr>
+            <tr>
+              <td>
+                <p>Evenaar door drie continenten</p>
+              </td>
+              <td>
+                <p>Juist</p>
+              </td>
+              <td>
+                <p>Zuid-Amerika, Afrika, Azië</p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p>Helium is lichter dan lucht</p>
+              </td>
+              <td>
+                <p>Juist</p>
+              </td>
+              <td>
+                <p>Helium heeft een lagere dichtheid dan lucht</p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p>Pluto officieel planeet</p>
+              </td>
+              <td>
+                <p>Onjuist</p>
+              </td>
+              <td>
+                <p>Pluto is sinds 2006 geclassificeerd als dwergplaneet</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </qti-content-body>
     </qti-rubric-block>
   </qti-item-body>

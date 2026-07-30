@@ -45,9 +45,17 @@
     </div>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
-        <p>Lesotho ligt volledig binnen Zuid-Afrika</p>
-        <p>San Marino en Vaticaanstad liggen volledig binnen Italië</p>
-        <p>Bolivia is niet ingesloten</p>
+        <ul>
+          <li>
+            <p>Lesotho ligt volledig binnen Zuid-Afrika</p>
+          </li>
+          <li>
+            <p>San Marino en Vaticaanstad liggen volledig binnen Italië</p>
+          </li>
+          <li>
+            <p>Bolivia is niet ingesloten</p>
+          </li>
+        </ul>
       </qti-content-body>
     </qti-rubric-block>
   </qti-item-body>

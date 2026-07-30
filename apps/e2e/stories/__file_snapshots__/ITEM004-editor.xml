@@ -33,8 +33,14 @@
     </div>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
-        <p>Correct: 44</p>
-        <p>Uitleg: XL = 40, IV = 4, samen 44.</p>
+        <ul>
+          <li>
+            <p>Correct: 44</p>
+          </li>
+          <li>
+            <p>Uitleg: XL = 40, IV = 4, samen 44.</p>
+          </li>
+        </ul>
       </qti-content-body>
     </qti-rubric-block>
   </qti-item-body>

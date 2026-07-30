@@ -53,9 +53,17 @@
     </div>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
-        <p>Diamond → Guns, Germs and Steel</p>
-        <p>Harari → Sapiens</p>
-        <p>Arendt → The Human Condition</p>
+        <ul>
+          <li>
+            <p>Diamond → Guns, Germs and Steel</p>
+          </li>
+          <li>
+            <p>Harari → Sapiens</p>
+          </li>
+          <li>
+            <p>Arendt → The Human Condition</p>
+          </li>
+        </ul>
       </qti-content-body>
     </qti-rubric-block>
   </qti-item-body>

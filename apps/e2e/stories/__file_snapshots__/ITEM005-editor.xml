@@ -19,9 +19,17 @@
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
         <p>Beoordelingscriteria (controle):</p>
-        <p>Antwoord noemt minstens twee rationale factoren (bijv. variatie in opbrengst, leveringszekerheid, kosten, netstabiliteit).</p>
-        <p>Toelichting waarom mix betrouwbaarder is.</p>
-        <p>Begrijpelijke argumentatie.</p>
+        <ul>
+          <li>
+            <p>Antwoord noemt minstens twee rationale factoren (bijv. variatie in opbrengst, leveringszekerheid, kosten, netstabiliteit).</p>
+          </li>
+          <li>
+            <p>Toelichting waarom mix betrouwbaarder is.</p>
+          </li>
+          <li>
+            <p>Begrijpelijke argumentatie.</p>
+          </li>
+        </ul>
         <p>Opmerking: handmatige beoordeling vereist; automatische scoring is niet geconfigureerd.</p>
       </qti-content-body>
     </qti-rubric-block>

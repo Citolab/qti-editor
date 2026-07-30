@@ -230,6 +230,12 @@ importers:
       '@storybook/web-components-vite':
         specifier: ^10.5.3
         version: 10.5.3(esbuild@0.28.1)(lit@3.3.2)(rollup@4.60.1)(storybook@10.5.5(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.8.3))
+      prosemirror-schema-list:
+        specifier: ^1.5.1
+        version: 1.5.1
+      prosemirror-tables:
+        specifier: ^1.8.5
+        version: 1.8.5
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
