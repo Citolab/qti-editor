@@ -46,6 +46,16 @@
      */
     --qti-edit-hottext-hint-color: var(--qti-border-color, #c6cad0);
 
+    /*
+     * The tint under a hovered interaction. Derived from the text colour rather than a fixed grey, so
+     * it stays a neutral wash on any brand and on a dark surface. The inset is how far it extends
+     * past the interaction's own box — spent as a shadow spread, never padding, so hovering cannot
+     * move the prose.
+     */
+    --qti-edit-interaction-hover-bg: color-mix(in srgb, currentColor 6%, transparent);
+    --qti-edit-interaction-hover-radius: var(--qti-border-radius, 0.2rem);
+    --qti-edit-interaction-hover-inset: 0.25rem;
+
     /* Empty-prompt placeholder. The text is a variable so hosts can translate it. */
     --qti-edit-placeholder-color: var(--qti-text-color-muted, #6b7280);
     --qti-edit-prompt-placeholder: 'Prompt text goes here';
@@ -231,6 +241,28 @@ qti-order-interaction qti-simple-choice {
   qti-hottext-interaction.qti-unselected-hidden qti-hottext {
     text-decoration: underline dotted var(--qti-edit-hottext-hint-color);
     text-underline-offset: 0.2em;
+  }
+
+  /*
+   * Hovering an interaction tints it, so an author can see what they are about to edit and where it
+   * begins and ends — several interactions often sit in one flow of prose with nothing between them.
+   *
+   * `[response-identifier]` is the hook: every QTI interaction carries one, and nothing else in an
+   * item body does. Checked against text-entry, inline-choice, match, order, gap-match, select-point
+   * and hottext — the attribute matched exactly the interaction elements in each, no false positives.
+   * A tag-name selector would need all twelve listed and would rot as interactions are added.
+   *
+   * Paint only, so unlike the in-word radio this cannot move the text: background-color and
+   * border-radius never reflow. The breathing room around the tint is a box-shadow SPREAD rather
+   * than padding for the same reason — padding would resize the box and shove the prose around on
+   * every hover.
+   *
+   * Scoped to .ProseMirror so it can only ever apply to an editor document, never to a rendered item.
+   */
+  .ProseMirror [response-identifier]:hover {
+    background-color: var(--qti-edit-interaction-hover-bg);
+    border-radius: var(--qti-edit-interaction-hover-radius);
+    box-shadow: 0 0 0 var(--qti-edit-interaction-hover-inset) var(--qti-edit-interaction-hover-bg);
   }
 
   /* Empty prompt — placeholder text so an unfilled prompt is not an invisible target. */
