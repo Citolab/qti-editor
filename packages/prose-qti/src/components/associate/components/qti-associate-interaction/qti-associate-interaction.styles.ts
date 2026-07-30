@@ -10,24 +10,10 @@ const styles: CSSResultGroup = [
       white-space: normal;
     }
 
-    /* Pending pulse — only empty slots react.
-       qti-theme's outer qti-associate-interaction::part(drop) rule
-       wins the cascade over shadow rules for ::part() selectors. We
-       redirect by overriding the custom properties IT reads (which inherit
-       through the shadow boundary). Animation lives in shadow because it
-       doesn't conflict with the theme cascade. */
-    :host(:state(pending)) [part='drop']:not(:has(qti-fake-drag)) {
-      --qti-border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
-      --qti-bg: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
-      animation: qti-edit-drop-pulse 1.2s ease-in-out infinite;
-    }
-
-    @keyframes qti-edit-drop-pulse {
-      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb,
-        var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70)) 45%, transparent); }
-      50%      { box-shadow: 0 0 0 4px color-mix(in srgb,
-        var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70)) 0%, transparent); }
-    }
+    /* The pending pulse used to live here, redirecting --qti-border-color/--qti-bg because an
+       outer qti-theme ::part(drop) rule beat any shadow rule. It now lives once in prose-qti's
+       core-css.css, in the qti-components.overrides layer, keyed off the "empty" part token this
+       component emits (see _renderDropContainer). One definition for all four drop interactions. */
   `
 ];
 

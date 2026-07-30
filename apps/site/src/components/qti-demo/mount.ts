@@ -19,7 +19,8 @@ import { descriptors, qtiPlugins, seedDoc, exportQtiItem } from './prosemirror-q
 
 import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
-import './qti.css';
+// QTI element styling ships with @citolab/prose-qti's core-css.css, imported by src/style.css.
+// Override the --qti-edit-* variables there to customise; do not restate selectors.
 
 const editorPlugins = [
   history(),

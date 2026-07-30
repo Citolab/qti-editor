@@ -153,7 +153,7 @@ export class QtiAssociateInteractionEdit extends Interaction {
       this._placeIntoSlot(containerIndex, side, sourceId);
     },
     // Mirror pending state onto the interaction host so CSS can pulse empty
-    // drop slots via `:state(pending) ::part(drop):not(:has(qti-fake-drag))`.
+    // drop slots via `:state(pending)::part(drop empty)` (see core-css.css).
     onPendingChanged: pending => {
       if (pending != null) this.internals.states.add('pending');
       else this.internals.states.delete('pending');
@@ -358,7 +358,7 @@ export class QtiAssociateInteractionEdit extends Interaction {
           (container, i) => html`
             <div part="drop-row">
               <div
-                part="drop"
+                part=${container.left === null ? 'drop empty' : 'drop'}
                 class="dl"
                 data-drop-slot=${container.left === null ? `${i}:left` : nothing}
               >
@@ -367,7 +367,7 @@ export class QtiAssociateInteractionEdit extends Interaction {
                   : nothing}
               </div>
               <div
-                part="drop"
+                part=${container.right === null ? 'drop empty' : 'drop'}
                 class="dl"
                 data-drop-slot=${container.right === null ? `${i}:right` : nothing}
               >

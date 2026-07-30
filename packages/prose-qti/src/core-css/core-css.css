@@ -8,7 +8,45 @@
  *   3. Editor-only affordances (rubric-block boundary, ProseKit placeholder fix).
  *
  * Plain CSS — no Tailwind, no PostCSS plugins required at the consumer.
+ *
+ * ── The --qti-edit-* contract ────────────────────────────────────────────────────────────────
+ *
+ * Every editor-only visual below is painted from a --qti-edit-* variable declared in the block
+ * that follows. Implementing apps SET VARIABLES; they do not restate selectors. That is the whole
+ * interface — if a knob you need is missing, add it here rather than reaching for a rule in the app.
+ *
+ * Defaults sit in @layer qti-components.global, near the bottom of qti-theme's layer order, so an
+ * app's plain (unlayered) :root declaration always wins — unlayered beats layered regardless of
+ * specificity. The rules that consume them sit in @layer qti-components.overrides, qti-theme's last
+ * layer, so they beat the theme without relying on specificity.
+ *
+ * Each default resolves through the qti-components theme token first and only falls back to a
+ * literal, so the editor keeps tracking runtime theming for free.
+ *
+ * This replaced a per-app qti.css that every editor app copied by hand. Those copies had already
+ * drifted: the site's build still used :state(--checked), which never matched anything, because
+ * qti-hottext adds the plain 'checked' state. See apps/e2e/stories/kennisnet.css for a worked
+ * example of overriding both these and the qti-components tokens.
  */
+
+@layer qti-components.global {
+  :root {
+    /* Drop target while a drag source is selected — see the pulse block below. */
+    --qti-edit-drop-pending-border: var(--qti-border-active, #f86d70);
+    --qti-edit-drop-pending-bg: var(--qti-bg-active, #ffecec);
+
+    /* Ring on the drag source the author just picked. */
+    --qti-edit-selected-outline-color: var(--accent, #2563eb);
+    --qti-edit-selected-outline-width: 2px;
+
+    /* Hottext the author marked as part of the correct response. */
+    --qti-edit-hottext-checked-border: var(--qti-border-color-focus, #2563eb);
+
+    /* Empty-prompt placeholder. The text is a variable so hosts can translate it. */
+    --qti-edit-placeholder-color: var(--qti-text-color-muted, #6b7280);
+    --qti-edit-prompt-placeholder: 'Prompt text goes here';
+  }
+}
 
 qti-rubric-block {
   display: block !important;
@@ -66,19 +104,23 @@ qti-order-interaction qti-simple-choice {
  * `:host(:state(pending)) [part='drop']:empty` inside the choice's shadow; overriding `display`
  * through `::part()` would clobber that for associate, which has no match-set to set the variable.
  *
- * COVERAGE — which drop target pulses, and from where:
+ * COVERAGE — this block is the ONLY definition of the pulse. All four drop interactions:
  *
- *   match      qti-simple-associable-choice::part(drop)   here (both rules below)
- *   gap-match  qti-gap                                    here (light-DOM target)
- *   order      qti-order-interaction ::part(drop)         its OWN shadow CSS
- *   associate  qti-associate-interaction ::part(drop)     its OWN shadow CSS
+ *   match      qti-simple-associable-choice::part(drop)        variable- and state-driven
+ *   gap-match  qti-gap:state(pending)                          light-DOM target, no part needed
+ *   order      qti-order-interaction::part(drop empty)
+ *   associate  qti-associate-interaction::part(drop empty)
  *
- * Order and associate are deliberately NOT duplicated here. Their slots must pulse only while
- * EMPTY, which their shadow rules express as `[part='drop']:not(:has(qti-fake-drag))`. A structural
- * filter cannot be applied after `::part()` from outside, so a blanket
- * `qti-order-interaction::part(drop)` rule here would pulse filled slots too — a regression. Both
- * were verified pulsing (`qti-edit-drop-pulse`) as soon as a slot is emptied. If you ever unify
- * them, the filter has to move with them.
+ * Order and associate previously owned a copy inside their own shadow CSS, because a slot must
+ * pulse only while EMPTY and `[part='drop']:not(:has(qti-fake-drag))` was the only way to express
+ * that — a structural filter cannot follow `::part()` from outside. Those components now emit a
+ * second `empty` part token on unfilled slots instead, so `::part(drop empty)` says the same thing
+ * from out here. `::part()` matches on token containment, so every existing `::part(drop)` rule in
+ * qti-theme keeps matching filled and empty slots alike.
+ *
+ * Consequence worth knowing: the pulse now depends on core-css.css being loaded. It always was for
+ * match and gap-match; it is now true for order and associate too. Every app imports this file from
+ * its own src/style.css, and the header above already calls it mandatory.
  *
  * Selectors are kept as SEPARATE rules on purpose: one invalid selector in a comma-separated group
  * drops the whole group at parse time, and `:state()` support is not universal.
@@ -113,5 +155,86 @@ qti-order-interaction qti-simple-choice {
     border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
     background: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
     animation: dropslot-pulse 1.2s ease-in-out infinite;
+  }
+
+  /* order — `:state(pending)` on the host, `empty` token on the unfilled slots. */
+  qti-order-interaction:state(pending)::part(drop empty) {
+    border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
+    background: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
+    animation: dropslot-pulse 1.2s ease-in-out infinite;
+  }
+
+  /* associate — same shape as order. */
+  qti-associate-interaction:state(pending)::part(drop empty) {
+    border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
+    background: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
+    animation: dropslot-pulse 1.2s ease-in-out infinite;
+  }
+
+  /*
+   * Drag source — picked / "selected".
+   *
+   * Unified across all four drag-drop interactions: PendingSelectionController toggles
+   * :state(selected) on whatever source the author clicked. Intentionally distinct from the
+   * pending-target pulse. Per-state visuals use :state() on the host, never data-* attributes, so
+   * editor-only UI state structurally cannot leak into the exported XML.
+   *
+   * qti-gap-text also emits :state(linked) and :state(disabled); neither is painted here. Hosts
+   * that want to differentiate should add a rule rather than a variable.
+   */
+  qti-gap-text:state(selected),
+  qti-simple-choice:state(selected),
+  qti-simple-associable-choice:state(selected) {
+    outline: var(--qti-edit-selected-outline-width) solid var(--qti-edit-selected-outline-color);
+    outline-offset: 2px;
+  }
+
+  /*
+   * Hottext — flex container.
+   *
+   * The custom element defaults to display: inline. With a block <p> child, browsers open empty
+   * inline line-boxes above and below it (the whitespace bands seen in hottext-multi-response).
+   * Flex also ignores the whitespace-only text nodes Lit emits around <slot>, so the host's height
+   * collapses to its real content. The runtime theme leaves this alone, so it is editor-only.
+   */
+  qti-hottext-interaction {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /*
+   * Hottext — chip border at rest. The runtime theme only paints one under
+   * .qti-input-control-hidden; authoring wants the "selectable" affordance visible always. Reuses
+   * the theme tokens so it keeps tracking theming.
+   */
+  qti-hottext-interaction qti-hottext {
+    border: var(--qti-border-thickness) var(--qti-border-style) var(--qti-border-color);
+  }
+
+  /*
+   * Hottext — reveal the hidden radio/checkbox on hover. In qti-unselected-hidden mode the theme
+   * hides that part for a clean runtime look, but the author still has to click it to mark the
+   * correct response.
+   */
+  qti-hottext-interaction.qti-unselected-hidden qti-hottext:hover::part(ch) {
+    display: grid;
+  }
+
+  /*
+   * Hottext — author marked as correct response. The runtime visual (radio fill via the theme's
+   * :state(checked)) stays intact; this adds an outline so authors can scan a block of text and
+   * pick out the scoring hottexts at a glance.
+   */
+  qti-hottext-interaction qti-hottext:state(checked) {
+    outline: 2px solid var(--qti-edit-hottext-checked-border);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+
+  /* Empty prompt — placeholder text so an unfilled prompt is not an invisible target. */
+  qti-prompt p:has(> br.ProseMirror-trailingBreak:only-child)::before {
+    content: var(--qti-edit-prompt-placeholder);
+    color: var(--qti-edit-placeholder-color);
+    pointer-events: none;
   }
 }

@@ -64,6 +64,13 @@ import '@citolab/prose-qti/components/shared/components/qti-gap/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-gap-text/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-fake-drag/register.js';
 
+/*
+ * Editor-only half of the Kennisnet brand. The runtime half (kennisnet.css) is imported per story
+ * and kept byte-identical with qti-components; this one sets --qti-edit-* variables, which only
+ * mean anything in the editor, so it is deliberately not in that shared file.
+ */
+import './kennisnet-edit.css';
+
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 import type { RoundtripTransform } from '@citolab/prose-qti/item-roundtrip';
 

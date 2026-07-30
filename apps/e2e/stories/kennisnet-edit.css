@@ -1,0 +1,29 @@
+/*
+ * Kennisnet brand — EDITOR-ONLY half.
+ *
+ * kennisnet.css next to this file brands the RUNTIME by setting qti-components tokens, and is kept
+ * byte-identical with its twin in qti-components so the two repos render an item the same way. That
+ * file must stay free of editor concepts: qti-components has no editor, so a --qti-edit-* variable
+ * there is dead weight.
+ *
+ * So the editor half lives here instead. It is a worked example of the --qti-edit-* contract
+ * declared in @citolab/prose-qti's core-css.css: brand the authoring affordances by setting
+ * variables only, never by restating a selector. Every editor visual — the drag-source ring, the
+ * drop-slot pulse, the hottext correct-response mark, the empty-prompt placeholder — is painted
+ * from one of those variables.
+ *
+ * Unlayered on purpose: unlayered declarations beat layered ones, so this wins over the defaults
+ * core-css.css declares in @layer qti-components.global without having to know the layer order.
+ *
+ * Imported once from prosemirror-base.ts, so all 17 regression stories pick it up.
+ */
+
+:root {
+  /* Ring on a picked drag source: Kennisnet purple instead of the generic blue. */
+  --qti-edit-selected-outline-color: var(--qti-primary);
+
+  /* The Kennisnet items are Dutch, so the authoring placeholder is too. This is why the
+     placeholder is a variable and not a literal in core-css.css — content strings need
+     translating, and a host cannot restate the ::before rule without also owning its selector. */
+  --qti-edit-prompt-placeholder: 'Vraagtekst komt hier';
+}

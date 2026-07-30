@@ -46,7 +46,7 @@ export class QtiOrderInteractionEdit extends Interaction {
       if (Number.isFinite(slotIndex)) this._placeSelectedChoice(sourceId, slotIndex);
     },
     // Mirror the pending state onto the interaction host so CSS can pulse
-    // empty drop slots via `:state(pending) ::part(drop):not(:has(qti-fake-drag))`.
+    // empty drop slots via `:state(pending)::part(drop empty)` (see core-css.css).
     onPendingChanged: pending => {
       if (pending != null) this.internals.states.add('pending');
       else this.internals.states.delete('pending');
@@ -249,13 +249,19 @@ export class QtiOrderInteractionEdit extends Interaction {
     // element — just a styling/role hook; the theme reaches it via ::part(drop).
     // Pending and filled visuals are driven by:
     //   - `:state(pending)` on the interaction host (set by PendingSelectionController)
-    //   - `:has(qti-fake-drag)` to detect filled slots in CSS
+    //   - a second `empty` part token on unfilled slots
+    //
+    // The `empty` token exists so the pending pulse can live OUTSIDE this shadow root, in
+    // prose-qti's core-css.css. A structural filter like `:not(:has(qti-fake-drag))` cannot be
+    // applied after `::part()`, so without it an outside rule could not tell a filled slot from an
+    // empty one and would pulse both. `::part(drop empty)` matches only when both tokens are
+    // present, while every existing `::part(drop)` rule in qti-theme keeps matching either way.
     return html`
       ${this._getSlots().map((choiceId, index) => html`
         <drop-list
           role="region"
           class="order-slot"
-          part="drop"
+          part=${choiceId === null ? 'drop empty' : 'drop'}
           data-slot-index=${index}
         >
           ${choiceId !== null
