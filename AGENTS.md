@@ -77,6 +77,23 @@
 - **Test file placement**: `*.browser.test.ts`, colocated. The `browser` vitest project globs `packages/**/src/**/*.browser.test.ts` and `apps/**/*.browser.test.ts`.
 - Record any product bug or upstream gap found while writing tests in `docs/testing-findings.md` rather than silently working around it.
 
+## Story Alignment Requirements
+- **Goal**: Keep editor regression stories one-to-one with upstream qti-components stories so rendering and behavior stay aligned.
+- **Primary scope**: `apps/e2e/stories/*.regression.stories.ts` in this repo, aligned against corresponding interaction stories and canonical item fixtures in qti-components.
+- **Parity unit**: Treat each item as its own alignment unit (for example ITEM001, ITEM002). Complete and verify one item before moving to the next.
+- **Story responsibilities**: Editor stories should only build the schema, mount editor/runtime harness, and expose import/export roundtrip. Keep interaction behavior assertions in sibling `*.browser.test.ts` files.
+- **Roundtrip requirement**: Use the current roundtrip import/export path used by ITEM001 as the baseline pattern. Do not reintroduce older import/export shortcuts that can drop layout semantics.
+- **Layout parity**: Keep max-width and container constraints identical between editor and qti-components stories. Prefer story meta/layout configuration over ad hoc per-story wrappers unless required.
+- **Theme parity**: Use qti-components theme CSS as the visual source of truth. Put shared visual corrections upstream first; keep editor-only overrides minimal and explicit.
+- **Diff policy**: For each item, compare these dimensions explicitly: fixture XML, story args, view mode behavior, layout meta, and runtime harness wiring.
+- **Verification checklist per item**:
+  - Story renders in editor Storybook and qti-components Storybook.
+  - Roundtrip output preserves expected structure/attributes for that item.
+  - Runtime rendering matches upstream interaction behavior for both correct and incorrect response paths where applicable.
+  - No new lint/type errors in changed files.
+- **Execution order**: Continue in item order unless requested otherwise. Current next target is ITEM002 after ITEM001 parity was confirmed.
+- **Change discipline**: While doing story parity work, avoid unrelated HMR/linking workflow changes unless they are direct blockers to item alignment.
+
 ## Verification Defaults
 - Validate with the narrowest useful command first (changed package).
 - Validate app build second when package behavior surfaces in UI.
