@@ -23,8 +23,6 @@ import { createRegressionEditor } from './prosemirror-base';
 import sourceXML from './fixtures/ITEM001.xml?raw';
 
 import '@citolab/prose-qti/components/choice/register.js';
-import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
-import '@citolab/prose-qti/components/shared/components/qti-simple-choice/register.js';
 
 import 'prosemirror-view/style/prosemirror.css';
 // The same stylesheets the shipping editors load (see apps/*/src/style.css).

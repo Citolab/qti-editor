@@ -43,6 +43,27 @@ import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components
 /* eslint-disable-next-line import/no-relative-packages */
 import { divLockPlugin, qtiLayoutDivNodeSpec } from '../../qti-prosemirror-item/src/components/qti-layout-div';
 
+/*
+ * Shared child custom elements.
+ *
+ * Each interaction's own `register.js` defines ONLY the interaction element — `qti-simple-choice`,
+ * `qti-simple-associable-choice`, `qti-gap` &co ship their own. Leaving those to the stories had the
+ * same outcome as the schema drift above: only ITEM001/002 registered their children, so e.g.
+ * `qti-simple-associable-choice` never upgraded in the match items and rendered without a shadow
+ * root. They are shared furniture, so the base owns them; `customElements.define` is global and each
+ * register guards with `customElements.get`, so importing them once here is exactly equivalent to
+ * every story doing it, minus the drift.
+ *
+ * The interaction's own register stays in the story — one story, one interaction.
+ */
+import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
+import '@citolab/prose-qti/components/shared/components/qti-simple-choice/register.js';
+import '@citolab/prose-qti/components/shared/components/qti-simple-associable-choice/register.js';
+import '@citolab/prose-qti/components/shared/components/qti-simple-match-set/register.js';
+import '@citolab/prose-qti/components/shared/components/qti-gap/register.js';
+import '@citolab/prose-qti/components/shared/components/qti-gap-text/register.js';
+import '@citolab/prose-qti/components/shared/components/qti-fake-drag/register.js';
+
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 import type { RoundtripTransform } from '@citolab/prose-qti/item-roundtrip';
 

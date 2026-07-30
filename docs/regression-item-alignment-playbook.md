@@ -48,8 +48,22 @@ undo/redo + constrained Home/End keymap, `baseKeymap`, the descriptor's own `plu
 `nodeAttrsSyncPlugin`, `blockSelectPlugin`, `divLockPlugin`, and the attributes panel with an
 `editableAttrs` allowlist derived from the descriptor.
 
-**The story owns** exactly one interaction descriptor, its roundtrip transforms, and its fixture.
-Descriptors are deliberately NOT aggregated in the base: one story = basic schema + one interaction.
+The base also imports the **shared child custom elements** — `qti-prompt`, `qti-simple-choice`,
+`qti-simple-associable-choice`, `qti-simple-match-set`, `qti-gap`, `qti-gap-text`, `qti-fake-drag`.
+An interaction's own `register.js` defines ONLY the interaction element; its children ship separate
+registers. `customElements.define` is global and every register guards with `customElements.get`, so
+importing them once in the base is equivalent to each story doing it, minus the drift.
+
+**The story owns** exactly one interaction descriptor, its roundtrip transforms, its fixture, and its
+own `components/<interaction>/register.js`. Descriptors and interaction elements are deliberately NOT
+aggregated in the base: one story = basic schema + one interaction.
+
+Note `@citolab/prose-qti/components/register.js` exists and registers everything at once. It is
+deliberately NOT used here — it would pull every interaction element into every story.
+
+`qti-rubric-block` and `qti-content-body` stay undefined custom elements in every story. That is by
+design: `components/rubric-block/` ships a schema and commands, no element. Do not go looking for a
+missing register for them.
 
 Undo/redo is bound `Mod-z` / `Shift-Mod-z` / `Mod-y`. On macOS `Mod` is Cmd, so `Mod-y` is a no-op
 there and `Shift-Mod-z` is the redo chord that matters — worth knowing when writing a test.
@@ -63,7 +77,14 @@ wrappers never reached the editor DOM, which is why qti-theme's
 while working in qti-components — there was nothing for it to match. Putting the layout div in the
 base fixed it for all 17 at once.
 
-That change moved six roundtrip snapshots — ITEM003, 004, 006, 008, 010, 015 — each gaining the
+The child-element registrations had drifted the same way and for the same reason — only ITEM001/002
+registered theirs. Measured before the fix: `qti-simple-match-set` + `qti-simple-associable-choice`
+undefined in ITEM007-010, `qti-simple-choice` in ITEM013/014, `qti-gap` + `qti-gap-text` in ITEM015,
+`qti-prompt` in ITEM016, `qti-simple-associable-choice` in ITEM017. Those elements never upgraded, so
+they rendered with no shadow root. All defined and shadowed now; re-run the probe by walking
+`.ProseMirror` for `qti-*` tags and checking `customElements.get(tag)` plus `el.shadowRoot`.
+
+The layout-div change moved six roundtrip snapshots — ITEM003, 004, 006, 008, 010, 015 — each gaining the
 layout wrappers its source fixture already declared. Those are exactly the six fixtures that contain
 `qti-layout-*` markup; the nine without it were untouched, which is the check to repeat if this ever
 regresses. Verified with `git diff -w`: added layout divs are the only non-whitespace change.
