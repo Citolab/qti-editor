@@ -36,6 +36,38 @@ ITEM017 first.
 In qti-editor the sibling browser test uses the same stem:
 `itemnnn-qti-<interaction>.regression.browser.test.ts`.
 
+## Shared ProseMirror setup (qti-editor)
+
+`apps/e2e/stories/prosemirror-base.ts` owns the half of the editor setup that must never differ per
+item; `createRegressionEditor({ descriptor, sourceXML, transforms, extraNodes? })` returns
+`{ schema, importItem, exportAssessmentItemDoc, mountEditor }`.
+
+**The base owns** the basic QTI schema (`qtiBasicNodes` / `qtiBasicMarks`), item furniture
+(`qtiLayoutDiv`, rubric block, `doc` identifier/title attrs) and the plugin stack: `history()`,
+undo/redo + constrained Home/End keymap, `baseKeymap`, the descriptor's own `pluginFactories`,
+`nodeAttrsSyncPlugin`, `blockSelectPlugin`, `divLockPlugin`, and the attributes panel with an
+`editableAttrs` allowlist derived from the descriptor.
+
+**The story owns** exactly one interaction descriptor, its roundtrip transforms, and its fixture.
+Descriptors are deliberately NOT aggregated in the base: one story = basic schema + one interaction.
+
+Undo/redo is bound `Mod-z` / `Shift-Mod-z` / `Mod-y`. On macOS `Mod` is Cmd, so `Mod-y` is a no-op
+there and `Shift-Mod-z` is the redo chord that matters — worth knowing when writing a test.
+
+### Why the base exists
+
+The setup had already drifted: only ITEM001/002 carried `qtiLayoutDiv` in their schema, so the other
+15 stories silently dropped every `qti-layout-row` / `qti-layout-col*` wrapper on import. The
+wrappers never reached the editor DOM, which is why qti-theme's
+`@media (width <= 767px) { [class*='qti-layout-col'] { width: 100% } }` looked broken in qti-editor
+while working in qti-components — there was nothing for it to match. Putting the layout div in the
+base fixed it for all 17 at once.
+
+That change moved six roundtrip snapshots — ITEM003, 004, 006, 008, 010, 015 — each gaining the
+layout wrappers its source fixture already declared. Those are exactly the six fixtures that contain
+`qti-layout-*` markup; the nine without it were untouched, which is the check to repeat if this ever
+regresses. Verified with `git diff -w`: added layout divs are the only non-whitespace change.
+
 ## Shared layout contract
 
 Both repos render the item at one measure so a qti-components story and a qti-editor story can be
@@ -163,8 +195,15 @@ these are real content forks and each needs a call on which repo is canonical:
 `ITEM001-editor.xml` file snapshot is stale (the committed copy predates the `qti-layout-row` /
 `qti-layout-col` divs the import now produces), and one assertion expects `paragraph` where the doc
 now yields `qtiLayoutDiv`. Both were failing before 003-017 were touched and were left alone --
-`ITEM001-editor.xml` was explicitly reverted after an unfiltered `vitest -u` run picked it up.
-Baseline to compare against: 17 of 18 files pass, 87 tests pass, 2 fail.
+`ITEM001-editor.xml` was explicitly reverted twice, after unfiltered `vitest -u` runs picked it up
+(the positional filter does not reliably restrict `-u`; check `git status` on the snapshot dir after
+every update run). Baseline to compare against: 17 of 18 files pass, 87 tests pass, 2 fail.
+
+ITEM001 is now the ONLY snapshot still missing the layout divs and image widths, because it is the
+only one deliberately left unblessed. Its diff is the same kind that was accepted for the other six.
+Blessing it is probably right, but its sibling assertion failure (`paragraph` vs `qtiLayoutDiv`)
+suggests the Enter-after-interaction behaviour is not settled, and that could move the export again
+-- so it is a decision, not a cleanup.
 
 ## Behavioral choices we kept
 

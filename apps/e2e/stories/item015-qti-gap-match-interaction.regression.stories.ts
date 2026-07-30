@@ -16,22 +16,15 @@
 
 import { html } from 'lit';
 import { ref } from 'lit/directives/ref.js';
-import { Schema, type Node as ProseMirrorNode } from 'prosemirror-model';
-import { EditorState, type Plugin } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
-import { qtiBasicMarks, qtiBasicNodes } from '@citolab/prose-qti';
-import { keymap } from 'prosemirror-keymap';
-import { baseKeymap } from 'prosemirror-commands';
-import { roundtripGapMatch, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
-import { ensureInteractionPrompts, exportItemXml, importItemFromString } from '@citolab/prose-qti/item-roundtrip';
-import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
-import { blockSelectPlugin } from '@citolab/prose-extensions/prosemirror';
 import { gapMatchInteractionDescriptor } from '@citolab/prose-qti/components/gap-match';
+import { roundtripGapMatch, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
+import { ensureInteractionPrompts } from '@citolab/prose-qti/item-roundtrip';
 
+import { createRegressionEditor } from './prosemirror-base';
 import sourceXML from './fixtures/ITEM015.xml?raw';
+
 import '@citolab/prose-qti/components/gap-match/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
-import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
 
 import 'prosemirror-view/style/prosemirror.css';
 // The same stylesheets the shipping editors load (see apps/*/src/style.css).
@@ -42,13 +35,6 @@ import '@citolab/prose-qti/core-css.css';
 import './kennisnet.css';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
-
-const qtiNodes = Object.fromEntries(
-  [...gapMatchInteractionDescriptor.nodeSpecs, ...qtiRubricBlockDescriptor.nodeSpecs].map(({ name, spec }) => [
-    name,
-    spec
-  ])
-);
 
 // match's qti-simple-associable-choice content references the qtiMedia node
 // group. We don't render real media in regression tests; stub it so the
@@ -61,54 +47,22 @@ const qtiMediaStub = {
   toDOM: () => ['qti-media-stub'] as const,
 };
 
-const baseNodes = {
-  ...qtiBasicNodes,
-  paragraph: { ...qtiBasicNodes.paragraph, group: 'block richtext' },
-  qtiMediaStub,
-  ...qtiNodes,
-};
-
-export const schema = new Schema({
-  nodes: {
-    ...baseNodes,
-    doc: {
-      ...baseNodes.doc,
-      attrs: {
-        identifier: {},
-        title: {}
-      }
-    }
-  },
-  marks: qtiBasicMarks
+const editor = createRegressionEditor({
+  descriptor: gapMatchInteractionDescriptor,
+  sourceXML,
+  transforms: schema => [roundtripGapMatch, roundtripItemBody, ensureInteractionPrompts(schema)],
+  extraNodes: { qtiMediaStub }
 });
 
-const editorPlugins: Plugin[] = [keymap(baseKeymap), blockSelectPlugin];
+export const { schema, exportAssessmentItemDoc, mountEditor } = editor;
 
-export const importItem015 = (): ProseMirrorNode =>
-  importItemFromString(sourceXML, schema, {
-    assetBasePath: '/qti/kennisnet',
-    transforms: [roundtripGapMatch, roundtripItemBody, ensureInteractionPrompts(schema)]
-  });
-
-export const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document =>
-  new DOMParser().parseFromString(exportItemXml(doc, schema), 'application/xml');
-
-export const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLElement } = {}): EditorView => {
-  const plugins = options.panelEl
-    ? [...editorPlugins, attributesPanelPlugin(options.panelEl)]
-    : editorPlugins;
-
-  const view = new EditorView(container, {
-    state: EditorState.create({ doc: importItem015(), schema, plugins }),
-    dispatchTransaction(tr) {
-      view.updateState(view.state.apply(tr));
-    }
-  });
-  return view;
-};
+/** Import ITEM015.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
+export const importItem015 = editor.importItem;
 
 const meta: Meta = {
   title: 'QTI Kennisnet/Regression',
+  // These exports are the reusable import/export pipeline (consumed by the
+  // regression test), not stories.
   excludeStories: ['schema', 'importItem015', 'exportAssessmentItemDoc', 'mountEditor']
 };
 export default meta;

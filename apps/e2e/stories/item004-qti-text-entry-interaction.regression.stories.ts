@@ -16,21 +16,13 @@
 
 import { html } from 'lit';
 import { ref } from 'lit/directives/ref.js';
-import { Schema, type Node as ProseMirrorNode } from 'prosemirror-model';
-import { EditorState, type Plugin } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
-import { qtiBasicMarks, qtiBasicNodes } from '@citolab/prose-qti';
-import { keymap } from 'prosemirror-keymap';
-import { baseKeymap } from 'prosemirror-commands';
-import { roundtripTextEntry, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
-import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-roundtrip';
-import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
-import { blockSelectPlugin } from '@citolab/prose-extensions/prosemirror';
 import { textEntryInteractionDescriptor } from '@citolab/prose-qti/components/text-entry';
+import { roundtripTextEntry, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
 
+import { createRegressionEditor } from './prosemirror-base';
 import sourceXML from './fixtures/ITEM004.xml?raw';
+
 import '@citolab/prose-qti/components/text-entry/register.js';
-import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
 
 import 'prosemirror-view/style/prosemirror.css';
 // The same stylesheets the shipping editors load (see apps/*/src/style.css).
@@ -42,63 +34,16 @@ import './kennisnet.css';
 
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-const qtiNodes = Object.fromEntries(
-  [...textEntryInteractionDescriptor.nodeSpecs, ...qtiRubricBlockDescriptor.nodeSpecs].map(({ name, spec }) => [
-    name,
-    spec
-  ])
-);
-
-const baseNodes = { ...qtiBasicNodes, paragraph: { ...qtiBasicNodes.paragraph, group: 'block richtext' }, ...qtiNodes };
-
-/** The editor schema used for the ITEM004 roundtrip. */
-export const schema = new Schema({
-  nodes: {
-    ...baseNodes,
-    doc: {
-      ...baseNodes.doc,
-      // identifier/title are always supplied from the item-body on import.
-      attrs: {
-        identifier: {},
-        title: {}
-      }
-    }
-  },
-  marks: qtiBasicMarks
+const editor = createRegressionEditor({
+  descriptor: textEntryInteractionDescriptor,
+  sourceXML,
+  transforms: () => [roundtripTextEntry, roundtripItemBody]
 });
 
-/** Minimal plugin set: base keymap and block-select. */
-const editorPlugins: Plugin[] = [keymap(baseKeymap), blockSelectPlugin];
+export const { schema, exportAssessmentItemDoc, mountEditor } = editor;
 
 /** Import ITEM004.xml into a ProseMirror document (raw QTI → roundtrip-xml → PM doc). */
-export const importItem004 = (): ProseMirrorNode =>
-  importItemFromString(sourceXML, schema, {
-    assetBasePath: '/qti/kennisnet',
-    transforms: [roundtripTextEntry, roundtripItemBody]
-  });
-
-/**
- * Export a ProseMirror doc to the complete editor-origin QTI assessment item
- * (item-body wrapped with response/outcome declarations + response processing),
- * parsed as an XML `Document`. This is the editor's "save" output.
- */
-export const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document =>
-  new DOMParser().parseFromString(exportItemXml(doc, schema), 'application/xml');
-
-/** Mount the ITEM004 editor into `container`, optionally wiring the attributes panel. */
-export const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLElement } = {}): EditorView => {
-  const plugins = options.panelEl
-    ? [...editorPlugins, attributesPanelPlugin(options.panelEl)]
-    : editorPlugins;
-
-  const view = new EditorView(container, {
-    state: EditorState.create({ doc: importItem004(), schema, plugins }),
-    dispatchTransaction(tr) {
-      view.updateState(view.state.apply(tr));
-    }
-  });
-  return view;
-};
+export const importItem004 = editor.importItem;
 
 const meta: Meta = {
   title: 'QTI Kennisnet/Regression',
