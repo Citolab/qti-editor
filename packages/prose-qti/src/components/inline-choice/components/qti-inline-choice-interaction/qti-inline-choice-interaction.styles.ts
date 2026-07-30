@@ -11,6 +11,7 @@ import externalStyles from '@qti-components/inline-choice-interaction/styles';
 const styles: CSSResultGroup = [
   externalStyles,
   css`
+    /* Keeps the closed combobox on one line where it sits inside a sentence. */
     :host {
       white-space: nowrap;
     }
@@ -19,6 +20,12 @@ const styles: CSSResultGroup = [
       top: 100%;
       left: 0;
       z-index: 10;
+      /*
+       * white-space inherits, and the host's nowrap reached the menu — which pinned the option
+       * rows onto a single line. Reset it here so the menu lays out like upstream's; the option's
+       * own single-line clipping lives on qti-inline-choice itself.
+       */
+      white-space: normal;
     }
   `,
 ];
