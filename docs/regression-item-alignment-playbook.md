@@ -22,9 +22,38 @@ Align each ITEMnnn between qti-components and qti-editor so both repos use:
 For any ITEMnnn:
 
 - Fixture filename: ITEMnnn.xml (same in both repos)
-- Story filename pattern: qti-<interaction>-itemnnn.regression.stories.ts (same item number)
+- Story filename pattern: itemnnn-qti-<interaction>.regression.stories.ts (same item number)
 - Story export name pattern: RoundtripItemnnn (same item number)
 - Story title: QTI Kennisnet/Regression
+
+The filename leads with `itemnnn` on purpose. Storybook orders stories in a title group by index
+order, which is the glob's alphabetical filename order, so a zero-padded numeric prefix puts the
+sidebar in ITEM001..ITEM017 order in both repos with no `storySort` config at all. (It also survives
+someone later switching to `method: 'alphabetical'`, since the story names — `Roundtrip Item 007` —
+are zero-padded too.) The older `qti-<interaction>-itemnnn` pattern sorted by interaction and put
+ITEM017 first.
+
+In qti-editor the sibling browser test uses the same stem:
+`itemnnn-qti-<interaction>.regression.browser.test.ts`.
+
+## Shared layout contract
+
+Both repos render the item at one measure so a qti-components story and a qti-editor story can be
+put side by side and compared:
+
+- `--regression-item-width: 800px` and `--regression-panel-width: 320px` are declared in
+  `apps/e2e/stories/kennisnet.css`, which is kept **byte-identical in both repos**. Change the value
+  in both or the comparison is void.
+- `.regression-item` caps the item column. qti-components applies it via a `regressionLayout`
+  decorator in `apps/e2e/stories/regression-layout.ts`, wired into every story's `meta.decorators`,
+  so the 17 story bodies stay identical.
+- qti-editor additionally uses `.regression-layout` (flex row) with the attributes panel
+  `.regression-panel` to the right of the item. All 17 render functions are byte-identical.
+- The panel `<aside>` is **first in the DOM** so its `ref` callback captures the element before the
+  editor's `ref` mounts against it; CSS `order` moves it to the right visually. Do not "fix" the DOM
+  order to match the visual order — that reintroduces the bug ITEM001/002 had, where the panel ref
+  sat in child position, never fired, and the stories rendered with no attributes panel.
+- 800 + 24 gap + 320 = 1144, inside the 1280px browser-test viewport.
 
 ### qti-components locations
 
@@ -46,40 +75,45 @@ For any ITEMnnn:
 
 qti-components:
 
-- Story: apps/e2e/stories/qti-choice-interaction-item001.regression.stories.ts
+- Story: apps/e2e/stories/item001-qti-choice-interaction.regression.stories.ts
 - Fixture: apps/e2e/stories/fixtures/ITEM001.xml
 
 qti-editor:
 
-- Story: apps/e2e/stories/qti-choice-interaction-item001.regression.stories.ts
+- Story: apps/e2e/stories/item001-qti-choice-interaction.regression.stories.ts
 - Fixture: apps/e2e/stories/fixtures/ITEM001.xml
-- Browser test: apps/e2e/stories/qti-choice-interaction-item001.regression.browser.test.ts
+- Browser test: apps/e2e/stories/item001-qti-choice-interaction.regression.browser.test.ts
 
 ### ITEM002
 
 qti-components:
 
-- Story: apps/e2e/stories/qti-choice-interaction-item002.regression.stories.ts
+- Story: apps/e2e/stories/item002-qti-choice-interaction.regression.stories.ts
 - Fixture: apps/e2e/stories/fixtures/ITEM002.xml
 
 qti-editor:
 
-- Story: apps/e2e/stories/qti-choice-interaction-item002.regression.stories.ts
+- Story: apps/e2e/stories/item002-qti-choice-interaction.regression.stories.ts
 - Fixture: apps/e2e/stories/fixtures/ITEM002.xml
-- Browser test: apps/e2e/stories/qti-choice-interaction-item002.regression.browser.test.ts
+- Browser test: apps/e2e/stories/item002-qti-choice-interaction.regression.browser.test.ts
+
+Both stories now use the shared layout described under "Shared layout contract": the item is capped
+at `--regression-item-width`, and in qti-editor the attributes panel sits to its right. ITEM001/002
+previously had neither — their panel `ref` sat in lit child position, where the directive never
+fires, so `panelEl` was always null and no panel was mounted.
 
 ### ITEM003 - ITEM017 (qti-components side complete)
 
 qti-components now carries the full set. For each NNN in 003..017:
 
-- Story: apps/e2e/stories/qti-<interaction>-itemNNN.regression.stories.ts
+- Story: apps/e2e/stories/itemNNN-qti-<interaction>.regression.stories.ts
 - Fixture: apps/e2e/stories/fixtures/ITEMNNN.xml (byte-identical copy of public/assets/api/kennisnet/ITEMNNN.xml)
 
 Interaction per item: 003/004 text-entry, 005 extended-text, 006 inline-choice, 007-010 match,
 011/012 hottext, 013/014 order, 015 gap-match, 016 select-point, 017 associate.
 
 ITEM017 is the one filename that does not name its own element: the fixture renders through
-`qti-match-interaction`, but the file is `qti-associate-interaction-item017.regression.stories.ts`
+`qti-match-interaction`, but the file is `item017-qti-associate-interaction.regression.stories.ts`
 because qti-editor models it with the associate ProseMirror descriptor. One filename per item beats a
 per-repo-accurate name, so both repos use `associate`; the qti-components story carries a comment
 saying so.
@@ -125,7 +159,7 @@ these are real content forks and each needs a call on which repo is canonical:
 
 ### Pre-existing failures (not caused by this alignment)
 
-`qti-choice-interaction-item001.regression.browser.test.ts` fails 2 tests on a clean checkout: the
+`item001-qti-choice-interaction.regression.browser.test.ts` fails 2 tests on a clean checkout: the
 `ITEM001-editor.xml` file snapshot is stale (the committed copy predates the `qti-layout-row` /
 `qti-layout-col` divs the import now produces), and one assertion expects `paragraph` where the doc
 now yields `qtiLayoutDiv`. Both were failing before 003-017 were touched and were left alone --
@@ -157,7 +191,7 @@ Align ITEMNNN across qti-components and qti-editor using the established regress
 Requirements:
 - Keep the same item number everywhere (ITEMNNN).
 - Ensure both repos contain matching fixture files named ITEMNNN.xml under apps/e2e/stories/fixtures/.
-- Ensure both repos contain matching regression story files named qti-<interaction>-itemNNN.regression.stories.ts under apps/e2e/stories/.
+- Ensure both repos contain matching regression story files named itemNNN-qti-<interaction>.regression.stories.ts under apps/e2e/stories/.
 - Ensure story export naming follows RoundtripItemNNN.
 - Keep story title as QTI Kennisnet/Regression.
 - In qti-editor, keep interaction behavior in sibling *.browser.test.ts only (stories render only).

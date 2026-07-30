@@ -11,7 +11,7 @@ Status legend: **fixed** · **open** · **upstream** (needs a change outside thi
 
 ## 1. `Enter` was bound to `undefined` in two hottext stories — **fixed**
 
-`qti-hottext-interaction-item011.regression.stories.ts:66` and `…item012…:66` did:
+`item011-qti-hottext-interaction.regression.stories.ts:66` and `…item012…:66` did:
 
 ```ts
 keymap({ Enter: hottextInteractionDescriptor.enterCommand })
@@ -25,7 +25,7 @@ keymap({ Enter: hottextInteractionDescriptor.enterCommand })
 
 ## 2. Unused import in the select-point story — **fixed**
 
-`qti-select-point-interaction-item016.regression.stories.ts:28` imported `nodeAttrsSyncPlugin` without using it (`TS6133`). Removed.
+`item016-qti-select-point-interaction.regression.stories.ts:28` imported `nodeAttrsSyncPlugin` without using it (`TS6133`). Removed.
 
 ## 3. Interaction controls expose no ARIA roles — **upstream** (`@citolab/qti-components`)
 
@@ -221,7 +221,7 @@ A QTI `pair` is **unordered**: `A O` and `O A` denote the same association. Down
 - **Consequence**: a candidate who associates Obelix→Asterix scores 0 where Asterix→Obelix scores 1. The association is symmetric in the question but not in the scoring.
 - **Secondary**: `A O` contains a space, which is not a valid QTI identifier — so the exported declaration is questionable on its own terms.
 - **Why it hid**: the previous test staged only the exact correct strings, so the distinction never arose. This is the clearest example of why correct-*and*-incorrect assertions matter.
-- **Pinned by**: two tests in `qti-associate-interaction-item017.regression.browser.test.ts` — one on runtime scoring, one asserting the exported `base-type` directly. Flip both when fixed.
+- **Pinned by**: two tests in `item017-qti-associate-interaction.regression.browser.test.ts` — one on runtime scoring, one asserting the exported `base-type` directly. Flip both when fixed.
 - **Where to look**: the associate composer metadata / `composeAssociateInteractionElement`, plus `roundtripAssociate` (which is itself dead in the real import path — finding #7).
 
 ## 9. `schema:check` and `typecheck` were not enforced — **fixed**
