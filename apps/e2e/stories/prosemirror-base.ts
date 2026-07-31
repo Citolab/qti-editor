@@ -76,6 +76,9 @@ import 'prosemirror-tables/style/tables.css';
  */
 import './kennisnet-edit.css';
 
+/* Canvas chrome for the editing surface itself: inner padding, no UA focus ring. */
+import './editor-canvas.css';
+
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 import type { RoundtripTransform } from '@citolab/prose-qti/item-roundtrip';
 

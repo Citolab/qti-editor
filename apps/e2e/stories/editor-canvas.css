@@ -1,0 +1,21 @@
+/*
+ * The authoring canvas — chrome for the ProseMirror editor in the regression stories.
+ *
+ * Not in either stylesheet next to it: kennisnet.css is kept byte-identical with its qti-components
+ * twin, which has no editor, and kennisnet-edit.css is the variables-only example of the
+ * --qti-edit-* contract. Unlayered, like the story chrome in kennisnet.css.
+ *
+ * Imported once from prosemirror-base.ts, so all 17 regression stories pick it up.
+ */
+
+.editor-container > .ProseMirror {
+  /* Breathing room, so text and interactions are not flush against the column edge. */
+  padding: 1rem;
+
+  /*
+   * Drop Chrome's `outline: auto` on the focused contenteditable. Safe here and not on a control:
+   * a document's focus indicator is the caret, which says where you are rather than merely that you
+   * are somewhere. The ring also traced the whole column, so it read as a border on the item.
+   */
+  outline: none;
+}

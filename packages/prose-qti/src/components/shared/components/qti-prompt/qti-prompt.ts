@@ -1,5 +1,9 @@
-import { html, LitElement } from 'lit';
+import { html, LitElement, type CSSResultGroup } from 'lit';
+
+import styles from './qti-prompt.styles.js';
 export class QtiPromptEdit extends LitElement {
+  static override styles: CSSResultGroup = styles;
+
   override render() {
     return html`<slot></slot>`;
   }
