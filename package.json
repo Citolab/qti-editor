@@ -72,7 +72,7 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^5.2.1",
     "@eslint/js": "^9.39.5",
-    "@qti-components/theme": "https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@60f8b03",
+    "@qti-components/theme": "https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@ac83402",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/exec": "^7.1.0",
