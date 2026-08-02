@@ -10,6 +10,8 @@ import {
 import { mountQtiRuntime } from './runtime-harness';
 import snapshotXml from './__file_snapshots__/ITEM001-editor.xml?raw';
 
+import type { Node as ProseMirrorNode } from 'prosemirror-model';
+
 test('exported QTI matches the ITEM001-editor.xml snapshot', async () => {
   // Editor pipeline: import ITEM001 → export → must equal the frozen snapshot.
   const exported = exportAssessmentItemDoc(importItem001());
@@ -169,21 +171,25 @@ test('deleting the typed text empties the new choice, then Enter exits into a ne
   // layout row — and the test reported "expected qtiLayoutDiv to be paragraph" as though the
   // Enter affordance had broken. It had not; the assertion was looking one level too high.
   // Asking the interaction's own parent for its next sibling is agnostic to how deep it sits.
+  //
+  // Collected into an array rather than assigned to a `let` from inside the callback: TypeScript's
+  // control-flow analysis does not track assignments made in a nested function, so a
+  // `let parent: Node | null = null` stays narrowed to `null` at the use site and `parent?.foo`
+  // resolves against `never` (TS2339). Pushing to a typed array sidesteps the narrowing entirely.
   const { doc, selection } = view.state;
-  let interactionParent: typeof doc | null = null;
-  let interactionIndex = -1;
+  const interactionSites: { parent: ProseMirrorNode; index: number }[] = [];
   doc.descendants((node, _pos, parent, index) => {
-    if (interactionIndex !== -1) return false;
-    if (node.type.name === 'qtiChoiceInteraction') {
-      interactionParent = parent as typeof doc;
-      interactionIndex = index;
+    if (interactionSites.length > 0) return false;
+    if (node.type.name === 'qtiChoiceInteraction' && parent) {
+      interactionSites.push({ parent, index });
       return false;
     }
     return true;
   });
 
-  expect(interactionIndex, 'qti-choice-interaction not found in the document').toBeGreaterThanOrEqual(0);
-  const nodeAfterInteraction = interactionParent?.maybeChild(interactionIndex + 1);
+  const [interactionSite] = interactionSites;
+  expect(interactionSite, 'qti-choice-interaction not found in the document').toBeDefined();
+  const nodeAfterInteraction = interactionSite.parent.maybeChild(interactionSite.index + 1);
 
   expect(nodeAfterInteraction?.type.name).toBe('paragraph');
   expect(nodeAfterInteraction?.textContent).toBe('');
