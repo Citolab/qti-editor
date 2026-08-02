@@ -161,9 +161,29 @@ test('deleting the typed text empties the new choice, then Enter exits into a ne
 
   // The cursor jumped out of the interaction into a new empty paragraph that
   // sits as a sibling after the qti-choice-interaction.
+  //
+  // Found by walking the document rather than indexing doc.content.content, because the
+  // interaction is NOT a top-level node here: ITEM001's item-body wraps it in
+  // qti-layout-row / qti-layout-col9 divs, and the editor preserves them. The old top-level
+  // lookup returned -1 for the interaction, so `interactionIndex + 1` addressed child 0 — the
+  // layout row — and the test reported "expected qtiLayoutDiv to be paragraph" as though the
+  // Enter affordance had broken. It had not; the assertion was looking one level too high.
+  // Asking the interaction's own parent for its next sibling is agnostic to how deep it sits.
   const { doc, selection } = view.state;
-  const interactionIndex = doc.content.content.findIndex(node => node.type.name === 'qtiChoiceInteraction');
-  const nodeAfterInteraction = doc.content.content[interactionIndex + 1];
+  let interactionParent: typeof doc | null = null;
+  let interactionIndex = -1;
+  doc.descendants((node, _pos, parent, index) => {
+    if (interactionIndex !== -1) return false;
+    if (node.type.name === 'qtiChoiceInteraction') {
+      interactionParent = parent as typeof doc;
+      interactionIndex = index;
+      return false;
+    }
+    return true;
+  });
+
+  expect(interactionIndex, 'qti-choice-interaction not found in the document').toBeGreaterThanOrEqual(0);
+  const nodeAfterInteraction = interactionParent?.maybeChild(interactionIndex + 1);
 
   expect(nodeAfterInteraction?.type.name).toBe('paragraph');
   expect(nodeAfterInteraction?.textContent).toBe('');

@@ -15,23 +15,29 @@
     </qti-default-value>
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
-    <p>
-      <img src="/qti/kennisnet/resources/atom.png" alt="Atoom"/>
-    </p>
-    <qti-choice-interaction max-choices="1" response-identifier="RESPONSE" shuffle="true">
-      <qti-prompt>
-        <p>Welke van de onderstaande elementen heeft de hoogste atoommassa?</p>
-      </qti-prompt>
-      <qti-simple-choice identifier="choice1">
-        <p>Tin (Sn)</p>
-      </qti-simple-choice>
-      <qti-simple-choice identifier="choice2">
-        <p>Jodium (I)</p>
-      </qti-simple-choice>
-      <qti-simple-choice identifier="choice3">
-        <p>Xenon (Xe)</p>
-      </qti-simple-choice>
-    </qti-choice-interaction>
+    <div class="qti-layout-row">
+      <div class="qti-layout-col3">
+        <p>
+          <img src="/qti/kennisnet/resources/atom.png" alt="Atoom" width="250"/>
+        </p>
+      </div>
+      <div class="qti-layout-col9">
+        <qti-choice-interaction max-choices="1" response-identifier="RESPONSE" shuffle="true">
+          <qti-prompt>
+            <p>Welke van de onderstaande elementen heeft de hoogste atoommassa?</p>
+          </qti-prompt>
+          <qti-simple-choice identifier="choice1">
+            <p>Tin (Sn)</p>
+          </qti-simple-choice>
+          <qti-simple-choice identifier="choice2">
+            <p>Jodium (I)</p>
+          </qti-simple-choice>
+          <qti-simple-choice identifier="choice3">
+            <p>Xenon (Xe)</p>
+          </qti-simple-choice>
+        </qti-choice-interaction>
+      </div>
+    </div>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
         <p>Xenon — atoommassa ≈ 131,29 u; Tin ≈ 118,71 u; Jodium ≈ 126,90 u</p>
