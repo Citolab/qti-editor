@@ -36,17 +36,20 @@ Use **`apps/qti-prosekit-item`** when you want to:
 
 ## Storybook Documentation Path
 
+For CSS sourcemap diagnostics and style-origin inspection, see [docs/css-sourcemaps-verification.md](css-sourcemaps-verification.md).
+
 Storybook should document how to build an editor in stages:
 
 1. Start with a bare ProseMirror editor.
 2. Add the interaction packages via the descriptor registry.
 3. Add the required styles: `@qti-components/theme` for the underlying QTI web components plus the mandatory `@citolab/prose-qti/core-css.css` for editor-specific element backgrounds, spacing, and affordances.
-4. Add the `blockSelectExtension` and `nodeAttrsSyncExtension` ProseKit extensions from `@citolab/prose-extensions/prosekit-extensions` (requires the `prosekit` peer dependency; the underlying plugins are also available prosekit-free from `@citolab/prose-extensions/block-select` and `@citolab/prose-extensions/node-attrs-sync`).
-5. Add the QTI attributes panel: `<qti-attributes-panel>` from `@citolab/prose-qti-ui/components/attributes-panel`, wired to the editor via `editorContext` from `@citolab/prose-qti-ui/editor-context`. It resolves each selected node's fields via `getNodeAttributePanelMetadataByNodeTypeName` (`@citolab/prose-qti/core/interactions/composer`), falling back to a per-node "friendly editor" (`choice-attributes-editor`, `text-entry-attributes-editor`, `extended-text-attributes-editor`, `rubric-block-attributes-editor`) when one is registered for that node type.
-6. Add code and composer panels.
-7. Wire QTI integration surfaces from `@citolab/prose-qti/integration/*`.
+4. Build your host schema from `@citolab/prose-qti/schema` (`qtiBasicNodes` / `qtiBasicMarks`) instead of importing `prosemirror-schema-basic` directly. This keeps QTI image dimensions (`width`/`height`) intact across XML import and PM roundtrip and gives an explicit place to trim non-QTI baseline nodes.
+5. Add the `blockSelectExtension` and `nodeAttrsSyncExtension` ProseKit extensions from `@citolab/prose-extensions/prosekit-extensions` (requires the `prosekit` peer dependency; the underlying plugins are also available prosekit-free from `@citolab/prose-extensions/block-select` and `@citolab/prose-extensions/node-attrs-sync`).
+6. Add the QTI attributes panel: `<qti-attributes-panel>` from `@citolab/prose-qti-ui/components/attributes-panel`, wired to the editor via `editorContext` from `@citolab/prose-qti-ui/editor-context`. It resolves each selected node's fields via `getNodeAttributePanelMetadataByNodeTypeName` (`@citolab/prose-qti/core/interactions/composer`), falling back to a per-node "friendly editor" (`choice-attributes-editor`, `text-entry-attributes-editor`, `extended-text-attributes-editor`, `rubric-block-attributes-editor`) when one is registered for that node type.
+7. Add code and composer panels.
+8. Wire QTI integration surfaces from `@citolab/prose-qti/integration/*`.
 
-For step 7, use the integration exports directly. `prosekit` is an optional peer dependency of `@citolab/prose-qti`, so `events`, `code`, and `interactions/prosekit` are published as their own subpaths rather than re-exported from `@citolab/prose-qti/integration` — importing the bare barrel must not force-evaluate `prosekit/core` for consumers who don't have it installed:
+For step 8, use the integration exports directly. `prosekit` is an optional peer dependency of `@citolab/prose-qti`, so `events`, `code`, and `interactions/prosekit` are published as their own subpaths rather than re-exported from `@citolab/prose-qti/integration` — importing the bare barrel must not force-evaluate `prosekit/core` for consumers who don't have it installed:
 
 ```ts
 import { createEditor, union } from 'prosekit/core';

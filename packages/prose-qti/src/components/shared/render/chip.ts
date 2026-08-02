@@ -14,6 +14,11 @@ import '../components/qti-fake-drag/register.js';
  * via `part="chip-remove"`; `<qti-fake-drag>`'s own shadow CSS handles the
  * hover/focus reveal.
  *
+ * `exportparts` forwards the chip's *inner* parts up one shadow level. `::part()` only reaches one
+ * level, and this chip lives inside the drop host's shadow, so without forwarding the theme's
+ * `qti-match-interaction ::part(drag-control)::before` rule — the one that draws the grip icon —
+ * cannot see it. That is why placed chips were painted but had no grip.
+ *
  * `onRemove` is invoked when the × is clicked; the wrapper calls
  * `stopPropagation()` so the host's drop-target click handler doesn't fire.
  */
@@ -25,6 +30,7 @@ export function renderEditChip(
   return html`
     <qti-fake-drag
       part="drag"
+      exportparts="drag-control, chip-label, chip-remove"
       .identifier=${identifier}
       .label=${label}
       @fake-drag-remove=${(event: Event) => {

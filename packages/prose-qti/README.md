@@ -223,9 +223,16 @@ for the pattern).
 
 #### defineQtiExtension(): Extension
 
-`union(defineBasicExtension(), defineQtiInteractionsExtension())` — ProseKit's
-basic extension plus every QTI interaction, for apps that want a complete
-editor in one call.
+`union(defineBasicExtension(), defineQtiInteractionsExtension())` — a complete
+editor in one call: every QTI interaction on top of the shared prose base from
+[`@citolab/prose-extensions/prosekit`](../prose-extensions/src/prosekit/basic.ts).
+
+That base is **not** ProseKit's `prosekit/basic`, and the difference is not
+cosmetic. ProseKit ships a single flat `list` node that serialises to
+`<div class="prosemirror-flat-list">`, and marks named `bold` / `italic`. QTI
+content is `ul` / `ol` / `li` with `strong` / `em`, which is what
+`@qti-components/theme` styles and what QTI XML round-trips. The shared base
+substitutes both.
 
 #### registerQtiInteractionElements(): void
 

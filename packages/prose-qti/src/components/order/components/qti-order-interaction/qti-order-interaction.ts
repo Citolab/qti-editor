@@ -1,10 +1,27 @@
 import { html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
-import { Interaction, PendingSelectionController, renderEditChip } from '../../../shared';
+import { DropzoneAutoSizeMixin } from '@qti-components/interactions-core';
+
+import { Interaction, markChips, PendingSelectionController, renderEditChip } from '../../../shared';
 import styles from './qti-order-interaction.styles.js';
 
-export class QtiOrderInteractionEdit extends Interaction {
+/**
+ * The drop slots are sized from the chips they will hold, by the SAME mixin the runtime uses.
+ * `DropzoneAutoSizeMixin` measures the widest and tallest `qti-simple-choice` and publishes
+ * `--qti-dropzone-min-width` / `--qti-dropzone-min-height`; upstream's stylesheet, already imported
+ * here as `externalStyles`, reads them on `[part~='drop']`. Nothing in this file knows the numbers.
+ *
+ * The selectors differ from the mixin's defaults because the editor's markup does: the drops are
+ * `<drop-list part="drop">` in this shadow root, and the drag container is a `<div part="drags">`
+ * rather than upstream's `<slot part="drags">`.
+ */
+export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
+  Interaction,
+  'qti-simple-choice',
+  '[part~="drop"]',
+  '[part="drags"]'
+) {
   static override styles = styles;
 
   public internals: ElementInternals;
@@ -46,7 +63,7 @@ export class QtiOrderInteractionEdit extends Interaction {
       if (Number.isFinite(slotIndex)) this._placeSelectedChoice(sourceId, slotIndex);
     },
     // Mirror the pending state onto the interaction host so CSS can pulse
-    // empty drop slots via `:state(pending) ::part(drop):not(:has(qti-fake-drag))`.
+    // empty drop slots via `:state(pending)::part(drop empty)` (see core-css.css).
     onPendingChanged: pending => {
       if (pending != null) this.internals.states.add('pending');
       else this.internals.states.delete('pending');
@@ -76,8 +93,20 @@ export class QtiOrderInteractionEdit extends Interaction {
     super.disconnectedCallback();
   }
 
+  /**
+   * Not the host. This element is a ProseMirror node, and PM's DOMObserver runs with
+   * `attributes: true` over its subtree — a `style` attribute it did not author marks the node
+   * dirty, it re-renders, and the re-render re-triggers whatever wrote it. `part="container"` is
+   * inside the shadow root, invisible to that observer, and an ancestor of both the chips and the
+   * drops in the flat tree, which is all custom property inheritance needs.
+   */
+  public override dropzonePropertyTarget(): HTMLElement {
+    return this.shadowRoot?.querySelector<HTMLElement>('[part="container"]') ?? this;
+  }
+
   override firstUpdated() {
     this._trySetup();
+    this.updateMinDimensionsForDropZones();
   }
 
   private _onSlotChange = () => {
@@ -87,6 +116,10 @@ export class QtiOrderInteractionEdit extends Interaction {
       this._syncOrderWithChoices();
       this._triggerRender();
     }
+    // Deliberately here and in firstUpdated, NOT in updated(): the mixin's first pass returns before
+    // it attaches its observers when there are no chips yet, so an interaction that starts empty
+    // would never measure at all — while measuring on every render turns one pass into a cycle.
+    this.updateMinDimensionsForDropZones();
   };
 
   private _trySetup() {
@@ -170,7 +203,11 @@ export class QtiOrderInteractionEdit extends Interaction {
   }
 
   private _getChoices(): HTMLElement[] {
-    return Array.from(this.querySelectorAll('qti-simple-choice'));
+    const choices = Array.from(this.querySelectorAll<HTMLElement>('qti-simple-choice'));
+    // Every path that cares about the chips comes through here, so this is the one place that has to
+    // classify them for the theme. See markChips for why it is a state and not an attribute.
+    markChips(choices);
+    return choices;
   }
 
   private _getChoiceIds(): string[] {
@@ -249,13 +286,19 @@ export class QtiOrderInteractionEdit extends Interaction {
     // element — just a styling/role hook; the theme reaches it via ::part(drop).
     // Pending and filled visuals are driven by:
     //   - `:state(pending)` on the interaction host (set by PendingSelectionController)
-    //   - `:has(qti-fake-drag)` to detect filled slots in CSS
+    //   - a second `empty` part token on unfilled slots
+    //
+    // The `empty` token exists so the pending pulse can live OUTSIDE this shadow root, in
+    // prose-qti's core-css.css. A structural filter like `:not(:has(qti-fake-drag))` cannot be
+    // applied after `::part()`, so without it an outside rule could not tell a filled slot from an
+    // empty one and would pulse both. `::part(drop empty)` matches only when both tokens are
+    // present, while every existing `::part(drop)` rule in qti-theme keeps matching either way.
     return html`
       ${this._getSlots().map((choiceId, index) => html`
         <drop-list
           role="region"
           class="order-slot"
-          part="drop"
+          part=${choiceId === null ? 'drop empty' : 'drop'}
           data-slot-index=${index}
         >
           ${choiceId !== null

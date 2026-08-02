@@ -47,9 +47,17 @@
     </p>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
-        <p>Vermogen → watt (W)</p>
-        <p>Druk → pascal (Pa)</p>
-        <p>Frequentie → hertz (Hz)</p>
+        <ul>
+          <li>
+            <p>Vermogen → watt (W)</p>
+          </li>
+          <li>
+            <p>Druk → pascal (Pa)</p>
+          </li>
+          <li>
+            <p>Frequentie → hertz (Hz)</p>
+          </li>
+        </ul>
       </qti-content-body>
     </qti-rubric-block>
   </qti-item-body>

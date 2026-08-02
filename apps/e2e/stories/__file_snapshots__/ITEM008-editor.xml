@@ -17,39 +17,53 @@
     </qti-default-value>
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
-    <p>Koppel de historicus/auteur aan het bijbehorende werk:</p>
-    <qti-match-interaction class="qti-choices-right" response-identifier="RESPONSE">
-      <qti-simple-match-set>
-        <qti-simple-associable-choice identifier="left_diamond" match-max="1">
-          <p>Jared Diamond</p>
-        </qti-simple-associable-choice>
-        <qti-simple-associable-choice identifier="left_harari" match-max="1">
-          <p>Yuval Noah Harari</p>
-        </qti-simple-associable-choice>
-        <qti-simple-associable-choice identifier="left_arendt" match-max="1">
-          <p>Hannah Arendt</p>
-        </qti-simple-associable-choice>
-      </qti-simple-match-set>
-      <qti-simple-match-set>
-        <qti-simple-associable-choice identifier="right_sapiens" match-max="1">
-          <p>Sapiens</p>
-        </qti-simple-associable-choice>
-        <qti-simple-associable-choice identifier="right_ggs" match-max="1">
-          <p>Guns, Germs and Steel</p>
-        </qti-simple-associable-choice>
-        <qti-simple-associable-choice identifier="right_thc" match-max="1">
-          <p>The Human Condition</p>
-        </qti-simple-associable-choice>
-      </qti-simple-match-set>
-    </qti-match-interaction>
-    <p>
-      <img src="/qti/kennisnet/resources/books.png" alt="Boeken"/>
-    </p>
+    <div class="qti-layout-row">
+      <div class="qti-layout-col8">
+        <p>Koppel de historicus/auteur aan het bijbehorende werk:</p>
+        <qti-match-interaction class="qti-choices-right" response-identifier="RESPONSE">
+          <qti-simple-match-set>
+            <qti-simple-associable-choice identifier="left_diamond" match-max="1">
+              <p>Jared Diamond</p>
+            </qti-simple-associable-choice>
+            <qti-simple-associable-choice identifier="left_harari" match-max="1">
+              <p>Yuval Noah Harari</p>
+            </qti-simple-associable-choice>
+            <qti-simple-associable-choice identifier="left_arendt" match-max="1">
+              <p>Hannah Arendt</p>
+            </qti-simple-associable-choice>
+          </qti-simple-match-set>
+          <qti-simple-match-set>
+            <qti-simple-associable-choice identifier="right_sapiens" match-max="1">
+              <p>Sapiens</p>
+            </qti-simple-associable-choice>
+            <qti-simple-associable-choice identifier="right_ggs" match-max="1">
+              <p>Guns, Germs and Steel</p>
+            </qti-simple-associable-choice>
+            <qti-simple-associable-choice identifier="right_thc" match-max="1">
+              <p>The Human Condition</p>
+            </qti-simple-associable-choice>
+          </qti-simple-match-set>
+        </qti-match-interaction>
+      </div>
+      <div class="qti-layout-col4 qti-margin-t-5">
+        <p>
+          <img src="/qti/kennisnet/resources/books.png" alt="Boeken" width="250"/>
+        </p>
+      </div>
+    </div>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
-        <p>Diamond → Guns, Germs and Steel</p>
-        <p>Harari → Sapiens</p>
-        <p>Arendt → The Human Condition</p>
+        <ul>
+          <li>
+            <p>Diamond → Guns, Germs and Steel</p>
+          </li>
+          <li>
+            <p>Harari → Sapiens</p>
+          </li>
+          <li>
+            <p>Arendt → The Human Condition</p>
+          </li>
+        </ul>
       </qti-content-body>
     </qti-rubric-block>
   </qti-item-body>

@@ -1,9 +1,10 @@
 import { html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
+import { DropzoneAutoSizeMixin } from '@qti-components/interactions-core';
 import nativeStyle from '@qti-components/associate-interaction/styles';
 
-import { PendingSelectionController, renderEditChip } from '../../../shared';
+import { markChips, PendingSelectionController, renderEditChip } from '../../../shared';
 import { Interaction } from '../../../shared/components/interaction.js';
 import styles from './qti-associate-interaction.styles.js';
 
@@ -103,7 +104,11 @@ function splitPair(raw: string): SlotContainer | null {
  * Editor component for qti-associate-interaction.
  * Choices are shown in a pool; click a choice then click a drop slot to form a pair.
  */
-export class QtiAssociateInteractionEdit extends Interaction {
+export class QtiAssociateInteractionEdit extends DropzoneAutoSizeMixin(
+  Interaction,
+  'qti-simple-associable-choice',
+  '[part~="drop"]'
+) {
   static override styles = [nativeStyle, styles];
 
   public internals: ElementInternals;
@@ -153,7 +158,7 @@ export class QtiAssociateInteractionEdit extends Interaction {
       this._placeIntoSlot(containerIndex, side, sourceId);
     },
     // Mirror pending state onto the interaction host so CSS can pulse empty
-    // drop slots via `:state(pending) ::part(drop):not(:has(qti-fake-drag))`.
+    // drop slots via `:state(pending)::part(drop empty)` (see core-css.css).
     onPendingChanged: pending => {
       if (pending != null) this.internals.states.add('pending');
       else this.internals.states.delete('pending');
@@ -178,12 +183,28 @@ export class QtiAssociateInteractionEdit extends Interaction {
     this._setupDone = false;
   }
 
+  /**
+   * The drops container, not the host. The drops are shadow `<div part="drop">` inside
+   * `[part='drops']`, so the reservation reaches them from there; the chips are covered separately,
+   * because `applyDropzoneAutoSizing` publishes on `slot[part='drags']` too. That keeps every write
+   * inside the shadow root — this element is a ProseMirror node with no `ignoreMutation` guard, and
+   * PM's DOMObserver watches attributes, so a `style` on the host would re-render it and re-trigger
+   * whatever wrote it.
+   */
+  public override dropzonePropertyTarget(): HTMLElement {
+    return this.shadowRoot?.querySelector<HTMLElement>('[part="drops"]') ?? this;
+  }
+
   override firstUpdated() {
     this._trySetup();
+    this.updateMinDimensionsForDropZones();
   }
 
   private _onSlotChange = () => {
     this._trySetup();
+    // Here rather than in updated(): the mixin's first pass returns before attaching its observers
+    // when there are no chips yet, while measuring on every render turns one pass into a cycle.
+    this.updateMinDimensionsForDropZones();
   };
 
   private _trySetup() {
@@ -286,7 +307,10 @@ export class QtiAssociateInteractionEdit extends Interaction {
   }
 
   private _getChoices(): HTMLElement[] {
-    return Array.from(this.querySelectorAll('qti-simple-associable-choice'));
+    const choices = Array.from(this.querySelectorAll<HTMLElement>('qti-simple-associable-choice'));
+    // The one place that enumerates the chips, so the one place that classifies them for the theme.
+    markChips(choices);
+    return choices;
   }
 
   private _buildLabelCache() {
@@ -358,7 +382,7 @@ export class QtiAssociateInteractionEdit extends Interaction {
           (container, i) => html`
             <div part="drop-row">
               <div
-                part="drop"
+                part=${container.left === null ? 'drop empty' : 'drop'}
                 class="dl"
                 data-drop-slot=${container.left === null ? `${i}:left` : nothing}
               >
@@ -367,7 +391,7 @@ export class QtiAssociateInteractionEdit extends Interaction {
                   : nothing}
               </div>
               <div
-                part="drop"
+                part=${container.right === null ? 'drop empty' : 'drop'}
                 class="dl"
                 data-drop-slot=${container.right === null ? `${i}:right` : nothing}
               >

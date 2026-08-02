@@ -12,16 +12,24 @@
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
     <p>
-      <img src="/qti/kennisnet/resources/solarpark-wind-park.jpg" alt="Wereldkaart"/>
+      <img src="/qti/kennisnet/resources/solarpark-wind-park.jpg" alt="Wereldkaart" width="100%"/>
     </p>
     <p>Leg in 3–5 zinnen uit waarom veel landen overstappen op een mix van zonne- en windenergie in plaats van op één enkele bron te vertrouwen.</p>
     <qti-extended-text-interaction response-identifier="RESPONSE" expected-lines="5"/>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
         <p>Beoordelingscriteria (controle):</p>
-        <p>Antwoord noemt minstens twee rationale factoren (bijv. variatie in opbrengst, leveringszekerheid, kosten, netstabiliteit).</p>
-        <p>Toelichting waarom mix betrouwbaarder is.</p>
-        <p>Begrijpelijke argumentatie.</p>
+        <ul>
+          <li>
+            <p>Antwoord noemt minstens twee rationale factoren (bijv. variatie in opbrengst, leveringszekerheid, kosten, netstabiliteit).</p>
+          </li>
+          <li>
+            <p>Toelichting waarom mix betrouwbaarder is.</p>
+          </li>
+          <li>
+            <p>Begrijpelijke argumentatie.</p>
+          </li>
+        </ul>
         <p>Opmerking: handmatige beoordeling vereist; automatische scoring is niet geconfigureerd.</p>
       </qti-content-body>
     </qti-rubric-block>

@@ -15,7 +15,10 @@
     },
     "strict": false,
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    // Referenced by packages/prose-qti. Without this, its `rootDir: src` rejects
+    // our sources, because tsconfig.base.json path-maps this package to src.
+    "composite": true
   },
   "include": ["src"],
   "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.stories.ts", "node_modules", "dist"]

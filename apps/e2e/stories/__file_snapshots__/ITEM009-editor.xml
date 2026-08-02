@@ -52,8 +52,14 @@
     </p>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
-        <p>Biologie: enzym, mitochondrion</p>
-        <p>Scheikunde: isotoop, katalysator, molmassa</p>
+        <ul>
+          <li>
+            <p>Biologie: enzym, mitochondrion</p>
+          </li>
+          <li>
+            <p>Scheikunde: isotoop, katalysator, molmassa</p>
+          </li>
+        </ul>
         <p>Toelichting: een katalysator komt ook in biologie voor, maar als algemeen begrip past het primair bij chemie.</p>
       </qti-content-body>
     </qti-rubric-block>

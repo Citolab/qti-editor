@@ -11,7 +11,7 @@
  */
 
 import { Schema } from 'prosemirror-model';
-import { nodes as basicNodes, marks } from 'prosemirror-schema-basic';
+import { qtiBasicNodes, qtiBasicMarks } from '@citolab/prose-qti';
 import { orderedList, bulletList, listItem } from 'prosemirror-schema-list';
 import { tableNodes } from 'prosemirror-tables';
 import { defaultSettings, updateImageNode } from 'prosemirror-image-plugin';
@@ -52,13 +52,13 @@ export const imagePluginSettings = {
 };
 
 const baseSchema = new Schema({
-  marks,
+  marks: qtiBasicMarks,
   nodes: {
     // ── Core prose ────────────────────────────────────────────────────────
     doc:       { content: 'block+', attrs: { identifier: {}, title: {} } },
-    paragraph: { ...basicNodes.paragraph, content: 'inline*', group: 'block richtext' },
-    text:      basicNodes.text,
-    image:     basicNodes.image,
+    paragraph: { ...qtiBasicNodes.paragraph, content: 'inline*', group: 'block richtext' },
+    text:      qtiBasicNodes.text,
+    image:     qtiBasicNodes.image,
 
     // ── Lists & tables ────────────────────────────────────────────────────
     ordered_list: { ...orderedList, content: 'list_item+', group: 'block richtext' },
@@ -107,8 +107,36 @@ const baseSchema = new Schema({
 // at a glance. Without this directive, Prettier collapses the per-node
 // alignment of `content` / `group` into a single column and the schema turns
 // back into the dense, unreadable form it used to be.
+const pluginImageNodes = updateImageNode(baseSchema.spec.nodes, imagePluginSettings);
+const pluginImageSpec = pluginImageNodes.get('image');
+
+const nodesWithImageWidthParse =
+  pluginImageSpec == null
+    ? pluginImageNodes
+    : pluginImageNodes.update('image', {
+        ...pluginImageSpec,
+        parseDOM: [
+          ...(pluginImageSpec.parseDOM ?? []),
+          {
+            tag: 'img[src]',
+            getAttrs: (node: Node | string) => {
+              if (!(node instanceof HTMLElement)) return false;
+              return {
+                src: node.getAttribute('src'),
+                alt: node.getAttribute('alt'),
+                title: node.getAttribute('title'),
+                width: node.getAttribute('width'),
+                height: node.getAttribute('height'),
+                maxWidth: null,
+                align: null
+              };
+            }
+          }
+        ]
+      });
+
 // prettier-ignore
 export const appSchema = new Schema({
-  marks,
-  nodes: updateImageNode(baseSchema.spec.nodes, imagePluginSettings)
+  marks: qtiBasicMarks,
+  nodes: nodesWithImageWidthParse
 });

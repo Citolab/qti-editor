@@ -44,35 +44,25 @@ const styles: CSSResultGroup = [
       align-content: start;
     }
 
+    /*
+     * No min-height here. Upstream's [part~='drop'] rule declares
+     * min-height: var(--qti-dropzone-min-height, 0), and DropzoneAutoSizeMixin publishes that
+     * property from the measured chips (see the component). A flat floor on .order-slot has the same
+     * specificity as that rule and comes later in this array, so it would silently win and pin the
+     * slot at 3rem whatever the chips did.
+     */
     .order-slot {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       gap: 4px;
       padding: 4px;
-      min-height: 3rem;
     }
 
-    /* Pending pulse — only empty slots react.
-       qti-theme's outer qti-order-interaction::part(drop) rule wins
-       the cascade over shadow rules for ::part() selectors. We can't
-       beat it with a more-specific shadow rule, so instead we override the
-       custom properties IT reads (--qti-border-color, --qti-bg). Those
-       inherit through the shadow boundary, so setting them on the empty
-       drop region redirects theme's own declarations. Animation lives in
-       shadow because it doesn't conflict with the theme cascade. */
-    :host(:state(pending)) [part='drop']:not(:has(qti-fake-drag)) {
-      --qti-border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
-      --qti-bg: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
-      animation: qti-edit-drop-pulse 1.2s ease-in-out infinite;
-    }
-
-    @keyframes qti-edit-drop-pulse {
-      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb,
-        var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70)) 45%, transparent); }
-      50%      { box-shadow: 0 0 0 4px color-mix(in srgb,
-        var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70)) 0%, transparent); }
-    }
+    /* The pending pulse used to live here, redirecting --qti-border-color/--qti-bg because an
+       outer qti-theme ::part(drop) rule beat any shadow rule. It now lives once in prose-qti's
+       core-css.css, in the qti-components.overrides layer, keyed off the "empty" part token this
+       component emits (see _renderSlots). One definition for all four drop interactions. */
   `,
 ];
 

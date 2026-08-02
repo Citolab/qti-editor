@@ -15,15 +15,21 @@
     </qti-default-value>
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
-    <p>
-      <img src="/qti/kennisnet/resources/doppler.png" alt="Doppler"/>
-    </p>
-    <p>De Doppler-verschuiving treedt op wanneer een geluidsbron en een waarnemer zich ten opzichte van elkaar bewegen.</p>
-    <p> Het waargenomen geluid wordt dan <qti-inline-choice-interaction response-identifier="RESPONSE" shuffle="false" data-prompt="kies het juiste antwoord…">
-    <qti-inline-choice identifier="choice_lager">lager</qti-inline-choice>
-    <qti-inline-choice identifier="choice_hoger">hoger</qti-inline-choice>
-    <qti-inline-choice identifier="choice_onveranderd">onveranderd</qti-inline-choice>
-  </qti-inline-choice-interaction> wanneer de bron dichterbij komt.</p>
+    <div class="qti-layout-row">
+      <div class="qti-layout-col4">
+        <p>
+          <img src="/qti/kennisnet/resources/doppler.png" alt="Doppler" width="250"/>
+        </p>
+      </div>
+      <div class="qti-layout-col8">
+        <p>De Doppler-verschuiving treedt op wanneer een geluidsbron en een waarnemer zich ten opzichte van elkaar bewegen.</p>
+        <p> Het waargenomen geluid wordt dan <qti-inline-choice-interaction response-identifier="RESPONSE" shuffle="false" data-prompt="kies het juiste antwoord…">
+        <qti-inline-choice identifier="choice_lager">lager</qti-inline-choice>
+        <qti-inline-choice identifier="choice_hoger">hoger</qti-inline-choice>
+        <qti-inline-choice identifier="choice_onveranderd">onveranderd</qti-inline-choice>
+      </qti-inline-choice-interaction> wanneer de bron dichterbij komt.</p>
+    </div>
+  </div>
 </qti-item-body>
 <qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct"/>
 </qti-assessment-item>

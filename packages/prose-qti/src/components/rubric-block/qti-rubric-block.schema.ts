@@ -10,8 +10,19 @@ export const QTI_RUBRIC_BLOCK_VIEW_VALUES = VIEW_VALUES;
  * QTI Rubric Block node specification.
  *
  * Authors instructions / scoring / navigation rubrics inside qti-item-body.
- * Content is restricted to the `richtext` group (paragraphs, lists, and tables
- * - whichever the host schema places in that group). No interactions.
+ * Content is the `richtext` group — paragraphs, lists and tables, whichever of
+ * them the host schema places in that group. No interactions.
+ *
+ * A group rather than named node types (`(paragraph | table | ...)+`) on
+ * purpose: a group reference resolves as long as *some* node carries the group,
+ * whereas a name reference makes every host schema define that exact node.
+ * The pure-ProseMirror hosts — including the e2e story harnesses, built on
+ * `prosemirror-schema-basic` — have no table or list nodes at all, and naming
+ * them makes `Schema` construction throw before a single test runs.
+ *
+ * The ProseKit hosts get their `richtext` memberships from
+ * `defineBasicExtension` in `@citolab/prose-extensions/prosekit`; see the note
+ * there on why paragraph cannot be patched into the group after the fact.
  *
  * On the wire the body is wrapped in <qti-content-body>; that wrapper is
  * pure serialization framing — it has no PM node.

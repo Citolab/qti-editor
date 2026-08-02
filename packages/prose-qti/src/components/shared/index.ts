@@ -33,6 +33,7 @@ export * from './composer/stripped-attributes.js';
 export * from './response/codec.js';
 export * from './i18n/index.js';
 
+export * from './drag-drop-states.js';
 export * from './mixins/index.js';
 export * from './controllers/pending-selection-controller.js';
 export * from './render/chip.js';

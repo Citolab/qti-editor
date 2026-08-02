@@ -79,6 +79,11 @@ Interaction components: `associate`, `choice`, `extended-text`, `gap-match`, `ho
 
 `src/core-css/core-css.css` — the mandatory stylesheet for rendering the editor's PM document (interaction element backgrounds/spacing plus the rubric-block boundary and ProseKit placeholder fix), published as the `./core-css.css` subpath (`@citolab/prose-qti/core-css.css`). Every app that renders the editor must import it alongside `@qti-components/theme`.
 
+`src/schema/` owns shared ProseMirror base-schema primitives for QTI hosts:
+- `qtiBasicNodes` / `qtiBasicMarks` (`@citolab/prose-qti/schema`) are the canonical QTI-focused replacement for direct `prosemirror-schema-basic` usage in this repo.
+- The `image` node in this module preserves `width` and `height` attributes on parse/serialize so QTI XML image dimensions survive import and roundtrip.
+- `createQtiBasicNodes(...)` allows host schemas to keep or omit optional baseline nodes (for example `blockquote`) explicitly.
+
 ### `packages/prose-extensions` (`@citolab/prose-extensions`)
 
 Generic ProseMirror and ProseKit extensions with no QTI-specific logic. `prosekit` is an optional peer dependency (`peerDependenciesMeta.prosekit.optional: true`) — feature subpaths (e.g. `./block-select`, `./node-attrs-sync`) export only plain ProseMirror plugins and never import `prosekit`, so raw-ProseMirror consumers don't need it installed.

@@ -1,6 +1,20 @@
 import { css, html, LitElement } from 'lit';
 
-import { translateQti } from '../../../shared';
+import { QtiHottext } from '@qti-components/interactions-core';
+
+
+import type { CSSResult, CSSResultGroup } from 'lit';
+
+/**
+ * The runtime hottext's own styles: box-sizing, and the `:host` box every theme paints against —
+ * `display: inline-flex`, `align-items: center`, `position: relative` (the containing block for the
+ * answer-key tick the theme draws as an absolutely positioned ::before) and the inline padding.
+ *
+ * This file used to declare `:host` from scratch and adopt one sheet where the runtime adopts two,
+ * so the editor's hottext was `display: inline`, `position: static`, unaligned, and measured 129x43
+ * against the runtime's 59x24.
+ */
+const hottextStyles = QtiHottext.styles as CSSResult;
 
 export const HOTTEXT_RADIO_CLICK_EVENT = 'qti-hottext-radio-click';
 export const HOTTEXT_REMOVE_EVENT = 'qti-hottext-remove';
@@ -10,44 +24,27 @@ export interface HottextRadioClickDetail {
 }
 
 export class QtiHottextEdit extends LitElement {
-  static override styles = css`
+  static override styles: CSSResultGroup = [
+    hottextStyles,
+    css`
+    /*
+     * The editor adds NOTHING to a hottext's look. The host box, its padding, the border per variant
+     * and the selected paint all come from the runtime styles above, so a hottext here is the word
+     * the candidate will see — at rest and while editing.
+     *
+     * There was a radio in here, revealed by the caret, for marking the correct response. Showing it
+     * widened the inline box and reflowed the sentence; every authoring action now lives in the
+     * interaction's popover instead, where it cannot move the text. Upstream's own
+     * "display: none" on the control stands, and the control stays in the tree for the
+     * accessibility mapping exactly as upstream intends.
+     *
+     * nowrap keeps a multi-word hottext on one line.
+     */
     :host {
       white-space: nowrap;
     }
-
-    [part='remove'] {
-      opacity: 0.65;
-      pointer-events: auto;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 1rem;
-      height: 1rem;
-      padding: 0;
-      border: none;
-      border-radius: 999px;
-      background: color-mix(in srgb, currentColor 12%, white);
-      color: inherit;
-      cursor: pointer;
-      font: inherit;
-      font-size: 0.8em;
-      line-height: 1;
-      transition:
-        opacity 120ms ease,
-        background 120ms ease;
-    }
-
-    :host(:hover) [part='remove'],
-    :host(:focus-within) [part='remove'],
-    [part='remove']:hover,
-    [part='remove']:focus-visible {
-      opacity: 1;
-    }
-
-    [part='remove']:hover {
-      background: color-mix(in srgb, #dc2626 18%, white);
-    }
-  `;
+  `
+  ];
 
   #internals = this.attachInternals();
 
@@ -64,49 +61,12 @@ export class QtiHottextEdit extends LitElement {
     this.#internals.states.add(role);
   }
 
-  #handleRadioMousedown = (e: MouseEvent) => {
-    e.preventDefault();
-  };
-
-  #handleRadioClick = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    this.dispatchEvent(
-      new CustomEvent<HottextRadioClickDetail>(HOTTEXT_RADIO_CLICK_EVENT, {
-        bubbles: true,
-        composed: true,
-        detail: { identifier: this.getAttribute('identifier') ?? '' },
-      }),
-    );
-  };
-
-  #handleRemoveClick = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    this.dispatchEvent(
-      new CustomEvent(HOTTEXT_REMOVE_EVENT, {
-        bubbles: true,
-        composed: true,
-      }),
-    );
-  };
-
   override render() {
     return html`
-      <div part="control" @mousedown=${this.#handleRadioMousedown} @click=${this.#handleRadioClick}>
+      <div part="control">
         <div part="control-mark"></div>
       </div>
       <slot part="label"></slot>
-      <button
-        part="remove"
-        type="button"
-        title=${translateQti('hottext.remove', { target: this })}
-        aria-label=${translateQti('hottext.remove', { target: this })}
-        @mousedown=${this.#handleRadioMousedown}
-        @click=${this.#handleRemoveClick}
-      >
-        ×
-      </button>
     `;
   }
 }

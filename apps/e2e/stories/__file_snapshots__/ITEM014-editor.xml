@@ -31,7 +31,11 @@
     </qti-order-interaction>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
-        <p>Correcte volgorde: 1 → √2 → π</p>
+        <ul>
+          <li>
+            <p>Correcte volgorde: 1 → √2 → π</p>
+          </li>
+        </ul>
       </qti-content-body>
     </qti-rubric-block>
   </qti-item-body>

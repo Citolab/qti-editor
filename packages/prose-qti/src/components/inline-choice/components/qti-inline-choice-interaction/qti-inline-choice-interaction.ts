@@ -1,4 +1,4 @@
-import { html, LitElement, nothing } from 'lit';
+import { html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
 import {
@@ -56,26 +56,24 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
         >
         <span part="dropdown-icon" aria-hidden="true">▾</span>
       </button>
-      ${this._panelOpen
-        ? html`
-            <div part="menu" role="listbox">
-              <button part="option" type="button" role="option">
-                <span part="option-content">${this.dataPrompt ?? this.i18n.t('inlineChoice.emptyOption')}</span>
-              </button>
-              <slot @slotchange=${this.#onChoicesSlotChange}></slot>
-            </div>
-          `
-        : html`
-            ${nothing}
-            <slot @slotchange=${this.#onChoicesSlotChange} hidden></slot>
-          `}
+      <!--
+        Always rendered, open or shut. The menu is what sizes the trigger — it is an in-flow grid
+        item whose widest option sets the value track — and a list that is not in the DOM sizes
+        nothing. Open/closed is therefore a paint toggle (\`visibility\`, in the styles) rather than
+        a render toggle, which is what it used to be.
+      -->
+      <div part="menu" role="listbox" ?data-open=${this._panelOpen}>
+        <button part="option" type="button" role="option">
+          <span part="option-content">${this.dataPrompt ?? this.i18n.t('inlineChoice.emptyOption')}</span>
+        </button>
+        <slot @slotchange=${this.#onChoicesSlotChange}></slot>
+      </div>
     `;
   }
 
   override connectedCallback() {
     super.connectedCallback();
     this.addEventListener(QTI_CORRECT_RESPONSE_TOGGLE_EVENT, this.#handleCorrectResponseToggle);
-    this.#estimateOptimalWidth();
   }
 
   override disconnectedCallback() {
@@ -135,20 +133,20 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
     this._correctChoiceText = correctText;
   }
 
-  #estimateOptimalWidth() {
-    // const trigger = this.renderRoot.querySelector<HTMLElement>('button[part="trigger"]');
-    // let widthPx = 0;
-    // if (widthPx <= 0 && trigger) {
-    //   widthPx = trigger.getBoundingClientRect().width;
-    // }
-    // if (widthPx <= 0) return;
-    // const fontSize = parseFloat(getComputedStyle(this).fontSize || '16') || 16;
-    // const widthEm = Math.min(Math.max(widthPx / fontSize, 8.75), 40);
-    // this.style.setProperty('--qti-calculated-min-width', `${widthEm}em`);
-  }
+  /*
+   * `#estimateOptimalWidth` used to live here, entirely commented out.
+   *
+   * Its one live statement was `this.style.setProperty('--qti-calculated-min-width', …)` — a style
+   * attribute written onto the HOST, which inside the editor is a ProseMirror-managed node. PM
+   * reverts an attribute its schema does not know, the revert re-renders the node, and the
+   * re-render re-runs the code that wrote it. That is the freeze, and disabling the method was the
+   * workaround.
+   *
+   * The trigger is now sized by the menu through the grid, so there is nothing left to write and
+   * nothing for ProseMirror to revert. See qti-inline-choice-interaction.styles.ts.
+   */
 
   #onChoicesSlotChange = () => {
-    this.#estimateOptimalWidth();
     this.#syncSelectedChoices();
   };
 }

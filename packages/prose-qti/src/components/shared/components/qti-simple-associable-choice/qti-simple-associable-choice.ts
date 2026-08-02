@@ -37,8 +37,13 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
   static override styles: CSSResultGroup = [
     associableChoiceStyles,
     css`
+      /*
+       * No flex-direction here. Upstream's :host is a row (grip beside label) and it switches to a
+       * column only for drop targets, via :host([qti-droppable]) / :host(:state(droppable)).
+       * Forcing column on every choice stacked the grip icon above the label on the source chips.
+       * The interaction opts targets in with the "droppable" state — see match-drag-drop.ts.
+       */
       :host {
-        flex-direction: column;
         /* Runtime sets user-select:none for dragging; the editor needs to keep
            the choice text selectable/editable. */
         user-select: auto;
@@ -59,6 +64,8 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
         display: inline;
       }
 
+      /* No centring here either — upstream centres a target's drop region under
+         :host([qti-droppable]) / :host(:state(droppable)). */
       [part='drop'] {
         display: flex;
         flex-wrap: wrap;

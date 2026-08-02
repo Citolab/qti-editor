@@ -31,6 +31,19 @@ export class QtiFakeDrag extends LitElement {
       box-sizing: border-box;
     }
 
+    /*
+     * The grip. Deliberately empty and unpainted here: qti-theme draws it through
+     * "qti-match-interaction ::part(drag-control)::before" (the grip mixin's mask-image), the same
+     * selector it uses for the runtime chip. Exposing the part is the whole contract — the editor
+     * gets the runtime's icon for free and cannot drift from it. Without this the placed chips were
+     * correctly purple but had no grip, because nothing in the shadow carried that part.
+     */
+    [part='drag-control'] {
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
     .label {
       white-space: nowrap;
     }
@@ -77,6 +90,7 @@ export class QtiFakeDrag extends LitElement {
    */
   override render() {
     return html`
+      <span part="drag-control"></span>
       <span class="label" part="chip-label"><slot>${this.label}</slot></span>
       <button
         type="button"

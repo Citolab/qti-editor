@@ -17,34 +17,87 @@
     </qti-default-value>
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
-    <p>Geef voor elk van de onderstaande stellingen aan of ze juist of onjuist zijn.</p>
-    <qti-match-interaction class="qti-match-tabular" response-identifier="RESPONSE">
-      <qti-simple-match-set>
-        <qti-simple-associable-choice identifier="evenaar" match-max="1">
-          <p>De evenaar loopt door drie continenten</p>
-        </qti-simple-associable-choice>
-        <qti-simple-associable-choice identifier="helium" match-max="1">
-          <p>Helium is lichter dan lucht</p>
-        </qti-simple-associable-choice>
-        <qti-simple-associable-choice identifier="pluto" match-max="1">
-          <p>Pluto wordt officieel beschouwd als een planeet</p>
-        </qti-simple-associable-choice>
-      </qti-simple-match-set>
-      <qti-simple-match-set>
-        <qti-simple-associable-choice identifier="juist" match-max="3">
-          <p>Juist</p>
-        </qti-simple-associable-choice>
-        <qti-simple-associable-choice identifier="onjuist" match-max="3">
-          <p>Onjuist</p>
-        </qti-simple-associable-choice>
-      </qti-simple-match-set>
-    </qti-match-interaction>
-    <p>
-      <img src="/qti/kennisnet/resources/question-marks.png" alt="Vragen"/>
-    </p>
+    <div class="qti-layout-row">
+      <div class="qti-layout-col10">
+        <p>Geef voor elk van de onderstaande stellingen aan of ze juist of onjuist zijn.</p>
+        <qti-match-interaction class="qti-match-tabular" response-identifier="RESPONSE">
+          <qti-simple-match-set>
+            <qti-simple-associable-choice identifier="evenaar" match-max="1">
+              <p>De evenaar loopt door drie continenten</p>
+            </qti-simple-associable-choice>
+            <qti-simple-associable-choice identifier="helium" match-max="1">
+              <p>Helium is lichter dan lucht</p>
+            </qti-simple-associable-choice>
+            <qti-simple-associable-choice identifier="pluto" match-max="1">
+              <p>Pluto wordt officieel beschouwd als een planeet</p>
+            </qti-simple-associable-choice>
+          </qti-simple-match-set>
+          <qti-simple-match-set>
+            <qti-simple-associable-choice identifier="juist" match-max="3">
+              <p>Juist</p>
+            </qti-simple-associable-choice>
+            <qti-simple-associable-choice identifier="onjuist" match-max="3">
+              <p>Onjuist</p>
+            </qti-simple-associable-choice>
+          </qti-simple-match-set>
+        </qti-match-interaction>
+      </div>
+      <div class="qti-layout-col2">
+        <p>
+          <img src="/qti/kennisnet/resources/question-marks.png" alt="Vragen" width="130"/>
+        </p>
+      </div>
+    </div>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
-        <p>StellingAntwoordToelichting Evenaar door drie continentenJuistZuid-Amerika, Afrika, Azië Helium is lichter dan luchtJuistHelium heeft een lagere dichtheid dan lucht Pluto officieel planeetOnjuistPluto is sinds 2006 geclassificeerd als dwergplaneet</p>
+        <table>
+          <tbody>
+            <tr>
+              <th>
+                <p>Stelling</p>
+              </th>
+              <th>
+                <p>Antwoord</p>
+              </th>
+              <th>
+                <p>Toelichting</p>
+              </th>
+            </tr>
+            <tr>
+              <td>
+                <p>Evenaar door drie continenten</p>
+              </td>
+              <td>
+                <p>Juist</p>
+              </td>
+              <td>
+                <p>Zuid-Amerika, Afrika, Azië</p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p>Helium is lichter dan lucht</p>
+              </td>
+              <td>
+                <p>Juist</p>
+              </td>
+              <td>
+                <p>Helium heeft een lagere dichtheid dan lucht</p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p>Pluto officieel planeet</p>
+              </td>
+              <td>
+                <p>Onjuist</p>
+              </td>
+              <td>
+                <p>Pluto is sinds 2006 geclassificeerd als dwergplaneet</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </qti-content-body>
     </qti-rubric-block>
   </qti-item-body>

@@ -1,7 +1,9 @@
 import { html } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { Interaction, PendingSelectionController } from '../../../shared';
+import { DropzoneAutoSizeMixin } from '@qti-components/interactions-core';
+
+import { Interaction, markChips, markDroppables, PendingSelectionController } from '../../../shared';
 import styles from './qti-gap-match-interaction.styles.js';
 
 /** Idempotent helper — diffs state set operations. */
@@ -65,7 +67,11 @@ export interface GapAssociationChangeDetail {
  * owns the association map, label cache, lightdom visual sync, and change
  * event emission.
  */
-export class QtiGapMatchInteractionEdit extends Interaction {
+export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
+  Interaction,
+  'qti-gap-text',
+  'qti-gap'
+) {
   static override styles = styles;
 
   @property({ type: Number, attribute: 'max-associations' })
@@ -131,9 +137,25 @@ export class QtiGapMatchInteractionEdit extends Interaction {
       if (touchedGapText) {
         this.buildLabelCache();
         this.applyVisualState();
+        this.updateMinDimensionsForDropZones();
       }
     });
     this.observer.observe(this, { childList: true, subtree: true, characterData: true });
+  }
+
+  /**
+   * The drops, not the host. A gap is a light-DOM `qti-gap` assigned to `slot[part='drops']`, so the
+   * slot is its parent in the flat tree and the reservation reaches it by inheritance. The chips are
+   * covered separately — `applyDropzoneAutoSizing` publishes on `slot[part='drags']` too — which is
+   * what lets this stay entirely inside the shadow root. Writing on the host instead would put a
+   * `style` attribute on a ProseMirror node, and PM's DOMObserver watches attributes.
+   */
+  public override dropzonePropertyTarget(): HTMLElement {
+    return this.shadowRoot?.querySelector<HTMLElement>('slot[part="drops"]') ?? this;
+  }
+
+  override firstUpdated() {
+    this.updateMinDimensionsForDropZones();
   }
 
   override disconnectedCallback(): void {
@@ -154,11 +176,18 @@ export class QtiGapMatchInteractionEdit extends Interaction {
   }
 
   private getGapTexts(): HTMLElement[] {
-    return Array.from(this.querySelectorAll('qti-gap-text')) as HTMLElement[];
+    const gapTexts = Array.from(this.querySelectorAll<HTMLElement>('qti-gap-text'));
+    // The one place that enumerates the chips, so the one place that classifies them for the theme.
+    markChips(gapTexts);
+    return gapTexts;
   }
 
   private getGaps(): HTMLElement[] {
-    return Array.from(this.querySelectorAll('qti-gap')) as HTMLElement[];
+    const gaps = Array.from(this.querySelectorAll<HTMLElement>('qti-gap'));
+    // A gap IS a custom element, so unlike order's and associate's plain <div> drops it can carry
+    // the state the runtime marks drop targets with.
+    markDroppables(gaps);
+    return gaps;
   }
 
   private buildLabelCache() {

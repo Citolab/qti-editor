@@ -43,6 +43,15 @@ jobs:
       - name: Lint
         run: pnpm lint:check
 
+      # Both gates run before the (slow) Playwright install so they fail fast.
+      # Must stay after "Build packages": prose-qti resolves prose-extensions
+      # through its project reference output.
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Schema drift check
+        run: pnpm schema:check
+
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:

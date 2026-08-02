@@ -2,7 +2,35 @@
 # Strip yalc deps from staged package.json files before they enter a commit.
 # After the commit, run `pnpm yalc:add` to restore yalc dev mode.
 
+# There is deliberately no check for .qti-components-local-link-state.json here.
+#
+# Source-link mode cannot reach a commit. Its state file is gitignored, and .storybook/main.ts is
+# its only consumer — it turns into Vite aliases for the Storybook dev server and nothing else.
+# node_modules/@qti-components holds published packages either way, so eslint, tsc, vitest and every
+# build resolve identically whether the mode is on or off.
+#
+# Blocking the commit therefore protected nothing, while costing a `pnpm unlink` (full install and
+# cache clear) and a relink around every commit. The two checks below are different: `link:` and
+# `file:.yalc/` deps are written INTO tracked package.json files, so those can genuinely go live.
+
+linked_qti_in_index=false
 staged_pkg_jsons=$(git diff --cached --name-only --diff-filter=ACM -- '*package.json')
+for f in $staged_pkg_jsons; do
+  if git show ":$f" 2>/dev/null | grep -Eq '"@qti-components/.+": "link:|"@citolab/qti-components": "link:'; then
+    linked_qti_in_index=true
+    break
+  fi
+done
+
+if [ "$linked_qti_in_index" = "true" ]; then
+  echo ""
+  echo "❌ pre-commit: staged package.json files still contain qti-components link: deps."
+  echo "   Run: pnpm unlink"
+  echo "   Then re-stage and commit."
+  echo ""
+  exit 1
+fi
+
 yalc_in_index=false
 for f in $staged_pkg_jsons; do
   if git show ":$f" 2>/dev/null | grep -q '"file:\.yalc/'; then
@@ -25,12 +53,23 @@ if [ "$yalc_in_index" = "true" ]; then
   echo ""
 fi
 
-# Run the same lint check CI runs so drift can't sneak past a local commit.
-# Mirrors `.github/workflows/ci.yml` (Lint step: `pnpm lint:check`).
-echo "🔍 pre-commit: running eslint ."
-if ! eslint .; then
+# Lint and test the STAGED changes — eslint --fix on the staged source files, and one
+# `vitest run --changed` for the commit as a whole. See .lintstagedrc.mjs: the comment there
+# explains why the test call has to stay inside lint-staged (that is what makes "changed" mean
+# "staged"), and why it is --changed rather than a glob-seeded `vitest related`.
+#
+# This replaces a whole-repo `eslint .`. CI still runs `pnpm lint:check` over everything
+# (.github/workflows/ci.yml), which is where a repo-wide check belongs; a commit gate should look at
+# the commit.
+#
+# --hide-unstaged is load-bearing: by default lint-staged hides only PARTIALLY staged files, so a
+# fully unstaged edit stays on disk and `vitest --changed` picks it up — letting an unstaged fix mask
+# a staged bug. With the flag, "changed" and "staged" are the same set. Anything hidden is
+# recoverable from `git stash list`.
+echo "🔍 pre-commit: linting and testing staged changes…"
+if ! npx lint-staged --allow-empty --hide-unstaged; then
   echo ""
-  echo "❌ Lint failed. Fix errors above (or run 'pnpm lint' for autofix), then re-commit."
+  echo "❌ Pre-commit checks failed. Fix the errors above, then re-commit."
   echo "   To bypass in an emergency: git commit --no-verify"
   exit 1
 fi

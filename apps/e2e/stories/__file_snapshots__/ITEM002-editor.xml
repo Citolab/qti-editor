@@ -17,31 +17,45 @@
     </qti-default-value>
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
-    <qti-choice-interaction max-choices="0" response-identifier="RESPONSE" shuffle="true">
-      <qti-prompt>
-        <p>Welke van de volgende landen zijn volledig door één enkel ander land ingesloten?</p>
-      </qti-prompt>
-      <qti-simple-choice identifier="choice1">
-        <p>Lesotho</p>
-      </qti-simple-choice>
-      <qti-simple-choice identifier="choice2">
-        <p>San Marino</p>
-      </qti-simple-choice>
-      <qti-simple-choice identifier="choice3">
-        <p>Bolivia</p>
-      </qti-simple-choice>
-      <qti-simple-choice identifier="choice4">
-        <p>Vaticaanstad</p>
-      </qti-simple-choice>
-    </qti-choice-interaction>
-    <p>
-      <img src="/qti/kennisnet/resources/world-map.jpg" alt="Wereldkaart"/>
-    </p>
+    <div class="qti-layout-row">
+      <div class="qti-layout-col5">
+        <qti-choice-interaction max-choices="0" response-identifier="RESPONSE" shuffle="true">
+          <qti-prompt>
+            <p>Welke van de volgende landen zijn volledig door één enkel ander land ingesloten?</p>
+          </qti-prompt>
+          <qti-simple-choice identifier="choice1">
+            <p>Lesotho</p>
+          </qti-simple-choice>
+          <qti-simple-choice identifier="choice2">
+            <p>San Marino</p>
+          </qti-simple-choice>
+          <qti-simple-choice identifier="choice3">
+            <p>Bolivia</p>
+          </qti-simple-choice>
+          <qti-simple-choice identifier="choice4">
+            <p>Vaticaanstad</p>
+          </qti-simple-choice>
+        </qti-choice-interaction>
+      </div>
+      <div class="qti-layout-col7">
+        <p>
+          <img src="/qti/kennisnet/resources/world-map.jpg" alt="Wereldkaart"/>
+        </p>
+      </div>
+    </div>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
-        <p>Lesotho ligt volledig binnen Zuid-Afrika</p>
-        <p>San Marino en Vaticaanstad liggen volledig binnen Italië</p>
-        <p>Bolivia is niet ingesloten</p>
+        <ul>
+          <li>
+            <p>Lesotho ligt volledig binnen Zuid-Afrika</p>
+          </li>
+          <li>
+            <p>San Marino en Vaticaanstad liggen volledig binnen Italië</p>
+          </li>
+          <li>
+            <p>Bolivia is niet ingesloten</p>
+          </li>
+        </ul>
       </qti-content-body>
     </qti-rubric-block>
   </qti-item-body>

@@ -70,6 +70,25 @@ export const tabularStyles = css`
   :host(.qti-match-tabular) ::slotted(qti-simple-match-set) {
     display: contents;
   }
+
+  /*
+   * The radio/checkbox box centres its own mark. Mirrors
+   * qti-match-interaction-tabular.styles.ts in @qti-components/match-interaction, which carries the
+   * identical rule and explains why it belongs to the component rather than the theme: the cells are
+   * plain spans in an interaction's own shadow root, and a document-level rule reaching them through
+   * ::part() would also override qti-simple-choice's flex centring in non-tabular mode.
+   *
+   * This is what was missing: the theme sizes and paints the mark (8px, white, round) but sizing
+   * does nothing to a display:inline span, so the checked radios rendered as an empty purple ring.
+   * Making the box a flex container blockifies the mark as a flex item, which is exactly how the
+   * runtime gets display:block on it — no rule targets the mark directly in either repo.
+   */
+  :host(.qti-match-tabular) [part~='control'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
 `;
 
 /**

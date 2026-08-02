@@ -19,3 +19,4 @@ This starts the main editor app and watches packages for changes. The editor run
 
 - [docs/architecture.md](./docs/architecture.md) — package topology and ownership rules
 - [Itembody-only QTI subformat](./apps/site/src/content/docs/packages/itembody-subformat.mdx) — the itembody-only QTI subformat the editor reads and writes (also published on the docs site under Package Reference)
+- [docs/css-sourcemaps-verification.md](./docs/css-sourcemaps-verification.md) — verify CSS sourcemaps and inspect style origins in Storybook/shadow DOM

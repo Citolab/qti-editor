@@ -15,8 +15,17 @@ coverage
 .firebase
 .vscode
 .qti-components-packs
+.qti-components-local-link-state.json
+.qti-components-watch.pid
+.qti-components-watch.log
+.qti-components-theme-watch.pid
+.qti-components-theme-watch.log
 .pnpm-store
 .vitest-attachments
+# Vitest failure screenshots — derived, per-run, never reviewed. Deliberately NOT where the VRT
+# baselines live: apps/e2e/stories/__vrt__ is tracked, because a baseline nobody can see in a diff
+# proves nothing to anyone but the machine that ran it. Keeping the two apart is the whole point —
+# 40 failure PNGs once sat in this directory and read as if this repo had VRT. It did not.
 **/__screenshots__/
 
 *storybook.log
@@ -31,3 +40,5 @@ apps/qti-prosekit-app/public/r
 .claude/claude-debug.log
 
 *.code-workspace
+# TypeScript incremental build state (emitted by composite projects)
+*.tsbuildinfo

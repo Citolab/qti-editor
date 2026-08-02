@@ -9,3 +9,8 @@ export {
   type StrongSpecExtension,
 } from './strong-em.js'
 export { defineList, type ListExtension, type ListOptions } from './list.js'
+export {
+  defineBasicExtension,
+  type BasicExtension,
+  type BasicExtensionOptions,
+} from './basic.js'
