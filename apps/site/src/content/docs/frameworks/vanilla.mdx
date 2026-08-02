@@ -33,9 +33,11 @@ The boilerplate splits its editor across three files. Each file has a single con
 
 `schema.ts` is one literal — every interaction's `qti*InteractionNodeSpec` is spread in alongside core prose nodes. `content` and `group` are restated inline so the whole topology is visible in one file.
 
+Base prose nodes and marks (`paragraph`, `text`, `image`, marks) come from `qtiBasicNodes`/`qtiBasicMarks` in `@citolab/prose-qti` — see [QTI Base Schema](/docs/packages/qti-base-schema/) — rather than importing `prosemirror-schema-basic` directly, so image `width`/`height` survive QTI XML import and roundtrip:
+
 ```ts
 import { Schema } from 'prosemirror-model';
-import { nodes as basicNodes, marks } from 'prosemirror-schema-basic';
+import { qtiBasicNodes, qtiBasicMarks } from '@citolab/prose-qti';
 import { orderedList, bulletList, listItem } from 'prosemirror-schema-list';
 import { tableNodes } from 'prosemirror-tables';
 import { qtiChoiceInteractionNodeSpec } from '@citolab/prose-qti/components/choice';
@@ -48,11 +50,12 @@ import {
 } from '@citolab/prose-qti/components/shared';
 
 export const appSchema = new Schema({
-  marks,
+  marks: qtiBasicMarks,
   nodes: {
     doc:       { content: 'block+', attrs: { identifier: {}, title: {} } },
-    paragraph: { ...basicNodes.paragraph, content: 'inline*', group: 'block richtext' },
-    text:      basicNodes.text,
+    paragraph: { ...qtiBasicNodes.paragraph, content: 'inline*', group: 'block richtext' },
+    text:      qtiBasicNodes.text,
+    image:     qtiBasicNodes.image,
     ordered_list: { ...orderedList, content: 'list_item+', group: 'block richtext' },
     bullet_list:  { ...bulletList,  content: 'list_item+', group: 'block richtext' },
     list_item:    { ...listItem,    content: 'paragraph (paragraph | bullet_list | ordered_list)*' },

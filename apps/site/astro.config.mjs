@@ -119,6 +119,7 @@ export default defineConfig({
             { label: 'Itembody-only QTI Subformat', slug: 'docs/packages/itembody-subformat' },
             { label: 'QTI 3 Item Import', slug: 'docs/packages/qti3-item-import' },
             { label: 'QTI Item Roundtrip', slug: 'docs/packages/qti-item-roundtrip' },
+            { label: 'QTI Base Schema', slug: 'docs/packages/qti-base-schema' },
           ],
         },
         {

@@ -93,7 +93,7 @@ Owns:
 - `src/prosemirror/node-attrs-sync` — node attribute synchronization
 - `src/prosemirror/paste-semantic-html` — paste HTML handling
 - `src/prosemirror/prosekit-extensions.ts` — ProseKit extension wrappers (`blockSelectExtension`, `nodeAttrsSyncExtension`, `defineSemanticPasteExtension`) for the plugins above, published as the `./prosekit-extensions` subpath; importing from here requires the `prosekit` peer dependency
-- `src/prosekit/` — ProseKit-specific wrappers for marks/lists (`defineEm`, `defineStrong`, `defineList`, etc.)
+- `src/prosekit/` — ProseKit-specific wrappers for marks/lists (`defineEm`, `defineStrong`, `defineList`), plus `defineBasicExtension()` — the shared QTI-shaped ProseKit base (doc/text/paragraph/heading/list/image/table nodes, `em`/`strong` marks, base keymap/commands/history/gap cursor) that every app's own `basic-extension.ts` composes on top of with its own additions (hard break, virtual selection, AI, etc.) rather than redefining the base itself
 
 Does not own QTI composition logic, interaction-specific behavior, or app wiring.
 
