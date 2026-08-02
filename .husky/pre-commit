@@ -53,12 +53,23 @@ if [ "$yalc_in_index" = "true" ]; then
   echo ""
 fi
 
-# Run the same lint check CI runs so drift can't sneak past a local commit.
-# Mirrors `.github/workflows/ci.yml` (Lint step: `pnpm lint:check`).
-echo "🔍 pre-commit: running eslint ."
-if ! eslint .; then
+# Lint and test the STAGED changes — eslint --fix on the staged source files, and one
+# `vitest run --changed` for the commit as a whole. See .lintstagedrc.mjs: the comment there
+# explains why the test call has to stay inside lint-staged (that is what makes "changed" mean
+# "staged"), and why it is --changed rather than a glob-seeded `vitest related`.
+#
+# This replaces a whole-repo `eslint .`. CI still runs `pnpm lint:check` over everything
+# (.github/workflows/ci.yml), which is where a repo-wide check belongs; a commit gate should look at
+# the commit.
+#
+# --hide-unstaged is load-bearing: by default lint-staged hides only PARTIALLY staged files, so a
+# fully unstaged edit stays on disk and `vitest --changed` picks it up — letting an unstaged fix mask
+# a staged bug. With the flag, "changed" and "staged" are the same set. Anything hidden is
+# recoverable from `git stash list`.
+echo "🔍 pre-commit: linting and testing staged changes…"
+if ! npx lint-staged --allow-empty --hide-unstaged; then
   echo ""
-  echo "❌ Lint failed. Fix errors above (or run 'pnpm lint' for autofix), then re-commit."
+  echo "❌ Pre-commit checks failed. Fix the errors above, then re-commit."
   echo "   To bypass in an emergency: git commit --no-verify"
   exit 1
 fi
