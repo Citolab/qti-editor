@@ -1,0 +1,28 @@
+{
+  "tagName": "qti-hottext-interaction",
+  "content": "paragraph+",
+  "group": "block",
+  "defining": true,
+  "isolating": true,
+  "attrs": {
+    "responseIdentifier": {
+      "default": null
+    },
+    "maxChoices": {
+      "default": 1
+    },
+    "minChoices": {
+      "default": 0
+    },
+    "class": {
+      "default": null
+    },
+    "correctResponse": {
+      "default": null
+    },
+    "score": {
+      "default": 1
+    }
+  },
+  "note": "The exception to the prompt rule: no prompt at all. Hottext choices are embedded in running text, so the instruction and the answerable content are the same paragraphs — a separate prompt would have nothing to say. XSD: nests hottexts inside the full block model. Collapsed to `paragraph+`."
+}

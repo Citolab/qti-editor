@@ -1,0 +1,29 @@
+{
+  "tagName": "qti-inline-choice-interaction",
+  "content": "qtiInlineChoice+",
+  "group": "inline",
+  "inline": true,
+  "isolating": true,
+  "selectable": true,
+  "attrs": {
+    "responseIdentifier": {
+      "default": null
+    },
+    "shuffle": {
+      "default": false
+    },
+    "class": {
+      "default": null
+    },
+    "correctResponse": {
+      "default": null
+    },
+    "score": {
+      "default": 1
+    },
+    "dataPrompt": {
+      "default": null
+    }
+  },
+  "note": "XSD: has a leading `qti-label?`. The editor uses the `data-prompt` attribute instead, so the element has no child prompt."
+}
