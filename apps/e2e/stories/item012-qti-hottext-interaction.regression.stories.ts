@@ -47,6 +47,10 @@ export const importItem012 = editor.importItem;
 
 const meta: Meta = {
   title: 'QTI Kennisnet/Regression',
+  // Captured by the VRT project (VRT=1, `just screenshots`). One story, one committed baseline in
+  // apps/e2e/stories/__vrt__ — the editor's counterpart to the runtime's kennisnet baselines, so the
+  // same ITEM fixture can be eyeballed side by side across the two repos.
+  tags: ['vrt'],
   // These exports are the reusable import/export pipeline (consumed by the
   // regression test), not stories.
   excludeStories: ['schema', 'importItem012', 'exportAssessmentItemDoc', 'mountEditor']
