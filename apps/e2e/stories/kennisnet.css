@@ -26,12 +26,12 @@
     --drag-border-color: transparent;
   }
 
-  qti-order-interaction::part(drag) {
-    --drag-background-color: white;
-    --drag-color: var(--qti-fg);
-    --drag-border-color: var(--qti-border-color);
-    --drag-box-shadow: 0 3px color-mix(in srgb, var(--qti-primary) 50%, transparent);
-  }
+  /*
+   * Order's chips are deliberately absent from the list above: they take the brand's primary fill
+   * like every other chip. A white/bordered treatment for order alone used to sit here and was
+   * removed rather than left commented out — the selector list is the statement of which chips the
+   * brand paints, and a commented exception reads as an open question forever.
+   */
 }
 
 @layer qti-components.interactions.states {

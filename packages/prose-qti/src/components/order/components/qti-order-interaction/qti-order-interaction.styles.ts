@@ -44,13 +44,19 @@ const styles: CSSResultGroup = [
       align-content: start;
     }
 
+    /*
+     * No min-height here. Upstream's [part~='drop'] rule declares
+     * min-height: var(--qti-dropzone-min-height, 0), and DropzoneAutoSizeMixin publishes that
+     * property from the measured chips (see the component). A flat floor on .order-slot has the same
+     * specificity as that rule and comes later in this array, so it would silently win and pin the
+     * slot at 3rem whatever the chips did.
+     */
     .order-slot {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       gap: 4px;
       padding: 4px;
-      min-height: 3rem;
     }
 
     /* The pending pulse used to live here, redirecting --qti-border-color/--qti-bg because an
