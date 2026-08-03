@@ -120,6 +120,7 @@ export default defineConfig({
             { label: 'QTI 3 Item Import', slug: 'docs/packages/qti3-item-import' },
             { label: 'QTI Item Roundtrip', slug: 'docs/packages/qti-item-roundtrip' },
             { label: 'QTI Base Schema', slug: 'docs/packages/qti-base-schema' },
+            { label: 'Node Conversion', slug: 'docs/packages/prose-qti-node' },
           ],
         },
         {

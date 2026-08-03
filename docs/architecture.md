@@ -83,6 +83,10 @@ Interaction components: `associate`, `choice`, `extended-text`, `gap-match`, `ho
 - `qtiBasicNodes` / `qtiBasicMarks` (`@citolab/prose-qti/schema`) are the canonical QTI-focused replacement for direct `prosemirror-schema-basic` usage in this repo.
 - The `image` node in this module preserves `width` and `height` attributes on parse/serialize so QTI XML image dimensions survive import and roundtrip.
 - `createQtiBasicNodes(...)` allows host schemas to keep or omit optional baseline nodes (for example `blockquote`) explicitly.
+- `qtiLayoutDivNodeSpec` (the `<div class="qti-layout-row">` / `qti-layout-colN` wrappers) lives here too — it is author-written QTI item-format vocabulary, not editor furniture, so it belongs in the document model rather than in an app. `apps/*` re-export it for backwards compatibility and keep only `divLockPlugin`, which is genuinely editing behavior.
+- `createQtiSchema(options?)` assembles the one roundtrip ProseMirror schema (`qtiBasicNodes` + list/table nodes + every registered interaction's node specs) that the editor, the tests, and the Node conversion functions all share, so they cannot disagree with each other.
+
+`src/node/` (`@citolab/prose-qti/node`) runs the QTI ↔ ProseMirror conversion in plain Node instead of a browser: `qti3ToPm`, `pmToQti3`, `htmlToPm`, `pmToHtml`, and `validateHtml`. It is a subpath rather than a separate package specifically so the conversion can never be installed at a version that disagrees with the schema defining it, and it is the only place `linkedom` (the Node DOM shim) is reached, so a browser bundle never pulls it in.
 
 ### `packages/prose-extensions` (`@citolab/prose-extensions`)
 
@@ -344,7 +348,7 @@ The **roundtrip-QTI** format is a lossless XML serialization of the editor's Pro
 
 ## QTI Item Export / Import
 
-`@citolab/prose-qti/item-export` and `@citolab/prose-qti/item-roundtrip/export` serialize the editor's ProseMirror tree to a single standard QTI 3.0 assessment item, and `@citolab/prose-qti/item-roundtrip/import` / `@citolab/prose-qti/qti3-item-import` read a QTI 3.0 item back. The output is interchange-friendly standard QTI with no `data-*` mirrors. There is currently no multi-item test/package-building surface in this package.
+`@citolab/prose-qti/item-export` and `@citolab/prose-qti/item-roundtrip/export` serialize the editor's ProseMirror tree to a single standard QTI 3.0 assessment item, and `@citolab/prose-qti/item-roundtrip/import` / `@citolab/prose-qti/qti3-item-import` read a QTI 3.0 item back. The output is interchange-friendly standard QTI with no `data-*` mirrors. There is currently no multi-item test/package-building surface in this package. `@citolab/prose-qti/node` wraps the same import/export pair with a default schema for callers running in plain Node rather than the editor's own browser runtime.
 
 The non-QTI attribute set lives in each interaction's component directory within `packages/prose-qti/src/components/`.
 

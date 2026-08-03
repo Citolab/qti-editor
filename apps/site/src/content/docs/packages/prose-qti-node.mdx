@@ -1,0 +1,89 @@
+---
+title: Node Conversion
+description: QTI 3 <-> ProseMirror conversion that runs in plain Node, with a default schema and an HTML validity check.
+slug: docs/packages/prose-qti-node
+---
+
+`@citolab/prose-qti/node` runs the editor's QTI ↔ ProseMirror conversion outside a browser. Import it in a script, a build step, or a server process to convert QTI XML, the roundtrip HTML format, or a ProseMirror document into each other, and to check whether a piece of HTML survives the editor's schema unchanged.
+
+```ts
+import { qti3ToPm, pmToQti3, htmlToPm, pmToHtml, validateHtml } from '@citolab/prose-qti/node';
+```
+
+## When to use this
+
+Use this subpath when you need QTI conversion in a place that isn't the editor's own browser runtime — a CLI script, a Node-based server, or a test harness — and you want the same document model the editor uses, not a hand-assembled one. The likely first consumer is a server that validates or converts LLM-generated item content against the editor's real schema.
+
+If you're building the editor itself, use [`@citolab/prose-qti/item-roundtrip`](/docs/packages/qti-item-roundtrip/) directly instead — this subpath exists for callers outside the editor's own schema wiring.
+
+## Why a subpath, not a separate package
+
+Conversion and the schema that defines it must never be installable at versions that disagree — splitting them into separate packages is the surest way to create exactly that drift. `linkedom`, the DOM shim this subpath needs, is reached only through `@citolab/prose-qti/node`, so a browser consumer importing `@citolab/prose-qti` never pulls it into a bundle.
+
+Importing `@citolab/prose-qti/node` installs the DOM shim as a side effect — `DOMParser`, `XMLSerializer`, `document`, and `document.implementation.createDocument`, none of which exist in plain Node.
+
+## What it provides
+
+- `qti3ToPm(xml, options?)` — QTI 3 XML → ProseMirror document. Also accepts the editor's own roundtrip XML, since the transform chain is idempotent.
+- `pmToQti3(doc, options?)` — ProseMirror document → a complete QTI 3 `<qti-assessment-item>`: namespace and schemaLocation, a `<qti-response-declaration>` per interaction, `SCORE`/`MAXSCORE` outcome declarations, and response processing.
+- `htmlToPm(html, options?)` — the roundtrip HTML format (item body only) → ProseMirror document.
+- `pmToHtml(doc, options?)` — ProseMirror document → the roundtrip HTML format. The document's `identifier`/`title` attributes are not emitted into the HTML; pass them back in on the next `htmlToPm` call via `options`.
+- `validateHtml(html, options?)` — did the schema keep what you wrote? See [Validating HTML](#validating-html) below.
+- `createQtiSchema(options?)` — builds the same ProseMirror schema the conversion functions default to. See [The default schema](#the-default-schema).
+
+All four conversion functions take an optional `{ schema?, include? }`: pass `schema` to use your own (built with `createQtiSchema`), or `include` to narrow the default schema to specific interactions by tag name (e.g. `['qti-order-interaction']`).
+
+## Typical usage
+
+```ts
+import { qti3ToPm, pmToQti3 } from '@citolab/prose-qti/node';
+
+const doc = qti3ToPm(itemXml);
+const roundtripped = pmToQti3(doc);
+```
+
+```ts
+import { htmlToPm, pmToHtml } from '@citolab/prose-qti/node';
+
+const doc = htmlToPm('<p>Hello <qti-choice-interaction>…</qti-choice-interaction></p>', {
+  identifier: 'ITEM-1',
+  title: 'Sample item',
+});
+const html = pmToHtml(doc, { identifier: 'ITEM-1', title: 'Sample item' });
+```
+
+## Validating HTML
+
+`validateHtml(html)` parses HTML into the schema and re-serializes it, then diffs the two:
+
+```ts
+const result = validateHtml(html);
+// { valid, changes, suspect, normalizedHtml }
+```
+
+- `valid` — `true` when the schema kept the input exactly as written.
+- `changes` — per element, what the schema added and removed, with paths. Elements the schema only *moved* (for example, lifting a `<table>` out of a `<qti-prompt>` it can't legally sit in) are matched and excluded, so a moved-but-otherwise-intact element doesn't drown out genuine additions and removals.
+- `suspect` — `true` when the changes involve an interaction whose roundtrip identity isn't stable yet (see [Known limitations](#known-limitations)). Treat these results as unreliable rather than reporting them to a generator as its mistake.
+- `normalizedHtml` — the document as the schema would have it; hand this back as the corrected form.
+
+This can't simply parse and catch an error: ProseMirror's parser never rejects invalid markup, it coerces — silently dropping what doesn't fit and lifting what sits in the wrong place — so a successful parse doesn't mean the input was valid.
+
+## The default schema
+
+All four conversion functions default to one schema, built once by `createQtiSchema()` and memoised. This matters because ProseMirror compares node types by identity, not by name — building a fresh schema on every call would make every resulting document incomparable with every other one, even when their content is byte-identical.
+
+`createQtiSchema(options?)` accepts:
+
+- `include?: string[]` — restrict the schema to specific interactions by tag name.
+- `extraNodes?: Record<string, NodeSpec>` — extra node specs merged in last, for a node your host owns that this package doesn't (not a place to add anything belonging to the item format itself).
+
+## Known limitations
+
+- **`htmlToPm` round-trip identity isn't stable for every interaction.** Measured on the 17-item regression corpus: 11 of 17 hold; `match`, `associate`, and an inline-choice whitespace edge do not. `validateHtml` sets `suspect: true` on these rather than letting a caller mistake our instability for their mistake.
+- **`@qti-components/*`'s published dists use extensionless relative imports**, which Node's ESM resolver rejects. This subpath's build bundles around it with esbuild; it isn't a limitation you need to work around as a consumer, but it's why this subpath ships a bundle rather than re-exporting source.
+- **linkedom drops the `xmlns:xsi` declaration** on serialize while keeping `xsi:schemaLocation`, so emitted QTI XML is namespace-incomplete. The document model itself is unaffected.
+
+## Notes
+
+- `prosemirror-*` packages stay external to this subpath's bundle — inlining `prosemirror-model` would hand a consumer a second, private copy of it, and node types are compared by identity.
+- All 17 ITEM regression fixtures roundtrip `qti3ToPm` → `pmToQti3` in plain Node and reproduce the same committed snapshots the browser-based regression tests assert against.
