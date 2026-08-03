@@ -74,10 +74,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # `pnpm build:packages`, not two --filter calls, because ORDER MATTERS and this had it
+      # backwards: prose-qti resolves prose-extensions through a TypeScript project reference, so
+      # building prose-qti first fails with TS6305 ("Output file ... has not been built from source
+      # file"). build:packages uses `--sort`, which builds them in dependency order — the same
+      # script CI runs, so the two cannot drift again.
+      #
+      # It stayed hidden because the release job had never reached this step: CI failures and the
+      # path filter stopped the workflow earlier every previous time.
       - name: Build publishable packages
-        run: |
-          pnpm --filter @citolab/prose-qti build
-          pnpm --filter @citolab/prose-extensions build
+        run: pnpm build:packages
 
       - name: Configure git
         run: |

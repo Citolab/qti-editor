@@ -1,0 +1,148 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Development/Node conversion" />
+
+# Converting QTI in Node
+
+Turning QTI into the editor's document model, and back, without a browser. Tooling for people
+working **on** the repo — the editor's own docs live in `apps/site/src/content/docs`.
+
+```js
+import { qti3ToPm, pmToQti3, htmlToPm, pmToHtml, validateHtml } from '@citolab/prose-qti/node';
+```
+
+One import. No DOM setup, no globals, no flags — the subpath installs what it needs.
+
+## The five functions
+
+| | |
+| --- | --- |
+| `qti3ToPm(xml, options?)` | QTI (or roundtrip) XML → ProseMirror document |
+| `pmToQti3(doc, options?)` | ProseMirror document → QTI XML, response declarations and all |
+| `htmlToPm(html, options?)` | HTML → ProseMirror document |
+| `pmToHtml(doc, options?)` | ProseMirror document → HTML |
+| `validateHtml(html, options?)` | did this HTML survive the schema unchanged? |
+
+`createQtiSchema(options?)` builds the schema they default to. Pass `include: ['qti-order-interaction']`
+to narrow it to one interaction, or `schema` to supply your own.
+
+```js
+const doc = qti3ToPm(readFileSync('ITEM001.xml', 'utf8'), { assetBasePath: '/qti/kennisnet' });
+const xml = pmToQti3(doc);
+```
+
+`htmlToPm` needs the document attributes HTML cannot carry:
+
+```js
+htmlToPm('<p>Water boils at 100 degrees.</p>', { identifier: 'ITEM001', title: 'Boiling point' });
+```
+
+## `validateHtml` — the generator loop
+
+This is the function the whole thing exists for. A generator writes HTML; this says whether the
+schema kept it, and what it changed if not.
+
+```js
+const result = validateHtml('<qti-prompt><table>…</table></qti-prompt>', { identifier: 'X', title: 'X' });
+
+result.valid          // false
+result.changes        // what the schema added and removed, with paths
+result.normalizedHtml // the corrected form — hand this back to the generator
+result.suspect        // true when the difference is probably OUR bug, not the input's
+```
+
+For that input the report is two lines, both actionable:
+
+```
+removed <qti-prompt> at qti-prompt[0] was dropped — the schema does not allow it there
+added   <p> appeared at table[0]/tbody[0]/tr[0]/td[0]/p[0] — the schema inserted it
+```
+
+<div style={{ borderLeft: '3px solid #888', paddingLeft: '1rem', margin: '1rem 0' }}>
+  **Why it cannot just parse and catch an error.** ProseMirror's parser never rejects invalid
+  markup — it *coerces*, silently dropping what does not fit and lifting what sits in the wrong
+  place, and it never throws. So validation compares the **input** against what the schema gave
+  back. The difference is the report.
+
+  An earlier version of this compared the round trip against *itself*, which measures idempotency
+  rather than fidelity, and duly called a `<table>` nested in a `<qti-prompt>` valid.
+</div>
+
+Content is **lifted, not discarded**. In that example the prompt is what disappears; the table and
+its text survive. So the corrected form is usable rather than lossy — a structural mistake does not
+cost the author their words.
+
+### Only added and removed — moves are deliberately silent
+
+An earlier version reported moves too, and it was noise. Lifting that table moves its `tbody`, `tr`
+and `td` along with it, so one conceptual event became four "moved" lines, none of which is the part
+worth fixing. Elements are still matched by path, so a moved element is recognised as the same
+element and stays out of the report. What is left is the signal: this disappeared, that appeared.
+
+### Why not an off-the-shelf differ
+
+Checked. [`diff-dom`](https://www.npmjs.com/package/diff-dom) is patch-oriented — it emits actions to
+*apply* (`relocateGroup`, `route: [0,1]`), which would need translating into author-facing language
+anyway. [`visual-dom-diff`](https://github.com/Teamwork/visual-dom-diff) annotates a fragment for
+humans to read, not a machine. `udomdiff` and `domdiff`, by linkedom's own author, are µhtml's
+rendering engine — they answer "how do I make A look like B", not "what did the schema change".
+`prosemirror-changeset` derives changes from *steps*, and we have two documents and no steps.
+
+There is also a framing reason: the generator writes HTML, so the feedback has to be in HTML. "Your
+`<qti-prompt>` was dropped" is actionable; "qtiSimpleMatchSet inserted at pos 42" asks it to
+understand a model it never sees.
+
+### Read this before trusting a failure
+
+`pm → html → pm` is **not** yet an identity on the regression corpus. Match and associate gain nodes
+on re-parse — the parser fills required content the serialized form no longer distinguishes. When a
+difference involves those, `result.suspect` is `true`, and the failure is more likely ours than the
+input's. Do not feed a suspect result back to a generator as if it were its mistake.
+
+## What is proven, and how
+
+`packages/prose-qti/src/node/node-conversion.node.test.ts` — 27 tests in the `node` Vitest project,
+so `just test` and the pre-commit hook both run them.
+
+- **All 17 ITEM fixtures** roundtrip `qti3ToPm → pmToQti3` and reproduce the same committed snapshots
+  the browser tests assert against, one test per item.
+- The DOM shim installs correctly, including `createDocument` accepting a root element name.
+- `validateHtml` accepts prose, lists and layout wrappers; rejects a table in a prompt with a usable
+  diff.
+
+Those tests import the **built package**, not source. That is deliberate: source resolves through
+tsconfig paths and would pass while the shipped artifact failed — which is exactly what happened
+before the bundle existed.
+
+`apps/e2e/verify-node-conversion.mjs` runs the same surface under plain `node`, with no test runner
+in the way:
+
+```bash
+cd apps/e2e && node verify-node-conversion.mjs
+```
+
+## Why `./node` is bundled
+
+`@qti-components/*` dists contain extensionless relative imports — `from './elements/qti-gap'` —
+because they compile with `moduleResolution: bundler`, which permits that and emits it verbatim.
+Legal TypeScript, legal for a bundler, and rejected outright by Node's ESM resolver.
+
+So `prose-qti`'s build runs `tsc` as before and then bundles **just this entry point** with esbuild,
+resolving those specifiers at build time. `prosemirror-*` and `linkedom` stay external — inlining
+prosemirror-model would give a consumer a second private copy, and ProseMirror compares node types
+by identity.
+
+It is bundled from `dist`, not from source: pointing esbuild at the TypeScript would make it
+re-compile the descriptor graph including the Lit components, and Lit's decorators do not survive an
+arbitrary transpiler ("Unsupported decorator location: field").
+
+## Known limitations
+
+- **`pm → html → pm` identity does not hold** — 11/17 with a per-item schema, 0/17 with the full
+  one. The cause is not yet isolated; narrowing the schema was tested and ruled out. This is the
+  open problem blocking a trustworthy generator loop.
+- **linkedom drops the `xmlns:xsi` declaration** while keeping `xsi:schemaLocation`, so emitted QTI
+  is namespace-incomplete. The document model is unaffected — all 17 fixtures still roundtrip — but
+  output headed for an XSD validator needs it restored.
+- **`.path()` is not idempotent.** Re-importing exported output re-applies `assetBasePath`, giving
+  `/qti/kennisnet//qti/kennisnet/…`. Do not pass it on a re-import.

@@ -27,9 +27,11 @@ export {
   type RoundtripExportXmlOptions,
 } from './export.js';
 
-export { ensureInteractionPrompts } from './ensure-interaction-prompts.js';
 export {
   defaultRoundtripExportTransforms,
   stripEmptyPrompts,
   type RoundtripExportTransform,
 } from './strip-empty-prompts.js';
+export * from './convert.js';
+export type { HtmlChange, HtmlChangeKind } from './diff-html.js';
+export * from './validate.js';

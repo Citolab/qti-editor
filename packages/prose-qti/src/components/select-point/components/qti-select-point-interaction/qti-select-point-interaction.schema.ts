@@ -80,7 +80,7 @@ function buildImgSelectPointNode(schema: Schema, node: HTMLElement): ProseMirror
 
 export const qtiSelectPointInteractionNodeSpec: NodeSpec = {
   group: 'block',
-  content: 'qtiPrompt imgSelectPoint',
+  content: 'qtiPrompt? imgSelectPoint',
   selectable: true,
   isolating: true,
   attrs: {

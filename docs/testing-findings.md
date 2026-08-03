@@ -224,8 +224,10 @@ A QTI `pair` is **unordered**: `A O` and `O A` denote the same association. Down
 - **Pinned by**: two tests in `item017-qti-associate-interaction.regression.browser.test.ts` — one on runtime scoring, one asserting the exported `base-type` directly. Flip both when fixed.
 - **Where to look**: the associate composer metadata / `composeAssociateInteractionElement`, plus `roundtripAssociate` (which is itself dead in the real import path — finding #7).
 
-## 9. `schema:check` and `typecheck` were not enforced — **fixed**
+## 9. `schema:check` and `typecheck` were not enforced — **fixed, then obsolete**
 
-`pnpm schema:check` exists specifically to catch drift between `schema/content-model.json` and the generated model, and was never wired into CI. Likewise three packages define `typecheck` scripts that nothing ran. Both are now CI steps.
+`pnpm schema:check` existed specifically to catch drift between `schema/content-model.json` and the generated model, and was never wired into CI. Likewise three packages define `typecheck` scripts that nothing ran. Both were made CI steps.
+
+`schema:check` is since **gone**, along with the generated content model it checked. That export existed for out-of-process consumers who never arrived; the conversion runs in Node now and callers build the real schema with `createQtiSchema()`. What remains in `schema/` runs as ordinary browser tests. The `typecheck` half of this finding stands.
 
 A single root `tsc -p tsconfig.json` is **not** viable (161 errors from `apps/*` compiler-option conflicts — missing `jsx`, duplicate `HTMLElementTagNameMap`); typechecking fans out per project instead.

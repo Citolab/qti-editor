@@ -42,8 +42,9 @@
       "types": "./dist/schema/*",
       "default": "./dist/schema/*"
     },
-    "./content-model": {
-      "default": "./dist/content-model.json"
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "default": "./dist/node/index.js"
     },
     "./integration": {
       "types": "./dist/integration/index.d.ts",
@@ -248,7 +249,7 @@
     "./core-css.css": "./dist/core-css/core-css.css"
   },
   "scripts": {
-    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css && cp src/core-css/core-css.css dist/core-css/core-css.css && cp ../../schema/content-model.json dist/content-model.json",
+    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css && cp src/core-css/core-css.css dist/core-css/core-css.css && node scripts/bundle-node.mjs",
     "typecheck": "tsc --noEmit -p ./tsconfig.json",
     "clean": "rm -rf dist"
   },
@@ -267,7 +268,11 @@
     "@qti-components/order-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/order-interaction@509fcae",
     "@qti-components/select-point-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/select-point-interaction@509fcae",
     "@qti-components/text-entry-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@509fcae",
-    "@qti-components/transformers": "https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@509fcae"
+    "@qti-components/transformers": "https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@509fcae",
+    "linkedom": "^0.18.13",
+    "prosemirror-schema-basic": "^1.2.4",
+    "prosemirror-schema-list": "^1.5.1",
+    "prosemirror-tables": "^1.8.5"
   },
   "peerDependencies": {
     "lit": "^3.3.2",
@@ -283,6 +288,7 @@
     }
   },
   "devDependencies": {
+    "esbuild": "^0.27.7",
     "typescript": "^5.0.0"
   },
   "files": [

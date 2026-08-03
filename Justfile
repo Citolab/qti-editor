@@ -41,20 +41,6 @@ vrt:
 screenshots:
 	pnpm run test:vrt:update
 
-# Regenerate the schema fixtures from the editor's real schema, then verify them. Run after any
-# *.schema.ts change — and READ the diff: a changed fixture is a changed editor contract, and
-# content-model.json is consumed outside this repo, including by LLM generation.
-[group('primary')]
-schema:
-	pnpm run schema:build
-	pnpm run schema:check
-
-# Verify only — fails if any fixture, content-model.json or the notes have drifted.
-# Runs the same test `just test` does; it is here as a fast targeted alias.
-[group('primary')]
-schema-check:
-	pnpm run schema:check
-
 # Linked dev: yalc-couple local qti-components + run its build→yalc:push watcher alongside the qti-prosemirror-item app (HMR / full refresh on push)
 [group('primary')]
 yalc:

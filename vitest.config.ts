@@ -106,14 +106,46 @@ export default defineConfig({
               },
             },
           ]) as any[]),
+      /*
+       * Node-environment tests. Everything else in this repo runs in Chromium, which is right for
+       * the editor but cannot prove the one thing `@citolab/prose-qti/node` claims: that the
+       * conversion works with no browser at all. A browser test would pass with the real DOM in
+       * place and tell us nothing.
+       *
+       * The tests import the BUILT package (`@citolab/prose-qti/node`), not source, so they
+       * exercise the artifact a consumer installs — including its esbuild bundle, which is what
+       * makes it loadable by plain Node at all.
+       */
+      {
+        extends: true,
+        /*
+         * Resolve `@citolab/prose-qti/node` to the BUILT bundle, not to source.
+         *
+         * tsconfig maps `@citolab/prose-qti/*` to `packages/prose-qti/src/*`, which is right for
+         * every other project — but it would make this one test source and pass while the shipped
+         * artifact failed. That is not hypothetical: source pulls the @qti-components dists in
+         * directly, and Node rejects their extensionless relative imports. Only the esbuild step in
+         * that package's build resolves them, so only the built file proves anything.
+         */
+        resolve: {
+          alias: {
+            '@citolab/prose-qti/node': path.join(dirname, 'packages/prose-qti/dist/node/index.js')
+          }
+        },
+        test: {
+          name: 'node',
+          environment: 'node',
+          include: ['packages/**/src/**/*.node.test.ts']
+        }
+      },
       {
         extends: true,
         test: {
           name: 'browser',
-          // `schema/` is in here because the schema fixture gate lives there and must run through
-          // Vite: building the real editor schema imports the real components, and those are built
-          // for a bundler. The same check as a standalone tsx script died on a Vite-only stylesheet
-          // specifier in a dependency's dist — see the header of content-model.browser.test.ts.
+          // `schema/` is in here because its tests build the REAL editor schema, which imports the
+          // real components, and those are built for a bundler — so they must run through Vite. The
+          // same construction as a standalone tsx script died on a Vite-only stylesheet specifier in
+          // a dependency's dist.
           include: [
             'packages/**/src/**/*.browser.test.ts',
             'apps/**/*.browser.test.ts',
