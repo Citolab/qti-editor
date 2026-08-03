@@ -51,6 +51,9 @@ import {
 } from 'prosemirror-tables';
 import { imagePlugin, startImageUpload } from 'prosemirror-image-plugin';
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
+// qti-layout-* wrappers: the node spec and the lock both come from the package now. Keeping the
+// wrappers immutable is not this app's decision to make differently from every other host.
+import { qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
 
 import { attributesPanelPlugin } from './components/attributes-panel-plugin.js';
 import {
@@ -62,9 +65,6 @@ import {
   exportQtiItem
 } from './prosemirror-qti.js';
 import { appSchema as schema, imagePluginSettings } from './schema.js';
-// EXPERIMENT: lockable qti-layout-* div wrappers (non-QTI affordance).
-// The node spec is owned by schema.ts; only the plugin is imported here.
-import { divLockPlugin } from './components/qti-layout-div.js';
 // Example app-level widget: edit a selected text-entry interaction's correct
 // response with a plain <textarea> (the package ships only the data model).
 import { textEntryWidgetPlugin } from './components/text-entry-widget.js';
@@ -202,8 +202,8 @@ const editorPlugins: Plugin[] = [
   ...qtiPlugins,
   // Example: textarea widget for a selected text-entry interaction's correct response.
   textEntryWidgetPlugin(),
-  // EXPERIMENT: keep qti-layout-* divs immutable while their content stays editable.
-  divLockPlugin,
+  // Keep qti-layout-* wrappers immutable while their content stays editable.
+  qtiLayoutDivLockPlugin,
   // Plugin-provided image upload support: toolbar picker + paste/drop image files.
   imagePlugin(imagePluginSettings),
   ...tableListPlugins,

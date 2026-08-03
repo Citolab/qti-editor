@@ -45,7 +45,7 @@ item; `createRegressionEditor({ descriptor, sourceXML, transforms, extraNodes? }
 **The base owns** the basic QTI schema (`qtiBasicNodes` / `qtiBasicMarks`), item furniture
 (`qtiLayoutDiv`, rubric block, `doc` identifier/title attrs) and the plugin stack: `history()`,
 undo/redo + constrained Home/End keymap, `baseKeymap`, the descriptor's own `pluginFactories`,
-`nodeAttrsSyncPlugin`, `blockSelectPlugin`, `divLockPlugin`, and the attributes panel with an
+`nodeAttrsSyncPlugin`, `blockSelectPlugin`, `qtiLayoutDivLockPlugin`, and the attributes panel with an
 `editableAttrs` allowlist derived from the descriptor.
 
 The base also imports the **shared child custom elements** — `qti-prompt`, `qti-simple-choice`,

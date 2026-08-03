@@ -8,9 +8,8 @@
  * but they cannot be removed, replaced, or reordered. Everything below is
  * free-form `block*` content.
  *
- * Pattern adapted from apps/qti-prosemirror-item/src/components/qti-layout-div.ts
- * (`divLockPlugin`): a `filterTransaction` that rejects any transaction which
- * would change the locked prefix.
+ * Pattern adapted from `qtiLayoutDivLockPlugin` in @citolab/prose-qti's schema/qti-layout-div.ts:
+ * a `filterTransaction` that rejects any transaction which would change the locked prefix.
  */
 
 import { defineNodeSpec, definePlugin, union, type Extension, type NodeJSON } from 'prosekit/core';

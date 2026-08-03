@@ -1,4 +1,6 @@
-import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+import { Plugin } from 'prosemirror-state';
+
+import type { DOMOutputSpec, Node as ProseMirrorNode, NodeSpec } from 'prosemirror-model';
 
 /**
  * The QTI layout wrappers — `<div class="qti-layout-row">` and `<div class="qti-layout-colN">`.
@@ -15,8 +17,27 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
  *   - The spec existed as **two byte-identical copies**, in QTI-Editor's ProseMirror app and in the
  *     Angular editor. Diffed and confirmed identical before this move.
  *
- * So it is item-format vocabulary. The document model belongs to the package; only the *editing
- * behaviour* around it (the lock plugin that stops the wrappers being edited away) belongs to an app.
+ * So it is item-format vocabulary, and the document model belongs to the package.
+ *
+ * ## The lock came with it
+ *
+ * An earlier split kept `qtiLayoutDivLockPlugin` in the app, on the reasoning that a document model
+ * is the package's job while editing behaviour is the host's. That line does not survive contact:
+ *
+ *   - Both known hosts want the same answer, and both had the same plugin, verbatim. The node spec
+ *     was moved here for exactly that reason one round earlier; leaving the plugin behind just
+ *     restarted the clock on the same drift.
+ *   - The boundary is not where it was drawn. `isolating` and `selectable: false` below are already
+ *     editing behaviour, decided here. The lock is the third clause of that same sentence — without
+ *     it those two are advisory, since a selection spanning the wrapper still deletes it.
+ *   - Nothing can author one. The wrappers arrive from imported QTI and no editor offers a command
+ *     to insert or remove them, so "how many are there" is a property of the imported item, not a
+ *     thing an author decides. A host that shipped the node without the lock would let an author
+ *     destroy structure they cannot recreate.
+ *
+ * It is a separate export rather than something automatic, so a host that genuinely wants editable
+ * grids simply does not add it. Opting out is one omitted array entry; opting in, before, was
+ * reimplementing this file.
  *
  * ## What omitting it costs
  *
@@ -70,3 +91,42 @@ export const qtiLayoutDivNodeSpec: NodeSpec = {
   isolating: true,
   selectable: false
 };
+
+/** How many layout wrappers this document contains. */
+function layoutCount(doc: ProseMirrorNode): number {
+  let count = 0;
+  doc.descendants(node => {
+    if (node.type.name === 'qtiLayoutDiv') count += 1;
+    return true;
+  });
+  return count;
+}
+
+/**
+ * Keep the layout wrappers exactly as the imported item had them.
+ *
+ * Rejects any transaction that changes how many `qtiLayoutDiv` nodes the document contains.
+ * Everything else still works: editing inside a column, and changing a wrapper's own `class`, both
+ * leave the count alone and pass through.
+ *
+ * ## Why a count, and not a stricter check
+ *
+ * A count is the weakest invariant that stops the only failure that matters — a wrapper being
+ * deleted, usually as collateral in a selection that spanned it, leaving an author with structure
+ * they have no command to rebuild. Comparing positions or classes instead would reject legitimate
+ * edits inside the columns, which is most of what an author does in these items.
+ *
+ * `filterTransaction` is reject-only by design. It cannot repair or insert; a plugin that needs to
+ * add a node wants `appendTransaction`. Protecting is exactly what is wanted here.
+ *
+ * Add it to the plugin list to opt in:
+ *
+ *     import { qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
+ *     plugins: [...otherPlugins, qtiLayoutDivLockPlugin]
+ */
+export const qtiLayoutDivLockPlugin = new Plugin({
+  filterTransaction(tr, state) {
+    if (!tr.docChanged) return true;
+    return layoutCount(state.doc) === layoutCount(tr.doc);
+  }
+});

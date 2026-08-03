@@ -66,7 +66,16 @@ So it is item-format vocabulary that merely happens to live in an app. Split it:
 | | belongs |
 |---|---|
 | `qtiLayoutDivNodeSpec` | **prose-qti** — document model is the package's job |
-| `divLockPlugin` | the app — that is editing behaviour |
+| `qtiLayoutDivLockPlugin` | **prose-qti** too — see below |
+
+The split originally kept the lock in the app, on the reasoning that editing behaviour is the
+host's. That did not survive: both hosts wanted the same answer and both carried the same plugin
+verbatim, so leaving it behind restarted the same drift the node-spec move had just ended. The
+boundary was also mis-drawn — `isolating` and `selectable: false` are already editing behaviour
+decided in the spec, and without the lock they are merely advisory, since a selection spanning a
+wrapper still deletes it. Nothing can author a wrapper either: they arrive from imported QTI and no
+editor offers a command to make one, so an unlocked host lets an author destroy structure they
+cannot rebuild. It is a separate export, so opting out is one omitted array entry.
 
 Measured consequence: with it, Node reproduces the snapshots **17/17**; without it, **9/17**, failing
 exactly the 8 fixtures containing `qti-layout-*`.

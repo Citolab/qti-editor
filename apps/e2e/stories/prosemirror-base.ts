@@ -35,6 +35,7 @@ import {
   constrainedShiftHome
 } from '@citolab/prose-qti/components/shared';
 import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-roundtrip';
+import { qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
 
 // Relative rather than by package specifier: `@qti-editor/prosemirror-item` has no tsconfig path
 // mapping and is not linked into node_modules, so the specifier form does not resolve. The story
@@ -42,8 +43,6 @@ import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-rou
 // `*.stories.ts` in eslint.config, and this module is not a story file.
 /* eslint-disable-next-line import/no-relative-packages */
 import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
-/* eslint-disable-next-line import/no-relative-packages */
-import { divLockPlugin } from '../../qti-prosemirror-item/src/components/qti-layout-div';
 
 /*
  * Shared child custom elements.
@@ -201,7 +200,7 @@ export function createRegressionEditor({
     ...(descriptor.pluginFactories ?? []).map(factory => factory()),
     nodeAttrsSyncPlugin,
     blockSelectPlugin,
-    divLockPlugin
+    qtiLayoutDivLockPlugin
   ];
 
   // Editable-attribute allowlist for the panel, sourced from the interaction's attribute-panel

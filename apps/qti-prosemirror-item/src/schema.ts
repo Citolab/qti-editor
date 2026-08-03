@@ -40,8 +40,7 @@ import {
   qtiGapNodeSpec,
   qtiGapTextNodeSpec
 } from '@citolab/prose-qti/components/shared';
-
-import { qtiLayoutDivNodeSpec } from './components/qti-layout-div.js';
+import { qtiLayoutDivNodeSpec } from '@citolab/prose-qti/schema';
 
 export const imagePluginSettings = {
   ...defaultSettings,
