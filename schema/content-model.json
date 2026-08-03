@@ -67,7 +67,7 @@
     },
     "qtiSelectPointInteraction": {
       "tagName": "qti-select-point-interaction",
-      "content": "qtiPrompt imgSelectPoint",
+      "content": "qtiPrompt? imgSelectPoint",
       "group": "block",
       "isolating": true,
       "selectable": true,
@@ -97,7 +97,7 @@
     },
     "qtiOrderInteraction": {
       "tagName": "qti-order-interaction",
-      "content": "qtiPrompt qtiSimpleChoice+",
+      "content": "qtiPrompt? qtiSimpleChoice+",
       "group": "block",
       "defining": true,
       "isolating": true,
@@ -129,7 +129,7 @@
     },
     "qtiMatchInteraction": {
       "tagName": "qti-match-interaction",
-      "content": "qtiPrompt qtiSimpleMatchSet{2}",
+      "content": "qtiPrompt? qtiSimpleMatchSet{2}",
       "group": "block",
       "defining": true,
       "isolating": true,
@@ -153,7 +153,7 @@
     },
     "qtiMatchInteractionTabular": {
       "tagName": "qti-match-interaction",
-      "content": "qtiPrompt qtiSimpleMatchSet{2}",
+      "content": "qtiPrompt? qtiSimpleMatchSet{2}",
       "group": "block",
       "defining": true,
       "isolating": true,
@@ -290,7 +290,7 @@
     },
     "qtiGapMatchInteraction": {
       "tagName": "qti-gap-match-interaction",
-      "content": "qtiPrompt qtiGapText{2,} paragraph+",
+      "content": "qtiPrompt? qtiGapText{2,} paragraph+",
       "group": "block",
       "defining": true,
       "isolating": true,
@@ -317,7 +317,7 @@
     },
     "qtiExtendedTextInteraction": {
       "tagName": "qti-extended-text-interaction",
-      "content": "qtiPrompt",
+      "content": "qtiPrompt?",
       "group": "block",
       "defining": true,
       "isolating": true,
@@ -365,7 +365,7 @@
     },
     "qtiChoiceInteraction": {
       "tagName": "qti-choice-interaction",
-      "content": "qtiPrompt qtiSimpleChoice+",
+      "content": "qtiPrompt? qtiSimpleChoice+",
       "group": "block",
       "defining": true,
       "isolating": true,
@@ -426,7 +426,7 @@
     },
     "qtiAssociateInteraction": {
       "tagName": "qti-associate-interaction",
-      "content": "qtiPrompt qtiSimpleAssociableChoice+",
+      "content": "qtiPrompt? qtiSimpleAssociableChoice+",
       "group": "block",
       "defining": true,
       "isolating": true,

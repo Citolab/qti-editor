@@ -159,13 +159,17 @@ export const NODES = {
   // All of them are `defining` and `isolating`: an interaction is a unit that paste must not
   // dissolve and that selection must not escape by accident.
   //
-  // XSD: every one of these has `qti-prompt?` — optional. The editor requires it, so an
-  // interaction always has a stable first child to land the cursor in and a place for the
-  // question text to live. An empty prompt renders as its placeholder, not as nothing.
+  // The prompt is optional here, matching the XSD's `qti-prompt?`.
+  //
+  // It used to be required, which bought a real editing affordance — an interaction always had a
+  // stable first child to land the cursor in. The price was a pair of transforms pulling in
+  // opposite directions: one synthesised an empty prompt on import so a conforming item could
+  // satisfy the schema, the other stripped it again on export. Both existed only to serve a
+  // constraint the standard does not impose, so both are gone.
 
   qtiChoiceInteraction: {
     tagName: 'qti-choice-interaction',
-    content: 'qtiPrompt qtiSimpleChoice+',
+    content: 'qtiPrompt? qtiSimpleChoice+',
     group: 'block',
     defining: true,
     isolating: true,
@@ -181,7 +185,7 @@ export const NODES = {
 
   qtiOrderInteraction: {
     tagName: 'qti-order-interaction',
-    content: 'qtiPrompt qtiSimpleChoice+',
+    content: 'qtiPrompt? qtiSimpleChoice+',
     group: 'block',
     defining: true,
     isolating: true,
@@ -197,7 +201,7 @@ export const NODES = {
 
   qtiAssociateInteraction: {
     tagName: 'qti-associate-interaction',
-    content: 'qtiPrompt qtiSimpleAssociableChoice+',
+    content: 'qtiPrompt? qtiSimpleAssociableChoice+',
     group: 'block',
     defining: true,
     isolating: true,
@@ -218,7 +222,7 @@ export const NODES = {
   // XSD: permits an empty match set (`minOccurs="0"`) — see qtiSimpleMatchSet.
   qtiMatchInteraction: {
     tagName: 'qti-match-interaction',
-    content: 'qtiPrompt qtiSimpleMatchSet{2}',
+    content: 'qtiPrompt? qtiSimpleMatchSet{2}',
     group: 'block',
     defining: true,
     isolating: true,
@@ -236,7 +240,7 @@ export const NODES = {
   // when it is present. Two PM nodes, one markup element.
   qtiMatchInteractionTabular: {
     tagName: 'qti-match-interaction',
-    content: 'qtiPrompt qtiSimpleMatchSet{2}',
+    content: 'qtiPrompt? qtiSimpleMatchSet{2}',
     group: 'block',
     defining: true,
     isolating: true,
@@ -256,7 +260,7 @@ export const NODES = {
   // degenerate interaction with only one possible answer.
   qtiGapMatchInteraction: {
     tagName: 'qti-gap-match-interaction',
-    content: 'qtiPrompt qtiGapText{2,} paragraph+',
+    content: 'qtiPrompt? qtiGapText{2,} paragraph+',
     group: 'block',
     defining: true,
     isolating: true,
@@ -294,7 +298,7 @@ export const NODES = {
   // Prompt only — the response is a textarea the runtime supplies, with no authored content.
   qtiExtendedTextInteraction: {
     tagName: 'qti-extended-text-interaction',
-    content: 'qtiPrompt',
+    content: 'qtiPrompt?',
     group: 'block',
     defining: true,
     isolating: true,
@@ -317,7 +321,7 @@ export const NODES = {
   // Note this one is `isolating` but not `defining`.
   qtiSelectPointInteraction: {
     tagName: 'qti-select-point-interaction',
-    content: 'qtiPrompt imgSelectPoint',
+    content: 'qtiPrompt? imgSelectPoint',
     group: 'block',
     selectable: true,
     isolating: true,
