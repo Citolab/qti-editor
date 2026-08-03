@@ -1,10 +1,10 @@
 ---
 title: QTI Base Schema
-description: Shared ProseMirror base-schema nodes and marks for QTI hosts.
+description: Shared ProseMirror base-schema nodes and marks, plus the QTI layout-wrapper node and its lock plugin, for QTI hosts.
 slug: docs/packages/qti-base-schema
 ---
 
-`@citolab/prose-qti/schema` provides `qtiBasicNodes` and `qtiBasicMarks` — a drop-in replacement for importing `prosemirror-schema-basic` directly when you assemble a raw ProseMirror schema for a QTI host. It is also re-exported from the package root (`@citolab/prose-qti`).
+`@citolab/prose-qti/schema` provides `qtiBasicNodes` and `qtiBasicMarks` — a drop-in replacement for importing `prosemirror-schema-basic` directly when you assemble a raw ProseMirror schema for a QTI host — plus the `qtiLayoutDiv` node spec and its lock plugin, covered below. `qtiBasicNodes` and `qtiBasicMarks` are also re-exported from the package root (`@citolab/prose-qti`).
 
 ## When to use this
 
@@ -43,6 +43,28 @@ export const appSchema = new Schema({
 ```
 
 Only the node names you list in the `nodes` object end up in the schema — `qtiBasicNodes` and `createQtiBasicNodes()` are both plain lookup objects, not a schema fragment applied automatically. Restate `content`/`group` for each node as your document topology requires, the same as for any other node spec in this repo (see the [TypeScript Integration](/docs/frameworks/vanilla/) guide).
+
+## Layout wrappers: `qtiLayoutDivNodeSpec` and `qtiLayoutDivLockPlugin`
+
+QTI items can arrive with `<div class="qti-layout-row">` / `qti-layout-colN` wrappers, styled by the theme's `@media (width <= 767px)` responsive rule. These are author-written item content, not editor furniture, so the document model for them lives in this package rather than in a host app:
+
+- `qtiLayoutDivNodeSpec` — a single block-level `NodeSpec` shared by both the row and column wrappers (the distinction is carried entirely by the preserved `class` string). It is `isolating` and `selectable: false`, so edits and Backspace/Delete joins don't cross the wrapper boundary and the wrapper itself can't be node-selected.
+- `qtiLayoutDivLockPlugin` — a ProseMirror plugin that rejects any transaction changing how many `qtiLayoutDiv` nodes the document contains. Add it to your plugin list to opt in:
+
+  ```ts
+  import { qtiLayoutDivNodeSpec, qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
+
+  const schema = new Schema({
+    nodes: {
+      // ...
+      qtiLayoutDiv: { ...qtiLayoutDivNodeSpec, content: 'block+', group: 'block' },
+    },
+  });
+
+  const plugins = [/* ...other plugins */, qtiLayoutDivLockPlugin];
+  ```
+
+Without the plugin, `isolating`/`selectable: false` are only advisory — a selection spanning a wrapper can still delete it, and nothing in the editor can recreate one afterward, since layout wrappers only ever arrive via import and no interaction offers a command to author one. The plugin is a separate export rather than something applied automatically, so a host that genuinely wants editable grids can opt out by omitting it.
 
 ## Notes
 
