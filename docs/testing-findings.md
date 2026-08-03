@@ -230,4 +230,6 @@ A QTI `pair` is **unordered**: `A O` and `O A` denote the same association. Down
 
 `schema:check` is since **gone**, along with the generated content model it checked. That export existed for out-of-process consumers who never arrived; the conversion runs in Node now and callers build the real schema with `createQtiSchema()`. What remains in `schema/` runs as ordinary browser tests. The `typecheck` half of this finding stands.
 
+An out-of-process consumer that wants the grammar as data now has `schemaToJson()` (`@citolab/prose-qti/schema` and `/node`) instead — a function returning a value, not a generator writing a committed file. No fixture gating comes back with it: a fixture of a projection has to be re-blessed whenever the schema moves, which is exactly the drift-hiding failure mode this finding is about.
+
 A single root `tsc -p tsconfig.json` is **not** viable (161 errors from `apps/*` compiler-option conflicts — missing `jsx`, duplicate `HTMLElementTagNameMap`); typechecking fans out per project instead.
