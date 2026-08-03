@@ -5,6 +5,16 @@ import { QtiGapText } from '@qti-components/interactions-core';
 
 import type { CSSResultGroup } from 'lit';
 
+/**
+ * Editor component for qti-gap-text — one draggable choice in the pool of a
+ * `qti-gap-match-interaction`.
+ *
+ * @customElement qti-gap-text
+ * @attr {string} identifier - Required. Identifies this choice within its interaction; it is
+ * the first half of every `gaptext gap` pair in the interaction's answer key.
+ * @attr {number} match-max - Maximum number of gaps this choice may be associated with. `0`
+ * means unlimited — the choice can be reused in every gap.
+ */
 export class QtiGapTextEdit extends LitElement {
   /**
    * Upstream's stylesheet, plus the authoring-only additions — the same shape

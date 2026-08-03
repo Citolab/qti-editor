@@ -10,6 +10,20 @@ import {
 import styles from './qti-inline-choice-interaction.styles.js';
 
 
+/**
+ * Editor component for qti-inline-choice-interaction — a dropdown embedded in running text,
+ * holding `qti-inline-choice` options.
+ *
+ * @customElement qti-inline-choice-interaction
+ * @attr {string} response-identifier - Required. Identifier of the response variable this
+ * interaction is bound to; the response variable has base-type `identifier` and single
+ * cardinality — an inline choice always takes exactly one answer.
+ * @attr {string} data-prompt - Editor-specific. Custom text rendered while the selection is in
+ * its unselected state. When unset, the platform default placeholder is used.
+ * @attr {string} correct-response - Answer key held on the element while authoring. The
+ * `identifier` of the single correct `qti-inline-choice`. Converted to and from
+ * `qti-correct-response` on import/export.
+ */
 export class QtiInlineChoiceInteraction extends InteractionPanel {
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,

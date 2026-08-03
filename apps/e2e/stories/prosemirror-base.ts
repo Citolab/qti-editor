@@ -63,7 +63,7 @@ import '@citolab/prose-qti/components/shared/components/qti-simple-associable-ch
 import '@citolab/prose-qti/components/shared/components/qti-simple-match-set/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-gap/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-gap-text/register.js';
-import '@citolab/prose-qti/components/shared/components/qti-fake-drag/register.js';
+import '@citolab/prose-qti/components/shared/components/dummy-drag/register.js';
 
 /* Column-resize handle and cell-selection styling for the table plugin. */
 import 'prosemirror-tables/style/tables.css';

@@ -35,6 +35,11 @@ export interface QtiInlineChoiceFocusDetail {
  * The option being inline-level is why the dropdown's layout hinges on the menu's `white-space`:
  * with `normal` each 100%-wide option wraps onto its own line, with `nowrap` they all pin to one
  * line. See qti-inline-choice-interaction.styles.ts, which resets it on [part=menu].
+ *
+ * @customElement qti-inline-choice
+ * @attr {string} identifier - Required. Identifies this option within its
+ * `qti-inline-choice-interaction`; it is the value that appears in the interaction's answer key
+ * and in the candidate's response.
  */
 export class QtiInlineChoiceEdit extends CorrectResponseClickMixin(QtiInlineChoiceBase) {
   static override styles: CSSResultGroup = [

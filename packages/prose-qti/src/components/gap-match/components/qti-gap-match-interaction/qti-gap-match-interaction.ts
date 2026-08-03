@@ -60,12 +60,28 @@ export interface GapAssociationChangeDetail {
  * Editor component for qti-gap-match-interaction. Authoring is inline:
  * click a gap-text source → every empty `<qti-gap>` pulses red-dashed (via
  * `:state(pending)` on the gap host) → click a gap to commit. Click the ×
- * inside a filled gap's `<qti-fake-drag>` to clear it. Escape / outside
+ * inside a filled gap's `<dummy-drag>` to clear it. Escape / outside
  * click cancels pending.
  *
  * Selection state lives in {@link PendingSelectionController}; this class
  * owns the association map, label cache, lightdom visual sync, and change
  * event emission.
+ *
+ * @customElement qti-gap-match-interaction
+ * @attr {string} response-identifier - Required. Identifier of the response variable this
+ * interaction is bound to; the response variable has base-type `directedPair`.
+ * @attr {number} max-associations - Maximum number of gaps the candidate may fill. `0` means
+ * unlimited.
+ * @attr {number} min-associations - Minimum number of gaps the candidate must fill before the
+ * interaction counts as answered.
+ * @attr {boolean} shuffle - Whether the delivery engine may randomise the order of the
+ * `qti-gap-text` choices. Honoured at delivery, not in the editor.
+ * @attr {string} class - Shared interaction vocabulary for the presentation of the choice pool
+ * and the gaps.
+ * @attr {string} correct-response - Answer key held on the element while authoring. One
+ * `gaptext gap` pair per filled gap, space inside the pair and comma between pairs
+ * (`ht_zuur gap_low,ht_basisch gap_high`); the `qti-gap-text` identifier comes first.
+ * Converted to and from `qti-correct-response` on import/export.
  */
 export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
   Interaction,
@@ -120,7 +136,7 @@ export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
     this.parseCorrectResponse();
     this.buildLabelCache();
     this.applyVisualState();
-    this.addEventListener('fake-drag-remove', this.onFakeDragRemove as EventListener);
+    this.addEventListener('dummy-drag-remove', this.onFakeDragRemove as EventListener);
     void this.selection;
 
     // Watch for text content changes in gap-text elements so labels stay live.
@@ -159,7 +175,7 @@ export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
   }
 
   override disconnectedCallback(): void {
-    this.removeEventListener('fake-drag-remove', this.onFakeDragRemove as EventListener);
+    this.removeEventListener('dummy-drag-remove', this.onFakeDragRemove as EventListener);
     this.observer?.disconnect();
     this.observer = null;
     super.disconnectedCallback();
@@ -290,8 +306,8 @@ export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
 
   /**
    * Remove an association when the × button inside a filled gap's
-   * `<qti-fake-drag>` is clicked. The button stops the native click event but
-   * dispatches a composed `fake-drag-remove` CustomEvent that bubbles out of
+   * `<dummy-drag>` is clicked. The button stops the native click event but
+   * dispatches a composed `dummy-drag-remove` CustomEvent that bubbles out of
    * the gap's shadow into the interaction host. We resolve the affected gap
    * from the event's composedPath (the chip lives inside it).
    *

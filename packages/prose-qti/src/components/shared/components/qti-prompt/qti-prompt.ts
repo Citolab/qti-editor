@@ -2,6 +2,15 @@ import { html, LitElement, type CSSResultGroup } from 'lit';
 
 import { QtiPrompt } from '@qti-components/interactions-core';
 
+/**
+ * Editor component for qti-prompt — the question text of an interaction. Placed inside an
+ * interaction it assigns itself to that interaction's `prompt` slot; in the item body it simply
+ * renders where it stands.
+ *
+ * The element carries no attributes of its own; its content is the prompt.
+ *
+ * @customElement qti-prompt
+ */
 export class QtiPromptEdit extends LitElement {
   /**
    * Upstream's, with nothing added — the local qti-prompt.styles.ts was a character-for-character

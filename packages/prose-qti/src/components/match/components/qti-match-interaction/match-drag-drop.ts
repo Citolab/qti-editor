@@ -92,7 +92,7 @@ export class DragDropController implements ReactiveController {
   }
 
   hostDisconnected(): void {
-    this.host.removeEventListener('fake-drag-remove', this.onFakeDragRemove as EventListener);
+    this.host.removeEventListener('dummy-drag-remove', this.onFakeDragRemove as EventListener);
     // Clear any lingering :state(pending|filled) on target choices so a
     // switch to tabular mode doesn't leave drag-drop's affordances behind.
     for (const target of getChoices(getMatchSets(this.host)[1])) {
@@ -130,7 +130,7 @@ export class DragDropController implements ReactiveController {
 
     this.setupDone = true;
     this.buildLabelCache();
-    this.host.addEventListener('fake-drag-remove', this.onFakeDragRemove as EventListener);
+    this.host.addEventListener('dummy-drag-remove', this.onFakeDragRemove as EventListener);
     this.setupMutationObserver();
     this.triggerRender();
   }

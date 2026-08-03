@@ -126,7 +126,7 @@ qti-order-interaction qti-simple-choice {
  *   associate  qti-associate-interaction::part(drop empty)
  *
  * Order and associate previously owned a copy inside their own shadow CSS, because a slot must
- * pulse only while EMPTY and `[part='drop']:not(:has(qti-fake-drag))` was the only way to express
+ * pulse only while EMPTY and `[part='drop']:not(:has(dummy-drag))` was the only way to express
  * that — a structural filter cannot follow `::part()` from outside. Those components now emit a
  * second `empty` part token on unfilled slots instead, so `::part(drop empty)` says the same thing
  * from out here. `::part()` matches on token containment, so every existing `::part(drop)` rule in

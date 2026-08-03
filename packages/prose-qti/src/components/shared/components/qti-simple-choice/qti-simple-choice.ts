@@ -28,6 +28,11 @@ class QtiSimpleChoiceBase extends LitElement {
  * Edit mode version of qti-simple-choice that allows:
  * - Text editing in the content slot
  * - Clicking the radio/checkbox control to set correct responses
+ *
+ * @customElement qti-simple-choice
+ * @attr {string} identifier - Required. Identifies this choice within its interaction; it is
+ * the value that appears in the interaction's answer key and in the candidate's response. Read
+ * straight off the element by the parent interaction, so it is not a reactive property here.
  */
 export class QtiSimpleChoiceEdit extends CorrectResponseClickMixin(QtiSimpleChoiceBase) {
   // make sure we can text select and click the choices

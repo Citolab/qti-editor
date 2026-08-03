@@ -3,3 +3,7 @@ packages:
   - "packages/*"
   - "packages/*/*"
   - "packages/*/*/*"
+
+# The cem CLI ships as a platform binary and needs its postinstall to run.
+onlyBuiltDependencies:
+  - "@pwrs/cem"

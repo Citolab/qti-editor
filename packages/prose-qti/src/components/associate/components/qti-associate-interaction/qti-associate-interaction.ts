@@ -103,6 +103,19 @@ function splitPair(raw: string): SlotContainer | null {
 /**
  * Editor component for qti-associate-interaction.
  * Choices are shown in a pool; click a choice then click a drop slot to form a pair.
+ *
+ * @customElement qti-associate-interaction
+ * @attr {string} response-identifier - Required. Identifier of the response variable this
+ * interaction is bound to; the response variable has base-type `directedPair`.
+ * @attr {number} max-associations - Maximum number of pairs the candidate may create. `0` means
+ * unlimited.
+ * @attr {number} min-associations - Minimum number of pairs the candidate must create before the
+ * interaction counts as answered.
+ * @attr {boolean} shuffle - Whether the delivery engine may randomise the order of the choices.
+ * Honoured at delivery, not in the editor.
+ * @attr {string} correct-response - Answer key held on the element while authoring. One `source
+ * target` pair per association, space inside the pair and comma between pairs
+ * (`A P,C M`). Converted to and from `qti-correct-response` on import/export.
  */
 export class QtiAssociateInteractionEdit extends DropzoneAutoSizeMixin(
   Interaction,

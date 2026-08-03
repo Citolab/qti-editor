@@ -8,6 +8,12 @@ export type MatchSelectingTargetDetail = { active: boolean };
 /**
  * Editor component for qti-simple-match-set elements.
  * Container for qti-simple-associable-choice elements in match interactions.
+ *
+ * A `qti-match-interaction` holds exactly two of these, and their order is the direction of the
+ * association: sources come from the first set, targets from the second. The element carries no
+ * attributes of its own — position is what identifies it.
+ *
+ * @customElement qti-simple-match-set
  */
 export class QtiSimpleMatchSetEdit extends LitElement {
   static override styles = css`

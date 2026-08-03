@@ -15,6 +15,22 @@ import styles from './qti-order-interaction.styles.js';
  * The selectors differ from the mixin's defaults because the editor's markup does: the drops are
  * `<drop-list part="drop">` in this shadow root, and the drag container is a `<div part="drags">`
  * rather than upstream's `<slot part="drags">`.
+ *
+ * @customElement qti-order-interaction
+ * @attr {string} response-identifier - Required. Identifier of the response variable this
+ * interaction is bound to; the response variable has base-type `identifier` and ordered
+ * cardinality.
+ * @attr {boolean} shuffle - Whether the delivery engine may randomise the order the choices are
+ * presented in. Honoured at delivery, not in the editor.
+ * @attr {'horizontal'|'vertical'} orientation - Direction the drop slots run in. Unlike on
+ * `qti-choice-interaction`, this attribute is current for the order interaction and not
+ * deprecated.
+ * @attr {string} class - Shared interaction vocabulary for the presentation of the choices and
+ * the drop slots.
+ * @attr {string} correct-response - Answer key held on the element while authoring. The
+ * `identifier` of every `qti-simple-choice` in the one correct sequence, comma-separated
+ * (`step1,step2,step3`). Order IS the answer here — reordering these values changes what is
+ * correct. Converted to and from `qti-correct-response` on import/export.
  */
 export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
   Interaction,
@@ -289,7 +305,7 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
     //   - a second `empty` part token on unfilled slots
     //
     // The `empty` token exists so the pending pulse can live OUTSIDE this shadow root, in
-    // prose-qti's core-css.css. A structural filter like `:not(:has(qti-fake-drag))` cannot be
+    // prose-qti's core-css.css. A structural filter like `:not(:has(dummy-drag))` cannot be
     // applied after `::part()`, so without it an outside rule could not tell a filled slot from an
     // empty one and would pulse both. `::part(drop empty)` matches only when both tokens are
     // present, while every existing `::part(drop)` rule in qti-theme keeps matching either way.

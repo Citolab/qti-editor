@@ -32,6 +32,15 @@ export interface FakeDragRemoveDetail {
 /**
  * Editor component for qti-simple-associable-choice elements.
  * Used in qti-match-interaction and qti-associate-interaction.
+ *
+ * @customElement qti-simple-associable-choice
+ * @attr {string} identifier - Required. Identifies this choice within its interaction; it is
+ * the value that appears in the interaction's answer key pairs.
+ * @attr {number} match-max - Required. Maximum number of associations this choice may take part
+ * in. `0` means unlimited — the choice can be paired with every target.
+ * @attr {number} match-min - Minimum number of associations this choice must take part in.
+ * @attr {boolean} fixed - Whether the delivery engine must leave this choice in place when the
+ * enclosing interaction shuffles its choices.
  */
 export class QtiSimpleAssociableChoiceEdit extends LitElement {
   static override styles: CSSResultGroup = [
@@ -111,7 +120,7 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
 
   private _onRemoveFakeDrag(identifier: string) {
     this.dispatchEvent(
-      new CustomEvent<FakeDragRemoveDetail>('fake-drag-remove', {
+      new CustomEvent<FakeDragRemoveDetail>('dummy-drag-remove', {
         detail: { identifier },
         bubbles: true,
         composed: true,

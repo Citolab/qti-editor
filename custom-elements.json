@@ -1,0 +1,453 @@
+{
+  "schemaVersion": "2.1.0",
+  "elements": [
+    {
+      "tagName": "qti-associate-interaction",
+      "description": "Editor component for qti-associate-interaction. Choices are shown in a pool; click a choice then click a drop slot to form a pair.",
+      "module": "packages/prose-qti/src/components/associate/components/qti-associate-interaction/qti-associate-interaction.js",
+      "attributes": [
+        {
+          "name": "response-identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifier of the response variable this interaction is bound to; the response variable has base-type `directedPair`."
+        },
+        {
+          "name": "max-associations",
+          "type": "number",
+          "description": "Maximum number of pairs the candidate may create. `0` means unlimited."
+        },
+        {
+          "name": "min-associations",
+          "type": "number",
+          "description": "Minimum number of pairs the candidate must create before the interaction counts as answered."
+        },
+        {
+          "name": "shuffle",
+          "type": "boolean",
+          "description": "Whether the delivery engine may randomise the order of the choices. Honoured at delivery, not in the editor."
+        },
+        {
+          "name": "correct-response",
+          "type": "string",
+          "description": "Answer key held on the element while authoring. One `source target` pair per association, space inside the pair and comma between pairs (`A P,C M`). Converted to and from `qti-correct-response` on import/export."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-choice-interaction",
+      "description": "Editor component for qti-choice-interaction. Presents a list of `qti-simple-choice` children; clicking a choice's control marks it as the correct response.",
+      "module": "packages/prose-qti/src/components/choice/components/qti-choice-interaction/qti-choice-interaction.js",
+      "attributes": [
+        {
+          "name": "response-identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifier of the response variable this interaction is bound to; the response variable has base-type `identifier`."
+        },
+        {
+          "name": "min-choices",
+          "type": "number",
+          "description": "Minimum number of choices the candidate must select before the interaction counts as answered."
+        },
+        {
+          "name": "max-choices",
+          "type": "number",
+          "description": "Maximum number of choices the candidate may select. `1` is a single-response item, `0` means unlimited — this attribute alone is what separates single from multiple response."
+        },
+        {
+          "name": "class",
+          "type": "'qti-orientation-vertical'|'qti-orientation-horizontal'",
+          "values": [
+            "qti-orientation-vertical",
+            "qti-orientation-horizontal"
+          ],
+          "description": "Shared interaction vocabulary controlling choice layout. Preferred over the deprecated `orientation` attribute."
+        },
+        {
+          "name": "correct-response",
+          "type": "string",
+          "description": "Answer key held on the element while authoring. The `identifier` of each correct `qti-simple-choice`, comma-separated (`choice1,choice3`); order is not significant. Converted to and from `qti-correct-response` on import/export."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-extended-text-interaction",
+      "description": "Editor component for qti-extended-text-interaction — a free-prose response area.",
+      "module": "packages/prose-qti/src/components/extended-text/components/qti-extended-text-interaction/qti-extended-text-interaction.js",
+      "attributes": [
+        {
+          "name": "response-identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifier of the response variable this interaction is bound to; the response variable has base-type `string`."
+        },
+        {
+          "name": "expected-length",
+          "type": "number",
+          "description": "Hint to the delivery engine for how many characters the response is expected to run to. Advisory only; it does not limit input."
+        },
+        {
+          "name": "expected-lines",
+          "type": "number",
+          "description": "Hint for how many lines the response is expected to run to. Drives the height of the input area unless a `qti-height-lines-N` class overrides it."
+        },
+        {
+          "name": "placeholder-text",
+          "type": "string",
+          "description": "Text shown in the empty input area. Guidance for the candidate, never part of the response."
+        },
+        {
+          "name": "pattern-mask",
+          "type": "string",
+          "description": "Regular expression the response must match before it is accepted."
+        },
+        {
+          "name": "class",
+          "type": "string",
+          "description": "Shared interaction vocabulary, e.g. `qti-height-lines-N` for the height of the input area and the plain/rich-text and character-counter classes."
+        },
+        {
+          "name": "correct-response",
+          "type": "string",
+          "description": "Model answer held on the element while authoring, NOT a machine-scorable key — free prose has nothing to compare against. Converted to and from `qti-correct-response` on import/export."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-gap",
+      "description": "Editor component for qti-gap — one blank in a `qti-gap-match-interaction` passage that a `qti-gap-text` choice can be dropped into.",
+      "module": "packages/prose-qti/src/components/shared/components/qti-gap/qti-gap.js",
+      "attributes": [
+        {
+          "name": "identifier",
+          "required": true,
+          "type": "string | null",
+          "default": "null",
+          "description": "Identifies this gap within its interaction; it is the second half of every `gaptext gap` pair in the interaction's answer key."
+        },
+        {
+          "name": "match-max",
+          "type": "number",
+          "default": "1",
+          "description": "Maximum number of choices that may be associated with this gap. A gap can only ever hold one, so QTI defines no match-max on it; the editor keeps the attribute for symmetry with the other associable elements."
+        },
+        {
+          "name": "data-assigned-label",
+          "type": "string | null",
+          "default": "null",
+          "description": "Editor-specific, written by the parent interaction: the label text of the choice currently filling this gap, so the gap can render the chip without looking the choice up again."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-gap-match-interaction",
+      "description": "Editor component for qti-gap-match-interaction. Authoring is inline: click a gap-text source → every empty `<qti-gap>` pulses red-dashed (via `:state(pending)` on the gap host) → click a gap to commit. Click the × inside a filled gap's `<dummy-drag>` to clear it. Escape / outside click cancels pending. Selection state lives in {@link PendingSelectionController}; this class owns the association map, label cache, lightdom visual sync, and change event emission.",
+      "module": "packages/prose-qti/src/components/gap-match/components/qti-gap-match-interaction/qti-gap-match-interaction.js",
+      "attributes": [
+        {
+          "name": "response-identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifier of the response variable this interaction is bound to; the response variable has base-type `directedPair`."
+        },
+        {
+          "name": "max-associations",
+          "type": "number",
+          "description": "Maximum number of gaps the candidate may fill. `0` means unlimited."
+        },
+        {
+          "name": "min-associations",
+          "type": "number",
+          "description": "Minimum number of gaps the candidate must fill before the interaction counts as answered."
+        },
+        {
+          "name": "shuffle",
+          "type": "boolean",
+          "description": "Whether the delivery engine may randomise the order of the `qti-gap-text` choices. Honoured at delivery, not in the editor."
+        },
+        {
+          "name": "class",
+          "type": "string",
+          "description": "Shared interaction vocabulary for the presentation of the choice pool and the gaps."
+        },
+        {
+          "name": "correct-response",
+          "type": "string",
+          "description": "Answer key held on the element while authoring. One `gaptext gap` pair per filled gap, space inside the pair and comma between pairs (`ht_zuur gap_low,ht_basisch gap_high`); the `qti-gap-text` identifier comes first. Converted to and from `qti-correct-response` on import/export."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-gap-text",
+      "description": "Editor component for qti-gap-text — one draggable choice in the pool of a `qti-gap-match-interaction`.",
+      "module": "packages/prose-qti/src/components/shared/components/qti-gap-text/qti-gap-text.js",
+      "attributes": [
+        {
+          "name": "identifier",
+          "required": true,
+          "type": "string | null",
+          "default": "null",
+          "description": "Identifies this choice within its interaction; it is the first half of every `gaptext gap` pair in the interaction's answer key."
+        },
+        {
+          "name": "match-max",
+          "type": "number",
+          "default": "1",
+          "description": "Maximum number of gaps this choice may be associated with. `0` means unlimited — the choice can be reused in every gap."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-hottext",
+      "description": "Editor component for qti-hottext — one selectable word or phrase inside a `qti-hottext-interaction` passage.",
+      "module": "packages/prose-qti/src/components/hottext/components/qti-hottext/qti-hottext.js",
+      "attributes": [
+        {
+          "name": "identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifies this hottext within its interaction; it is the value that appears in the interaction's answer key and in the candidate's response. Read straight off the element by the parent interaction, so it is not a reactive property here."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-hottext-interaction",
+      "description": "Editor component for qti-hottext-interaction — a passage in which selected words are wrapped in `qti-hottext` elements the candidate can pick.",
+      "module": "packages/prose-qti/src/components/hottext/components/qti-hottext-interaction/qti-hottext-interaction.js",
+      "attributes": [
+        {
+          "name": "response-identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifier of the response variable this interaction is bound to; the response variable has base-type `identifier`."
+        },
+        {
+          "name": "max-choices",
+          "type": "number",
+          "description": "Maximum number of hottexts the candidate may select. `1` is a single-response item, `0` means unlimited."
+        },
+        {
+          "name": "min-choices",
+          "type": "number",
+          "description": "Minimum number of hottexts the candidate must select before the interaction counts as answered."
+        },
+        {
+          "name": "correct-response",
+          "type": "string",
+          "description": "Answer key held on the element while authoring. The `identifier` of each correct `qti-hottext`, comma-separated (`ht_door,ht_langs`); order is not significant. Converted to and from `qti-correct-response` on import/export."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-inline-choice",
+      "description": "Edit-mode version of qti-inline-choice — same shape as QtiSimpleChoiceEdit. Upstream's styles come first so the option row keeps the runtime's own box (inline-flex, centred, single-line, clipped); this file only adds what edit mode needs on top: the clickable correct-response control and an editable label. Previously :host was declared from scratch here, which meant every upstream tweak to the option row had to be mirrored by hand. The option being inline-level is why the dropdown's layout hinges on the menu's `white-space`: with `normal` each 100%-wide option wraps onto its own line, with `nowrap` they all pin to one line. See qti-inline-choice-interaction.styles.ts, which resets it on [part=menu].",
+      "module": "packages/prose-qti/src/components/inline-choice/components/qti-inline-choice-interaction/qti-inline-choice.js",
+      "attributes": [
+        {
+          "name": "identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifies this option within its `qti-inline-choice-interaction`; it is the value that appears in the interaction's answer key and in the candidate's response."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-inline-choice-interaction",
+      "description": "Editor component for qti-inline-choice-interaction — a dropdown embedded in running text, holding `qti-inline-choice` options.",
+      "module": "packages/prose-qti/src/components/inline-choice/components/qti-inline-choice-interaction/qti-inline-choice-interaction.js",
+      "attributes": [
+        {
+          "name": "response-identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifier of the response variable this interaction is bound to; the response variable has base-type `identifier` and single cardinality — an inline choice always takes exactly one answer."
+        },
+        {
+          "name": "data-prompt",
+          "type": "string",
+          "description": "Editor-specific. Custom text rendered while the selection is in its unselected state. When unset, the platform default placeholder is used."
+        },
+        {
+          "name": "correct-response",
+          "type": "string",
+          "description": "Answer key held on the element while authoring. The `identifier` of the single correct `qti-inline-choice`. Converted to and from `qti-correct-response` on import/export."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-match-interaction",
+      "description": "One element, two modes: - `<qti-match-interaction>`                          → click-to-associate (drag-drop controller) - `<qti-match-interaction class=\"qti-match-tabular\">` → matrix of checkboxes (tabular controller) The active controller is swapped at runtime whenever the `class` attribute gains/loses `qti-match-tabular`. Each controller owns its own observers, listeners, and shadow render template; the orchestrator just routes.",
+      "module": "packages/prose-qti/src/components/match/components/qti-match-interaction/qti-match-interaction.js",
+      "attributes": [
+        {
+          "name": "response-identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifier of the response variable this interaction is bound to; the response variable has base-type `directedPair`."
+        },
+        {
+          "name": "class",
+          "type": "string",
+          "description": "Shared interaction vocabulary. `qti-match-tabular` switches this element from click-to-associate to the checkbox matrix; the class is what selects the mode, there is no separate attribute for it."
+        },
+        {
+          "name": "data-first-column-header",
+          "type": "string",
+          "description": "Editor-specific. Heading for the first column of the tabular mode, above the source choices."
+        },
+        {
+          "name": "correct-response",
+          "type": "string",
+          "description": "Answer key held on the element while authoring. One `source target` pair per association, space inside the pair and comma between pairs (`left_druk right_pascal`). `source` is an identifier from the first `qti-simple-match-set` and `target` from the second — the direction matters. Converted to and from `qti-correct-response` on import/export."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-order-interaction",
+      "description": "The drop slots are sized from the chips they will hold, by the SAME mixin the runtime uses. `DropzoneAutoSizeMixin` measures the widest and tallest `qti-simple-choice` and publishes `--qti-dropzone-min-width` / `--qti-dropzone-min-height`; upstream's stylesheet, already imported here as `externalStyles`, reads them on `[part~='drop']`. Nothing in this file knows the numbers. The selectors differ from the mixin's defaults because the editor's markup does: the drops are `<drop-list part=\"drop\">` in this shadow root, and the drag container is a `<div part=\"drags\">` rather than upstream's `<slot part=\"drags\">`.",
+      "module": "packages/prose-qti/src/components/order/components/qti-order-interaction/qti-order-interaction.js",
+      "attributes": [
+        {
+          "name": "response-identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifier of the response variable this interaction is bound to; the response variable has base-type `identifier` and ordered cardinality."
+        },
+        {
+          "name": "shuffle",
+          "type": "boolean",
+          "description": "Whether the delivery engine may randomise the order the choices are presented in. Honoured at delivery, not in the editor."
+        },
+        {
+          "name": "orientation",
+          "type": "'horizontal'|'vertical'",
+          "values": [
+            "horizontal",
+            "vertical"
+          ],
+          "description": "Direction the drop slots run in. Unlike on `qti-choice-interaction`, this attribute is current for the order interaction and not deprecated."
+        },
+        {
+          "name": "class",
+          "type": "string",
+          "description": "Shared interaction vocabulary for the presentation of the choices and the drop slots."
+        },
+        {
+          "name": "correct-response",
+          "type": "string",
+          "description": "Answer key held on the element while authoring. The `identifier` of every `qti-simple-choice` in the one correct sequence, comma-separated (`step1,step2,step3`). Order IS the answer here — reordering these values changes what is correct. Converted to and from `qti-correct-response` on import/export."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-prompt",
+      "description": "Editor component for qti-prompt — the question text of an interaction. Placed inside an interaction it assigns itself to that interaction's `prompt` slot; in the item body it simply renders where it stands. The element carries no attributes of its own; its content is the prompt.",
+      "module": "packages/prose-qti/src/components/shared/components/qti-prompt/qti-prompt.js",
+      "attributes": []
+    },
+    {
+      "tagName": "qti-select-point-interaction",
+      "description": "Editor component for qti-select-point-interaction — a background image the candidate clicks to place points, with author-drawn scoring areas on top.",
+      "module": "packages/prose-qti/src/components/select-point/components/qti-select-point-interaction/qti-select-point-interaction.js",
+      "attributes": [
+        {
+          "name": "response-identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifier of the response variable this interaction is bound to; the response variable has base-type `point`."
+        },
+        {
+          "name": "area-mappings",
+          "type": "string",
+          "description": "Editor-specific. JSON array of the scoring areas drawn on the image, each `{ id, shape, coords, mappedValue, defaultValue }` with `shape` one of `circle` or `rect` and `coords` in the image's own pixel space. Serialised to a `qti-area-mapping` in the response declaration on export; defaults to `[]`."
+        },
+        {
+          "name": "correct-response",
+          "type": "string",
+          "description": "Answer key held on the element while authoring. `x y` integer coordinates in the image's own pixel space, space inside the point and comma between points (`100 150,220 340`). Most point items score by area rather than exact pixel — prefer `area-mappings`. Converted to and from `qti-correct-response` on import/export."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-simple-associable-choice",
+      "description": "Editor component for qti-simple-associable-choice elements. Used in qti-match-interaction and qti-associate-interaction.",
+      "module": "packages/prose-qti/src/components/shared/components/qti-simple-associable-choice/qti-simple-associable-choice.js",
+      "attributes": [
+        {
+          "name": "identifier",
+          "required": true,
+          "type": "string",
+          "default": "'A'",
+          "description": "Identifies this choice within its interaction; it is the value that appears in the interaction's answer key pairs."
+        },
+        {
+          "name": "match-max",
+          "required": true,
+          "type": "number",
+          "default": "1",
+          "description": "Maximum number of associations this choice may take part in. `0` means unlimited — the choice can be paired with every target."
+        },
+        {
+          "name": "match-min",
+          "type": "number",
+          "default": "0",
+          "description": "Minimum number of associations this choice must take part in."
+        },
+        {
+          "name": "fixed",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the delivery engine must leave this choice in place when the enclosing interaction shuffles its choices."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-simple-choice",
+      "description": "qti-order-interaction qti-choice-interaction Edit mode version of qti-simple-choice that allows: - Text editing in the content slot - Clicking the radio/checkbox control to set correct responses",
+      "module": "packages/prose-qti/src/components/shared/components/qti-simple-choice/qti-simple-choice.js",
+      "attributes": [
+        {
+          "name": "identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifies this choice within its interaction; it is the value that appears in the interaction's answer key and in the candidate's response. Read straight off the element by the parent interaction, so it is not a reactive property here."
+        }
+      ]
+    },
+    {
+      "tagName": "qti-simple-match-set",
+      "description": "Editor component for qti-simple-match-set elements. Container for qti-simple-associable-choice elements in match interactions. A `qti-match-interaction` holds exactly two of these, and their order is the direction of the association: sources come from the first set, targets from the second. The element carries no attributes of its own — position is what identifies it.",
+      "module": "packages/prose-qti/src/components/shared/components/qti-simple-match-set/qti-simple-match-set.js",
+      "attributes": []
+    },
+    {
+      "tagName": "qti-text-entry-interaction",
+      "description": "Editor component for qti-text-entry-interaction — a single-line input embedded in running text.",
+      "module": "packages/prose-qti/src/components/text-entry/components/qti-text-entry-interaction/qti-text-entry-interaction.js",
+      "attributes": [
+        {
+          "name": "response-identifier",
+          "required": true,
+          "type": "string",
+          "description": "Identifier of the response variable this interaction is bound to; the response variable has base-type `string`."
+        },
+        {
+          "name": "pattern-mask",
+          "type": "string",
+          "description": "Regular expression the response must match before it is accepted."
+        },
+        {
+          "name": "placeholder-text",
+          "type": "string",
+          "description": "Text shown in the empty input. Guidance for the candidate, never part of the response."
+        },
+        {
+          "name": "correct-response",
+          "type": "string",
+          "description": "Answer key held on the element while authoring: the single expected string. Matching is exact unless the response processing template folds case. A value containing a comma cannot be expressed — the codec reads it as two answers, so use a mapping in the response declaration for several accepted answers. Converted to and from `qti-correct-response` on import/export."
+        }
+      ]
+    }
+  ]
+}

@@ -23,6 +23,15 @@ export interface HottextRadioClickDetail {
   identifier: string;
 }
 
+/**
+ * Editor component for qti-hottext — one selectable word or phrase inside a
+ * `qti-hottext-interaction` passage.
+ *
+ * @customElement qti-hottext
+ * @attr {string} identifier - Required. Identifies this hottext within its interaction; it is
+ * the value that appears in the interaction's answer key and in the candidate's response. Read
+ * straight off the element by the parent interaction, so it is not a reactive property here.
+ */
 export class QtiHottextEdit extends LitElement {
   static override styles: CSSResultGroup = [
     hottextStyles,

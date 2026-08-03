@@ -15,6 +15,20 @@ import hostBaseStyles from './qti-match-interaction.styles.js';
  * The active controller is swapped at runtime whenever the `class` attribute
  * gains/loses `qti-match-tabular`. Each controller owns its own observers,
  * listeners, and shadow render template; the orchestrator just routes.
+ *
+ * @customElement qti-match-interaction
+ * @attr {string} response-identifier - Required. Identifier of the response variable this
+ * interaction is bound to; the response variable has base-type `directedPair`.
+ * @attr {string} class - Shared interaction vocabulary. `qti-match-tabular` switches this
+ * element from click-to-associate to the checkbox matrix; the class is what selects the mode,
+ * there is no separate attribute for it.
+ * @attr {string} data-first-column-header - Editor-specific. Heading for the first column of
+ * the tabular mode, above the source choices.
+ * @attr {string} correct-response - Answer key held on the element while authoring. One `source
+ * target` pair per association, space inside the pair and comma between pairs
+ * (`left_druk right_pascal`). `source` is an identifier from the first `qti-simple-match-set`
+ * and `target` from the second — the direction matters. Converted to and from
+ * `qti-correct-response` on import/export.
  */
 export class QtiMatchInteractionEdit extends Interaction implements TabularHost, DragDropHost {
   static override styles = [hostBaseStyles, tabularStyles];

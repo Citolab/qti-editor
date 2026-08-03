@@ -12,6 +12,24 @@ import styles from './qti-choice-interaction.styles.js';
 export type Orientation = 'horizontal' | 'vertical' | undefined;
 const ChoiceInteractionBase = VocabularyMixin(Interaction, 'qti-simple-choice') as typeof Interaction;
 
+/**
+ * Editor component for qti-choice-interaction. Presents a list of `qti-simple-choice`
+ * children; clicking a choice's control marks it as the correct response.
+ *
+ * @customElement qti-choice-interaction
+ * @attr {string} response-identifier - Required. Identifier of the response variable this
+ * interaction is bound to; the response variable has base-type `identifier`.
+ * @attr {number} min-choices - Minimum number of choices the candidate must select before the
+ * interaction counts as answered.
+ * @attr {number} max-choices - Maximum number of choices the candidate may select. `1` is a
+ * single-response item, `0` means unlimited — this attribute alone is what separates single
+ * from multiple response.
+ * @attr {'qti-orientation-vertical'|'qti-orientation-horizontal'} class - Shared interaction
+ * vocabulary controlling choice layout. Preferred over the deprecated `orientation` attribute.
+ * @attr {string} correct-response - Answer key held on the element while authoring. The
+ * `identifier` of each correct `qti-simple-choice`, comma-separated (`choice1,choice3`); order
+ * is not significant. Converted to and from `qti-correct-response` on import/export.
+ */
 export class QtiChoiceInteractionEdit extends ChoiceInteractionBase {
   static override styles = styles;
 

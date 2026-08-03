@@ -21,7 +21,7 @@ export * from './components/qti-gap/qti-gap.schema.js';
 export * from './components/qti-gap-text/qti-gap-text.js';
 export * from './components/qti-gap-text/qti-gap-text.schema.js';
 
-export * from './components/qti-fake-drag/qti-fake-drag.js';
+export * from './components/dummy-drag/dummy-drag.js';
 
 export * from './commands/enter.js';
 export * from './commands/home-end.js';

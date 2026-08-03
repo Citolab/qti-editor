@@ -40,6 +40,7 @@
     "build:packages": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/prose-extensions\" --filter \"./packages/prose-qti\" run build && QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/prose-qti-ui\" run build",
     "registry:build": "pnpm --filter @citolab/prose-qti-ui registry:build",
     "registry:serve": "pnpm --filter @citolab/prose-qti-ui registry:serve",
+    "cem": "cem generate && node scripts/cem-filter.mjs node_modules/.cache/cem/custom-elements.raw.json custom-elements.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:vrt": "VRT=1 vitest run --project vrt",
@@ -72,6 +73,7 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^5.2.1",
     "@eslint/js": "^9.39.5",
+    "@pwrs/cem": "^0.11.0",
     "@qti-components/theme": "https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@509fcae",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",

@@ -28,6 +28,9 @@ importers:
       '@eslint/js':
         specifier: ^9.39.5
         version: 9.39.5
+      '@pwrs/cem':
+        specifier: ^0.11.0
+        version: 0.11.0
       '@qti-components/theme':
         specifier: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@509fcae
         version: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@509fcae
@@ -2592,6 +2595,41 @@ packages:
 
   '@protobufjs/utf8@1.1.0':
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
+
+  '@pwrs/cem-darwin-arm64@0.11.0':
+    resolution: {integrity: sha512-5NFxI53+EiEO0zZ/tC6YVGpd9YNWjVjR2A/WuOtdXFc3xXgMj2ylvNnpEQhnhVkp2DPhTvsXCgs5h3Ig8P5xpQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@pwrs/cem-darwin-x64@0.11.0':
+    resolution: {integrity: sha512-kENUWHwEqloVMnh3qr4JA263akX4yFKSdj/Ngi++jrYA3od14EGoUaB9ItnbOPC3KJoa1ilXeYBQmmQe+9l/gA==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@pwrs/cem-linux-arm64@0.11.0':
+    resolution: {integrity: sha512-U9AGlNYU0DqaBxusBKG/dk42jyYmc/VI0k7mFk+5tUGYjg2ry2fYhCtfcc1N3sGrOayiA4KusB6wNp6gykEk6A==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@pwrs/cem-linux-x64@0.11.0':
+    resolution: {integrity: sha512-M+sdsqYCyQS+OmnAelXk+la7jtAC+ynqo0WTAaGgwk61EmKPCGLM6vE3D+i/OdtI7y2YyyEEokx1vGoF86Xivg==}
+    cpu: [x64]
+    os: [linux]
+
+  '@pwrs/cem-win32-arm64@0.11.0':
+    resolution: {integrity: sha512-4IWOm+OhMlyfQxzED7a3aZOCdp8yydwdzguhz2jAHOWY4+1aqVJgxViImu9Jap5iCSX9iYTTB+z7jcfw1Kge5A==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@pwrs/cem-win32-x64@0.11.0':
+    resolution: {integrity: sha512-QBdaWeRZrCSnRvuoLy3b0fFDzABZveBzQafJ1Dq1HqFIz8ZRZ4k7uavTKi35Mp6LhG2i0FzpglKZH/+sis3wTg==}
+    cpu: [x64]
+    os: [win32]
+
+  '@pwrs/cem@0.11.0':
+    resolution: {integrity: sha512-RYevS96tl61JWAtgo/2qksLd+CRfhCKj6b2fuEgjBpKWNDrVsr6JvX+xNNYgXBf+g2xQLgfdgaZvRNakDswzAQ==}
+    engines: {node: '>=22.0.0'}
+    hasBin: true
 
   '@qti-components/associate-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@509fcae':
     resolution: {tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@509fcae}
@@ -10137,6 +10175,33 @@ snapshots:
   '@protobufjs/pool@1.1.0': {}
 
   '@protobufjs/utf8@1.1.0': {}
+
+  '@pwrs/cem-darwin-arm64@0.11.0':
+    optional: true
+
+  '@pwrs/cem-darwin-x64@0.11.0':
+    optional: true
+
+  '@pwrs/cem-linux-arm64@0.11.0':
+    optional: true
+
+  '@pwrs/cem-linux-x64@0.11.0':
+    optional: true
+
+  '@pwrs/cem-win32-arm64@0.11.0':
+    optional: true
+
+  '@pwrs/cem-win32-x64@0.11.0':
+    optional: true
+
+  '@pwrs/cem@0.11.0':
+    optionalDependencies:
+      '@pwrs/cem-darwin-arm64': 0.11.0
+      '@pwrs/cem-darwin-x64': 0.11.0
+      '@pwrs/cem-linux-arm64': 0.11.0
+      '@pwrs/cem-linux-x64': 0.11.0
+      '@pwrs/cem-win32-arm64': 0.11.0
+      '@pwrs/cem-win32-x64': 0.11.0
 
   '@qti-components/associate-interaction@https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@509fcae(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:

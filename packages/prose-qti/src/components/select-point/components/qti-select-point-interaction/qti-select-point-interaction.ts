@@ -47,6 +47,22 @@ type ImageAttrsChangeDetail = {
   attrs: Record<string, unknown>;
 };
 
+/**
+ * Editor component for qti-select-point-interaction — a background image the candidate clicks
+ * to place points, with author-drawn scoring areas on top.
+ *
+ * @customElement qti-select-point-interaction
+ * @attr {string} response-identifier - Required. Identifier of the response variable this
+ * interaction is bound to; the response variable has base-type `point`.
+ * @attr {string} area-mappings - Editor-specific. JSON array of the scoring areas drawn on the
+ * image, each `{ id, shape, coords, mappedValue, defaultValue }` with `shape` one of `circle` or
+ * `rect` and `coords` in the image's own pixel space. Serialised to a `qti-area-mapping` in the
+ * response declaration on export; defaults to `[]`.
+ * @attr {string} correct-response - Answer key held on the element while authoring. `x y`
+ * integer coordinates in the image's own pixel space, space inside the point and comma between
+ * points (`100 150,220 340`). Most point items score by area rather than exact pixel — prefer
+ * `area-mappings`. Converted to and from `qti-correct-response` on import/export.
+ */
 export class QtiSelectPointInteractionEdit extends Interaction {
   static override styles = styles;
 

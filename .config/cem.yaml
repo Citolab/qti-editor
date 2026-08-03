@@ -1,0 +1,42 @@
+# @pwrs/cem — interactions-only manifest.
+#
+# Scope: the interaction elements in `packages/prose-qti` (`@citolab/prose-qti`) — the editor's
+# own custom elements. Not the ones it re-exports from qti-components, and not the app-level UI
+# components in `apps/*`.
+#
+# The globs below reach every element: `components/<interaction>/components/<element>/` for the
+# interactions and `components/shared/components/<element>/` for the shared children. The second
+# glob picks up the editor-only elements, whose files are not `qti-*` — they are analysed so the
+# filter can report what it excluded rather than never seeing them at all.
+#
+# cem does NOT read `customElements.define()` out of the neighbouring `register.ts`, and it only
+# derives attributes from `@property({ attribute })` when the class literally extends LitElement
+# in the same file — which most of these do not. So every element declares its tag and its
+# attribute contract in JSDoc:
+#
+#     @customElement qti-choice-interaction
+#     @attr {number} max-choices - Maximum number of choices the candidate may select.
+#
+# An element without `@customElement` is invisible to this manifest, and an attribute without
+# `@attr` is missing from it.
+#
+# `pnpm run cem` runs this and then strips the output down to `qti-`-prefixed elements and their
+# attributes — see scripts/cem-filter.mjs. Editor-only elements are named without the prefix
+# (`dummy-drag`) and drop out there.
+generate:
+  files:
+    - 'packages/prose-qti/src/components/*/components/*/qti-*.ts'
+    - 'packages/prose-qti/src/components/shared/components/*/dummy-*.ts'
+  exclude:
+    - '**/*.stories.ts'
+    - '**/*.spec.ts'
+    - '**/*.test.ts'
+    - '**/*.styles.ts'
+    - '**/*.schema.ts'
+    - '**/*.commands.ts'
+    - '**/*.compose.ts'
+    - '**/dist/**'
+  # cem can only write a full manifest to a file, so this is the unfiltered intermediate that
+  # scripts/cem-filter.mjs reads and then deletes. It lives under node_modules/ rather than the
+  # repo root so nothing has to gitignore it — cem creates the directory itself.
+  output: 'node_modules/.cache/cem/custom-elements.raw.json'

@@ -13,6 +13,21 @@ import {
 import styles from './qti-hottext-interaction.styles.js';
 import { parseCorrectResponse } from '../../utils/parse-correct-response.js';
 
+/**
+ * Editor component for qti-hottext-interaction — a passage in which selected words are wrapped
+ * in `qti-hottext` elements the candidate can pick.
+ *
+ * @customElement qti-hottext-interaction
+ * @attr {string} response-identifier - Required. Identifier of the response variable this
+ * interaction is bound to; the response variable has base-type `identifier`.
+ * @attr {number} max-choices - Maximum number of hottexts the candidate may select. `1` is a
+ * single-response item, `0` means unlimited.
+ * @attr {number} min-choices - Minimum number of hottexts the candidate must select before the
+ * interaction counts as answered.
+ * @attr {string} correct-response - Answer key held on the element while authoring. The
+ * `identifier` of each correct `qti-hottext`, comma-separated (`ht_door,ht_langs`); order is not
+ * significant. Converted to and from `qti-correct-response` on import/export.
+ */
 export class QtiHottextInteractionEdit extends Interaction {
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
