@@ -4,7 +4,7 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiChoiceInteractionNodeSpec: NodeSpec = {
   group: 'block',
-  content: 'qtiPrompt qtiSimpleChoice+',
+  content: 'qtiPrompt? qtiSimpleChoice+',
   attrs: {
     maxChoices: { default: 0 },
     class: { default: null },

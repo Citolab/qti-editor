@@ -18,7 +18,6 @@ import { html } from 'lit';
 import { ref } from 'lit/directives/ref.js';
 import { orderInteractionDescriptor } from '@citolab/prose-qti/components/order';
 import { roundtripOrder, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
-import { ensureInteractionPrompts } from '@citolab/prose-qti/item-roundtrip';
 
 import { createRegressionEditor } from './prosemirror-base';
 import sourceXML from './fixtures/ITEM013.xml?raw';
@@ -49,7 +48,7 @@ const qtiMediaStub = {
 const editor = createRegressionEditor({
   descriptor: orderInteractionDescriptor,
   sourceXML,
-  transforms: schema => [roundtripOrder, roundtripItemBody, ensureInteractionPrompts(schema)],
+  transforms: () => [roundtripOrder, roundtripItemBody],
   extraNodes: { qtiMediaStub }
 });
 

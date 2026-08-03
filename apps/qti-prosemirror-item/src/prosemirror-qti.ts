@@ -37,7 +37,6 @@ import { selectPointInteractionDescriptor } from '@citolab/prose-qti/components/
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
 import {
   defaultRoundtripTransforms,
-  ensureInteractionPrompts,
   exportItemXml,
   importItemFromUrl
 } from '@citolab/prose-qti/item-roundtrip';
@@ -128,13 +127,11 @@ export async function loadQtiItems(): Promise<{ href: string; identifier: string
  * recover misplaced children; it does not auto-insert required leading
  * siblings, so a prompt-less interaction in the source would close on its
  * first child and leak the rest of the interaction up to the doc level. The
- * `ensureInteractionPrompts` transform — driven by the schema, no hardcoded
- * tag list — injects an empty prompt where one is missing so the parser sees
  * the required first child in place.
  */
 export function importQtiItem(href: string, schema: Schema): Promise<ProseMirrorNode> {
   return importItemFromUrl(href, schema, {
-    transforms: [...defaultRoundtripTransforms, ensureInteractionPrompts(schema)]
+    transforms: [...defaultRoundtripTransforms]
   });
 }
 

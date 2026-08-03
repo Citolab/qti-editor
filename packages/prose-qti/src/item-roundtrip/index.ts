@@ -27,7 +27,6 @@ export {
   type RoundtripExportXmlOptions,
 } from './export.js';
 
-export { ensureInteractionPrompts } from './ensure-interaction-prompts.js';
 export {
   defaultRoundtripExportTransforms,
   stripEmptyPrompts,

@@ -329,10 +329,14 @@ expands it into a complete `<qti-assessment-item>` via
 to `doc.attrs.identifier` / `doc.attrs.title`. `exportItemXml`'s
 `options.format` (default `true`) controls pretty-printing.
 
-Also exported from `item-roundtrip`: `ensureInteractionPrompts` (fills in
-missing `<qti-prompt>` elements before export) and `stripEmptyPrompts` /
-`defaultRoundtripExportTransforms` (the reverse — drop prompts that ended up
-empty).
+Also exported from `item-roundtrip`: `stripEmptyPrompts` /
+`defaultRoundtripExportTransforms`, which drop prompts that ended up empty.
+
+There used to be an `ensureInteractionPrompts` counterpart that synthesised
+missing `<qti-prompt>` elements on import, because the schema required one on
+every interaction. The schema now makes `qtiPrompt` optional — matching the QTI
+XSD, which has always had `qti-prompt?` — so nothing needs synthesising and both
+halves of that dance are gone.
 
 ### `qti3-item-import`
 

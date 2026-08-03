@@ -18,7 +18,6 @@ import { html } from 'lit';
 import { ref } from 'lit/directives/ref.js';
 import { gapMatchInteractionDescriptor } from '@citolab/prose-qti/components/gap-match';
 import { roundtripGapMatch, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
-import { ensureInteractionPrompts } from '@citolab/prose-qti/item-roundtrip';
 
 import { createRegressionEditor } from './prosemirror-base';
 import sourceXML from './fixtures/ITEM015.xml?raw';
@@ -49,7 +48,7 @@ const qtiMediaStub = {
 const editor = createRegressionEditor({
   descriptor: gapMatchInteractionDescriptor,
   sourceXML,
-  transforms: schema => [roundtripGapMatch, roundtripItemBody, ensureInteractionPrompts(schema)],
+  transforms: () => [roundtripGapMatch, roundtripItemBody],
   extraNodes: { qtiMediaStub }
 });
 

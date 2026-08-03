@@ -7,7 +7,9 @@
  * `<qti-prompt><p/></qti-prompt>` — semantically empty and noisy on the wire.
  * `qti-prompt` is `0..1` in QTI 3.0, so dropping an empty one is lossless.
  *
- * Counterpart to `ensureInteractionPrompts` on the import side.
+ * Was the counterpart to an `ensureInteractionPrompts` import transform, which synthesised empty
+ * prompts to satisfy a schema that required them. The schema makes `qtiPrompt` optional now, so
+ * nothing synthesises them — this remains only to drop prompts an author genuinely left empty.
  */
 
 export type RoundtripExportTransform = (itemBody: XMLDocument) => void;
