@@ -83,6 +83,7 @@ Interaction components: `associate`, `choice`, `extended-text`, `gap-match`, `ho
 - `qtiBasicNodes` / `qtiBasicMarks` (`@citolab/prose-qti/schema`) are the canonical QTI-focused replacement for direct `prosemirror-schema-basic` usage in this repo.
 - The `image` node in this module preserves `width` and `height` attributes on parse/serialize so QTI XML image dimensions survive import and roundtrip.
 - Nothing is removed from the basic set. A `createQtiBasicNodes(...)` helper used to offer trimming and defaulted to dropping `blockquote`; it had no callers and its premise was wrong — QTI permits `blockquote`, `hr`, `pre` and `code` in an item body. A host wanting a narrower document builds its own `nodes` object.
+- `qtiLayoutDivNodeSpec` (included in `qtiBasicNodes.qtiLayoutDiv`) models the author-written `<div class="qti-layout-row">`/`-colN` grid wrappers; `qtiLayoutDivLockPlugin` is the accompanying opt-in plugin that stops a transaction from adding or removing a wrapper, since nothing in either host editor can author a new one. Both used to live duplicated across the two host apps and moved here for the same reason `qtiBasicNodes` did — one definition instead of two that drift.
 
 ### `packages/prose-extensions` (`@citolab/prose-extensions`)
 
