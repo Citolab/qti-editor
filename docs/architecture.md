@@ -83,6 +83,7 @@ Interaction components: `associate`, `choice`, `extended-text`, `gap-match`, `ho
 - `qtiBasicNodes` / `qtiBasicMarks` (`@citolab/prose-qti/schema`) are the canonical QTI-focused replacement for direct `prosemirror-schema-basic` usage in this repo.
 - The `image` node in this module preserves `width` and `height` attributes on parse/serialize so QTI XML image dimensions survive import and roundtrip.
 - Nothing is removed from the basic set. A `createQtiBasicNodes(...)` helper used to offer trimming and defaulted to dropping `blockquote`; it had no callers and its premise was wrong — QTI permits `blockquote`, `hr`, `pre` and `code` in an item body. A host wanting a narrower document builds its own `nodes` object.
+- `qtiBasicNodes.qtiLayoutDiv` (`qtiLayoutDivNodeSpec`) models the author-written `<div class="qti-layout-row">`/`-colN` grid wrappers, and `qtiLayoutDivLockPlugin` is the accompanying opt-in plugin that rejects any transaction changing how many of them a document has — nothing in either host editor can author a new one, so a deleted wrapper cannot be rebuilt. Both used to be duplicated across the two host apps and now live here as the single definition.
 
 ### `packages/prose-extensions` (`@citolab/prose-extensions`)
 
@@ -301,6 +302,17 @@ Primary documentation surface for:
 - Step-by-step editor assembly guidance
 
 (`packages/prose-qti-ui` also builds an installable component registry via `pnpm registry:build`, but this is an in-house scaffolding tool, not a documented product surface.)
+
+## Custom Elements Manifest
+
+`pnpm run cem` generates `custom-elements.json` at the repo root: the tag name, description, and attribute contract of every `qti-*` element `packages/prose-qti` defines. It runs [`@pwrs/cem`](https://github.com/bennypowers/cem) per `.config/cem.yaml`, then pipes the raw output through `scripts/cem-filter.mjs`, which keeps only `qti-`-prefixed tags and reduces each declaration to `tagName`/`description`/`attributes` — no parts, properties, events, methods, or slots. It is a manual, on-demand script; nothing in CI regenerates or checks it.
+
+Two limits of `@pwrs/cem` shape how the source is written:
+
+- it does not follow `customElements.define()` out of a neighbouring `register.ts`, so an element gets a tag only from a JSDoc `@customElement` line;
+- it only derives attributes from `@property({ attribute })` when the class literally extends `LitElement` in that file — most of these extend `Interaction`, `InteractionPanel`, or a mixin call instead, so attributes come from one `@attr` JSDoc line per attribute rather than being inferred.
+
+An element or attribute missing from `custom-elements.json` after running `pnpm run cem` means the JSDoc is missing, not that the filter dropped it — the script logs excluded editor-only tags and any attribute-less element as a warning.
 
 ## Tests
 

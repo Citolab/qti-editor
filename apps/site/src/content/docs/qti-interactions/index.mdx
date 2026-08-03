@@ -96,3 +96,7 @@ Each descriptor's `attributePanelMetadata` declares which attributes are user-ed
 | `case-sensitive` | Whether the response match is case-sensitive (text entry) |
 
 The boilerplate ships a small [`attributesPanelPlugin`](https://github.com/Citolab/qti-editor/blob/main/apps/qti-prosemirror-item/src/components/attributes-panel-plugin.ts) that renders these into a side panel; the [TypeScript Integration](/docs/frameworks/vanilla/) guide walks through it.
+
+## Custom elements manifest
+
+[`custom-elements.json`](https://github.com/Citolab/qti-editor/blob/main/custom-elements.json) at the repo root lists the tag name, description, and attribute contract for every `qti-*` custom element these interaction packages define — useful if you're generating typed wrappers or IDE hints for the elements rather than reading the TypeScript source directly. It's generated on demand with `pnpm run cem` and is not part of the published npm package.

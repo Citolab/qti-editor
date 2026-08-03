@@ -33,12 +33,13 @@ Keep private:
 - Versioning is commit-message driven via `multi-semantic-release` (see `release.config.cjs`), not Changesets — there is no version PR step. Each publishable package is tagged and released independently as `<name>@<version>` based on Angular-style conventional commits (`fix:`, `feat:`, etc.) touching that package's path.
 - The release workflow (`.github/workflows/release.yml`) runs after `CI: push-quality` succeeds on `main`, and only proceeds when the triggering push touched a release-relevant path (`package.json`, `pnpm-lock.yaml`, `packages/prose-qti/`, `packages/prose-extensions/`, or the release workflow itself).
 - Release publishes with `pnpm publish --provenance`, which rewrites each package's internal `workspace:*` dependency ranges (see below) to real published semver ranges before publishing — no `NPM_TOKEN` is required because npm trusted publishing (OIDC) is configured.
-- A successful release commits the bumped `package.json` and `CHANGELOG.md` back to `main` with `chore(release): <version> [skip ci]`, which is filtered back out of the release-relevant-paths check so it does not retrigger itself.
+- A successful release commits `CHANGELOG.md` back to `main` with `chore(release): <version> [skip ci]`, which is filtered back out of the release-relevant-paths check so it does not retrigger itself. `package.json` is deliberately **not** committed back — see below.
 
 ### Internal Package Dependencies
 
 - Packages that depend on another publishable package in this repo (e.g. `@citolab/prose-extensions` depends on `@citolab/prose-qti`) declare that dependency with the pnpm `workspace:*` protocol, never a pinned version. Pinning it manually goes stale the moment the depended-on package's version bumps and breaks local installs/CI (see the `fix: workspace resolution` and `fix: try pinning pkg versions due to ci breakage` commits).
 - `workspace:*` is only valid for local development; `pnpm publish` rewrites it to a real version range automatically at publish time, so consumers installing from npm never see the `workspace:*` specifier.
+- That rewrite happens unconditionally: `multi-semantic-release`'s dependency-update step resolves `workspace:*` to a concrete version in every manifest before publishing, ahead of anything `--deps.bump` could otherwise control. That is correct for the published tarball and wrong for this repo's own `package.json` — committing it back leaves `package.json` disagreeing with `pnpm-lock.yaml` (which still holds `workspace:*`), which fails `pnpm install --frozen-lockfile` on the next push. Release commits carry `[skip ci]`, so CI does not catch this at release time; the breakage instead surfaces later, pointing at a manifest nobody touched. `release.config.cjs`'s `@semantic-release/git` `assets` list is `[changelog]` only for this reason — `package.json`'s rewritten `workspace:*` value never reaches `main`.
 
 ### Site Hosting
 
