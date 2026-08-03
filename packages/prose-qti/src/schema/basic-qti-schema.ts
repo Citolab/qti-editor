@@ -4,10 +4,6 @@ import { qtiLayoutDivNodeSpec } from './qti-layout-div.js';
 
 import type { NodeSpec } from 'prosemirror-model';
 
-interface QtiBasicNodeOptions {
-  omitBlockquote?: boolean;
-}
-
 function stripUnit(value: string): string {
   const trimmed = value.trim();
   if (/^\d+(\.\d+)?px$/i.test(trimmed)) {
@@ -70,8 +66,32 @@ const qtiImageNodeSpec: NodeSpec = {
   }
 };
 
-const qtiBasicNodesDefault = {
+/**
+ * prosemirror-schema-basic, extended. One override and one addition — nothing is removed.
+ *
+ * ## Nothing is removed, deliberately
+ *
+ * There used to be a `createQtiBasicNodes({ omitBlockquote })` beside this, defaulting to dropping
+ * `blockquote` on the stated grounds that "QTI item bodies do not model it". That is false: the QTI
+ * 3 implementation guide's own worked examples put `<blockquote>` inside `<qti-item-body>` (§3.2.3
+ * nests one in a `<div>`, §3.2.8 closes one directly before `</qti-item-body>`), and `<hr>`,
+ * `<pre>` and `<code>` are permitted alongside it.
+ *
+ * It had no callers, so nothing was actually trimmed — but its default contradicted what
+ * `createQtiSchema()` does, leaving two answers to one question. Removed rather than corrected,
+ * because a knob for removing valid item content is a knob for silently losing an author's markup:
+ * ProseMirror's parser does not reject what it has no node for, it drops it. Same reasoning that
+ * put `qtiLayoutDiv` below into the base set rather than behind an opt-in.
+ *
+ * A host that genuinely wants a narrower document builds its own `nodes` object; it does not need
+ * this module's permission.
+ */
+export const qtiBasicNodes = {
   ...basicNodes,
+  /*
+   * The only override. prosemirror-schema-basic's image models src/alt/title and drops width and
+   * height outright, so an authored `<img width="120">` came back without its dimensions.
+   */
   image: qtiImageNodeSpec,
   /*
    * In the basic set rather than opt-in, because omitting it is not a smaller schema — it is a
@@ -82,18 +102,9 @@ const qtiBasicNodesDefault = {
   qtiLayoutDiv: qtiLayoutDivNodeSpec
 };
 
+/**
+ * Unmodified. Re-exported so a host takes its nodes and marks from one place, and so the name does
+ * not have to change if a QTI-specific mark is ever needed. `code` — one of the four elements QTI
+ * permits that people expect to find in the node set — lives here, as a mark, not a node.
+ */
 export const qtiBasicMarks = basicMarks;
-
-export const qtiBasicNodes = qtiBasicNodesDefault;
-
-export function createQtiBasicNodes(options: QtiBasicNodeOptions = {}): Record<string, NodeSpec> {
-  const { omitBlockquote = true } = options;
-  const nextNodes = { ...qtiBasicNodesDefault };
-
-  if (omitBlockquote) {
-    const { blockquote: _blockquote, ...withoutBlockquote } = nextNodes;
-    return withoutBlockquote;
-  }
-
-  return nextNodes;
-}
