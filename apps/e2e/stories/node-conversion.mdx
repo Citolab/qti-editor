@@ -24,7 +24,8 @@ One import. No DOM setup, no globals, no flags — the subpath installs what it 
 | `validateHtml(html, options?)` | did this HTML survive the schema unchanged? |
 
 `createQtiSchema(options?)` builds the schema they default to. Pass `include: ['qti-order-interaction']`
-to narrow it to one interaction, or `schema` to supply your own.
+to narrow it to one interaction, or `schema` to supply your own. To *read* that schema rather than
+build one, see `schemaToJson` below.
 
 ```js
 const doc = qti3ToPm(readFileSync('ITEM001.xml', 'utf8'), { assetBasePath: '/qti/kennisnet' });
@@ -99,16 +100,95 @@ on re-parse — the parser fills required content the serialized form no longer 
 difference involves those, `result.suspect` is `true`, and the failure is more likely ours than the
 input's. Do not feed a suspect result back to a generator as if it were its mistake.
 
+## The schema as data — `schemaToJson`
+
+The grammar as a plain JSON-able object, for a consumer that needs to *read* the document model
+rather than build one — out of process, in another language, or as context for a generator.
+
+```js
+import { schemaToJson } from '@citolab/prose-qti/node';
+
+writeFileSync('schema.json', JSON.stringify(schemaToJson(), null, 2));
+```
+
+42 nodes, 4 marks, 4 groups, about 14 KB. One node of it, attributes abridged:
+
+```json
+"qtiGapMatchInteraction": {
+  "tagName": "qti-gap-match-interaction",
+  "content": "qtiPrompt? qtiGapText{2,} paragraph+",
+  "group": "block",
+  "defining": true,
+  "isolating": true,
+  "attrs": {
+    "maxAssociations": { "default": 0 },
+    "correctResponse": { "default": null }
+  }
+}
+```
+
+It takes a schema and defaults to `createQtiSchema()` — the corpus-measured one. Pass
+`buildEditorSchema()` from `schema/editor-schema.ts` to describe the ProseKit composition instead.
+The two are **not** interchangeable, so the function picks neither for you.
+
+### The counterpart to `custom-elements.json`
+
+The repo publishes two contracts and they answer different questions. `custom-elements.json` says
+which elements exist and what attributes they take, in a standard format. This says what may nest
+inside what. A custom elements manifest has no way to express `qtiPrompt? qtiGapText{2,} paragraph+`,
+so neither artifact subsumes the other.
+
+<div style={{ borderLeft: '3px solid #888', paddingLeft: '1rem', margin: '1rem 0' }}>
+  **Why it returns a value instead of writing a file.** A generator that wrote `content-model.json`
+  to disk lived in `schema/` until it was removed, together with 11 committed fixtures and a
+  `schemaVersion` fingerprint. All of that machinery existed for one reason: a description of the
+  schema sitting on disk can drift from the schema it describes.
+
+  Read off the live schema on demand there is nothing to drift, so none of it came back. The
+  composed schema stays the source of truth and this is a projection of it. A caller that wants a
+  file calls `JSON.stringify` — which is all the writer ever did.
+</div>
+
+### Reading the output
+
+- **`nodes` is ordered, and the order is part of the grammar.** ProseMirror resolves a content
+  expression's default type by first match. Preserve it if your parser can; C#'s `System.Text.Json`
+  does for `JsonObject` and `Dictionary<string, T>`.
+- **Boolean flags appear only when true.** Absent means false — which is what a deserialising
+  consumer's `bool` field defaults to anyway.
+- **`tagName` is the markup name**, read back out of each node's own `toDOM` rather than a
+  hand-maintained map. The object keys are ProseMirror node names and will *not* match your markup.
+  `heading` reports `h1`; its real tag is `h1`..`h6`, chosen by the `level` attribute.
+- **`attrs` values are `{ "default": … }` or `{ "required": true }`.** A required attribute has no
+  default and must be supplied when constructing the node — `doc` needs `identifier` and `title`.
+  `"default": null` is a real default of null, not an absent one.
+- **`content` strings are ProseMirror content expressions** over these node names and the group
+  names in `groups`, which is a reverse index provided for exactly that resolution.
+- `parseDOM` and `toDOM` are absent. They are functions, and they describe serialization rather than
+  the document model.
+
+Hand-written prose about *why* the editor narrows the QTI XSD is deliberately not in here. It lives
+in `schema/notes.ts`, where a test stops a note outliving the node it describes.
+
 ## What is proven, and how
 
-`packages/prose-qti/src/node/node-conversion.node.test.ts` — 27 tests in the `node` Vitest project,
-so `just test` and the pre-commit hook both run them.
+Two files in the `node` Vitest project, 35 tests, so `just test` and the pre-commit hook both run
+them.
+
+`packages/prose-qti/src/node/node-conversion.node.test.ts` — 27 tests:
 
 - **All 17 ITEM fixtures** roundtrip `qti3ToPm → pmToQti3` and reproduce the same committed snapshots
   the browser tests assert against, one test per item.
 - The DOM shim installs correctly, including `createDocument` accepting a root element name.
 - `validateHtml` accepts prose, lists and layout wrappers; rejects a table in a prompt with a usable
   diff.
+
+`packages/prose-qti/src/node/schema-to-json.node.test.ts` — 8 tests, asserting the contract rather
+than a snapshot. Node order survives, content expressions survive, tag names come back off `toDOM`,
+required and defaulted attributes stay distinguishable, and the result equals its own
+`JSON.parse(JSON.stringify(…))` — which is what proves no function leaked out of a spec. There is
+deliberately no committed fixture: a fixture of a projection has to be re-blessed every time the
+schema moves, which teaches everyone to re-bless it without reading it.
 
 Those tests import the **built package**, not source. That is deliberate: source resolves through
 tsconfig paths and would pass while the shipped artifact failed — which is exactly what happened

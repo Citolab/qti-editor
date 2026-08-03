@@ -59,3 +59,10 @@ export { validateHtml, type ValidationResult } from '../item-roundtrip/validate.
 export type { HtmlChange, HtmlChangeKind } from '../item-roundtrip/diff-html.js';
 
 export { createQtiSchema, type CreateQtiSchemaOptions } from '../schema/create-qti-schema.js';
+
+/**
+ * The schema as data, for a caller that wants to read the grammar rather than build it — the
+ * counterpart to the repo's `custom-elements.json`, which carries elements and attributes but
+ * cannot express a content model. Returns a value; writing it to a file is the caller's business.
+ */
+export { schemaToJson, type SchemaJson, type NodeJson } from '../schema/schema-to-json.js';
