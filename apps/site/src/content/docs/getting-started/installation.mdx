@@ -23,6 +23,8 @@ pnpm add prosemirror-state prosemirror-view prosemirror-model prosemirror-comman
 
 `@citolab/prose-qti` treats the ProseMirror packages as peer dependencies. Keep the ProseMirror packages on one aligned release set and upgrade them together; reuse versions your app already has rather than introducing a second copy.
 
+Build your base schema nodes/marks from `qtiBasicNodes`/`qtiBasicMarks` (`@citolab/prose-qti`, also reachable via the `@citolab/prose-qti/schema` subpath) instead of importing `prosemirror-schema-basic` directly — see [QTI Base Schema](/docs/packages/qti-base-schema/). `prosemirror-schema-basic` stays a dependency either way; `qtiBasicNodes` is built on top of it and only patches the `image` node.
+
 ## Stylesheet
 
 Import `@citolab/prose-qti/core-css.css` wherever your app renders the editor's document — it is a mandatory plain-CSS stylesheet (no Tailwind or PostCSS plugins required) that styles interaction element backgrounds, spacing, and the rubric-block boundary:
@@ -80,5 +82,6 @@ See the [QTI Item Roundtrip](/docs/packages/qti-item-roundtrip/) reference for t
 | `prosemirror-*` | Core ProseMirror runtime | Always — QTI Editor is built on ProseMirror. |
 | `@citolab/prose-qti` | Descriptors, interactions, node specs, plugins, item roundtrip | The main runtime. |
 | `@citolab/prose-extensions` | Generic ProseMirror plugins | When you want block selection, node attribute sync, semantic paste, etc. |
+| `@citolab/prose-qti/schema` | `qtiBasicNodes`/`qtiBasicMarks` base schema nodes | When you assemble a raw ProseMirror schema by hand and want image dimensions to survive QTI XML roundtrip. |
 | `@citolab/prose-qti/qti3-item-import` | Standard QTI 3.0 item normalization | When you need to ingest third-party QTI XML before parsing into the editor. |
 | `@citolab/prose-qti/item-roundtrip` | One-call import/export between ProseMirror and QTI item XML | When you want a single helper for the full QTI item roundtrip. |
