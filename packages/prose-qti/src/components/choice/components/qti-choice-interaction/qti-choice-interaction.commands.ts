@@ -5,6 +5,7 @@
  */
 
 export {
+  createSimpleChoiceNode,
   insertChoiceInteraction,
   insertSimpleChoiceOnEnter,
   qtiChoiceEnterCommand
