@@ -40,3 +40,26 @@ This package integrates with `@qti-components/choice-interaction` through the sh
 - Edit choice text by clicking into any choice and typing.
 - Add a choice by pressing `Enter` at the end of a choice — a new sibling choice is inserted automatically.
 - Mark correct responses by clicking the radio button or checkbox next to a choice.
+
+## Adding a choice from a host affordance
+
+`Enter` at the end of a choice is not the only way to add one — a host can offer its own
+"add answer" control (a button, a decoration, whatever fits its UI). Reuse
+`createSimpleChoiceNode` for that instead of hand-building the node, so both routes produce a
+choice with the same shape:
+
+```ts
+import { createSimpleChoiceNode } from '@citolab/prose-qti/components/choice/components/qti-choice-interaction/commands/insert-choice-interaction.commands.js';
+
+const choice = createSimpleChoiceNode(view.state.schema);
+if (choice) {
+  const tr = view.state.tr.insert(insertPos, choice);
+  view.dispatch(tr);
+}
+```
+
+It returns `null` if the schema does not include the choice node types.
+
+The default i18n messages include the keys `choice.addOption`, `choice.removeOption` and
+`interaction.settings`, for hosts that add their own labeled affordances around a choice
+instead of hardcoding English.
