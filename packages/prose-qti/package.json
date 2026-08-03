@@ -46,6 +46,9 @@
       "types": "./dist/node/index.d.ts",
       "default": "./dist/node/index.js"
     },
+    "./content-model": {
+      "default": "./dist/content-model.json"
+    },
     "./integration": {
       "types": "./dist/integration/index.d.ts",
       "default": "./dist/integration/index.js"
@@ -249,7 +252,7 @@
     "./core-css.css": "./dist/core-css/core-css.css"
   },
   "scripts": {
-    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css && cp src/core-css/core-css.css dist/core-css/core-css.css && node scripts/bundle-node.mjs",
+    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css && cp src/core-css/core-css.css dist/core-css/core-css.css && cp ../../schema/content-model.json dist/content-model.json && node scripts/bundle-node.mjs",
     "typecheck": "tsc --noEmit -p ./tsconfig.json",
     "clean": "rm -rf dist"
   },

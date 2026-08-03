@@ -1,0 +1,29 @@
+{
+  "tagName": "qti-text-entry-interaction",
+  "group": "inline",
+  "marks": "_",
+  "inline": true,
+  "atom": true,
+  "selectable": true,
+  "attrs": {
+    "responseIdentifier": {
+      "default": null
+    },
+    "correctResponse": {
+      "default": null
+    },
+    "caseSensitive": {
+      "default": false
+    },
+    "class": {
+      "default": null
+    },
+    "placeholderText": {
+      "default": null
+    },
+    "score": {
+      "default": 1
+    }
+  },
+  "note": "Leaf: the input is the interaction. It sits inside a paragraph, between text. `marks: '_'` so it survives inside emphasised or bold runs."
+}
