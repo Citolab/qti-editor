@@ -6,66 +6,28 @@
  * (see `public/qti/kennisnet/ITEM001.xml`). This experiment teaches the minimal
  * ProseMirror editor to:
  *
- * 1. Preserve those wrappers (and their exact `class`) across import/export, by
- *    adding a single `qtiLayoutDiv` node to the schema. Only divs whose class
- *    starts with `qti-layout-` are matched; any other `<div>` is left to the
- *    default parser behaviour (ignored as a structural wrapper).
+ * 1. Preserve those wrappers (and their exact `class`) across import/export. The
+ *    node spec that does this MOVED to @citolab/prose-qti — the wrappers are
+ *    author-written QTI and qti-components styles them, so the document model
+ *    belongs to the package. It is re-exported here for existing callers.
  * 2. Lock the wrappers in place: they cannot be deleted or inserted. Their
  *    `class` *can* still be changed, and the content *inside* each column stays
  *    fully editable. Enforcement is a `filterTransaction` that rejects any
  *    transaction which changes how many layout divs the document contains.
  *
- * Wire-up lives in `prosemirror-qti.ts` (Option A): `qtiLayoutDivNodeSpec` is
- * merged into the schema's nodes and `divLockPlugin` is appended to `qtiPlugins`.
+ * What is left here is the part that genuinely is app behaviour: `divLockPlugin`.
+ *
+ * Wire-up lives in `prosemirror-qti.ts`: the node now arrives with `qtiBasicNodes`,
+ * and `divLockPlugin` is appended to `qtiPlugins`.
  */
 
 import { Plugin } from 'prosemirror-state';
+import { qtiLayoutDivNodeSpec } from '@citolab/prose-qti';
 
-import type { DOMOutputSpec, Node as ProseMirrorNode, NodeSpec } from 'prosemirror-model';
+import type { Node as ProseMirrorNode } from 'prosemirror-model';
 
-const LAYOUT_CLASS_PREFIX = 'qti-layout-';
-
-/** True when `className` marks a QTI layout wrapper (`qti-layout-row` / `-colN`). */
-function isLayoutClass(className: string | null): boolean {
-  return !!className && className.split(/\s+/).some(token => token.startsWith(LAYOUT_CLASS_PREFIX));
-}
-
-/**
- * A single generic node covering both the row and the column wrappers — both are
- * block-level and hold block content, so one spec serves the whole grid. The
- * exact `class` string is preserved verbatim so it round-trips unchanged.
- *
- * `isolating` keeps edits (and Backspace/Delete joins) from crossing the wrapper
- * boundary; `selectable: false` stops the wrapper itself from being node-selected
- * and deleted. The hard guarantee that the wrappers never change is enforced by
- * `divLockPlugin` below.
- */
-export const qtiLayoutDivNodeSpec: NodeSpec = {
-  group: 'block',
-  content: 'block+',
-  attrs: {
-    class: { default: null }
-  },
-  parseDOM: [
-    {
-      tag: 'div',
-      getAttrs: (node: Node | string) => {
-        if (!(node instanceof HTMLElement)) return false;
-        const className = node.getAttribute('class');
-        if (!isLayoutClass(className)) return false;
-        return { class: className };
-      }
-    }
-  ],
-  toDOM(node): DOMOutputSpec {
-    const attrs: Record<string, string> = {};
-    if (node.attrs.class) attrs.class = node.attrs.class as string;
-    return ['div', attrs, 0];
-  },
-  defining: true,
-  isolating: true,
-  selectable: false
-};
+/** Re-exported so existing imports keep working; the spec itself lives in the package now. */
+export { qtiLayoutDivNodeSpec };
 
 /** Number of layout divs in the document. */
 function layoutCount(doc: ProseMirrorNode): number {

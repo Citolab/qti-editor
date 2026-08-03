@@ -43,7 +43,7 @@ import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-rou
 /* eslint-disable-next-line import/no-relative-packages */
 import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
 /* eslint-disable-next-line import/no-relative-packages */
-import { divLockPlugin, qtiLayoutDivNodeSpec } from '../../qti-prosemirror-item/src/components/qti-layout-div';
+import { divLockPlugin } from '../../qti-prosemirror-item/src/components/qti-layout-div';
 
 /*
  * Shared child custom elements.
@@ -92,7 +92,7 @@ export interface RegressionEditorOptions {
   sourceXML: string;
   /**
    * Import-side roundtrip transforms for this item. Receives the built schema because some
-   * transforms need it (`ensureInteractionPrompts`).
+   * transforms need it.
    */
   transforms: (schema: Schema) => RoundtripTransform[];
   /**
@@ -132,8 +132,8 @@ export function createRegressionEditor({
   const baseNodes = {
     ...qtiBasicNodes,
     paragraph: { ...qtiBasicNodes.paragraph, group: 'block richtext' },
-    // Keeps <div class="qti-layout-row"> / <div class="qti-layout-colN"> alive across the roundtrip.
-    qtiLayoutDiv: { ...qtiLayoutDivNodeSpec, content: 'block+', group: 'block' },
+    // qtiLayoutDiv arrives with qtiBasicNodes now — the wrappers are author-written QTI, so the
+    // node spec moved into the package. Previously re-declared here from a relative app import.
 
     /*
      * Lists and tables, copied from apps/qti-prosemirror-item/src/schema.ts so the stories carry the

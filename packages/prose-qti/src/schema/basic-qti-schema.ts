@@ -1,5 +1,7 @@
 import { nodes as basicNodes, marks as basicMarks } from 'prosemirror-schema-basic';
 
+import { qtiLayoutDivNodeSpec } from './qti-layout-div.js';
+
 import type { NodeSpec } from 'prosemirror-model';
 
 interface QtiBasicNodeOptions {
@@ -70,7 +72,14 @@ const qtiImageNodeSpec: NodeSpec = {
 
 const qtiBasicNodesDefault = {
   ...basicNodes,
-  image: qtiImageNodeSpec
+  image: qtiImageNodeSpec,
+  /*
+   * In the basic set rather than opt-in, because omitting it is not a smaller schema — it is a
+   * lossy one. Without this node the author's `<div class="qti-layout-row">` wrappers are dropped
+   * on import, and every consumer that forgot to add it was silently losing them. See
+   * qti-layout-div.ts.
+   */
+  qtiLayoutDiv: qtiLayoutDivNodeSpec
 };
 
 export const qtiBasicMarks = basicMarks;
