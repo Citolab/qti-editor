@@ -2,6 +2,22 @@
 # Strip yalc deps from staged package.json files before they enter a commit.
 # After the commit, run `pnpm yalc:add` to restore yalc dev mode.
 
+# Not in CI. Every check below gates a HUMAN commit — a developer about to push code — and none of
+# them has a subject when the committer is a robot.
+#
+# This is not hypothetical tidiness. It broke the release: multi-semantic-release commits the
+# version bump itself, that commit fired this hook, and the hook ran the browser tests, which died
+# with "Executable doesn't exist at .../chrome-headless-shell" because the release job installs no
+# Playwright browsers and has no reason to. The release then failed having published nothing, so
+# main sat several merges ahead of npm with no sign of why.
+#
+# CI runs the real gates over the whole repo (.github/workflows/ci.yml) and the release only runs
+# at all once that has passed, so nothing is skipped here that was not already checked more
+# thoroughly there.
+if [ -n "$CI" ]; then
+  exit 0
+fi
+
 # There is deliberately no check for .qti-components-local-link-state.json here.
 #
 # Source-link mode cannot reach a commit. Its state file is gitignored, and .storybook/main.ts is
