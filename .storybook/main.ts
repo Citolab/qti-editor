@@ -14,7 +14,11 @@ const config: StorybookConfig = {
     // "../packages/*/*/src/**/*.mdx",
     // "../apps/*/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     // "../apps/*/src/**/*.mdx",
-    "../apps/*/stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+    "../apps/*/stories/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    // Docs-only pages. Kept beside the stories rather than in apps/site/src/content/docs, because
+    // that site documents the editor for people USING it, and these document the repo's own tooling
+    // for people working ON it — a different audience and a different lifetime.
+    "../apps/*/stories/**/*.mdx"
   ],
   "addons": [
     "@chromatic-com/storybook",

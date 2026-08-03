@@ -32,3 +32,6 @@ export {
   stripEmptyPrompts,
   type RoundtripExportTransform,
 } from './strip-empty-prompts.js';
+export * from './convert.js';
+export type { HtmlChange, HtmlChangeKind } from './diff-html.js';
+export * from './validate.js';
