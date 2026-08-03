@@ -1,0 +1,28 @@
+{
+  "tagName": "qti-match-interaction",
+  "content": "qtiPrompt qtiSimpleMatchSet{2}",
+  "group": "block",
+  "defining": true,
+  "isolating": true,
+  "attrs": {
+    "shuffle": {
+      "default": false
+    },
+    "class": {
+      "default": null
+    },
+    "correctResponse": {
+      "default": null
+    },
+    "responseIdentifier": {
+      "default": null
+    },
+    "score": {
+      "default": 1
+    },
+    "dataFirstColumnHeader": {
+      "default": null
+    }
+  },
+  "note": "Same tag as qtiMatchInteraction. The only discriminator is `class~=\"qti-match-tabular\"`: the tabular parse rule requires it at priority 80, and the non-tabular rule returns false when it is present. Two PM nodes, one markup element."
+}

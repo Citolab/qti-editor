@@ -41,13 +41,16 @@ vrt:
 screenshots:
 	pnpm run test:vrt:update
 
-# Regenerate schema/content-model.json from the editor's real schema, then verify content-model.mjs still agrees with it. Run after any *.schema.ts change.
+# Regenerate the schema fixtures from the editor's real schema, then verify them. Run after any
+# *.schema.ts change — and READ the diff: a changed fixture is a changed editor contract, and
+# content-model.json is consumed outside this repo, including by LLM generation.
 [group('primary')]
 schema:
 	pnpm run schema:build
 	pnpm run schema:check
 
-# Verify only — fails if content-model.mjs has drifted or content-model.json is stale. For CI.
+# Verify only — fails if any fixture, content-model.json or the notes have drifted.
+# Runs the same test `just test` does; it is here as a fast targeted alias.
 [group('primary')]
 schema-check:
 	pnpm run schema:check

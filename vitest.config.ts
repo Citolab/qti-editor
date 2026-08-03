@@ -110,7 +110,15 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'browser',
-          include: ['packages/**/src/**/*.browser.test.ts', 'apps/**/*.browser.test.ts'],
+          // `schema/` is in here because the schema fixture gate lives there and must run through
+          // Vite: building the real editor schema imports the real components, and those are built
+          // for a bundler. The same check as a standalone tsx script died on a Vite-only stylesheet
+          // specifier in a dependency's dist — see the header of content-model.browser.test.ts.
+          include: [
+            'packages/**/src/**/*.browser.test.ts',
+            'apps/**/*.browser.test.ts',
+            'schema/**/*.browser.test.ts'
+          ],
           setupFiles: ['./tools/testing/setup/vitest.js'],
           globalSetup: ['./tools/testing/setup/vendor-qti-runtime.global.mjs'],
           browser: {

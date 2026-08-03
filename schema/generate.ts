@@ -1,155 +1,79 @@
 /**
- * Emit `schema/content-model.json` from the schema the editor actually builds.
+ * Write the schema fixtures from the schema the editor actually builds.
  *
  *   pnpm schema:build
  *
- * Nothing here is authored. It constructs the real composed editor schema — ProseKit's base
- * extension plus every registered QTI descriptor — and serialises the grammar off it. The output
- * is for machine consumers that need the editor's document model without running an editor: a
- * validator, a generator, an importer, or an out-of-process parser in another language.
+ * Two outputs, from one construction (see content-model.ts):
  *
- * `schema/content-model.mjs` is the human-facing counterpart. Same facts, plus the commentary
- * JSON cannot carry — what the QTI XSD permits, where the editor narrows it, and why. Keep both:
- * `pnpm schema:check` fails if they disagree.
+ *   content-model.json     the whole grammar, node order intact
+ *   __interactions__/<name>.json  one file per interaction node
  *
- * ## Determinism
+ * The per-node files exist for the diff, not for consumers. The whole model is 13 KB, so a one-line
+ * change to qtiOrderInteraction used to surface as a hunk in the middle of an unrelated wall of
+ * JSON. Split, a failing fixture names the node in the filename and the diff is the few lines that
+ * actually moved. content-model.json stays the authority — it is what carries node ORDER, which the
+ * split files cannot express and which is load-bearing (ProseMirror resolves a content expression's
+ * default type by first match).
  *
- * Same schema in, byte-identical file out. Node order follows the schema's own order, which is
- * meaningful — ProseMirror resolves a content expression's default type by first match, so
- * reordering changes behaviour. Object keys are emitted in a fixed sequence, never
- * `Object.keys()` order. There is no timestamp in the output; a regenerated file is unchanged
- * unless the schema changed, so a dirty git diff means real drift.
+ * ## content-model.json ships
  *
- * ## Notes for consumers
+ * packages/prose-qti copies it into its dist at build time and exports it as
+ * `@citolab/prose-qti/content-model`, so a consumer imports the document model rather than reaching
+ * into this repo. The copy is a `cp` in that package's build script, so the build fails loudly if
+ * this file is missing — deliberate: shipping a stale or absent content model silently would be
+ * worse than not building at all.
  *
- * - `nodes` is an ordered object. Preserve the order if your parser can; C#'s
- *   `System.Text.Json` does for `JsonObject` / `Dictionary<string, T>` on deserialise.
- * - Boolean fields are emitted only when true. Absent means false, which is what a C# `bool`
- *   field defaults to.
- * - `tagName` is the markup name, read back from each node's `toDOM`. It is what you need to
- *   match QTI XML; the object keys are ProseMirror node names and will not match your markup.
- *   `heading` reports `h1` — its real tag is `h1`..`h6` selected by the `level` attribute.
+ * It carries a `schemaVersion`: a fingerprint of the grammar, derived and never hand-bumped, which
+ * excludes the notes so it moves when the document model moves and not when prose is reworded.
+ *
+ * `schema/notes.ts` is the human-facing counterpart: same facts, plus the commentary JSON
+ * cannot carry — what the QTI XSD permits, where the editor narrows it, and why. Keep both;
+ * `schema/content-model.browser.test.ts` fails if they disagree.
+ *
+ * ## Notes for consumers of content-model.json
+ *
+ * - `nodes` is an ordered object. Preserve the order if your parser can; C#'s `System.Text.Json`
+ *   does for `JsonObject` / `Dictionary<string, T>` on deserialise.
+ * - Boolean fields are emitted only when true. Absent means false, which is what a C# `bool` field
+ *   defaults to.
+ * - `tagName` is the markup name, read back from each node's `toDOM`. It is what you need to match
+ *   QTI XML; the object keys are ProseMirror node names and will not match your markup. `heading`
+ *   reports `h1` — its real tag is `h1`..`h6` selected by the `level` attribute.
  * - `attrs` values carry either `{ "default": <value> }` or `{ "required": true }`. A required
- *   attribute has no default and must be supplied when constructing the node. `"default": null`
- *   is a real default of null, not an absent one.
- * - `content` strings are ProseMirror content expressions over these node names and the group
- *   names in `groups`.
+ *   attribute has no default and must be supplied when constructing the node. `"default": null` is
+ *   a real default of null, not an absent one.
+ * - `content` strings are ProseMirror content expressions over these node names and the group names
+ *   in `groups`.
  */
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { createEditor, union } from 'prosekit/core';
+import { buildContentModel, interactionSlices, serialise } from './content-model';
 
-import { defineBasicExtension } from '../apps/qti-prosekit-app/src/extensions/basic-extension.js';
-import { defineQtiInteractionsExtension } from '../apps/qti-prosekit-app/src/extensions/qti-interactions-extension.js';
-import { IDENTIFIED } from './content-model.mjs';
-
-/**
- * Grammar-bearing NodeSpec fields, in emit order. `parseDOM` / `toDOM` are excluded — they are
- * functions, and they describe serialization rather than the document model.
- */
-const FLAGS = ['inline', 'atom', 'defining', 'isolating', 'selectable', 'draggable', 'createGapCursor'] as const;
-
-type NodeJson = {
-  tagName?: string;
-  content?: string;
-  group?: string;
-  marks?: string;
-  topNode?: true;
-  placeholder?: string;
-  attrs?: Record<string, { default?: unknown } | { required: true }>;
-} & Partial<Record<(typeof FLAGS)[number], true>>;
-
-const schema = createEditor({
-  extension: union(defineBasicExtension(), defineQtiInteractionsExtension())
-}).schema;
-
-/**
- * Read a node's markup tag by asking its `toDOM` for one.
- *
- * `toDOM` returns a DOMOutputSpec whose first element is the tag name, so a created node round
- * -trips to its own tag without a hand-maintained mapping. Nodes with required attrs are built
- * with `create` rather than `createChecked` so an unfilled content model does not throw — the
- * tag does not depend on the children.
- */
-function tagNameOf(name: string): string | undefined {
-  const type = schema.nodes[name];
-  const toDOM = type?.spec.toDOM;
-  if (!toDOM || type.isText) return undefined;
-  try {
-    const out = toDOM(type.create()) as unknown;
-    if (Array.isArray(out) && typeof out[0] === 'string') return out[0];
-  } catch {
-    /* a node that cannot be created without children still has no tag dependence on them */
-  }
-  return undefined;
-}
-
-// ── nodes ────────────────────────────────────────────────────────────────────
-const nodes: Record<string, NodeJson> = {};
-schema.spec.nodes.forEach((name: string, spec: Record<string, unknown>) => {
-  const out: NodeJson = {};
-
-  const tagName = tagNameOf(name);
-  if (tagName) out.tagName = tagName;
-  if (typeof spec.content === 'string') out.content = spec.content;
-  if (typeof spec.group === 'string') out.group = spec.group;
-  if (typeof spec.marks === 'string') out.marks = spec.marks;
-  if (schema.topNodeType.name === name) out.topNode = true;
-  for (const flag of FLAGS) if (spec[flag] === true) out[flag] = true;
-  if (typeof spec.placeholder === 'string') out.placeholder = spec.placeholder;
-
-  const attrs = spec.attrs as Record<string, unknown> | undefined;
-  if (attrs && Object.keys(attrs).length > 0) {
-    out.attrs = {};
-    for (const attr of Object.keys(attrs)) {
-      // ProseMirror's own notion of required — an attribute with no default. Read it off the
-      // resolved NodeType rather than the raw spec, because `{ default: undefined }` and a
-      // genuinely absent `default` are indistinguishable by `'default' in obj`.
-      const resolved = schema.nodes[name]?.attrs?.[attr];
-      out.attrs[attr] = resolved?.isRequired ? { required: true } : { default: resolved?.default ?? null };
-    }
-  }
-
-  nodes[name] = out;
-});
-
-// ── marks ────────────────────────────────────────────────────────────────────
-const marks: Record<string, { tagName?: string }> = {};
-for (const name of Object.keys(schema.marks)) {
-  const toDOM = schema.marks[name].spec.toDOM;
-  let tagName: string | undefined;
-  if (toDOM) {
-    const out = toDOM(schema.marks[name].create(), true) as unknown;
-    if (Array.isArray(out) && typeof out[0] === 'string') tagName = out[0];
-  }
-  marks[name] = tagName ? { tagName } : {};
-}
-
-// ── groups ───────────────────────────────────────────────────────────────────
-// A reverse index over the `group` fields. Content expressions reference these names, so a
-// consumer resolving an expression needs to know what each one admits.
-const groups: Record<string, string[]> = {};
-for (const [name, spec] of Object.entries(nodes)) {
-  for (const g of (spec.group ?? '').split(/\s+/).filter(Boolean)) (groups[g] ??= []).push(name);
-}
-
-// ── write ────────────────────────────────────────────────────────────────────
-const output = {
-  $comment:
-    'Generated by schema/generate.ts from the built editor schema — do not edit. Run `pnpm schema:build`.',
-  topNode: schema.topNodeType.name,
-  nodes,
-  marks,
-  groups,
-  /** Nodes whose `identifier` attribute a `correct-response` may reference. See content-model.mjs. */
-  identified: IDENTIFIED
-};
+const model = buildContentModel();
 
 const target = fileURLToPath(new URL('./content-model.json', import.meta.url));
-writeFileSync(target, JSON.stringify(output, null, 2) + '\n');
+writeFileSync(target, serialise(model));
+
+// ── per-interaction fixtures ─────────────────────────────────────────────────
+// Emptied first, so removing an interaction removes its fixture instead of leaving a stale file
+// that no test would ever look at again.
+//
+// Interactions only, not every node: content-model.json above already covers all of them, so this
+// split is for diff locality rather than coverage. See interactionSlices in content-model.ts.
+const interactionsDir = fileURLToPath(new URL('./__interactions__/', import.meta.url));
+mkdirSync(interactionsDir, { recursive: true });
+for (const stale of readdirSync(interactionsDir).filter(f => f.endsWith('.json'))) {
+  rmSync(`${interactionsDir}${stale}`);
+}
+
+const slices = interactionSlices(model);
+for (const [name, spec] of Object.entries(slices)) {
+  writeFileSync(fileURLToPath(new URL(`./__interactions__/${name}.json`, import.meta.url)), serialise(spec));
+}
 
 console.log(
-  `✓ wrote schema/content-model.json — ${Object.keys(nodes).length} nodes, ` +
-    `${Object.keys(marks).length} marks, ${Object.keys(groups).length} groups`
+  `✓ wrote schema/content-model.json — ${Object.keys(model.nodes).length} nodes, ` +
+    `${Object.keys(model.marks).length} marks, ${Object.keys(model.groups).length} groups`
 );
+console.log(`✓ wrote ${Object.keys(slices).length} per-interaction fixtures to schema/__interactions__/`);

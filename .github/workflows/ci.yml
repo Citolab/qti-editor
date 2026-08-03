@@ -43,14 +43,21 @@ jobs:
       - name: Lint
         run: pnpm lint:check
 
-      # Both gates run before the (slow) Playwright install so they fail fast.
+      # Runs before the (slow) Playwright install so it fails fast.
       # Must stay after "Build packages": prose-qti resolves prose-extensions
       # through its project reference output.
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Schema drift check
-        run: pnpm schema:check
+      # No separate "Schema drift check" step any more. It is now a browser test
+      # (schema/content-model.browser.test.ts) and so runs under "Run tests" below.
+      #
+      # It could not stay here even if we wanted it: this position is before the Playwright
+      # install, and the check needs a browser now. It needs one because building the real editor
+      # schema imports the real components, which are built for a bundler — as a plain tsx script
+      # it died on a Vite-only stylesheet specifier in a dependency's dist, and it had never once
+      # run green in CI because Typecheck failed ahead of it every time and nobody saw the step
+      # underneath.
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
