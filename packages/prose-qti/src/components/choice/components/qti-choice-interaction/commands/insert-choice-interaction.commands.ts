@@ -2,8 +2,31 @@ import { createInsertSiblingOnEnterCommand } from '@citolab/prose-qti/components
 import { createInsertBlockInteractionCommand } from '@citolab/prose-qti/components/shared/commands/insert.js';
 import { translateQti } from '@citolab/prose-qti/components/shared';
 
+import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
 import type { Command } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
+
+/**
+ * An empty `qtiSimpleChoice` with a fresh identifier.
+ *
+ * Exported because a choice can be added by more than one route — Enter at the end of a choice, and
+ * a host's own affordance such as an "add answer" decoration — and those routes must produce
+ * structurally identical nodes. When this was inlined in the Enter handler, the second route had to
+ * reimplement it, and "same attrs, same shape" became a comment someone had to honour rather than
+ * something the code guaranteed.
+ *
+ * Deliberately a node factory rather than a command: the two routes agree on WHAT a new choice is
+ * and differ on WHERE it goes. Enter also has to handle exiting the interaction on an empty
+ * trailing choice, which an insert-at-position caller has no notion of, so sharing a whole command
+ * would force one caller into the other's shape.
+ */
+export function createSimpleChoiceNode(schema: Schema): ProseMirrorNode | null {
+  const choiceType = schema.nodes.qtiSimpleChoice;
+  const paragraphType = schema.nodes.qtiSimpleChoiceParagraph;
+  if (!choiceType || !paragraphType) return null;
+
+  return choiceType.create({ identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` }, paragraphType.create());
+}
 
 /**
  * Command to insert a choice interaction at the current selection
@@ -62,11 +85,7 @@ export const insertSimpleChoiceOnEnter: Command = (state, dispatch) => {
   return createInsertSiblingOnEnterCommand({
     ancestorNodeName: 'qtiSimpleChoice',
     selectionOffset: 2,
-    createSiblingNode: () =>
-      choiceType.create(
-        { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
-        paragraphType.create()
-      ),
+    createSiblingNode: currentState => createSimpleChoiceNode(currentState.schema),
     // Enter on an empty trailing choice exits the interaction into a new
     // paragraph below it, instead of adding another empty choice.
     createExitNode: currentState => currentState.schema.nodes.paragraph?.create() ?? null,
