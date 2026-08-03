@@ -1,0 +1,64 @@
+---
+title: Content Model
+description: The machine-readable manifest of the editor's document model, published for out-of-process consumers.
+slug: docs/packages/content-model
+---
+
+`@citolab/prose-qti/content-model` exports a single JSON file describing the editor's ProseMirror document model: every node, mark, and group the editor's schema can build, plus the reasoning behind the places it narrows the QTI 3.0 standard.
+
+## When to use this
+
+Use this export when you need to:
+
+- validate or generate the editor's roundtrip document shape from **outside** the editor — a backend service, an LLM-driven generator, or an offline validator
+- read the document model from a language other than TypeScript (the format is aimed at C#/Python-style consumers as much as JS ones)
+- understand, in one place, where the editor's schema is stricter than the QTI 3.0 XSD and why
+
+## What it is, and is not
+
+It is the **roundtrip format** — the editor's own document model. It is not QTI, and a document that satisfies this contract is not thereby valid QTI. Converting to and from standard QTI XML (carrying `score`, `correct-response`, and friends) is a separate step; see [QTI Item Roundtrip](./qti-item-roundtrip).
+
+## Usage
+
+```ts
+import contentModel from '@citolab/prose-qti/content-model';
+
+contentModel.schemaVersion; // "fnv1a64-f04508231bf07b42"
+contentModel.topNode;       // "doc"
+contentModel.nodes.qtiChoiceInteraction;
+```
+
+The package copies the file into its `dist` at build time — there is no separate install step or additional package to add.
+
+## Shape
+
+```json
+{
+  "schemaVersion": "fnv1a64-f04508231bf07b42",
+  "topNode": "doc",
+  "nodes": { "...": "one entry per node, keyed by ProseMirror node name" },
+  "marks": { "...": "one entry per mark" },
+  "groups": { "...": "reverse index: group name -> member node names" },
+  "identified": ["qtiSimpleChoice", "qtiSimpleAssociableChoice", "..."]
+}
+```
+
+- **`nodes`** is an ordered object — order is meaningful, since ProseMirror resolves a content expression's default type by first match. Preserve it if your parser can; C#'s `System.Text.Json` does for a `JsonObject` / `Dictionary<string, T>` on deserialise.
+- Each node entry may carry `tagName` (the QTI markup element, read back from the node's own serializer — match on this, not the object key, since the two diverge for nodes like `heading`, which reports `h1` even though its real tag is `h1`..`h6`), `content` (a ProseMirror content expression over these node names and the names in `groups`), `group`, `marks`, boolean flags (`inline`, `atom`, `defining`, `isolating`, `selectable`, `draggable`, `createGapCursor` — emitted only when true; absent means false), `attrs` (each either `{ "default": <value> }` or `{ "required": true }` — a required attribute has no default and must be supplied when constructing the node; `"default": null` is a real default, not an absent one), and `note`.
+- **`note`** is the one field no generator produces: hand-authored prose recording where the editor narrows the QTI 3.0 XSD and why — for example, that the standard makes `qti-prompt` optional on several interactions while the editor requires it. This is exactly the context an LLM generating a document needs and cannot infer from `content: "qtiPromptParagraph"` alone.
+- **`identified`** lists the node names whose `identifier` attribute a `correct-response` may reference (`qtiSimpleChoice`, `qtiGap`, `qtiHottext`, and so on).
+
+## `schemaVersion`
+
+A fingerprint of the grammar, derived and never hand-bumped — a number someone has to remember to increment is wrong exactly when it matters. It covers everything a document's validity depends on (`topNode`, every node's content expression, group, marks, flags, attribute defaults, `tagName`, the group index, and `identified`) but **excludes `note`**: rewording why a prompt is narrowed changes nothing a document's validity depends on, so it must not invalidate a consumer's cached schema or read as a breaking change.
+
+Compare it after refetching the file to detect a real grammar change without diffing the whole document.
+
+## For non-npm consumers
+
+If your validator or generator isn't a Node/npm consumer — the C# and Python case this format is aimed at — don't reach into this repository's source (`schema/content-model.json`); that file is a build fixture, not the published artifact. Fetch the published one instead, for example via a CDN over the npm package: `https://unpkg.com/@citolab/prose-qti/content-model.json`.
+
+## Related
+
+- [QTI Item Roundtrip](./qti-item-roundtrip)
+- [Itembody-only QTI Subformat](./itembody-subformat)

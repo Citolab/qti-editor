@@ -228,4 +228,6 @@ A QTI `pair` is **unordered**: `A O` and `O A` denote the same association. Down
 
 `pnpm schema:check` exists specifically to catch drift between `schema/content-model.json` and the generated model, and was never wired into CI. Likewise three packages define `typecheck` scripts that nothing ran. Both are now CI steps.
 
+> **Correction.** `schema:check` is no longer its own CI step. It used to be a plain `tsx` script, `schema/check.ts`, and it had never once run green: building the real composed schema pulls in the real components, which are built for a bundler, and `tsx` (a transpiler, not a bundler) died on a Vite-only stylesheet specifier in a dependency's `dist` before reading a single node spec. It was rebuilt as `schema/content-model.browser.test.ts` / `schema/markup-contract.browser.test.ts`, which run through Vitest/Vite and so don't hit that failure — and which need a real browser, so the check now runs inside `pnpm test` (the "Run tests" step), in CI, and in the staged-only pre-commit hook, rather than as a separate pre-Playwright-install step. `typecheck` is unaffected and still runs as its own CI step, ahead of the Playwright install.
+
 A single root `tsc -p tsconfig.json` is **not** viable (161 errors from `apps/*` compiler-option conflicts — missing `jsx`, duplicate `HTMLElementTagNameMap`); typechecking fans out per project instead.

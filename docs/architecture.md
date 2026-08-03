@@ -36,6 +36,9 @@ apps/
   qti-prosemirror-item/ ← @qti-editor/prosemirror-item  (raw ProseMirror example)
   site/                ← @qti-editor/site  (Astro documentation site)
   e2e/                 (end-to-end tests)
+
+schema/                (repo tooling, not a package: generates content-model.json —
+                        see "Generated content model" below)
 ```
 
 ## Layer Ownership
@@ -176,6 +179,12 @@ apps/*                      (consume all packages)
 `packages/prose-qti` and `packages/prose-extensions` are published to npm, so their `package.json` `exports` map (`main`, `types`, and every subpath) must resolve to built `dist/**` output, never raw `src/**/*.ts` — consumers do not compile this repo's TypeScript. Wildcard subpath entries (e.g. `"./components/choice/*": "./dist/components/choice/*"`) must map directly to the already-extensioned build output; do not append `.js`/`.d.ts` in the exports map yourself, since the glob match already includes the extension and doing so produces duplicate-extension paths that fail to resolve. Run each package's `build` script and spot-check `dist/` before changing its `exports` map.
 
 Cross-package dependencies within this repo (e.g. `prose-extensions` depending on `prose-qti`) use the pnpm `workspace:*` protocol rather than a pinned version — see [release-plan.md](release-plan.md#internal-package-dependencies).
+
+### Generated content model
+
+The root-level `schema/` directory is tooling, not a package: it builds the real composed editor schema (ProseKit's base extension plus every registered QTI descriptor) and serialises it to `schema/content-model.json` — a machine-readable manifest of every node, mark, and group the editor's document model admits, for consumers (validators, generators, out-of-process parsers) that need the document model without running an editor. `packages/prose-qti`'s `build` script copies that file into its own `dist/content-model.json` and publishes it as the `./content-model` subpath export (`@citolab/prose-qti/content-model`); there is no second, hand-maintained copy anywhere.
+
+Regenerate with `pnpm schema:build` (or `just schema`) after any `*.schema.ts` change, and read the diff — a changed fixture is a changed editor contract. Drift is caught by `schema/content-model.browser.test.ts`, which runs in `pnpm test`/CI/the pre-commit hook, not by a standalone script. See the "Development/Schema tooling" Storybook page (`apps/e2e/stories/schema-tooling.mdx`) for the full pipeline and [Content Model](../apps/site/src/content/docs/packages/content-model.mdx) for the published-consumer view.
 
 ## Placement Decision Rules
 

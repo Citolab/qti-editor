@@ -116,6 +116,7 @@ export default defineConfig({
         {
           label: 'Package Reference',
           items: [
+            { label: 'Content Model', slug: 'docs/packages/content-model' },
             { label: 'Itembody-only QTI Subformat', slug: 'docs/packages/itembody-subformat' },
             { label: 'QTI 3 Item Import', slug: 'docs/packages/qti3-item-import' },
             { label: 'QTI Item Roundtrip', slug: 'docs/packages/qti-item-roundtrip' },
