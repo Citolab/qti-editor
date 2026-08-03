@@ -40,8 +40,6 @@
     "build:packages": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/prose-extensions\" --filter \"./packages/prose-qti\" run build && QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/prose-qti-ui\" run build",
     "registry:build": "pnpm --filter @citolab/prose-qti-ui registry:build",
     "registry:serve": "pnpm --filter @citolab/prose-qti-ui registry:serve",
-    "schema:build": "tsx schema/generate.ts",
-    "schema:check": "vitest run --project browser schema/content-model",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:vrt": "VRT=1 vitest run --project vrt",

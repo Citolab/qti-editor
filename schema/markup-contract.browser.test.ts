@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { buildEditorSchema } from './content-model';
+import { buildEditorSchema } from './editor-schema';
 
 import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
 
@@ -8,11 +8,11 @@ import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
 /**
  * The schema stated as document shapes: what the editor accepts, and what it refuses.
  *
- * Companion to content-model.browser.test.ts, answering a different question. The fixture test asks
- * "did the grammar change since last time" — mechanical, exhaustive, and useless as documentation:
- * `qtiPrompt qtiGapText{2,} paragraph+` is precise and tells you nothing about what an author may
- * write. This file asks "is THIS shape legal", one example at a time, which is the form a human can
- * check by eye.
+ * This is now the whole of schema/'s test coverage, and it is the half worth keeping. A committed
+ * fixture of the grammar used to sit beside it, asking "did this change since last time" —
+ * mechanical, exhaustive, and useless as documentation: `qtiPrompt? qtiGapText{2,} paragraph+` is
+ * precise and tells you nothing about what an author may write. This file asks "is THIS shape
+ * legal", one example at a time, which is the form a human can check by eye.
  *
  * It is also where the editor's NARROWINGS become visible. Every `XSD:` note in notes.ts
  * claims the standard permits something the editor does not; each claim is a rejection case below,
@@ -80,6 +80,20 @@ describe('shapes the editor accepts', () => {
     );
   });
 
+  test('the prompt is optional, as the XSD has it', () => {
+    // Every interaction's content expression leads with `qtiPrompt?`. It was `qtiPrompt` for a
+    // while, on the reasoning that an interaction should always have a stable first child to land
+    // the cursor in. That was reverted: requiring one meant importing real QTI — where the prompt
+    // genuinely is optional — had to synthesise an empty prompt to get a document that would
+    // validate, which put a node in the author's item that the author never wrote.
+    accepts('choice interaction with no prompt', () =>
+      schema.nodes.qtiChoiceInteraction.createChecked({ responseIdentifier: 'RESPONSE' }, [
+        simpleChoice('a', 'Tin'),
+        simpleChoice('b', 'Iodine')
+      ])
+    );
+  });
+
   test('an order interaction, same shape as choice', () => {
     accepts('order interaction', () =>
       schema.nodes.qtiOrderInteraction.createChecked({ responseIdentifier: 'RESPONSE' }, [
@@ -127,17 +141,9 @@ describe('shapes the editor accepts', () => {
 
 describe('narrowings the editor enforces', () => {
   /*
-   * Each case corresponds to an `XSD:` note in notes.ts, emitted into content-model.json as
-   * that node's `note`. Relaxing a narrowing means changing both the note and the case below.
+   * Each case corresponds to an `XSD:` note in notes.ts. Relaxing a narrowing means changing both
+   * the note and the case below.
    */
-
-  test('an interaction must have a prompt, though the XSD makes it optional', () => {
-    // "XSD: every one of these has `qti-prompt?` — optional. The editor requires it, so an
-    // interaction always has a stable first child to land the cursor in."
-    refuses('choice interaction with no prompt', () =>
-      schema.nodes.qtiChoiceInteraction.createChecked({ responseIdentifier: 'R' }, [simpleChoice('a', 'Tin')])
-    );
-  });
 
   test('an interaction needs at least one choice', () => {
     refuses('choice interaction with a prompt and nothing else', () =>

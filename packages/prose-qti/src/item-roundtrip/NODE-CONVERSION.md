@@ -121,9 +121,9 @@ The spike is what makes this a decision rather than a hope: the full pipeline al
 Not urgent, and not the same question. Both known editors — QTI-Editor and QTI-Editor-angular — are
 TypeScript, so a **library** serves them with no network hop, and it keeps the conversion versioned
 alongside the schema that defines it. That last part is not theoretical: a hand-copied
-`qti-editor-schema.json` already exists elsewhere in the estate, 38 nodes and no `schemaVersion`,
-predating the generated export. Copies drift; that is exactly why
-`@citolab/prose-qti/content-model` is generated rather than duplicated.
+`qti-editor-schema.json` already exists elsewhere in the estate, 38 nodes, drifting quietly. The
+answer to that is not a better copy — a generated `content-model.json` export was built and then
+removed unused — it is that a consumer calls `createQtiSchema()` and gets the real thing.
 
 A **service** earns its place only if version skew across consumers has to be controlled centrally
 rather than by dependency ranges, or if something needs conversion without a JS runtime. Neither
@@ -133,8 +133,8 @@ The likely first consumer is an **MCP server over the roundtrip format**, in Nod
 .NET one. That does not change the answer — it confirms it. An MCP server is LLM-facing by
 construction, which is the audience these three functions exist for, and it would *import* the
 library rather than replace it. It also puts the stale hand-copied schema out of its misery: the
-server would consume `@citolab/prose-qti/content-model` directly, so the manifest it hands an LLM
-cannot fall behind the editor that produced it.
+server builds the schema itself and validates against it with `validateHtml`, so what it hands an
+LLM cannot fall behind the editor that produced it.
 
 ---
 

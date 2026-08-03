@@ -142,10 +142,10 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'browser',
-          // `schema/` is in here because the schema fixture gate lives there and must run through
-          // Vite: building the real editor schema imports the real components, and those are built
-          // for a bundler. The same check as a standalone tsx script died on a Vite-only stylesheet
-          // specifier in a dependency's dist — see the header of content-model.browser.test.ts.
+          // `schema/` is in here because its tests build the REAL editor schema, which imports the
+          // real components, and those are built for a bundler — so they must run through Vite. The
+          // same construction as a standalone tsx script died on a Vite-only stylesheet specifier in
+          // a dependency's dist.
           include: [
             'packages/**/src/**/*.browser.test.ts',
             'apps/**/*.browser.test.ts',

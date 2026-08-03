@@ -1,38 +1,28 @@
 /**
- * The hand-authored half of schema/: prose about the document model, and the one list the generator
- * cannot derive.
+ * Prose about the document model: why the editor narrows the standard, what the XSD permits that we
+ * do not, and which decisions are load-bearing. None of it is derivable from the schema, which is
+ * why it is written down rather than generated.
  *
- * schema/ reads authored → compute → write:
+ * All of schema/ is now three files — this one, `editor-schema.ts` which builds the real composed
+ * schema, and `markup-contract.browser.test.ts` which states the narrowings below as document shapes
+ * the editor accepts or refuses. Every `XSD:` note here has a rejection case there, so a note and
+ * the behaviour it describes cannot drift apart silently.
  *
- *   notes.ts            this file. What a human wrote and the schema cannot know.
- *   content-model.ts    builds the real editor schema and shapes it. Pure; no I/O.
- *   generate.ts         the CLI. Writes content-model.json and __interactions__/.
+ * ## Why this is a `.ts` file of strings rather than a markdown doc
  *
- * ## What this file is now
+ * Two reasons, both mechanical. `notes.browser.test.ts` fails if a key names a node that no longer
+ * exists, so a note cannot outlive what it describes — prose in markdown goes stale in silence.
+ * And IDENTIFIED below is authored *input*, not documentation: it is a claim about the schema that
+ * the same test checks.
  *
- * It was `content-model.mjs` and carried a full copy of the schema — NODES, MARKS and GROUPS —
- * diffed against the built schema to catch drift. That copy is gone. `content-model.json` and the
- * per-interaction fixtures under `__interactions__/` are generated from the real schema, so the data
- * no longer needs a hand-maintained twin; keeping one meant every schema change demanded a manual
- * edit here before the check would pass, which is the exact cost the fixtures remove.
+ * ## What was here before
  *
- * Renamed with it, because the old name had stopped being true: the content model lives in
- * content-model.json, and what is left here is notes. `.ts` rather than `.mjs` because nothing
- * outside schema/ ever imported it, so the extension bought no portability — only an exemption from
- * typechecking.
- *
- * What could not be generated is the prose: why the editor narrows the standard, what the XSD
- * permits that we do not, and which decisions are load-bearing. That is what remains.
- *
- * ## NOTES ends up in content-model.json
- *
- * Each entry is emitted as that node's `note` field, so a consumer reading only the JSON gets the
- * reasoning too. That is the point: these were JS comments in a `.mjs`, invisible to the C# and
- * Python parsers the JSON exists for, and invisible to LLM generation — which is precisely the
- * audience that benefits most from "the XSD makes qti-prompt optional; the editor requires it".
- *
- * A key naming a node that no longer exists fails `content-model.browser.test.ts`, so a note cannot
- * outlive what it describes.
+ * These notes were emitted into a generated `content-model.json`, published as
+ * `@citolab/prose-qti/content-model` for out-of-process consumers — a C# MCP server, Python, LLM
+ * generation — that would read a description of the grammar instead of building it. Those consumers
+ * never arrived. The conversion runs in Node now (see the package's `/node` subpath), where a caller
+ * gets the real schema from `createQtiSchema()`, so the serialiser, the committed fixtures, the
+ * version fingerprint and the export were removed. The prose is what was worth keeping.
  */
 export const NOTES: Record<string, string> = {
   doc: "apps/qti-prosekit-app narrows this to `heading paragraph qtiItemDivider block*` to pin a locked title/intro header. That is an app decision, not part of the portable core.",
@@ -61,8 +51,8 @@ export const NOTES: Record<string, string> = {
 /**
  * Nodes whose `identifier` attribute a `correct-response` may reference.
  *
- * Authored input, not documentation: the generator emits it into content-model.json as `identified`,
- * and the test asserts every name here really has an `identifier` attribute in the built schema.
+ * Authored input, not documentation: `notes.browser.test.ts` asserts every name here really has an
+ * `identifier` attribute in the built schema.
  */
 export const IDENTIFIED: readonly string[] = [
   'qtiSimpleChoice',
