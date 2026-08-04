@@ -74,7 +74,7 @@
     "@chromatic-com/storybook": "^5.2.1",
     "@eslint/js": "^9.39.5",
     "@pwrs/cem": "^0.11.0",
-    "@qti-components/theme": "https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@29a326f",
+    "@qti-components/theme": "catalog:",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/exec": "^7.1.0",
