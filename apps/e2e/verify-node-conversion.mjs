@@ -5,12 +5,15 @@
  * extensionless relative imports because they compile with `moduleResolution: bundler`. Fixing that
  * emit is the only honest way to remove the hook.
  */
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 
 import { qti3ToPm, pmToQti3, htmlToPm, pmToHtml, validateHtml, createQtiSchema } from '@citolab/prose-qti/node';
 
 const read = p => readFileSync(new URL(p, import.meta.url), 'utf8');
-const ITEMS = Array.from({ length: 17 }, (_, i) => `ITEM${String(i + 1).padStart(3, '0')}`);
+const ITEMS = readdirSync(new URL('./stories/fixtures/', import.meta.url))
+  .filter(name => /^ITEM\d+\.xml$/.test(name))
+  .map(name => name.replace(/\.xml$/, ''))
+  .sort();
 
 const canonical = xml => {
   const doc = new DOMParser().parseFromString(xml.replace(/^<\?xml[^?]*\?>\s*/, ''), 'text/xml');
@@ -37,7 +40,7 @@ for (const item of ITEMS) {
   const doc = qti3ToPm(read(`./stories/fixtures/${item}.xml`), { assetBasePath: '/qti/kennisnet' });
   if (canonical(pmToQti3(doc)) === canonical(read(`./stories/__file_snapshots__/${item}-editor.xml`))) roundtrip++;
 }
-console.log(`qti3ToPm -> pmToQti3 vs committed snapshots : ${roundtrip}/17`);
+console.log(`qti3ToPm -> pmToQti3 vs committed snapshots : ${roundtrip}/${ITEMS.length}`);
 
 // The generator loop: write HTML, find out what the schema kept.
 console.log('\n--- validateHtml, as a generator would use it ---');

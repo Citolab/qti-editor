@@ -55,10 +55,6 @@ export default defineConfig(({ command }) => ({
         replacement: `${interactionsUmbrellaSrcRoot}/index.ts`,
       },
       {
-        find: /^@qti-editor\/interactions\/associate$/,
-        replacement: `${interactionsUmbrellaSrcRoot}/associate/index.ts`,
-      },
-      {
         find: /^@qti-editor\/interactions\/choice$/,
         replacement: `${interactionsUmbrellaSrcRoot}/choice/index.ts`,
       },
@@ -259,7 +255,6 @@ export default defineConfig(({ command }) => ({
   ],
   optimizeDeps: {
     exclude: [
-      '@qti-components/associate-interaction',
       '@qti-components/base',
       '@qti-components/choice-interaction',
       '@qti-components/extended-text-interaction',

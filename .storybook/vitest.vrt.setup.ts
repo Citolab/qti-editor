@@ -8,7 +8,7 @@ import * as previewAnnotations from './preview';
  * Visual-regression (VRT) capture project — the editor's half of the pair.
  *
  * A port of QTI-Components' `.storybook/vitest.vrt.setup.ts`, deliberately kept close to it: the
- * point of having VRT on both sides is that the same 17 ITEM fixtures can be put side by side, and
+ * point of having VRT on both sides is that the same ITEM fixtures can be put side by side, and
  * that only works if the two suites capture the same way. Same channel threshold, same allowed
  * mismatch ratio, same stability waits.
  *

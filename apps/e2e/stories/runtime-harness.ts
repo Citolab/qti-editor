@@ -79,7 +79,7 @@ export async function placeByKeyboard(
  * Stages a response value directly, bypassing the UI.
  *
  * PREFER REAL INTERACTION. Use this ONLY for the drag-based interactions
- * (order, match, gap-match, associate), which cannot currently be driven by
+ * (order, match, gap-match), which cannot currently be driven by
  * Playwright — see finding #14 in docs/testing-findings.md. Every other
  * interaction type must be exercised through `harness.frame` locators so the
  * gesture itself is covered.

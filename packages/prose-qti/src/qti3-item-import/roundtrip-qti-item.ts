@@ -1,6 +1,5 @@
 import { qtiTransformItem } from '@qti-components/transformers';
 
-import { roundtripAssociate } from './roundtrip-associate';
 import { roundtripChoice } from './roundtrip-choice';
 import { roundtripExtendedText } from './roundtrip-extended-text';
 import { roundtripInteractions } from './roundtrip-interactions';
@@ -26,7 +25,6 @@ export function roundtripQtiItem(xmlString: string): string {
     .fn(roundtripChoice)
     .fn(roundtripTextEntry)
     .fn(roundtripExtendedText)
-    .fn(roundtripAssociate)
     .fn(roundtripMatch)
     .fn(roundtripGapMatch)
     .fn(roundtripOrder)

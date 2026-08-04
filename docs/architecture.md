@@ -58,7 +58,7 @@ The main QTI package. Contains all QTI-specific logic and the integration layer 
 - Per-interaction attribute panel metadata
 - A `descriptor.ts` exporting a single object that `satisfies InteractionDescriptor`
 
-Interaction components: `associate`, `choice`, `extended-text`, `gap-match`, `hottext`, `inline-choice`, `match`, `order`, `rubric-block`, `select-point`, `text-entry`, plus `shared/` for cross-interaction schemas and helpers.
+Interaction components: `choice`, `extended-text`, `gap-match`, `hottext`, `inline-choice`, `match`, `order`, `rubric-block`, `select-point`, `text-entry`, plus `shared/` for cross-interaction schemas and helpers.
 
 `src/core/` owns:
 - Descriptor registry: `listInteractionDescriptors()` — canonical list of all registered interactions

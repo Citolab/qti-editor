@@ -11,7 +11,6 @@ import {
   registerMenuRootElement,
   registerMenuTriggerElement,
 } from 'prosekit/lit/menu';
-import { insertAssociateInteraction } from '@citolab/prose-qti/components/associate';
 import { insertGapMatchInteraction, insertGap } from '@citolab/prose-qti/components/gap-match';
 import { insertChoiceInteraction } from '@citolab/prose-qti/components/choice';
 import { insertExtendedTextInteraction } from '@citolab/prose-qti/components/extended-text';
@@ -83,20 +82,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
 
   // Order matches registeredDescriptors in @qti-editor/core/interactions/composer.ts
 
-  // 1. Associate Interaction
-  if (schema.nodes.qtiAssociateInteraction && schema.nodes.qtiSimpleAssociableChoice) {
-    const nodeType = schema.nodes.qtiAssociateInteraction;
-    items.push({
-      label: translateQti('interactionInsert.associate', { target: view.dom }),
-      canInsert: canInsert(view, nodeType),
-      command: () => {
-        insertAssociateInteraction(view.state, view.dispatch, view);
-        view.focus();
-      },
-    });
-  }
-
-  // 2. Choice Interaction
+  // 1. Choice Interaction
   if (
     schema.nodes.qtiChoiceInteraction &&
     schema.nodes.qtiPrompt &&
@@ -115,7 +101,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
     });
   }
 
-  // 3. Extended Text Interaction
+  // 2. Extended Text Interaction
   if (schema.nodes.qtiExtendedTextInteraction) {
     const nodeType = schema.nodes.qtiExtendedTextInteraction;
     items.push({
@@ -128,7 +114,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
     });
   }
 
-  // 4. Gap Match Interaction + Gap (conditional)
+  // 3. Gap Match Interaction + Gap (conditional)
   if (schema.nodes.qtiGapMatchInteraction && schema.nodes.qtiGapText && schema.nodes.qtiGap) {
     const nodeType = schema.nodes.qtiGapMatchInteraction;
     items.push({
@@ -151,7 +137,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
     });
   }
 
-  // 5. Hottext Interaction
+  // 4. Hottext Interaction
   if (schema.nodes.qtiHottextInteraction && schema.nodes.qtiHottext) {
     const nodeType = schema.nodes.qtiHottextInteraction;
     items.push({
@@ -164,7 +150,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
     });
   }
 
-  // 6. Inline Choice Interaction
+  // 5. Inline Choice Interaction
   if (schema.nodes.qtiInlineChoiceInteraction && schema.nodes.qtiInlineChoice) {
     const nodeType = schema.nodes.qtiInlineChoiceInteraction;
     items.push({
@@ -177,7 +163,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
     });
   }
 
-  // 7. Match Interaction
+  // 6. Match Interaction
   if (schema.nodes.qtiMatchInteraction && schema.nodes.qtiSimpleMatchSet && schema.nodes.qtiSimpleAssociableChoice) {
     const nodeType = schema.nodes.qtiMatchInteraction;
     items.push({
@@ -190,7 +176,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
     });
   }
 
-  // 8. Order Interaction
+  // 7. Order Interaction
   if (schema.nodes.qtiOrderInteraction && schema.nodes.qtiSimpleChoice) {
     const nodeType = schema.nodes.qtiOrderInteraction;
     items.push({
@@ -203,7 +189,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
     });
   }
 
-  // 9. Select Point Interaction
+  // 8. Select Point Interaction
   if (schema.nodes.qtiSelectPointInteraction) {
     const nodeType = schema.nodes.qtiSelectPointInteraction;
     items.push({
@@ -216,7 +202,7 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
     });
   }
 
-  // 10. Text Entry Interaction
+  // 9. Text Entry Interaction
   if (schema.nodes.qtiTextEntryInteraction) {
     const nodeType = schema.nodes.qtiTextEntryInteraction;
     items.push({

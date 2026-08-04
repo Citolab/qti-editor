@@ -17,7 +17,6 @@ const consumers = [
   {
     dir: 'packages/prose-qti',
     packages: [
-      '@qti-components/associate-interaction',
       '@qti-components/base',
       '@qti-components/choice-interaction',
       '@qti-components/extended-text-interaction',

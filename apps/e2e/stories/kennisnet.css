@@ -18,7 +18,6 @@
   :state(drag),
   [data-drag-clone],
   qti-gap::part(drag),
-  qti-associate-interaction::part(drag),
   qti-simple-associable-choice::part(drag) {
     --drag-background-color: var(--qti-primary);
     --drag-color: var(--qti-primary-fg);

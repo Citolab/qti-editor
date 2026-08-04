@@ -23,14 +23,15 @@ import type { NodeSpec } from 'prosemirror-model';
  *   qtiBasicNodes + descriptors   <- this one. Plain ProseMirror.
  *   ProseKit's basic extension + descriptors
  *
- * This is the one measured against the regression corpus: with it, a Node roundtrip of all 17 ITEM
- * fixtures reproduces the committed snapshots 17/17. The ProseKit path has never been measured
+ * This is the one measured against the regression corpus: with it, a Node roundtrip of every ITEM
+ * fixture reproduces the committed snapshots — 16/16 today. The ProseKit path has never been measured
  * against the corpus and does not carry `qtiLayoutDiv`, so building conversion on it would silently
  * drop author layout.
  *
  * ## Why lists and tables are in here
  *
- * Not decoration — measured. Removing them takes the corpus from 17/17 to **7/17**. An item body is
+ * Not decoration — measured. Removing them took the corpus from 17/17 to **7/17** (measured when
+ * it was 17 items, before ITEM017 left with the associate interaction). An item body is
  * HTML, and rubric blocks in particular already contain `<ul>`/`<li>`. `paragraph` is re-declared
  * into the `richtext` group because `tableNodes` uses `cellContent: 'richtext+'`.
  *

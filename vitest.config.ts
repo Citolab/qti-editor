@@ -80,9 +80,9 @@ export default defineConfig({
                  * In parallel, workers race over the same Storybook iframe and Vite's on-the-fly
                  * dependency optimization: roughly two thirds of the files died with "Vitest failed
                  * to find the runner" while the rest passed, and which ones varied per run. Serial,
-                 * all 17 pass every time.
+                 * all of them pass every time.
                  *
-                 * Nothing is lost. The whole suite is 17 screenshots in ~5s, and a screenshot is
+                 * Nothing is lost. The whole suite is 16 screenshots in ~5s, and a screenshot is
                  * timing-sensitive by nature — a capture that waits on fonts, images and three
                  * animation frames wants a quiet browser, not a contended one.
                  */

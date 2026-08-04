@@ -150,14 +150,6 @@
       "types": "./dist/components/register.d.ts",
       "default": "./dist/components/register.js"
     },
-    "./components/associate": {
-      "types": "./dist/components/associate/index.d.ts",
-      "default": "./dist/components/associate/index.js"
-    },
-    "./components/associate/*": {
-      "types": "./dist/components/associate/*",
-      "default": "./dist/components/associate/*"
-    },
     "./components/choice": {
       "types": "./dist/components/choice/index.d.ts",
       "default": "./dist/components/choice/index.js"
@@ -256,7 +248,6 @@
   "dependencies": {
     "@citolab/prose-extensions": "workspace:*",
     "@lit/context": "^1.1.6",
-    "@qti-components/associate-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@509fcae",
     "@qti-components/base": "https://pkg.pr.new/Citolab/qti-components/@qti-components/base@509fcae",
     "@qti-components/choice-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/choice-interaction@509fcae",
     "@qti-components/extended-text-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/extended-text-interaction@509fcae",

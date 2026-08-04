@@ -27,19 +27,15 @@ const editorReady = roundtripQtiItem(thirdPartyQti3Xml);
 ## Scope
 
 `roundtripQtiItem` runs every per-type transform (`roundtripChoice`,
-`roundtripTextEntry`, `roundtripExtendedText`, `roundtripAssociate`,
-`roundtripMatch`, `roundtripGapMatch`, `roundtripOrder`,
-`roundtripSelectPoint`, `roundtripInteractions`, `roundtripItemBody`)
-followed by `reduceToItemBody`. All transforms are idempotent and
-independent — order doesn't affect correctness, only which source wins when
-an attribute is expressed more than one way.
+`roundtripTextEntry`, `roundtripExtendedText`, `roundtripMatch`,
+`roundtripGapMatch`, `roundtripOrder`, `roundtripSelectPoint`,
+`roundtripInteractions`, `roundtripItemBody`) followed by
+`reduceToItemBody`. All transforms are idempotent and independent — order
+doesn't affect correctness, only which source wins when an attribute is
+expressed more than one way.
 
-Each transform except `roundtripAssociate` is also exported individually from
-this barrel (`roundtripChoice`, `roundtripTextEntry`, `roundtripExtendedText`,
-`roundtripMatch`, `roundtripGapMatch`, `roundtripOrder`,
-`roundtripSelectPoint`, `roundtripInteractions`, `roundtripItemBody`,
-`reduceToItemBody`) for callers that need to run a subset;
-`roundtripAssociate` is currently only reachable via `roundtripQtiItem`.
+Each transform is also exported individually from this barrel for callers
+that need to run a subset.
 
 `roundtripMatch` converts the standard `directedPair` correct response
 (`<qti-value>SOURCE TARGET</qti-value>`) into the same shape `qti-components`

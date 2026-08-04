@@ -18,8 +18,8 @@
  * It also carries the side-effect imports that register the QTI interaction edit
  * elements (custom elements used by the node views).
  *
- * Supported interactions: choice, extended-text, text-entry, associate,
- * gap-match, hottext, inline-choice, match, order, select-point (+ rubric block).
+ * Supported interactions: choice, extended-text, text-entry, gap-match,
+ * hottext, inline-choice, match, order, select-point (+ rubric block).
  */
 
 import { chainCommands } from 'prosemirror-commands';
@@ -27,7 +27,6 @@ import { keymap } from 'prosemirror-keymap';
 import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
 import { extendedTextInteractionDescriptor } from '@citolab/prose-qti/components/extended-text';
 import { textEntryInteractionDescriptor } from '@citolab/prose-qti/components/text-entry';
-import { associateInteractionDescriptor } from '@citolab/prose-qti/components/associate';
 import { gapMatchInteractionDescriptor } from '@citolab/prose-qti/components/gap-match';
 import { hottextInteractionDescriptor } from '@citolab/prose-qti/components/hottext';
 import { inlineChoiceInteractionDescriptor } from '@citolab/prose-qti/components/inline-choice';
@@ -47,7 +46,6 @@ import { qtiTransformTest } from '@qti-components/transformers';
 import '@citolab/prose-qti/components/choice/register.js';
 import '@citolab/prose-qti/components/extended-text/register.js';
 import '@citolab/prose-qti/components/text-entry/register.js';
-import '@citolab/prose-qti/components/associate/register.js';
 import '@citolab/prose-qti/components/gap-match/register.js';
 import '@citolab/prose-qti/components/hottext/register.js';
 import '@citolab/prose-qti/components/inline-choice/register.js';
@@ -70,7 +68,6 @@ export const descriptors: InteractionDescriptor[] = [
   choiceInteractionDescriptor,
   extendedTextInteractionDescriptor,
   textEntryInteractionDescriptor,
-  associateInteractionDescriptor,
   gapMatchInteractionDescriptor,
   hottextInteractionDescriptor,
   inlineChoiceInteractionDescriptor,

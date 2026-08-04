@@ -30,6 +30,13 @@ the element manifest an LLM needs exists rather than needing to be built.
 
 ## What was measured
 
+> **Corpus note.** Every figure in this document is `/17`, measured when the corpus had 17 ITEM
+> fixtures. It has 16 today: ITEM017 was the associate item and went with the qti-associate-interaction
+> removal. The ratios below are left exactly as measured rather than decremented — re-deriving them
+> means re-running the spike, and a silently adjusted number is worse than a dated one. What still
+> holds live is the first row: the node conversion test reads the corpus off disk and reproduces
+> every committed snapshot, 16/16.
+
 A spike ran the real pipeline in plain Node over all 17 ITEM fixtures, comparing against the same
 `__file_snapshots__` the Storybook regression tests assert. Harness:
 `apps/e2e/spike-node-roundtrip.mjs`, run with

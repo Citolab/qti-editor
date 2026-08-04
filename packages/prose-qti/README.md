@@ -79,7 +79,7 @@ import {
 } from '@citolab/prose-qti/core/interactions/composer';
 ```
 
-The registry currently includes: `associate`, `choice`, `extended-text`,
+The registry currently includes: `choice`, `extended-text`,
 `gap-match`, `hottext`, `inline-choice`, `match` (both `matchInteractionDescriptor`
 and the tabular variant `matchInteractionTabularDescriptor`), `order`,
 `select-point`, `text-entry`, and `rubric-block`.
@@ -316,7 +316,7 @@ overridden.
 
 **`RoundtripImportOptions`:**
 - `assetBasePath?: string` — rewrites relative asset URLs (e.g. `<img src>`) to resolve at runtime.
-- `transforms?: readonly RoundtripTransform[]` — override the per-type transform list. Defaults to `defaultRoundtripTransforms` (all interaction types except `associate`, which is applied separately by `qti3-item-import`'s own `roundtripQtiItem`). `reduceToItemBody` always runs last regardless.
+- `transforms?: readonly RoundtripTransform[]` — override the per-type transform list. Defaults to `defaultRoundtripTransforms`. `reduceToItemBody` always runs last regardless.
 
 #### exportItemXml(doc, schema, context?, options?): string
 #### exportItemXmlDoc(doc, schema, context?): XMLDocument
@@ -353,7 +353,7 @@ import { roundtripQtiItem } from '@citolab/prose-qti/qti3-item-import/roundtrip-
 #### roundtripQtiItem(xmlString: string): string
 
 Runs every per-type transform (`roundtripChoice`, `roundtripTextEntry`,
-`roundtripExtendedText`, `roundtripAssociate`, `roundtripMatch`,
+`roundtripExtendedText`, `roundtripMatch`,
 `roundtripGapMatch`, `roundtripOrder`, `roundtripSelectPoint`,
 `roundtripInteractions`, `roundtripItemBody`) followed by `reduceToItemBody`,
 returning the normalized `<qti-item-body>` XML string. All transforms are
@@ -363,10 +363,9 @@ source wins when an attribute is expressed more than one way.
 the PM bridge (see `defaultRoundtripTransforms`); use `roundtripQtiItem`
 instead when you want the normalized XML without parsing it into ProseMirror.
 
-Each transform except `roundtripAssociate` is also exported individually from
-its own subpath (e.g. `qti3-item-import/roundtrip-choice`) for callers that
-need to run a subset; `roundtripAssociate` is currently only reachable via the
-`qti3-item-import` barrel import or `roundtripQtiItem`.
+Each transform is also exported individually from its own subpath
+(e.g. `qti3-item-import/roundtrip-choice`) for callers that need to run a
+subset.
 
 ### `components/register` and `components/<name>`
 
@@ -382,7 +381,7 @@ interaction — `integration/interactions/prosekit`'s
 `defineQtiInteractionsExtension` already imports it, so most consumers don't
 need to import it directly.
 
-Each `components/<name>` subpath (`associate`, `choice`, `extended-text`,
+Each `components/<name>` subpath (`choice`, `extended-text`,
 `gap-match`, `hottext`, `inline-choice`, `match`, `order`, `rubric-block`,
 `select-point`, `shared`, `text-entry`) exports that interaction's
 `InteractionDescriptor` plus its Lit components, schema, commands and

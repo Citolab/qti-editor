@@ -96,7 +96,8 @@ export interface RegressionEditorOptions {
   transforms: (schema: Schema) => RoundtripTransform[];
   /**
    * Extra node specs on top of the base, for the rare item whose interaction references a node group
-   * nobody owns yet (ITEM017's media stub). Prefer fixing the descriptor over reaching for this.
+   * nobody owns yet (the match/order/gap-match items' media stub). Prefer fixing the descriptor
+   * over reaching for this.
    */
   extraNodes?: Record<string, NodeSpec>;
 }

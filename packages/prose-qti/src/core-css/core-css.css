@@ -105,8 +105,8 @@ qti-order-interaction qti-simple-choice {
  * Reviving it here rather than back inside the shadow, for two reasons:
  *   - `::part(drop)` from the document beats the component's own shadow rules, so this cannot be
  *     out-cascaded by the theme's `::part(drop)` declarations the way a shadow rule would be (the
- *     order/associate components had to resort to redirecting custom properties to work around
- *     exactly that — see their .styles.ts).
+ *     order component had to resort to redirecting custom properties to work around
+ *     exactly that — see its .styles.ts).
  *   - `qti-components.overrides` is the theme's last declared layer and is otherwise empty, so this
  *     sits on top of the whole theme by construction instead of by specificity accident.
  *
@@ -115,25 +115,26 @@ qti-order-interaction qti-simple-choice {
  * observer watches attributes and would fight any DOM-visible state.
  *
  * Only the animation is revived. Revealing the empty slot is already handled by
- * `:host(:state(pending)) [part='drop']:empty` inside the choice's shadow; overriding `display`
- * through `::part()` would clobber that for associate, which has no match-set to set the variable.
+ * `:host(:state(pending)) [part='drop']:empty` inside the choice's shadow, and overriding `display`
+ * through `::part()` would clobber it.
  *
- * COVERAGE — this block is the ONLY definition of the pulse. All four drop interactions:
+ * COVERAGE — this block is the ONLY definition of the pulse. All three drop interactions:
  *
  *   match      qti-simple-associable-choice::part(drop)        variable- and state-driven
  *   gap-match  qti-gap:state(pending)                          light-DOM target, no part needed
  *   order      qti-order-interaction::part(drop empty)
- *   associate  qti-associate-interaction::part(drop empty)
  *
- * Order and associate previously owned a copy inside their own shadow CSS, because a slot must
+ * (Associate had a fourth rule of the same shape. It went with the interaction.)
+ *
+ * Order previously owned a copy inside its own shadow CSS, because a slot must
  * pulse only while EMPTY and `[part='drop']:not(:has(dummy-drag))` was the only way to express
- * that — a structural filter cannot follow `::part()` from outside. Those components now emit a
+ * that — a structural filter cannot follow `::part()` from outside. It now emits a
  * second `empty` part token on unfilled slots instead, so `::part(drop empty)` says the same thing
  * from out here. `::part()` matches on token containment, so every existing `::part(drop)` rule in
  * qti-theme keeps matching filled and empty slots alike.
  *
  * Consequence worth knowing: the pulse now depends on core-css.css being loaded. It always was for
- * match and gap-match; it is now true for order and associate too. Every app imports this file from
+ * match and gap-match; it is now true for order too. Every app imports this file from
  * its own src/style.css, and the header above already calls it mandatory.
  *
  * Selectors are kept as SEPARATE rules on purpose: one invalid selector in a comma-separated group
@@ -151,7 +152,7 @@ qti-order-interaction qti-simple-choice {
   }
 
   /* match — driven by the match-set's inherited variable. Resolves to `none` until a match-set
-     sets it, so this rule is inert for associate, which reuses the same element as a SOURCE. */
+     sets it, so this rule is inert wherever the same element is reused as a SOURCE. */
   qti-simple-associable-choice::part(drop) {
     animation: var(--qti-dropslot-selecting, none) 1.2s ease-in-out infinite;
   }
@@ -173,13 +174,6 @@ qti-order-interaction qti-simple-choice {
 
   /* order — `:state(pending)` on the host, `empty` token on the unfilled slots. */
   qti-order-interaction:state(pending)::part(drop empty) {
-    border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
-    background: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
-    animation: dropslot-pulse 1.2s ease-in-out infinite;
-  }
-
-  /* associate — same shape as order. */
-  qti-associate-interaction:state(pending)::part(drop empty) {
     border-color: var(--qti-edit-drop-pending-border, var(--qti-border-active, #f86d70));
     background: var(--qti-edit-drop-pending-bg, var(--qti-bg-active, #ffecec));
     animation: dropslot-pulse 1.2s ease-in-out infinite;
