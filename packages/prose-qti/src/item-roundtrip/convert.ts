@@ -48,8 +48,10 @@ export interface ConvertOptions {
  * schema per call made every document incomparable with every other: `xmlToPm(x).eq(htmlToPm(y))`
  * was false even for byte-identical content, because the two docs' node types came from different
  * Schema instances. Measured — round-trip identity read 0/17 with a schema per call and 11/17 with
- * one shared instance, on exactly the same documents. (Measured on the 17-item corpus, before
- * ITEM017 left with the associate interaction; the ratio is historical, the conclusion is not.)
+ * one shared instance, on exactly the same documents. The shared-instance figure re-measured to
+ * 11/16 on 2026-08-04 (the corpus lost ITEM017 with the associate interaction, and it was not one of
+ * the failures); the schema-per-call counterfactual was not re-run, so that 0/17 is as first
+ * measured.
  *
  * It is also simply wasteful: the schema composes 42 node specs from every registered descriptor.
  *

@@ -30,25 +30,28 @@ the element manifest an LLM needs exists rather than needing to be built.
 
 ## What was measured
 
-> **Corpus note.** Every figure in this document is `/17`, measured when the corpus had 17 ITEM
-> fixtures. It has 16 today: ITEM017 was the associate item and went with the qti-associate-interaction
-> removal. The ratios below are left exactly as measured rather than decremented — re-deriving them
-> means re-running the spike, and a silently adjusted number is worse than a dated one. What still
-> holds live is the first row: the node conversion test reads the corpus off disk and reproduces
-> every committed snapshot, 16/16.
-
-A spike ran the real pipeline in plain Node over all 17 ITEM fixtures, comparing against the same
+A spike ran the real pipeline in plain Node over every ITEM fixture, comparing against the same
 `__file_snapshots__` the Storybook regression tests assert. Harness:
-`apps/e2e/spike-node-roundtrip.mjs`, run with
-`node --import ./spike-resolve-dirs.mjs spike-node-roundtrip.mjs` from `apps/e2e`.
+`apps/e2e/spike-node-roundtrip.mjs`, run with `node spike-node-roundtrip.mjs` from `apps/e2e`.
 
-| | result |
-|---|---|
-| xml → html → pm → qti xml, vs the committed snapshots | **17/17** structurally identical |
-| pm → html → pm identity | 11/17 (identical via live nodes *and* via an HTML string) |
-| pm → qti xml → pm identity | 11/17 |
+Re-run 2026-08-04 on the 16-item corpus (ITEM017 left with qti-associate-interaction). The original
+harness needed a resolve hook and imported source; this one imports the shipped
+`@citolab/prose-qti/node` bundle, which needs neither.
 
-Verified honest: corrupting a fixture drops the first row to 16/17 and names the diff.
+| | result | was (17-item corpus) |
+|---|---|---|
+| xml → html → pm → qti xml, vs the committed snapshots | **16/16** structurally identical | 17/17 |
+| pm → html → pm identity | 11/16 | 11/17 |
+| pm → qti xml → pm identity | 11/16 | 11/17 |
+
+Both identity rows now fail on exactly the same five fixtures, which they did not before: ITEM006
+and ITEM007–010. Removing associate took ITEM017 out of the failing set, and nothing else moved.
+
+One trap worth recording, because it cost a wrong number on the first re-run: do NOT pass
+`assetBasePath` when re-importing the EXPORTED xml in row 3. The export already carries rewritten
+asset URLs, so re-applying the base prefixes them twice and every fixture with an `<img>` fails
+identity on attributes while its node count matches exactly. That reads like a real regression
+(it scored 4/16) and is purely harness error.
 
 **The conversion needs no browser.** That question is settled.
 
@@ -84,8 +87,11 @@ wrapper still deletes it. Nothing can author a wrapper either: they arrive from 
 editor offers a command to make one, so an unlocked host lets an author destroy structure they
 cannot rebuild. It is a separate export, so opting out is one omitted array entry.
 
-Measured consequence: with it, Node reproduces the snapshots **17/17**; without it, **9/17**, failing
-exactly the 8 fixtures containing `qti-layout-*`.
+Measured consequence: with it, Node reproduces the snapshots **16/16**; without it, **8/16**, failing
+exactly the 8 fixtures containing `qti-layout-*` — ITEM001–004, 006, 008, 010, 015. (Re-derived
+2026-08-04 by rebuilding the schema with the `qtiLayoutDiv` spec dropped. Was 17/17 and 9/17 on the
+17-item corpus, with the same 8 failures; removing associate took a passing item out, so the pass
+count moved and the failure set did not.)
 
 ### 2. The shared baseline levels UP, not down
 
@@ -109,14 +115,17 @@ difference, and that diff *is* the report to hand back to the generator.
 
 ### 4. …but it is blocked on round-trip stability, and that is the real obstacle
 
-Identity is **11/17**, failing on the same six in both directions: match (ITEM007–010), associate
-(ITEM017), and a whitespace edge in inline-choice (ITEM006). Match and associate *gain* nodes on
-re-parse — 38→47, 22→28 — because the parser fills required content the serialized form no longer
-distinguishes.
+Identity is **11/16**, failing on the same five in both directions: match (ITEM007–010) and a
+whitespace edge in inline-choice (ITEM006). Match *gains* nodes on re-parse — 36→45, 39→48, 42→52,
+67→75 — because the parser fills required content the serialized form no longer distinguishes.
+ITEM006 fails at an identical node count, so its difference is in content, not structure.
+
+(Associate used to fail here too, at 22→28. It is gone, and with it one of the two node-gaining
+interactions; the remaining one is match.)
 
 A validator built on this today would report "you added a `qtiSimpleMatchSet`" when the generator did
-nothing of the kind. **False positives on 5 of 10 interaction types**, and on the hardest ones to
-generate. This must be characterised before `validate()` is worth building. It is not a Node
+nothing of the kind. **False positives on 2 interaction types** — match and inline-choice — and match
+is among the hardest to generate. This must be characterised before `validate()` is worth building. It is not a Node
 artefact — it is content-matching behaviour, expected to reproduce in the browser, though that has
 **not** been verified.
 
@@ -160,7 +169,7 @@ LLM cannot fall behind the editor that produced it.
    both directory and file form). `tsc` emits ESM without rewriting specifiers, so Node's resolver
    rejects them. The spike works around it with a resolve hook; the fix belongs in that build. Same
    family as the Vite-only `?inline` stylesheet specifier fixed in `509fcae`.
-2. **linkedom drops the `xmlns:xsi` declaration** while keeping `xsi:schemaLocation` — 17/17. That
+2. **linkedom drops the `xmlns:xsi` declaration** while keeping `xsi:schemaLocation` — every fixture. That
    output is malformed XML. Either shim it, or pick a different DOM implementation.
 3. **`.path()` is not idempotent.** Re-importing exported output re-applies `assetBasePath`, yielding
    `/qti/kennisnet//qti/kennisnet/…`. Sharp edge for any import→export→import flow.
@@ -171,7 +180,7 @@ LLM cannot fall behind the editor that produced it.
 
 1. Move `qtiLayoutDiv` into prose-qti; drop the relative import and its eslint-disable from the
    stories, and the duplicate from the Angular editor. **One baseline, nothing lost.**
-2. Characterise the 6/17 identity failures — are match/associate recoverable, or is the serialized
+2. Characterise the 5/16 identity failures — is match recoverable, or is the serialized
    form genuinely lossy? Confirm the browser behaves the same.
 3. Only then build `validate()`, on a round-trip that can be trusted.
 4. Decide package vs endpoint when a consumer forces the question.
