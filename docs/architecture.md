@@ -26,6 +26,7 @@ When in doubt, prefer putting reusable logic in a package and letting the app co
 ```text
 packages/
   prose-qti/           ← @citolab/prose-qti   (QTI core + interactions + integration)
+  prose-qti-node/      ← @citolab/prose-qti-node  (Node-only re-bundle of prose-qti's conversion API)
   prose-extensions/    ← @citolab/prose-extensions  (generic ProseMirror/ProseKit extensions)
   prose-qti-ui/        ← @citolab/prose-qti-ui  (private UI components, shadcn-registry style)
   prose-ai/            ← @citolab/prose-ai  (private, AI extensions vendored from @prosekit/ai)
@@ -88,6 +89,14 @@ Interaction components: `choice`, `extended-text`, `gap-match`, `hottext`, `inli
 - The `image` node in this module preserves `width` and `height` attributes on parse/serialize so QTI XML image dimensions survive import and roundtrip.
 - Nothing is removed from the basic set. A `createQtiBasicNodes(...)` helper used to offer trimming and defaulted to dropping `blockquote`; it had no callers and its premise was wrong — QTI permits `blockquote`, `hr`, `pre` and `code` in an item body. A host wanting a narrower document builds its own `nodes` object.
 - `qtiLayoutDivNodeSpec` (included in `qtiBasicNodes.qtiLayoutDiv`) models the author-written `<div class="qti-layout-row">`/`-colN` grid wrappers; `qtiLayoutDivLockPlugin` is the accompanying opt-in plugin that stops a transaction from adding or removing a wrapper, since nothing in either host editor can author a new one. Both used to live duplicated across the two host apps and moved here for the same reason `qtiBasicNodes` did — one definition instead of two that drift.
+
+### `packages/prose-qti-node` (`@citolab/prose-qti-node`)
+
+Published package. Re-bundles `prose-qti`'s six Node conversion functions (`qti3ToPm`, `pmToQti3`, `htmlToPm`, `pmToHtml`, `validateHtml`, `schemaToJson`) and `createQtiSchema` for plain Node, with a manifest sized for that: `linkedom` plus three `prosemirror-*` packages as dependencies, `prosemirror-model`/`prosemirror-state`/`prosemirror-commands` as peers, and no `@qti-components/*` or `lit`. See [node-api.md](node-api.md).
+
+Built by `scripts/bundle-node.mjs`, which esbuild-bundles `prose-qti`'s `dist/node/index.js` (not `src/`, since Lit's decorators do not survive a generic transpiler) with the ProseMirror packages kept external. Its `workspace:*` devDependency on `@citolab/prose-qti` is what orders `pnpm -r --sort` so that dist exists first.
+
+Does not own conversion logic — that stays in `packages/prose-qti/src/node/`. This package only owns the bundling and the manifest split that keeps a Node-only consumer from installing the browser component graph.
 
 ### `packages/prose-extensions` (`@citolab/prose-extensions`)
 
@@ -171,6 +180,10 @@ Does not own reusable editor primitives, interaction behavior, or canonical comp
          ↓
 apps/*                      (consume all packages)
 
+@citolab/prose-qti-node     (built from prose-qti's dist/node/ output at pack time; no
+                              dependency on prose-extensions/prose-qti-ui — consumed
+                              directly by Node-only integrations, not by apps/*)
+
 @citolab/prose-ai           (private; peer-depends on prosekit only, no
                               dependency on the chain above — consumed
                               directly by apps/*)
@@ -179,6 +192,8 @@ apps/*                      (consume all packages)
 ## Package Exports
 
 `packages/prose-qti` and `packages/prose-extensions` are published to npm, so their `package.json` `exports` map (`main`, `types`, and every subpath) must resolve to built `dist/**` output, never raw `src/**/*.ts` — consumers do not compile this repo's TypeScript. Wildcard subpath entries (e.g. `"./components/choice/*": "./dist/components/choice/*"`) must map directly to the already-extensioned build output; do not append `.js`/`.d.ts` in the exports map yourself, since the glob match already includes the extension and doing so produces duplicate-extension paths that fail to resolve. Run each package's `build` script and spot-check `dist/` before changing its `exports` map.
+
+`packages/prose-qti-node` is also published, but its rules differ: it has a single `.` export, an esbuild bundle of `prose-qti`'s `dist/node/index.js` (`scripts/bundle-node.mjs`), not a `tsc` mirror of `src/`. There is no subpath wildcard to keep in sync — only one entry point to rebuild whenever `prose-qti`'s node entry changes.
 
 Cross-package dependencies within this repo (e.g. `prose-extensions` depending on `prose-qti`) use the pnpm `workspace:*` protocol rather than a pinned version — see [release-plan.md](release-plan.md#internal-package-dependencies).
 
