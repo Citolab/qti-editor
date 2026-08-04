@@ -238,10 +238,15 @@
       "types": "./dist/components/text-entry/*",
       "default": "./dist/components/text-entry/*"
     },
-    "./core-css.css": "./dist/core-css/core-css.css"
+    "./core-css.css": "./dist/core-css/core-css.css",
+    "./qti-prose.css": "./dist/qti-prose.css",
+    "./transformers": {
+      "types": "./dist/transformers.d.ts",
+      "default": "./dist/transformers.js"
+    }
   },
   "scripts": {
-    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css && cp src/core-css/core-css.css dist/core-css/core-css.css && node scripts/bundle-node.mjs",
+    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css && cp src/core-css/core-css.css dist/core-css/core-css.css && cp src/qti-prose.css dist/qti-prose.css && node scripts/bundle-node.mjs",
     "typecheck": "tsc --noEmit -p ./tsconfig.json",
     "clean": "rm -rf dist"
   },
@@ -259,6 +264,7 @@
     "@qti-components/order-interaction": "catalog:",
     "@qti-components/select-point-interaction": "catalog:",
     "@qti-components/text-entry-interaction": "catalog:",
+    "@qti-components/theme": "catalog:",
     "@qti-components/transformers": "catalog:",
     "linkedom": "^0.18.13",
     "prosemirror-schema-basic": "^1.2.4",
