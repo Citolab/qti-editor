@@ -694,6 +694,9 @@ importers:
       '@qti-components/text-entry-interaction':
         specifier: 'catalog:'
         version: https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@29a326f(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/theme':
+        specifier: 'catalog:'
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@29a326f
       '@qti-components/transformers':
         specifier: 'catalog:'
         version: https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@29a326f

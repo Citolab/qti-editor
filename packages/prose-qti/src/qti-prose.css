@@ -1,0 +1,35 @@
+/*
+ * The QTI item stylesheet, as one import.
+ *
+ * Named for the package rather than for the editor: this is NOT editor chrome. Toolbar, panels
+ * and layout stay the host's. What is here is how QTI CONTENT is painted — the item theme, plus
+ * this package's authoring affordances on top of it.
+ *
+ * A consuming app writes `@import '@citolab/prose-qti/qti-prose.css';` and is done. It does not name
+ * `@qti-components/theme`, does not declare it, and therefore never has to move a pkg.pr.new pin
+ * when this package moves to a new components build. That was the point: the implementing party
+ * should not have to know which qti-components build the editor is built against.
+ *
+ * ## The order below is load-bearing, and that is the other reason this file exists
+ *
+ * A cascade layer's position is fixed by its FIRST MENTION, not by the `@layer a, b, c;` statement.
+ * item.css is the file that declares the whole order; core-css.css only adds rules into layers that
+ * statement already named. Import them the other way round and core-css.css *creates*
+ * `qti-components.overrides` before `qti-components.interactions.*` exists, so the layer that is
+ * meant to win ends up early and loses — silently, with no error and no warning.
+ *
+ * Measured, not reasoned: with a two-sheet probe of exactly this shape, theme-then-core resolves the
+ * override to green and core-then-theme resolves it to red.
+ *
+ * So the ordering constraint is now discharged here, once, instead of being restated in every app's
+ * style entry point where any of them could get it wrong.
+ *
+ * ## What a consumer still owns
+ *
+ * A brand overlay (e.g. kennisnet.css) goes AFTER this import. Overlays only add rules into layers
+ * item.css has already declared — checked: kennisnet writes into `qti-components.global`,
+ * `.interactions.brand` and `.interactions.states`, all pre-declared, and introduces no new layer
+ * names — so "after" is the only requirement, and their order relative to each other is free.
+ */
+@import '@qti-components/theme/item.css';
+@import './core-css/core-css.css';
