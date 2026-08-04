@@ -2,12 +2,30 @@
 
 Converting QTI into the editor's document model and back, without a browser.
 
+```sh
+npm install @citolab/prose-qti-node
+```
 ```js
-import { qti3ToPm, pmToQti3, htmlToPm, pmToHtml, validateHtml, schemaToJson } from '@citolab/prose-qti/node';
+import { qti3ToPm, pmToQti3, htmlToPm, pmToHtml, validateHtml, schemaToJson } from '@citolab/prose-qti-node';
 ```
 
-One import. No DOM setup, no globals, no flags — the subpath installs what it needs. This is the
-surface for tooling: importers, generators, batch conversion, anything that runs in CI.
+One import. No DOM setup, no globals, no flags. This is the surface for tooling: importers,
+generators, batch conversion, anything that runs in CI.
+
+## Why this is its own package
+
+It used to be `@citolab/prose-qti/node`, and installing it for Node-only use pulled 13
+`@qti-components/*` browser component packages plus `lit` peer warnings — a component graph a script
+never touches. The code was never the problem: the bundle imports only `linkedom` and
+`prosemirror-*`, with everything else inlined. The *manifest* around it was sized for browser
+consumers.
+
+So the manifest was split, not the code. This package installs ~30 packages, no `@qti-components`,
+no `lit`, and no peer warnings.
+
+`prosemirror-model`, `prosemirror-state` and `prosemirror-commands` are **peer** dependencies rather
+than direct ones, deliberately: ProseMirror compares node types by identity, so a second private copy
+of `prosemirror-model` would make documents from this package incomparable with your own.
 
 ## The functions
 

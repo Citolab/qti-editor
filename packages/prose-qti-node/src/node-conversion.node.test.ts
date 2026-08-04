@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 
 import { describe, expect, test } from 'vitest';
 
-import { createQtiSchema, htmlToPm, pmToHtml, pmToQti3, validateHtml, qti3ToPm } from '@citolab/prose-qti/node';
+import { createQtiSchema, htmlToPm, pmToHtml, pmToQti3, validateHtml, qti3ToPm } from '@citolab/prose-qti-node';
 
 /**
  * The Node conversion surface, exercised the way a consumer uses it.
@@ -25,8 +25,8 @@ import { createQtiSchema, htmlToPm, pmToHtml, pmToQti3, validateHtml, qti3ToPm }
  * runner in the way at all.
  */
 
-const FIXTURES = new URL('../../../../apps/e2e/stories/fixtures/', import.meta.url);
-const SNAPSHOTS = new URL('../../../../apps/e2e/stories/__file_snapshots__/', import.meta.url);
+const FIXTURES = new URL('../../../apps/e2e/stories/fixtures/', import.meta.url);
+const SNAPSHOTS = new URL('../../../apps/e2e/stories/__file_snapshots__/', import.meta.url);
 // Read from disk rather than counting to a literal. The count WAS a literal 17, and removing
 // ITEM017 with the associate interaction turned it into a test that asked for a file nobody had
 // deleted it from — a failure about the corpus size rather than about conversion.

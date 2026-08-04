@@ -19,6 +19,7 @@
     "prosemirror-view": "^1.38.1"
   },
   "devDependencies": {
+    "@citolab/prose-qti-node": "workspace:*",
     "@storybook/web-components-vite": "^10.5.3",
     "linkedom": "^0.18.13",
     "prosemirror-schema-list": "^1.5.1",

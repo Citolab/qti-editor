@@ -108,28 +108,28 @@ export default defineConfig({
           ]) as any[]),
       /*
        * Node-environment tests. Everything else in this repo runs in Chromium, which is right for
-       * the editor but cannot prove the one thing `@citolab/prose-qti/node` claims: that the
+       * the editor but cannot prove the one thing `@citolab/prose-qti-node` claims: that the
        * conversion works with no browser at all. A browser test would pass with the real DOM in
        * place and tell us nothing.
        *
-       * The tests import the BUILT package (`@citolab/prose-qti/node`), not source, so they
+       * The tests import the BUILT package (`@citolab/prose-qti-node`), not source, so they
        * exercise the artifact a consumer installs — including its esbuild bundle, which is what
        * makes it loadable by plain Node at all.
        */
       {
         extends: true,
         /*
-         * Resolve `@citolab/prose-qti/node` to the BUILT bundle, not to source.
+         * Resolve `@citolab/prose-qti-node` to its BUILT bundle, not to prose-qti's source.
          *
          * tsconfig maps `@citolab/prose-qti/*` to `packages/prose-qti/src/*`, which is right for
          * every other project — but it would make this one test source and pass while the shipped
          * artifact failed. That is not hypothetical: source pulls the @qti-components dists in
          * directly, and Node rejects their extensionless relative imports. Only the esbuild step in
-         * that package's build resolves them, so only the built file proves anything.
+         * prose-qti-node's build resolves them, so only the built file proves anything.
          */
         resolve: {
           alias: {
-            '@citolab/prose-qti/node': path.join(dirname, 'packages/prose-qti/dist/node/index.js')
+            '@citolab/prose-qti-node': path.join(dirname, 'packages/prose-qti-node/dist/index.js')
           }
         },
         test: {
