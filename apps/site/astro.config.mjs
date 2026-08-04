@@ -101,7 +101,6 @@ export default defineConfig({
           label: 'QTI Interactions',
           items: [
             { label: 'Overview', slug: 'docs/qti-interactions' },
-            { label: 'Associate Interaction', slug: 'docs/qti-interactions/associate' },
             { label: 'Choice Interaction', slug: 'docs/qti-interactions/choice' },
             { label: 'Extended Text Interaction', slug: 'docs/qti-interactions/extended-text' },
             { label: 'Gap Match Interaction', slug: 'docs/qti-interactions/gap-match' },

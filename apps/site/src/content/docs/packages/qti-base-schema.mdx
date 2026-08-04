@@ -1,10 +1,10 @@
 ---
 title: QTI Base Schema
-description: Shared ProseMirror base-schema nodes and marks for QTI hosts.
+description: Shared ProseMirror base-schema nodes and marks, plus the QTI layout-wrapper node and its lock plugin, for QTI hosts.
 slug: docs/packages/qti-base-schema
 ---
 
-`@citolab/prose-qti/schema` provides `qtiBasicNodes` and `qtiBasicMarks` — a drop-in replacement for importing `prosemirror-schema-basic` directly when you assemble a raw ProseMirror schema for a QTI host. It is also re-exported from the package root (`@citolab/prose-qti`).
+`@citolab/prose-qti/schema` provides `qtiBasicNodes` and `qtiBasicMarks` — a drop-in replacement for importing `prosemirror-schema-basic` directly when you assemble a raw ProseMirror schema for a QTI host — plus the `qtiLayoutDiv` node and its lock plugin, covered below. `qtiBasicNodes` and `qtiBasicMarks` are also re-exported from the package root (`@citolab/prose-qti`).
 
 ## When to use this
 
@@ -17,32 +17,68 @@ Use this package when you build your ProseMirror `Schema` by hand (see the [Type
 
 ## What it provides
 
-- `qtiBasicNodes` — `prosemirror-schema-basic`'s node specs with the `image` node's `parseDOM`/`toDOM` replaced to round-trip `width`/`height`.
+- `qtiBasicNodes` — `prosemirror-schema-basic`'s node specs with the `image` node's `parseDOM`/`toDOM` replaced to round-trip `width`/`height`, plus a `qtiLayoutDiv` node for the QTI layout wrappers.
 - `qtiBasicMarks` — `prosemirror-schema-basic`'s marks, unchanged, re-exported for a single consistent import path.
+- `qtiLayoutDivLockPlugin` — an optional ProseMirror plugin that keeps `qtiLayoutDiv` wrappers from being added or removed by editing. Not included automatically; add it to your plugin list.
+
 Nothing is removed from `prosemirror-schema-basic` — one node is overridden and one is added.
+
+## Layout wrappers (`qtiLayoutDiv`)
+
+`qtiBasicNodes.qtiLayoutDiv` models the `<div class="qti-layout-row">` / `<div class="qti-layout-colN">` presentation wrappers that QTI items use for grid layout. They are author-written in the source XML — no editor offers a command to create one — so a schema that omits this node silently drops every wrapper on import.
+
+Import and export preserve the wrapper's `class` attribute exactly; editing the content inside a column, or changing a wrapper's own `class`, both work normally.
+
+Because nothing can author a new wrapper, an editor that lets a selection spanning one delete it leaves an author with structure they have no command to rebuild. `qtiLayoutDivLockPlugin` closes that gap:
+
+```ts
+import { qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
+
+const plugins = [...otherPlugins, qtiLayoutDivLockPlugin];
+```
+
+It rejects any transaction that would change how many `qtiLayoutDiv` nodes the document contains, and leaves everything else — including re-classing a wrapper — untouched. It is a separate export rather than automatic, so a host that genuinely wants editable grids simply omits it from its plugin list.
 
 ## Typical usage
 
 ```ts
 import { Schema } from 'prosemirror-model';
-import { qtiBasicNodes, qtiBasicMarks } from '@citolab/prose-qti';
+import { qtiBasicNodes, qtiBasicMarks, qtiLayoutDivLockPlugin } from '@citolab/prose-qti';
 import { qtiChoiceInteractionNodeSpec } from '@citolab/prose-qti/components/choice';
 
 export const appSchema = new Schema({
   marks: qtiBasicMarks,
   nodes: {
-    doc:       { content: 'block+', attrs: { identifier: {}, title: {} } },
-    paragraph: { ...qtiBasicNodes.paragraph, content: 'inline*', group: 'block richtext' },
-    text:      qtiBasicNodes.text,
-    image:     qtiBasicNodes.image,
+    doc:          { content: 'block+', attrs: { identifier: {}, title: {} } },
+    paragraph:    { ...qtiBasicNodes.paragraph, content: 'inline*', group: 'block richtext' },
+    text:         qtiBasicNodes.text,
+    image:        qtiBasicNodes.image,
+    qtiLayoutDiv: { ...qtiBasicNodes.qtiLayoutDiv, content: 'block+', group: 'block' },
 
     // QTI interactions
     qtiChoiceInteraction: { ...qtiChoiceInteractionNodeSpec },
   },
 });
+
+const plugins = [/* ...other plugins */, qtiLayoutDivLockPlugin];
 ```
 
 Only the node names you list in the `nodes` object end up in the schema — `qtiBasicNodes` is a plain lookup object, not a schema fragment applied automatically. Restate `content`/`group` for each node as your document topology requires, the same as for any other node spec in this repo (see the [TypeScript Integration](/docs/frameworks/vanilla/) guide).
+
+## Reading the schema as JSON
+
+`schemaToJson(schema?: Schema)` (also re-exported from `@citolab/prose-qti/node`, the package's Node-only conversion entry point) serializes a schema's grammar — nodes, marks, content expressions, group membership, and attribute defaults/requiredness — to a plain JSON-able object, for a consumer that wants to read the document model rather than build one, out of process, in another language, or as context for a generator:
+
+```ts
+import { writeFileSync } from 'node:fs';
+import { schemaToJson } from '@citolab/prose-qti/node';
+
+writeFileSync('schema.json', JSON.stringify(schemaToJson(), null, 2));
+```
+
+It defaults to `createQtiSchema()` — the same roundtrip schema `@citolab/prose-qti/node`'s conversion functions use — but takes any `Schema` if you want to describe a different one, e.g. `schemaToJson(createQtiSchema({ include: ['qti-order-interaction'] }))`.
+
+This is the content-model counterpart to the repo's `custom-elements.json` (generated by `pnpm run cem`): the manifest says which `qti-*` elements exist and what attributes they take, this says what may nest inside what (`qtiPrompt? qtiSimpleChoice+`, group membership, node order). Neither subsumes the other — a custom elements manifest has no way to express a content model.
 
 ## Notes
 

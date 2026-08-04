@@ -14,7 +14,6 @@ When you install `@citolab/prose-qti`, the matching `@qti-components/*` dependen
 
 | Interaction | What it does | Package |
 |---|---|---|
-| [Associate Interaction](/docs/qti-interactions/associate/) | Associating options from a shared set according to configured matching rules | `@citolab/prose-qti/components/associate` |
 | [Choice Interaction](/docs/qti-interactions/choice/) | Single- or multiple-choice questions with a prompt and selectable choices | `@citolab/prose-qti/components/choice` |
 | [Gap Match Interaction](/docs/qti-interactions/gap-match/) | Dragging or placing predefined gap texts into matching gaps in a passage | `@citolab/prose-qti/components/gap-match` |
 | [Hottext Interaction](/docs/qti-interactions/hottext/) | Marking words or phrases inside a text passage as selectable response options | `@citolab/prose-qti/components/hottext` |
@@ -96,3 +95,7 @@ Each descriptor's `attributePanelMetadata` declares which attributes are user-ed
 | `case-sensitive` | Whether the response match is case-sensitive (text entry) |
 
 The boilerplate ships a small [`attributesPanelPlugin`](https://github.com/Citolab/qti-editor/blob/main/apps/qti-prosemirror-item/src/components/attributes-panel-plugin.ts) that renders these into a side panel; the [TypeScript Integration](/docs/frameworks/vanilla/) guide walks through it.
+
+## Custom elements manifest
+
+[`custom-elements.json`](https://github.com/Citolab/qti-editor/blob/main/custom-elements.json) at the repo root lists the tag name, description, and attribute contract for every `qti-*` custom element these interaction packages define — useful if you're generating typed wrappers or IDE hints for the elements rather than reading the TypeScript source directly. It's generated on demand with `pnpm run cem` and is not part of the published npm package.

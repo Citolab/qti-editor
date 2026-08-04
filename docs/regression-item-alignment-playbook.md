@@ -49,7 +49,9 @@ undo/redo + constrained Home/End keymap, `baseKeymap`, the descriptor's own `plu
 `editableAttrs` allowlist derived from the descriptor.
 
 The base also imports the **shared child custom elements** — `qti-prompt`, `qti-simple-choice`,
-`qti-simple-associable-choice`, `qti-simple-match-set`, `qti-gap`, `qti-gap-text`, `qti-fake-drag`.
+`qti-simple-associable-choice`, `qti-simple-match-set`, `qti-gap`, `qti-gap-text`, `dummy-drag`
+(renamed from `qti-fake-drag` — it has no QTI counterpart and never reaches exported item XML, so it
+does not carry the `qti-` prefix).
 An interaction's own `register.js` defines ONLY the interaction element; its children ship separate
 registers. `customElements.define` is global and every register guards with `customElements.get`, so
 importing them once in the base is equivalent to each story doing it, minus the drift.
