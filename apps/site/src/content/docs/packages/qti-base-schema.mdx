@@ -17,9 +17,27 @@ Use this package when you build your ProseMirror `Schema` by hand (see the [Type
 
 ## What it provides
 
-- `qtiBasicNodes` — `prosemirror-schema-basic`'s node specs with the `image` node's `parseDOM`/`toDOM` replaced to round-trip `width`/`height`.
+- `qtiBasicNodes` — `prosemirror-schema-basic`'s node specs with the `image` node's `parseDOM`/`toDOM` replaced to round-trip `width`/`height`, plus a `qtiLayoutDiv` node for the QTI layout wrappers.
 - `qtiBasicMarks` — `prosemirror-schema-basic`'s marks, unchanged, re-exported for a single consistent import path.
+- `qtiLayoutDivLockPlugin` — an optional ProseMirror plugin that keeps `qtiLayoutDiv` wrappers from being added or removed by editing. Not included automatically; add it to your plugin list.
+
 Nothing is removed from `prosemirror-schema-basic` — one node is overridden and one is added.
+
+## Layout wrappers (`qtiLayoutDiv`)
+
+`qtiBasicNodes.qtiLayoutDiv` models the `<div class="qti-layout-row">` / `<div class="qti-layout-colN">` presentation wrappers that QTI items use for grid layout. They are author-written in the source XML — no editor offers a command to create one — so a schema that omits this node silently drops every wrapper on import.
+
+Import and export preserve the wrapper's `class` attribute exactly; editing the content inside a column, or changing a wrapper's own `class`, both work normally.
+
+Because nothing can author a new wrapper, an editor that lets a selection spanning one delete it leaves an author with structure they have no command to rebuild. `qtiLayoutDivLockPlugin` closes that gap:
+
+```ts
+import { qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
+
+const plugins = [...otherPlugins, qtiLayoutDivLockPlugin];
+```
+
+It rejects any transaction that would change how many `qtiLayoutDiv` nodes the document contains, and leaves everything else — including re-classing a wrapper — untouched. It is a separate export rather than automatic, so a host that genuinely wants editable grids simply omits it from its plugin list.
 
 ## Typical usage
 
