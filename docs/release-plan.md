@@ -11,6 +11,7 @@ This repository has three delivery channels that should remain separate:
 The publishable packages are:
 
 - `@citolab/prose-qti` — QTI core, interactions, integration surfaces
+- `@citolab/prose-qti-node` — the same conversion API, re-bundled for plain Node with no browser or `@qti-components/*` dependencies
 - `@citolab/prose-extensions` — generic ProseMirror/ProseKit extensions
 
 Keep private:
@@ -22,6 +23,7 @@ Keep private:
 ## Rationale
 
 - `@citolab/prose-qti` is the main reusable authoring API: interaction descriptors, QTI composition, XML serialization, ProseKit integration.
+- `@citolab/prose-qti-node` exists because installing `@citolab/prose-qti` for its Node-only conversion functions pulled in all 13 `@qti-components/*` browser packages and `lit` peer warnings a script never touches — the conversion code was fine, the manifest wasn't. See [node-api.md](node-api.md).
 - `@citolab/prose-extensions` is the stable generic editor extension surface: attributes engine, block select, node-attrs sync, semantic paste.
 - `@citolab/prose-qti-ui` is distributed through the shadcn-style registry rather than npm — consumers install components directly from the hosted registry JSON.
 - `@citolab/prose-ai` is vendored, app-only AI tooling with no stable public API of its own; it has no reason to be an npm surface.
@@ -31,7 +33,7 @@ Keep private:
 ### Packages
 
 - Versioning is commit-message driven via `multi-semantic-release` (see `release.config.cjs`), not Changesets — there is no version PR step. Each publishable package is tagged and released independently as `<name>@<version>` based on Angular-style conventional commits (`fix:`, `feat:`, etc.) touching that package's path.
-- The release workflow (`.github/workflows/release.yml`) runs after `CI: push-quality` succeeds on `main`, and only proceeds when the triggering push touched a release-relevant path (`package.json`, `pnpm-lock.yaml`, `packages/prose-qti/`, `packages/prose-extensions/`, or the release workflow itself).
+- The release workflow (`.github/workflows/release.yml`) runs after `CI: push-quality` succeeds on `main`, and only proceeds when the triggering push touched a release-relevant path (`package.json`, `pnpm-lock.yaml`, `packages/prose-qti/`, `packages/prose-qti-node/`, `packages/prose-extensions/`, or the release workflow itself). `packages/prose-qti-node/` is listed explicitly rather than relying on the `packages/prose-qti/` prefix to catch it — that pattern doesn't match, since `-node` sits before the slash, so a change touching only the new package would otherwise never trigger a release.
 - Release publishes with `pnpm publish --provenance`, which rewrites each package's internal `workspace:*` dependency ranges (see below) to real published semver ranges before publishing — no `NPM_TOKEN` is required because npm trusted publishing (OIDC) is configured.
 - A successful release commits the bumped `package.json` and `CHANGELOG.md` back to `main` with `chore(release): <version> [skip ci]`, which is filtered back out of the release-relevant-paths check so it does not retrigger itself.
 
