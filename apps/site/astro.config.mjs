@@ -46,7 +46,6 @@ export default defineConfig({
     optimizeDeps: {
       include: ['lit', 'lit/decorators.js'],
       exclude: [
-        '@qti-components/associate-interaction',
         '@qti-components/base',
         '@qti-components/interactions',
         '@citolab/prose-qti-ui',
@@ -54,7 +53,6 @@ export default defineConfig({
         '@citolab/prose-qti/components/shared',
         '@citolab/prose-qti/components/choice',
         '@citolab/prose-qti/components/extended-text',
-        '@citolab/prose-qti/components/associate',
         '@citolab/prose-qti/components/match',
         '@citolab/prose-qti/components/text-entry',
         '@citolab/prose-qti/components/select-point',
@@ -101,7 +99,6 @@ export default defineConfig({
           label: 'QTI Interactions',
           items: [
             { label: 'Overview', slug: 'docs/qti-interactions' },
-            { label: 'Associate Interaction', slug: 'docs/qti-interactions/associate' },
             { label: 'Choice Interaction', slug: 'docs/qti-interactions/choice' },
             { label: 'Extended Text Interaction', slug: 'docs/qti-interactions/extended-text' },
             { label: 'Gap Match Interaction', slug: 'docs/qti-interactions/gap-match' },

@@ -67,3 +67,13 @@ jobs:
 
       - name: Build Storybook
         run: pnpm build-storybook
+
+      # The site was the one buildable artifact CI did not build, and it broke on main because of
+      # that: removing qti-associate-interaction deleted its docs page but left the Starlight sidebar
+      # pointing at the slug, which is a build error and nothing else. Both PRs went green, main went
+      # red, and the failure surfaced in the deploy workflow well after the merge.
+      #
+      # `astro check && astro build` over 26 pages costs ~11s on top of an install that has already
+      # happened, so there is no reason for this to be a post-merge discovery.
+      - name: Build site
+        run: pnpm --filter @qti-editor/site run build

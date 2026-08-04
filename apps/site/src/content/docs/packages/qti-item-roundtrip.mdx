@@ -24,7 +24,7 @@ The package exposes a small set of convenience helpers:
 - `exportItemXml`
 - `exportItemXmlDoc`
 
-It also exports the roundtrip transform and export option types so callers can type their integration code precisely, plus two prompt-handling helpers: `ensureInteractionPrompts` and `stripEmptyPrompts` (see [Prompt handling](#prompt-handling) below).
+It also exports the roundtrip transform and export option types so callers can type their integration code precisely, plus the prompt-handling helper `stripEmptyPrompts` (see [Prompt handling](#prompt-handling) below).
 
 ## Typical usage
 
@@ -49,19 +49,23 @@ const xml = exportItemXml(editor.state.doc, schema, {
 
 ## Prompt handling
 
-Some editor schemas require a `qti-prompt` as the first child of block interactions such as `order`, `match` (including its tabular variant), `associate`, and `gap-match` — so authors always see a prompt slot to fill in, even though QTI 3.0 itself makes `qti-prompt` optional on these interactions. That mismatch needs a transform on both sides of the roundtrip:
+`qti-prompt` is optional on block interactions, in QTI 3.0 and in this package's schemas alike, so
+importing needs no transform for it. An item that omits a prompt parses as an interaction without
+one.
 
-- **On import**, `ensureInteractionPrompts(schema)` derives the set of interaction tags that require a leading prompt from the supplied schema, and injects an empty `<qti-prompt><p/></qti-prompt>` into any matching interaction whose source XML omits one. This is opt-in — append it to `RoundtripImportOptions.transforms` yourself, since only your schema knows whether a prompt is required:
+This used to say the opposite. The schemas required a leading `qti-prompt` — so that authors always
+saw a slot to fill in — and a pair of transforms bridged the gap: `ensureInteractionPrompts` injected
+an empty prompt on import, `stripEmptyPrompts` took it out again on export. The requirement was the
+bug: synthesising a prompt made a valid QTI item import as a document containing an element its
+author never wrote, which then exported back out as real markup. The roundtrip added content. Every
+interaction's content expression now leads with `qtiPrompt?` and `ensureInteractionPrompts` is gone.
 
-  ```ts
-  import { importItemFromString, defaultRoundtripTransforms, ensureInteractionPrompts } from '@citolab/prose-qti/item-roundtrip';
-
-  const node = importItemFromString(xml, schema, {
-    transforms: [...defaultRoundtripTransforms, ensureInteractionPrompts(schema)],
-  });
-  ```
-
-- **On export**, `stripEmptyPrompts` removes any `<qti-prompt>` whose text content is empty or whitespace-only before the item-body is wrapped in `<qti-assessment-item>` — since `qti-prompt` is `0..1` in QTI 3.0, dropping an empty one is lossless. It's part of `defaultRoundtripExportTransforms` and runs automatically; pass `{ transforms: [] }` to disable it, or your own list to customize.
+- **On export**, `stripEmptyPrompts` remains, with a smaller and no longer symmetrical job: it
+  removes any `<qti-prompt>` whose text content is empty or whitespace-only before the item-body is
+  wrapped in `<qti-assessment-item>`. Since `qti-prompt` is `0..1` in QTI 3.0, dropping an empty one
+  is lossless. It now cleans up after an author who left a prompt blank, rather than after us. It is
+  part of `defaultRoundtripExportTransforms` and runs automatically; pass `{ transforms: [] }` to
+  disable it, or your own list to customize.
 
 ## Notes
 
