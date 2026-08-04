@@ -27,13 +27,22 @@ Build your base schema nodes/marks from `qtiBasicNodes`/`qtiBasicMarks` (`@citol
 
 ## Stylesheet
 
-Import `@citolab/prose-qti/core-css.css` wherever your app renders the editor's document — it is a mandatory plain-CSS stylesheet (no Tailwind or PostCSS plugins required) that styles interaction element backgrounds, spacing, and the rubric-block boundary:
+Import `@citolab/prose-qti/qti-prose.css` wherever your app renders the editor's document — it is a mandatory plain-CSS stylesheet (no Tailwind or PostCSS plugins required) that bundles the upstream `@qti-components/theme` stylesheet together with this package's own interaction element backgrounds, spacing, and rubric-block boundary styles, in the order the cascade requires:
 
 ```css
+@import '@citolab/prose-qti/qti-prose.css';
+```
+
+This is the only stylesheet import a host needs — `@qti-components/theme` is a dependency of `@citolab/prose-qti` itself, so you never declare it or track which `qti-components` build the editor is pinned to. Add a brand overlay stylesheet *after* this import, not before.
+
+If you'd rather manage the two stylesheets yourself (e.g. to share `@qti-components/theme` across other UI in your app), import them separately and in this order — reversing it silently breaks the CSS cascade:
+
+```css
+@import '@qti-components/theme/item.css';
 @import '@citolab/prose-qti/core-css.css';
 ```
 
-Pair it with the upstream `@qti-components/theme` stylesheet that styles the QTI web components themselves. See `apps/qti-prosemirror-item/src/app.css` for the reference import order.
+See `apps/qti-prosemirror-item/src/app.css` for the reference import order.
 
 ## QTI interactions
 
@@ -74,6 +83,16 @@ const xml = exportItemXml(view.state.doc, schema);
 
 See the [QTI Item Roundtrip](/docs/packages/qti-item-roundtrip/) reference for the full surface.
 
+## Transformers
+
+`@citolab/prose-qti/transformers` re-exports `@qti-components/transformers` in full (`qtiTransformItem`, `qtiTransformTest`, …) so a host never names `@qti-components/transformers` itself:
+
+```ts
+import { qtiTransformTest } from '@citolab/prose-qti/transformers';
+```
+
+Like the stylesheet above, this exists so a consuming app tracks only `@citolab/prose-qti`'s version — not a second, separately-pinned `qti-components` package that has to be bumped in lockstep.
+
 ## Package overview
 
 | Package | What it provides | When to use this |
@@ -84,3 +103,5 @@ See the [QTI Item Roundtrip](/docs/packages/qti-item-roundtrip/) reference for t
 | `@citolab/prose-qti/schema` | `qtiBasicNodes`/`qtiBasicMarks` base schema nodes | When you assemble a raw ProseMirror schema by hand and want image dimensions to survive QTI XML roundtrip. |
 | `@citolab/prose-qti/qti3-item-import` | Standard QTI 3.0 item normalization | When you need to ingest third-party QTI XML before parsing into the editor. |
 | `@citolab/prose-qti/item-roundtrip` | One-call import/export between ProseMirror and QTI item XML | When you want a single helper for the full QTI item roundtrip. |
+| `@citolab/prose-qti/qti-prose.css` | Bundled `@qti-components/theme` + `core-css.css` stylesheet | When you want one stylesheet import instead of pairing two yourself. |
+| `@citolab/prose-qti/transformers` | Re-export of `@qti-components/transformers` | When you call `qtiTransformItem`/`qtiTransformTest` and don't want to declare `@qti-components/transformers` separately. |

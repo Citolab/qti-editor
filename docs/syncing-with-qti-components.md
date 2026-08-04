@@ -27,7 +27,11 @@ Every package/app that consumes `@qti-components/*` pins the same commit SHA
 in its own `dependencies`/`devDependencies`:
 
 - `packages/prose-qti/package.json` — the interaction components
-  (`@qti-components/choice-interaction`, `@qti-components/base`, …)
+  (`@qti-components/choice-interaction`, `@qti-components/base`, …), plus
+  `@qti-components/theme` and `@qti-components/transformers` — this package
+  bundles the theme into its `./qti-prose.css` subpath and re-exports the
+  transformers under `./transformers`, so a consumer never pins either
+  directly (see [architecture.md](architecture.md))
 - root `package.json` — `@qti-components/theme` (dev-only, used by apps for styling)
 - `apps/e2e/package.json` — `@citolab/qti-components` (end-to-end test fixtures)
 - `apps/qti-prosekit-app`, `apps/qti-prosekit-item`, `apps/qti-prosemirror-item`,

@@ -79,6 +79,10 @@ Interaction components: `choice`, `extended-text`, `gap-match`, `hottext`, `inli
 
 `src/core-css/core-css.css` — the mandatory stylesheet for rendering the editor's PM document (interaction element backgrounds/spacing plus the rubric-block boundary and ProseKit placeholder fix), published as the `./core-css.css` subpath (`@citolab/prose-qti/core-css.css`). Every app that renders the editor must import it alongside `@qti-components/theme`.
 
+`src/qti-prose.css` — bundles `@qti-components/theme/item.css` then `core-css.css`, in that order, published as the `./qti-prose.css` subpath (`@citolab/prose-qti/qti-prose.css`). The order is load-bearing: a CSS cascade layer's position is fixed by its first mention, and `item.css` is what declares the whole layer order, so it must load first or `core-css.css` creates its override layer too early and silently loses the cascade. `@qti-components/theme` is a dependency of this package (via the catalog) specifically so this bundle resolves without the consumer declaring it. A host that only wants one stylesheet import (and never wants to know which `qti-components` build the editor is pinned to) imports this instead of the two files separately; a brand overlay still goes after it. Apps in this repo keep importing `@qti-components/theme` and `core-css.css` directly, since they already sit next to the catalog.
+
+`src/transformers.ts` — re-exports all of `@qti-components/transformers` (`qtiTransformItem`, `qtiTransformTest`, …) under the `./transformers` subpath (`@citolab/prose-qti/transformers`), so a consuming host names only `@citolab/prose-qti` and never pins `@qti-components/transformers` itself.
+
 `src/schema/` owns shared ProseMirror base-schema primitives for QTI hosts:
 - `qtiBasicNodes` / `qtiBasicMarks` (`@citolab/prose-qti/schema`) are the canonical QTI-focused replacement for direct `prosemirror-schema-basic` usage in this repo.
 - The `image` node in this module preserves `width` and `height` attributes on parse/serialize so QTI XML image dimensions survive import and roundtrip.
