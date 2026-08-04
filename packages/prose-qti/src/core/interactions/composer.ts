@@ -1,4 +1,3 @@
-import { associateInteractionDescriptor } from '@citolab/prose-qti/components/associate';
 import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
 import { extendedTextInteractionDescriptor } from '@citolab/prose-qti/components/extended-text';
 import { gapMatchInteractionDescriptor } from '@citolab/prose-qti/components/gap-match';
@@ -19,7 +18,6 @@ import type {
 } from '@citolab/prose-qti/interfaces';
 
 const registeredDescriptors: InteractionDescriptor[] = [
-  associateInteractionDescriptor,
   choiceInteractionDescriptor,
   extendedTextInteractionDescriptor,
   gapMatchInteractionDescriptor,

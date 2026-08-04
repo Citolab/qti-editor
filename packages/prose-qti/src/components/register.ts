@@ -1,4 +1,3 @@
-import './associate/register.js';
 import './choice/register.js';
 import './extended-text/register.js';
 import './gap-match/register.js';

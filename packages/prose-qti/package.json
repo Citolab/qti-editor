@@ -150,14 +150,6 @@
       "types": "./dist/components/register.d.ts",
       "default": "./dist/components/register.js"
     },
-    "./components/associate": {
-      "types": "./dist/components/associate/index.d.ts",
-      "default": "./dist/components/associate/index.js"
-    },
-    "./components/associate/*": {
-      "types": "./dist/components/associate/*",
-      "default": "./dist/components/associate/*"
-    },
     "./components/choice": {
       "types": "./dist/components/choice/index.d.ts",
       "default": "./dist/components/choice/index.js"
@@ -256,19 +248,18 @@
   "dependencies": {
     "@citolab/prose-extensions": "workspace:*",
     "@lit/context": "^1.1.6",
-    "@qti-components/associate-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@509fcae",
-    "@qti-components/base": "https://pkg.pr.new/Citolab/qti-components/@qti-components/base@509fcae",
-    "@qti-components/choice-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/choice-interaction@509fcae",
-    "@qti-components/extended-text-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/extended-text-interaction@509fcae",
-    "@qti-components/gap-match-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/gap-match-interaction@509fcae",
-    "@qti-components/hottext-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/hottext-interaction@509fcae",
-    "@qti-components/inline-choice-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/inline-choice-interaction@509fcae",
-    "@qti-components/interactions-core": "https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@509fcae",
-    "@qti-components/match-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/match-interaction@509fcae",
-    "@qti-components/order-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/order-interaction@509fcae",
-    "@qti-components/select-point-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/select-point-interaction@509fcae",
-    "@qti-components/text-entry-interaction": "https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@509fcae",
-    "@qti-components/transformers": "https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@509fcae",
+    "@qti-components/base": "catalog:",
+    "@qti-components/choice-interaction": "catalog:",
+    "@qti-components/extended-text-interaction": "catalog:",
+    "@qti-components/gap-match-interaction": "catalog:",
+    "@qti-components/hottext-interaction": "catalog:",
+    "@qti-components/inline-choice-interaction": "catalog:",
+    "@qti-components/interactions-core": "catalog:",
+    "@qti-components/match-interaction": "catalog:",
+    "@qti-components/order-interaction": "catalog:",
+    "@qti-components/select-point-interaction": "catalog:",
+    "@qti-components/text-entry-interaction": "catalog:",
+    "@qti-components/transformers": "catalog:",
     "linkedom": "^0.18.13",
     "prosemirror-schema-basic": "^1.2.4",
     "prosemirror-schema-list": "^1.5.1",

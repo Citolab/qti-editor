@@ -41,7 +41,6 @@ const TAG_TO_I18N_KEY: Record<string, string> = {
   'qti-text-entry-interaction': 'interactionInsert.textEntry',
   'qti-inline-choice-interaction': 'interactionInsert.inlineChoice',
   'qti-hottext-interaction': 'interactionInsert.hottext',
-  'qti-associate-interaction': 'interactionInsert.associate',
   'qti-match-interaction': 'interactionInsert.match',
   'qti-order-interaction': 'interactionInsert.order',
   'qti-select-point-interaction': 'interactionInsert.selectPoint',

@@ -126,12 +126,6 @@
       "@citolab/prose-qti/components/register": [
         "packages/prose-qti/src/components/register.ts"
       ],
-      "@citolab/prose-qti/components/associate": [
-        "packages/prose-qti/src/components/associate/index.ts"
-      ],
-      "@citolab/prose-qti/components/associate/*": [
-        "packages/prose-qti/src/components/associate/*"
-      ],
       "@citolab/prose-qti/components/choice": [
         "packages/prose-qti/src/components/choice/index.ts"
       ],

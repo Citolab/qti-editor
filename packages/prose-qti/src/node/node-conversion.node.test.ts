@@ -1,6 +1,6 @@
 /* eslint-disable import/no-nodejs-modules -- a *.node.test.ts runs in Node by definition; the rule
    guards the browser-targeted source, which this is not. */
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 
 import { describe, expect, test } from 'vitest';
 
@@ -27,7 +27,13 @@ import { createQtiSchema, htmlToPm, pmToHtml, pmToQti3, validateHtml, qti3ToPm }
 
 const FIXTURES = new URL('../../../../apps/e2e/stories/fixtures/', import.meta.url);
 const SNAPSHOTS = new URL('../../../../apps/e2e/stories/__file_snapshots__/', import.meta.url);
-const ITEMS = Array.from({ length: 17 }, (_, i) => `ITEM${String(i + 1).padStart(3, '0')}`);
+// Read from disk rather than counting to a literal. The count WAS a literal 17, and removing
+// ITEM017 with the associate interaction turned it into a test that asked for a file nobody had
+// deleted it from — a failure about the corpus size rather than about conversion.
+const ITEMS = readdirSync(FIXTURES)
+  .filter(name => /^ITEM\d+\.xml$/.test(name))
+  .map(name => name.replace(/\.xml$/, ''))
+  .sort();
 
 const read = (base: URL, name: string) => readFileSync(new URL(name, base), 'utf8');
 

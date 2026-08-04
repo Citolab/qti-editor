@@ -63,7 +63,6 @@ export default defineConfig({
   ],
   optimizeDeps: {
     exclude: [
-      '@qti-components/associate-interaction',
       '@qti-components/base',
       '@qti-components/choice-interaction',
       '@qti-components/extended-text-interaction',

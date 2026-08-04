@@ -17,7 +17,7 @@ Status legend: **fixed** · **open** · **upstream** (needs a change outside thi
 keymap({ Enter: hottextInteractionDescriptor.enterCommand })
 ```
 
-`enterCommand` is optional on `InteractionDescriptor` (`packages/prose-qti/src/interfaces/descriptor.ts:55`) and is defined only on the **choice, match, associate, gap-match and inline-choice** descriptors — never hottext. The keymap therefore bound `Enter` to `undefined` (a silent no-op).
+`enterCommand` is optional on `InteractionDescriptor` (`packages/prose-qti/src/interfaces/descriptor.ts:55`) and was defined only on the **choice, match, associate, gap-match and inline-choice** descriptors — never hottext. (Associate has since been removed.) The keymap therefore bound `Enter` to `undefined` (a silent no-op).
 
 - **Why it survived**: Vite never typechecks, so `pnpm test` stayed green. `tsc` flags it immediately.
 - **Resolution**: removed the dead entry; `baseKeymap` handles Enter. Hottext genuinely has no Enter affordance — its children *wrap existing text* rather than forming a list of siblings, unlike the interactions that do define `enterCommand`.
@@ -78,9 +78,9 @@ Known latent example: `ITEM003.xml` declares **two** accepted answers (`breking`
 
 **Follow-up**: the planned `roundtrip-stability.ts` fixpoint assertion.
 
-## 7. `roundtripAssociate` is dead in the real import path — **open**
+## 7. `roundtripAssociate` is dead in the real import path — **closed, deleted**
 
-`packages/prose-qti/src/qti3-item-import/roundtrip-associate/index.ts` is not exported from that directory's `index.ts`, has no `package.json` subpath, and is absent from `defaultRoundtripTransforms`. ITEM017 (the associate fixture) is handled by the generic `roundtripInteractions` fallback instead. Either wire it in or delete it — right now it is untested, unreachable code that looks live.
+`packages/prose-qti/src/qti3-item-import/roundtrip-associate/index.ts` was not exported from that directory's `index.ts`, had no `package.json` subpath, and was absent from `defaultRoundtripTransforms`. ITEM017 (the associate fixture) was handled by the generic `roundtripInteractions` fallback instead. The finding offered two ways out — wire it in or delete it — and deletion is what happened: it went with the rest of the editor's associate support.
 
 ## 8. Ten package stories are orphaned by a commented-out glob — **open**
 
@@ -183,7 +183,7 @@ Drop targets are `[...trackedDroppables, ...trackedDragContainers]`. Verified en
 
 
 
-order, match, gap-match and associate use a **pointer-based** drag implementation (`qti-draggable="true"`, `cursor: grab`, `touch-action: none`, `qti-droppable="true"` on the targets). Neither `locator.dropTo()` nor `userEvent.dragAndDrop()` engages it — both hang and time out:
+order, match and gap-match use a **pointer-based** drag implementation (`qti-draggable="true"`, `cursor: grab`, `touch-action: none`, `qti-droppable="true"` on the targets). Neither `locator.dropTo()` nor `userEvent.dragAndDrop()` engages it — both hang and time out:
 
 ```
 frame.dragAndDrop: Timeout 59557ms exceeded.
@@ -205,7 +205,12 @@ Click-to-place does not work either: clicking a choice focuses it (`activeElemen
 - **Next steps to try**: (a) a manual `pointerdown` → `pointermove`×N → `pointerup` sequence at the CDP level (vitest does not expose `page.mouse`, so this may need a custom locator or a Playwright escape hatch); (b) check whether the components expose a keyboard placement affordance — the order choices carry `tabindex="0"`, which suggests one was intended; (c) if neither, adding an accessible keyboard path upstream would make these testable *and* usable without a mouse.
 - This is the single largest remaining gap in the interaction suite.
 
-## 15. Associate export downgrades `base-type="pair"` to `"identifier"` — **open** (scoring bug)
+## 15. Associate export downgrades `base-type="pair"` to `"identifier"` — **moot, associate removed** (scoring bug)
+
+Kept because the bug is real and was never fixed — it is waiting for whoever restores associate, and
+the tests that pinned it are in the archive rather than in the repo. Nothing in the editor can hit it
+today: qti-associate-interaction is gone from the schema, the descriptor registry, the insert menu
+and the corpus.
 
 Found by adding a reversed-pair scoring test to ITEM017.
 
@@ -221,8 +226,8 @@ A QTI `pair` is **unordered**: `A O` and `O A` denote the same association. Down
 - **Consequence**: a candidate who associates Obelix→Asterix scores 0 where Asterix→Obelix scores 1. The association is symmetric in the question but not in the scoring.
 - **Secondary**: `A O` contains a space, which is not a valid QTI identifier — so the exported declaration is questionable on its own terms.
 - **Why it hid**: the previous test staged only the exact correct strings, so the distinction never arose. This is the clearest example of why correct-*and*-incorrect assertions matter.
-- **Pinned by**: two tests in `item017-qti-associate-interaction.regression.browser.test.ts` — one on runtime scoring, one asserting the exported `base-type` directly. Flip both when fixed.
-- **Where to look**: the associate composer metadata / `composeAssociateInteractionElement`, plus `roundtripAssociate` (which is itself dead in the real import path — finding #7).
+- **Was pinned by**: two tests in `item017-qti-associate-interaction.regression.browser.test.ts` — one on runtime scoring, one asserting the exported `base-type` directly. Both live in the removal archive; restore them with the interaction and flip them when fixed.
+- **Where to look**: the associate composer metadata / `composeAssociateInteractionElement`, plus `roundtripAssociate` (finding #7 — deleted at the same time).
 
 ## 9. `schema:check` and `typecheck` were not enforced — **fixed, then obsolete**
 

@@ -18,7 +18,6 @@ import { defaultSettings, updateImageNode } from 'prosemirror-image-plugin';
 import { qtiChoiceInteractionNodeSpec } from '@citolab/prose-qti/components/choice';
 import { qtiExtendedTextInteractionNodeSpec } from '@citolab/prose-qti/components/extended-text';
 import { qtiTextEntryInteractionNodeSpec } from '@citolab/prose-qti/components/text-entry';
-import { qtiAssociateInteractionNodeSpec } from '@citolab/prose-qti/components/associate';
 import { qtiGapMatchInteractionNodeSpec } from '@citolab/prose-qti/components/gap-match';
 import { qtiHottextInteractionNodeSpec, qtiHottextNodeSpec } from '@citolab/prose-qti/components/hottext';
 import {
@@ -81,15 +80,14 @@ const baseSchema = new Schema({
     qtiGapText:                         { ...qtiGapTextNodeSpec,                         content: 'text*',              group: 'block' },
 
     // ── QTI block interactions ────────────────────────────────────────────
-    qtiChoiceInteraction:       { ...qtiChoiceInteractionNodeSpec,       content: 'qtiPrompt qtiSimpleChoice+',              group: 'block' },
-    qtiOrderInteraction:        { ...qtiOrderInteractionNodeSpec,        content: 'qtiPrompt qtiSimpleChoice+',             group: 'block' },
-    qtiMatchInteraction:        { ...qtiMatchInteractionNodeSpec,        content: 'qtiPrompt qtiSimpleMatchSet{2}',         group: 'block' },
-    qtiMatchInteractionTabular: { ...qtiMatchInteractionTabularNodeSpec, content: 'qtiPrompt qtiSimpleMatchSet{2}',         group: 'block' },
-    qtiAssociateInteraction:    { ...qtiAssociateInteractionNodeSpec,    content: 'qtiPrompt qtiSimpleAssociableChoice+',   group: 'block' },
+    qtiChoiceInteraction:       { ...qtiChoiceInteractionNodeSpec,       content: 'qtiPrompt? qtiSimpleChoice+',             group: 'block' },
+    qtiOrderInteraction:        { ...qtiOrderInteractionNodeSpec,        content: 'qtiPrompt? qtiSimpleChoice+',            group: 'block' },
+    qtiMatchInteraction:        { ...qtiMatchInteractionNodeSpec,        content: 'qtiPrompt? qtiSimpleMatchSet{2}',        group: 'block' },
+    qtiMatchInteractionTabular: { ...qtiMatchInteractionTabularNodeSpec, content: 'qtiPrompt? qtiSimpleMatchSet{2}',        group: 'block' },
     qtiHottextInteraction:      { ...qtiHottextInteractionNodeSpec,      content: 'paragraph+',                              group: 'block' },
-    qtiGapMatchInteraction:     { ...qtiGapMatchInteractionNodeSpec,     content: 'qtiPrompt qtiGapText{2,} paragraph+',    group: 'block' },
-    qtiExtendedTextInteraction: { ...qtiExtendedTextInteractionNodeSpec, content: 'qtiPrompt',                               group: 'block' },
-    qtiSelectPointInteraction:  { ...qtiSelectPointInteractionNodeSpec,  content: 'qtiPrompt imgSelectPoint',                group: 'block' },
+    qtiGapMatchInteraction:     { ...qtiGapMatchInteractionNodeSpec,     content: 'qtiPrompt? qtiGapText{2,} paragraph+',   group: 'block' },
+    qtiExtendedTextInteraction: { ...qtiExtendedTextInteractionNodeSpec, content: 'qtiPrompt?',                              group: 'block' },
+    qtiSelectPointInteraction:  { ...qtiSelectPointInteractionNodeSpec,  content: 'qtiPrompt? imgSelectPoint',               group: 'block' },
 
     // ── QTI inline interactions ───────────────────────────────────────────
     qtiInlineChoiceInteraction: { ...qtiInlineChoiceInteractionNodeSpec, content: 'qtiInlineChoice+', group: 'inline', inline: true },

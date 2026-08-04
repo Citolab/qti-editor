@@ -24,7 +24,8 @@ import type { RoundtripImportOptions } from './import.js';
  * them from linkedom or jsdom before calling. prosemirror-model itself needs no shim — it already
  * accepts an injected document.
  *
- * Measured: all 17 ITEM regression fixtures roundtrip to their committed snapshots in plain Node.
+ * Measured: every ITEM regression fixture roundtrips to its committed snapshot in plain Node —
+ * 16/16 today, and the test reads the corpus off disk so the number follows the fixtures.
  *
  * ## Why HTML is a first-class boundary here
  *
@@ -47,7 +48,10 @@ export interface ConvertOptions {
  * schema per call made every document incomparable with every other: `xmlToPm(x).eq(htmlToPm(y))`
  * was false even for byte-identical content, because the two docs' node types came from different
  * Schema instances. Measured — round-trip identity read 0/17 with a schema per call and 11/17 with
- * one shared instance, on exactly the same documents.
+ * one shared instance, on exactly the same documents. The shared-instance figure re-measured to
+ * 11/16 on 2026-08-04 (the corpus lost ITEM017 with the associate interaction, and it was not one of
+ * the failures); the schema-per-call counterfactual was not re-run, so that 0/17 is as first
+ * measured.
  *
  * It is also simply wasteful: the schema composes 42 node specs from every registered descriptor.
  *

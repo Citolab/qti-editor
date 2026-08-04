@@ -163,17 +163,19 @@ qti-components now carries the full set. For each NNN in 003..017:
 - Fixture: apps/e2e/stories/fixtures/ITEMNNN.xml (byte-identical copy of public/assets/api/kennisnet/ITEMNNN.xml)
 
 Interaction per item: 003/004 text-entry, 005 extended-text, 006 inline-choice, 007-010 match,
-011/012 hottext, 013/014 order, 015 gap-match, 016 select-point, 017 associate.
+011/012 hottext, 013/014 order, 015 gap-match, 016 select-point.
 
-ITEM017 is the one filename that does not name its own element: the fixture renders through
-`qti-match-interaction`, but the file is `item017-qti-associate-interaction.regression.stories.ts`
-because qti-editor models it with the associate ProseMirror descriptor. One filename per item beats a
-per-repo-accurate name, so both repos use `associate`; the qti-components story carries a comment
-saying so.
+ITEM017 was associate, and is gone from qti-editor: the interaction was removed and its item with it,
+so the editor corpus is 16. qti-components keeps ITEM017 — a DIFFERENT item, "Sleepvraag –
+afbeeldingen koppelen", which is a match interaction — under the filename
+`item017-qti-associate-interaction.regression.stories.ts`. That name only ever existed to mirror
+qti-editor's, and now mirrors nothing; it was left unrenamed to avoid churning a story id during the
+removal. Rename it when this playbook is next acted on, and the one-filename-per-item rule below
+applies to 003-016.
 
 ### ITEM003 - ITEM017 (qti-editor side complete)
 
-Both repos now carry all 17. The qti-editor stories already had the right filenames and
+Both repos carried all 17 at the time of writing (16 in qti-editor since ITEM017/associate was removed). The qti-editor stories already had the right filenames and
 `RoundtripItemNNN` exports; what changed for 003-017 was four things, each aligning to ITEM001/002:
 
 1. Fixture copied from `public/qti/kennisnet/ITEMNNN.xml` to `apps/e2e/stories/fixtures/ITEMNNN.xml`

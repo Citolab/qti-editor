@@ -18,8 +18,8 @@
  * It also carries the side-effect imports that register the QTI interaction edit
  * elements (custom elements used by the node views).
  *
- * Supported interactions: choice, extended-text, text-entry, associate,
- * gap-match, hottext, inline-choice, match, order, select-point (+ rubric block).
+ * Supported interactions: choice, extended-text, text-entry, gap-match,
+ * hottext, inline-choice, match, order, select-point (+ rubric block).
  */
 
 import { chainCommands } from 'prosemirror-commands';
@@ -27,7 +27,6 @@ import { keymap } from 'prosemirror-keymap';
 import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
 import { extendedTextInteractionDescriptor } from '@citolab/prose-qti/components/extended-text';
 import { textEntryInteractionDescriptor } from '@citolab/prose-qti/components/text-entry';
-import { associateInteractionDescriptor } from '@citolab/prose-qti/components/associate';
 import { gapMatchInteractionDescriptor } from '@citolab/prose-qti/components/gap-match';
 import { hottextInteractionDescriptor } from '@citolab/prose-qti/components/hottext';
 import { inlineChoiceInteractionDescriptor } from '@citolab/prose-qti/components/inline-choice';
@@ -47,7 +46,6 @@ import { qtiTransformTest } from '@qti-components/transformers';
 import '@citolab/prose-qti/components/choice/register.js';
 import '@citolab/prose-qti/components/extended-text/register.js';
 import '@citolab/prose-qti/components/text-entry/register.js';
-import '@citolab/prose-qti/components/associate/register.js';
 import '@citolab/prose-qti/components/gap-match/register.js';
 import '@citolab/prose-qti/components/hottext/register.js';
 import '@citolab/prose-qti/components/inline-choice/register.js';
@@ -70,7 +68,6 @@ export const descriptors: InteractionDescriptor[] = [
   choiceInteractionDescriptor,
   extendedTextInteractionDescriptor,
   textEntryInteractionDescriptor,
-  associateInteractionDescriptor,
   gapMatchInteractionDescriptor,
   hottextInteractionDescriptor,
   inlineChoiceInteractionDescriptor,
@@ -122,12 +119,15 @@ export async function loadQtiItems(): Promise<{ href: string; identifier: string
 /**
  * Import a QTI 3.0 item from `href` into a ProseMirror document for `schema`.
  *
- * The editor's schema requires `<qti-prompt>` on interactions that QTI 3.0
- * marks optional. ProseMirror's `DOMParser` only inserts *wrapping* parents to
- * recover misplaced children; it does not auto-insert required leading
- * siblings, so a prompt-less interaction in the source would close on its
- * first child and leak the rest of the interaction up to the doc level. The
- * the required first child in place.
+ * This used to pass an `ensureInteractionPrompts` transform, because the editor's schema required
+ * `<qti-prompt>` on interactions that QTI 3.0 marks optional — and ProseMirror's `DOMParser` only
+ * inserts *wrapping* parents to recover misplaced children, never a required leading sibling, so a
+ * prompt-less interaction in the source closed on its first child and leaked the rest up to the doc
+ * level.
+ *
+ * The requirement was the bug, and `./schema.ts` now leads every interaction's content expression
+ * with `qtiPrompt?` (matching the package NodeSpecs), so a prompt-less interaction parses as what it
+ * is and no transform is needed.
  */
 export function importQtiItem(href: string, schema: Schema): Promise<ProseMirrorNode> {
   return importItemFromUrl(href, schema, {

@@ -16,7 +16,6 @@ const interactionsSharedSrcRoot = fileURLToPath(new URL('../../packages/prose-qt
 const interactionsUmbrellaSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components', import.meta.url));
 const interactionsChoiceSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/choice/src', import.meta.url));
 const interactionsExtendedTextSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/extended-text/src', import.meta.url));
-const interactionsAssociateSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/associate/src', import.meta.url));
 const interactionsMatchSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/match/src', import.meta.url));
 const interactionsOrderSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/order/src', import.meta.url));
 const interactionsTextEntrySrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/text-entry/src', import.meta.url));
@@ -39,7 +38,6 @@ const fullReloadRoots = [
   prosekitExtensionsSrcRoot,
   interactionsChoiceSrcRoot,
   interactionsExtendedTextSrcRoot,
-  interactionsAssociateSrcRoot,
   interactionsMatchSrcRoot,
   interactionsOrderSrcRoot,
   interactionsTextEntrySrcRoot,
@@ -131,10 +129,6 @@ export default defineConfig({
         replacement: `${interactionsUmbrellaSrcRoot}/index.ts`,
       },
       {
-        find: /^@qti-editor\/interactions\/associate$/,
-        replacement: `${interactionsUmbrellaSrcRoot}/associate/index.ts`,
-      },
-      {
         find: /^@qti-editor\/interactions\/choice$/,
         replacement: `${interactionsUmbrellaSrcRoot}/choice/index.ts`,
       },
@@ -193,14 +187,6 @@ export default defineConfig({
       {
         find: /^@qti-editor\/interaction-extended-text$/,
         replacement: `${interactionsExtendedTextSrcRoot}/index.ts`,
-      },
-      {
-        find: /^@qti-editor\/interaction-associate\/(.*)\.js$/,
-        replacement: `${interactionsAssociateSrcRoot}/$1.ts`,
-      },
-      {
-        find: /^@qti-editor\/interaction-associate$/,
-        replacement: `${interactionsAssociateSrcRoot}/index.ts`,
       },
       {
         find: /^@qti-editor\/interaction-match\/(.*)\.js$/,
@@ -305,7 +291,6 @@ export default defineConfig({
   ],
   optimizeDeps: {
     exclude: [
-      '@qti-components/associate-interaction',
       '@qti-components/base',
       '@qti-components/choice-interaction',
       '@qti-components/extended-text-interaction',
@@ -324,7 +309,6 @@ export default defineConfig({
       '@citolab/prose-extensions/prosekit',
       '@citolab/prose-qti/components/choice',
       '@citolab/prose-qti/components/extended-text',
-      '@citolab/prose-qti/components/associate',
       '@citolab/prose-qti/components/match',
       '@citolab/prose-qti/components/order',
       '@citolab/prose-qti/components/text-entry',
