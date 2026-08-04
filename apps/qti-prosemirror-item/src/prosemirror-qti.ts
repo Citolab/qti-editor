@@ -122,12 +122,15 @@ export async function loadQtiItems(): Promise<{ href: string; identifier: string
 /**
  * Import a QTI 3.0 item from `href` into a ProseMirror document for `schema`.
  *
- * The editor's schema requires `<qti-prompt>` on interactions that QTI 3.0
- * marks optional. ProseMirror's `DOMParser` only inserts *wrapping* parents to
- * recover misplaced children; it does not auto-insert required leading
- * siblings, so a prompt-less interaction in the source would close on its
- * first child and leak the rest of the interaction up to the doc level. The
- * the required first child in place.
+ * This used to pass an `ensureInteractionPrompts` transform, because the editor's schema required
+ * `<qti-prompt>` on interactions that QTI 3.0 marks optional — and ProseMirror's `DOMParser` only
+ * inserts *wrapping* parents to recover misplaced children, never a required leading sibling, so a
+ * prompt-less interaction in the source closed on its first child and leaked the rest up to the doc
+ * level.
+ *
+ * The requirement was the bug, and `./schema.ts` now leads every interaction's content expression
+ * with `qtiPrompt?` (matching the package NodeSpecs), so a prompt-less interaction parses as what it
+ * is and no transform is needed.
  */
 export function importQtiItem(href: string, schema: Schema): Promise<ProseMirrorNode> {
   return importItemFromUrl(href, schema, {
