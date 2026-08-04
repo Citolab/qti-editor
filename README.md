@@ -15,11 +15,10 @@ Prerequisites: [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/).
 
 ```sh
 pnpm install
-pnpm dev                      # ProseKit editor app, http://localhost:5173
-pnpm dev:prosemirror-item     # plain ProseMirror editor app, http://localhost:5175
+pnpm dev          # the editor, http://localhost:5175
 ```
 
-Both watch the packages, so a change in `packages/` reloads the app. Other entry points:
+`pnpm dev` watches the packages, so a change in `packages/` reloads the app. Other entry points:
 
 ```sh
 pnpm storybook    # component and interaction stories, port 6008
@@ -67,10 +66,6 @@ this repo's problem rather than the host's.
   and how `correct-response`, `score` and select-point's area mappings survive a round trip
 - [docs/node-api.md](./docs/node-api.md) — converting QTI outside a browser, and validating generated
   HTML against the schema
-- [docs/syncing-with-qti-components.md](./docs/syncing-with-qti-components.md) — moving onto a new
-  qti-components build
-- [docs/testing-findings.md](./docs/testing-findings.md) — open and closed findings from the test
-  suites, with the reasoning behind each
 
 ## Contributing
 

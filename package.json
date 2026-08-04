@@ -20,7 +20,7 @@
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "dev": "pnpm --filter @qti-editor/prosekit-app dev",
+    "dev": "pnpm --filter @qti-editor/prosemirror-item dev",
     "dev:prosekit-app": "pnpm --filter @qti-editor/prosekit-app dev",
     "dev:prosekit-item": "pnpm --filter @qti-editor/prosekit-item dev",
     "dev:prosemirror-item": "pnpm --filter @qti-editor/prosemirror-item dev",

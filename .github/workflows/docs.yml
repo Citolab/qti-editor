@@ -59,11 +59,31 @@ jobs:
             --model claude-sonnet-5
             --allowedTools "Edit,Write,Bash(git:*),Bash(gh:*)"
           prompt: |
-            Code in packages changed. Update the docs in
-            apps/site/src/content/docs and in /docs to match. Create a
-            new branch, commit your changes, push the branch, and open
-            a pull request against main with `gh pr create` describing
-            what changed and why.
+            Code in packages changed. Update the docs to match, then create a
+            new branch, commit, push, and open a pull request against main with
+            `gh pr create` describing what changed and why.
+
+            The two doc trees have different audiences and are not
+            interchangeable:
+
+            - apps/site/src/content/docs is the PUBLISHED site, for people USING
+              the editor. Interactions, the item format, getting started.
+            - /docs is for people WORKING ON this repo. The Node API
+              (docs/node-api.md), testing findings, sync playbooks. Do NOT
+              promote any of it onto the site.
+
+            Two rules that have been broken before:
+
+            - Every Starlight sidebar entry in apps/site/astro.config.mjs must
+              resolve to a page that exists. Deleting a page without removing its
+              sidebar entry fails the site build outright, and CI now builds the
+              site, so it fails the PR.
+            - Check main before documenting an API. Do not reintroduce
+              `ensureInteractionPrompts` (deleted; qti-prompt is optional now) or
+              qti-associate-interaction (removed from the editor entirely).
+
+            Keep one PR per run and rebase rather than stacking: several stale
+            docs PRs conflicting with each other is what prompted this note.
         env:
           ANTHROPIC_FOUNDRY_RESOURCE: ${{ secrets.AZURE_FOUNDRY_RESOURCE }}
           GH_TOKEN: ${{ github.token }}
