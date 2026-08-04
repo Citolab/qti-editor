@@ -8,7 +8,7 @@ Turning QTI into the editor's document model, and back, without a browser. Tooli
 working **on** the repo — the editor's own docs live in `apps/site/src/content/docs`.
 
 ```js
-import { qti3ToPm, pmToQti3, htmlToPm, pmToHtml, validateHtml } from '@citolab/prose-qti/node';
+import { qti3ToPm, pmToQti3, htmlToPm, pmToHtml, validateHtml } from '@citolab/prose-qti-node';
 ```
 
 One import. No DOM setup, no globals, no flags — the subpath installs what it needs.
@@ -106,7 +106,7 @@ The grammar as a plain JSON-able object, for a consumer that needs to *read* the
 rather than build one — out of process, in another language, or as context for a generator.
 
 ```js
-import { schemaToJson } from '@citolab/prose-qti/node';
+import { schemaToJson } from '@citolab/prose-qti-node';
 
 writeFileSync('schema.json', JSON.stringify(schemaToJson(), null, 2));
 ```

@@ -42,10 +42,6 @@
       "types": "./dist/schema/*",
       "default": "./dist/schema/*"
     },
-    "./node": {
-      "types": "./dist/node/index.d.ts",
-      "default": "./dist/node/index.js"
-    },
     "./integration": {
       "types": "./dist/integration/index.d.ts",
       "default": "./dist/integration/index.js"
@@ -246,7 +242,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css && cp src/core-css/core-css.css dist/core-css/core-css.css && cp src/qti-prose.css dist/qti-prose.css && node scripts/bundle-node.mjs",
+    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css && cp src/core-css/core-css.css dist/core-css/core-css.css && cp src/qti-prose.css dist/qti-prose.css",
     "typecheck": "tsc --noEmit -p ./tsconfig.json",
     "clean": "rm -rf dist"
   },
@@ -266,7 +262,6 @@
     "@qti-components/text-entry-interaction": "catalog:",
     "@qti-components/theme": "catalog:",
     "@qti-components/transformers": "catalog:",
-    "linkedom": "^0.18.13",
     "prosemirror-schema-basic": "^1.2.4",
     "prosemirror-schema-list": "^1.5.1",
     "prosemirror-tables": "^1.8.5"
@@ -286,6 +281,7 @@
   },
   "devDependencies": {
     "esbuild": "^0.27.7",
+    "linkedom": "^0.18.13",
     "typescript": "^5.0.0"
   },
   "files": [

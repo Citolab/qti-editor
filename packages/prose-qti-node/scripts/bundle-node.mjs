@@ -1,12 +1,23 @@
-import { rename, rm } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 import { build } from 'esbuild';
 
 /**
- * Bundle the `./node` entry point so plain Node can import it.
+ * Bundle this package's single entry point so plain Node can import it.
  *
- * ## Why this exists
+ * ## Why this package exists at all
+ *
+ * The conversion functions are dependency-light — the bundle below imports only linkedom and
+ * prosemirror-*. Everything else, including all 13 `@qti-components/*` packages and Lit, is INLINED.
+ * But they used to ship inside @citolab/prose-qti, whose manifest carries 19 dependencies and 6
+ * peers sized for BROWSER consumers. A Node-only consumer installing it therefore paid for a
+ * component graph the code it calls never touches, and collected `lit` / `@lit/context` peer
+ * warnings on the way. Reported from a Node-only MCP server integration; the functions worked, the
+ * install was the problem.
+ *
+ * Splitting the manifest is the whole fix. The bundle itself did not need to change.
+ *
+ * ## Why bundling is needed
  *
  * `@qti-components/*` dists contain extensionless relative imports
  * (`from './elements/qti-associable-hotspot'`). They compile with
@@ -15,7 +26,8 @@ import { build } from 'esbuild';
  *
  * That is not something this package can fix, and it is not something a consumer should have to
  * work around with a resolve hook. A bundler resolves those specifiers at BUILD time, which is the
- * job bundlers exist for. Everything else in this package stays plain `tsc` output.
+ * job bundlers exist for. (In prose-qti, where this script used to live, everything OTHER than the
+ * node entry stays plain `tsc` output — bundling is only ever applied here.)
  *
  * ## Bundled from dist, not from source
  *
@@ -32,6 +44,7 @@ import { build } from 'esbuild';
  * ProseMirror compares node types by identity.
  */
 const packageRoot = fileURLToPath(new URL('..', import.meta.url));
+const proseQtiDist = fileURLToPath(new URL('../../prose-qti/dist/', import.meta.url));
 
 const EXTERNAL = [
   'linkedom',
@@ -47,24 +60,24 @@ const EXTERNAL = [
   'prosemirror-transform'
 ];
 
-const entry = `${packageRoot}dist/node/index.js`;
-const temp = `${packageRoot}dist/node/index.bundled.mjs`;
+/*
+ * Read prose-qti's dist, write ours. The workspace devDependency on @citolab/prose-qti is what
+ * orders `pnpm -r --sort` so that dist exists by the time this runs; if it does not, esbuild fails
+ * loudly on a missing entry point rather than emitting something half-formed.
+ */
+const entry = `${proseQtiDist}node/index.js`;
+const outfile = `${packageRoot}dist/index.js`;
 
 await build({
   entryPoints: [entry],
-  outfile: temp,
+  outfile,
   bundle: true,
   platform: 'node',
   format: 'esm',
   target: 'node20',
   external: EXTERNAL,
-  logLevel: 'warning',
-  // Keep the declaration file tsc already wrote; esbuild does not touch .d.ts.
-  allowOverwrite: false
+  logLevel: 'warning'
 });
 
-// Replace the tsc-emitted entry with the bundle. `dist/node/index.d.ts` still describes it.
-await rm(entry);
-await rename(temp, entry);
-
-console.log('✓ bundled dist/node/index.js for plain Node');
+// Types are produced separately by scripts/bundle-types.mjs — esbuild does not touch .d.ts.
+console.log('✓ bundled dist/index.js for plain Node');

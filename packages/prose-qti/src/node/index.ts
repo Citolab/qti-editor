@@ -5,7 +5,7 @@ import { installNodeDom } from './dom.js';
 /**
  * QTI ↔ ProseMirror conversion, ready to use in Node.
  *
- *     import { qti3ToPm, pmToQti3, htmlToPm, pmToHtml, validateHtml } from '@citolab/prose-qti/node';
+ *     import { qti3ToPm, pmToQti3, htmlToPm, pmToHtml, validateHtml } from '@citolab/prose-qti-node';
  *
  * A subpath rather than a separate package: the conversion and the schema that defines it must never
  * be installable at versions that disagree, and splitting them is the surest way to arrange exactly

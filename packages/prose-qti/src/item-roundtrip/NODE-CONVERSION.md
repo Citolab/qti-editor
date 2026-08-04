@@ -36,7 +36,7 @@ A spike ran the real pipeline in plain Node over every ITEM fixture, comparing a
 
 Re-run 2026-08-04 on the 16-item corpus (ITEM017 left with qti-associate-interaction). The original
 harness needed a resolve hook and imported source; this one imports the shipped
-`@citolab/prose-qti/node` bundle, which needs neither.
+`@citolab/prose-qti-node` bundle, which needs neither.
 
 | | result | was (17-item corpus) |
 |---|---|---|

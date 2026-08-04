@@ -5,7 +5,7 @@ import type { Schema } from 'prosemirror-model';
 /**
  * Serialise a schema's grammar to a plain JSON-able object.
  *
- *     import { schemaToJson } from '@citolab/prose-qti/node';
+ *     import { schemaToJson } from '@citolab/prose-qti-node';
  *     writeFileSync('schema.json', JSON.stringify(schemaToJson(), null, 2));
  *
  * The counterpart to the repo's `custom-elements.json`, and it answers a different question. The

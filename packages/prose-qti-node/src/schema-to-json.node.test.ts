@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { createQtiSchema, schemaToJson } from '@citolab/prose-qti/node';
+import { createQtiSchema, schemaToJson } from '@citolab/prose-qti-node';
 
 /**
  * `schemaToJson` as a consumer meets it: through the built `/node` entry point, in plain Node.

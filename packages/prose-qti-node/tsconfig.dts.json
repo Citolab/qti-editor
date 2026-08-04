@@ -1,0 +1,22 @@
+{
+  // Used ONLY by scripts/bundle-types.mjs, to flatten prose-qti's node declarations.
+  //
+  // Not extending tsconfig.base.json on purpose. The base sets `types: ["vitest/globals"]` for the
+  // packages that need it, and dts-bundle-generator then walks into @vitest/spy's declarations and
+  // dies on `Symbol.dispose` — an error about a test-runner type, in a build that has nothing to do
+  // with tests. `types: []` keeps the ambient surface to the lib files below.
+  //
+  // This package compiles nothing of its own: its JS is esbuild's, its types are the bundler's. The
+  // options here exist to resolve declarations, not to emit anything.
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "skipLibCheck": true,
+    "types": [],
+    "noEmit": true
+  },
+  "include": []
+}

@@ -42,7 +42,7 @@ jobs:
           fi
 
           changed_files="$(git diff --name-only HEAD^ HEAD)"
-          if echo "$changed_files" | grep -Eq '^(package\.json$|pnpm-lock\.yaml$|packages/prose-qti/|packages/prose-extensions/|\.github/workflows/release\.yml$)'; then
+          if echo "$changed_files" | grep -Eq '^(package\.json$|pnpm-lock\.yaml$|packages/prose-qti/|packages/prose-qti-node/|packages/prose-extensions/|\.github/workflows/release\.yml$)'; then
             echo "should_release=true" >> "$GITHUB_OUTPUT"
           else
             echo "should_release=false" >> "$GITHUB_OUTPUT"

@@ -7,7 +7,7 @@
  */
 import { readdirSync, readFileSync } from 'node:fs';
 
-import { qti3ToPm, pmToQti3, htmlToPm, pmToHtml, validateHtml, createQtiSchema } from '@citolab/prose-qti/node';
+import { qti3ToPm, pmToQti3, htmlToPm, pmToHtml, validateHtml, createQtiSchema } from '@citolab/prose-qti-node';
 
 const read = p => readFileSync(new URL(p, import.meta.url), 'utf8');
 const ITEMS = readdirSync(new URL('./stories/fixtures/', import.meta.url))

@@ -2,11 +2,11 @@
  * Re-run of the NODE-CONVERSION spike, on the current corpus.
  *
  * Reproduces the three rows of the "What was measured" table plus the identity-failure
- * characterisation. Same surface a consumer gets: `@citolab/prose-qti/node`, no browser.
+ * characterisation. Same surface a consumer gets: `@citolab/prose-qti-node`, no browser.
  */
 import { readdirSync, readFileSync } from 'node:fs';
 
-import { qti3ToPm, pmToQti3, pmToHtml, htmlToPm, createQtiSchema } from '@citolab/prose-qti/node';
+import { qti3ToPm, pmToQti3, pmToHtml, htmlToPm, createQtiSchema } from '@citolab/prose-qti-node';
 
 const FIXTURES = new URL('./stories/fixtures/', import.meta.url);
 const SNAPSHOTS = new URL('./stories/__file_snapshots__/', import.meta.url);

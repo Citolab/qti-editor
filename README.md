@@ -41,23 +41,28 @@ Export folds those into standard response declarations and strips them, so what 
 plain QTI 3.0 with no editor-specific markup. See
 [the roundtrip format](./docs/roundtrip-format.md).
 
-None of that conversion needs a browser. The same pipeline runs under plain `node`, which is what
-makes batch import, CI checks and generator feedback possible — see the
-[Node API](./docs/node-api.md).
+None of that conversion needs a browser. The same pipeline ships separately as
+`@citolab/prose-qti-node`, which is what makes batch import, CI checks and generator feedback
+possible — see the [Node API](./docs/node-api.md).
 
 ## Packages
 
 | package | published | what it is |
 |---|---|---|
-| `@citolab/prose-qti` | yes | schema, interaction descriptors, item roundtrip, node API |
+| `@citolab/prose-qti` | yes | schema, interaction descriptors, item roundtrip — the editor |
+| `@citolab/prose-qti-node` | yes | the same conversion, for plain Node. No browser, no components |
 | `@citolab/prose-extensions` | yes | ProseMirror extensions not specific to QTI |
 | `@citolab/prose-qti-ui` | no | toolbar, insert menu, attributes panel |
 | `@citolab/prose-ai` | no | authoring assistance, experimental |
 
-A host app declares `@citolab/prose-qti` and nothing else from the QTI stack. The item stylesheet and
-the QTI transformers are re-exported from it — `@citolab/prose-qti/qti-prose.css` and
+**Building an editor?** Declare `@citolab/prose-qti` and nothing else from the QTI stack. The item
+stylesheet and the QTI transformers are re-exported from it — `@citolab/prose-qti/qti-prose.css` and
 `@citolab/prose-qti/transformers` — so which qti-components build the editor is pinned against stays
 this repo's problem rather than the host's.
+
+**Converting QTI in a script, a server or CI?** Declare `@citolab/prose-qti-node` instead. It is the
+same conversion code, bundled, and it installs ~30 packages with no `@qti-components` and no `lit` —
+where the editor package brings the whole component graph a browser needs and a script does not.
 
 ## Documentation
 
