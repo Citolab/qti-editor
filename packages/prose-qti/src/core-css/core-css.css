@@ -187,13 +187,30 @@ qti-order-interaction qti-simple-choice {
    * pending-target pulse. Per-state visuals use :state() on the host, never data-* attributes, so
    * editor-only UI state structurally cannot leak into the exported XML.
    *
-   * qti-gap-text also emits :state(linked) and :state(disabled); neither is painted here. Hosts
-   * that want to differentiate should add a rule rather than a variable.
+   * qti-gap-text also emits :state(disabled); it is not painted here. Hosts that want to
+   * differentiate should add a rule rather than a variable.
    */
   qti-gap-text:state(selected),
   qti-simple-choice:state(selected),
   qti-simple-associable-choice:state(selected) {
     outline: var(--qti-edit-selected-outline-width) solid var(--qti-edit-selected-outline-color);
+    outline-offset: 2px;
+  }
+
+  /*
+   * Drag source — linked into a drop.
+   *
+   * Says, from the pool, which chips are already spoken for: an author scanning the bank can see
+   * what still needs placing without reading every gap. Driven by the interaction's correction
+   * state, which each chip subscribes to, so it is true of the answer key rather than of whatever
+   * the last DOM sweep happened to write.
+   *
+   * Red is a placeholder while the affordance is being designed — it is deliberately loud so the
+   * state is obvious to look at, and it is a rule rather than a variable for the same reason the
+   * note above gives.
+   */
+  qti-gap-text:state(linked) {
+    outline: var(--qti-edit-selected-outline-width) solid var(--qti-error, #df0000);
     outline-offset: 2px;
   }
 
