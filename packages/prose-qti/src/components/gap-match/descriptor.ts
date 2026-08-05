@@ -4,7 +4,7 @@ import {
   qtiPromptNodeSpec,
   qtiPromptParagraphNodeSpec,
 } from '../shared';
-import { insertGapMatchInteraction, qtiGapMatchEnterCommand } from './components/qti-gap-match-interaction/qti-gap-match-interaction.commands.js';
+import { insertGapMatchInteraction, qtiGapMatchBackspaceCommand, qtiGapMatchEnterCommand } from './components/qti-gap-match-interaction/qti-gap-match-interaction.commands.js';
 import { qtiGapMatchInteractionNodeSpec } from './components/qti-gap-match-interaction/qti-gap-match-interaction.schema.js';
 import { gapMatchInteractionComposerMetadata, gapMatchNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
 import { gapMatchComposerHandler } from './composer/handler.js';
@@ -25,6 +25,7 @@ export const gapMatchInteractionDescriptor = {
   pluginFactories: [createGapMatchNodeViewPlugin],
   insertCommand: insertGapMatchInteraction,
   enterCommand: qtiGapMatchEnterCommand,
+  backspaceCommand: qtiGapMatchBackspaceCommand,
   composerMetadata: gapMatchInteractionComposerMetadata,
   composerHandler: gapMatchComposerHandler,
   attributePanelMetadata: gapMatchNodeAttributePanelMetadataByNodeTypeName,

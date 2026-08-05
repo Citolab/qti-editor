@@ -10,7 +10,7 @@ import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
  *
  * This is now the whole of schema/'s test coverage, and it is the half worth keeping. A committed
  * fixture of the grammar used to sit beside it, asking "did this change since last time" —
- * mechanical, exhaustive, and useless as documentation: `qtiPrompt? qtiGapText{2,} paragraph+` is
+ * mechanical, exhaustive, and useless as documentation: `qtiPrompt? qtiGapText+ paragraph+` is
  * precise and tells you nothing about what an author may write. This file asks "is THIS shape
  * legal", one example at a time, which is the form a human can check by eye.
  *
@@ -151,10 +151,12 @@ describe('narrowings the editor enforces', () => {
     );
   });
 
-  test('a gap-match needs two gap texts, though the XSD allows one', () => {
-    // "XSD: `qti-gap-text` is `+`. The editor requires two — a single-source gap match is a
-    // degenerate interaction with only one possible answer."
-    refuses('gap-match with a single gap text', () =>
+  test('a gap-match may hold a single gap text, as the XSD allows', () => {
+    // This was a rejection case: the editor required two, because one source makes a degenerate
+    // interaction. That is a judgement about a FINISHED item, and it made the half-finished ones
+    // unrepresentable — authoring a gap match out of prose leaves exactly one source the moment the
+    // first gap is made. The narrowing was dropped; `qti-gap-text` is `+` here as in the XSD.
+    accepts('gap-match with a single gap text', () =>
       schema.nodes.qtiGapMatchInteraction.createChecked({ responseIdentifier: 'R' }, [
         prompt(),
         gapText('g1', 'alpha'),

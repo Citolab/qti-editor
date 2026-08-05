@@ -1,3 +1,5 @@
+import { TextSelection } from 'prosemirror-state';
+
 import { createInsertBlockInteractionCommand } from '../../../shared/commands/insert.js';
 import { createInsertSiblingOnEnterCommand } from '../../../shared/commands/enter.js';
 import { translateQti } from '../../../shared';
@@ -91,6 +93,61 @@ export const insertGapTextOnEnter: Command = (state, dispatch) => {
  * Inserts new gap-text when inside qti-gap-text.
  */
 export const qtiGapMatchEnterCommand: Command = insertGapTextOnEnter;
+
+/**
+ * Backspace in an empty `qti-gap-text` removes it, the way Backspace in an empty inline choice
+ * removes that.
+ *
+ * Only when it is already empty: a chip with words in it should lose a character, which is what
+ * falling through to the default gets. Emptying then deleting is two presses, and the second one
+ * is unambiguous.
+ *
+ * The last chip stays. The content model is `qtiPrompt? qtiGapText+ paragraph+`, so an interaction
+ * with no pool at all is not a document ProseMirror would accept — the step would be refused and
+ * the author would get nothing rather than an explanation.
+ *
+ * Nothing here touches the answer key. A pair naming the deleted chip is dropped by the
+ * interaction's own pruning, which runs on whatever removed it — this command, a selection delete,
+ * a paste over the top — rather than only on the paths that thought to ask.
+ */
+export const deleteGapTextOnBackspace: Command = (state, dispatch) => {
+  const { selection, schema } = state;
+  const gapTextType = schema.nodes.qtiGapText;
+  const interactionType = schema.nodes.qtiGapMatchInteraction;
+  if (!gapTextType || !interactionType) return false;
+  if (!selection.empty) return false;
+
+  const { $from } = selection;
+  if ($from.parent.type !== gapTextType) return false;
+  if ($from.parentOffset !== 0 || $from.parent.content.size !== 0) return false;
+
+  const interaction = $from.node($from.depth - 1);
+  if (interaction.type !== interactionType) return false;
+
+  let pool = 0;
+  interaction.forEach(child => {
+    if (child.type === gapTextType) pool += 1;
+  });
+  if (pool <= 1) return false;
+
+  if (!dispatch) return true;
+
+  const start = $from.before($from.depth);
+  const index = $from.index($from.depth - 1);
+  const tr = state.tr.delete(start, start + $from.parent.nodeSize);
+  // Backwards into whatever precedes it, or forwards when it was the first thing in the pool.
+  const landing = index > 0 ? start - 1 : start + 1;
+  tr.setSelection(
+    TextSelection.near(tr.doc.resolve(Math.max(0, Math.min(landing, tr.doc.content.size)))),
+  );
+  dispatch(tr.scrollIntoView());
+  return true;
+};
+
+/**
+ * Backspace command for gap-match.
+ */
+export const qtiGapMatchBackspaceCommand: Command = deleteGapTextOnBackspace;
 
 /**
  * Insert a qti-gap inline element at the cursor position.

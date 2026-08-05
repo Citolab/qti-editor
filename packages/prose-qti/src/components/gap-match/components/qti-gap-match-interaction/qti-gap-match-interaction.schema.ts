@@ -4,7 +4,11 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
   group: 'block',
-  content: 'qtiPrompt? qtiGapText{2,} paragraph+',
+  // `qtiGapText+`, which is what the XSD has. This was `{2,}` on the reasoning that a one-choice
+  // gap match is degenerate — true of a FINISHED item, but the editor is where items are
+  // half-finished. An author building one out of prose has exactly one choice the moment they make
+  // their first gap, and any gesture that undoes a gap has to be able to return the pool to one.
+  content: 'qtiPrompt? qtiGapText+ paragraph+',
   attrs: {
     maxAssociations: { default: 0 },
     shuffle: { default: false },
