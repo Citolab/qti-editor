@@ -1,20 +1,9 @@
-import { css, html, LitElement } from 'lit';
-
-import { QtiHottext } from '@qti-components/interactions-core';
+import { html, LitElement } from 'lit';
 
 
-import type { CSSResult, CSSResultGroup } from 'lit';
+import styles from './qti-hottext.styles.js';
 
-/**
- * The runtime hottext's own styles: box-sizing, and the `:host` box every theme paints against —
- * `display: inline-flex`, `align-items: center`, `position: relative` (the containing block for the
- * answer-key tick the theme draws as an absolutely positioned ::before) and the inline padding.
- *
- * This file used to declare `:host` from scratch and adopt one sheet where the runtime adopts two,
- * so the editor's hottext was `display: inline`, `position: static`, unaligned, and measured 129x43
- * against the runtime's 59x24.
- */
-const hottextStyles = QtiHottext.styles as CSSResult;
+import type { CSSResultGroup } from 'lit';
 
 export const HOTTEXT_RADIO_CLICK_EVENT = 'qti-hottext-radio-click';
 export const HOTTEXT_REMOVE_EVENT = 'qti-hottext-remove';
@@ -33,27 +22,7 @@ export interface HottextRadioClickDetail {
  * straight off the element by the parent interaction, so it is not a reactive property here.
  */
 export class QtiHottextEdit extends LitElement {
-  static override styles: CSSResultGroup = [
-    hottextStyles,
-    css`
-    /*
-     * The editor adds NOTHING to a hottext's look. The host box, its padding, the border per variant
-     * and the selected paint all come from the runtime styles above, so a hottext here is the word
-     * the candidate will see — at rest and while editing.
-     *
-     * There was a radio in here, revealed by the caret, for marking the correct response. Showing it
-     * widened the inline box and reflowed the sentence; every authoring action now lives in the
-     * interaction's popover instead, where it cannot move the text. Upstream's own
-     * "display: none" on the control stands, and the control stays in the tree for the
-     * accessibility mapping exactly as upstream intends.
-     *
-     * nowrap keeps a multi-word hottext on one line.
-     */
-    :host {
-      white-space: nowrap;
-    }
-  `
-  ];
+  static override styles: CSSResultGroup = styles;
 
   #internals = this.attachInternals();
 

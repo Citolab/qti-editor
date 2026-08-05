@@ -1,13 +1,10 @@
-import { css, html, LitElement, nothing } from 'lit';
+import { html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { QtiSimpleChoice } from '@qti-components/interactions-core';
-
 import { CorrectResponseClickMixin } from '../../mixins/correct-response-click.mixin.js';
+import styles from './qti-simple-choice.styles.js';
 
-import type { CSSResult, CSSResultGroup } from 'lit';
-
-const styles = QtiSimpleChoice.styles as CSSResult;
+import type { CSSResultGroup } from 'lit';
 
 /**
  * Base class with internals for the mixin
@@ -36,19 +33,7 @@ class QtiSimpleChoiceBase extends LitElement {
  */
 export class QtiSimpleChoiceEdit extends CorrectResponseClickMixin(QtiSimpleChoiceBase) {
   // make sure we can text select and click the choices
-  static override styles: CSSResultGroup = [
-    styles,
-    css`
-      :host {
-        user-select: unset !important;
-        cursor: unset !important;
-      }
-      /* Style the control as clickable */
-      [part="control"] {
-        cursor: pointer;
-      }
-    `
-  ];
+  static override styles: CSSResultGroup = styles;
 
   // property label
   @property({ type: String, attribute: false })
