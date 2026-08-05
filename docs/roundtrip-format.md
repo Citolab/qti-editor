@@ -33,7 +33,7 @@ Extended-text has no `correct-response` because there is no correct answer to re
 ### `correct-response`
 
 One attribute, comma-separated, whatever the interaction's shape. A choice interaction writes
-`"choice1,choice3"`; the pair-based interactions — match, gap-match, associate-style — write
+`"choice1,choice3"`; the pair-based interactions — match and gap-match — write
 `"source target"` inside each entry and commas between them:
 `"left_druk right_pascal,left_frequentie right_hertz"`. Keeping one spelling across every
 interaction is what lets a single shared codec read and write them all.

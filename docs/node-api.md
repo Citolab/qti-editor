@@ -109,7 +109,7 @@ writeFileSync('schema.json', JSON.stringify(schemaToJson(), null, 2));
 ```json
 "qtiGapMatchInteraction": {
   "tagName": "qti-gap-match-interaction",
-  "content": "qtiPrompt? qtiGapText{2,} paragraph+",
+  "content": "qtiPrompt? qtiGapText+ paragraph+",
   "group": "block",
   "defining": true,
   "isolating": true,
@@ -127,7 +127,7 @@ drift.
 
 The repo publishes two contracts answering different questions. `custom-elements.json` says which
 elements exist and what attributes they take, in a standard format. This says what may nest inside
-what. A custom elements manifest cannot express `qtiPrompt? qtiGapText{2,} paragraph+`, so neither
+what. A custom elements manifest cannot express `qtiPrompt? qtiGapText+ paragraph+`, so neither
 subsumes the other.
 
 ## Verifying it still works
