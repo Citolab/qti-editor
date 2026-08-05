@@ -43,6 +43,11 @@ export default defineConfig(({ command }) => ({
         replacement: qtiStylesSrcRoot,
       },
       {
+        // Keep package import path in sync with src CSS during workspace dev.
+        find: /^@citolab\/prose-qti\/core-css\.css$/,
+        replacement: qtiStylesSrcRoot,
+      },
+      {
         find: /^@qti-editor\/interfaces$/,
         replacement: qtiInterfacesSrcRoot,
       },

@@ -18,7 +18,7 @@
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
     <p>Sorteer de volgende getallen van klein naar groot:</p>
-    <qti-order-interaction response-identifier="RESPONSE" class="qti-vertical">
+    <qti-order-interaction response-identifier="RESPONSE" class="qti-orientation-vertical">
       <qti-simple-choice identifier="num_sqrt2">
         <p>√2 (≈ 1,414)</p>
       </qti-simple-choice>

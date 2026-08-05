@@ -18,7 +18,7 @@
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
     <p>Zet de volgende stappen van het wetenschappelijke proces in de juiste volgorde (van links naar rechts):</p>
-    <qti-order-interaction response-identifier="RESPONSE" class="qti-horizontal">
+    <qti-order-interaction response-identifier="RESPONSE" class="qti-orientation-horizontal">
       <qti-simple-choice identifier="step_hypothese">
         <p>Hypothese formuleren</p>
       </qti-simple-choice>

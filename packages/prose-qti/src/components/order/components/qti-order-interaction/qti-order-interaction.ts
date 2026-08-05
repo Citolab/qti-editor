@@ -1,10 +1,13 @@
 import { html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
+import { ContextProvider } from '@lit/context';
 
 import { DropzoneAutoSizeMixin } from '@qti-components/interactions-core';
 
-import { Interaction, markChips, PendingSelectionController, renderEditChip } from '../../../shared';
+import { correctionContext, Interaction, markChips, PendingSelectionController, renderEditChip } from '../../../shared';
 import styles from './qti-order-interaction.styles.js';
+
+import type { CorrectionLink, CorrectionRole } from '../../../shared';
 
 /**
  * The drop slots are sized from the chips they will hold, by the SAME mixin the runtime uses.
@@ -59,7 +62,8 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
 
   /** Positional, sparse: index = slot, value = choice id or null. */
   private _order: (string | null)[] = [];
-  private _labelCache = new Map<string, string>();
+
+  private readonly _correction = new ContextProvider(this, { context: correctionContext });
   private _setupDone = false;
   private _observer: MutationObserver | null = null;
 
@@ -78,12 +82,12 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
       const slotIndex = Number(target.identifier);
       if (Number.isFinite(slotIndex)) this._placeSelectedChoice(sourceId, slotIndex);
     },
-    // Mirror the pending state onto the interaction host so CSS can pulse
-    // empty drop slots via `:state(pending)::part(drop empty)` (see core-css.css).
+    // Mirror the pending state onto the interaction host so editor styles can
+    // target pending order placement without DOM-visible attributes.
     onPendingChanged: pending => {
       if (pending != null) this.internals.states.add('pending');
       else this.internals.states.delete('pending');
-    },
+    }
   });
 
   constructor() {
@@ -96,6 +100,7 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
   }
 
   override connectedCallback() {
+    this.addEventListener('dummy-drag-activate', this._onChipActivate as EventListener);
     super.connectedCallback();
     this._parseCorrectResponse();
     requestAnimationFrame(() => this._trySetup());
@@ -103,6 +108,7 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
   }
 
   override disconnectedCallback() {
+    this.removeEventListener('dummy-drag-activate', this._onChipActivate as EventListener);
     this._observer?.disconnect();
     this._observer = null;
     this._setupDone = false;
@@ -128,7 +134,6 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
   private _onSlotChange = () => {
     this._trySetup();
     if (this._setupDone) {
-      this._buildLabelCache();
       this._syncOrderWithChoices();
       this._triggerRender();
     }
@@ -144,15 +149,21 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
     if (choices.length === 0) return;
 
     this._setupDone = true;
-    this._buildLabelCache();
     this._syncOrderWithChoices();
     this._setupMutationObserver();
     this._triggerRender();
   }
 
+  /**
+   * Decline the chip menu while a choice is pending — the click means "place it here" and belongs
+   * to the pending-selection commit, which only this element knows about.
+   */
+  private _onChipActivate = (event: CustomEvent): void => {
+    if (this._selection.pendingSourceId != null) event.preventDefault();
+  };
+
   private _setupMutationObserver() {
     this._observer = new MutationObserver(() => {
-      this._buildLabelCache();
       this._syncOrderWithChoices();
       this._triggerRender();
     });
@@ -207,17 +218,6 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
     }
   }
 
-  private _buildLabelCache() {
-    this._labelCache.clear();
-    for (const choice of this._getChoices()) {
-      const id = choice.getAttribute('identifier');
-      if (id) {
-        const clone = choice.cloneNode(true) as HTMLElement;
-        this._labelCache.set(id, clone.textContent?.trim() || id);
-      }
-    }
-  }
-
   private _getChoices(): HTMLElement[] {
     const choices = Array.from(this.querySelectorAll<HTMLElement>('qti-simple-choice'));
     // Every path that cares about the chips comes through here, so this is the one place that has to
@@ -232,8 +232,17 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
       .filter((id): id is string => Boolean(id));
   }
 
-  private _getLabel(id: string): string {
-    return this._labelCache.get(id) || id;
+  /**
+   * The words in a choice, read when asked rather than cached.
+   *
+   * The cache this replaces was rebuilt from a MutationObserver, which meant it could be a step
+   * behind the DOM — the same staleness that had a gap-match gap painting a raw identifier. It also
+   * fell back to the identifier for an empty choice, which is not a label and is not what the
+   * candidate would ever see; an empty choice now reads as empty, which is the truth.
+   */
+  private _labelOf(id: string): string {
+    const choice = this.querySelector<HTMLElement>(`qti-simple-choice[identifier="${CSS.escape(id)}"]`);
+    return choice?.textContent?.trim() ?? '';
   }
 
   private _getSlots(): Array<string | null> {
@@ -242,7 +251,53 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
   }
 
   private _triggerRender() {
+    this._publish();
     this._renderTrigger++;
+  }
+
+  /**
+   * Publish what is true for order, and no more.
+   *
+   * Order is the weakest fit of the three drag-drop interactions for this context, for two
+   * structural reasons worth stating rather than working around. Its drops are `<drop-list>` divs in
+   * this element's own shadow root, addressed by index — they are not custom elements and not
+   * ProseMirror nodes, so they can never subscribe to anything. And its answer key is an ordered
+   * LIST, not directed pairs: `_order` is positional and emits dense, so `drop` below is a slot
+   * number rather than an identity. Nothing consumes it as one — `dragsIn` has no consumers here —
+   * and calling it an identifier would be the shape lying about what it holds.
+   *
+   * What the pool chips get out of it is real: they learn they are placed without this element
+   * reaching in to tell them, which is what removed the label cache and its staleness.
+   *
+   * `limitOf` is 1 because a choice occupies one slot at a time. `qti-simple-choice` deliberately
+   * does not derive `disabled` from that: a placed choice can still be picked up and moved to
+   * another slot, so "used up" is not a state it is ever in.
+   */
+  private _publish(): void {
+    const labels = new Map<string, string>();
+    const roles = new Map<string, CorrectionRole>();
+    for (const choice of this._getChoices()) {
+      const id = choice.getAttribute('identifier');
+      if (!id) continue;
+      labels.set(id, choice.textContent?.trim() ?? '');
+      roles.set(id, 'drag');
+    }
+
+    const links: CorrectionLink[] = [];
+    this._order.forEach((id, index) => {
+      if (id) links.push({ drag: id, drop: String(index) });
+    });
+
+    this._correction.setValue({
+      links,
+      roleOf: id => roles.get(id) ?? null,
+      presentation: 'chips',
+      dragsIn: drop => links.filter(link => link.drop === drop).map(link => link.drag),
+      dropsOf: drag => links.filter(link => link.drag === drag).map(link => link.drop),
+      labelOf: drag => labels.get(drag),
+      limitOf: () => 1,
+      pending: this._selection.pendingSourceId
+    });
   }
 
   private _emitChange() {
@@ -251,21 +306,25 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
     const dense = this._order.filter((id): id is string => id !== null);
     const correctResponse = dense.length > 0 ? dense.join(',') : null;
 
-    this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
-      detail: {
-        nodeType: 'qtiOrderInteraction',
-        tagName: 'qti-order-interaction',
-        attrs: { correctResponse },
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    this.dispatchEvent(
+      new CustomEvent('qti-prosemirror-node-attrs-change', {
+        detail: {
+          nodeType: 'qtiOrderInteraction',
+          tagName: 'qti-order-interaction',
+          attrs: { correctResponse }
+        },
+        bubbles: true,
+        composed: true
+      })
+    );
 
-    this.dispatchEvent(new CustomEvent('order-response-change', {
-      detail: { order: dense, correctResponse },
-      bubbles: true,
-      composed: true,
-    }));
+    this.dispatchEvent(
+      new CustomEvent('order-response-change', {
+        detail: { order: dense, correctResponse },
+        bubbles: true,
+        composed: true
+      })
+    );
   }
 
   private _placeSelectedChoice(choiceId: string, slotIndex: number) {
@@ -300,28 +359,19 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
     // qti-components shape (runtime renders `<div role="region" part="drop">`
     // inside `part="drops"`). The `<drop-list>` tag is NOT a registered custom
     // element — just a styling/role hook; the theme reaches it via ::part(drop).
-    // Pending and filled visuals are driven by:
-    //   - `:state(pending)` on the interaction host (set by PendingSelectionController)
-    //   - a second `empty` part token on unfilled slots
-    //
-    // The `empty` token exists so the pending pulse can live OUTSIDE this shadow root, in
-    // prose-qti's core-css.css. A structural filter like `:not(:has(dummy-drag))` cannot be
-    // applied after `::part()`, so without it an outside rule could not tell a filled slot from an
-    // empty one and would pulse both. `::part(drop empty)` matches only when both tokens are
-    // present, while every existing `::part(drop)` rule in qti-theme keeps matching either way.
+    // The `empty` part token lets outside editor styles distinguish unfilled
+    // slots from filled ones through `::part(drop empty)` when they need to.
+    // Every existing `::part(drop)` rule in qti-theme still matches either way.
     return html`
-      ${this._getSlots().map((choiceId, index) => html`
-        <drop-list
-          role="region"
-          class="order-slot"
-          part=${choiceId === null ? 'drop empty' : 'drop'}
-          data-slot-index=${index}
-        >
-          ${choiceId !== null
-            ? renderEditChip(this._getLabel(choiceId), choiceId, () => this._clearSlot(index))
-            : nothing}
-        </drop-list>
-      `)}
+      ${this._getSlots().map(
+        (choiceId, index) => html`
+          <div role="region" part="drop" data-slot-index=${index}>
+            ${choiceId !== null
+              ? renderEditChip(this._labelOf(choiceId), choiceId, () => this._clearSlot(index))
+              : nothing}
+          </div>
+        `
+      )}
     `;
   }
 
@@ -330,13 +380,9 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
 
     return html`
       <slot name="prompt"></slot>
-      <div part="container" class="interaction-preview">
-        <div part="drags" class="preview-drags">
-          <slot @slotchange=${this._onSlotChange}></slot>
-        </div>
-        <div part="drops" class="preview-drops">
-          ${this._renderSlots()}
-        </div>
+      <div part="container">
+        <slot part="drags" @slotchange=${this._onSlotChange}></slot>
+        <div part="drops">${this._renderSlots()}</div>
       </div>
     `;
   }

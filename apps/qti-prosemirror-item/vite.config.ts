@@ -9,6 +9,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 // reference, e.g. images) resolve at runtime.
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const publicDir = fileURLToPath(new URL('../../public', import.meta.url));
+const proseQtiCoreCssSrcFile = fileURLToPath(new URL('../../packages/prose-qti/src/core-css/core-css.css', import.meta.url));
 
 export default defineConfig({
   publicDir,
@@ -16,6 +17,14 @@ export default defineConfig({
     target: 'esnext',
   },
   resolve: {
+    alias: [
+      {
+        // During workspace development, resolve package-exported core CSS to src
+        // so style edits hot-reload without rebuilding @citolab/prose-qti.
+        find: /^@citolab\/prose-qti\/core-css\.css$/,
+        replacement: proseQtiCoreCssSrcFile,
+      },
+    ],
     // The QTI interaction edit components are Lit elements; dedupe Lit so a
     // single instance is used across the app and the workspace packages.
     dedupe: ['lit', 'lit-html', 'lit-element', '@lit/reactive-element'],

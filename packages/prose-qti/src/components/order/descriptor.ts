@@ -4,11 +4,13 @@ import {
   qtiSimpleChoiceNodeSpec,
   qtiSimpleChoiceParagraphNodeSpec,
 } from '@citolab/prose-qti/components/shared';
+import { createChipMenuPlugin } from '@citolab/prose-qti/components/shared';
 
 import { insertOrderInteraction } from './components/qti-order-interaction/qti-order-interaction.commands.js';
 import { qtiOrderInteractionNodeSpec } from './components/qti-order-interaction/qti-order-interaction.schema.js';
 import { orderInteractionComposerMetadata, orderNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
 import { orderComposerHandler } from './composer/handler.js';
+
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
@@ -22,6 +24,7 @@ export const orderInteractionDescriptor = {
     { name: 'qtiSimpleChoice', spec: qtiSimpleChoiceNodeSpec },
     { name: 'qtiSimpleChoiceParagraph', spec: qtiSimpleChoiceParagraphNodeSpec },
   ],
+  pluginFactories: [() => createChipMenuPlugin('order')],
   insertCommand: insertOrderInteraction,
   composerMetadata: orderInteractionComposerMetadata,
   composerHandler: orderComposerHandler,

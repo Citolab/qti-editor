@@ -1,13 +1,10 @@
-import { css, html, LitElement } from 'lit';
+import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { QtiInlineChoice } from '@qti-components/interactions-core';
-
 import { CorrectResponseClickMixin } from '../../../shared';
+import styles from './qti-inline-choice.styles.js';
 
-import type { CSSResultGroup, CSSResult } from 'lit';
-
-const styles = QtiInlineChoice.styles as CSSResult;
+import type { CSSResultGroup } from 'lit';
 
 class QtiInlineChoiceBase extends LitElement {
   public internals: ElementInternals;
@@ -42,45 +39,7 @@ export interface QtiInlineChoiceFocusDetail {
  * and in the candidate's response.
  */
 export class QtiInlineChoiceEdit extends CorrectResponseClickMixin(QtiInlineChoiceBase) {
-  static override styles: CSSResultGroup = [
-    styles,
-    css`
-      /* Upstream has no control to space away from the label. */
-      :host {
-        gap: 0.25rem;
-      }
-
-      [part='control'] {
-        cursor: pointer;
-        flex-shrink: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 1em;
-        height: 1em;
-        border: 1px solid currentColor;
-        border-radius: 50%;
-        box-sizing: border-box;
-      }
-
-      [part='control-mark'] {
-        width: 0.5em;
-        height: 0.5em;
-        border-radius: 50%;
-        background: transparent;
-      }
-
-      :host(:state(checked)) [part='control-mark'] {
-        background: currentColor;
-      }
-
-      [part='label'] {
-        flex: 1;
-        min-width: 0;
-        cursor: text;
-      }
-    `
-  ];
+  static override styles: CSSResultGroup = styles;
 
   @property({ type: String })
   override identifier = 'A';

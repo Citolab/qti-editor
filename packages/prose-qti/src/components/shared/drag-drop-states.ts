@@ -41,3 +41,17 @@ export function markChips(chips: Iterable<Element>): void {
 export function markDroppables(droppables: Iterable<Element>): void {
   for (const droppable of droppables) statesOf(droppable)?.add('droppable');
 }
+
+/**
+ * Add or remove one custom state.
+ *
+ * Unlike {@link markChips} and {@link markDroppables} — which classify an element for its whole
+ * life — the states an element derives from the interaction's correction state come and go, so
+ * these need taking away as well as putting on. `CustomStateSet` has no `toggle` in the DOM lib
+ * this project builds against, hence the pair of calls.
+ */
+export function toggleState(states: CustomStateSet | undefined, name: string, on: boolean): void {
+  if (!states) return;
+  if (on) states.add(name);
+  else states.delete(name);
+}

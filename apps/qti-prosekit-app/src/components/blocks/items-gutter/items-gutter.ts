@@ -1,5 +1,7 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+
+import styles from './items-gutter.styles.js';
 
 import type { Editor } from 'prosekit/core';
 
@@ -11,21 +13,7 @@ import type { Editor } from 'prosekit/core';
  */
 @customElement('qti-items-gutter')
 export class QtiItemsGutter extends LitElement {
-  static override styles = css`
-    :host {
-      display: block;
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3rem;
-      background: hsl(var(--muted, 220 13% 95%) / 0.5);
-      border-right: 1px solid hsl(var(--border, 220 13% 91%));
-      overflow: hidden;
-      user-select: none;
-      z-index: 1;
-    }
-  `;
+  static override styles = styles;
 
   @property({ attribute: false })
   editor: Editor | null = null;

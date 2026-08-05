@@ -1,11 +1,14 @@
+import { ContextProvider } from '@lit/context';
 import { LitElement, nothing, type PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js';
 
-import { Interaction } from '../../../shared';
+import { correctionContext, Interaction, serializeCorrection } from '../../../shared';
 import { DragDropController, type DragDropHost } from './match-drag-drop.js';
-import { classHasTabular, type MatchAssociationChangeDetail, type TabularMatchAssociationChangeDetail } from './match-shared.js';
+import { classHasTabular, getChoices, getMatchSets, labelOfChoice, type MatchAssociationChangeDetail, type TabularMatchAssociationChangeDetail } from './match-shared.js';
 import { TabularController, tabularStyles, type TabularHost } from './match-tabular.js';
 import hostBaseStyles from './qti-match-interaction.styles.js';
+
+import type { CorrectionLink, CorrectionRole } from '../../../shared';
 
 /**
  * One element, two modes:
@@ -63,6 +66,8 @@ export class QtiMatchInteractionEdit extends Interaction implements TabularHost,
   private tabular?: TabularController;
   private dragDrop?: DragDropController;
   private currentMode: 'tabular' | 'drag-drop' | null = null;
+
+  private readonly correction = new ContextProvider(this, { context: correctionContext });
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -164,6 +169,76 @@ export class QtiMatchInteractionEdit extends Interaction implements TabularHost,
         detail,
       }),
     );
+  }
+
+  // ─── Correction state, published to the choices inside ───────────────────
+
+  /**
+   * Publish the correction state for whichever mode is active.
+   *
+   * The provider lives on the host rather than in a controller because the two modes are swapped at
+   * runtime: a provider owned by the drag-drop controller would disappear the moment an author
+   * ticked `qti-match-tabular`, and every choice would lose its subscription with it. The host
+   * outlives both, so the controllers hand it their links and it does the publishing.
+   *
+   * Roles are decided here for the same reason they cannot be decided by the choices: a
+   * `qti-simple-associable-choice` is a drag or a drop purely by which `qti-simple-match-set` it
+   * sits in, and the sets are told apart by their order. Only this element can see that.
+   */
+  publishCorrection(links: readonly CorrectionLink[], pending: string | null): void {
+    const [sourceSet, targetSet] = getMatchSets(this);
+    const sources = getChoices(sourceSet);
+    const targets = getChoices(targetSet);
+
+    const roles = new Map<string, CorrectionRole>();
+    const labels = new Map<string, string>();
+    const limits = new Map<string, number>();
+
+    for (const [choices, role] of [
+      [sources, 'drag'],
+      [targets, 'drop'],
+    ] as const) {
+      for (const choice of choices) {
+        const identifier = choice.getAttribute('identifier');
+        if (!identifier) continue;
+        roles.set(identifier, role);
+        labels.set(identifier, labelOfChoice(choice));
+        const raw = choice.getAttribute('match-max');
+        const limit = raw ? Number(raw) : 1;
+        limits.set(identifier, Number.isFinite(limit) && limit >= 0 ? limit : 1);
+      }
+    }
+
+    // Only prune once there is evidence the choices have rendered — see the same reasoning in
+    // gap-match's `live`. Before ProseMirror attaches them every identifier looks missing.
+    const present = roles.size > 0;
+    const live = present
+      ? links.filter(link => roles.get(link.drag) === 'drag' && roles.get(link.drop) === 'drop')
+      : [...links];
+
+    this.correction.setValue({
+      links: live,
+      roleOf: identifier => roles.get(identifier) ?? null,
+      presentation: this.currentMode === 'tabular' ? 'matrix' : 'chips',
+      dragsIn: drop => live.filter(link => link.drop === drop).map(link => link.drag),
+      dropsOf: drag => live.filter(link => link.drag === drag).map(link => link.drop),
+      labelOf: drag => labels.get(drag),
+      limitOf: drag => limits.get(drag) ?? 1,
+      pending,
+    });
+
+    // A pruned link named a choice that is no longer in the document, so the answer key has to lose
+    // it too or it exports a `qti-correct-response` referring to something not in the item. Written
+    // from here rather than from a controller because both modes can be the one that noticed, and
+    // the controller only keeps its own copy in step — one writer for the document either way.
+    if (live.length !== links.length) {
+      this.emitNodeAttrsChange({
+        nodeType: this.currentMode === 'tabular' ? 'qtiMatchInteractionTabular' : 'qtiMatchInteraction',
+        tagName: 'qti-match-interaction',
+        attrs: { correctResponse: serializeCorrection(live) },
+      });
+      this.dragDrop?.adoptLinks(live);
+    }
   }
 
   override render() {

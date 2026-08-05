@@ -26,6 +26,7 @@ const interactionsHottextSrcRoot = fileURLToPath(new URL('../../packages/prose-q
 const qtiItemDividerSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/item-divider/src', import.meta.url));
 const qtiRubricBlockSrcRoot = fileURLToPath(new URL('../../packages/prose-qti/src/components/rubric-block/src', import.meta.url));
 const prosemirrorPluginsSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosemirror/src', import.meta.url));
+const proseQtiCoreCssSrcFile = fileURLToPath(new URL('../../packages/prose-qti/src/core-css/core-css.css', import.meta.url));
 const appCustomElementRoots = [
   fileURLToPath(new URL('./src/components/qti-editor-app.ts', import.meta.url)),
   fileURLToPath(new URL('./src/components/qti-slash-menu.ts', import.meta.url)),
@@ -267,6 +268,12 @@ export default defineConfig({
       {
         find: /^@qti-editor\/prosemirror-plugins$/,
         replacement: `${prosemirrorPluginsSrcRoot}/index.ts`,
+      },
+      {
+        // During workspace development, resolve the exported package CSS to src
+        // so style edits hot-reload without rebuilding @citolab/prose-qti.
+        find: /^@citolab\/prose-qti\/core-css\.css$/,
+        replacement: proseQtiCoreCssSrcFile,
       },
     ],
   },

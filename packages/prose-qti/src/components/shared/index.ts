@@ -23,6 +23,9 @@ export * from './components/qti-gap-text/qti-gap-text.schema.js';
 
 export * from './components/dummy-drag/dummy-drag.js';
 
+export * from './extensions/chip-menu.js';
+export * from './extensions/selection-menu.js';
+
 export * from './commands/enter.js';
 export * from './commands/home-end.js';
 export * from './commands/insert.js';
@@ -35,6 +38,7 @@ export * from './i18n/index.js';
 
 export * from './drag-drop-states.js';
 export * from './mixins/index.js';
+export * from './context/correction-context.js';
 export * from './controllers/pending-selection-controller.js';
 export * from './render/chip.js';
 export * from './styles/panel.js';

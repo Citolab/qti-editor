@@ -81,7 +81,8 @@ export const insertMatchInteraction: Command = (state, dispatch, view?: EditorVi
 /**
  * Handles Enter inside qti-simple-associable-choice paragraphs by inserting a new empty
  * sibling qti-simple-associable-choice directly after the current one.
- * When inserting in the source set (index 0), also appends a new choice to the target set.
+ * The new choice always lands in the set the cursor is already in — the other set
+ * is never touched, so adding a drag does not add a drop (and vice versa).
  */
 export const insertSimpleAssociableChoiceOnEnter: Command = (state, dispatch) => {
   const choiceType = state.schema.nodes.qtiSimpleAssociableChoice;
@@ -152,34 +153,12 @@ export const insertSimpleAssociableChoiceOnEnter: Command = (state, dispatch) =>
     paragraphType.create()
   );
 
+  // Enter adds exactly one choice, to the set the cursor is in. The two sets of
+  // a match interaction are independent — sources (drags) and targets (drops)
+  // need not be equal in number, and a one-to-one item stays one-to-one until
+  // the author says otherwise — so adding a drag must never add a drop as well.
   const tr = state.tr.insert(sourceInsertPos, sourceSibling);
   tr.setSelection(TextSelection.create(tr.doc, sourceInsertPos + 2)).scrollIntoView();
-
-  // Existing non-tabular match authoring keeps the two vertical lists balanced
-  // by appending a target when a source is added. Tabular rows and columns are
-  // independent, so adding a row must not create a new column.
-  if (isSourceSet && !isTabularInteraction && interactionDepth >= 0 && matchSetType) {
-    const originalInteractionPos = selection.$from.before(interactionDepth);
-    const mappedInteractionPos = tr.mapping.map(originalInteractionPos);
-    const interactionNodeNew = tr.doc.nodeAt(mappedInteractionPos);
-    if (interactionNodeNew) {
-      let setCount = 0;
-      interactionNodeNew.forEach((child, childOffset) => {
-        if (child.type === matchSetType) {
-          setCount++;
-          if (setCount === 2) {
-            const targetChoice = choiceType.create(
-              { identifier: `TARGET_${crypto.randomUUID()}`, matchMax: 3 },
-              paragraphType.create()
-            );
-            // Insert before the closing tag of the target set
-            const insertAt = mappedInteractionPos + 1 + childOffset + child.nodeSize - 1;
-            tr.insert(insertAt, targetChoice);
-          }
-        }
-      });
-    }
-  }
 
   dispatch(tr);
   return true;

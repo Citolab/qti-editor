@@ -19,6 +19,8 @@ export interface TabularHost extends LitElement {
     attrs: Record<string, unknown>;
   }): void;
   emitTabularAssociationChange(detail: TabularMatchAssociationChangeDetail): void;
+  /** Hands the links to the host, which owns the correction provider and decides the roles. */
+  publishCorrection(links: readonly { drag: string; drop: string }[], pending: string | null): void;
 }
 
 /**
@@ -170,7 +172,30 @@ export class TabularController implements ReactiveController {
     );
     this.sourceChoices = getChoices(sourceSet);
     this.targetChoices = getChoices(targetSet);
+    this.publish();
     this.host.requestUpdate();
+  }
+
+  /**
+   * Publish the same links the matrix is drawn from.
+   *
+   * Both modes hold the same answer key — this one parses it out of `correct-response` and writes it
+   * back from the checked cells — so the correction state has to be published here too, or it would
+   * describe the interaction only while it happened to be in drag-drop mode. Without this a choice
+   * ProseMirror created after a switch to tabular would subscribe and be handed whatever the other
+   * mode last said.
+   *
+   * `pending` is always null: tabular has no pick-up gesture, a cell is ticked or it is not.
+   */
+  private publish(links?: readonly string[]): void {
+    const pairs = links ?? parseCorrectResponseAsPairs(this.host.correctResponse);
+    this.host.publishCorrection(
+      Array.from(pairs, pair => {
+        const [drag, drop] = pair.split(' ');
+        return { drag, drop };
+      }),
+      null,
+    );
   }
 
   /** Returns the entire tabular shadow body for the host's render(). */
@@ -255,6 +280,7 @@ export class TabularController implements ReactiveController {
   private onCellChange = (): void => {
     const pairs = this.collectCheckedPairs();
     const correctResponse = serializePairs(pairs);
+    this.publish(pairs);
 
     this.host.emitNodeAttrsChange({
       nodeType: 'qtiMatchInteractionTabular',
