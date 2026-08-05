@@ -9,6 +9,38 @@
  *
  * Plain CSS — no Tailwind, no PostCSS plugins required at the consumer.
  *
+
+ * ── Custom states: the full vocabulary ───────────────────────────────────────────────────────────
+ *
+ * Every editor-side state an element can carry, who sets it, and who draws it. All of them are
+ * `ElementInternals` custom states, never attributes — these elements are ProseMirror nodes and PM's
+ * DOMObserver reverts attributes it does not know from the schema, which then re-triggers whatever
+ * wrote them. A custom state is invisible to a mutation observer, so it is the only marker this side
+ * can carry. Select them as `element:state(name)`, and through a shadow boundary as
+ * `element::part(x):state(name)` — `:state()` after `::part()` is supported, unlike `:empty`.
+ *
+ * | state       | on                                               | means                                    | drawn by   |
+ * |-------------|--------------------------------------------------|------------------------------------------|------------|
+ * | `drag`      | qti-gap-text, qti-simple-choice,                  | this is a draggable chip                 | qti-theme  |
+ * |             | qti-simple-associable-choice (source set)         |                                          |            |
+ * | `droppable` | qti-gap, qti-simple-associable-choice (target)    | this is a drop target                    | qti-theme  |
+ * | `filled`    | qti-gap, qti-simple-associable-choice (target)    | something is in this drop                | qti-theme  |
+ * | `checked`   | qti-hottext, qti-simple-choice                    | in the answer key                        | qti-theme  |
+ * | `radio` /   | qti-hottext, qti-simple-choice                    | cardinality of the interaction, so the   | qti-theme  |
+ * | `checkbox`  |                                                   | control is drawn round or square         |            |
+ * | `pending`   | qti-gap, qti-simple-associable-choice (target),   | a drag is picked up and this is somewhere| core-css   |
+ * |             | qti-order-interaction (the HOST, not its slots)   | it could go                              | (below)    |
+ * | `selected`  | whichever drag the author picked up               | picked up, not yet placed                | core-css   |
+ * |             |                                                   |                                          | (below)    |
+ * | `linked`    | qti-gap-text, qti-simple-choice                   | already placed in a drop                 | NOBODY     |
+ * | `disabled`  | qti-gap-text                                      | at its match-max, nowhere left to put it | NOBODY     |
+ *
+ * The last two are live and correct — derived from the interaction's correction state, so they are
+ * true of the answer key rather than of whatever a DOM sweep last wrote — and nothing draws them.
+ * That is deliberate, not an oversight, and a host is free to add a rule. See the note on
+ * `:state(selected)` below for what was tried for `linked` and why each attempt was taken back out.
+ *
+ *
  * ── The --qti-edit-* contract ────────────────────────────────────────────────────────────────
  *
  * Every editor-only visual below is painted from a --qti-edit-* variable declared in the block
@@ -38,6 +70,7 @@
     /* Ring on the drag source the author just picked. */
     --qti-edit-selected-outline-color: var(--accent, #2563eb);
     --qti-edit-selected-outline-width: 2px;
+
 
     /*
      * The only editor-only mark on a hottext: the dotted hint under a .qti-unselected-hidden word,
@@ -187,9 +220,33 @@ qti-order-interaction qti-simple-choice {
    * pending-target pulse. Per-state visuals use :state() on the host, never data-* attributes, so
    * editor-only UI state structurally cannot leak into the exported XML.
    *
-   * qti-gap-text also emits :state(disabled); it is not painted here. Hosts that want to
-   * differentiate should add a rule rather than a variable.
+   * ## States that are emitted here and deliberately NOT painted
+   *
+   * `:state(linked)` — a drag that is already placed in a drop. Emitted by `qti-gap-text`
+   * (gap-match) and `qti-simple-choice` (order), both derived from the interaction's correction
+   * state, so it is true of the answer key rather than of whatever a DOM sweep last wrote. It is
+   * live and correct; nothing draws it yet.
+   *
+   * It was drawn, briefly, and taken back out — recorded so the next attempt starts further along:
+   *
+   *   - A loud red ring read as an error. "Already placed" is the resting state of half the bank,
+   *     not a problem.
+   *   - Fading or desaturating is the obvious "done" treatment and is wrong twice: a themed chip can
+   *     be solid with white text (kennisnet's are), so washing the fill takes the label's contrast
+   *     with it — and a placed chip is not disabled, it can still be picked up and moved, which is
+   *     exactly the gesture a faded control discourages.
+   *   - A quiet outline in `--qti-border-color` collided with the accent: this theme computes that
+   *     token to a saturated teal, near enough to the selected ring that the two read alike.
+   *   - Deriving it from `currentColor` (as the hover tint above does) survives any theme, and is
+   *     where to pick this up. Whatever is chosen must be declared BEFORE `:state(selected)` below:
+   *     a placed chip the author picks up is both, both would paint `outline`, and at equal
+   *     specificity source order is what decides which wins — it should be the transient one.
+   *
+   * `:state(disabled)` — a gap-text at its match-max. Also emitted, also unpainted.
+   *
+   * Hosts that want to differentiate either should add a rule rather than a variable.
    */
+
   qti-gap-text:state(selected),
   qti-simple-choice:state(selected),
   qti-simple-associable-choice:state(selected) {
@@ -197,22 +254,6 @@ qti-order-interaction qti-simple-choice {
     outline-offset: 2px;
   }
 
-  /*
-   * Drag source — linked into a drop.
-   *
-   * Says, from the pool, which chips are already spoken for: an author scanning the bank can see
-   * what still needs placing without reading every gap. Driven by the interaction's correction
-   * state, which each chip subscribes to, so it is true of the answer key rather than of whatever
-   * the last DOM sweep happened to write.
-   *
-   * Red is a placeholder while the affordance is being designed — it is deliberately loud so the
-   * state is obvious to look at, and it is a rule rather than a variable for the same reason the
-   * note above gives.
-   */
-  qti-gap-text:state(linked) {
-    outline: var(--qti-edit-selected-outline-width) solid var(--qti-error, #df0000);
-    outline-offset: 2px;
-  }
 
   /*
    * Hottext — flex container.
