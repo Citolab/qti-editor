@@ -30,7 +30,7 @@ export function renderEditChip(
   return html`
     <dummy-drag
       part="drag"
-      exportparts="drag-control, chip-label, chip-remove"
+      exportparts="drag-control, chip-label"
       .identifier=${identifier}
       .label=${label}
       @dummy-drag-remove=${(event: Event) => {

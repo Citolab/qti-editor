@@ -9,6 +9,7 @@ import { qtiGapMatchInteractionNodeSpec } from './components/qti-gap-match-inter
 import { gapMatchInteractionComposerMetadata, gapMatchNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
 import { gapMatchComposerHandler } from './composer/handler.js';
 import { createGapMatchNodeViewPlugin } from './extensions/node-view.js';
+import { createChipMenuPlugin } from '../shared';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
@@ -22,7 +23,7 @@ export const gapMatchInteractionDescriptor = {
     { name: 'qtiGapText', spec: qtiGapTextNodeSpec },
     { name: 'qtiGap', spec: qtiGapNodeSpec },
   ],
-  pluginFactories: [createGapMatchNodeViewPlugin],
+  pluginFactories: [createGapMatchNodeViewPlugin, () => createChipMenuPlugin('gap-match')],
   insertCommand: insertGapMatchInteraction,
   enterCommand: qtiGapMatchEnterCommand,
   backspaceCommand: qtiGapMatchBackspaceCommand,

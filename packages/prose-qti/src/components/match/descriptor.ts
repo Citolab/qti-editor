@@ -17,6 +17,7 @@ import {
 } from './composer/metadata.js';
 import { matchComposerHandler } from './composer/handler.js';
 import { createQtiMatchTabularNodeViewPlugin } from './extensions/tabular-node-view.js';
+import { createChipMenuPlugin } from '../shared';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
@@ -36,6 +37,7 @@ export const matchInteractionDescriptor = {
     { name: 'qtiSimpleAssociableChoice', spec: qtiSimpleAssociableChoiceNodeSpec },
     { name: 'qtiSimpleAssociableChoiceParagraph', spec: qtiSimpleAssociableChoiceParagraphNodeSpec },
   ],
+  pluginFactories: [() => createChipMenuPlugin('match')],
   insertCommand: insertMatchInteraction,
   enterCommand: insertSimpleAssociableChoiceOnEnter,
   composerMetadata: matchInteractionComposerMetadata,
@@ -57,7 +59,7 @@ export const matchInteractionTabularDescriptor = {
     { name: 'qtiSimpleAssociableChoice', spec: qtiSimpleAssociableChoiceNodeSpec },
     { name: 'qtiSimpleAssociableChoiceParagraph', spec: qtiSimpleAssociableChoiceParagraphNodeSpec },
   ],
-  pluginFactories: [createQtiMatchTabularNodeViewPlugin],
+  pluginFactories: [createQtiMatchTabularNodeViewPlugin, () => createChipMenuPlugin('match-tabular')],
   enterCommand: insertSimpleAssociableChoiceOnEnter,
   composerMetadata: matchInteractionComposerMetadata,
   composerHandler: matchComposerHandler,

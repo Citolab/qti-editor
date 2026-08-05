@@ -124,6 +124,7 @@ export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
     this.links = parseCorrection(this.correctResponse);
     this.publish();
     this.addEventListener('dummy-drag-remove', this.onChipRemove as EventListener);
+    this.addEventListener('dummy-drag-activate', this.onChipActivate as EventListener);
     void this.selection;
 
     // Three things the published state depends on are changed by ordinary editing rather than by
@@ -159,6 +160,7 @@ export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
 
   override disconnectedCallback(): void {
     this.removeEventListener('dummy-drag-remove', this.onChipRemove as EventListener);
+    this.removeEventListener('dummy-drag-activate', this.onChipActivate as EventListener);
     this.observer?.disconnect();
     this.observer = null;
     super.disconnectedCallback();
@@ -306,7 +308,19 @@ export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
     return Number.isFinite(limit) && limit >= 0 ? limit : 1;
   }
 
-  /** Empty a drop. Raised by the × on the chip a filled gap paints. */
+
+  /**
+   * Decline the chip menu while a drag is pending.
+   *
+   * A click on a placed chip then means "put this one here instead", which is the pending-selection
+   * commit's job — and only this element knows a drag is pending. Cancelling lets the click carry on
+   * to that commit instead of opening a menu over the top of it.
+   */
+  private onChipActivate = (event: CustomEvent): void => {
+    if (this.selection.pendingSourceId != null) event.preventDefault();
+  };
+
+  /** Empty a drop. Raised when the chip a filled gap paints is removed. */
   private onChipRemove = (event: CustomEvent<{ identifier: string }>): void => {
     const gap = event
       .composedPath()

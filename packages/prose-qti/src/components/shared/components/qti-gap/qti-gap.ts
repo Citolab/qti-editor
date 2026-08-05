@@ -107,7 +107,7 @@ export class QtiGapEdit extends LitElement {
       ${this.occupant != null
         ? html`<dummy-drag
             part="drag"
-            exportparts="drag-control, chip-label, chip-remove"
+            exportparts="drag-control, chip-label"
             .identifier=${this.identifier ?? ''}
             .label=${this.assignedLabel ?? ''}
           ></dummy-drag>`

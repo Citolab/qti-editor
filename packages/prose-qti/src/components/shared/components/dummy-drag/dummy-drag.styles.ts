@@ -30,32 +30,21 @@ const styles: CSSResultGroup = css`
     white-space: nowrap;
   }
 
-  button[part='chip-remove'] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 14px;
-    height: 14px;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    background: transparent;
-    color: inherit;
-    font-size: 1.1em;
-    line-height: 1;
+  /*
+   * The whole chip is the control, so it says so and nothing more.
+   *
+   * No hover treatment that hides the label: hovering is how a pointer crosses the screen, and
+   * blurring or covering the words at exactly the moment they are pointed at is the wrong trade.
+   * The outline is the theme's own focus colour so a brand moves it, and it is drawn OUTSIDE the
+   * box — outline does not participate in layout, so nothing shifts.
+   */
+  :host([interactive]) {
     cursor: pointer;
-    opacity: 0;
-    transition: opacity 100ms ease-out;
   }
 
-  :host(:hover) button[part='chip-remove'],
-  button[part='chip-remove']:focus {
-    opacity: 0.7;
-  }
-
-  button[part='chip-remove']:hover {
-    opacity: 1;
-    background: rgb(0 0 0 / 0.1);
+  :host([interactive]:hover) {
+    outline: 2px solid var(--qti-border-active, var(--qti-focus-color, currentColor));
+    outline-offset: 1px;
   }
 `;
 

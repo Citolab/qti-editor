@@ -282,4 +282,66 @@ qti-order-interaction qti-simple-choice {
     color: var(--qti-edit-placeholder-color);
     pointer-events: none;
   }
+
+  /*
+   * The selection menu: a small popover offering actions over a selection inside an interaction
+   * ("make a gap of these words", "make a hot text option of them"). Each interaction that wants
+   * one ships its own tooltip plugin; this is the one thing they share, because a menu that looks
+   * different per interaction would read as a different menu.
+   *
+   * It is editor chrome with no runtime counterpart, so there is no upstream rule to inherit — but
+   * it is still painted through qti-components' tokens rather than literals, so a brand reaches it
+   * for free. The "menu" and "button" roles are qti-theme's own; here they are written longhand
+   * (per-role slot, global token fallback) because that is what the theme's paint mixins expand to.
+   *
+   * Parented to <body> and fixed-positioned by the plugin, so neither an unpositioned editor
+   * container nor a scroll container can clip it.
+   */
+  .qti-selection-menu {
+    position: fixed;
+    z-index: 50;
+
+    /* Flex, so the whitespace between buttons cannot become line boxes and inflate the popover. */
+    display: flex;
+    align-items: center;
+    gap: var(--qti-spacing, 0.5rem);
+    padding: var(--qti-padding-inline);
+
+    background-color: var(--menu-background-color, var(--qti-component-background-color));
+    background-image: var(--menu-background-image, var(--qti-component-background-image));
+    border-width: var(--menu-border-width, var(--qti-component-border-width));
+    border-style: var(--menu-border-style, var(--qti-component-border-style));
+    border-color: var(--menu-border-color, var(--qti-component-border-color));
+    border-radius: var(--menu-border-radius, var(--qti-component-border-radius));
+    box-shadow: var(--menu-box-shadow, 0 4px 12px rgb(0 0 0 / 15%));
+    color: var(--menu-color, var(--qti-component-color));
+  }
+
+  .qti-selection-menu-action {
+    padding: var(--qti-padding-box);
+    cursor: pointer;
+    font: inherit;
+    /* A single phrase; without this it wrapped mid-label inside the popover. */
+    white-space: nowrap;
+
+    background-color: var(--button-background-color, var(--qti-component-background-color));
+    background-image: var(--button-background-image, var(--qti-component-background-image));
+    border-width: var(--button-border-width, var(--qti-component-border-width));
+    border-style: var(--button-border-style, var(--qti-component-border-style));
+    border-color: var(--button-border-color, var(--qti-component-border-color));
+    border-radius: var(--button-border-radius, var(--qti-component-border-radius));
+    box-shadow: var(--button-box-shadow, var(--qti-component-box-shadow));
+    color: var(--button-color, var(--qti-component-color));
+
+    transition: background-color 120ms ease;
+  }
+
+  .qti-selection-menu-action:hover {
+    background-color: var(--qti-bg-active);
+  }
+
+  .qti-selection-menu-action:focus-visible {
+    box-shadow: 0 0 0 var(--qti-focus-border-width) var(--qti-focus-color);
+    outline: none;
+  }
 }

@@ -96,6 +96,7 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
   }
 
   override connectedCallback() {
+    this.addEventListener('dummy-drag-activate', this._onChipActivate as EventListener);
     super.connectedCallback();
     this._parseCorrectResponse();
     requestAnimationFrame(() => this._trySetup());
@@ -103,6 +104,7 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
   }
 
   override disconnectedCallback() {
+    this.removeEventListener('dummy-drag-activate', this._onChipActivate as EventListener);
     this._observer?.disconnect();
     this._observer = null;
     this._setupDone = false;
@@ -149,6 +151,14 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
     this._setupMutationObserver();
     this._triggerRender();
   }
+
+  /**
+   * Decline the chip menu while a choice is pending — the click means "place it here" and belongs
+   * to the pending-selection commit, which only this element knows about.
+   */
+  private _onChipActivate = (event: CustomEvent): void => {
+    if (this._selection.pendingSourceId != null) event.preventDefault();
+  };
 
   private _setupMutationObserver() {
     this._observer = new MutationObserver(() => {

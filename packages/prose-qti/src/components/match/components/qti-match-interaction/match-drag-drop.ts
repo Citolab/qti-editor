@@ -92,6 +92,7 @@ export class DragDropController implements ReactiveController {
 
   hostDisconnected(): void {
     this.host.removeEventListener('dummy-drag-remove', this.onFakeDragRemove as EventListener);
+    this.host.removeEventListener('dummy-drag-activate', this.onChipActivate as EventListener);
     // Clear any lingering :state(pending|filled) on target choices so a
     // switch to tabular mode doesn't leave drag-drop's affordances behind.
     for (const target of getChoices(getMatchSets(this.host)[1])) {
@@ -129,6 +130,7 @@ export class DragDropController implements ReactiveController {
 
     this.setupDone = true;
     this.host.addEventListener('dummy-drag-remove', this.onFakeDragRemove as EventListener);
+    this.host.addEventListener('dummy-drag-activate', this.onChipActivate as EventListener);
     this.setupMutationObserver();
     this.triggerRender();
   }
@@ -201,15 +203,43 @@ export class DragDropController implements ReactiveController {
    * `match-max` (1 = single target per source, anything else = multiple).
    */
   private commitPair(sourceId: string, targetId: string): void {
-    const matchMax = this.getSourceMatchMax(sourceId);
-    if (matchMax === 1) {
+    const sourceMax = this.getSourceMatchMax(sourceId);
+    if (sourceMax === 1) {
       for (const pair of Array.from(this.pairs)) {
         if (pair.startsWith(`${sourceId} `)) this.pairs.delete(pair);
       }
     }
+
+    /*
+     * The TARGET's match-max is a limit too, and it was never enforced — only the source's was. A
+     * one-to-one item (every match-max="1") would happily take a second source into a target that
+     * already held one, and the answer key said so while the target painted only the first chip.
+     *
+     * Dropping the oldest is what "put this one here instead" means: an author clicking a placed
+     * chip with another source in hand is replacing what is there, not adding beside it. `0` is
+     * unlimited, as everywhere else.
+     */
+    const targetMax = this.getTargetMatchMax(targetId);
+    if (targetMax !== 0) {
+      const here = Array.from(this.pairs).filter(pair => pair.endsWith(` ${targetId}`));
+      for (const pair of here.slice(0, Math.max(0, here.length - targetMax + 1))) {
+        this.pairs.delete(pair);
+      }
+    }
+
     this.pairs.add(`${sourceId} ${targetId}`);
     this.emitChange();
     this.triggerRender();
+  }
+
+  private getTargetMatchMax(targetId: string): number {
+    const [, targetSet] = getMatchSets(this.host);
+    const choice = targetSet?.querySelector<HTMLElement>(
+      `qti-simple-associable-choice[identifier="${CSS.escape(targetId)}"]`,
+    );
+    const raw = choice?.getAttribute('match-max');
+    const value = raw ? Number(raw) : 1;
+    return Number.isFinite(value) && value >= 0 ? value : 1;
   }
 
   /** Remove the (source, target) pair represented by the clicked fake-drag chip. */
@@ -226,6 +256,17 @@ export class DragDropController implements ReactiveController {
     this.emitChange();
     this.triggerRender();
   }
+
+  /**
+   * Decline the chip menu while a source is pending.
+   *
+   * A click on a placed chip then means "put this one here instead", which is
+   * {@link PendingSelectionController}'s commit — and only this controller knows a source is
+   * pending. Cancelling lets the click carry on to that commit instead of opening a menu over it.
+   */
+  private onChipActivate = (event: CustomEvent): void => {
+    if (this.selection.pendingSourceId != null) event.preventDefault();
+  };
 
   private onFakeDragRemove = (e: CustomEvent<{ identifier: string }>): void => {
     e.stopPropagation();
