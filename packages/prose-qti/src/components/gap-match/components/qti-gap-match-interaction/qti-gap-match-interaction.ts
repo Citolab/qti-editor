@@ -1,53 +1,29 @@
+import { ContextProvider } from '@lit/context';
 import { html } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import { DropzoneAutoSizeMixin } from '@qti-components/interactions-core';
 
-import { Interaction, markChips, markDroppables, PendingSelectionController } from '../../../shared';
+import {
+  correctionContext,
+  Interaction,
+  markChips,
+  markDroppables,
+  parseCorrection,
+  PendingSelectionController,
+  serializeCorrection,
+} from '../../../shared';
 import styles from './qti-gap-match-interaction.styles.js';
 
-/** Idempotent helper — diffs state set operations. */
-function toggleState(set: CustomStateSet, name: string, on: boolean): void {
-  if (on) set.add(name);
-  else set.delete(name);
-}
+import type { CorrectionLink, CorrectionRole, CorrectionState } from '../../../shared';
 
-/**
- * Iterate `"src tgt"` entries from the correct-response value. Accepts the
- * canonical comma-joined string, the codec's array form (returned by
- * `parseResponseAttribute` when there are multiple entries), and the
- * legacy JSON-array shape (`'["src tgt", ...]'`) authored before this commit.
- * Mirrors the helper in match-shared.ts so both interactions stay aligned.
- */
-function* iterPairEntries(raw: string | string[] | null | undefined): Generator<string> {
-  if (raw == null) return;
-  if (Array.isArray(raw)) {
-    for (const entry of raw) {
-      const t = typeof entry === 'string' ? entry.trim() : '';
-      if (t) yield t;
-    }
-    return;
-  }
-  const trimmed = raw.trim();
-  if (!trimmed) return;
-  if (trimmed.startsWith('[')) {
-    try {
-      const parsed: unknown = JSON.parse(trimmed);
-      if (Array.isArray(parsed)) {
-        for (const entry of parsed) {
-          const t = typeof entry === 'string' ? entry.trim() : '';
-          if (t) yield t;
-        }
-        return;
-      }
-    } catch {
-      /* fall through */
-    }
-  }
-  for (const entry of trimmed.split(',')) {
-    const t = entry.trim();
-    if (t) yield t;
-  }
+/** True when this node is, or holds, either end of a link — a chip in the pool or a gap in the prose. */
+function containsLinkable(node: HTMLElement): boolean {
+  return (
+    node.tagName === 'QTI-GAP-TEXT' ||
+    node.tagName === 'QTI-GAP' ||
+    node.querySelector('qti-gap-text, qti-gap') != null
+  );
 }
 
 export type GapAssociation = [string, string];
@@ -57,15 +33,27 @@ export interface GapAssociationChangeDetail {
 }
 
 /**
- * Editor component for qti-gap-match-interaction. Authoring is inline:
- * click a gap-text source → every empty `<qti-gap>` pulses red-dashed (via
- * `:state(pending)` on the gap host) → click a gap to commit. Click the ×
- * inside a filled gap's `<dummy-drag>` to clear it. Escape / outside
- * click cancels pending.
+ * Editor component for qti-gap-match-interaction.
  *
- * Selection state lives in {@link PendingSelectionController}; this class
- * owns the association map, label cache, lightdom visual sync, and change
- * event emission.
+ * Authoring is inline: click a `qti-gap-text` → every empty `<qti-gap>` pulses → click a gap to
+ * link them. Escape or a click outside cancels a pending pick.
+ *
+ * ## What this class owns, and what it no longer does
+ *
+ * It owns the correction state — the list of `{ drag, drop }` links — and publishes it on
+ * {@link correctionContext} for the elements inside it. `correct-response` is *derived* from that
+ * list and written back to the ProseMirror node, which stays what is persisted; the list is the
+ * live model between those writes.
+ *
+ * It used to also paint every child: a `querySelectorAll` sweep on each change, setting custom
+ * states and a label attribute on each gap. That needed a MutationObserver to catch children
+ * ProseMirror had added, a label cache to avoid re-reading them, and an `isApplyingVisualState`
+ * guard so the sweep's own writes would not re-trigger it — and the cache could still be a step
+ * behind the DOM, which is exactly how a gap came to paint a raw `GAP_TEXT_<uuid>` as its label.
+ * Children now subscribe to the state and paint themselves, so all of that is gone.
+ *
+ * The one observer left watches the pool for label edits, because the words an author types are
+ * part of the published state and nothing else would notice them changing.
  *
  * @customElement qti-gap-match-interaction
  * @attr {string} response-identifier - Required. Identifier of the response variable this
@@ -105,12 +93,13 @@ export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
   @property({ type: String, attribute: 'correct-response' })
   override correctResponse: string | null = null;
 
-  private labelCache = new Map<string, string>();
+  /** The correction state. Everything else about linking is derived from this list. */
+  private links: CorrectionLink[] = [];
   private observer: MutationObserver | null = null;
   private lastEmittedResponse: string | null = null;
-  private isApplyingVisualState = false;
   private isEmittingChange = false;
-  private associations = new Map<string, string>();
+
+  private readonly provider = new ContextProvider(this, { context: correctionContext });
 
   private readonly selection = new PendingSelectionController(this, {
     resolveSource: el => {
@@ -123,26 +112,36 @@ export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
       const identifier = el.getAttribute('identifier');
       return identifier ? { element: el, identifier } : null;
     },
-    onCommit: (textId, target) => {
-      const gapId = target.identifier;
-      if (!gapId) return;
-      this.commitAssociation(textId, gapId);
+    onCommit: (dragId, target) => {
+      if (target.identifier) this.link(dragId, target.identifier);
     },
-    onPendingChanged: () => this.applyVisualState(),
+    // A pick-up changes nothing about the links, but the drops need to know to offer themselves.
+    onPendingChanged: () => this.publish(),
   });
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.parseCorrectResponse();
-    this.buildLabelCache();
-    this.applyVisualState();
-    this.addEventListener('dummy-drag-remove', this.onFakeDragRemove as EventListener);
+    this.links = parseCorrection(this.correctResponse);
+    this.publish();
+    this.addEventListener('dummy-drag-remove', this.onChipRemove as EventListener);
     void this.selection;
 
-    // Watch for text content changes in gap-text elements so labels stay live.
+    // Three things the published state depends on are changed by ordinary editing rather than by
+    // anything this class runs: the words in a chip, whether a chip is there at all, and whether a
+    // gap is. Deleting either end is how a link comes to name something that no longer exists, so a
+    // removal has to republish just as much as an edit does — and a removal reports the INTERACTION
+    // as the mutation target, so it is invisible to a walk that starts at the target and stops here.
+    //
+    // Republishing is all it does. Unlike the sweep this replaced it writes nothing to the DOM, and
+    // what publishing does write — states, and a label attribute on the gaps — is not observed
+    // here, so it cannot re-trigger itself.
     this.observer = new MutationObserver(mutations => {
-      if (this.isApplyingVisualState) return;
-      const touchedGapText = mutations.some(mutation => {
+      const touched = mutations.some(mutation => {
+        if (mutation.type === 'childList') {
+          const changed = [...mutation.addedNodes, ...mutation.removedNodes];
+          if (changed.some(node => node instanceof HTMLElement && containsLinkable(node))) return true;
+        }
+
         let node: Node | null = mutation.target;
         while (node && node !== this) {
           if (node instanceof HTMLElement && node.tagName === 'QTI-GAP-TEXT') return true;
@@ -150,13 +149,23 @@ export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
         }
         return false;
       });
-      if (touchedGapText) {
-        this.buildLabelCache();
-        this.applyVisualState();
+      if (touched) {
+        this.publish();
         this.updateMinDimensionsForDropZones();
       }
     });
     this.observer.observe(this, { childList: true, subtree: true, characterData: true });
+  }
+
+  override disconnectedCallback(): void {
+    this.removeEventListener('dummy-drag-remove', this.onChipRemove as EventListener);
+    this.observer?.disconnect();
+    this.observer = null;
+    super.disconnectedCallback();
+  }
+
+  override firstUpdated() {
+    this.updateMinDimensionsForDropZones();
   }
 
   /**
@@ -170,79 +179,154 @@ export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
     return this.shadowRoot?.querySelector<HTMLElement>('slot[part="drops"]') ?? this;
   }
 
-  override firstUpdated() {
-    this.updateMinDimensionsForDropZones();
-  }
-
-  override disconnectedCallback(): void {
-    this.removeEventListener('dummy-drag-remove', this.onFakeDragRemove as EventListener);
-    this.observer?.disconnect();
-    this.observer = null;
-    super.disconnectedCallback();
-  }
-
   override updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
-    if (changedProperties.has('correctResponse')) {
-      if (this.correctResponse !== this.lastEmittedResponse) {
-        this.parseCorrectResponse();
-        this.applyVisualState();
-      }
+    // An answer key that arrived from outside — an import, an undo — replaces the state. One that
+    // this element just derived and emitted is already the state, and re-reading it would undo a
+    // link the author made in the same tick.
+    if (changedProperties.has('correctResponse') && this.correctResponse !== this.lastEmittedResponse) {
+      this.links = parseCorrection(this.correctResponse);
+      this.publish();
     }
   }
 
-  private getGapTexts(): HTMLElement[] {
-    const gapTexts = Array.from(this.querySelectorAll<HTMLElement>('qti-gap-text'));
+  private get drags(): HTMLElement[] {
+    const drags = Array.from(this.querySelectorAll<HTMLElement>('qti-gap-text'));
     // The one place that enumerates the chips, so the one place that classifies them for the theme.
-    markChips(gapTexts);
-    return gapTexts;
+    markChips(drags);
+    return drags;
   }
 
-  private getGaps(): HTMLElement[] {
-    const gaps = Array.from(this.querySelectorAll<HTMLElement>('qti-gap'));
+  private get drops(): HTMLElement[] {
+    const drops = Array.from(this.querySelectorAll<HTMLElement>('qti-gap'));
     // A gap IS a custom element, so unlike order's and associate's plain <div> drops it can carry
     // the state the runtime marks drop targets with.
-    markDroppables(gaps);
-    return gaps;
+    markDroppables(drops);
+    return drops;
   }
 
-  private buildLabelCache() {
-    this.labelCache.clear();
-    for (const gapText of this.getGapTexts()) {
-      const id = gapText.getAttribute('identifier');
-      if (!id) continue;
-      this.labelCache.set(id, gapText.textContent?.trim() || id);
+  private dragElement(identifier: string): HTMLElement | undefined {
+    return this.drags.find(drag => drag.getAttribute('identifier') === identifier);
+  }
+
+  /**
+   * Drop links whose drag or drop no longer exists.
+   *
+   * Deleting either end is ordinary editing — no command intercepts a Backspace — and a link that
+   * outlives what it names is not cosmetic: it exports a `qti-correct-response` referring to an
+   * element that is not in the item. Recomputed on publish rather than watched for, so it holds
+   * however the element left.
+   *
+   * ## Why the pool is checked for emptiness first
+   *
+   * Before ProseMirror has attached the light-DOM children, every identifier looks missing, and
+   * pruning on that evidence would empty a perfectly good answer key the moment the item loaded.
+   * The pool is what says whether anything has rendered: the content model requires at least two
+   * `qti-gap-text`, so no chips at all means "not yet", never "the author removed them". Once the
+   * pool is there the gaps are trustworthy too — including an interaction that legitimately has no
+   * gaps, where every link naming one really is stale.
+   */
+  private live(links: readonly CorrectionLink[]): CorrectionLink[] {
+    const drags = new Set(this.drags.map(drag => drag.getAttribute('identifier')).filter(Boolean));
+    if (drags.size === 0) return [...links];
+
+    const drops = new Set(this.drops.map(drop => drop.getAttribute('identifier')).filter(Boolean));
+    return links.filter(link => drags.has(link.drag) && drops.has(link.drop));
+  }
+
+  /** Rebuild the published snapshot. Always a new object, so subscribers always hear about it. */
+  private publish(): void {
+    const links = this.live(this.links);
+    const dropped = links.length !== this.links.length;
+    this.links = links;
+
+    const labels = new Map<string, string>();
+    const limits = new Map<string, number>();
+    for (const drag of this.drags) {
+      const identifier = drag.getAttribute('identifier');
+      if (!identifier) continue;
+      // The words as typed, and nothing invented. A chip the author has emptied has no label, and
+      // saying so lets a filled gap paint an empty chip rather than the identifier — which is not a
+      // label, is not what the candidate would ever see, and reads as corruption.
+      labels.set(identifier, drag.textContent?.trim() ?? '');
+      const raw = drag.getAttribute('match-max');
+      const limit = raw ? Number(raw) : 1;
+      limits.set(identifier, Number.isFinite(limit) && limit >= 0 ? limit : 1);
     }
-  }
+    // Touch the drops so a newly added gap is classified even before it consumes anything.
+    void this.drops;
 
-  private getLabel(identifier: string): string {
-    return this.labelCache.get(identifier) ?? identifier;
-  }
-
-  private parseCorrectResponse() {
-    this.associations.clear();
-    this.selection.cancel();
-    for (const entry of iterPairEntries(this.correctResponse)) {
-      const [textId, gapId] = entry.split(/\s+/);
-      if (textId && gapId) this.associations.set(gapId, textId);
+    // In gap-match the role IS the element type, so this is a lookup rather than a decision.
+    const roles = new Map<string, CorrectionRole>();
+    for (const identifier of labels.keys()) roles.set(identifier, 'drag');
+    for (const drop of this.drops) {
+      const identifier = drop.getAttribute('identifier');
+      if (identifier) roles.set(identifier, 'drop');
     }
+
+    const state: CorrectionState = {
+      links,
+      roleOf: identifier => roles.get(identifier) ?? null,
+      presentation: 'chips',
+      dragsIn: drop => links.filter(link => link.drop === drop).map(link => link.drag),
+      dropsOf: drag => links.filter(link => link.drag === drag).map(link => link.drop),
+      labelOf: drag => labels.get(drag),
+      limitOf: drag => limits.get(drag) ?? 1,
+      pending: this.selection.pendingSourceId,
+    };
+    this.provider.setValue(state);
+
+    // A link lost with its drag still has to leave the answer key.
+    if (dropped) this.emitChange();
   }
 
-  private emitChange() {
+  /** Put `drag` in `drop`, respecting how many drops that drag may occupy. */
+  private link(drag: string, drop: string): void {
+    const limit = this.limitFor(drag);
+    const alreadyHere = this.links.some(link => link.drag === drag && link.drop === drop);
+
+    let next = this.links.filter(link => link.drop !== drop);
+    if (limit === 1) {
+      // A one-drop drag moves rather than multiplies.
+      next = next.filter(link => link.drag !== drag);
+    } else if (!alreadyHere && limit !== 0 && next.filter(link => link.drag === drag).length >= limit) {
+      this.publish();
+      return;
+    }
+
+    next.push({ drag, drop });
+    this.links = next;
+    this.publish();
+    this.emitChange();
+  }
+
+  private limitFor(drag: string): number {
+    const raw = this.dragElement(drag)?.getAttribute('match-max');
+    const limit = raw ? Number(raw) : 1;
+    return Number.isFinite(limit) && limit >= 0 ? limit : 1;
+  }
+
+  /** Empty a drop. Raised by the × on the chip a filled gap paints. */
+  private onChipRemove = (event: CustomEvent<{ identifier: string }>): void => {
+    const gap = event
+      .composedPath()
+      .find(node => node instanceof HTMLElement && node.tagName === 'QTI-GAP') as HTMLElement | undefined;
+    const drop = gap?.getAttribute('identifier');
+    if (!drop || !this.links.some(link => link.drop === drop)) return;
+    event.stopPropagation();
+    this.links = this.links.filter(link => link.drop !== drop);
+    this.publish();
+    this.emitChange();
+  };
+
+  /** Derive `correct-response` from the links and hand it to the document. */
+  private emitChange(): void {
     if (this.isEmittingChange) return;
 
-    const associations = Array.from(this.associations.entries()).map(
-      ([gapId, textId]) => [textId, gapId] as GapAssociation,
-    );
-    // Canonical comma-joined `"gapText gap"` entries — same shared codec
-    // format associate / match / order use. Composer reads this via
-    // parseResponseAttribute and emits one <qti-value> per entry.
-    this.lastEmittedResponse =
-      associations.length > 0
-        ? associations.map(([textId, gapId]) => `${textId} ${gapId}`).join(',')
-        : null;
+    this.lastEmittedResponse = serializeCorrection(this.links);
+    const associations = this.links.map(link => [link.drag, link.drop] as GapAssociation);
 
-    // Defer the event dispatch to avoid re-entrancy during click handling.
+    // Deferred to avoid re-entrancy while a click is still being handled.
     this.isEmittingChange = true;
     queueMicrotask(() => {
       this.isEmittingChange = false;
@@ -265,114 +349,6 @@ export class QtiGapMatchInteractionEdit extends DropzoneAutoSizeMixin(
         }),
       );
     });
-  }
-
-  private getTextMatchMax(textId: string): number {
-    const element = this.getGapTexts().find(node => node.getAttribute('identifier') === textId);
-    const raw = element?.getAttribute('match-max');
-    const value = raw ? Number(raw) : 1;
-    return Number.isFinite(value) && value > 0 ? value : 1;
-  }
-
-  private countTextUsage(textId: string): number {
-    let count = 0;
-    for (const assignedTextId of this.associations.values()) {
-      if (assignedTextId === textId) count++;
-    }
-    return count;
-  }
-
-  private clearTextAssignments(textId: string) {
-    for (const [gapId, assignedTextId] of Array.from(this.associations.entries())) {
-      if (assignedTextId === textId) {
-        this.associations.delete(gapId);
-      }
-    }
-  }
-
-  /** Called by the {@link PendingSelectionController} when a gap is clicked while a gap-text is pending. */
-  private commitAssociation(textId: string, gapId: string) {
-    const limit = this.getTextMatchMax(textId);
-    if (limit <= 1) {
-      this.clearTextAssignments(textId);
-    } else if (this.countTextUsage(textId) >= limit && this.associations.get(gapId) !== textId) {
-      this.applyVisualState();
-      return;
-    }
-    this.associations.set(gapId, textId);
-    this.emitChange();
-    this.applyVisualState();
-  }
-
-  /**
-   * Remove an association when the × button inside a filled gap's
-   * `<dummy-drag>` is clicked. The button stops the native click event but
-   * dispatches a composed `dummy-drag-remove` CustomEvent that bubbles out of
-   * the gap's shadow into the interaction host. We resolve the affected gap
-   * from the event's composedPath (the chip lives inside it).
-   *
-   * Plain clicks on a filled gap are intentionally NOT a remove gesture —
-   * that conflicted with PendingSelectionController's commit cycle (commit
-   * fired first, then a plain-click remove undid it).
-   */
-  private onFakeDragRemove = (event: CustomEvent<{ identifier: string }>): void => {
-    const gap = event
-      .composedPath()
-      .find(node => node instanceof HTMLElement && node.tagName === 'QTI-GAP') as HTMLElement | undefined;
-    if (!gap) return;
-    const gapId = gap.getAttribute('identifier');
-    if (!gapId || !this.associations.has(gapId)) return;
-    event.stopPropagation();
-    this.associations.delete(gapId);
-    this.emitChange();
-    this.applyVisualState();
-  };
-
-  /**
-   * Flush the current `associations` map + pending-source id into UI state
-   * across the lightdom gap-text and gap elements. State is expressed via
-   * `ElementInternals.states` (`:state(pending|filled|selected|linked|disabled)`)
-   * — never via attributes — so editor-only state structurally can't leak
-   * into serialized QTI XML. The one DOM attribute we still set is
-   * `data-assigned-label` because it's content (the visible label of the
-   * assigned gap-text inside the filled gap).
-   */
-  private applyVisualState() {
-    if (this.isApplyingVisualState) return;
-    this.isApplyingVisualState = true;
-
-    try {
-      const pendingTextId = this.selection.pendingSourceId;
-      for (const gapText of this.getGapTexts()) {
-        const textId = gapText.getAttribute('identifier');
-        if (!textId) continue;
-        const usage = this.countTextUsage(textId);
-        const limit = this.getTextMatchMax(textId);
-        const states = (gapText as HTMLElement & { internals?: ElementInternals }).internals?.states;
-        if (!states) continue;
-        // `:state(selected)` is owned by PendingSelectionController — don't
-        // double-toggle it here. We still own `linked` and `disabled`.
-        toggleState(states, 'linked', usage > 0);
-        toggleState(states, 'disabled', usage >= limit && pendingTextId !== textId);
-      }
-
-      for (const gap of this.getGaps()) {
-        const gapId = gap.getAttribute('identifier');
-        if (!gapId) continue;
-        const assignedTextId = this.associations.get(gapId);
-        if (assignedTextId) {
-          gap.setAttribute('data-assigned-label', this.getLabel(assignedTextId));
-        } else {
-          gap.removeAttribute('data-assigned-label');
-        }
-        const states = (gap as HTMLElement & { internals?: ElementInternals }).internals?.states;
-        if (!states) continue;
-        toggleState(states, 'filled', assignedTextId != null);
-        toggleState(states, 'pending', pendingTextId != null && assignedTextId == null);
-      }
-    } finally {
-      this.isApplyingVisualState = false;
-    }
   }
 
   override render() {

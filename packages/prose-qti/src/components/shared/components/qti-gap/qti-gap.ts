@@ -1,7 +1,11 @@
+import { ContextConsumer } from '@lit/context';
 import { css, html, LitElement, nothing } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 
 import { QtiGap } from '@qti-components/interactions-core';
+
+import { correctionContext } from '../../context/correction-context.js';
+import { toggleState } from '../../drag-drop-states.js';
 
 import '../dummy-drag/register.js';
 
@@ -58,14 +62,56 @@ export class QtiGapEdit extends LitElement {
   @property({ type: Number, attribute: 'match-max' })
   matchMax = 1;
 
-  @property({ type: String, attribute: 'data-assigned-label' })
+  /**
+   * The chip this gap is painting, reflected so it stays inspectable from outside.
+   *
+   * Derived from the correction state rather than pushed in by the interaction. When the parent
+   * wrote it, the label could lag the state that named it — a gap filled by a chip created in the
+   * same transaction painted a raw `GAP_TEXT_<uuid>`, because the parent's label cache had not seen
+   * the chip yet. Read from the state at render time there is nothing to be out of date.
+   */
+  @property({ type: String, attribute: 'data-assigned-label', reflect: true })
   assignedLabel: string | null = null;
 
+  /**
+   * Identifier of the drag currently in this gap, or null.
+   *
+   * Kept apart from {@link assignedLabel} because a chip with no words is still a chip: an author
+   * who has emptied one has a gap that is filled and shows nothing, which is the truth. Deciding
+   * that from the label alone would make an empty chip indistinguishable from an empty gap.
+   */
+  @state()
+  private occupant: string | null = null;
+
   public internals: ElementInternals;
+
+  /** The correction state of whichever interaction this gap sits in. */
+  private readonly correction = new ContextConsumer(this, {
+    context: correctionContext,
+    subscribe: true,
+    callback: () => this.syncFromCorrection(),
+  });
 
   constructor() {
     super();
     this.internals = this.attachInternals();
+  }
+
+  /**
+   * `filled` — something is in this gap. `pending` — the author is holding a chip and this gap is
+   * empty, so it is somewhere that chip could go.
+   */
+  private syncFromCorrection(): void {
+    const state = this.correction.value;
+    const identifier = this.identifier;
+    if (!state || !identifier) return;
+
+    const occupant = state.dragsIn(identifier)[0] ?? null;
+    this.occupant = occupant;
+    this.assignedLabel = occupant ? (state.labelOf(occupant) ?? '') : null;
+
+    toggleState(this.internals.states, 'filled', occupant != null);
+    toggleState(this.internals.states, 'pending', state.pending != null && occupant == null);
   }
 
   override render() {
@@ -87,12 +133,12 @@ export class QtiGapEdit extends LitElement {
     // own copy. It cannot use renderEditChip: that stops `dummy-drag-remove` from propagating, and
     // the interaction listens for it on the host.
     return html`<div part="drop">
-      ${this.assignedLabel
+      ${this.occupant != null
         ? html`<dummy-drag
             part="drag"
             exportparts="drag-control, chip-label, chip-remove"
             .identifier=${this.identifier ?? ''}
-            .label=${this.assignedLabel}
+            .label=${this.assignedLabel ?? ''}
           ></dummy-drag>`
         : nothing}
     </div>`;
