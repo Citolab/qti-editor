@@ -1,4 +1,4 @@
-import { LitElement, css, html, nothing, type CSSResultGroup, type TemplateResult } from 'lit';
+import { LitElement, html, nothing, type CSSResultGroup, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ContextConsumer } from '@lit/context';
 import { defineUpdateHandler, type Editor } from 'prosekit/core';
@@ -7,6 +7,7 @@ import { translateQti } from '@citolab/prose-qti/components/shared';
 import { getNodeAttributePanelMetadataByNodeTypeName } from '@citolab/prose-qti/core/interactions/composer';
 
 import { editorContext } from '../../editor-context/index.js';
+import styles from './attributes-panel.styles.js';
 import {
   collectSelectionNodesWithSchemaAttrs,
   updateNodeAttrs,
@@ -33,15 +34,7 @@ const defaultQtiMetadataResolver: AttributesMetadataResolver = nodeType => {
 
 @customElement('qti-attributes-panel')
 export class QtiAttributesPanel extends LitElement {
-  static override styles: CSSResultGroup = [
-    css`
-      :host {
-        display: block;
-        font: inherit;
-        color: inherit;
-      }
-    `,
-  ];
+  static override styles: CSSResultGroup = styles;
 
   @property({ attribute: false })
   metadataResolver: AttributesMetadataResolver = defaultQtiMetadataResolver;
