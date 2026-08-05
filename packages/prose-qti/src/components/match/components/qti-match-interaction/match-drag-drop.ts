@@ -10,7 +10,7 @@ import {
   type MatchAssociationChangeDetail,
 } from './match-shared.js';
 
-import type { FakeDrag, MatchSelectingTargetDetail } from '@citolab/prose-qti/components/shared';
+import type { MatchSelectingTargetDetail } from '@citolab/prose-qti/components/shared';
 
 export interface DragDropHost extends LitElement {
   correctResponse: string | string[] | null;
@@ -20,13 +20,13 @@ export interface DragDropHost extends LitElement {
     attrs: Record<string, unknown>;
   }): void;
   emitMatchAssociationChange(detail: MatchAssociationChangeDetail): void;
+  /** Hands the links to the host, which owns the correction provider and decides the roles. */
+  publishCorrection(links: readonly { drag: string; drop: string }[], pending: string | null): void;
 }
 
 /**
  * Drag-drop (click-to-associate) mode controller. Owns:
  *  - the pending-source / associations state
- *  - the label cache (rebuilt on subtree changes — drag-drop legitimately needs
- *    `subtree:true` for this, unlike tabular mode)
  *  - the document-level keydown / pointerdown listeners for Escape and click-out
  *  - the fake-drag synchronization back into the target choices
  */
@@ -42,7 +42,6 @@ export class DragDropController implements ReactiveController {
    * switches at runtime — the same correctResponse JSON renders identically.
    */
   private pairs = new Set<string>();
-  private labelCache = new Map<string, string>();
 
   constructor(host: DragDropHost) {
     this.host = host;
@@ -129,20 +128,19 @@ export class DragDropController implements ReactiveController {
     if (matchSets.length < 2) return;
 
     this.setupDone = true;
-    this.buildLabelCache();
     this.host.addEventListener('dummy-drag-remove', this.onFakeDragRemove as EventListener);
     this.setupMutationObserver();
     this.triggerRender();
   }
 
   private setupMutationObserver(): void {
+    // Republishes, and nothing else. The words in a choice and whether a choice is there at all are
+    // both part of the published state and both changed by ordinary editing, which nothing else
+    // would notice. Publishing writes no DOM of its own, so this cannot re-trigger itself — unlike
+    // the sweep it replaced, which is why that one needed guarding.
     this.observer = new MutationObserver(() => {
-      this.buildLabelCache();
       this.triggerRender();
     });
-    // Drag-drop mode does need subtree+characterData (label cache rebuilds on
-    // any choice content change). This is NOT the chatty observer that caused
-    // problems in tabular mode — it lives in drag-drop mode only.
     this.observer.observe(this.host, {
       childList: true,
       subtree: true,
@@ -173,77 +171,26 @@ export class DragDropController implements ReactiveController {
 
   private triggerRender(): void {
     this.host.requestUpdate();
-    this.syncFakeDrags();
+    this.publish();
+  }
+
+  /** Hand the current links to the host, which owns the provider and decides the roles. */
+  private publish(): void {
+    const links = Array.from(this.pairs).map(pair => {
+      const [drag, drop] = pair.split(' ');
+      return { drag, drop };
+    });
+    this.host.publishCorrection(links, this.selection.pendingSourceId);
   }
 
   /**
-   * Give the source choices the runtime's own `:state(drag)`, which is what qti-theme keys on for
-   * both halves of a chip's look: `qti-match-interaction :state(drag)` paints it through the
-   * --drag-* contract (so a brand overlay like kennisnet.css wins with no specificity contest), and
-   * `:state(drag)::part(control)::before` draws the grip icon. Without it the editor drew plain
-   * outlined boxes with no grip while the runtime drew branded chips.
+   * Adopt links the host pruned — an end of the pair was deleted from the document.
    *
-   * ElementInternals states only — NEVER an attribute. ProseMirror's mutation observer reverts any
-   * attribute it does not know from the schema, and reverting re-triggers the observer that set it,
-   * which is an infinite loop that hard-freezes the tab. The same reason `:state(pending)` and
-   * `:state(filled)` below are states rather than markers, and why the drop region is centred from
-   * CSS in qti-simple-associable-choice rather than by stamping the runtime's [qti-droppable].
+   * Keeps this controller's own copy in step and nothing more. The host writes the corrected answer
+   * key to the document itself, because either mode can be the one that noticed a choice went.
    */
-  private applyRuntimeDragDropHooks(): void {
-    const [sourceSet, targetSet] = getMatchSets(this.host);
-
-    for (const source of getChoices(sourceSet)) {
-      const internals = (source as HTMLElement & { internals?: ElementInternals }).internals;
-      internals?.states.add('drag');
-    }
-
-    // The runtime stamps [qti-droppable]; qti-simple-associable-choice.styles.ts accepts
-    // :state(droppable) as the same opt-in precisely so a ProseMirror host can use it.
-    for (const target of getChoices(targetSet)) {
-      const internals = (target as HTMLElement & { internals?: ElementInternals }).internals;
-      internals?.states.add('droppable');
-    }
-  }
-
-  private syncFakeDrags(): void {
-    if (!this.setupDone) return;
-    this.applyRuntimeDragDropHooks();
-    for (const target of getChoices(getMatchSets(this.host)[1])) {
-      const targetId = target.getAttribute('identifier');
-      const drags: FakeDrag[] = [];
-      if (targetId) {
-        for (const pair of this.pairs) {
-          const [sourceId, pairTargetId] = pair.split(' ');
-          if (pairTargetId === targetId) {
-            drags.push({ identifier: sourceId, label: this.labelCache.get(sourceId) ?? sourceId });
-          }
-        }
-      }
-      const typed = target as HTMLElement & {
-        fakeDrags: FakeDrag[];
-        internals?: ElementInternals;
-      };
-      typed.fakeDrags = drags;
-      // Mirror filled state into the choice's internals so the shared
-      // `:state(filled)` CSS rule applies uniformly with the other interactions.
-      if (typed.internals) {
-        if (drags.length > 0) typed.internals.states.add('filled');
-        else typed.internals.states.delete('filled');
-      }
-    }
-  }
-
-  private buildLabelCache(): void {
-    this.labelCache.clear();
-    const [sourceSet, targetSet] = getMatchSets(this.host);
-    for (const choice of [...getChoices(sourceSet), ...getChoices(targetSet)]) {
-      const id = choice.getAttribute('identifier');
-      if (id) {
-        const clone = choice.cloneNode(true) as HTMLElement;
-        clone.querySelectorAll('qti-simple-associable-choice').forEach(el => el.remove());
-        this.labelCache.set(id, clone.textContent?.trim() || id);
-      }
-    }
+  adoptLinks(links: readonly { drag: string; drop: string }[]): void {
+    this.pairs = new Set(links.map(link => `${link.drag} ${link.drop}`));
   }
 
   // ─── Interaction ────────────────────────────────────────────────────────

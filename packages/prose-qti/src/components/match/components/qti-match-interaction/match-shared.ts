@@ -93,6 +93,20 @@ export function getChoices(matchSet: HTMLElement | null): HTMLElement[] {
   return Array.from(matchSet.querySelectorAll(':scope > qti-simple-associable-choice'));
 }
 
+/**
+ * The words an author typed into a choice.
+ *
+ * Nested `qti-simple-associable-choice` elements are stripped first: a malformed or mid-edit
+ * document can nest them, and a label that swallowed its neighbour's text would then be what a
+ * filled drop paints. Falls back to the identifier for nothing at all, which is the only case where
+ * showing an identifier beats showing a blank.
+ */
+export function labelOfChoice(choice: HTMLElement): string {
+  const clone = choice.cloneNode(true) as HTMLElement;
+  clone.querySelectorAll('qti-simple-associable-choice').forEach(nested => nested.remove());
+  return clone.textContent?.trim() ?? '';
+}
+
 /** `qti-match-tabular` discriminator helper. */
 export const TABULAR_CLASS = 'qti-match-tabular';
 

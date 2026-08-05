@@ -1,8 +1,11 @@
+import { ContextConsumer } from '@lit/context';
 import { css, html, LitElement } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 
 import { QtiSimpleAssociableChoice } from '@qti-components/interactions-core';
 
+import { correctionContext } from '../../context/correction-context.js';
+import { toggleState } from '../../drag-drop-states.js';
 import { renderEditChip } from '../../render/chip.js';
 
 import type { CSSResult, CSSResultGroup } from 'lit';
@@ -112,11 +115,56 @@ export class QtiSimpleAssociableChoiceEdit extends LitElement {
   fixed: boolean = false;
 
   /**
-   * Source choices assigned to this target as the correct response. Set by the
-   * parent interaction; rendered as non-interactive previews in the drop slot.
+   * The drags linked into this choice, rendered as previews in the drop slot.
+   *
+   * Derived from the correction state rather than assigned by the interaction. The parent used to
+   * set this on every target on every change, which meant a choice ProseMirror had just created
+   * showed nothing until the next sweep, and the labels came from a cache that could be a step
+   * behind the DOM.
    */
-  @property({ attribute: false })
-  fakeDrags: FakeDrag[] = [];
+  @state()
+  private fakeDrags: FakeDrag[] = [];
+
+  /** The correction state of whichever interaction this choice sits in. */
+  private readonly correction = new ContextConsumer(this, {
+    context: correctionContext,
+    subscribe: true,
+    callback: () => this.syncFromCorrection(),
+  });
+
+  /**
+   * Take role, contents and filled-ness from the published state.
+   *
+   * The role matters most. This element is a drag in the first match set and a drop in the second,
+   * and it cannot tell which from anything about itself — only the interaction knows how the sets
+   * are ordered. It used to be told by a sweep that only ever ADDED the state, on the reasoning
+   * that a choice is what it is for life; that holds where the role is the element type, but here
+   * an author can move a choice from one set to the other and it would then be marked both. Setting
+   * it from the state, and unsetting the other, is what makes that impossible rather than unlikely.
+   *
+   * `:state(drag)` is what qti-theme keys on for a chip's whole look — the --drag-* contract and
+   * the grip drawn by `:state(drag)::part(control)::before`. `:state(droppable)` is the editor-side
+   * spelling of the runtime's `[qti-droppable]`, which this element's own styles accept as the same
+   * opt-in precisely so a ProseMirror host can use a state where the runtime uses an attribute.
+   */
+  private syncFromCorrection(): void {
+    const correction = this.correction.value;
+    if (!correction) return;
+
+    // Roles are true in every mode; painting them is only right where the interaction is showing
+    // its links as chips. In tabular mode these same choices are the grid's headings.
+    const role = correction.roleOf(this.identifier);
+    const chips = correction.presentation === 'chips';
+    toggleState(this.internals.states, 'drag', chips && role === 'drag');
+    toggleState(this.internals.states, 'droppable', chips && role === 'drop');
+
+    const drags = chips && role === 'drop' ? correction.dragsIn(this.identifier) : [];
+    this.fakeDrags = drags.map(identifier => ({
+      identifier,
+      label: correction.labelOf(identifier) ?? '',
+    }));
+    toggleState(this.internals.states, 'filled', this.fakeDrags.length > 0);
+  }
 
   private _onRemoveFakeDrag(identifier: string) {
     this.dispatchEvent(
