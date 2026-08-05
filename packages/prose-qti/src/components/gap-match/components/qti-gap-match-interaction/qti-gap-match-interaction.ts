@@ -35,8 +35,8 @@ export interface GapAssociationChangeDetail {
 /**
  * Editor component for qti-gap-match-interaction.
  *
- * Authoring is inline: click a `qti-gap-text` → every empty `<qti-gap>` pulses → click a gap to
- * link them. Escape or a click outside cancels a pending pick.
+ * Authoring is inline: click a `qti-gap-text`, then click a gap to link them.
+ * Escape or a click outside cancels a pending pick.
  *
  * ## What this class owns, and what it no longer does
  *

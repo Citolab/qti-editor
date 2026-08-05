@@ -1,0 +1,43 @@
+/*
+ * Mandatory layout for QTI elements and editor chrome rendered inside the
+ * editor document. Visual hooks for QTI custom states belong in
+ * editor-states.css.
+ */
+
+qti-rubric-block {
+  display: block !important;
+}
+
+.qti-selection-menu {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem;
+  color: #111827;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+}
+
+.qti-selection-menu-action {
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font: inherit;
+  white-space: nowrap;
+  color: inherit;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.2rem;
+}
+
+.qti-selection-menu-action:hover {
+  background: #f3f4f6;
+}
+
+.qti-selection-menu-action:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}

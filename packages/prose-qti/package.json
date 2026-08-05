@@ -242,7 +242,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css && cp src/core-css/core-css.css dist/core-css/core-css.css && cp src/qti-prose.css dist/qti-prose.css",
+    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css && cp src/core-css/*.css dist/core-css/ && cp src/qti-prose.css dist/qti-prose.css",
     "typecheck": "tsc --noEmit -p ./tsconfig.json",
     "clean": "rm -rf dist"
   },

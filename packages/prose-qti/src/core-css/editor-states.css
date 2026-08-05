@@ -1,0 +1,32 @@
+/*
+ * Editor-only state hooks for QTI elements.
+ *
+ * These selectors intentionally contain no paint. They document the editor
+ * custom states from the old core-css state table so styling can be reviewed
+ * explicitly before it is added.
+ */
+
+@layer qti-components.overrides {
+  qti-gap-text:state(selected),
+  qti-simple-choice:state(selected),
+  qti-simple-associable-choice:state(selected) {
+    /* Drag sources selected by PendingSelectionController. */
+  }
+
+  qti-gap-text:state(linked),
+  qti-simple-choice:state(linked) {
+    /* Drag sources that are already linked into at least one drop. */
+  }
+
+  qti-gap:state(pending),
+  qti-simple-associable-choice:state(pending),
+  qti-order-interaction:state(pending)::part(drop) {
+    background: #f3f4f6;
+    /* Drop targets, or the order interaction host, while a drag source is pending. */
+  }
+
+  /* qti-hottext-interaction.qti-unselected-hidden qti-hottext {
+    text-decoration: underline dotted #c6cad0;
+    text-underline-offset: 0.2em;
+  } */
+}

@@ -41,11 +41,6 @@ const styles: CSSResultGroup = css`
   :host([interactive]) {
     cursor: pointer;
   }
-
-  :host([interactive]:hover) {
-    outline: 2px solid var(--qti-border-active, var(--qti-focus-color, currentColor));
-    outline-offset: 1px;
-  }
 `;
 
 export default styles;

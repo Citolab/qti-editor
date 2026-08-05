@@ -4,14 +4,7 @@ import { ContextProvider } from '@lit/context';
 
 import { DropzoneAutoSizeMixin } from '@qti-components/interactions-core';
 
-
-import {
-  correctionContext,
-  Interaction,
-  markChips,
-  PendingSelectionController,
-  renderEditChip,
-} from '../../../shared';
+import { correctionContext, Interaction, markChips, PendingSelectionController, renderEditChip } from '../../../shared';
 import styles from './qti-order-interaction.styles.js';
 
 import type { CorrectionLink, CorrectionRole } from '../../../shared';
@@ -89,12 +82,12 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
       const slotIndex = Number(target.identifier);
       if (Number.isFinite(slotIndex)) this._placeSelectedChoice(sourceId, slotIndex);
     },
-    // Mirror the pending state onto the interaction host so CSS can pulse
-    // empty drop slots via `:state(pending)::part(drop empty)` (see core-css.css).
+    // Mirror the pending state onto the interaction host so editor styles can
+    // target pending order placement without DOM-visible attributes.
     onPendingChanged: pending => {
       if (pending != null) this.internals.states.add('pending');
       else this.internals.states.delete('pending');
-    },
+    }
   });
 
   constructor() {
@@ -303,7 +296,7 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
       dropsOf: drag => links.filter(link => link.drag === drag).map(link => link.drop),
       labelOf: drag => labels.get(drag),
       limitOf: () => 1,
-      pending: this._selection.pendingSourceId,
+      pending: this._selection.pendingSourceId
     });
   }
 
@@ -313,21 +306,25 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
     const dense = this._order.filter((id): id is string => id !== null);
     const correctResponse = dense.length > 0 ? dense.join(',') : null;
 
-    this.dispatchEvent(new CustomEvent('qti-prosemirror-node-attrs-change', {
-      detail: {
-        nodeType: 'qtiOrderInteraction',
-        tagName: 'qti-order-interaction',
-        attrs: { correctResponse },
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    this.dispatchEvent(
+      new CustomEvent('qti-prosemirror-node-attrs-change', {
+        detail: {
+          nodeType: 'qtiOrderInteraction',
+          tagName: 'qti-order-interaction',
+          attrs: { correctResponse }
+        },
+        bubbles: true,
+        composed: true
+      })
+    );
 
-    this.dispatchEvent(new CustomEvent('order-response-change', {
-      detail: { order: dense, correctResponse },
-      bubbles: true,
-      composed: true,
-    }));
+    this.dispatchEvent(
+      new CustomEvent('order-response-change', {
+        detail: { order: dense, correctResponse },
+        bubbles: true,
+        composed: true
+      })
+    );
   }
 
   private _placeSelectedChoice(choiceId: string, slotIndex: number) {
@@ -362,28 +359,19 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
     // qti-components shape (runtime renders `<div role="region" part="drop">`
     // inside `part="drops"`). The `<drop-list>` tag is NOT a registered custom
     // element — just a styling/role hook; the theme reaches it via ::part(drop).
-    // Pending and filled visuals are driven by:
-    //   - `:state(pending)` on the interaction host (set by PendingSelectionController)
-    //   - a second `empty` part token on unfilled slots
-    //
-    // The `empty` token exists so the pending pulse can live OUTSIDE this shadow root, in
-    // prose-qti's core-css.css. A structural filter like `:not(:has(dummy-drag))` cannot be
-    // applied after `::part()`, so without it an outside rule could not tell a filled slot from an
-    // empty one and would pulse both. `::part(drop empty)` matches only when both tokens are
-    // present, while every existing `::part(drop)` rule in qti-theme keeps matching either way.
+    // The `empty` part token lets outside editor styles distinguish unfilled
+    // slots from filled ones through `::part(drop empty)` when they need to.
+    // Every existing `::part(drop)` rule in qti-theme still matches either way.
     return html`
-      ${this._getSlots().map((choiceId, index) => html`
-        <drop-list
-          role="region"
-          class="order-slot"
-          part=${choiceId === null ? 'drop empty' : 'drop'}
-          data-slot-index=${index}
-        >
-          ${choiceId !== null
-            ? renderEditChip(this._labelOf(choiceId), choiceId, () => this._clearSlot(index))
-            : nothing}
-        </drop-list>
-      `)}
+      ${this._getSlots().map(
+        (choiceId, index) => html`
+          <div role="region" part="drop" data-slot-index=${index}>
+            ${choiceId !== null
+              ? renderEditChip(this._labelOf(choiceId), choiceId, () => this._clearSlot(index))
+              : nothing}
+          </div>
+        `
+      )}
     `;
   }
 
@@ -392,13 +380,9 @@ export class QtiOrderInteractionEdit extends DropzoneAutoSizeMixin(
 
     return html`
       <slot name="prompt"></slot>
-      <div part="container" class="interaction-preview">
-        <div part="drags" class="preview-drags">
-          <slot @slotchange=${this._onSlotChange}></slot>
-        </div>
-        <div part="drops" class="preview-drops">
-          ${this._renderSlots()}
-        </div>
+      <div part="container">
+        <slot part="drags" @slotchange=${this._onSlotChange}></slot>
+        <div part="drops">${this._renderSlots()}</div>
       </div>
     `;
   }
