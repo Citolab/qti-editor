@@ -2,6 +2,7 @@
   "name": "@citolab/prose-qti-node",
   "version": "0.0.0",
   "description": "QTI 3.0 <-> ProseMirror conversion for plain Node. No browser, no web components.",
+  "license": "GPL-3.0-only",
   "type": "module",
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",

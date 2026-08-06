@@ -71,6 +71,20 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org/
 
+      # Trusted publishing needs npm >= 11.5.1: the OIDC token exchange that authenticates the
+      # publish lives in the npm CLI, not in pnpm. `pnpm publish` on pnpm 10 delegates to npm, so
+      # this is the CLI that actually talks to the registry — whatever npm ships with Node 24 is
+      # not guaranteed to clear that bar, and a too-old npm fails as an auth error rather than as
+      # a version error.
+      #
+      # NOTE: pnpm 11 implements `publish` natively and no longer delegates. When this repo moves
+      # to pnpm 11, the publishCmd in release.config.cjs must call `npm publish` directly or the
+      # OIDC exchange disappears with the delegation.
+      - name: Ensure npm supports trusted publishing
+        run: |
+          npm install -g npm@latest
+          npm --version
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
