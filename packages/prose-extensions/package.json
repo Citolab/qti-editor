@@ -63,7 +63,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "lit": "^3.3.2"
+    "lit": "^3.3.3"
   },
   "peerDependencies": {
     "prosekit": "^0.21.4",
@@ -80,7 +80,7 @@
     }
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.3"
   },
   "files": [
     "dist"
