@@ -181,7 +181,11 @@ wcConfigs['flat/recommended'], // Storybook-specific rules
   ignores: [
     'node_modules/**',
     'hosting/**', // Local deploy/storybook build artifacts
-    'packages/ui/src/components/editor/**', // Clean prosekit installs — do not lint or modify
+    // Clean prosekit installs — do not lint or modify. This tree used to live in
+    // packages/ui/src/components/editor; when it moved into the app the ignore stayed behind, so CI
+    // started linting vendored prosekit example code (34 errors: import/order, wc/no-self-class,
+    // and lit/attribute-value-entities on Tailwind arbitrary variants like `[&_span]:text-blue-500`).
+    'apps/qti-prosekit-item/src/components/editor/**',
     '**/dist/**', // Build output directories
     'build/**',
     'coverage/**',

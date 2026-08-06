@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+# Whole-repo lint before anything leaves the machine.
+#
+# pre-commit lints the STAGED files (see .lintstagedrc.mjs) — the right gate for a commit, but blind
+# to a whole class of failure that CI's `eslint .` catches:
+#
+#   * a stale ignore glob. The prosekit example tree moved from packages/ui/src/components/editor to
+#     apps/qti-prosekit-item/src/components/editor and eslint.config.js kept ignoring the old path,
+#     so 34 errors in never-touched vendored files failed CI on a commit that did not go near them.
+#   * any edit to eslint.config.js, which re-lints files nobody staged.
+#   * `git commit --no-verify`, which skips pre-commit entirely but cannot skip this.
+#
+# `eslint .` over this repo takes a few seconds — cheap enough per push, too slow per commit.
+#
+# CI is exempt for the same reason pre-commit is: the release job pushes tags and version-bump
+# commits, and .github/workflows/ci.yml already runs this exact command.
+if [ -n "$CI" ]; then
+  exit 0
+fi
+
+echo "🔍 pre-push: linting the whole repo…"
+if ! pnpm lint:check; then
+  echo ""
+  echo "❌ pre-push: lint errors above would fail CI."
+  echo "   Fix them (many are auto-fixable: pnpm lint), then push again."
+  echo "   To bypass in an emergency: git push --no-verify"
+  exit 1
+fi
