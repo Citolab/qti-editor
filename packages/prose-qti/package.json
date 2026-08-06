@@ -1,6 +1,6 @@
 {
   "name": "@citolab/prose-qti",
-  "version": "1.7.0",
+  "version": "1.14.0",
   "description": "QTI functionality for ProseMirror-based editors.",
   "repository": {
     "type": "git",
@@ -267,12 +267,12 @@
     "prosemirror-tables": "^1.8.5"
   },
   "peerDependencies": {
-    "lit": "^3.3.2",
+    "lit": "^3.3.3",
     "prosekit": "^0.21.4",
     "prosemirror-commands": "^1.7.1",
-    "prosemirror-model": "^1.25.4",
+    "prosemirror-model": "^1.25.8",
     "prosemirror-state": "^1.4.4",
-    "prosemirror-view": "^1.41.8"
+    "prosemirror-view": "^1.41.9"
   },
   "peerDependenciesMeta": {
     "prosekit": {
@@ -282,7 +282,7 @@
   "devDependencies": {
     "esbuild": "^0.27.7",
     "linkedom": "^0.18.13",
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.3"
   },
   "files": [
     "dist"
