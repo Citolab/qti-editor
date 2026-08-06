@@ -2,7 +2,7 @@
   "name": "@qti-editor/root",
   "pnpm": {
     "overrides": {
-      "prosekit": "^0.21.3",
+      "prosekit": "^0.21.4",
       "prosemirror-commands": "^1.7.1",
       "prosemirror-history": "^1.5.0",
       "prosemirror-inputrules": "^1.5.1",
@@ -113,10 +113,10 @@
     "prosemirror-commands": "^1.7.1",
     "prosemirror-history": "^1.5.0",
     "prosemirror-keymap": "^1.2.3",
-    "prosemirror-model": "^1.25.11",
+    "prosemirror-model": "^1.25.8",
     "prosemirror-schema-basic": "^1.2.4",
     "prosemirror-state": "^1.4.4",
-    "prosemirror-view": "^1.42.2",
+    "prosemirror-view": "^1.41.9",
     "remark-gfm": "^4.0.1",
     "semantic-release": "^24.2.9",
     "shadow-dom-testing-library": "^1.14.1",
