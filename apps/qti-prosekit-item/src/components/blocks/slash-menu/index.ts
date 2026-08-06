@@ -1,1 +1,1 @@
-export { registerLitEditorSlashMenu } from './slash-menu'
+export { registerLitEditorSlashMenu } from '../../editor/ui/slash-menu/index.ts'

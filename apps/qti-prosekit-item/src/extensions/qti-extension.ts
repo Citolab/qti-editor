@@ -12,9 +12,23 @@ import {
   listSelectedInteractionPluginFactories,
   listInteractionSchemaNodeSpecs,
 } from '@citolab/prose-qti/core/interactions/composer';
+import { qtiLayoutDivLockPlugin, qtiLayoutDivNodeSpec } from '@citolab/prose-qti/schema';
 import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
+import { type Command } from 'prosekit/pm/state';
 
-import type { Command } from 'prosekit/pm/state';
+import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
+
+export function listInsertableInteractionDescriptors(options?: {
+  include?: string[];
+}): Array<InteractionDescriptor & { insertCommand: Command }> {
+  const descriptors = options?.include
+    ? listInteractionDescriptors().filter(d => options.include!.includes(d.tagName))
+    : listInteractionDescriptors();
+
+  return descriptors.filter((descriptor): descriptor is InteractionDescriptor & { insertCommand: Command } =>
+    descriptor.insertCommand != null,
+  );
+}
 
 /**
  * Assembles selected QTI interactions into a ProseKit extension.
@@ -33,7 +47,7 @@ export function defineQtiInteractionsExtension(options?: {
   include?: string[];
 }): Extension {
   const allDescriptors = listInteractionDescriptors();
-  
+
   // Filter to only included interaction types if specified
   const descriptors = options?.include
     ? allDescriptors.filter(d => options.include!.includes(d.tagName))
@@ -58,6 +72,15 @@ export function defineQtiInteractionsExtension(options?: {
       enterCommands.some(cmd => cmd(state, dispatch, view));
   }
 
+  const backspaceCommands = descriptors
+    .map(d => d.backspaceCommand)
+    .filter((cmd): cmd is Command => cmd != null);
+
+  if (backspaceCommands.length > 0) {
+    keymap['Backspace'] = (state, dispatch, view) =>
+      backspaceCommands.some(cmd => cmd(state, dispatch, view));
+  }
+
   // Add keyboard shortcuts for insert commands
   for (const descriptor of descriptors) {
     if (descriptor.insertCommand && descriptor.keyboardShortcut) {
@@ -69,5 +92,11 @@ export function defineQtiInteractionsExtension(options?: {
     definePlugin(pluginFactory)
   );
 
-  return union(...nodeSpecExtensions, defineKeymap(keymap), ...pluginExtensions);
+  return union(
+    defineNodeSpec({ name: 'qtiLayoutDiv', ...qtiLayoutDivNodeSpec }),
+    definePlugin(() => qtiLayoutDivLockPlugin),
+    ...nodeSpecExtensions,
+    defineKeymap(keymap),
+    ...pluginExtensions,
+  );
 }

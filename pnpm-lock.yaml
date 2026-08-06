@@ -417,6 +417,9 @@ importers:
       '@qti-components/theme':
         specifier: 'catalog:'
         version: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@29a326f
+      '@qti-components/transformers':
+        specifier: 'catalog:'
+        version: https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@29a326f
       lit:
         specifier: ^3.3.2
         version: 3.3.2

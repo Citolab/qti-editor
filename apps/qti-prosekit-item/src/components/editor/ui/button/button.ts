@@ -1,4 +1,4 @@
-import { html, LitElement, nothing } from 'lit';
+import { html, LitElement, nothing, type PropertyDeclaration } from 'lit'
 import {
   registerTooltipPopupElement,
   registerTooltipPositionerElement,
@@ -6,39 +6,34 @@ import {
   registerTooltipTriggerElement,
 } from 'prosekit/lit/tooltip'
 
-
-registerTooltipRootElement()
-registerTooltipTriggerElement()
-registerTooltipPositionerElement()
-registerTooltipPopupElement()
-
 class LitButton extends LitElement {
-  static properties = {
+  static override properties = {
     pressed: { type: Boolean },
     disabled: { type: Boolean },
     tooltip: { type: String },
-    icon: { type: String }
-  };
+    icon: { type: String },
+  } satisfies Record<string, PropertyDeclaration>
 
   pressed = false
   disabled = false
   tooltip = ''
   icon = ''
 
-  createRenderRoot() {
+  override createRenderRoot() {
     return this
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback()
+    this.classList.add('contents')
   }
 
-  handleMouseDown = (event) => {
+  private handleMouseDown = (event: MouseEvent) => {
     // Prevent the editor from being blurred when the button is clicked
     event.preventDefault()
-  };
+  }
 
-  render() {
+  override render() {
     const tooltip = this.tooltip
 
     return html`
@@ -54,20 +49,32 @@ class LitButton extends LitElement {
             ${tooltip ? html`<span class="sr-only">${tooltip}</span>` : nothing}
           </button>
         </prosekit-tooltip-trigger>
-        ${
-          tooltip
-            ? html`
-              <prosekit-tooltip-content class="z-50 overflow-hidden rounded-md border border-solid bg-gray-900 dark:bg-gray-50 px-3 py-1.5 text-xs text-gray-50 dark:text-gray-900 shadow-xs not-data-state:hidden will-change-transform motion-safe:data-[state=open]:animate-in motion-safe:data-[state=closed]:animate-out motion-safe:data-[state=open]:fade-in-0 motion-safe:data-[state=closed]:fade-out-0 motion-safe:data-[state=open]:zoom-in-95 motion-safe:data-[state=closed]:zoom-out-95 motion-safe:data-[state=open]:animate-duration-150 motion-safe:data-[state=closed]:animate-duration-200 motion-safe:data-[side=bottom]:slide-in-from-top-2 motion-safe:data-[side=bottom]:slide-out-to-top-2 motion-safe:data-[side=left]:slide-in-from-right-2 motion-safe:data-[side=left]:slide-out-to-right-2 motion-safe:data-[side=right]:slide-in-from-left-2 motion-safe:data-[side=right]:slide-out-to-left-2 motion-safe:data-[side=top]:slide-in-from-bottom-2 motion-safe:data-[side=top]:slide-out-to-bottom-2">
-                ${tooltip}
-              </prosekit-tooltip-content>
+        ${tooltip
+          ? html`
+              <prosekit-tooltip-positioner class="block overflow-visible w-min h-min z-50 ease-out transition-transform duration-100 motion-reduce:transition-none">
+                <prosekit-tooltip-popup class="flex box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none duration-100 data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 overflow-hidden rounded-md border border-solid bg-gray-900 dark:bg-gray-50 px-3 py-1.5 text-xs text-gray-50 dark:text-gray-900 shadow-xs text-nowrap">
+                  ${tooltip}
+                </prosekit-tooltip-popup>
+              </prosekit-tooltip-positioner>
             `
-            : nothing
-        }
+          : nothing}
       </prosekit-tooltip-root>
-    `;
+    `
   }
 }
 
-if (!customElements.get('lit-editor-button')) {
+export function registerLitEditorButton() {
+  registerTooltipPopupElement()
+  registerTooltipPositionerElement()
+  registerTooltipRootElement()
+  registerTooltipTriggerElement()
+
+  if (customElements.get('lit-editor-button')) return
   customElements.define('lit-editor-button', LitButton)
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'lit-editor-button': LitButton
+  }
 }

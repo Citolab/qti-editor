@@ -25,6 +25,7 @@ const interactionsInlineChoiceSrcRoot = fileURLToPath(new URL('../../packages/pr
 const prosemirrorPluginsSrcRoot = fileURLToPath(new URL('../../packages/prose-extensions/src/prosemirror', import.meta.url));
 
 export default defineConfig(({ command }) => ({
+  publicDir: '../../public',
   resolve: {
     // Dev only: the dev server pre-bundles deps (optimizeDeps), which can create
     // two instances of @prosekit/core — one for the app's `prosekit/core` import

@@ -7,67 +7,62 @@ import {
   registerInlinePopoverRootElement,
   type OpenChangeEvent,
 } from 'prosekit/lit/inline-popover'
-import { editorContext } from '@citolab/prose-qti-ui/editor-context'
 
-import type { LinkAttrs } from 'prosekit/extensions/link'
+import { registerLitEditorButton } from '../button/index.ts'
+import { editorContext } from '../editor-context.ts'
+
 import type { EditorState } from 'prosekit/pm/state'
+import type { LinkAttrs } from 'prosekit/extensions/link'
+import type { BasicExtension } from 'prosekit/basic'
 
-
-import '../button/index.js'
-
- 
-type AnyEditor = Editor<any>
-
-function getInlineMenuItems(editor: AnyEditor) {
-  const commands = editor.commands as Record<string, { canExec: (...args: unknown[]) => boolean } & ((...args: unknown[]) => void)>
+function getInlineMenuItems(editor: Editor<BasicExtension>) {
+  const commands = editor.commands as Record<string, ((...args: unknown[]) => unknown) & { canExec?: (...args: unknown[]) => boolean }>
   const marks = editor.marks as Record<string, { isActive: () => boolean } | undefined>
 
-  const bold = commands.toggleStrong ?? commands.toggleBold
-  const italic = commands.toggleEm ?? commands.toggleItalic
-  const boldMark = marks.strong ?? marks.bold
-  const italicMark = marks.em ?? marks.italic
+  const toggleBold = commands.toggleBold ?? commands.toggleStrong
+  const toggleItalic = commands.toggleItalic ?? commands.toggleEm
 
   return {
-    bold: bold
+    bold: toggleBold
       ? {
-          isActive: boldMark?.isActive() ?? false,
-          canExec: bold.canExec(),
-          command: () => bold(),
+          isActive: marks.bold?.isActive() ?? marks.strong?.isActive() ?? false,
+          canExec: toggleBold.canExec?.() ?? false,
+          command: () => toggleBold(),
         }
       : undefined,
-    italic: italic
+    italic: toggleItalic
       ? {
-          isActive: italicMark?.isActive() ?? false,
-          canExec: italic.canExec(),
-          command: () => italic(),
+          isActive: marks.italic?.isActive() ?? marks.em?.isActive() ?? false,
+          canExec: toggleItalic.canExec?.() ?? false,
+          command: () => toggleItalic(),
         }
       : undefined,
-    underline: commands.toggleUnderline
+    underline: editor.commands.toggleUnderline
       ? {
-          isActive: marks.underline?.isActive() ?? false,
-          canExec: commands.toggleUnderline.canExec(),
-          command: () => commands.toggleUnderline(),
+          isActive: editor.marks.underline.isActive(),
+          canExec: editor.commands.toggleUnderline.canExec(),
+          command: () => editor.commands.toggleUnderline(),
         }
       : undefined,
-    strike: commands.toggleStrike
+    strike: editor.commands.toggleStrike
       ? {
-          isActive: marks.strike?.isActive() ?? false,
-          canExec: commands.toggleStrike.canExec(),
-          command: () => commands.toggleStrike(),
+          isActive: editor.marks.strike.isActive(),
+          canExec: editor.commands.toggleStrike.canExec(),
+          command: () => editor.commands.toggleStrike(),
         }
       : undefined,
-    code: commands.toggleCode
+    code: editor.commands.toggleCode
       ? {
-          isActive: marks.code?.isActive() ?? false,
-          canExec: commands.toggleCode.canExec(),
-          command: () => commands.toggleCode(),
+          isActive: editor.marks.code.isActive(),
+          canExec: editor.commands.toggleCode.canExec(),
+          command: () => editor.commands.toggleCode(),
         }
       : undefined,
-    link: commands.addLink
+    link: editor.commands.addLink
       ? {
-          isActive: marks.link?.isActive() ?? false,
-          canExec: commands.addLink.canExec({ href: '' }),
-          command: () => (commands.expandLink as () => void)(),
+          isActive: editor.marks.link.isActive(),
+          canExec: editor.commands.addLink.canExec({ href: '' }),
+          command: () => editor.commands.expandLink(),
           currentLink: getCurrentLink(editor.state) || '',
         }
       : undefined,
@@ -86,21 +81,6 @@ function getCurrentLink(state: EditorState): string | undefined {
     }
   }
 }
-
-const POSITIONER_CLASS =
-  'block overflow-visible w-min h-min z-50 ease-out transition-transform duration-100 motion-reduce:transition-none'
-
-const MAIN_POPUP_CLASS =
-  'box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 duration-40 border border-gray-200 dark:border-gray-800 shadow-lg bg-[canvas] relative flex min-w-32 space-x-1 overflow-auto whitespace-nowrap rounded-lg p-1'
-
-const LINK_POPUP_CLASS =
-  'box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 duration-40 border border-gray-200 dark:border-gray-800 shadow-lg bg-[canvas] relative flex flex-col w-xs rounded-lg p-4 gap-y-2 items-stretch'
-
-const LINK_POPUP_INPUT_CLASS =
-  'flex h-9 rounded-md w-full bg-[canvas] px-3 py-2 text-sm placeholder:text-gray-500 dark:placeholder:text-gray-500 transition border box-border border-gray-200 dark:border-gray-800 border-solid ring-0 ring-transparent focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-300 focus-visible:ring-offset-0 outline-hidden focus-visible:outline-hidden file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50'
-
-const LINK_POPUP_REMOVE_CLASS =
-  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white dark:ring-offset-gray-950 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-300 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-0 bg-gray-900 dark:bg-gray-50 text-gray-50 dark:text-gray-900 hover:bg-gray-900/90 dark:hover:bg-gray-50/90 h-9 px-3'
 
 class LitInlineMenu extends LitElement {
   static override properties = {
@@ -123,10 +103,7 @@ class LitInlineMenu extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback()
-    // Light-DOM element: apply `display: contents` via a self-class so the
-    // Tailwind utility flows without introducing a shadow root.
-    // eslint-disable-next-line wc/no-self-class
-    this.classList.add('contents')
+    this.style.display = 'contents'
     this.attachEditorListener()
   }
 
@@ -141,7 +118,7 @@ class LitInlineMenu extends LitElement {
   }
 
   private attachEditorListener() {
-    const editor = this.editorConsumer.value as AnyEditor | undefined
+    const editor = this.editorConsumer.value as Editor | undefined
     if (editor === this.attachedEditor) return
 
     this.detachEditorListener()
@@ -158,12 +135,11 @@ class LitInlineMenu extends LitElement {
     this.attachedEditor = undefined
   }
 
-  private handleLinkUpdate(editor: AnyEditor, href?: string) {
-    const commands = editor.commands as Record<string, (arg?: unknown) => void>
+  private handleLinkUpdate(editor: Editor<BasicExtension>, href?: string) {
     if (href) {
-      commands.addLink?.({ href })
+      editor.commands.addLink({ href })
     } else {
-      commands.removeLink?.()
+      editor.commands.removeLink()
     }
 
     this.linkMenuOpen = false
@@ -171,7 +147,7 @@ class LitInlineMenu extends LitElement {
   }
 
   override render() {
-    const editor = this.editorConsumer.value as AnyEditor | undefined
+    const editor = this.editorConsumer.value as Editor<BasicExtension> | undefined
     if (!editor) {
       return nothing
     }
@@ -187,10 +163,10 @@ class LitInlineMenu extends LitElement {
           }
         }}
       >
-        <prosekit-inline-popover-positioner class=${POSITIONER_CLASS}>
+        <prosekit-inline-popover-positioner class="block overflow-visible w-min h-min z-50 ease-out transition-transform duration-100 motion-reduce:transition-none">
           <prosekit-inline-popover-popup
             data-testid="inline-menu-main"
-            class=${MAIN_POPUP_CLASS}
+            class="box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 duration-40 border border-gray-200 dark:border-gray-800 shadow-lg bg-[canvas] relative flex min-w-32 space-x-1 overflow-auto whitespace-nowrap rounded-lg p-1"
           >
             ${items.bold
               ? html`
@@ -274,10 +250,13 @@ class LitInlineMenu extends LitElement {
                 this.linkMenuOpen = event.detail
               }}
             >
-              <prosekit-inline-popover-positioner placement="bottom" class=${POSITIONER_CLASS}>
+              <prosekit-inline-popover-positioner
+                placement="bottom"
+                class="block overflow-visible w-min h-min z-50 ease-out transition-transform duration-100 motion-reduce:transition-none"
+              >
                 <prosekit-inline-popover-popup
                   data-testid="inline-menu-link"
-                  class=${LINK_POPUP_CLASS}
+                  class="box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 duration-40 border border-gray-200 dark:border-gray-800 shadow-lg bg-[canvas] relative flex flex-col w-xs rounded-lg p-4 gap-y-2 items-stretch"
                 >
                   ${this.linkMenuOpen
                     ? html`
@@ -292,7 +271,7 @@ class LitInlineMenu extends LitElement {
                           <input
                             placeholder="Paste the link..."
                             value=${items.link.currentLink}
-                            class=${LINK_POPUP_INPUT_CLASS}
+                            class="flex h-9 rounded-md w-full bg-[canvas] px-3 py-2 text-sm placeholder:text-gray-500 dark:placeholder:text-gray-500 transition border box-border border-gray-200 dark:border-gray-800 border-solid ring-0 ring-transparent focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-300 focus-visible:ring-offset-0 outline-hidden focus-visible:outline-hidden file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50"
                           />
                         </form>
                       `
@@ -302,7 +281,7 @@ class LitInlineMenu extends LitElement {
                         <button
                           @click=${() => this.handleLinkUpdate(editor)}
                           @mousedown=${(event: MouseEvent) => event.preventDefault()}
-                          class=${LINK_POPUP_REMOVE_CLASS}
+                          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white dark:ring-offset-gray-950 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-300 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-0 bg-gray-900 dark:bg-gray-50 text-gray-50 dark:text-gray-900 hover:bg-gray-900/90 dark:hover:bg-gray-50/90 h-9 px-3"
                         >
                           Remove link
                         </button>
@@ -318,6 +297,7 @@ class LitInlineMenu extends LitElement {
 }
 
 export function registerLitEditorInlineMenu() {
+  registerLitEditorButton()
   registerInlinePopoverRootElement()
   registerInlinePopoverPositionerElement()
   registerInlinePopoverPopupElement()
