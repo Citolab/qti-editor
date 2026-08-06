@@ -31,50 +31,23 @@ The boilerplate splits its editor across three files. Each file has a single con
 
 ## 1. Schema
 
-`schema.ts` is one literal — every interaction's `qti*InteractionNodeSpec` is spread in alongside core prose nodes. `content` and `group` are restated inline so the whole topology is visible in one file.
+`schema.ts` builds the document topology from `createQtiSchema()` in `@citolab/prose-qti/schema`, rather than restating every interaction's node spec by hand. A hand-restated `content` or `group` silently wins over the package's own, so a schema change upstream (a loosened `content` expression, say) goes unnoticed until an editor built on the stale copy rejects a document the package considers valid — see [QTI Base Schema](/docs/packages/qti-base-schema/).
 
-Base prose nodes and marks (`paragraph`, `text`, `image`, marks) come from `qtiBasicNodes`/`qtiBasicMarks` in `@citolab/prose-qti` — see [QTI Base Schema](/docs/packages/qti-base-schema/) — rather than importing `prosemirror-schema-basic` directly, so image `width`/`height` survive QTI XML import and roundtrip:
+`createQtiSchema()` composes the QTI basics (`qtiBasicNodes`/`qtiBasicMarks`), lists, tables with `richtext` cell content, and every registered interaction, with `doc` requiring `identifier`/`title` attributes:
 
 ```ts
 import { Schema } from 'prosemirror-model';
-import { qtiBasicNodes, qtiBasicMarks } from '@citolab/prose-qti';
-import { orderedList, bulletList, listItem } from 'prosemirror-schema-list';
-import { tableNodes } from 'prosemirror-tables';
-import { qtiChoiceInteractionNodeSpec } from '@citolab/prose-qti/components/choice';
-import { qtiTextEntryInteractionNodeSpec } from '@citolab/prose-qti/components/text-entry';
-import {
-  qtiPromptNodeSpec,
-  qtiPromptParagraphNodeSpec,
-  qtiSimpleChoiceNodeSpec,
-  qtiSimpleChoiceParagraphNodeSpec,
-} from '@citolab/prose-qti/components/shared';
+import { createQtiSchema } from '@citolab/prose-qti/schema';
+
+const qtiSchema = createQtiSchema();
 
 export const appSchema = new Schema({
-  marks: qtiBasicMarks,
-  nodes: {
-    doc:       { content: 'block+', attrs: { identifier: {}, title: {} } },
-    paragraph: { ...qtiBasicNodes.paragraph, content: 'inline*', group: 'block richtext' },
-    text:      qtiBasicNodes.text,
-    image:     qtiBasicNodes.image,
-    ordered_list: { ...orderedList, content: 'list_item+', group: 'block richtext' },
-    bullet_list:  { ...bulletList,  content: 'list_item+', group: 'block richtext' },
-    list_item:    { ...listItem,    content: 'paragraph (paragraph | bullet_list | ordered_list)*' },
-    ...tableNodes({ tableGroup: 'block richtext', cellContent: 'richtext+', cellAttributes: {} }),
-
-    // QTI shared building blocks
-    qtiPrompt:                { ...qtiPromptNodeSpec,                content: 'qtiPromptParagraph' },
-    qtiPromptParagraph:       { ...qtiPromptParagraphNodeSpec,       content: 'text*', group: 'block' },
-    qtiSimpleChoice:          { ...qtiSimpleChoiceNodeSpec,          content: 'qtiSimpleChoiceParagraph' },
-    qtiSimpleChoiceParagraph: { ...qtiSimpleChoiceParagraphNodeSpec, content: 'text*', group: 'block' },
-
-    // QTI interactions
-    qtiChoiceInteraction:    { ...qtiChoiceInteractionNodeSpec },
-    qtiTextEntryInteraction: { ...qtiTextEntryInteractionNodeSpec },
-  },
+  marks: qtiSchema.spec.marks,
+  nodes: qtiSchema.spec.nodes,
 });
 ```
 
-Add the other interactions (`extended-text`, `gap-match`, `hottext`, `inline-choice`, `match`, `order`, `select-point`, `rubric-block`) the same way — import their `qti*InteractionNodeSpec` and spread into the literal.
+Pass `{ include: ['qti-choice-interaction', /* … */] }` to restrict the schema to specific interactions by tag name, or `{ extraNodes: { /* … */ } }` to merge in node specs the package doesn't own — extras are merged last, so they win.
 
 ## 2. QTI integration
 
