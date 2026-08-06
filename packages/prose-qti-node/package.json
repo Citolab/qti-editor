@@ -1,6 +1,6 @@
 {
   "name": "@citolab/prose-qti-node",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "QTI 3.0 <-> ProseMirror conversion for plain Node. No browser, no web components.",
   "license": "GPL-3.0-only",
   "type": "module",
@@ -35,13 +35,13 @@
   },
   "peerDependencies": {
     "prosemirror-commands": "^1.7.1",
-    "prosemirror-model": "^1.25.4",
+    "prosemirror-model": "^1.25.8",
     "prosemirror-state": "^1.4.4"
   },
   "devDependencies": {
     "@citolab/prose-qti": "workspace:*",
     "dts-bundle-generator": "^9.5.1",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.27.7",
     "vitest": "^4.1.10"
   }
 }

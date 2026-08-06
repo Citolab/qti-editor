@@ -25,15 +25,15 @@
     "@citolab/prose-extensions": "workspace:*",
     "@citolab/prose-qti": "workspace:*",
     "@lit/context": "^1.1.6",
-    "lit": "^3.3.2"
+    "lit": "^3.3.3"
   },
   "peerDependencies": {
     "prosekit": "^0.21.4"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "esbuild": "^0.27.4",
+    "@types/node": "^20.19.43",
+    "esbuild": "^0.27.7",
     "serve": "^14.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.3"
   }
 }

@@ -15,7 +15,7 @@
     "@lit/reactive-element": "^2.1.0",
     "@qti-components/theme": "catalog:",
     "@qti-components/transformers": "catalog:",
-    "lit": "^3.3.2",
+    "lit": "^3.3.3",
     "lit-element": "^4.2.0",
     "lit-html": "^3.3.0",
     "prosemirror-commands": "^1.7.1",
@@ -33,9 +33,9 @@
     "prosemirror-view": "^1.41.9"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
-    "vite": "^5.0.0",
-    "vite-tsconfig-paths": "^4.3.1"
+    "@types/node": "^20.19.43",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.3",
+    "vite-tsconfig-paths": "^6.1.1"
   }
 }

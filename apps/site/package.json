@@ -20,7 +20,7 @@
     "@lit/context": "^1.1.6",
     "@qti-components/theme": "catalog:",
     "astro": "^5.7.2",
-    "lit": "^3.3.2",
+    "lit": "^3.3.3",
     "prosemirror-commands": "^1.7.1",
     "prosemirror-dropcursor": "^1.8.2",
     "prosemirror-gapcursor": "^1.4.1",
@@ -35,9 +35,9 @@
     "@astrojs/check": "^0.9.4",
     "@astrojs/mdx": "^4.3.14",
     "@tailwindcss/typography": "^0.5.19",
-    "@tailwindcss/vite": "^4.1.18",
+    "@tailwindcss/vite": "^4.3.3",
     "daisyui": "^5.1.6",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.3"
   }
 }

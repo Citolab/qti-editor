@@ -9,21 +9,21 @@
     "@citolab/prose-qti": "workspace:*",
     "@citolab/qti-components": "catalog:",
     "@qti-components/theme": "catalog:",
-    "lit": "^3.3.2",
-    "prosemirror-commands": "^1.6.3",
-    "prosemirror-history": "^1.4.1",
-    "prosemirror-keymap": "^1.2.2",
-    "prosemirror-model": "^1.25.4",
+    "lit": "^3.3.3",
+    "prosemirror-commands": "^1.7.1",
+    "prosemirror-history": "^1.5.0",
+    "prosemirror-keymap": "^1.2.3",
+    "prosemirror-model": "^1.25.8",
     "prosemirror-schema-basic": "^1.2.4",
-    "prosemirror-state": "^1.4.3",
-    "prosemirror-view": "^1.38.1"
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.41.9"
   },
   "devDependencies": {
     "@citolab/prose-qti-node": "workspace:*",
-    "@storybook/web-components-vite": "^10.5.3",
+    "@storybook/web-components-vite": "^10.5.5",
     "linkedom": "^0.18.13",
     "prosemirror-schema-list": "^1.5.1",
     "prosemirror-tables": "^1.8.5",
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.3"
   }
 }
