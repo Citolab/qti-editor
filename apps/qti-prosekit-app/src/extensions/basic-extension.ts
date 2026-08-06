@@ -23,7 +23,7 @@ export type BasicExtension = Union<
 
 export function defineBasicExtension(): BasicExtension {
   return union(
-    defineSharedBasicExtension(),
+    defineSharedBasicExtension({ list: { inputRules: true } }),
     // Nodes
     defineHardBreak(),
     // Behaviour

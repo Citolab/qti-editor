@@ -65,8 +65,6 @@ class LitTableHandle extends LitElement {
     },
   };
 
-  dir = '';
-
   editorConsumer = new ContextConsumer(this, {
     context: editorContext,
     subscribe: true,

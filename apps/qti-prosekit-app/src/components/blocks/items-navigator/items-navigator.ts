@@ -77,6 +77,8 @@ export class QtiItemsNavigator extends LitElement {
     super.disconnectedCallback();
     document.removeEventListener('selectionchange', this.handleNativeSelectionChange);
     this.removeEditorListeners();
+    // Delayed detection callbacks check this before accessing editor.view.
+    this.editor = null;
   }
 
   override updated(changedProperties: Map<string, any>) {

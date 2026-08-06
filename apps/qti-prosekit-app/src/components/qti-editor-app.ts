@@ -277,6 +277,14 @@ export class QtiEditorApp extends LitElement {
 
   override disconnectedCallback() {
     document.removeEventListener('selectionchange', this._trackCurrentItem);
+    // Child menus and navigators clean up listeners from editor.view during
+    // their own disconnection. Unmount after that custom-element reaction has
+    // completed so cleanup never observes a destroyed view.
+    setTimeout(() => {
+      if (this.isConnected) return;
+      this.editor.unmount();
+      this._editorMounted = false;
+    }, 0);
     super.disconnectedCallback();
   }
 
@@ -361,7 +369,7 @@ export class QtiEditorApp extends LitElement {
 
   async importRoundtripXml(): Promise<void> {
     try {
-      const pmDoc = await importRoundtripXml(this.editor.schema);
+      const pmDoc = await importRoundtripXml();
       const doc = ensureLockedHeader(pmDoc.toJSON());
       this.editor.setContent(doc);
       localStorage.setItem(getAutoSaveKey(), JSON.stringify(stampSchemaVersion(doc)));
@@ -374,7 +382,7 @@ export class QtiEditorApp extends LitElement {
 
   async importXml(): Promise<void> {
     try {
-      const result = await openXmlFilePicker({ schema: this.editor.schema });
+      const result = await openXmlFilePicker();
       const importedDoc = ensureLockedHeader(result.json);
       this.editor.setContent(importedDoc);
 
@@ -384,12 +392,6 @@ export class QtiEditorApp extends LitElement {
 
       // Notify the React layer (dirty state, auto-save status) that content changed.
       document.dispatchEvent(new CustomEvent('qti:content:change', { bubbles: true }));
-      if (result.compatibility?.report) {
-        document.dispatchEvent(new CustomEvent('qti:compatibility:report', {
-          detail: result.compatibility.report,
-          bubbles: true,
-        }));
-      }
 
       // Update metadata if present
       if (result.metadata) {
@@ -431,7 +433,6 @@ export class QtiEditorApp extends LitElement {
         </div>
         <div class="w-80 shrink-0 overflow-y-auto">
           ${this._editorMounted ? html`<qti-attributes-panel
-            .editor=${this.editor}
             class="block w-full sticky top-0"
             @qti:attributes:change=${this.onPanelAttributesChange}
           ></qti-attributes-panel>` : ''}

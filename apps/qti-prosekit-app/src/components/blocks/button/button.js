@@ -20,10 +20,13 @@ class LitButton extends LitElement {
     icon: { type: String }
   };
 
-  pressed = false
-  disabled = false
-  tooltip = ''
-  icon = ''
+  constructor() {
+    super()
+    this.pressed = false
+    this.disabled = false
+    this.tooltip = ''
+    this.icon = ''
+  }
 
   createRenderRoot() {
     return this

@@ -1,30 +1,28 @@
-import { jsonFromHTML } from 'prosekit/core';
-import { roundtripQtiItem } from '@citolab/prose-qti/qti3-item-import';
-import { xmlToHTML } from '@citolab/prose-qti/item-export/pm-xml';
+import { defaultRoundtripTransforms, importItemFromString } from '@citolab/prose-qti/item-roundtrip';
+import { createEditor, union } from 'prosekit/core';
 
-import { buildCompatibilityReport, migrateHtmlFragment } from './compatibility/index.js';
+import { defineBasicExtension } from '../extensions/basic-extension.js';
+import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 
-import type { CompatibilityReport, MigrationResult } from '@citolab/prose-qti/interfaces';
-import type { Node, Schema } from 'prosekit/pm/model';
+import type { NodeJSON } from 'prosekit/core';
+import type { Node } from 'prosekit/pm/model';
+
+// The application editor has a locked top-level heading/paragraph/divider
+// prefix. That is application chrome, not QTI vocabulary, so using its schema
+// to parse an item makes ProseMirror coerce item content into the required
+// heading. Parse with a neutral QTI document schema first, then let the caller
+// add the locked prefix to the resulting JSON. Reuse the app's node definitions so
+// JSON attribute types (notably ProseKit image width/height) stay compatible.
+const qtiImportSchema = createEditor({
+  extension: union(defineBasicExtension(), defineQtiInteractionsExtension()),
+}).schema;
 
 export interface ImportXmlResult {
-  json: ReturnType<typeof jsonFromHTML>;
+  json: NodeJSON;
   metadata?: {
     title?: string;
     identifier?: string;
   };
-  compatibility?: {
-    html?: MigrationResult<string>;
-    items?: Array<{
-      href: string;
-      html: MigrationResult<string>;
-    }>;
-    report?: CompatibilityReport;
-  };
-}
-
-export interface ImportXmlOptions {
-  schema: Schema;
 }
 
 /**
@@ -59,7 +57,7 @@ function extractMetadata(xmlText: string): { title?: string; identifier?: string
 /**
  * Import QTI XML and convert to ProseMirror JSON
  */
-export function importXmlFromText(xmlText: string, options: ImportXmlOptions): ImportXmlResult {
+export function importXmlFromText(xmlText: string): ImportXmlResult {
   // Clean the XML text
   let cleanedXml = cleanXmlText(xmlText);
 
@@ -69,56 +67,34 @@ export function importXmlFromText(xmlText: string, options: ImportXmlOptions): I
     cleanedXml = cleanedXml.substring(firstLtIndex);
   }
 
-  // Every QTI 3.0 item is treated as third-party: hoist correct-response / score
-  // from native qti-response-declaration / qti-response-processing onto each
-  // interaction as canonical authoring attributes the schema's parseDOM reads.
-  const xmlForImport = roundtripQtiItem(cleanedXml);
-
-  // Convert XML to HTML
-  const compatibility = migrateHtmlFragment(xmlToHTML(xmlForImport), {
-    metadata: {
-      importPath: 'apps/qti-prosekit-app/importXmlFromText',
-    },
-    preserve: {
-      attributeNames: ['rubric-text'],
-      elementTags: ['qti-rubric-block'],
-    },
+  // Use the same qti-transform-backed import path as the reference editors.
+  // It applies the canonical interaction/item transforms, reduces to
+  // qti-item-body, preserves empty custom elements, and parses with this schema.
+  const doc = importItemFromString(cleanedXml, qtiImportSchema, {
+    transforms: [...defaultRoundtripTransforms],
   });
-
-  // Convert HTML to ProseMirror JSON
-  const json = jsonFromHTML(compatibility.document, { schema: options.schema });
 
   // Extract metadata
   const metadata = extractMetadata(cleanedXml);
 
   return {
-    json,
+    json: doc.toJSON(),
     metadata,
-    compatibility: {
-      html: compatibility,
-      report: buildCompatibilityReport([
-        {
-          id: 'xml-import',
-          label: metadata.identifier ?? metadata.title ?? 'Imported XML',
-          result: compatibility,
-        },
-      ]),
-    },
   };
 }
 
 /**
  * Import QTI XML from a File object
  */
-export async function importXmlFromFile(file: File, options: ImportXmlOptions): Promise<ImportXmlResult> {
+export async function importXmlFromFile(file: File): Promise<ImportXmlResult> {
   const xmlText = await file.text();
-  return importXmlFromText(xmlText, options);
+  return importXmlFromText(xmlText);
 }
 
 /**
  * Open file picker and import QTI XML file
  */
-export function openXmlFilePicker(options: ImportXmlOptions): Promise<ImportXmlResult> {
+export function openXmlFilePicker(): Promise<ImportXmlResult> {
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -132,7 +108,7 @@ export function openXmlFilePicker(options: ImportXmlOptions): Promise<ImportXmlR
       }
 
       try {
-        const result = await importXmlFromFile(file, options);
+        const result = await importXmlFromFile(file);
         resolve(result);
       } catch (error) {
         console.error('Failed to import XML:', error);
@@ -144,7 +120,7 @@ export function openXmlFilePicker(options: ImportXmlOptions): Promise<ImportXmlR
   });
 }
 
-export function importRoundtripXml(schema: Schema): Promise<Node> {
+export function importRoundtripXml(): Promise<Node> {
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -155,9 +131,10 @@ export function importRoundtripXml(schema: Schema): Promise<Node> {
       const reader = new FileReader();
       reader.onload = () => {
         try {
-          const html = xmlToHTML(reader.result as string);
-          const json = jsonFromHTML(html, { schema });
-          resolve(schema.nodeFromJSON(json));
+          const doc = importItemFromString(reader.result as string, qtiImportSchema, {
+            transforms: [...defaultRoundtripTransforms],
+          });
+          resolve(doc);
         } catch {
           reject(new Error('Invalid roundtrip XML'));
         }
