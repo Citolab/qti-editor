@@ -33,6 +33,12 @@ This package integrates with `@qti-components/gap-match-interaction`.
 - Supports inserting `qti-gap` placeholders inside the interaction body where responses can be placed.
 - Keeps gap definitions, gap placements, and QTI response semantics tied to structured interaction nodes.
 
+## In the editor
+
+- Add a gap text by pressing `Enter` at the end of one — a new sibling gap text is inserted automatically. A single gap text is a valid pool; you don't need a second one to start.
+- Backspace in an empty gap text removes it, as long as it isn't the only one left in the pool.
+- Click a placed chip inside a gap to open a small popover offering to remove it.
+
 ## Runtime behavior
 
 This package includes runtime ProseMirror behavior for keeping authoring state in sync while editing gap matches.
