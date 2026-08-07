@@ -10,7 +10,7 @@ import {
   type HistoryExtension,
   type Union,
 } from 'prosekit/core'
-import { defineDoc, type DocExtension } from 'prosekit/extensions/doc'
+import { type DocExtension } from 'prosekit/extensions/doc'
 import { defineGapCursor, type GapCursorExtension } from 'prosekit/extensions/gap-cursor'
 import { defineHeading, type HeadingExtension } from 'prosekit/extensions/heading'
 import { defineImage, type ImageExtension } from 'prosekit/extensions/image'
@@ -66,6 +66,32 @@ import { defineEm, defineStrong, type EmExtension, type StrongExtension } from '
  * the schema is a node that can appear in exported QTI.
  */
 /**
+ * ProseKit's doc node, rebuilt so an empty document fills with a paragraph.
+ *
+ * `defineDoc()` says `content: 'block+'`. ProseMirror answers "what goes in an empty doc?" with
+ * `ContentMatch.defaultType` — the first edge of the content expression that is not text and has no
+ * required attrs — and for a bare group reference that is whichever node happens to sit first in the
+ * group. Here that is `qtiRubricBlock`, so selecting all and deleting left the author staring at an
+ * empty feedback box rather than a blank line.
+ *
+ * Naming paragraph as the first alternative makes it the filler. The accepted node set does not
+ * change: paragraph is already in `block`, so `(paragraph | block)+` admits and rejects exactly what
+ * `block+` did.
+ *
+ * Rebuilt rather than patched with a second `defineNodeSpec({ name: 'doc', … })`. Measured: that
+ * patch does not win the merge against `defineDoc()`'s own spec, and `content` stays `block+` —
+ * the same trap documented above for paragraph's group. Supplying the spec ourselves means there is
+ * nothing to lose the merge to.
+ */
+function defineQtiDoc(): DocExtension {
+  return defineNodeSpec({
+    name: 'doc',
+    content: '(paragraph | block)+',
+    topNode: true,
+  }) as unknown as DocExtension
+}
+
+/**
  * ProseKit's paragraph node, rebuilt so its spec is ours to set.
  *
  * Identical to `defineParagraph()` apart from the `richtext` group membership
@@ -115,7 +141,7 @@ export interface BasicExtensionOptions {
 export function defineBasicExtension(options?: BasicExtensionOptions): BasicExtension {
   return union(
     // Nodes
-    defineDoc(),
+    defineQtiDoc(),
     defineNodeAttr({ type: 'doc', attr: 'title', default: '' }),
     defineNodeAttr({ type: 'doc', attr: 'identifier', default: '' }),
     defineText(),

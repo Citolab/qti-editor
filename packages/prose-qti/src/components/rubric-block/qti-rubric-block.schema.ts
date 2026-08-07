@@ -29,7 +29,15 @@ export const QTI_RUBRIC_BLOCK_VIEW_VALUES = VIEW_VALUES;
  */
 export const qtiRubricBlockNodeSpec: NodeSpec = {
   group: 'block',
-  content: 'richtext+',
+  /*
+   * `paragraph` is named first so it is what an empty rubric block fills with.
+   *
+   * The accepted content is unchanged — paragraph is in `richtext`, so this matches exactly what
+   * `richtext+` did. But ProseMirror resolves an empty node's filler via `ContentMatch.defaultType`,
+   * the first edge of the expression, and for a bare group reference that is whichever node is first
+   * in the group — `table`. An emptied rubric block therefore came back holding an empty table.
+   */
+  content: '(paragraph | richtext)+',
   defining: true,
   // Let the gap cursor settle directly before/after the rubric block so authors
   // can place a cursor between it and an adjacent interaction (or below it at the

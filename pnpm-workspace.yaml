@@ -18,20 +18,20 @@ packages:
 # so the published @citolab/prose-qti manifest is byte-identical to what it was before this moved
 # (verified by packing a test workspace). A consumer therefore does not need pnpm.
 catalog:
-  '@citolab/qti-components': 'https://pkg.pr.new/Citolab/qti-components/@citolab/qti-components@9910944'
-  '@qti-components/base': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/base@9910944'
-  '@qti-components/choice-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/choice-interaction@9910944'
-  '@qti-components/extended-text-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/extended-text-interaction@9910944'
-  '@qti-components/gap-match-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/gap-match-interaction@9910944'
-  '@qti-components/hottext-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/hottext-interaction@9910944'
-  '@qti-components/inline-choice-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/inline-choice-interaction@9910944'
-  '@qti-components/interactions-core': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@9910944'
-  '@qti-components/match-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/match-interaction@9910944'
-  '@qti-components/order-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/order-interaction@9910944'
-  '@qti-components/select-point-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/select-point-interaction@9910944'
-  '@qti-components/text-entry-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@9910944'
-  '@qti-components/theme': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@9910944'
-  '@qti-components/transformers': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@9910944'
+  '@citolab/qti-components': 'https://pkg.pr.new/Citolab/qti-components/@citolab/qti-components@9a2532b'
+  '@qti-components/base': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/base@9a2532b'
+  '@qti-components/choice-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/choice-interaction@9a2532b'
+  '@qti-components/extended-text-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/extended-text-interaction@9a2532b'
+  '@qti-components/gap-match-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/gap-match-interaction@9a2532b'
+  '@qti-components/hottext-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/hottext-interaction@9a2532b'
+  '@qti-components/inline-choice-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/inline-choice-interaction@9a2532b'
+  '@qti-components/interactions-core': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@9a2532b'
+  '@qti-components/match-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/match-interaction@9a2532b'
+  '@qti-components/order-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/order-interaction@9a2532b'
+  '@qti-components/select-point-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/select-point-interaction@9a2532b'
+  '@qti-components/text-entry-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@9a2532b'
+  '@qti-components/theme': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@9a2532b'
+  '@qti-components/transformers': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@9a2532b'
 
 # The cem CLI ships as a platform binary and needs its postinstall to run.
 onlyBuiltDependencies:

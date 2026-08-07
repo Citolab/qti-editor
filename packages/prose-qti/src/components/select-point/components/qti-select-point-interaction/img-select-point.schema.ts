@@ -23,6 +23,16 @@ export const imgSelectPointNodeSpec: NodeSpec = {
   parseDOM: [
     {
       tag: 'img',
+      /*
+       * Only the image that IS the select-point graphic.
+       *
+       * Without the context this rule matched every `<img>` in the document, so an ordinary
+       * illustration parsed into the interaction's clickable canvas: it rendered at the full width
+       * of its container rather than at its own size, and round-tripped as a select-point image.
+       * The priority matches the paragraph rules that solve the same problem for `<p>`.
+       */
+      context: 'qtiSelectPointInteraction/',
+      priority: 60,
       getAttrs: (node: Node | string) => {
         if (!isElementLike(node)) return {};
         return {
