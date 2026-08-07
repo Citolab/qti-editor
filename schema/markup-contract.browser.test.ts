@@ -129,13 +129,28 @@ describe('shapes the editor accepts', () => {
     );
   });
 
-  test('a bare image is a block, not inline', () => {
-    // notes.ts, image: "Block, not inline. Worth stating plainly: a bare <img> in running
-    // text does not survive as inline content — it is lifted out of the paragraph."
-    expect(schema.nodes.image.isInline, 'image is a block node').toBe(false);
-    refuses('an image inside a paragraph', () =>
-      schema.nodes.paragraph.createChecked(null, [text('before '), schema.nodes.image.create({ src: 'x.png' })])
+  test('an image sits inline, inside a paragraph', () => {
+    // notes.ts, image. This was the other way round while the editor used ProseKit's block image:
+    // a bare <img> in running text was lifted out of the paragraph, and the XSD does not allow an
+    // img as a child of qti-item-body at all, so a block image could only ever serialise to
+    // something the schema rejects.
+    expect(schema.nodes.image.isInline, 'image is an inline node').toBe(true);
+    accepts('paragraph containing an image between text', () =>
+      schema.nodes.paragraph.createChecked(null, [
+        text('before '),
+        schema.nodes.image.create({ src: 'x.png', alt: 'An illustration' }),
+        text(' after'),
+      ])
     );
+  });
+
+  test('an image carries the alternative text the standard requires', () => {
+    // Previously an `XSD:` narrowing in notes.ts — ProseKit's spec had no `alt` at all, so it was
+    // destroyed on every import/export cycle. Silently, and on assessment content.
+    const img = schema.nodes.image.createChecked({ src: 'atom.png', alt: 'Atoom' });
+    expect(img.attrs.alt, 'alt survives on the node').toBe('Atoom');
+    // Percentages have to survive too — the sample items use width="100%".
+    expect(schema.nodes.image.createChecked({ src: 'x.png', width: '100%' }).attrs.width).toBe('100%');
   });
 });
 

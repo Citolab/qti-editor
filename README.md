@@ -71,6 +71,8 @@ where the editor package brings the whole component graph a browser needs and a 
   and how `correct-response`, `score` and select-point's area mappings survive a round trip
 - [docs/node-api.md](./docs/node-api.md) — converting QTI outside a browser, and validating generated
   HTML against the schema
+- [docs/prosekit-divergences.md](./docs/prosekit-divergences.md) — where ProseKit's nodes differ from
+  ProseMirror's, which of them we replace and why, and the two traps when patching a ProseKit spec
 
 ## Contributing
 

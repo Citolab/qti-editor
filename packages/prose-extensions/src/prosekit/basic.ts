@@ -13,7 +13,7 @@ import {
 import { type DocExtension } from 'prosekit/extensions/doc'
 import { defineGapCursor, type GapCursorExtension } from 'prosekit/extensions/gap-cursor'
 import { defineHeading, type HeadingExtension } from 'prosekit/extensions/heading'
-import { defineImage, type ImageExtension } from 'prosekit/extensions/image'
+import { defineImageCommands, type ImageExtension } from 'prosekit/extensions/image'
 import {
   defineParagraphCommands,
   defineParagraphKeymap,
@@ -92,6 +92,73 @@ function defineQtiDoc(): DocExtension {
 }
 
 /**
+ * The image node, shaped like ProseMirror's rather than ProseKit's.
+ *
+ * Same reasoning as `defineList`: where ProseKit's variant does not match the format we serialise
+ * to, take the ProseMirror standard and extend it. ProseKit's image diverges from
+ * `prosemirror-schema-basic` on all three points that matter here, and each one was a bug:
+ *
+ * | | prosemirror-schema-basic | ProseKit |
+ * |---|---|---|
+ * | level   | `inline`                  | `block`                              |
+ * | attrs   | `src`, `alt`, `title`     | `src`, `width`, `height` — no `alt`  |
+ * | parsing | reads the attributes      | measures `getBoundingClientRect()`   |
+ *
+ * 1. **Inline.** QTI's XSD does not allow `img` as a child of `qti-item-body`; it is phrasing
+ *    content and needs a block parent. A block image can therefore only ever serialise to something
+ *    the schema rejects, and it also cannot sit in a sentence — an icon or a maths glyph mid-text is
+ *    ordinary assessment content. Inline makes `<p><img/></p>` parse and re-serialise unchanged.
+ * 2. **`alt`.** ProseKit has no such attribute, so alternative text was destroyed on every
+ *    import/export cycle — silently, and on assessment content, where it is an accessibility
+ *    requirement rather than a nicety.
+ * 3. **Attributes, not layout.** ProseKit derives width/height from `getBoundingClientRect()` and
+ *    `naturalWidth`. During an import the DOM is detached, so both are 0 and the authored size is
+ *    lost. Reading the attributes is also the only way to keep a percentage.
+ *
+ * `width` and `height` are `string`, not ProseKit's `number`. The sample items use `width="100%"`
+ * as well as `width="250"`, and a numeric attr silently drops the percentage.
+ *
+ * Rebuilt rather than patched, like `defineQtiDoc` and `defineQtiParagraph` — see the note on
+ * `defineQtiDoc` for why a second `defineNodeSpec` cannot be relied on to win the merge.
+ * `defineImageCommands()` is ProseKit's and is reused unchanged.
+ */
+function defineQtiImage(): ImageExtension {
+  return union(
+    defineNodeSpec({
+      name: 'image',
+      inline: true,
+      group: 'inline',
+      draggable: true,
+      attrs: {
+        src: { default: null, validate: 'string|null' },
+        alt: { default: null, validate: 'string|null' },
+        title: { default: null, validate: 'string|null' },
+        width: { default: null, validate: 'string|null' },
+        height: { default: null, validate: 'string|null' },
+      },
+      parseDOM: [
+        {
+          tag: 'img[src]',
+          getAttrs: (element: HTMLElement | string) => {
+            if (typeof element === 'string') return { src: null }
+            return {
+              src: element.getAttribute('src') || null,
+              alt: element.getAttribute('alt') || null,
+              title: element.getAttribute('title') || null,
+              width: element.getAttribute('width') || null,
+              height: element.getAttribute('height') || null,
+            }
+          },
+        },
+      ],
+      // prosemirror-model skips null values, so absent attributes stay absent on the way out.
+      toDOM: node => ['img', node.attrs],
+    }),
+    defineImageCommands(),
+  ) as unknown as ImageExtension
+}
+
+/**
  * ProseKit's paragraph node, rebuilt so its spec is ours to set.
  *
  * Identical to `defineParagraph()` apart from the `richtext` group membership
@@ -148,7 +215,7 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     defineQtiParagraph(),
     defineHeading(),
     defineList(options?.list),
-    defineImage(),
+    defineQtiImage(),
     defineTable(),
     // Table's own spec has no priority override, so a plain patch reaches it.
     defineNodeSpec({ name: 'table', group: 'block richtext' }),
