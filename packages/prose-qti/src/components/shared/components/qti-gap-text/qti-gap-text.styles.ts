@@ -2,6 +2,8 @@ import { css, type CSSResultGroup } from 'lit';
 
 import { QtiGapText } from '@qti-components/interactions-core';
 
+import { editorWhiteSpace } from '../../styles/white-space.js';
+
 /**
  * Upstream's stylesheet, plus the authoring-only additions — the same shape
  * `QtiSimpleChoiceEdit` uses. Imported through the package root, not a deep
@@ -17,6 +19,7 @@ import { QtiGapText } from '@qti-components/interactions-core';
  * {@link ElementInternals.states}, never a DOM attribute, so it can't leak into serialized XML.
  */
 const styles: CSSResultGroup = [
+  editorWhiteSpace,
   QtiGapText.styles,
   css`
     /*

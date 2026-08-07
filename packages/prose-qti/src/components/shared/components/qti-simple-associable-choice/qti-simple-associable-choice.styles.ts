@@ -2,11 +2,14 @@ import { css, type CSSResult, type CSSResultGroup } from 'lit';
 
 import { QtiSimpleAssociableChoice } from '@qti-components/interactions-core';
 
+import { editorWhiteSpace } from '../../styles/white-space.js';
+
 /**
  * The runtime qti-components associable-choice styles, so the editor host layout matches the live
  * interaction as closely as possible, plus the authoring-only additions.
  */
 const styles: CSSResultGroup = [
+  editorWhiteSpace,
   QtiSimpleAssociableChoice.styles as CSSResult,
   css`
     /*

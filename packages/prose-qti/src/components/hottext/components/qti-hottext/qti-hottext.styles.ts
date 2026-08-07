@@ -2,6 +2,8 @@ import { css, type CSSResult, type CSSResultGroup } from 'lit';
 
 import { QtiHottext } from '@qti-components/interactions-core';
 
+import { editorWhiteSpace } from '../../../shared/styles/white-space.js';
+
 /**
  * The runtime hottext's own styles: box-sizing, and the `:host` box every theme paints against —
  * `display: inline-flex`, `align-items: center`, `position: relative` (the containing block for the
@@ -12,6 +14,7 @@ import { QtiHottext } from '@qti-components/interactions-core';
  * against the runtime's 59x24.
  */
 const styles: CSSResultGroup = [
+  editorWhiteSpace,
   QtiHottext.styles as CSSResult,
   css`
     /*

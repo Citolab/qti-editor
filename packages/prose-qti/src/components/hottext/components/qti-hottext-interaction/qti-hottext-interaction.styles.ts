@@ -2,6 +2,8 @@ import { css, type CSSResultGroup } from 'lit';
 
 import externalStyles from '@qti-components/hottext-interaction/styles';
 
+import { editorWhiteSpace } from '../../../shared/styles/white-space.js';
+
 /*
  * The selection menu is editor-only: a small popover offering "make hot text option" over a text
  * selection. It has no runtime counterpart, so there is no upstream rule to inherit — but it is
@@ -29,6 +31,7 @@ import externalStyles from '@qti-components/hottext-interaction/styles';
  */
 const styles: CSSResultGroup = [
   externalStyles,
+  editorWhiteSpace,
   css`
     [part='selection-menu'] {
       position: fixed;

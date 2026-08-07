@@ -2,8 +2,11 @@ import { css, type CSSResult, type CSSResultGroup } from 'lit';
 
 import { QtiInlineChoice } from '@qti-components/interactions-core';
 
+import { editorWhiteSpace } from '../../../shared/styles/white-space.js';
+
 /** Upstream's stylesheet, plus the editor's own radio control and label affordances. */
 const styles: CSSResultGroup = [
+  editorWhiteSpace,
   QtiInlineChoice.styles as CSSResult,
   css`
     /* Upstream has no control to space away from the label. */

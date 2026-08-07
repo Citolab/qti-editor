@@ -2,6 +2,8 @@ import { css, type CSSResult, type CSSResultGroup } from 'lit';
 
 import { QtiSimpleChoice } from '@qti-components/interactions-core';
 
+import { editorWhiteSpace } from '../../styles/white-space.js';
+
 /**
  * Upstream's stylesheet, plus the authoring-only additions.
  *
@@ -9,6 +11,7 @@ import { QtiSimpleChoice } from '@qti-components/interactions-core';
  * editable, because in the editor that text is what the author is typing.
  */
 const styles: CSSResultGroup = [
+  editorWhiteSpace,
   QtiSimpleChoice.styles as CSSResult,
   css`
     :host {

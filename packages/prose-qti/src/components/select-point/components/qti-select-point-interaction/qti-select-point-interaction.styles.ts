@@ -2,13 +2,12 @@ import { css, type CSSResultGroup } from 'lit';
 
 import externalStyles from '@qti-components/select-point-interaction/styles';
 
+import { editorWhiteSpace } from '../../../shared/styles/white-space.js';
+
 const styles: CSSResultGroup = [
   externalStyles,
+  editorWhiteSpace,
   css`
-    :host {
-      white-space: normal;
-    }
-
     ::slotted(qti-prompt) {
       display: block;
       margin-bottom: 10px;

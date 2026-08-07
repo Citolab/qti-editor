@@ -2,8 +2,11 @@ import { css, type CSSResultGroup } from 'lit';
 
 import externalStyles from '@qti-components/text-entry-interaction/styles';
 
+import { editorWhiteSpace } from '../../../shared/styles/white-space.js';
+
 const styles: CSSResultGroup = [
   externalStyles,
+  editorWhiteSpace,
   css`
     :host {
       white-space: nowrap;

@@ -2,6 +2,8 @@ import { css, type CSSResultGroup } from 'lit';
 
 import externalStyles from '@qti-components/inline-choice-interaction/styles';
 
+import { editorWhiteSpace } from '../../../shared/styles/white-space.js';
+
 /**
  * Upstream uses CSS anchor positioning and a top-layer popover for the dropdown menu. The editor
  * deliberately does neither: the menu is an ordinary in-flow box, so it works without `anchor-name`
@@ -46,6 +48,7 @@ import externalStyles from '@qti-components/inline-choice-interaction/styles';
  */
 const styles: CSSResultGroup = [
   externalStyles,
+  editorWhiteSpace,
   css`
     /* Keeps the closed combobox on one line where it sits inside a sentence. */
     :host {
