@@ -334,7 +334,7 @@ The editor uses a single, monotonically increasing **schema version** for the Pr
 
 ```ts
 // packages/prose-qti/src/interfaces/compatibility.ts (or compatibility.ts in interfaces)
-export const CURRENT_SCHEMA_VERSION = 6;
+export const CURRENT_SCHEMA_VERSION = 7;
 ```
 
 ### Where the version lives
@@ -356,6 +356,7 @@ Migrations live in `apps/qti-prosekit-app/src/lib/compatibility/migrations/`, on
 | `json-v3-to-v4` | 3 → 4 | lift `rubricScoringBlock` into a sibling `qtiRubricBlock` |
 | `json-v4-to-v5` | 4 → 5 | flat prosekit list → prosemirror-schema-list (`bullet_list`/`ordered_list`) |
 | `json-v5-to-v6` | 5 → 6 | `bold`/`italic` marks → `strong`/`em` |
+| `json-v6-to-v7` | 6 → 7 | stringify numeric `image` `width`/`height`, wrap a block-position `image` in a paragraph (image is inline now, see [prosekit-divergences.md](prosekit-divergences.md)) |
 | `html-v1-to-v2` | 1 → 2 | normalise legacy camelCase HTML attrs |
 
 To add a migration: bump `CURRENT_SCHEMA_VERSION`, add a `json-vN-to-vM.ts` file, register it in `compatibility/migrations/index.ts`, and add a test.

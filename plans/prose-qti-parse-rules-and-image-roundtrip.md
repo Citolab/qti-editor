@@ -1,6 +1,8 @@
 # prose-qti: three parse/roundtrip bugs found while removing layout divs from Coco's samples
 
-> **Status:** #1, #2 and #4 are **fixed**. #3 is still open and needs a decision — see its Options.
+> **Status:** #1, #2 and #4 are **fixed**. #3 is now **fixed** too, via option 1 (image rebuilt inline
+> and QTI-aware) — see [prosekit-divergences.md](prosekit-divergences.md) and the `json-v6-to-v7`
+> migration in [architecture.md](../docs/architecture.md#the-migration-pipeline).
 >
 > After the fixes: `pnpm typecheck` clean across all packages + e2e, `pnpm test` 163 passed /
 > 2 skipped across 41 files, `pnpm test:vrt` 16/16, packages build.
