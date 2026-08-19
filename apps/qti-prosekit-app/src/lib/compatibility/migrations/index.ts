@@ -4,6 +4,7 @@ import { jsonV2ToV3 } from './json-v2-to-v3.js';
 import { jsonV3ToV4 } from './json-v3-to-v4.js';
 import { jsonV4ToV5 } from './json-v4-to-v5.js';
 import { jsonV5ToV6 } from './json-v5-to-v6.js';
+import { jsonV6ToV7 } from './json-v6-to-v7.js';
 
 import type { MigrationStep } from '@citolab/prose-qti/interfaces';
 import type { NodeJSON } from 'prosekit/core';
@@ -24,6 +25,8 @@ import type { NodeJSON } from 'prosekit/core';
  *   v4 — Lift rubricScoringBlock into a sibling qtiRubricBlock node.
  *   v5 — Convert prosekit flat `list` nodes to bullet_list/ordered_list + list_item.
  *   v6 — Convert legacy `bold`/`italic` marks to `strong`/`em`.
+ *   v7 — Stringify numeric image width/height and wrap block-level images in a
+ *        paragraph, for the image node rebuilt on prosemirror-schema-basic.
  *
  * HTML version history:
  *   v1 — Baseline. HTML/QTI without a version marker is treated as v1.
@@ -35,6 +38,7 @@ export const JSON_MIGRATION_STEPS = [
   jsonV3ToV4,
   jsonV4ToV5,
   jsonV5ToV6,
+  jsonV6ToV7,
 ] satisfies MigrationStep<NodeJSON>[];
 
 export const HTML_MIGRATION_STEPS = [

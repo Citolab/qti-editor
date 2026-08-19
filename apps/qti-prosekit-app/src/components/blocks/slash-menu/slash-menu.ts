@@ -45,9 +45,9 @@ const TAG_TO_I18N_KEY: Record<string, string> = {
   'qti-order-interaction': 'interactionInsert.order',
   'qti-select-point-interaction': 'interactionInsert.selectPoint',
   'qti-gap-match-interaction': 'interactionInsert.gapMatch',
+  'qti-rubric-block': 'interactionInsert.rubricBlock',
   // qti-item-divider has its own static slash-menu entry below — the divider
   // node lives locally in this app and is not part of the descriptor registry.
-  // qti-rubric-block is omitted: it's auto-attached to qti-extended-text-interaction.
 };
 
 @customElement('qti-slash-menu')
@@ -66,11 +66,24 @@ export class QtiSlashMenu extends LitElement {
     return (this.editor as any)?.view ?? null;
   }
 
+  private runAfterAutocompleteCleanup(callback: () => void) {
+    queueMicrotask(callback);
+  }
+
   private insertInteraction(insertCommand: any) {
-    const view = this.getView();
-    if (!view) return;
-    insertCommand(view.state, view.dispatch, view);
-    view.focus();
+    this.runAfterAutocompleteCleanup(() => {
+      const view = this.getView();
+      if (!view) return;
+      insertCommand(view.state, view.dispatch, view);
+      view.focus();
+    });
+  }
+
+  private runEditorCommand(callback: () => void) {
+    this.runAfterAutocompleteCleanup(() => {
+      callback();
+      this.getView()?.focus();
+    });
   }
 
   override render() {
@@ -140,60 +153,60 @@ export class QtiSlashMenu extends LitElement {
         <lit-editor-slash-menu-item
           class="contents"
           label="Text"
-          @select=${() => commands.setParagraph?.()}
+          @select=${() => this.runEditorCommand(() => commands.setParagraph?.())}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
           label="Heading 1"
           kbd="#"
-          @select=${() => commands.setHeading?.({ level: 1 })}
+          @select=${() => this.runEditorCommand(() => commands.setHeading?.({ level: 1 }))}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
           label="Heading 2"
           kbd="##"
-          @select=${() => commands.setHeading?.({ level: 2 })}
+          @select=${() => this.runEditorCommand(() => commands.setHeading?.({ level: 2 }))}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
           label="Heading 3"
           kbd="###"
-          @select=${() => commands.setHeading?.({ level: 3 })}
+          @select=${() => this.runEditorCommand(() => commands.setHeading?.({ level: 3 }))}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
           label="Bullet list"
           kbd="-"
-          @select=${() => commands.toggleBulletList?.()}
+          @select=${() => this.runEditorCommand(() => commands.toggleBulletList?.())}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
           label="Ordered list"
           kbd="1."
-          @select=${() => commands.toggleOrderedList?.()}
+          @select=${() => this.runEditorCommand(() => commands.toggleOrderedList?.())}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
           label="Quote"
           kbd=">"
-          @select=${() => commands.setBlockquote?.()}
+          @select=${() => this.runEditorCommand(() => commands.setBlockquote?.())}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
           label="Table"
-          @select=${() => commands.insertTable?.({ row: 3, col: 3 })}
+          @select=${() => this.runEditorCommand(() => commands.insertTable?.({ row: 3, col: 3 }))}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
           label="Divider"
           kbd="---"
-          @select=${() => commands.insertHorizontalRule?.()}
+          @select=${() => this.runEditorCommand(() => commands.insertHorizontalRule?.())}
         ></lit-editor-slash-menu-item>
         <lit-editor-slash-menu-item
           class="contents"
           label="Code"
           kbd="\`\`\`"
-          @select=${() => commands.setCodeBlock?.()}
+          @select=${() => this.runEditorCommand(() => commands.setCodeBlock?.())}
         ></lit-editor-slash-menu-item>
         
         <lit-editor-slash-menu-empty class="contents"></lit-editor-slash-menu-empty>

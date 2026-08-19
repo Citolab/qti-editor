@@ -2,7 +2,7 @@ import 'prosekit/basic/style.css';
 import 'prosekit/basic/typography.css';
 import '@citolab/prose-qti-ui/components/attributes-panel';
 import './blocks/code-panel/index.js';
-import './blocks/composer/index.js';
+import './blocks/preview-panel/index.js';
 import './blocks/toolbar/index.js';
 import './blocks/items-gutter/index.js';
 import './blocks/items-navigator/index.js';
@@ -12,7 +12,7 @@ import './blocks/slash-menu/index.js';
 import { provide, ContextProvider } from '@lit/context';
 import { createRef, ref, type Ref } from 'lit/directives/ref.js';
 import { LitElement, html, type PropertyValues } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import { itemContext, itemContextVariables, type ItemContext, type PerItemMetadata } from '@citolab/prose-qti/integration/item-context';
 import {
   blockSelectExtension,
@@ -31,6 +31,7 @@ import { buildCompatibilityReport, stampSchemaVersion } from '../lib/compatibili
 import { registerLitEditorTableHandle } from './blocks/table-handle/index.js';
 import { registerLitEditorDropIndicator } from './blocks/drop-indicator/index.js';
 import { registerLitEditorBlockHandle } from './blocks/block-handle/index.js';
+import { qtiCodePanelExtension } from './blocks/code-panel/index.js';
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 import { defineLockedHeaderExtension, LOCKED_HEADER_DEFAULT_CONTENT, ensureLockedHeader } from '../extensions/locked-header-extension.js';
@@ -70,6 +71,9 @@ function toXmlCompatibleFragment(html: string): string {
 export class QtiEditorApp extends LitElement {
   @property({ type: String, reflect: true })
   override lang = 'en';
+
+  @state()
+  private _activeView: 'editor' | 'player' = 'editor';
 
   private editor: Editor;
   private editorRef: Ref<HTMLDivElement>;
@@ -137,6 +141,12 @@ export class QtiEditorApp extends LitElement {
     const currentIdentifier = (view.state.doc.attrs.identifier as string) ?? '';
     if (nextIdentifier === currentIdentifier) return;
     view.dispatch(view.state.tr.setDocAttribute('identifier', nextIdentifier));
+  };
+
+  private onViewChange = (event: Event) => {
+    const detail = (event as CustomEvent<{ view: 'editor' | 'player' }>).detail;
+    if (!detail) return;
+    this._activeView = detail.view;
   };
 
   private _recomputeItems = () => {
@@ -220,6 +230,9 @@ export class QtiEditorApp extends LitElement {
       nodeAttrsSyncExtension,
       qtiEditorEventsExtension({
         emitSelectionChanges: false,
+        eventTarget: this.composerEventTarget,
+      }),
+      qtiCodePanelExtension({
         eventTarget: this.composerEventTarget,
       }),
     );
@@ -414,13 +427,21 @@ export class QtiEditorApp extends LitElement {
   override render() {
     // Only render components that need the editor after it's mounted
     const editorComponents = this._editorMounted ? html`
-      <lit-editor-toolbar .editor=${this.editor} class="block w-full shrink-0"></lit-editor-toolbar>
+      <lit-editor-toolbar
+        .editor=${this.editor}
+        .activeView=${this._activeView}
+        class="block w-full shrink-0"
+        @qti:view:change=${this.onViewChange}
+      ></lit-editor-toolbar>
     ` : html`<div class="block w-full shrink-0" style="padding-left: 1rem; padding-right: 1rem; height: 40px;"></div>`;
+
+    const editorPaneStyle = this._activeView === 'editor' ? '' : 'display: none;';
+    const playerPaneStyle = this._activeView === 'player' ? '' : 'display: none;';
 
     return html`
       ${editorComponents}
       <div class="flex flex-1 min-h-0 gap-4 p-4 overflow-hidden">
-        <div class="editor-card relative flex min-w-0 flex-1 flex-col rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden">
+        <div class="editor-card relative flex min-w-0 flex-1 flex-col rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden" style=${editorPaneStyle}>
           ${this._editorMounted ? html`<qti-items-gutter .editor=${this.editor}></qti-items-gutter>` : ''}
           <div class="relative flex-1 min-h-0 overflow-auto" style="padding-left: 3rem;">
             <div ${ref(this.editorRef)} class="card min-h-full w-full max-w-none px-6 py-6 prose" style="padding-left: 1rem;"></div>
@@ -429,9 +450,14 @@ export class QtiEditorApp extends LitElement {
             <lit-editor-table-handle></lit-editor-table-handle>
           </div>
           ${this._editorMounted ? html`<qti-slash-menu .editor=${this.editor} style="display: contents;"></qti-slash-menu>` : ''}
-          ${this._editorMounted ? html`<qti-composer .editor=${this.editor} class="block w-full shrink-0" style="position: relative; z-index: 10;"></qti-composer>` : ''}
         </div>
-        <div class="w-80 shrink-0 overflow-y-auto">
+        ${this._editorMounted ? html`<qti-preview-panel
+          class="relative flex min-w-0 flex-1 flex-col rounded-md border border-solid border-gray-200 bg-white text-black shadow-sm overflow-hidden"
+          style=${playerPaneStyle}
+          .active=${this._activeView === 'player'}
+          .editor=${this.editor}
+        ></qti-preview-panel>` : ''}
+        ${this._activeView === 'editor' ? html`<div class="w-80 shrink-0 overflow-y-auto">
           ${this._editorMounted ? html`<qti-attributes-panel
             class="block w-full sticky top-0"
             @qti:attributes:change=${this.onPanelAttributesChange}
@@ -440,7 +466,7 @@ export class QtiEditorApp extends LitElement {
             .editor=${this.editor}
             class="block w-full mt-5"
           ></qti-items-navigator>` : ''}
-        </div>
+        </div>` : ''}
       </div>
     `;
   }

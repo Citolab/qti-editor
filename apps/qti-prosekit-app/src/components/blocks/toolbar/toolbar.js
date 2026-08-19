@@ -9,123 +9,131 @@ import { defineUpdateHandler } from 'prosekit/core';
 import { subscribeQtiI18n, translateQti } from '@citolab/prose-qti/components/shared';
 import { editorContext } from '@citolab/prose-qti-ui/editor-context';
 
+function safeCanExec(check) {
+  try {
+    return Boolean(check?.())
+  } catch {
+    return false
+  }
+}
+
 function getToolbarItems(editor) {
   return {
     undo: editor.commands.undo
       ? {
           isActive: false,
-          canExec: editor.commands.undo.canExec(),
+          canExec: safeCanExec(() => editor.commands.undo.canExec()),
           command: () => editor.commands.undo(),
         }
       : undefined,
     redo: editor.commands.redo
       ? {
           isActive: false,
-          canExec: editor.commands.redo.canExec(),
+          canExec: safeCanExec(() => editor.commands.redo.canExec()),
           command: () => editor.commands.redo(),
         }
       : undefined,
     bold: editor.commands.toggleStrong
       ? {
           isActive: editor.marks.strong.isActive(),
-          canExec: editor.commands.toggleStrong.canExec(),
+          canExec: safeCanExec(() => editor.commands.toggleStrong.canExec()),
           command: () => editor.commands.toggleStrong(),
         }
       : undefined,
     italic: editor.commands.toggleEm
       ? {
           isActive: editor.marks.em.isActive(),
-          canExec: editor.commands.toggleEm.canExec(),
+          canExec: safeCanExec(() => editor.commands.toggleEm.canExec()),
           command: () => editor.commands.toggleEm(),
         }
       : undefined,
     underline: editor.commands.toggleUnderline
       ? {
           isActive: editor.marks.underline.isActive(),
-          canExec: editor.commands.toggleUnderline.canExec(),
+          canExec: safeCanExec(() => editor.commands.toggleUnderline.canExec()),
           command: () => editor.commands.toggleUnderline(),
         }
       : undefined,
     strike: editor.commands.toggleStrike
       ? {
           isActive: editor.marks.strike.isActive(),
-          canExec: editor.commands.toggleStrike.canExec(),
+          canExec: safeCanExec(() => editor.commands.toggleStrike.canExec()),
           command: () => editor.commands.toggleStrike(),
         }
       : undefined,
     code: editor.commands.toggleCode
       ? {
           isActive: editor.marks.code.isActive(),
-          canExec: editor.commands.toggleCode.canExec(),
+          canExec: safeCanExec(() => editor.commands.toggleCode.canExec()),
           command: () => editor.commands.toggleCode(),
         }
       : undefined,
     codeBlock: editor.commands.insertCodeBlock
       ? {
           isActive: editor.nodes.codeBlock.isActive(),
-          canExec: editor.commands.insertCodeBlock.canExec({ language: 'javascript' }),
+          canExec: safeCanExec(() => editor.commands.insertCodeBlock.canExec({ language: 'javascript' })),
           command: () => editor.commands.insertCodeBlock({ language: 'javascript' }),
         }
       : undefined,
     heading1: editor.commands.toggleHeading
       ? {
           isActive: editor.nodes.heading.isActive({ level: 1 }),
-          canExec: editor.commands.toggleHeading.canExec({ level: 1 }),
+          canExec: safeCanExec(() => editor.commands.toggleHeading.canExec({ level: 1 })),
           command: () => editor.commands.toggleHeading({ level: 1 }),
         }
       : undefined,
     heading2: editor.commands.toggleHeading
       ? {
           isActive: editor.nodes.heading.isActive({ level: 2 }),
-          canExec: editor.commands.toggleHeading.canExec({ level: 2 }),
+          canExec: safeCanExec(() => editor.commands.toggleHeading.canExec({ level: 2 })),
           command: () => editor.commands.toggleHeading({ level: 2 }),
         }
       : undefined,
     heading3: editor.commands.toggleHeading
       ? {
           isActive: editor.nodes.heading.isActive({ level: 3 }),
-          canExec: editor.commands.toggleHeading.canExec({ level: 3 }),
+          canExec: safeCanExec(() => editor.commands.toggleHeading.canExec({ level: 3 })),
           command: () => editor.commands.toggleHeading({ level: 3 }),
         }
       : undefined,
     horizontalRule: editor.commands.insertHorizontalRule
       ? {
           isActive: editor.nodes.horizontalRule.isActive(),
-          canExec: editor.commands.insertHorizontalRule.canExec(),
+          canExec: safeCanExec(() => editor.commands.insertHorizontalRule.canExec()),
           command: () => editor.commands.insertHorizontalRule(),
         }
       : undefined,
     blockquote: editor.commands.toggleBlockquote
       ? {
           isActive: editor.nodes.blockquote.isActive(),
-          canExec: editor.commands.toggleBlockquote.canExec(),
+          canExec: safeCanExec(() => editor.commands.toggleBlockquote.canExec()),
           command: () => editor.commands.toggleBlockquote(),
         }
       : undefined,
     bulletList: editor.commands.toggleBulletList
       ? {
           isActive: editor.nodes.bullet_list.isActive(),
-          canExec: editor.commands.toggleBulletList.canExec(),
+          canExec: safeCanExec(() => editor.commands.toggleBulletList.canExec()),
           command: () => editor.commands.toggleBulletList(),
         }
       : undefined,
     orderedList: editor.commands.toggleOrderedList
       ? {
           isActive: editor.nodes.ordered_list.isActive(),
-          canExec: editor.commands.toggleOrderedList.canExec(),
+          canExec: safeCanExec(() => editor.commands.toggleOrderedList.canExec()),
           command: () => editor.commands.toggleOrderedList(),
         }
       : undefined,
     insertImage: editor.commands.insertImage
       ? {
           isActive: false,
-          canExec: editor.commands.insertImage.canExec(),
+          canExec: safeCanExec(() => editor.commands.insertImage.canExec()),
         }
       : undefined,
     insertTable: editor.commands.insertTable
       ? {
           isActive: false,
-          canExec: editor.commands.insertTable.canExec({ row: 3, col: 3 }),
+          canExec: safeCanExec(() => editor.commands.insertTable.canExec({ row: 3, col: 3 })),
           command: () => editor.commands.insertTable({ row: 3, col: 3 }),
         }
       : undefined,
@@ -143,7 +151,19 @@ class LitToolbar extends LitElement {
     labels: {
       attribute: false
     },
+    activeView: {
+      attribute: false
+    },
   };
+
+  setView(view) {
+    if (view === this.activeView) return
+    this.dispatchEvent(new CustomEvent('qti:view:change', {
+      detail: { view },
+      bubbles: true,
+      composed: true,
+    }))
+  }
 
   createRenderRoot() {
     return this
@@ -434,6 +454,20 @@ class LitToolbar extends LitElement {
             `
             : nothing
         }
+        <div class="ml-auto flex items-center gap-1">
+          <lit-editor-button
+            .pressed=${this.activeView === 'editor'}
+            .tooltip=${this.t('toolbar.editorView', 'Editor')}
+            icon="i-lucide-pencil size-5 block"
+            @click=${() => this.setView('editor')}
+          ></lit-editor-button>
+          <lit-editor-button
+            .pressed=${this.activeView === 'player'}
+            .tooltip=${this.t('toolbar.previewView', 'Preview')}
+            icon="i-lucide-eye size-5 block"
+            @click=${() => this.setView('player')}
+          ></lit-editor-button>
+        </div>
       </div>
     `;
   }

@@ -14,7 +14,7 @@
         "prosekit",
         "@qti-editor/core"
       ],
-      "registryDependencies": ["qti-choice-attributes-editor", "qti-text-entry-attributes-editor", "qti-extended-text-attributes-editor"],
+      "registryDependencies": ["qti-choice-attributes-editor", "qti-text-entry-attributes-editor", "qti-extended-text-attributes-editor", "qti-rubric-block-attributes-editor"],
       "files": [
         {
           "path": "components/attributes-panel/index.ts",
@@ -90,6 +90,26 @@
           "path": "components/extended-text-attributes-editor/index.ts",
           "source": "src/components/extended-text-attributes-editor/index.ts",
           "module": "@citolab/prose-qti-ui/components/extended-text-attributes-editor",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/attributes-panel/patch-event.ts",
+          "source": "src/components/attributes-panel/patch-event.ts",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "qti-rubric-block-attributes-editor",
+      "type": "registry:ui",
+      "title": "QTI Rubric Block Attributes Editor",
+      "description": "Standalone rubric block editor for use and view attributes.",
+      "dependencies": ["lit", "@citolab/prose-qti/components/rubric-block"],
+      "files": [
+        {
+          "path": "components/rubric-block-attributes-editor/index.ts",
+          "source": "src/components/rubric-block-attributes-editor/index.ts",
+          "module": "@citolab/prose-qti-ui/components/rubric-block-attributes-editor",
           "type": "registry:component"
         },
         {

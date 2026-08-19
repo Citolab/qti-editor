@@ -9,6 +9,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 const require = createRequire(import.meta.url);
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const litReactiveElementRoot = dirname(require.resolve('@lit/reactive-element'));
+const qtiComponentsItemCssPath = require.resolve('@qti-components/theme/item.css');
 const coreSrcRoot = fileURLToPath(new URL('../../packages/qti/core/src', import.meta.url));
 const prosekitIntegrationSrcRoot = fileURLToPath(new URL('../../packages/extensions/prosekit/src', import.meta.url));
 const prosekitExtensionsSrcRoot = fileURLToPath(new URL('../../packages/prosekit/extensions/src', import.meta.url));
@@ -80,6 +81,14 @@ export default defineConfig({
       {
         find: /^@lit\/reactive-element\/decorators\/(.*)$/,
         replacement: `${litReactiveElementRoot}/decorators/$1`,
+      },
+      {
+        // @qti-components/item's published dist imports item.css via a
+        // monorepo-relative path into qti-theme/src that doesn't exist outside
+        // their own workspace. @qti-components/theme publishes the same file
+        // as a real subpath export, so redirect the broken import there.
+        find: /^(?:\.\.\/)+qti-theme\/src\/item\.css(\?inline)?$/,
+        replacement: `${qtiComponentsItemCssPath}$1`,
       },
       {
         find: /^@qti-editor\/core\/composer$/,
@@ -296,17 +305,43 @@ export default defineConfig({
       },
     },
   ],
+  build: {
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        // Rendered in an iframe by the preview panel — kept as a separate
+        // page so `@qti-components/item` registers its interactive custom
+        // elements in its own document instead of the editor's (which
+        // already claims the same QTI tag names for authoring).
+        preview: fileURLToPath(new URL('./preview.html', import.meta.url)),
+      },
+    },
+  },
   optimizeDeps: {
     exclude: [
+      // Every @qti-components package the app pulls in has to be listed here.
+      // They all import `@qti-components/base`, which is itself excluded, so a
+      // prebundled copy keeps that as a bare import inside node_modules/.vite/deps
+      // — and `base` is only a transitive dependency, which pnpm does not hoist,
+      // so nothing resolves it from there. Leaving them unoptimized keeps them
+      // resolving through their own package directories, where the symlink exists.
+      '@qti-components/associate-interaction',
       '@qti-components/base',
       '@qti-components/choice-interaction',
+      '@qti-components/corrections',
+      '@qti-components/corrections/elements',
+      '@qti-components/elements',
       '@qti-components/extended-text-interaction',
+      '@qti-components/gap-match-interaction',
       '@qti-components/hottext-interaction',
       '@qti-components/inline-choice-interaction',
       '@qti-components/interactions',
       '@qti-components/interactions-core',
+      '@qti-components/item',
       '@qti-components/match-interaction',
       '@qti-components/order-interaction',
+      '@qti-components/processing',
+      '@qti-components/select-point-interaction',
       '@qti-components/text-entry-interaction',
       '@qti-components/theme',
       '@qti-components/transformers',

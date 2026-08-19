@@ -17,7 +17,7 @@
  *   v5 — Convert prosekit flat `list` nodes to bullet_list/ordered_list + list_item.
  *   v6 — Convert legacy `bold`/`italic` marks to `strong`/`em`.
  */
-export const CURRENT_SCHEMA_VERSION = 6;
+export const CURRENT_SCHEMA_VERSION = 7;
 
 export type CompatibilitySourceKind = 'json' | 'html' | 'xml' | 'dom' | 'unknown';
 
@@ -30,6 +30,8 @@ export type CompatibilityChangeCode =
   | 'RENAME_NODE'
   | 'RENAME_ATTRIBUTE'
   | 'ATTRIBUTE_MOVED'
+  | 'ATTRIBUTE_COERCED'
+  | 'NODE_WRAPPED'
   | 'DEFAULT_APPLIED'
   | 'NODE_REMOVED'
   | 'ATTRIBUTE_REMOVED'

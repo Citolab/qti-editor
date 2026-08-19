@@ -15,7 +15,7 @@ const MATCH_CORRECT_INTERNAL_TEMPLATE = `
       <qti-set-outcome-value identifier="SCORE">
         <qti-sum>
           <qti-variable identifier="SCORE"/>
-          <qti-base-value base-type="float">1</qti-base-value>
+          <qti-base-value base-type="float">1</qti-base-value> //make variable, use this template if score > 1
         </qti-sum>
       </qti-set-outcome-value>
     </qti-response-if>

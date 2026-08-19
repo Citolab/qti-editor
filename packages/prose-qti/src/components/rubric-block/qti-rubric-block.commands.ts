@@ -3,9 +3,9 @@ import { TextSelection } from 'prosemirror-state';
 import type { Command, EditorState, Transaction } from 'prosemirror-state';
 
 /**
- * Insert a qti-rubric-block at the end of the current block, containing one
- * empty paragraph. Selection is placed inside that paragraph so the author
- * can start typing immediately.
+ * Insert a scorer-facing scoring qti-rubric-block at the end of the current
+ * block, containing one empty paragraph. Selection is placed inside that
+ * paragraph so the author can start typing immediately.
  */
 export function insertRubricBlock(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
   const { schema, tr } = state;
@@ -18,7 +18,7 @@ export function insertRubricBlock(state: EditorState, dispatch?: (tr: Transactio
   const insertPos = $from.after(1);
 
   if (dispatch) {
-    const node = rubricType.create(undefined, paragraphType.create());
+    const node = rubricType.create({ use: 'scoring', view: 'scorer' }, paragraphType.create());
     tr.insert(insertPos, node);
     tr.setSelection(TextSelection.create(tr.doc, insertPos + 2));
     dispatch(tr.scrollIntoView());
