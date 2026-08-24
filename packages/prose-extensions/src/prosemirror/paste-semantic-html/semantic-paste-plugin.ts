@@ -441,30 +441,33 @@ export function makeHtmlSemantic(html: string): string {
     .trim();
 }
 
+/**
+ * Every image on the clipboard, listed once.
+ *
+ * Reads `DataTransfer.files` and falls back to `items` only when it is empty. Reading both and
+ * deduplicating was the original approach and it does not work: Blink builds `files` by calling
+ * `getAsFile()` on each file item, and for a clipboard-sourced item that call mints a NEW `File`
+ * every time. A `Set<File>` therefore never matches, and each clipboard image was counted twice —
+ * which is why a Word paste produced two copies of the same picture. (With a synthetic
+ * `DataTransfer` the item caches a real `File`, so the identity check appears to work and the bug
+ * hides from any test that builds its own clipboard.)
+ *
+ * `files` already contains every `kind === 'file'` item, so the fallback can never double-count.
+ */
 function getClipboardImageFiles(dataTransfer: DataTransfer | null): File[] {
   if (!dataTransfer) return [];
 
-  const files: File[] = [];
-  const seen = new Set<File>();
+  const fromFiles = Array.from(dataTransfer.files || []).filter((file) => file.type.startsWith('image/'));
+  if (fromFiles.length > 0) return fromFiles;
 
+  const fromItems: File[] = [];
   for (const item of Array.from(dataTransfer.items || [])) {
     if (item.kind !== 'file' || !item.type.startsWith('image/')) continue;
-
     const file = item.getAsFile();
-    if (!file || seen.has(file)) continue;
-
-    seen.add(file);
-    files.push(file);
+    if (file) fromItems.push(file);
   }
 
-  for (const file of Array.from(dataTransfer.files || [])) {
-    if (!file.type.startsWith('image/') || seen.has(file)) continue;
-
-    seen.add(file);
-    files.push(file);
-  }
-
-  return files;
+  return fromItems;
 }
 
 function readImageFile(file: File): Promise<ClipboardImage> {
@@ -483,12 +486,22 @@ function readImageFile(file: File): Promise<ClipboardImage> {
   });
 }
 
+/** True when the browser cannot fetch this `src`, so the bytes have to come from the clipboard. */
 function shouldHydrateImageSrc(src: string | null): boolean {
   if (!src) return true;
   if (/^(data:image\/|blob:|https?:\/\/)/i.test(src)) return false;
   return true;
 }
 
+/**
+ * Replace unloadable `<img>` sources with clipboard image data, one placeholder per image, in order.
+ *
+ * Placeholders past the end of `images` keep the src they had — they are left visibly broken rather
+ * than silently deleted, because the author is the only one who can tell which figure went missing.
+ * Surplus clipboard images are IGNORED. They used to be appended to the body, and that is what made
+ * a plain Word paste sprout a picture out of nowhere: Word puts a bitmap of the whole selection on
+ * the clipboard as a fallback for apps that cannot read HTML, and this appended it as content.
+ */
 export function hydrateSemanticPasteImages(html: string, images: ClipboardImage[]): string {
   if (images.length === 0) return html;
 
@@ -507,27 +520,65 @@ export function hydrateSemanticPasteImages(html: string, images: ClipboardImage[
     if (!img.getAttribute('alt')) img.setAttribute('alt', image.alt);
   });
 
-  while (imageIndex < images.length) {
-    const image = images[imageIndex++];
-    const img = doc.createElement('img');
-    img.setAttribute('src', image.src);
-    img.setAttribute('alt', image.alt);
-    doc.body.appendChild(img);
-  }
-
   unwrapImageOnlyBlocks(doc.body);
 
   return doc.body.innerHTML.trim();
 }
 
-async function pasteHtmlWithClipboardImages(view: EditorView, html: string, files: File[]) {
-  const images = await Promise.all(files.map(readImageFile));
-  const semanticHtml = makeHtmlSemantic(html);
-  const hydratedHtml = hydrateSemanticPasteImages(semanticHtml, images);
-  const doc = new window.DOMParser().parseFromString(hydratedHtml, 'text/html');
-  const slice = ProseMirrorDOMParser.fromSchema(view.state.schema).parseSlice(doc.body);
+/**
+ * What, if anything, the clipboard's image files mean for this paste.
+ *
+ * The plugin used to assume every clipboard image corresponded to an `<img>` in the pasted HTML.
+ * That is wrong for the editors people actually copy from. Word, Excel, PowerPoint and Outlook all
+ * put a single PNG on the clipboard that is a RENDERING OF THE WHOLE SELECTION — text, tables and
+ * pictures flattened into one bitmap — purely as a fallback for targets that cannot read HTML. Used
+ * as image content it is never right: on a text selection it appears as a picture of the text, and
+ * on a mixed selection it overwrites the first real figure with a screenshot of everything.
+ *
+ * So the clipboard files are only trusted when they cannot be that fallback:
+ *
+ * - `insert`  — there is no usable HTML at all. A screenshot, or an image dragged from the desktop.
+ * - `hydrate` — the HTML is images and whitespace only, and its unloadable placeholders match the
+ *               clipboard images one for one. This is "copy a single picture out of Word", where
+ *               the `file:///…/clip_image001.png` src is dead and the clipboard bytes are the only
+ *               way to recover it.
+ * - `ignore`  — anything else. The HTML is the content; the bitmap is a duplicate of it.
+ */
+type ClipboardImagePlan = 'insert' | 'hydrate' | 'ignore';
 
-  view.dispatch(view.state.tr.replaceSelection(slice).scrollIntoView());
+function planClipboardImages(html: string, imageCount: number): ClipboardImagePlan {
+  if (!html.trim()) return 'insert';
+
+  const doc = new window.DOMParser().parseFromString(html, 'text/html');
+  // Word ships a stylesheet and its own XML namespace declarations inside the fragment; neither is
+  // content, but both carry text that would otherwise read as "this selection has text in it".
+  doc.body.querySelectorAll('style, script, xml, meta, link, title').forEach((el) => el.remove());
+  normalizeWordImageElements(doc.body, doc);
+
+  if (normalizeSpaces(doc.body.textContent || '')) return 'ignore';
+
+  const images = Array.from(doc.body.querySelectorAll('img'));
+  if (images.length === 0) return 'insert';
+
+  const placeholders = images.filter((img) => shouldHydrateImageSrc(img.getAttribute('src')));
+  return placeholders.length === imageCount ? 'hydrate' : 'ignore';
+}
+
+/**
+ * Parse with the view's own clipboard parser so context-dependent parse rules see where the paste
+ * lands, matching what ProseMirror would have done had we not taken over the event.
+ */
+function parseSliceForPaste(view: EditorView, html: string): Slice {
+  const doc = new window.DOMParser().parseFromString(html, 'text/html');
+  const parser = view.someProp('clipboardParser') ?? ProseMirrorDOMParser.fromSchema(view.state.schema);
+  return parser.parseSlice(doc.body, { context: view.state.selection.$from });
+}
+
+async function pasteHydratedImageHtml(view: EditorView, html: string, files: File[]) {
+  const images = await Promise.all(files.map(readImageFile));
+  const hydratedHtml = hydrateSemanticPasteImages(makeHtmlSemantic(html), images);
+
+  view.dispatch(view.state.tr.replaceSelection(parseSliceForPaste(view, hydratedHtml)).scrollIntoView());
 }
 
 async function pasteClipboardImages(view: EditorView, files: File[]) {
@@ -553,8 +604,15 @@ export function createSemanticPastePlugin(): Plugin {
         if (files.length === 0 || !view.state.schema.nodes.image) return false;
 
         const html = event.clipboardData?.getData('text/html') ?? '';
-        if (html.trim()) {
-          void pasteHtmlWithClipboardImages(view, html, files).catch((error) => {
+        const plan = planClipboardImages(html, files.length);
+
+        // The HTML is the content and the clipboard bitmap only mirrors it. Hand the event back so
+        // ProseMirror pastes `slice` through its normal pipeline — which has already run
+        // `transformPastedHTML` above, the view's clipboard parser and `transformPasted`.
+        if (plan === 'ignore') return false;
+
+        if (plan === 'hydrate') {
+          void pasteHydratedImageHtml(view, html, files).catch((error) => {
             console.error('Failed to paste clipboard image HTML:', error);
           });
           return true;
