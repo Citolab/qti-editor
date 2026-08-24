@@ -7,7 +7,37 @@ import { html, LitElement, nothing } from 'lit';
 import { ContextConsumer } from '@lit/context';
 import { defineUpdateHandler } from 'prosekit/core';
 import { subscribeQtiI18n, translateQti } from '@citolab/prose-qti/components/shared';
+import { canInsertBlockNode } from '@citolab/prose-qti-ui/components/interaction-insert-menu';
 import { editorContext } from '@citolab/prose-qti-ui/editor-context';
+
+import { insertItemDivider } from '../../item-divider/qti-item-divider.commands.js';
+
+/**
+ * The item separator, contributed to the shared insert menu.
+ *
+ * `qtiItemDivider` is this app's node — it lives in `src/components/item-divider`, not in
+ * `@citolab/prose-qti` — so `getInteractionInsertItems` cannot list it without the package importing
+ * from an app. The menu takes host entries through `extraItems` for exactly this, and it is why the
+ * separator was in the slash menu (also app-local) but missing from the toolbar.
+ *
+ * A function of the view, not a fixed array: `canInsert` depends on the current selection, and the
+ * menu re-runs this on every editor update so the entry greys out where a divider cannot go.
+ * `canInsertBlockNode` is the menu's own predicate, so this entry is judged like the built-in ones.
+ */
+function extraInsertItems(view) {
+  const nodeType = view.state.schema.nodes.qtiItemDivider;
+  if (!nodeType) return [];
+  return [
+    {
+      label: translateQti('interactionInsert.itemDivider', { target: view.dom }),
+      canInsert: canInsertBlockNode(view, nodeType),
+      command: () => {
+        insertItemDivider(view.state, view.dispatch);
+        view.focus();
+      },
+    },
+  ];
+}
 
 function safeCanExec(check) {
   try {
@@ -229,7 +259,7 @@ class LitToolbar extends LitElement {
 
     return html`
       <div class="z-2 box-border border-gray-200 dark:border-gray-800 border-solid border-l-0 border-r-0 border-t-0 border-b flex flex-wrap gap-1 p-2 px-4 items-center">
-        <qti-interaction-insert-menu .editor=${editor}></qti-interaction-insert-menu>
+        <qti-interaction-insert-menu .editor=${editor} .extraItems=${extraInsertItems}></qti-interaction-insert-menu>
         <qti-convert-menu .editor=${editor}></qti-convert-menu>
         ${
           items.undo

@@ -438,6 +438,9 @@ importers:
       postcss:
         specifier: ^8.5.6
         version: 8.5.8
+      prosemirror-gapcursor:
+        specifier: ^1.4.1
+        version: 1.4.1
       tailwindcss:
         specifier: ^4.1.18
         version: 4.2.2
@@ -715,6 +718,9 @@ importers:
         specifier: ^1.41.9
         version: 1.41.9
     devDependencies:
+      prosemirror-gapcursor:
+        specifier: ^1.4.1
+        version: 1.4.1
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2831,7 +2837,7 @@ packages:
       lit: ^3.3.1
 
   '@qti-components/item@https://pkg.pr.new/Citolab/qti-components/@qti-components/item@9a2532bba7656c86c068d50bfc9cebe8ced7eb2f':
-    resolution: {integrity: sha512-bQj7jPF/gutPUdMHHqTguBxI1gMoWkY7NR+0u3SU3/pvXvcAkn+iOw/GjbHmExTi0zfFw6SDUGndwl9V/MNS0Q==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/item@9a2532bba7656c86c068d50bfc9cebe8ced7eb2f}
+    resolution: {tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/item@9a2532bba7656c86c068d50bfc9cebe8ced7eb2f}
     version: 1.4.1
     peerDependencies:
       '@lit/context': ^1.1.6
@@ -2922,7 +2928,7 @@ packages:
       lit: ^3.3.1
 
   '@qti-components/test@https://pkg.pr.new/Citolab/qti-components/@qti-components/test@9a2532bba7656c86c068d50bfc9cebe8ced7eb2f':
-    resolution: {integrity: sha512-irib5hTBukYSX8qVI4J5WRW/LTOBSRMUB10H6Pf3OmASlVWZnZA0mUoak0vhrUk8ZlCrGCkWUBQmG3mKJIQZOA==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/test@9a2532bba7656c86c068d50bfc9cebe8ced7eb2f}
+    resolution: {tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/test@9a2532bba7656c86c068d50bfc9cebe8ced7eb2f}
     version: 1.5.1
     peerDependencies:
       '@heximal/templates': ^0.1.5
@@ -2948,7 +2954,7 @@ packages:
     version: 1.5.0
 
   '@qti-components/theme@https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@9a2532bba7656c86c068d50bfc9cebe8ced7eb2f':
-    resolution: {integrity: sha512-TVjGXOt0LhxxiqdRMJsptEhS04G+GrnOjeWH5ybmSfrouZTQa0k0IxO7jCwTeuTWR0SwlHGTNaUEmHFUeQ6JYQ==, tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@9a2532bba7656c86c068d50bfc9cebe8ced7eb2f}
+    resolution: {tarball: https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@9a2532bba7656c86c068d50bfc9cebe8ced7eb2f}
     version: 1.5.0
 
   '@qti-components/transformers@https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@9a2532b':

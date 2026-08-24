@@ -89,7 +89,22 @@ export const qtiLayoutDivNodeSpec: NodeSpec = {
   },
   defining: true,
   isolating: true,
-  selectable: false
+  selectable: false,
+  /*
+   * Reachability of the collapsed space between the wrapper's children.
+   *
+   * `content: 'block+'` admits a paragraph anywhere inside, so a gap cursor is always legitimate
+   * here — but prosemirror-gapcursor decides by reading `contentMatchAt(index).defaultType` and
+   * asking whether THAT is a textblock. `defaultType` is the first admitted type with no required
+   * attributes, which for `block+` is `qtiItemDivider`, and a divider is not a textblock. So the
+   * guess says no at every position and two interactions sitting side by side in an imported
+   * `qti-layout-row` have no writable space between them at all.
+   *
+   * `allowGapCursor` is the library's override for when the caller knows better than the heuristic.
+   * See the longer note on the `doc` spec in the prosekit app's locked-header extension, which is
+   * the same failure one level up.
+   */
+  allowGapCursor: true
 };
 
 /** How many layout wrappers this document contains. */

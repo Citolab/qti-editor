@@ -42,6 +42,30 @@ export function defineLockedHeaderExtension(): Extension {
       name: 'doc',
       topNode: true,
       content: 'heading paragraph qtiItemDivider block*',
+      /*
+       * Without this there is no gap cursor anywhere in the document, and the collapsed space
+       * between two adjacent interactions is unreachable — nothing can be typed between them.
+       *
+       * prosemirror-gapcursor only guesses. `GapCursor.valid` first checks that the neighbours are
+       * closed, which every QTI interaction is (they are `isolating`), and then asks whether a
+       * textblock could go here by reading `contentMatchAt(index).defaultType.isTextblock`.
+       * `defaultType` is the first type the content expression admits that has no required
+       * attributes — and in `block*` that is `qtiItemDivider`, whose two attributes both default.
+       * A divider is not a textblock, so the guess comes back no, at every position.
+       *
+       * The guess is simply wrong here: `paragraph` is in `block`, so a textblock demonstrably can
+       * go at any of those positions. `allowGapCursor` is the override the library provides for
+       * exactly this, and it short-circuits the heuristic rather than fighting it.
+       *
+       * The alternative — giving `qtiItemDivider` a required attribute so it stops winning
+       * `defaultType` — would move a load-bearing default that `createAndFill` and every
+       * auto-insertion path also read, to fix a cursor. Not worth it.
+       *
+       * Tables are deliberately NOT given this: `table` defaults to `tableRow` and `tableRow` to
+       * `tableCell`, and there the heuristic is right, because no textblock may sit between two
+       * rows or two cells. Those denials are correct and stay.
+       */
+      allowGapCursor: true,
     }),
     definePlugin(() => lockPlugin),
   );

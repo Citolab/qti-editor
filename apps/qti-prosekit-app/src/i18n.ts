@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { registerQtiMessages } from '@citolab/prose-qti/components/shared';
 
 const LANGUAGE_STORAGE_KEY = 'qti-editor:app-language';
 
@@ -222,5 +223,20 @@ void i18n
 i18n.on('languageChanged', language => {
   window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
 });
+
+/*
+ * The editor's Lit components translate through `translateQti`, which reads a registry separate from
+ * this i18next instance — i18next covers the React app chrome, `translateQti` covers everything
+ * inside the editor.
+ *
+ * `qtiItemDivider` is this app's own node, so its label is this app's to supply. Registering it here
+ * rather than adding it to `@citolab/prose-qti`'s catalogue keeps the ownership matching: the
+ * package should not carry strings for nodes it does not define.
+ *
+ * It also replaces a hardcoded 'Item-scheiding' in the slash menu, which showed Dutch to an English
+ * user because it never went through the registry at all.
+ */
+registerQtiMessages('en', { 'interactionInsert.itemDivider': 'Item Separator' });
+registerQtiMessages('nl', { 'interactionInsert.itemDivider': 'Item-scheiding' });
 
 export { i18n };

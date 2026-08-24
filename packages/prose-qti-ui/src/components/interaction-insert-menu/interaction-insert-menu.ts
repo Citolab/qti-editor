@@ -35,6 +35,13 @@ export interface InteractionInsertItem {
   command: () => void;
 }
 
+/**
+ * Can a block node of this type be placed at the current selection?
+ *
+ * Exported as `canInsertBlockNode` for hosts contributing through `extraItems`: an item added from
+ * outside should have its availability decided by the same predicate as the built-in ones, not by a
+ * near-copy that drifts.
+ */
 function canInsert(view: EditorView, nodeType: any): boolean {
   const { $from } = view.state.selection;
   for (let depth = $from.depth; depth >= 0; depth -= 1) {
@@ -262,6 +269,22 @@ export class QtiInteractionInsertMenu extends LitElement {
   @property({ attribute: false })
   editor: Editor | null = null;
 
+  /**
+   * Extra entries contributed by the host, appended after the built-in ones.
+   *
+   * A FUNCTION of the view rather than an array, because `canInsert` depends on where the selection
+   * currently is: a static array would be computed once and then go stale, showing an entry as
+   * available at a position that rejects it. This menu already re-renders on every editor update
+   * (see `attachEditorListener`), so the factory is re-run each time and a contributed item tracks
+   * the selection exactly like a built-in one.
+   *
+   * This is what a node the package does not own reaches the menu through. `qtiItemDivider` is the
+   * case that prompted it — it lives in the prosekit app, not in `@citolab/prose-qti`, so listing it
+   * in `getInteractionInsertItems` would mean this package importing from an app.
+   */
+  @property({ attribute: false })
+  extraItems: ((view: EditorView) => InteractionInsertItem[]) | null = null;
+
   @state()
   open = false;
 
@@ -344,9 +367,19 @@ export class QtiInteractionInsertMenu extends LitElement {
 
   override render() {
     const view = this.getEditorView();
-    const items = view ? getInteractionInsertItems(view) : [];
+    const items = view ? [...getInteractionInsertItems(view), ...(this.extraItems?.(view) ?? [])] : [];
     const canInsertAny = items.some(item => item.canInsert);
 
+    /*
+     * The list scrolls; the popup clips. Same split as the slash menu, and for the same reason: the
+     * rounded border and the open/close scale transition belong to the popup, so the popup keeps
+     * `overflow-hidden` and an inner element does the scrolling. The padding moved inward with it, so
+     * the scrollbar sits inside the border rather than over it.
+     *
+     * Not cosmetic. The popup had no max-height and no overflow at all, so it grew past the bottom of
+     * the window with no way to reach what was below — measured at 494px tall against a 620px
+     * viewport, leaving 32px of headroom, which one more entry erases.
+     */
     return html`
       <prosekit-menu-root @open-change=${this.handleOpenChange}>
         <prosekit-menu-trigger>
@@ -361,7 +394,8 @@ export class QtiInteractionInsertMenu extends LitElement {
           </button>
         </prosekit-menu-trigger>
         <prosekit-menu-positioner placement="bottom" class="block overflow-visible w-min h-min z-50 ease-out transition-transform duration-100 motion-reduce:transition-none">
-          <prosekit-menu-popup class="box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 duration-40 rounded-md border border-gray-200 dark:border-gray-800 shadow-lg bg-[canvas] flex min-w-56 flex-col gap-1 p-2 text-sm">
+          <prosekit-menu-popup class="box-border origin-(--transform-origin) transition-[opacity,scale] transition-discrete motion-reduce:transition-none data-[state=closed]:duration-150 data-[state=closed]:opacity-0 starting:opacity-0 data-[state=closed]:scale-95 starting:scale-95 duration-40 rounded-md border border-gray-200 dark:border-gray-800 shadow-lg bg-[canvas] flex min-w-56 min-h-0 max-h-100 flex-col overflow-hidden text-sm">
+          <div class="flex flex-col gap-1 p-2 min-h-0 overflow-y-auto overscroll-contain">
           ${items.map(
             item => item.canInsert
               ? html`
@@ -379,6 +413,7 @@ export class QtiInteractionInsertMenu extends LitElement {
                 </div>
               `,
           )}
+          </div>
           </prosekit-menu-popup>
         </prosekit-menu-positioner>
       </prosekit-menu-root>
@@ -391,3 +426,5 @@ declare global {
     'qti-interaction-insert-menu': QtiInteractionInsertMenu;
   }
 }
+
+export { canInsert as canInsertBlockNode };

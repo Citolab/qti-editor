@@ -22,6 +22,7 @@ import {
 import { defineTable, type TableExtension } from 'prosekit/extensions/table'
 import { defineText, type TextExtension } from 'prosekit/extensions/text'
 
+import { defineGapCursorParagraph } from './gap-cursor-paragraph.js'
 import { defineList, type ListExtension, type ListOptions } from './list.js'
 import { defineEm, defineStrong, type EmExtension, type StrongExtension } from './strong-em.js'
 
@@ -227,5 +228,8 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     defineBaseCommands(),
     defineHistory(),
     defineGapCursor(),
+    // The gap cursor decides where you can type; this decides what typing there produces. See the
+    // module note — the default picks whichever textblock sorts first, which is not `paragraph`.
+    defineGapCursorParagraph(),
   ) as BasicExtension
 }

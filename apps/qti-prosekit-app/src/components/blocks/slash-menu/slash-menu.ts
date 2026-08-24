@@ -17,7 +17,7 @@ import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { canUseRegexLookbehind, type Editor } from 'prosekit/core';
 import { listInteractionDescriptors } from '@citolab/prose-qti/core/interactions/composer';
-import { translateQti } from '@citolab/prose-qti/components/shared';
+import { subscribeQtiI18n, translateQti } from '@citolab/prose-qti/components/shared';
 import { insertGap } from '@citolab/prose-qti/components/gap-match';
 
 import { insertItemDivider } from '../../item-divider/qti-item-divider.commands.js';
@@ -70,8 +70,27 @@ export class QtiSlashMenu extends LitElement {
   @property({ type: Boolean, reflect: true })
   disabled = false;
 
+  private removeI18nListener?: () => void;
+
   override createRenderRoot() {
     return this;
+  }
+
+  /*
+   * Every label in this menu goes through `translateQti`, which reads the registry at RENDER time —
+   * so without a subscription the labels are whatever the language was on first render and a later
+   * switch never reaches them. The toolbar has subscribed all along; this menu had not, so its
+   * labels silently froze. Same two lines, same reason.
+   */
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.removeI18nListener = subscribeQtiI18n(() => this.requestUpdate());
+  }
+
+  override disconnectedCallback(): void {
+    this.removeI18nListener?.();
+    this.removeI18nListener = undefined;
+    super.disconnectedCallback();
   }
 
   private getView(): EditorView | null {
@@ -143,7 +162,7 @@ export class QtiSlashMenu extends LitElement {
         ${menuItems}
         <lit-editor-slash-menu-item
           class="contents"
-          label="Item-scheiding"
+          label=${translateQti('interactionInsert.itemDivider', { target: this })}
           @select=${() => this.insertInteraction(insertItemDivider)}
         ></lit-editor-slash-menu-item>
         ${canInsertGap ? html`
