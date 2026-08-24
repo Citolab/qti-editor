@@ -34,8 +34,9 @@ import {
   constrainedShiftEnd,
   constrainedShiftHome
 } from '@citolab/prose-qti/components/shared';
-import { exportItemXml, importItemFromString } from '@citolab/prose-qti/item-roundtrip';
+import { exportItemXml, importItemFromString, itemBodyFromString } from '@citolab/prose-qti/item-roundtrip';
 import { qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
+import { findUnrepresentableElements, TRANSPARENT_WRAPPER_TAGS } from '@citolab/prose-qti/schema-recovery';
 
 // Relative rather than by package specifier: `@qti-editor/prosemirror-item` has no tsconfig path
 // mapping and is not linked into node_modules, so the specifier form does not resolve. The story
@@ -80,6 +81,7 @@ import './editor-canvas.css';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 import type { RoundtripTransform } from '@citolab/prose-qti/item-roundtrip';
+import type { RecoveryMessageOptions, SchemaGapOutcome } from '@citolab/prose-qti/schema-recovery';
 
 /** Where the fixtures' relative `src` attributes are rebased to. */
 const ASSET_BASE_PATH = '/qti/kennisnet';
@@ -115,6 +117,19 @@ export interface RegressionEditor {
   exportAssessmentItemDoc: (doc: ProseMirrorNode) => Document;
   /** Mount the editor into `container`, optionally wiring the attributes panel. */
   mountEditor: (container: HTMLElement, options?: { panelEl?: HTMLElement }) => EditorView;
+  /**
+   * What this item's schema cannot represent in the fixture, asked before the parse.
+   *
+   * Every story here composes the base schema plus exactly ONE interaction, which is the same
+   * position the shipping editors are in against the whole QTI standard, only sharper. `importItem`
+   * will not tell you when that costs something: ProseMirror's `DOMParser` skips an element no rule
+   * matches, parses its children in its place, and reports nothing — so an item that imports is not
+   * an item that arrived intact. This is the only place the difference can be seen.
+   *
+   * Takes `getMessage` so a story can show what a host reading the report in its own language sees;
+   * omit it for the built-in English.
+   */
+  findImportGaps: (options?: RecoveryMessageOptions) => SchemaGapOutcome;
 }
 
 export function createRegressionEditor({
@@ -224,6 +239,18 @@ export function createRegressionEditor({
   const exportAssessmentItemDoc = (doc: ProseMirrorNode): Document =>
     new DOMParser().parseFromString(exportItemXml(doc, schema), 'application/xml');
 
+  // Scanned AFTER the roundtrip transforms have run, so nothing they consume is mistaken for lost
+  // content, and BEFORE the parse, which is where content is actually lost.
+  const findImportGaps = (options: RecoveryMessageOptions = {}): SchemaGapOutcome =>
+    findUnrepresentableElements(
+      schema,
+      itemBodyFromString(sourceXML, {
+        assetBasePath: ASSET_BASE_PATH,
+        transforms: transforms(schema)
+      }).documentElement,
+      { ignoreTags: TRANSPARENT_WRAPPER_TAGS, ...options }
+    );
+
   const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLElement } = {}): EditorView => {
     const plugins = options.panelEl
       ? [...editorPlugins, attributesPanelPlugin(options.panelEl, { editableAttrs })]
@@ -238,5 +265,5 @@ export function createRegressionEditor({
     return view;
   };
 
-  return { schema, importItem, exportAssessmentItemDoc, mountEditor };
+  return { schema, importItem, exportAssessmentItemDoc, findImportGaps, mountEditor };
 }

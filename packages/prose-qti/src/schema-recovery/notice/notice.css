@@ -1,0 +1,38 @@
+/*
+ * Styling for `renderSchemaGapNotice` — what the schema could not represent in the opened item.
+ *
+ * Keyed on the classes the function applies itself, so a host needs no particular element id and no
+ * particular place in its layout. Positioning is deliberately absent: where the notice sits is the
+ * host's decision, and the one thing a shared stylesheet must not do is decide it.
+ */
+.qti-schema-gap-notice {
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid #fcd34d;
+  background: #fef3c7;
+  color: #78350f;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.qti-schema-gap-notice[hidden] {
+  display: none;
+}
+
+.qti-schema-gap-notice .qti-schema-gap-notice-heading {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+}
+
+.qti-schema-gap-notice ul {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+
+.qti-schema-gap-notice code {
+  font-size: 0.9em;
+}
+
+.qti-schema-gap-notice .qti-schema-gap-notice-quote {
+  font-style: italic;
+  opacity: 0.85;
+}

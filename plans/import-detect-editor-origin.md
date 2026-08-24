@@ -1,5 +1,26 @@
 # Plan: Detect editor-origin on QTI3 import via `data-lab-editor-version`
 
+> **⚠️ Stale as of 2026-08-20 — Phase 0 describes an import path that no longer exists.**
+>
+> Three of this plan's premises have since changed:
+>
+> - **Step 3 of the "current import path" is gone.** `migrateHtmlFragment` and the whole HTML
+>   migration ladder were deleted — nothing this editor exported was ever camelCase, and the
+>   ladder's version detection could not work for an import. So there is no longer a compatibility
+>   pass preserving `rubric-text` / `qti-rubric-block` on the way in.
+> - **The `xmlToHTML` → `jsonFromHTML` pipeline is gone too.** `importXmlFromText` now runs
+>   `itemBodyFromString` → `findUnrepresentableElements` → `parseItemBody`
+>   (`apps/qti-prosekit-app/src/lib/importXml.ts`).
+> - **The "latent bug" is already fixed.** The plan's central finding — that the import path does not
+>   call the roundtrip transforms, so foreign QTI silently loses correct-response — no longer holds:
+>   `defaultRoundtripTransforms` is in the path. What replaced the plan's reporting half is
+>   `findUnrepresentableElements`, which answers "what could the schema not represent" by asking the
+>   schema rather than from an allow-list.
+>
+> The remaining idea — branching on `data-lab-editor-version` to skip lossy transforms for
+> editor-origin files — is still coherent and untouched by any of this. It just needs re-basing onto
+> the current pipeline, and its file paths (`apps/editor/`) predate the app rename.
+
 ## Goal
 
 When the user picks `Import QTI XML` and the file came out of *this* editor (carries `data-lab-editor-version` on `<qti-item-body>`), skip the lossy `qti3-item-import` transforms — the data-* mirrors already carry everything we need. When the file is foreign QTI (marker absent), run the transforms first to recover correct-response, score, etc. from the QTI-native elements.

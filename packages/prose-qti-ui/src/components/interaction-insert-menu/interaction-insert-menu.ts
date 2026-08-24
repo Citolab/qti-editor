@@ -15,7 +15,7 @@ import { insertGapMatchInteraction, insertGap } from '@citolab/prose-qti/compone
 import { insertChoiceInteraction } from '@citolab/prose-qti/components/choice';
 import { insertExtendedTextInteraction } from '@citolab/prose-qti/components/extended-text';
 import { insertHottextInteraction } from '@citolab/prose-qti/components/hottext';
-import { insertMatchInteraction } from '@citolab/prose-qti/components/match';
+import { insertMatchInteraction, insertMatchInteractionTabular } from '@citolab/prose-qti/components/match';
 import { insertOrderInteraction } from '@citolab/prose-qti/components/order';
 import { insertSelectPointInteraction } from '@citolab/prose-qti/components/select-point';
 import { insertInlineChoiceInteraction } from '@citolab/prose-qti/components/inline-choice';
@@ -185,6 +185,27 @@ function getInteractionInsertItems(view: EditorView): InteractionInsertItem[] {
       canInsert: canInsert(view, nodeType),
       command: () => {
         insertMatchInteraction(view.state, view.dispatch, view);
+        view.focus();
+      },
+    });
+  }
+
+  // 7b. Match Interaction, tabular. Same QTI element as above — the `qti-match-tabular` class is the
+  // only difference in the XML — but a separate schema node, so it gets its own entry rather than a
+  // toggle: an author picking a presentation up front is one click, where inserting a match and then
+  // finding the class is three. `qtiMatchInteractionTabular` needs no `qtiSimpleMatchSet` guard of
+  // its own; it shares the drag-drop variant's children, already checked above.
+  if (
+    schema.nodes.qtiMatchInteractionTabular &&
+    schema.nodes.qtiSimpleMatchSet &&
+    schema.nodes.qtiSimpleAssociableChoice
+  ) {
+    const nodeType = schema.nodes.qtiMatchInteractionTabular;
+    items.push({
+      label: translateQti('interactionInsert.matchTabular', { target: view.dom }),
+      canInsert: canInsert(view, nodeType),
+      command: () => {
+        insertMatchInteractionTabular(view.state, view.dispatch, view);
         view.focus();
       },
     });

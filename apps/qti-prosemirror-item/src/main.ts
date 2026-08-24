@@ -54,6 +54,8 @@ import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extension
 // qti-layout-* wrappers: the node spec and the lock both come from the package now. Keeping the
 // wrappers immutable is not this app's decision to make differently from every other host.
 import { qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
+// The notice is the package's, so both this editor and the regression story show the same one.
+import { renderSchemaGapNotice } from '@citolab/prose-qti/schema-recovery/notice';
 
 import { attributesPanelPlugin } from './components/attributes-panel-plugin.js';
 import {
@@ -236,6 +238,7 @@ const editorHost = document.querySelector<HTMLElement>('#editor-host')!;
 const exportBtn = document.querySelector<HTMLButtonElement>('#export-btn')!;
 const openBtn = document.querySelector<HTMLButtonElement>('#open-btn')!;
 const attributesPanel = document.querySelector<HTMLElement>('#attributes-panel')!;
+const schemaGapNotice = document.querySelector<HTMLElement>('#schema-gap-notice')!;
 
 let view: EditorView | null = null;
 
@@ -276,11 +279,15 @@ itemList.addEventListener('change', () => {
 async function openItem(href: string): Promise<void> {
   attributesPanel.innerHTML = '';
 
-  const doc = await importQtiItem(href, schema);
+  const imported = await importQtiItem(href, schema);
+
+  // Say what the schema could not represent before the document is on screen, so the notice is read
+  // as part of opening the item rather than as a later complaint about it.
+  renderSchemaGapNotice(schemaGapNotice, imported.gaps);
 
   view?.destroy();
   editorHost.innerHTML = '';
-  view = mountEditor(editorHost, doc, attributesPanel);
+  view = mountEditor(editorHost, imported.doc, attributesPanel);
   exportBtn.disabled = false;
   openBtn.disabled = false;
 }

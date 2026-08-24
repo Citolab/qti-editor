@@ -1,0 +1,18 @@
+{
+  "type": "doc",
+  "schemaVersion": 1,
+  "attrs": { "title": "Legacy hyphenated attrs", "identifier": "corpus-v1" },
+  "content": [
+    { "type": "heading", "attrs": { "level": 1 }, "content": [{ "type": "text", "text": "Corpus v1" }] },
+    { "type": "paragraph", "content": [{ "type": "text", "text": "Attribute names were hyphenated at v1." }] },
+    {
+      "type": "qtiChoiceInteraction",
+      "attrs": { "response-identifier": "RESPONSE", "max-choices": 1 },
+      "content": [
+        { "type": "qtiPrompt", "content": [{ "type": "qtiPromptParagraph", "content": [{ "type": "text", "text": "Pick one" }] }] },
+        { "type": "qtiSimpleChoice", "attrs": { "identifier": "A" }, "content": [{ "type": "qtiSimpleChoiceParagraph", "content": [{ "type": "text", "text": "Alpha" }] }] },
+        { "type": "qtiSimpleChoice", "attrs": { "identifier": "B" }, "content": [{ "type": "qtiSimpleChoiceParagraph", "content": [{ "type": "text", "text": "Bravo" }] }] }
+      ]
+    }
+  ]
+}

@@ -34,18 +34,30 @@ registerAutocompleteEmptyElement();
 
 const regex = canUseRegexLookbehind() ? /(?<!\S)\/(\S.*)?$/u : /\/(\S.*)?$/u;
 
-// Map tag names to i18n keys
-const TAG_TO_I18N_KEY: Record<string, string> = {
-  'qti-choice-interaction': 'interactionInsert.choice',
-  'qti-extended-text-interaction': 'interactionInsert.extendedText',
-  'qti-text-entry-interaction': 'interactionInsert.textEntry',
-  'qti-inline-choice-interaction': 'interactionInsert.inlineChoice',
-  'qti-hottext-interaction': 'interactionInsert.hottext',
-  'qti-match-interaction': 'interactionInsert.match',
-  'qti-order-interaction': 'interactionInsert.order',
-  'qti-select-point-interaction': 'interactionInsert.selectPoint',
-  'qti-gap-match-interaction': 'interactionInsert.gapMatch',
-  'qti-rubric-block': 'interactionInsert.rubricBlock',
+/**
+ * Map ProseMirror node type names to i18n keys.
+ *
+ * Keyed by `nodeTypeName`, not `tagName`, because the tag is not unique: the drag-drop and tabular
+ * match variants are both `<qti-match-interaction>` and are told apart only by the
+ * `qti-match-tabular` class, so a tag-keyed map collapsed them into one entry and whichever
+ * descriptor came second was silently unreachable. The node type is the discriminator the schema
+ * itself uses.
+ *
+ * Membership here is also what decides whether an interaction appears in this menu at all, so an
+ * interaction that gains an `insertCommand` still needs a line added below.
+ */
+const NODE_TYPE_TO_I18N_KEY: Record<string, string> = {
+  qtiChoiceInteraction: 'interactionInsert.choice',
+  qtiExtendedTextInteraction: 'interactionInsert.extendedText',
+  qtiTextEntryInteraction: 'interactionInsert.textEntry',
+  qtiInlineChoiceInteraction: 'interactionInsert.inlineChoice',
+  qtiHottextInteraction: 'interactionInsert.hottext',
+  qtiMatchInteraction: 'interactionInsert.match',
+  qtiMatchInteractionTabular: 'interactionInsert.matchTabular',
+  qtiOrderInteraction: 'interactionInsert.order',
+  qtiSelectPointInteraction: 'interactionInsert.selectPoint',
+  qtiGapMatchInteraction: 'interactionInsert.gapMatch',
+  qtiRubricBlock: 'interactionInsert.rubricBlock',
   // qti-item-divider has its own static slash-menu entry below — the divider
   // node lives locally in this app and is not part of the descriptor registry.
 };
@@ -95,9 +107,9 @@ export class QtiSlashMenu extends LitElement {
     
     // Build menu items array before rendering
     const menuItems = descriptors
-      .filter(d => d.insertCommand && TAG_TO_I18N_KEY[d.tagName])
+      .filter(d => d.insertCommand && NODE_TYPE_TO_I18N_KEY[d.nodeTypeName])
       .map(descriptor => {
-        const i18nKey = TAG_TO_I18N_KEY[descriptor.tagName];
+        const i18nKey = NODE_TYPE_TO_I18N_KEY[descriptor.nodeTypeName];
         const label = translateQti(i18nKey, { target: this });
         return html`
           <lit-editor-slash-menu-item

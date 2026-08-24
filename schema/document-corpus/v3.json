@@ -1,0 +1,13 @@
+{
+  "type": "doc",
+  "schemaVersion": 3,
+  "attrs": { "title": "rubricScoringBlock still an attribute", "identifier": "corpus-v3" },
+  "content": [
+    { "type": "heading", "attrs": { "level": 1 }, "content": [{ "type": "text", "text": "Corpus v3" }] },
+    {
+      "type": "qtiExtendedTextInteraction",
+      "attrs": { "responseIdentifier": "RESPONSE", "rubricScoringBlock": "Award one mark per named cause." },
+      "content": [{ "type": "qtiPrompt", "content": [{ "type": "qtiPromptParagraph", "content": [{ "type": "text", "text": "Name two causes" }] }] }]
+    }
+  ]
+}

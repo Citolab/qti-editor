@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { buildCompatibilityReport } from '../lib/compatibility/index.js';
+import { i18n } from '../i18n.js';
+import { buildCompatibilityReport, buildUnreadableDocumentReport } from '../lib/compatibility/index.js';
+import { publishCompatibilityReport } from '../lib/compatibility/report-channel.js';
 import {
   clearCurrentSession,
   deleteFile,
@@ -127,9 +129,28 @@ export function useFileOperations(untitledLabel: string) {
 
   const handleLoad = useCallback(
     (id: string): SavedFile | null => {
-      const result = loadFile(storageScope, id);
-      if (!result) return null;
-      const { file, compatibility } = result;
+      const outcome = loadFile(storageScope, id);
+
+      if (outcome.status === 'missing') return null;
+
+      /*
+       * The file exists and cannot be read. Say so.
+       *
+       * `loadFile` refuses rather than opening it, because the alternative — stamping an unmigrated
+       * document as current — is the one outcome no later migration can undo. But refusing used to
+       * be indistinguishable from doing nothing: the file stayed in the list, clicking it had no
+       * effect, and the editor went on showing the previous document under the previous name.
+       */
+      if (outcome.status === 'refused') {
+        publishCompatibilityReport(buildUnreadableDocumentReport({
+          id: outcome.file.id,
+          label: outcome.file.name,
+          reason: unreadableFileReason(outcome.file),
+        }));
+        return null;
+      }
+
+      const { file, compatibility } = outcome;
       setCurrentFile(file);
       setFileNameState(file.name);
       fileNameManuallyEditedRef.current = true;
@@ -140,10 +161,7 @@ export function useFileOperations(untitledLabel: string) {
           label: file.name,
           result: compatibility,
         }]);
-        document.dispatchEvent(new CustomEvent('qti:compatibility:report', {
-          detail: report,
-          bubbles: true,
-        }));
+        publishCompatibilityReport(report);
       }
       return file;
     },
@@ -178,4 +196,17 @@ export function useFileOperations(untitledLabel: string) {
     handleDelete,
     queryClient,
   };
+}
+
+/**
+ * Why a stored file could not be opened, in the reader's language.
+ *
+ * The version it was written at is the whole diagnosis when there is one: a file from a *newer*
+ * editor is a different problem from a file whose migration step is missing, and the number is what
+ * separates them.
+ */
+function unreadableFileReason(file: SavedFile): string {
+  return typeof file.schemaVersion === 'number'
+    ? i18n.t('compatibilityFileUnreadableAtVersion', { version: file.schemaVersion })
+    : i18n.t('compatibilityFileUnreadable');
 }

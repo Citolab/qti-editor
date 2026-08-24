@@ -334,20 +334,20 @@ The editor uses a single, monotonically increasing **schema version** for the Pr
 
 ```ts
 // packages/prose-qti/src/interfaces/compatibility.ts (or compatibility.ts in interfaces)
-export const CURRENT_SCHEMA_VERSION = 6;
+export const CURRENT_SCHEMA_VERSION = 7;
 ```
 
 ### Where the version lives
 
-- **Persisted JSON** — the version travels inside the document as a single top-level property: `{ "type": "doc", "schemaVersion": 6, ... }`. There is no separate storage envelope.
+- **Persisted JSON** — the version travels inside the document as a single top-level property: `{ "type": "doc", "schemaVersion": 7, ... }`. There is no separate storage envelope.
   - `stampSchemaVersion(doc)` adds the marker before writing.
   - `readPersistedDoc(value)` strips it, migrates, and reports what changed.
   - Never stamp a document before migrating it.
-- **Roundtrip-QTI** — the HTML/XML representation does not carry the schema version inline. On import, `sourceVersion` is supplied programmatically to `migrateHtmlFragment`.
+- **Roundtrip-QTI** — nowhere. The HTML/XML representation carries no version marker, and there is no HTML migration ladder to feed one to. There was, briefly: a `migrateHtmlFragment` pipeline whose single step renamed camelCase QTI attributes to hyphenated. It was removed on 2026-08-20 — nothing this editor ever exported was camelCase (every `toDOM` writes hyphenated, and no commit ever wrote otherwise), and its version detection could not work for an import anyway, since the caller has no way to know what wrote the file. Imported XML is normalised by the `qti3-item-import` transforms and checked against the schema by `findUnrepresentableElements` instead.
 
 ### The migration pipeline
 
-Migrations live in `apps/qti-prosekit-app/src/lib/compatibility/migrations/`, one file per transition, named `json-vN-to-vM.ts` / `html-vN-to-vM.ts`:
+Migrations live in `apps/qti-prosekit-app/src/lib/compatibility/migrations/`, one file per transition, named `json-vN-to-vM.ts`. The chain is unbroken from 1 to `CURRENT_SCHEMA_VERSION`; `ladder.browser.test.ts` asserts that, because a gap would let a document at that version pass through untransformed.
 
 | Step | Transition | What it does |
 | --- | --- | --- |
@@ -356,9 +356,20 @@ Migrations live in `apps/qti-prosekit-app/src/lib/compatibility/migrations/`, on
 | `json-v3-to-v4` | 3 → 4 | lift `rubricScoringBlock` into a sibling `qtiRubricBlock` |
 | `json-v4-to-v5` | 4 → 5 | flat prosekit list → prosemirror-schema-list (`bullet_list`/`ordered_list`) |
 | `json-v5-to-v6` | 5 → 6 | `bold`/`italic` marks → `strong`/`em` |
-| `html-v1-to-v2` | 1 → 2 | normalise legacy camelCase HTML attrs |
+| `json-v6-to-v7` | 6 → 7 | carry stored `image` width/height across the block → inline move |
 
-To add a migration: bump `CURRENT_SCHEMA_VERSION`, add a `json-vN-to-vM.ts` file, register it in `compatibility/migrations/index.ts`, and add a test.
+To add a migration: bump `CURRENT_SCHEMA_VERSION`, add a `json-vN-to-vM.ts` file, register it in `compatibility/migrations/index.ts`, add a `schema/document-corpus/v<N>.json` fixture for the shape you left behind, and cover the new step's branches in `ladder.browser.test.ts`. Two suites, two questions: the corpus asks whether an old document still opens (real schema, frozen fixtures), the ladder test asks whether each step does what it says and reports what it did (no schema, hand-built shapes — a step's `warning` paths are unreachable from a single fixture).
+
+### When the ladder is not enough
+
+A schema change can outrun the migration ladder, and a document that cannot be loaded must not come back as silence. `@citolab/prose-qti/schema-recovery` is the layer for that case — pure ProseMirror, used by both editors:
+
+- `findSchemaViolation` — the explicit `Node.check()` neither ProseMirror nor ProseKit performs on load
+- `salvageJsonDocument` — unwrap unknown nodes keeping their children, drop unknown marks keeping the text, reset attribute values the schema rejects; everything removed is recorded *and* preserved verbatim
+- `findUnrepresentableElements` — what a schema cannot match in DOM it is about to parse, which is the only moment `DOMParser`'s silent unwrapping can be observed
+- `createRecoveryMarkerPlugin` — decorations at the places content was removed from
+
+The ladder, storage keys, quarantine and wording stay in the app. What every removal says is replaceable without forking: see [compatibility-messages.md](compatibility-messages.md). The full account of the design, including what is still open, is in `plans/surface-silent-document-load-failures.md`.
 
 ## Roundtrip-QTI Format
 

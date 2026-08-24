@@ -32,7 +32,27 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
     const attrs: Record<string, string> = {};
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     if (node.attrs.shuffle) attrs['shuffle'] = 'true';
-    if (node.attrs.orientation && node.attrs.orientation !== 'vertical') attrs['orientation'] = node.attrs.orientation;
+    // Written even when it is the 'vertical' default — unless the class already spells the
+    // orientation, in which case the class wins and this stays silent.
+    //
+    // `qti-order-interaction.styles.ts` upstream lays the whole interaction out from this attribute
+    // and from the equivalent `qti-orientation-*` class, and has NO rule for the case where neither
+    // is present: an element with no orientation falls into the *unspecified* platform default,
+    // which upstream defines as the two-column `'drags drops'` grid. So a freshly inserted order
+    // interaction — node spec default `'vertical'`, attribute suppressed as redundant — rendered
+    // the opposite of what its own node says, with the drop slots ragged inside half-width `1fr`
+    // tracks. Writing the default is what makes the model and the rendering agree.
+    //
+    // The class check is not cosmetic. `orientation` defaults to `'vertical'` for any element that
+    // did not carry the attribute, including ITEM013, whose source says
+    // `class="qti-orientation-horizontal"`. Writing both unconditionally would export two spellings
+    // of one QTI concept that CONTRADICT each other.
+    //
+    // Reflecting the property on the custom element instead is not an option: the attribute-sync
+    // plugin observes attribute mutations and writes them back into the node, so an element that
+    // reflects its own default re-renders itself forever (verified — it hangs the editor).
+    const orientationInClass = /(^|\s)qti-orientation-/.test(node.attrs.class ?? '');
+    if (node.attrs.orientation && !orientationInClass) attrs['orientation'] = node.attrs.orientation;
     if (node.attrs.class) attrs['class'] = node.attrs.class;
     // correctResponse is a comma-separated identifier list (qti-components
     // convention) — pass through as-is.

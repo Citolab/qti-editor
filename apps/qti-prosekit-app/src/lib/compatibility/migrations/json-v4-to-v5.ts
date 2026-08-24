@@ -1,3 +1,5 @@
+import { mapContent } from './shared.js';
+
 import type { JsonNode } from './shared.js';
 import type { CompatibilityChange, MigrationStep } from '@citolab/prose-qti/interfaces';
 import type { NodeJSON } from 'prosekit/core';
@@ -27,7 +29,7 @@ function convertFlatLists(
   addChange: (change: CompatibilityChange) => void,
 ): JsonNode {
   const nextContent = Array.isArray(node.content)
-    ? node.content.map((child, index) =>
+    ? mapContent(node.content, (child, index) =>
         convertFlatLists(child, `${path}.content[${index}]`, addChange),
       )
     : node.content;

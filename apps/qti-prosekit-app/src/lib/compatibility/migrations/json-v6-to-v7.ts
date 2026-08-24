@@ -34,8 +34,11 @@ import type { NodeJSON } from 'prosekit/core';
  * An `image` directly inside one of these is already in a legal inline position. Anywhere else —
  * `doc`, `qtiItemBody`, `qtiRubricBlock`, a list item, a table cell — it was a block node and now
  * needs a block parent to live in.
+ *
+ * Exported so `ladder.browser.test.ts` can assert every entry actually leaves an image alone. An
+ * entry added here without being exercised fails that test.
  */
-const V6_INLINE_CONTENT_NODES: ReadonlySet<string> = new Set([
+export const V6_INLINE_CONTENT_NODES: ReadonlySet<string> = new Set([
   'code_block',
   'heading',
   'paragraph',

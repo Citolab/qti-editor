@@ -1,5 +1,30 @@
 # Plan: Promote `rubric-block` to a first-class non-QTI attribute
 
+> **⚠️ Stale as of 2026-08-20 — Phase "legacy HTML migration" cannot be implemented as written.**
+>
+> This plan's legacy-item story rests on an HTML migration ladder that no longer exists.
+> `HTML_MIGRATION_STEPS`, `migrateHtmlFragment` and the `composeHtmlStep` helpers were deleted:
+> nothing this editor ever exported carried a camelCase QTI attribute (every node spec's `toDOM`
+> writes hyphenated, and no commit in the repo's history wrote otherwise), and the ladder's version
+> detection could not work for an import anyway — the caller has no way to know what version wrote a
+> file, so every import fell back to "assume v1" and ran the rename unconditionally. See the note in
+> `apps/qti-prosekit-app/src/lib/compatibility/migrations/index.ts`.
+>
+> The `correct-response` → `rubric-block` rename this plan wants is still worth doing; only its
+> mechanism has to change. Two places can carry it, both better suited than a version ladder because
+> neither needs to know when a file was written:
+>
+> 1. **A `getAttrs` fallback in the extended-text node spec** — read `rubric-block`, fall back to
+>    `correct-response` when it is absent. Version-free, applies to every file forever, and lives
+>    next to the `toDOM` that writes the new name.
+> 2. **A roundtrip import transform** in `defaultRoundtripTransforms`, if the rename should apply
+>    before the schema sees the document at all.
+>
+> Also stale independently of the above: the file paths here (`packages/prosemirror/extensions/`,
+> `packages/prosemirror/interaction-extended-text/`) predate the consolidation into three
+> `@citolab/*` packages, and the stated prerequisite `plans/unify-non-qti-attribute-metadata.md` has
+> not shipped.
+
 ## Goal
 
 Today the `qti-extended-text-interaction` element stores rubric/model-answer text in the PM node attribute `rubricScoringBlock`, but serializes it on the DOM as `correct-response="..."` ([qti-extended-text-interaction.schema.ts:37,60](packages/prosemirror/interaction-extended-text/src/components/qti-extended-text-interaction/qti-extended-text-interaction.schema.ts#L37)) — overloading the standard QTI meaning of `correct-response` ("the correct answer"). This collides badly with any external QTI consumer or converter, and is the only interaction-specific surprise in the otherwise consistent non-QTI attribute system.

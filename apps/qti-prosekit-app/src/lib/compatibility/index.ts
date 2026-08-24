@@ -7,14 +7,15 @@
  * 2. Unknown content is preserved, not discarded — when a step encounters data
  *    it cannot map to the current schema it must call `context.preserve` and
  *    emit an `UNKNOWN_NODE_PRESERVED` or `UNKNOWN_ATTRIBUTE_PRESERVED` change.
- *    Use `jsonPreserveUnknownAttrs` / `htmlPreserveUnknownAttrs` from helpers.ts.
+ *    Use `jsonPreserveUnknownAttrs` from helpers.ts.
  *
  * 3. Steps are strictly version-ordered — each `MigrationStep` declares
  *    `fromVersion` and `toVersion`. `migrateDocument` walks the chain in order.
- *    When no step bridges exactly from the current version, it skips forward to
- *    the next registered step (or to the target version if none remain). This
- *    lets one representation stop early (e.g. HTML at v2) while another keeps
- *    going (JSON to v6) under a single shared target version.
+ *    When no step bridges exactly from the current version it skips forward to the
+ *    next registered step, warning as it goes. That is a recovery path for a
+ *    document whose stored version marker is corrupt, NOT a design allowance: the
+ *    JSON ladder is expected to bridge every version from 1 to
+ *    `CURRENT_SCHEMA_VERSION` with no gaps, and `ladder.browser.test.ts` asserts it.
  *
  * 4. Version is detected before migration — `detectVersion` is called first;
  *    if it returns null the pipeline falls back to `fallbackVersion` (default 1)
@@ -121,14 +122,14 @@ export function createMigrationRegistry<TDocument>(
 export * from './helpers.js';
 export * from './migrations/index.js';
 export * from './json.js';
-export * from './dom.js';
 export * from './report.js';
 
 /**
  * Low-level migration runner. Prefer `createMigrationRegistry` for most use
  * cases — this is exposed for formats that build their own registry wrappers.
  *
- * Throws if a required version-bridge step is missing from `steps`.
+ * Never throws for a missing version bridge — it skips forward and warns, per invariant 3. The
+ * previous line of this comment claimed it threw; it never did.
  */
 export function migrateDocument<TDocument>(
   document: TDocument,
@@ -152,10 +153,19 @@ export function migrateDocument<TDocument>(
   while (currentVersion < options.targetVersion) {
     const nextStep = steps.find(step => step.fromVersion === currentVersion);
     if (!nextStep) {
-      // No step bridges exactly from currentVersion. Skip forward to the next
-      // registered step (a representation may not need a transform at every
-      // version — e.g. HTML stops at v2 while JSON continues to v6). If no
-      // further step exists, jump straight to the target version.
+      /*
+       * No step bridges exactly from currentVersion, so skip forward to the next registered one.
+       *
+       * This is a recovery path, not a feature. It used to be one — HTML stopped at v2 while JSON
+       * continued, so a gap was normal and logged as `info` — but the HTML ladder is gone and a gap
+       * in the JSON ladder is now unambiguously a bug: a document at that version passes through
+       * untransformed. `ladder.browser.test.ts` asserts the chain is unbroken, so the only way to
+       * reach this in practice is a stored version marker that is corrupt or from the future.
+       *
+       * It skips rather than throwing because `readPersistedDoc` promises to be safe with untrusted
+       * input, and `schemaVersion: 0` in localStorage should still open the document. Hence the
+       * `warning`: recovery happened, and the user is told.
+       */
       const forwardStep = steps.find(step => step.fromVersion > currentVersion);
       if (!forwardStep) {
         currentVersion = options.targetVersion;
@@ -163,7 +173,7 @@ export function migrateDocument<TDocument>(
       }
       changes.push({
         code: 'VERSION_DETECTED',
-        severity: 'info',
+        severity: 'warning',
         message: `No migration step for version ${currentVersion}; skipping forward to ${forwardStep.fromVersion}.`,
         fromVersion: currentVersion,
         toVersion: forwardStep.fromVersion,

@@ -1,0 +1,13 @@
+{
+  "type": "doc",
+  "schemaVersion": 2,
+  "attrs": { "title": "Extended text carried correctResponse", "identifier": "corpus-v2" },
+  "content": [
+    { "type": "heading", "attrs": { "level": 1 }, "content": [{ "type": "text", "text": "Corpus v2" }] },
+    {
+      "type": "qtiExtendedTextInteraction",
+      "attrs": { "responseIdentifier": "RESPONSE", "correctResponse": "A model answer lived in an attribute." },
+      "content": [{ "type": "qtiPrompt", "content": [{ "type": "qtiPromptParagraph", "content": [{ "type": "text", "text": "Explain your reasoning" }] }] }]
+    }
+  ]
+}

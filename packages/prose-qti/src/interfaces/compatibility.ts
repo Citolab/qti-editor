@@ -16,6 +16,8 @@
  *   v4 — Lift rubricScoringBlock into a sibling qtiRubricBlock node.
  *   v5 — Convert prosekit flat `list` nodes to bullet_list/ordered_list + list_item.
  *   v6 — Convert legacy `bold`/`italic` marks to `strong`/`em`.
+ *   v7 — Carry stored `image` width/height across the block -> inline move and the
+ *        `number` -> `string|null` attribute change.
  */
 export const CURRENT_SCHEMA_VERSION = 7;
 
@@ -37,7 +39,10 @@ export type CompatibilityChangeCode =
   | 'ATTRIBUTE_REMOVED'
   | 'UNKNOWN_NODE_PRESERVED'
   | 'UNKNOWN_ATTRIBUTE_PRESERVED'
-  | 'UNSUPPORTED_CONTENT_PRESERVED';
+  | 'UNSUPPORTED_CONTENT_PRESERVED'
+  // A stored document could not be read at all. The only code here that is not about a change made
+  // to a document — it reports that no change was made, and why.
+  | 'DOCUMENT_UNREADABLE';
 
 export interface DocumentVersion {
   value: number;

@@ -1,0 +1,119 @@
+{
+  "type": "doc",
+  "schemaVersion": 7,
+  "attrs": { "title": "Every node type, at the current version", "identifier": "corpus-v7" },
+  "content": [
+    { "type": "heading", "attrs": { "level": 1 }, "content": [{ "type": "text", "text": "Corpus v7" }] },
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "strong", "marks": [{ "type": "strong" }] },
+        { "type": "text", "text": " and " },
+        { "type": "text", "text": "emphasis", "marks": [{ "type": "em" }] },
+        { "type": "hardBreak" },
+        { "type": "image", "attrs": { "src": "resources/atom.png", "alt": "Atom", "width": "100%" } },
+        { "type": "text", "text": " type here: " },
+        { "type": "qtiTextEntryInteraction", "attrs": { "responseIdentifier": "RESP_TEXT" } },
+        { "type": "text", "text": " and pick: " },
+        {
+          "type": "qtiInlineChoiceInteraction",
+          "attrs": { "responseIdentifier": "RESP_INLINE" },
+          "content": [
+            { "type": "qtiInlineChoice", "attrs": { "identifier": "IA" }, "content": [{ "type": "text", "text": "first" }] },
+            { "type": "qtiInlineChoice", "attrs": { "identifier": "IB" }, "content": [{ "type": "text", "text": "second" }] }
+          ]
+        }
+      ]
+    },
+    { "type": "qtiRubricBlock", "attrs": { "use": "scoring", "view": "scorer" }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "One mark per named cause." }] }] },
+    { "type": "bullet_list", "content": [{ "type": "list_item", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "A bullet" }] }] }] },
+    { "type": "ordered_list", "content": [{ "type": "list_item", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "A numbered item" }] }] }] },
+    {
+      "type": "table",
+      "content": [
+        {
+          "type": "tableRow",
+          "content": [
+            { "type": "tableHeaderCell", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Header" }] }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Cell" }] }] }
+          ]
+        }
+      ]
+    },
+    { "type": "qtiLayoutDiv", "attrs": { "class": "qti-layout-row" }, "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Inside a layout div." }] }] },
+    { "type": "qtiMediaStub" },
+    {
+      "type": "qtiChoiceInteraction",
+      "attrs": { "responseIdentifier": "RESP_CHOICE", "maxChoices": 1 },
+      "content": [
+        { "type": "qtiPrompt", "content": [{ "type": "qtiPromptParagraph", "content": [{ "type": "text", "text": "Pick one" }] }] },
+        { "type": "qtiSimpleChoice", "attrs": { "identifier": "A" }, "content": [{ "type": "qtiSimpleChoiceParagraph", "content": [{ "type": "text", "text": "Alpha" }] }] },
+        { "type": "qtiSimpleChoice", "attrs": { "identifier": "B" }, "content": [{ "type": "qtiSimpleChoiceParagraph", "content": [{ "type": "text", "text": "Bravo" }] }] }
+      ]
+    },
+    {
+      "type": "qtiOrderInteraction",
+      "attrs": { "responseIdentifier": "RESP_ORDER" },
+      "content": [
+        { "type": "qtiPrompt", "content": [{ "type": "qtiPromptParagraph", "content": [{ "type": "text", "text": "Put these in order" }] }] },
+        { "type": "qtiSimpleChoice", "attrs": { "identifier": "O1" }, "content": [{ "type": "qtiSimpleChoiceParagraph", "content": [{ "type": "text", "text": "First" }] }] },
+        { "type": "qtiSimpleChoice", "attrs": { "identifier": "O2" }, "content": [{ "type": "qtiSimpleChoiceParagraph", "content": [{ "type": "text", "text": "Second" }] }] }
+      ]
+    },
+    { "type": "qtiExtendedTextInteraction", "attrs": { "responseIdentifier": "RESP_EXT" }, "content": [{ "type": "qtiPrompt", "content": [{ "type": "qtiPromptParagraph", "content": [{ "type": "text", "text": "Explain your reasoning" }] }] }] },
+    {
+      "type": "qtiSelectPointInteraction",
+      "attrs": { "responseIdentifier": "RESP_POINT" },
+      "content": [
+        { "type": "qtiPrompt", "content": [{ "type": "qtiPromptParagraph", "content": [{ "type": "text", "text": "Click the nucleus" }] }] },
+        { "type": "imgSelectPoint", "attrs": { "imageSrc": "resources/atom.png", "imageAlt": "Atom" } }
+      ]
+    },
+    {
+      "type": "qtiHottextInteraction",
+      "attrs": { "responseIdentifier": "RESP_HOT" },
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            { "type": "text", "text": "Choose " },
+            { "type": "qtiHottext", "attrs": { "identifier": "H1" }, "content": [{ "type": "text", "text": "this word" }] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "qtiGapMatchInteraction",
+      "attrs": { "responseIdentifier": "RESP_GAP" },
+      "content": [
+        { "type": "qtiPrompt", "content": [{ "type": "qtiPromptParagraph", "content": [{ "type": "text", "text": "Drag the word into the gap" }] }] },
+        { "type": "qtiGapText", "attrs": { "identifier": "G1", "matchMax": 1 }, "content": [{ "type": "text", "text": "draggable" }] },
+        {
+          "type": "paragraph",
+          "content": [
+            { "type": "text", "text": "Fill this " },
+            { "type": "qtiGap", "attrs": { "identifier": "GAP1" } }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "qtiMatchInteraction",
+      "attrs": { "responseIdentifier": "RESP_MATCH" },
+      "content": [
+        { "type": "qtiPrompt", "content": [{ "type": "qtiPromptParagraph", "content": [{ "type": "text", "text": "Match the pairs" }] }] },
+        { "type": "qtiSimpleMatchSet", "content": [{ "type": "qtiSimpleAssociableChoice", "attrs": { "identifier": "L1" }, "content": [{ "type": "qtiSimpleAssociableChoiceParagraph", "content": [{ "type": "text", "text": "Left" }] }] }] },
+        { "type": "qtiSimpleMatchSet", "content": [{ "type": "qtiSimpleAssociableChoice", "attrs": { "identifier": "R1" }, "content": [{ "type": "qtiSimpleAssociableChoiceParagraph", "content": [{ "type": "text", "text": "Right" }] }] }] }
+      ]
+    },
+    {
+      "type": "qtiMatchInteractionTabular",
+      "attrs": { "responseIdentifier": "RESP_MATCH_TAB" },
+      "content": [
+        { "type": "qtiPrompt", "content": [{ "type": "qtiPromptParagraph", "content": [{ "type": "text", "text": "Match, as a table" }] }] },
+        { "type": "qtiSimpleMatchSet", "content": [{ "type": "qtiSimpleAssociableChoice", "attrs": { "identifier": "TL1" }, "content": [{ "type": "qtiSimpleAssociableChoiceParagraph", "content": [{ "type": "text", "text": "Row" }] }] }] },
+        { "type": "qtiSimpleMatchSet", "content": [{ "type": "qtiSimpleAssociableChoice", "attrs": { "identifier": "TR1" }, "content": [{ "type": "qtiSimpleAssociableChoiceParagraph", "content": [{ "type": "text", "text": "Column" }] }] }] }
+      ]
+    }
+  ]
+}

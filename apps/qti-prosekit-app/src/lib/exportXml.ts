@@ -1,7 +1,6 @@
 import { qtiItemFromProsemirror, xmlFromNode } from './qti-export.js';
 import { createQtiPackageFromNode } from '../components/package-builder/index.js';
 
-import type { Schema } from 'prosekit/pm/model';
 import type { ProseMirrorNode } from 'prosekit/pm/model';
 
 export interface ExportXmlOptions {
@@ -25,7 +24,23 @@ export function exportJson(node: ProseMirrorNode, fileName: string = 'item'): vo
   URL.revokeObjectURL(url);
 }
 
-export function importJson(schema: Schema): Promise<ProseMirrorNode> {
+/** A picked JSON file: the parsed value, and the name to report it under. */
+export interface PickedJsonFile {
+  value: unknown;
+  fileName: string;
+}
+
+/**
+ * Picks a JSON file and parses it. Does *not* build a document from it.
+ *
+ * It used to do both, with `schema.nodeFromJSON` inline — which throws on any node type the schema
+ * does not have, so importing a document written by an older schema failed whole rather than
+ * partially, and the caller could only show "Failed to import JSON file". The same content restored
+ * from localStorage would have been migrated and salvaged. There is no reason the file-picker path
+ * should be the harsher one, so the parsing stops here and the compatibility pipeline takes it from
+ * the caller.
+ */
+export function pickJsonFile(): Promise<PickedJsonFile> {
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -36,10 +51,9 @@ export function importJson(schema: Schema): Promise<ProseMirrorNode> {
       const reader = new FileReader();
       reader.onload = () => {
         try {
-          const json = JSON.parse(reader.result as string);
-          resolve(schema.nodeFromJSON(json));
+          resolve({ value: JSON.parse(reader.result as string), fileName: file.name });
         } catch {
-          reject(new Error('Invalid ProseMirror JSON'));
+          reject(new Error('Invalid JSON'));
         }
       };
       reader.readAsText(file);

@@ -7,22 +7,27 @@
 // element registration is global per document, so both can't coexist in one
 // page — this iframe gives the real, candidate-interactive components their
 // own registry to claim those tags in.
-// native.css is just the QTI-spec layout utility classes (qti-display-flex,
-// etc.) — it has no interaction theming. The actual choice/radio/checkbox
-// visuals live in item.css as `::part(ch)`/`::part(cha)` rules driven by
-// `:root { --qti-form-size: ...; }` custom properties. item-container already
-// adopts its own copy of item.css into its shadow root (for the ::part()
-// selectors to match), but a `:root` block inside a shadow-adopted
-// stylesheet never matches anything — only a real page-level `:root` does.
-// CSS custom properties inherit through shadow boundaries even though
-// selectors don't, so importing item.css here (page level) is what actually
-// makes those variables — and therefore the visuals — take effect.
+
+// item.css at page level, and only item.css.
+//
+// The actual choice/radio/checkbox visuals live in item.css as `::part()` rules sized from
+// `:root { --qti-control-size: ...; }` custom properties. item-container already adopts its own copy
+// of item.css into its shadow root (for the `::part()` selectors to match), but a `:root` block
+// inside a shadow-adopted stylesheet never matches anything — only a real page-level `:root` does.
+// Custom properties inherit through shadow boundaries even though selectors do not, so importing
+// item.css here (page level) is what makes those variables — and therefore the visuals — take effect.
+//
+// native.css is NOT imported. It is the QTI-spec layout utility vocabulary (qti-display-flex,
+// qti-orientation-*, qti-layout-col*), and item.css already `@import`s it — postcss-import inlines
+// it at theme build time, so all 317 of its class selectors are in the file below. Importing both
+// shipped the same 20KB twice into one document.
+//
+// The font comes from preview.html; the theme declares none. See the note there.
 
 // Must come first: claims the standard QTI tag names for the correction-capable
 // subclasses before the plain packages below register their own. See the module.
 import './preview-corrections';
 
-import '@qti-components/theme/native.css';
 import '@qti-components/theme/item.css';
 import '@qti-components/elements';
 import '@qti-components/item';

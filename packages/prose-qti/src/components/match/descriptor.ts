@@ -7,6 +7,7 @@ import {
 } from '../shared';
 import {
   insertMatchInteraction,
+  insertMatchInteractionTabular,
   insertSimpleAssociableChoiceOnEnter,
 } from './components/qti-match-interaction/qti-match-interaction.commands.js';
 import { qtiMatchInteractionNodeSpec } from './components/qti-match-interaction/qti-match-interaction.schema.js';
@@ -60,6 +61,7 @@ export const matchInteractionTabularDescriptor = {
     { name: 'qtiSimpleAssociableChoiceParagraph', spec: qtiSimpleAssociableChoiceParagraphNodeSpec },
   ],
   pluginFactories: [createQtiMatchTabularNodeViewPlugin, () => createChipMenuPlugin('match-tabular')],
+  insertCommand: insertMatchInteractionTabular,
   enterCommand: insertSimpleAssociableChoiceOnEnter,
   composerMetadata: matchInteractionComposerMetadata,
   composerHandler: matchComposerHandler,

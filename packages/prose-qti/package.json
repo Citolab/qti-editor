@@ -38,6 +38,15 @@
       "types": "./dist/schema/index.d.ts",
       "default": "./dist/schema/index.js"
     },
+    "./schema-recovery": {
+      "types": "./dist/schema-recovery/index.d.ts",
+      "default": "./dist/schema-recovery/index.js"
+    },
+    "./schema-recovery/notice": {
+      "types": "./dist/schema-recovery/notice/index.d.ts",
+      "default": "./dist/schema-recovery/notice/index.js"
+    },
+    "./schema-recovery/notice.css": "./dist/schema-recovery/notice/notice.css",
     "./schema/*": {
       "types": "./dist/schema/*",
       "default": "./dist/schema/*"
@@ -242,7 +251,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css && cp src/core-css/*.css dist/core-css/ && cp src/qti-prose.css dist/qti-prose.css",
+    "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css dist/schema-recovery/notice && cp src/core-css/*.css dist/core-css/ && cp src/schema-recovery/notice/*.css dist/schema-recovery/notice/ && cp src/qti-prose.css dist/qti-prose.css",
     "typecheck": "tsc --noEmit -p ./tsconfig.json",
     "clean": "rm -rf dist"
   },

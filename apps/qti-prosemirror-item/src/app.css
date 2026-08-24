@@ -2,6 +2,8 @@
 @import '@qti-components/theme/item.css';
 /* @import '@qti-components/theme/kennisnet-override.css'; */
 @import '@citolab/prose-qti/core-css.css';
+/* Styling for the schema-gap notice, from the package that renders it. */
+@import '@citolab/prose-qti/schema-recovery/notice.css';
 
 :root {
   --border: #d8dde3;

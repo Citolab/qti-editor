@@ -14,66 +14,109 @@ import type { Command } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 
 /**
+ * The default match template, shared by both modes.
+ *
+ * The two variants differ in exactly three things: which interaction node type holds them, whether
+ * `qti-match-tabular` is on the class, and the prompt. Everything below — three statements each
+ * taking one answer, three answer sets each able to take all three — is identical, deliberately, so
+ * that the two entries in the Interactions menu produce the same question in two presentations
+ * rather than two different questions.
+ *
+ * `matchMax` is what makes the tabular grid a radio grid rather than a checkbox grid: 1 on a source
+ * means a statement is filed under exactly one column. The targets take `sourceChoices.length`,
+ * which matches what `insertSimpleAssociableChoiceOnEnter` computes when the author adds a column
+ * later — the template and the Enter command have to agree or a fourth column would arrive with a
+ * different limit from the first three.
+ */
+function createMatchInteractionNode(
+  currentState: Parameters<Command>[0],
+  options: { nodeTypeName: 'qtiMatchInteraction' | 'qtiMatchInteractionTabular'; promptKey: string; className: string | null },
+  target: Element | null,
+) {
+  const { schema } = currentState;
+  const promptType = schema.nodes.qtiPrompt;
+  const promptParagraphType = schema.nodes.qtiPromptParagraph;
+  const matchSetType = schema.nodes.qtiSimpleMatchSet;
+  const associableChoiceType = schema.nodes.qtiSimpleAssociableChoice;
+  const associableChoiceParagraphType = schema.nodes.qtiSimpleAssociableChoiceParagraph;
+  const interactionType = schema.nodes[options.nodeTypeName];
+
+  if (!promptType || !promptParagraphType || !matchSetType || !associableChoiceType || !associableChoiceParagraphType || !interactionType) {
+    return null;
+  }
+
+  const responseIdentifier = `RESPONSE_${crypto.randomUUID()}`;
+  const prompt = promptType.create(
+    null,
+    promptParagraphType.create(null, schema.text(translateQti(options.promptKey, { target }))),
+  );
+
+  const choice = (prefix: 'SOURCE' | 'TARGET', matchMax: number, labelKey: string) =>
+    associableChoiceType.create(
+      { identifier: `${prefix}_${crypto.randomUUID()}`, matchMax },
+      associableChoiceParagraphType.create(null, schema.text(translateQti(labelKey, { target }))),
+    );
+
+  // First match set (source choices) — the drags in drag-drop mode, the rows in tabular mode.
+  const sourceLabelKeys = ['choice.itemA', 'choice.itemB', 'choice.itemC'];
+  const sourceMatchSet = matchSetType.create(
+    null,
+    sourceLabelKeys.map(key => choice('SOURCE', 1, key)),
+  );
+
+  // Second match set (target choices) — the drops in drag-drop mode, the columns in tabular mode.
+  const targetMatchSet = matchSetType.create(
+    null,
+    ['choice.option1', 'choice.option2', 'choice.option3'].map(key =>
+      choice('TARGET', sourceLabelKeys.length, key),
+    ),
+  );
+
+  return interactionType.create(
+    options.className ? { responseIdentifier, class: options.className } : { responseIdentifier },
+    [prompt, sourceMatchSet, targetMatchSet],
+  );
+}
+
+/**
  * Command to insert a match interaction at the current selection
  */
 export const insertMatchInteraction: Command = (state, dispatch, view?: EditorView) => {
   const target = view?.dom ?? null;
   return createInsertBlockInteractionCommand({
-    createNode: currentState => {
-      const { schema } = currentState;
-      const promptType = schema.nodes.qtiPrompt;
-      const promptParagraphType = schema.nodes.qtiPromptParagraph;
-      const matchSetType = schema.nodes.qtiSimpleMatchSet;
-      const associableChoiceType = schema.nodes.qtiSimpleAssociableChoice;
-      const associableChoiceParagraphType = schema.nodes.qtiSimpleAssociableChoiceParagraph;
-      const interactionType = schema.nodes.qtiMatchInteraction;
+    createNode: currentState =>
+      createMatchInteractionNode(
+        currentState,
+        { nodeTypeName: 'qtiMatchInteraction', promptKey: 'prompt.match.default', className: null },
+        target,
+      ),
+    selectionOffset: 2,
+  })(state, dispatch);
+};
 
-      if (!promptType || !promptParagraphType || !matchSetType || !associableChoiceType || !associableChoiceParagraphType || !interactionType) {
-        return null;
-      }
-
-      const responseIdentifier = `RESPONSE_${crypto.randomUUID()}`;
-      const prompt = promptType.create(
-        null,
-        promptParagraphType.create(null, schema.text(translateQti('prompt.match.default', { target }))),
-      );
-
-      // Create first match set (source choices)
-      const sourceChoices = [
-        associableChoiceType.create(
-          { identifier: `SOURCE_${crypto.randomUUID()}`, matchMax: 1 },
-          associableChoiceParagraphType.create(null, schema.text(translateQti('choice.itemA', { target })))
-        ),
-        associableChoiceType.create(
-          { identifier: `SOURCE_${crypto.randomUUID()}`, matchMax: 1 },
-          associableChoiceParagraphType.create(null, schema.text(translateQti('choice.itemB', { target })))
-        ),
-        associableChoiceType.create(
-          { identifier: `SOURCE_${crypto.randomUUID()}`, matchMax: 1 },
-          associableChoiceParagraphType.create(null, schema.text(translateQti('choice.itemC', { target })))
-        )
-      ];
-      const sourceMatchSet = matchSetType.create(null, sourceChoices);
-
-      // Create second match set (target choices)
-      const targetChoices = [
-        associableChoiceType.create(
-          { identifier: `TARGET_${crypto.randomUUID()}`, matchMax: 3 },
-          associableChoiceParagraphType.create(null, schema.text(translateQti('choice.option1', { target })))
-        ),
-        associableChoiceType.create(
-          { identifier: `TARGET_${crypto.randomUUID()}`, matchMax: 3 },
-          associableChoiceParagraphType.create(null, schema.text(translateQti('choice.option2', { target })))
-        ),
-        associableChoiceType.create(
-          { identifier: `TARGET_${crypto.randomUUID()}`, matchMax: 3 },
-          associableChoiceParagraphType.create(null, schema.text(translateQti('choice.option3', { target })))
-        )
-      ];
-      const targetMatchSet = matchSetType.create(null, targetChoices);
-
-      return interactionType.create({ responseIdentifier }, [prompt, sourceMatchSet, targetMatchSet]);
-    },
+/**
+ * Command to insert the TABULAR match interaction at the current selection.
+ *
+ * A separate node type rather than a flag on the existing one, because that is how the schema
+ * already models it: both variants serialise to `<qti-match-interaction>` and the
+ * `qti-match-tabular` class is the only discriminator, so each needs its own `parseDOM` to claim
+ * its half on import. The class is written into the node's `class` attribute (not just onto the
+ * rendered element) so it survives a round trip and stays visible and editable in the attribute
+ * panel — see `qtiMatchInteractionTabularNodeSpec`.
+ */
+export const insertMatchInteractionTabular: Command = (state, dispatch, view?: EditorView) => {
+  const target = view?.dom ?? null;
+  return createInsertBlockInteractionCommand({
+    createNode: currentState =>
+      createMatchInteractionNode(
+        currentState,
+        {
+          nodeTypeName: 'qtiMatchInteractionTabular',
+          promptKey: 'prompt.matchTabular.default',
+          className: 'qti-match-tabular',
+        },
+        target,
+      ),
     selectionOffset: 2,
   })(state, dispatch);
 };

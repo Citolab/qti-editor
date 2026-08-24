@@ -1,9 +1,11 @@
-import { defaultRoundtripTransforms, importItemFromString } from '@citolab/prose-qti/item-roundtrip';
+import { defaultRoundtripTransforms, itemBodyFromString, parseItemBody } from '@citolab/prose-qti/item-roundtrip';
+import { findUnrepresentableElements, TRANSPARENT_WRAPPER_TAGS } from '@citolab/prose-qti/schema-recovery';
 import { createEditor, union } from 'prosekit/core';
 
 import { defineBasicExtension } from '../extensions/basic-extension.js';
 import { defineQtiInteractionsExtension } from '../extensions/qti-interactions-extension.js';
 
+import type { SchemaGapOutcome } from '@citolab/prose-qti/schema-recovery';
 import type { NodeJSON } from 'prosekit/core';
 import type { Node } from 'prosekit/pm/model';
 
@@ -23,6 +25,15 @@ export interface ImportXmlResult {
     title?: string;
     identifier?: string;
   };
+  /**
+   * What the schema could not represent in the file. Empty for a file the editor models fully.
+   *
+   * Present because the parse itself will not tell you: ProseMirror's `DOMParser` skips an element
+   * no rule matches and parses its children in its place, silently, so importing an item that uses
+   * anything outside this editor's vocabulary loses it without a word. Asking the schema first is
+   * the only way to know.
+   */
+  gaps: SchemaGapOutcome;
 }
 
 /**
@@ -70,9 +81,17 @@ export function importXmlFromText(xmlText: string): ImportXmlResult {
   // Use the same qti-transform-backed import path as the reference editors.
   // It applies the canonical interaction/item transforms, reduces to
   // qti-item-body, preserves empty custom elements, and parses with this schema.
-  const doc = importItemFromString(cleanedXml, qtiImportSchema, {
+  //
+  // Split across `itemBodyFromString` / `parseItemBody` so the item body can be inspected in
+  // between: after the transforms have run, so nothing the transforms consume is mistaken for lost
+  // content, and before the parse, which is where the losing happens.
+  const itemBody = itemBodyFromString(cleanedXml, {
     transforms: [...defaultRoundtripTransforms],
   });
+  const gaps = findUnrepresentableElements(qtiImportSchema, itemBody.documentElement, {
+    ignoreTags: TRANSPARENT_WRAPPER_TAGS,
+  });
+  const doc = parseItemBody(itemBody, qtiImportSchema);
 
   // Extract metadata
   const metadata = extractMetadata(cleanedXml);
@@ -80,6 +99,7 @@ export function importXmlFromText(xmlText: string): ImportXmlResult {
   return {
     json: doc.toJSON(),
     metadata,
+    gaps,
   };
 }
 
@@ -120,7 +140,12 @@ export function openXmlFilePicker(): Promise<ImportXmlResult> {
   });
 }
 
-export function importRoundtripXml(): Promise<Node> {
+export interface ImportRoundtripXmlResult {
+  doc: Node;
+  gaps: SchemaGapOutcome;
+}
+
+export function importRoundtripXml(): Promise<ImportRoundtripXmlResult> {
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -131,10 +156,15 @@ export function importRoundtripXml(): Promise<Node> {
       const reader = new FileReader();
       reader.onload = () => {
         try {
-          const doc = importItemFromString(reader.result as string, qtiImportSchema, {
+          const itemBody = itemBodyFromString(reader.result as string, {
             transforms: [...defaultRoundtripTransforms],
           });
-          resolve(doc);
+          resolve({
+            gaps: findUnrepresentableElements(qtiImportSchema, itemBody.documentElement, {
+              ignoreTags: TRANSPARENT_WRAPPER_TAGS,
+            }),
+            doc: parseItemBody(itemBody, qtiImportSchema),
+          });
         } catch {
           reject(new Error('Invalid roundtrip XML'));
         }

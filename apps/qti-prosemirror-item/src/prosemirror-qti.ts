@@ -37,8 +37,10 @@ import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-b
 import {
   defaultRoundtripTransforms,
   exportItemXml,
-  importItemFromUrl
+  itemBodyFromUrl,
+  parseItemBody
 } from '@citolab/prose-qti/item-roundtrip';
+import { findUnrepresentableElements, TRANSPARENT_WRAPPER_TAGS } from '@citolab/prose-qti/schema-recovery';
 
 import { qtiTransformTest } from '@qti-components/transformers';
 
@@ -60,8 +62,15 @@ import '@citolab/prose-qti/components/shared/components/qti-gap/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-gap-text/register.js';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
+import type { SchemaGapOutcome } from '@citolab/prose-qti/schema-recovery';
 import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
 import type { Plugin } from 'prosemirror-state';
+
+/** An imported item, plus what the schema could not represent in it. */
+export interface ImportedQtiItem {
+  doc: ProseMirrorNode;
+  gaps: SchemaGapOutcome;
+}
 
 /** Every descriptor this minimal editor understands. */
 export const descriptors: InteractionDescriptor[] = [
@@ -129,10 +138,23 @@ export async function loadQtiItems(): Promise<{ href: string; identifier: string
  * with `qtiPrompt?` (matching the package NodeSpecs), so a prompt-less interaction parses as what it
  * is and no transform is needed.
  */
-export function importQtiItem(href: string, schema: Schema): Promise<ProseMirrorNode> {
-  return importItemFromUrl(href, schema, {
-    transforms: [...defaultRoundtripTransforms]
+export async function importQtiItem(href: string, schema: Schema): Promise<ImportedQtiItem> {
+  const itemBody = await itemBodyFromUrl(href, { transforms: [...defaultRoundtripTransforms] });
+
+  /*
+   * Ask the schema what it cannot represent, before parsing rather than after.
+   *
+   * This editor models ten interactions and the QTI standard has more, so a real item routinely
+   * contains elements it has no node for — and ProseMirror's `DOMParser` deals with those by
+   * skipping the element and parsing its children in its place. Silently. Nothing in the parsed
+   * document records that anything was dropped, and the narrower the schema the more it drops, so
+   * the only moment the question can be answered is this one.
+   */
+  const gaps = findUnrepresentableElements(schema, itemBody.documentElement, {
+    ignoreTags: TRANSPARENT_WRAPPER_TAGS,
   });
+
+  return { doc: parseItemBody(itemBody, schema), gaps };
 }
 
 /** Serialize a ProseMirror document back to a QTI 3.0 item XML string. */

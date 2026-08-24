@@ -9,6 +9,7 @@ import { EditorLayout, type EditorLayoutHandle } from './components/layout/layou
 import { StatusBar } from './components/layout/status-bar.js';
 import { UnsavedChangesDialog } from './components/file-management/unsaved-changes-dialog.js';
 import { LoginModal } from './components/auth/LoginModal.js';
+import { CompatibilityNotice } from './components/compatibility/compatibility-notice.js';
 import { useFileOperations } from './hooks/use-file-operations.js';
 import { useEditorDirtyState } from './hooks/use-editor-dirty-state.js';
 import { useAutoSave } from './hooks/use-auto-save.js';
@@ -82,7 +83,10 @@ export default function App() {
     (id: string) => {
       setLoadMenuOpen(false);
       withUnsavedGuard(() => {
-        handleLoad(id);
+        // A file that could not be opened must not remount the editor. Remounting would rebuild it
+        // from the autosave slot, which still holds the *previous* document — so the old content
+        // would reappear looking like the file that was just clicked.
+        if (!handleLoad(id)) return;
         resetDirty();
         setEditorKey((k) => k + 1);
       });
@@ -234,6 +238,8 @@ export default function App() {
         onSignIn={() => setLoginModalOpen(true)}
         onSignOut={signOut}
       />
+
+      <CompatibilityNotice />
 
       <EditorLayout
         ref={editorLayoutRef}

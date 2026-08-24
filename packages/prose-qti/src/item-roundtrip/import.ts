@@ -104,7 +104,36 @@ export function importItemFromString(
   schema: Schema,
   options: RoundtripImportOptions = {},
 ): ProseMirrorNode {
-  const itemBody = runRoundtrip(qtiTransformItem().parse(xml), options);
+  return parseItemBody(itemBodyFromString(xml, options), schema);
+}
+
+/**
+ * The transformed `<qti-item-body>` an import is about to parse, without parsing it.
+ *
+ * Split out because parsing is where content goes missing and there is no way to ask afterwards
+ * what was lost: ProseMirror's `DOMParser` drops what its schema cannot match and reports nothing.
+ * An editor whose schema models a subset of QTI — every editor — needs to compare the two, so it
+ * needs the input in hand:
+ *
+ * ```ts
+ * const itemBody = itemBodyFromString(xml, options);
+ * const gaps = findUnrepresentableElements(schema, itemBody.documentElement);
+ * const doc = parseItemBody(itemBody, schema);
+ * ```
+ *
+ * Callers with no such interest should keep using `importItemFromString`, which is this pair.
+ */
+export function itemBodyFromString(xml: string, options: RoundtripImportOptions = {}): XMLDocument {
+  return runRoundtrip(qtiTransformItem().parse(xml), options);
+}
+
+/**
+ * Parse a transformed `<qti-item-body>` into a ProseMirror document.
+ *
+ * The second half of {@link itemBodyFromString}. Takes the item body as-is — the transforms have
+ * already run, and running them again is the caller's business, not this function's.
+ */
+export function parseItemBody(itemBody: XMLDocument, schema: Schema): ProseMirrorNode {
   return roundtripXmlToPm(itemBody, schema);
 }
 
@@ -120,8 +149,18 @@ export async function importItemFromUrl(
   schema: Schema,
   options: RoundtripImportOptions & { signal?: AbortSignal } = {},
 ): Promise<ProseMirrorNode> {
+  return parseItemBody(await itemBodyFromUrl(url, options), schema);
+}
+
+/**
+ * The transformed `<qti-item-body>` a URL import is about to parse, without parsing it. See
+ * {@link itemBodyFromString} for why the two halves are separable.
+ */
+export async function itemBodyFromUrl(
+  url: string,
+  options: RoundtripImportOptions & { signal?: AbortSignal } = {},
+): Promise<XMLDocument> {
   const api = await qtiTransformItem().load(url, options.signal);
   const assetBasePath = options.assetBasePath ?? url.substring(0, url.lastIndexOf('/'));
-  const itemBody = runRoundtrip(api, { ...options, assetBasePath });
-  return roundtripXmlToPm(itemBody, schema);
+  return runRoundtrip(api, { ...options, assetBasePath });
 }
