@@ -36,3 +36,19 @@ Add the returned extension to your editor's extension composition.
 
 Use this when pasted content needs cleanup before it enters the editor document, especially for list-heavy copy/paste flows.
 
+## Image paste handling
+
+Word, Excel, PowerPoint and Outlook all put a bitmap of the whole selection on the clipboard as a
+fallback for apps that cannot read HTML, alongside the real HTML. The plugin only trusts that bitmap
+when the HTML itself cannot supply the image:
+
+- **No usable HTML** (a screenshot, or an image dragged from the desktop) — the clipboard image is
+  inserted directly.
+- **HTML is images and whitespace only, with unloadable `src`s** (e.g. a single picture copied out of
+  Word, whose `file:///…/clip_image001.png` source cannot be fetched) — the clipboard bytes replace
+  the dead placeholders one for one.
+- **Anything else** — the HTML is the content and the clipboard bitmap is ignored, since it only
+  duplicates what the HTML already describes. Earlier versions of this plugin trusted it more freely,
+  which is why a plain text paste from Word could sprout an unrelated picture, or a pasted figure
+  could come in twice.
+
