@@ -9,7 +9,8 @@
   },
   "type": "module",
   "sideEffects": [
-    "./dist/components/**/register.js"
+    "./dist/components/**/register.js",
+    "./src/components/**/register.ts"
   ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
