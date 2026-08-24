@@ -27,7 +27,20 @@ import { defineBasicExtension } from './extensions/basic-extension.js';
 import { defineLockedHeaderExtension, LOCKED_HEADER_DEFAULT_CONTENT } from './extensions/locked-header-extension.js';
 import { defineQtiInteractionsExtension } from './extensions/qti-interactions-extension.js';
 
-import type { Node as PmNode } from 'prosemirror-model';
+import type { Node as PmNode, ResolvedPos } from 'prosemirror-model';
+
+/**
+ * `GapCursor.valid` as the library actually ships it.
+ *
+ * It is a real static — the plugin routes every one of its own gap-cursor decisions through it, and
+ * it is the only place `allowGapCursor` is read — but prosemirror-gapcursor's `.d.ts` declares just
+ * the constructor, `map`, `content`, `eq` and `toJSON`, so TypeScript does not see it. The cast is
+ * narrowed to that one member rather than widened to `any`, so if the signature ever changes the
+ * error lands here instead of at the call site.
+ */
+function gapCursorValid($pos: ResolvedPos): boolean {
+  return (GapCursor as unknown as { valid($pos: ResolvedPos): boolean }).valid($pos);
+}
 
 function mount() {
   const editor = createEditor({
@@ -104,7 +117,7 @@ test('a gap cursor is valid between two adjacent interactions', () => {
     const doc = docWithTwoInteractions(editor.schema);
     const $gap = doc.resolve(gapBetweenInteractions(doc));
 
-    expect(GapCursor.valid($gap)).toBe(true);
+    expect(gapCursorValid($gap)).toBe(true);
   } finally {
     destroy();
   }
