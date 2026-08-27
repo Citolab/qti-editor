@@ -28,6 +28,12 @@ export type AttributesMetadataResolver = (
 
 const QTI_CHANGE_EVENT = 'qti:attributes:change';
 
+/**
+ * Rendered by the panel itself, not through either per-node path below.
+ * See {@link QtiAttributesPanel.renderScoreField}.
+ */
+const SCORE_ATTR = 'score';
+
 const defaultQtiMetadataResolver: AttributesMetadataResolver = nodeType => {
   return getNodeAttributePanelMetadataByNodeTypeName(nodeType) ?? null;
 };
@@ -167,7 +173,12 @@ export class QtiAttributesPanel extends LitElement {
     readOnly: Array<[string, AttrValue]>;
   } {
     if (!node) return { editable: [], readOnly: [] };
-    const entries = Object.entries(node.attrs ?? {}) as Array<[string, AttrValue]>;
+    // `score` is rendered separately for every node that has it, so it must not
+    // also turn up here — as a disabled entry in the read-only details, which is
+    // where it has been sitting for every interaction without a friendly editor.
+    const entries = (Object.entries(node.attrs ?? {}) as Array<[string, AttrValue]>).filter(
+      ([key]) => key !== SCORE_ATTR,
+    );
     const metadata = this.getPanelMetadata(node);
     if (!metadata?.editableAttributes) return { editable: entries, readOnly: [] };
 
@@ -252,6 +263,40 @@ export class QtiAttributesPanel extends LitElement {
   }
 
   /**
+   * The score field, rendered for any node that declares a `score` attribute.
+   *
+   * It sits here rather than in either per-node path because neither can reach
+   * every interaction. A node type with a friendly editor never renders the
+   * generic field list at all — the editor replaces it — which is why `score`
+   * has been sitting in extended-text's `editableAttributes` doing nothing. And
+   * putting a copy inside each friendly editor is the same field written four
+   * times, drifting four ways.
+   *
+   * Always a number input, never inferred from the current value: clearing the
+   * field stores `null`, and an inferred type would silently turn into a text
+   * box on the next render.
+   */
+  private renderScoreField(node: AttributesNodeDetail): TemplateResult | typeof nothing {
+    const attrs = node.attrs ?? {};
+    if (!(SCORE_ATTR in attrs)) return nothing;
+    const value = attrs[SCORE_ATTR] as AttrValue;
+
+    return html`
+      <label class="form-control w-full">
+        <span class="mb-1 text-sm font-medium">${this.i18n.t('attributes.score')}</span>
+        <input
+          class="input input-sm input-bordered w-full"
+          type="number"
+          step="any"
+          .value=${String(value ?? '')}
+          @input=${(e: Event) => this.handleFieldChange(node, SCORE_ATTR, value, e)}
+        />
+        <span class="mt-1 text-xs text-base-content/60">${this.i18n.t('attributes.scoreHint')}</span>
+      </label>
+    `;
+  }
+
+  /**
    * Per-node section: friendly editors (looked up by kind in the registry)
    * REPLACE the generic field list. Falls through to generic fields when no
    * friendly editor is registered for any of the node's declared kinds.
@@ -274,7 +319,8 @@ export class QtiAttributesPanel extends LitElement {
           data-node-type=${node.type}
         >
           <h4 class="text-xs font-semibold text-base-content/70">${node.type}</h4>
-          ${this.renderMissingCorrectResponseWarning(node)} ${friendlyTemplates}
+          ${this.renderMissingCorrectResponseWarning(node)} ${this.renderScoreField(node)}
+          ${friendlyTemplates}
         </section>
       `;
     }
@@ -286,6 +332,7 @@ export class QtiAttributesPanel extends LitElement {
         data-node-type=${node.type}
       >
         <h4 class="text-xs font-semibold text-base-content/70">${node.type}</h4>
+        ${this.renderScoreField(node)}
         ${editable.length
           ? editable.map(([k, v]) => this.renderField(node, k, v))
           : html`<p class="text-xs text-base-content/60">${this.i18n.t('attributes.noEditable')}</p>`}

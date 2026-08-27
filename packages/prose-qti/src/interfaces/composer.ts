@@ -9,7 +9,11 @@ export type ComposerWarningCode =
   | 'INVALID_AREA_MAPPINGS_JSON'
   | 'INVALID_AREA_MAPPING_ENTRY'
   | 'MISSING_RESPONSE_IDENTIFIER'
-  | 'MISSING_CORRECT_RESPONSE';
+  | 'MISSING_CORRECT_RESPONSE'
+  | 'INVALID_MAPPING_JSON'
+  | 'INVALID_MAPPING_ENTRY'
+  | 'MAPPING_ENTRY_STALE'
+  | 'RESPONSE_PROCESSING_KIND_MISMATCH';
 
 export interface ComposerWarning {
   code: ComposerWarningCode;
@@ -24,7 +28,20 @@ export interface QtiAreaMapEntry {
   mappedValue: number;
 }
 
-export interface QtiAreaMapping {
+/**
+ * QTI's clamps on a mapping's total, applied by the runtime AFTER summing the
+ * matched entries: `min(upperBound, max(lowerBound, total))`.
+ *
+ * `null` means the attribute was absent, which is not the same as zero —
+ * `lower-bound="0"` stops a negative entry pushing SCORE below zero, while no
+ * lower bound lets it. ITEM002 relies on the difference.
+ */
+export interface QtiMappingBounds {
+  lowerBound?: number | null;
+  upperBound?: number | null;
+}
+
+export interface QtiAreaMapping extends QtiMappingBounds {
   defaultValue: number;
   entries: QtiAreaMapEntry[];
 }
@@ -32,10 +49,15 @@ export interface QtiAreaMapping {
 export interface QtiStringMapEntry {
   mapKey: string;
   mappedValue: number;
-  caseSensitive: boolean;
+  /**
+   * `null` / absent means the source carried no `case-sensitive` attribute, and
+   * export leaves it off rather than materialising QTI's `false` default — which
+   * would add the attribute to every item that never had it.
+   */
+  caseSensitive?: boolean | null;
 }
 
-export interface QtiStringMapping {
+export interface QtiStringMapping extends QtiMappingBounds {
   defaultValue: number;
   entries: QtiStringMapEntry[];
 }

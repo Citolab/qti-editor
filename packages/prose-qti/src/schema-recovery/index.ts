@@ -35,6 +35,8 @@ export {
   type RecoveryMarkerState,
 } from './recovery-marker-plugin.js';
 export { collectExcerpt } from './excerpt.js';
+export { mergeSchemaGapOutcomes } from './merge.js';
+export { withHostMessage } from './messages.js';
 export {
   excerptOf,
   recoveryKindOf,

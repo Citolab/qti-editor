@@ -9,7 +9,7 @@ import { iterResponseValues } from '@citolab/prose-qti/components/shared';
 
 import { getInteractionComposerHandler } from '../interactions/composer.js';
 
-import type { ResponseProcessingKind } from '@citolab/prose-qti/interfaces';
+import type { InteractionResponseDeclaration, ResponseProcessingKind } from '@citolab/prose-qti/interfaces';
 
 export {
   getStrippedAttributeSources,
@@ -26,30 +26,16 @@ export interface ComposerItemContext {
   items?: Array<{ identifier?: string; title?: string }>;
 }
 
-export interface ResponseDeclaration {
-  identifier: string;
-  cardinality: 'single' | 'multiple' | 'ordered';
-  baseType: 'identifier' | 'directedPair' | 'point' | 'string';
-  correctResponse?: string | string[];
-  stringMapping?: {
-    defaultValue: number;
-    entries: Array<{
-      mapKey: string;
-      mappedValue: number;
-      caseSensitive: boolean;
-    }>;
-  };
+/**
+ * What an interaction's compose step produced, plus the scoring model it chose.
+ *
+ * The mapping shapes were spelled out inline here and had drifted from the
+ * `QtiStringMapping` / `QtiAreaMapping` the compose steps actually return — this
+ * copy still required `caseSensitive`, which the shared type now makes optional.
+ * Extending the shared declaration keeps the two from parting again.
+ */
+export interface ResponseDeclaration extends InteractionResponseDeclaration {
   responseProcessingKind?: ResponseProcessingKind;
-  areaMapping?: {
-    defaultValue: number;
-    entries: Array<{
-      shape: 'circle' | 'rect';
-      coords: string;
-      mappedValue: number;
-    }>;
-  };
-  sourceTag: string;
-  score?: number;
 }
 
 const QTI_NS = 'http://www.imsglobal.org/xsd/imsqtiasi_v3p0';
@@ -254,7 +240,13 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
         const mapEntry = xmlDoc.createElementNS(QTI_NS, 'qti-map-entry');
         mapEntry.setAttribute('map-key', entry.mapKey);
         mapEntry.setAttribute('mapped-value', String(entry.mappedValue));
-        mapEntry.setAttribute('case-sensitive', String(entry.caseSensitive));
+        // Absent means the source carried no `case-sensitive`; leave it off
+        // rather than stringifying undefined into the attribute. Text entry —
+        // the only producer today — always resolves it to a boolean, so current
+        // output is unchanged.
+        if (entry.caseSensitive != null) {
+          mapEntry.setAttribute('case-sensitive', String(entry.caseSensitive));
+        }
         mapping.appendChild(mapEntry);
       });
 
