@@ -31,7 +31,7 @@ Each interaction declares its non-QTI attributes in its composer metadata:
 ```ts
 export const choiceInteractionComposerMetadata = {
   // ...
-  nonQtiAttributes: [
+  strippedAttributes: [
     'score',
     // Object form: alias support for legacy source-name casings
     { source: 'correct-response', aliases: ['correctResponse', 'correctAnswer'] },
@@ -75,7 +75,7 @@ Every QTI 3.0 item is treated as third-party. `roundtripQtiItem` (`@citolab/pros
 
 To extend the subformat with a new attribute on an interaction:
 
-1. Add the attribute to `nonQtiAttributes` in the interaction's `composer/metadata.ts`. Use a **plain string** for the simple case; the **object form** `{ source, mirror: false }` for strip-only attributes (preserved elsewhere); the **object form** `{ source, aliases: [...] }` to also accept legacy source-name casings on input.
+1. Add the attribute to `strippedAttributes` in the interaction's `composer/metadata.ts`. Use a **plain string** for the simple case; the **object form** `{ source, mirror: false }` for strip-only attributes (preserved elsewhere); the **object form** `{ source, aliases: [...] }` to also accept legacy source-name casings on input.
 2. Read the attribute in the interaction's `.compose.ts` from the source element and use it for whatever the interaction needs (response declaration, UI state, additional element synthesis like extended-text's rubric block).
 3. If the attribute must survive a third-party round-trip, ensure `roundtripQtiItem` can reconstruct it from standard QTI; otherwise document it as an editor-only hint.
 

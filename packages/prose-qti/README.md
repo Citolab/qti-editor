@@ -218,7 +218,7 @@ is defined.
 For a curated subset of interactions, don't use this function — call
 `listInteractionSchemaNodeSpecs({ include })` /
 `listSelectedInteractionPluginFactories({ include })` directly and assemble
-your own extension (see [apps/qti-prosekit-item/src/extensions/qti-extension.ts](../../apps/qti-prosekit-item/src/extensions/qti-extension.ts)
+your own extension (see [apps/qti-prosekit-app/src/extensions/qti-interactions-extension.ts](../../apps/qti-prosekit-app/src/extensions/qti-interactions-extension.ts)
 for the pattern).
 
 #### defineQtiExtension(): Extension

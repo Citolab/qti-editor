@@ -88,7 +88,7 @@ Interaction components: `choice`, `extended-text`, `gap-match`, `hottext`, `inli
 - `qtiBasicNodes` / `qtiBasicMarks` (`@citolab/prose-qti/schema`) are the canonical QTI-focused replacement for direct `prosemirror-schema-basic` usage in this repo.
 - The `image` node in this module preserves `width` and `height` attributes on parse/serialize so QTI XML image dimensions survive import and roundtrip.
 - Nothing is removed from the basic set. A `createQtiBasicNodes(...)` helper used to offer trimming and defaulted to dropping `blockquote`; it had no callers and its premise was wrong — QTI permits `blockquote`, `hr`, `pre` and `code` in an item body. A host wanting a narrower document builds its own `nodes` object.
-- `qtiLayoutDivNodeSpec` (included in `qtiBasicNodes.qtiLayoutDiv`) models the author-written `<div class="qti-layout-row">`/`-colN` grid wrappers; `qtiLayoutDivLockPlugin` is the accompanying opt-in plugin that stops a transaction from adding or removing a wrapper, since nothing in either host editor can author a new one. Both used to live duplicated across the two host apps and moved here for the same reason `qtiBasicNodes` did — one definition instead of two that drift.
+- `qtiLayoutDivNodeSpec` (included in `qtiBasicNodes.qtiLayoutDiv`) models the author-written `<div class="qti-layout-row">`/`-colN` grid wrappers; `qtiLayoutDivLockPlugin` is the accompanying opt-in plugin that stops a transaction from adding or removing a wrapper, since nothing in either host editor can author a new one. Both used to live duplicated across the two host apps and moved here for the same reason `qtiBasicNodes` did — one definition instead of two that drift. The spec also sets `allowGapCursor: true`, since a `block+` content model's default-type heuristic (used by `prosemirror-gapcursor` to decide whether a position is reachable) picks the first admitted type with no required attributes, which is never a textblock here — without the override, two block interactions sitting side by side inside a `qti-layout-row` have no writable space between them.
 
 ### `packages/prose-qti-node` (`@citolab/prose-qti-node`)
 
@@ -379,5 +379,5 @@ Typical commands:
 
 - `pnpm --filter @citolab/prose-qti typecheck`
 - `pnpm --filter @citolab/prose-extensions typecheck`
-- `pnpm --filter @qti-editor/prosekit-item build`
+- `pnpm --filter @qti-editor/prosekit-app build`
 - `pnpm -r --filter "./packages/**" run typecheck`
