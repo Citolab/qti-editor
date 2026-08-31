@@ -1,5 +1,19 @@
 # Extract `qti-prosekit-app` into QTI-Coco and host it on App Service
 
+> **SUPERSEDED — not executed.** On 2026-08-31 the app was extracted to its own repository,
+> `qti-editor-full-assessment`, and kept on Firebase Hosting rather than becoming an app inside
+> QTI-Coco on Azure App Service. Two of the three reasons this plan gave for rejecting "a third
+> repository" have since gone away: `prose-qti-ui` was retired outright (so there was no private
+> package left to duplicate), and the hosting target stayed Firebase (so Coco's debugged Azure
+> pipeline was not the draw it was here).
+>
+> Kept for its Phase 0 findings, which are still accurate and were reused during the real
+> extraction — in particular the `optimizeDeps.exclude` and `resolve.dedupe` notes in 0.B, which
+> describe a dev-server-only failure that build and test runs do not catch.
+>
+> The rest of this document describes a destination that was never used. Read it as history.
+
+
 Goal: run `qti-prosekit-app` as a second app inside the QTI-Coco monorepo, deployed to its own Azure
 App Service in the same resource group as `qti-coco`, so it sits on the same host shape that can
 reach the Azure AI agent through a managed identity.

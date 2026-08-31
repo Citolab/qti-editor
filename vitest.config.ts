@@ -142,14 +142,9 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'browser',
-          // `schema/` is in here because its tests build the REAL editor schema, which imports the
-          // real components, and those are built for a bundler — so they must run through Vite. The
-          // same construction as a standalone tsx script died on a Vite-only stylesheet specifier in
-          // a dependency's dist.
           include: [
             'packages/**/src/**/*.browser.test.ts',
-            'apps/**/*.browser.test.ts',
-            'schema/**/*.browser.test.ts'
+            'apps/**/*.browser.test.ts'
           ],
           setupFiles: ['./tools/testing/setup/vitest.js'],
           globalSetup: ['./tools/testing/setup/vendor-qti-runtime.global.mjs'],

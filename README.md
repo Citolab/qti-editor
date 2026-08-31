@@ -52,7 +52,6 @@ possible — see the [Node API](./docs/node-api.md).
 | `@citolab/prose-qti` | yes | schema, interaction descriptors, item roundtrip — the editor |
 | `@citolab/prose-qti-node` | yes | the same conversion, for plain Node. No browser, no components |
 | `@citolab/prose-extensions` | yes | ProseMirror extensions not specific to QTI |
-| `@citolab/prose-qti-ui` | no | toolbar, insert menu, attributes panel |
 | `@citolab/prose-ai` | no | authoring assistance, experimental |
 
 **Building an editor?** Declare `@citolab/prose-qti` and nothing else from the QTI stack. The item

@@ -31,7 +31,6 @@ coverage
 *storybook.log
 storybook-static
 hosting/*
-apps/qti-prosekit-app/public/r
 
 .claude/*
 .claude/settings.json

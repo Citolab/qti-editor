@@ -5,8 +5,9 @@
   "targets": {
     "qti-editor-d2ea2": {
       "hosting": {
-        "site": ["qti-editor-d2ea2"],
-        "editor": ["qti-editor-playground"]
+        "site": [
+          "qti-editor-d2ea2"
+        ]
       }
     }
   }

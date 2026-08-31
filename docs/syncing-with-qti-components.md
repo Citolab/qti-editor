@@ -34,8 +34,9 @@ in its own `dependencies`/`devDependencies`:
   directly (see [architecture.md](architecture.md))
 - root `package.json` — `@qti-components/theme` (dev-only, used by apps for styling)
 - `apps/e2e/package.json` — `@citolab/qti-components` (end-to-end test fixtures)
-- `apps/qti-prosekit-app`, `apps/qti-prosekit-item`, `apps/qti-prosemirror-item`,
-  `apps/site` — re-declare the same pinned packages where needed
+- `apps/qti-prosemirror-item`, `apps/site` — re-declare the same pinned packages where needed
+- the extracted editor repository pins the same `pkg.pr.new` sha independently; it must be bumped
+  there too, and its sha must match the one `@citolab/prose-qti` was published with
 
 ## Bumping to a newer qti-components commit
 

@@ -78,7 +78,10 @@ There is deliberately **no** global registry to call at startup. Two consumers o
 fight over one mutable table and a test would have to remember to reset it; a per-call option carries
 the same information with none of that.
 
-### Embedding the full editor (`apps/qti-prosekit-app`)
+### Embedding the full editor
+
+The editor application lives in its own repository (`qti-editor-full-assessment`); the code below is
+from there, not from this checkout.
 
 Everything the notice says is an i18next key, and i18next is already runtime-mutable. The instance is
 exported, so an embedder can restyle every sentence after load, with no rebuild:

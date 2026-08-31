@@ -6,7 +6,11 @@
     {
       "target": "site",
       "public": "hosting/site",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
       "headers": [
         {
           "source": "**/*.html",
@@ -34,12 +38,6 @@
           "type": 301
         }
       ],
-      "rewrites": []
-    },
-    {
-      "target": "editor",
-      "public": "hosting/editor",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": []
     }
   ]

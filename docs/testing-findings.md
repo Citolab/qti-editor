@@ -92,7 +92,7 @@ Also found while assessing revival: `packages/prose-qti/src/components/order/int
 
 ## 10. e2e stories rendered an unstyled editor — **fixed**
 
-The regression stories imported only `prosemirror-view/style/prosemirror.css`. The shipping editors load two more (`apps/qti-prosekit-app/src/style.css`, `apps/qti-prosemirror-item/src/app.css`):
+The regression stories imported only `prosemirror-view/style/prosemirror.css`. The shipping editors load two more (`apps/qti-prosemirror-item/src/app.css`, and the extracted editor app's own `src/style.css`):
 
 ```css
 @import '@qti-components/theme/item.css';

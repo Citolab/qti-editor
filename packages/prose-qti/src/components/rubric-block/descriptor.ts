@@ -35,7 +35,7 @@ export const qtiRubricBlockDescriptor = {
       nodeTypeName: 'qtiRubricBlock',
       editableAttributes: ['use', 'view'],
       // The prosekit panel renders <qti-rubric-block-attributes-editor> for
-      // the `use`/`view` enums (see prose-qti-ui). The prosemirror panel
+      // the `use`/`view` enums (an app-owned friendly editor). The prosemirror panel
       // doesn't ship a registry of friendly editors and renders the attrs
       // as plain text — acceptable since the prosemirror-item app does not
       // author rubric blocks.

@@ -1,9 +1,0 @@
-{
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "allowJs": true,
-    "checkJs": false,
-    "useDefineForClassFields": false
-  },
-  "include": ["src/**/*.ts", "src/**/*.js", "../prose-qti/src/global.d.ts"]
-}

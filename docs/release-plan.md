@@ -1,10 +1,13 @@
 # Release Plan
 
-This repository has three delivery channels that should remain separate:
+This repository has two delivery channels that should remain separate:
 
 1. npm packages for reusable library surfaces
-2. Firebase Hosting deploys for first-party apps and the documentation site
-3. Firebase-hosted registry artifacts from `packages/prose-qti-ui`
+2. A Firebase Hosting deploy for the documentation site
+
+The editor application is **not** a delivery channel of this repository any more — it lives in its
+own repository (`qti-editor-full-assessment`), consumes the npm packages, and deploys itself. The
+shadcn-style component registry that used to be a third channel has been retired outright.
 
 ## npm Release Surface
 
@@ -16,8 +19,7 @@ The publishable packages are:
 
 Keep private:
 
-- `@citolab/prose-qti-ui` — distributed through the registry and Firebase hosting, not npm
-- `@citolab/prose-ai` — app-only AI extensions vendored from `@prosekit/ai`, consumed directly by `apps/qti-prosekit-item`, not published
+- `@citolab/prose-ai` — app-only AI extensions vendored from `@prosekit/ai`, not published and not currently consumed by anything in this repository
 - `apps/*` — not published
 
 ## Rationale
@@ -25,7 +27,6 @@ Keep private:
 - `@citolab/prose-qti` is the main reusable authoring API: interaction descriptors, QTI composition, XML serialization, ProseKit integration.
 - `@citolab/prose-qti-node` exists because installing `@citolab/prose-qti` for its Node-only conversion functions pulled in all 13 `@qti-components/*` browser packages and `lit` peer warnings a script never touches — the conversion code was fine, the manifest wasn't. See [node-api.md](node-api.md).
 - `@citolab/prose-extensions` is the stable generic editor extension surface: attributes engine, block select, node-attrs sync, semantic paste.
-- `@citolab/prose-qti-ui` is distributed through the shadcn-style registry rather than npm — consumers install components directly from the hosted registry JSON.
 - `@citolab/prose-ai` is vendored, app-only AI tooling with no stable public API of its own; it has no reason to be an npm surface.
 
 ## Workflow Split
@@ -48,18 +49,13 @@ Keep private:
 - Site deploy includes:
   - Astro site
   - Storybook
-  - Registry JSON under `/r/`
-
-### Editor Hosting
-
-- Deploy Firebase target `hosting:editor` on changes to `apps/qti-prosekit-app` and shared package/config paths.
-- Editor deploy is isolated from the site target.
 
 ## Operational Notes
 
-- Registry changes do not create npm releases.
-- Registry changes trigger the site hosting workflow because the registry is served from the site target.
-- `apps/qti-prosekit-item` and `apps/qti-prosemirror-item` are reference examples and are not deployed to Firebase.
+- `apps/qti-prosemirror-item` is a reference example and is not deployed to Firebase.
+- There is only one hosting target left here (`hosting:site`). The `hosting:editor` target moved to
+  the editor's own repository, which deploys to the same Firebase project and site
+  (`qti-editor-playground`) so its URL did not change.
 
 ## Required Secrets
 

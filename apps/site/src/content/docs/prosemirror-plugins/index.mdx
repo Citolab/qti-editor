@@ -41,9 +41,9 @@ import {
 See each plugin's page for the exact shape of its plugin factory and, where available, its ProseKit extension.
 
 The schema-version compatibility/migration pipeline and local-storage doc
-persistence used to be documented here, but they now live inside
-`apps/qti-prosekit-app` (not published) since only that app persists raw
-ProseMirror JSON. The virtual cursor plugin was removed — it had no
+persistence used to be documented here, but they now live inside the editor
+application (its own repository, not published) since only that app persists
+raw ProseMirror JSON. The virtual cursor plugin was removed — it had no
 consumers.
 
 ## ProseKit marks and lists
@@ -67,7 +67,7 @@ import { defineStrong, defineEm, defineList, defineBasicExtension } from '@citol
   });
   ```
 
-  Apps layer their own additions on top with `union()` — hard break, virtual selection, mod-click prevention, AI extensions, etc. — rather than forking this base; see `apps/qti-prosekit-app/src/extensions/basic-extension.ts` for the pattern.
+  Apps layer their own additions on top with `union()` — hard break, virtual selection, mod-click prevention, AI extensions, etc. — rather than forking this base. The editor application's own `basic-extension.ts` is the reference for that pattern.
 
 If you assemble a plain ProseMirror schema by hand instead of through ProseKit, use `qtiBasicNodes`/`qtiBasicMarks` from [QTI Base Schema](/docs/packages/qti-base-schema/) instead — same underlying image-dimension fix, no ProseKit dependency.
 

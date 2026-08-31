@@ -1,4 +1,4 @@
-name: Deploy Editor and Site
+name: Deploy Site
 
 on:
   workflow_run:
@@ -8,11 +8,6 @@ on:
       - completed
   workflow_dispatch:
     inputs:
-      deploy_editor:
-        description: 'Deploy editor'
-        required: false
-        default: true
-        type: boolean
       deploy_site:
         description: 'Deploy site'
         required: false
@@ -20,45 +15,10 @@ on:
         type: boolean
 
 concurrency:
-  group: deploy-editor-site
+  group: deploy-site
   cancel-in-progress: true
 
 jobs:
-  deploy-editor:
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.deploy_editor) || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main') }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
-          fetch-depth: 0
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 24
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build editor hosting bundle
-        env:
-          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
-        run: pnpm deploy:build:editor
-
-      - name: Deploy Firebase editor target
-        run: npx firebase-tools@latest deploy --only hosting:editor --token "${{ secrets.FIREBASE_TOKEN }}"
-
   deploy-site:
     if: ${{ (github.event_name == 'workflow_dispatch' && inputs.deploy_site) || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main') }}
     runs-on: ubuntu-latest

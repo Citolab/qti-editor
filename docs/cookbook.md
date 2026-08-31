@@ -4,17 +4,15 @@ This repository's primary surface for learning and assembling editors is:
 
 - **Storybook** — documentation surface for building an editor step by step
 
-The main editor app (`apps/qti-prosekit-app`) remains the realistic integration surface.
-
-(`packages/prose-qti-ui` also ships an installable, shadcn-style registry of copyable UI pieces, but it's an in-house build/scaffolding tool rather than a documented product surface — see "Registry Scaffolds" below for the raw build commands.)
+The full editor application lives in its own repository (`qti-editor-full-assessment`) and consumes
+these packages from npm. It remains the realistic integration surface, but it is no longer something
+you can run from this checkout.
 
 ## Reference Apps
 
 | App | Description |
 |-----|-------------|
-| `apps/qti-prosekit-app` | Full editor with Firebase, React panels, full toolbar. Runs via `pnpm dev`. |
-| `apps/qti-prosekit-item` | Minimal ProseKit + QTI example. Best starting point for new integrations. |
-| `apps/qti-prosemirror-item` | Raw ProseMirror with QTI roundtrip. No ProseKit. Installs `@citolab/prose-qti`/`@citolab/prose-extensions` as pinned npm ranges rather than `workspace:*`, so it also exercises the packages the way an external consumer would. |
+| `apps/qti-prosemirror-item` | Raw ProseMirror with QTI roundtrip. No ProseKit. Runs via `pnpm dev`. Installs `@citolab/prose-qti`/`@citolab/prose-extensions` as pinned npm ranges rather than `workspace:*`, so it also exercises the packages the way an external consumer would. |
 | `apps/site` | Astro documentation site. |
 
 ## How To Use These Surfaces
@@ -25,18 +23,17 @@ Use **Storybook** when you want to understand:
 - what each panel, extension, and utility does in isolation
 - how ProseMirror-native primitives relate to ProseKit-first assembly
 
-Use **`apps/qti-prosekit-app`** when you want to:
+Use **`apps/qti-prosemirror-item`** when you want to:
+- see the minimal setup for a QTI editor without ProseKit
+- exercise the packages the way an external consumer would (it installs them as pinned npm ranges,
+  not `workspace:*`)
+
+Use the **extracted editor repository** when you want to:
 - run the supported end-to-end editor
 - inspect realistic wiring across packages
 - test product-like workflows and integration behavior
 
-Use **`apps/qti-prosekit-item`** when you want to:
-- see the minimal setup for a ProseKit + QTI editor
-- understand the descriptor-based extension assembly pattern
-
 ## Storybook Documentation Path
-
-For CSS sourcemap diagnostics and style-origin inspection, see [docs/css-sourcemaps-verification.md](css-sourcemaps-verification.md).
 
 Storybook should document how to build an editor in stages:
 
@@ -45,7 +42,11 @@ Storybook should document how to build an editor in stages:
 3. Add the required styles. Import `@citolab/prose-qti/qti-prose.css` for the underlying QTI web component theme plus the mandatory editor-specific element backgrounds/spacing/affordances in one file (order-sensitive; don't split it back into its two source stylesheets). Apps in this repo instead import `@qti-components/theme` and `@citolab/prose-qti/core-css.css` directly, in that order, since they already depend on `@qti-components/theme` for their own styling.
 4. Build your host schema from `@citolab/prose-qti/schema` (`qtiBasicNodes` / `qtiBasicMarks`) instead of importing `prosemirror-schema-basic` directly. This keeps QTI image dimensions (`width`/`height`) intact across XML import and PM roundtrip and gives an explicit place to trim non-QTI baseline nodes.
 5. Add the `blockSelectExtension` and `nodeAttrsSyncExtension` ProseKit extensions from `@citolab/prose-extensions/prosekit-extensions` (requires the `prosekit` peer dependency; the underlying plugins are also available prosekit-free from `@citolab/prose-extensions/block-select` and `@citolab/prose-extensions/node-attrs-sync`).
-6. Add the QTI attributes panel: `<qti-attributes-panel>` from `@citolab/prose-qti-ui/components/attributes-panel`, wired to the editor via `editorContext` from `@citolab/prose-qti-ui/editor-context`. It resolves each selected node's fields via `getNodeAttributePanelMetadataByNodeTypeName` (`@citolab/prose-qti/core/interactions/composer`), falling back to a per-node "friendly editor" (`choice-attributes-editor`, `text-entry-attributes-editor`, `extended-text-attributes-editor`, `rubric-block-attributes-editor`) when one is registered for that node type.
+6. Add an attributes panel. The panel and its per-node "friendly editors" are **application-owned**
+   UI — they used to live in a `prose-qti-ui` package here, which has been retired; the extracted
+   editor app now owns that source outright. What this repository provides is the metadata the panel
+   renders from: `getNodeAttributePanelMetadataByNodeTypeName`
+   (`@citolab/prose-qti/core/interactions/composer`) resolves each selected node's editable fields.
 7. Add code and composer panels.
 8. Wire QTI integration surfaces from `@citolab/prose-qti/integration/*`.
 
@@ -68,28 +69,17 @@ const editor = createEditor({
 });
 ```
 
-`defineQtiInteractionsExtension` is assembled in the app from the descriptor registry — see `apps/qti-prosekit-item/src/extensions/qti-extension.ts` for the canonical pattern. It uses `listInteractionDescriptors()` and `listInteractionSchemaNodeSpecs()` from `@citolab/prose-qti/core/interactions/composer` to build node spec extensions and a keymap automatically.
-
-## Registry Scaffolds (internal)
-
-`packages/prose-qti-ui` exposes installable UI components through an in-house registry. Build and serve locally:
-
-```sh
-pnpm registry:build
-pnpm registry:serve
-```
-
-The registry source lives in `packages/prose-qti-ui/src/components/`, with a `registry.json` index. Components include:
-- `attributes-panel` — generic QTI attributes panel
-- `choice-attributes-editor` — choice interaction editor
-- `text-entry-attributes-editor` — text entry editor
-- `extended-text-attributes-editor` — extended text editor
-- `interaction-insert-menu` — interaction insertion UI
+`@citolab/prose-qti/integration/interactions/prosekit` ships `defineQtiInteractionsExtension()` and
+`defineQtiExtension()` covering every registered interaction — reach for those first. To assemble a
+curated subset yourself, use `listInteractionSchemaNodeSpecs({ include })` and
+`listSelectedInteractionPluginFactories({ include })` from
+`@citolab/prose-qti/core/interactions/composer`, which build node spec extensions and a keymap
+automatically.
 
 ## Direction
 
 The target repository model is:
 - Storybook for guided editor-building documentation and regression presets
 - Packages (`@citolab/prose-qti`, `@citolab/prose-extensions`) for the reusable architecture
-- `apps/qti-prosekit-app` for realistic end-to-end integration
-- `packages/prose-qti-ui`'s registry remains an internal scaffolding tool, not a documented product surface
+- `apps/qti-prosemirror-item` as the in-repo integration example
+- the extracted editor repository for realistic end-to-end integration

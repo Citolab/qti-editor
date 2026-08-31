@@ -13,7 +13,8 @@
  * Nothing here knows about QTI, storage, versions, or migration ladders. That is the host's
  * business: this layer only compares content against a schema and reports the difference. The
  * migration ladder that prevents most of these situations in the first place lives with whoever owns
- * the stored documents — in this repo, `apps/qti-prosekit-app/src/lib/compatibility/`.
+ * the stored documents — for this editor, the app's own `src/lib/compatibility/` (which lives in
+ * the `qti-editor-full-assessment` repository, not here).
  */
 
 export { findSchemaViolation, type SchemaViolation } from './validate.js';

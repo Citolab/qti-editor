@@ -7,7 +7,6 @@ This document is the canonical architecture reference for this repository.
 Its job is to keep the package structure stable as the codebase grows, especially when new code is scaffolded with AI. Before adding files, use this document to decide:
 
 - whether the code belongs in `apps/*`
-- whether it belongs in `packages/prose-qti-ui` (copyable UI components)
 - whether it belongs in a reusable package
 - which package layer owns it
 
@@ -15,7 +14,9 @@ If a generated change cannot be placed clearly using this document, stop and res
 
 ## Core Rule
 
-`apps/*` are examples, demos, and the main editor application.
+`apps/*` are examples, demos, the docs site and cross-package tests. **The main editor application
+is no longer here** — it was extracted to its own repository (`qti-editor-full-assessment`) and
+consumes these packages from npm. This repository is packages-first.
 
 They are not the source of truth for reusable behavior, domain logic, editor primitives, or QTI composition logic.
 
@@ -28,12 +29,9 @@ packages/
   prose-qti/           ← @citolab/prose-qti   (QTI core + interactions + integration)
   prose-qti-node/      ← @citolab/prose-qti-node  (Node-only re-bundle of prose-qti's conversion API)
   prose-extensions/    ← @citolab/prose-extensions  (generic ProseMirror/ProseKit extensions)
-  prose-qti-ui/        ← @citolab/prose-qti-ui  (private UI components, shadcn-registry style)
   prose-ai/            ← @citolab/prose-ai  (private, AI extensions vendored from @prosekit/ai)
 
 apps/
-  qti-prosekit-app/    ← @qti-editor/prosekit-app  (full editor: Firebase + React)
-  qti-prosekit-item/   ← @qti-editor/prosekit-item  (minimal ProseKit example)
   qti-prosemirror-item/ ← @qti-editor/prosemirror-item  (raw ProseMirror example)
   site/                ← @qti-editor/site  (Astro documentation site)
   e2e/                 (end-to-end tests)
@@ -78,7 +76,7 @@ Interaction components: `choice`, `extended-text`, `gap-match`, `hottext`, `inli
 - `interactions/prosekit` (subpath only, not re-exported from `./integration`) — `defineQtiInteractionsExtension`, `defineQtiExtension`, `registerQtiInteractionElements` (deprecated no-op kept for backwards compatibility)
 - Shared document types: `QtiDocumentJson`, `QtiNodeJson` (re-exported from `./integration`)
 
-`src/item-export/`, `src/item-roundtrip/`, `src/qti3-item-import/` own QTI serialization and import transforms. `editorContext`/`qtiEditorContext` and multi-item/package-building support were moved out of this package (see `packages/prose-qti-ui`) — this package's export surface is single-item only.
+`src/item-export/`, `src/item-roundtrip/`, `src/qti3-item-import/` own QTI serialization and import transforms. `editorContext`/`qtiEditorContext` and multi-item/package-building support were moved out of this package and now live in the consuming application — this package's export surface is single-item only.
 
 `src/core-css/core-css.css` — the mandatory stylesheet for rendering the editor's PM document, published as the `./core-css.css` subpath (`@citolab/prose-qti/core-css.css`). It is a compatibility entry point that `@import`s two split source files kept separate for review: `core-layout.css` (mandatory structural fixes — interaction backgrounds/spacing, the rubric-block boundary, the ProseKit placeholder fix) and `editor-states.css` (editor-only `:state(...)` hooks for gaps, choices and the order interaction — `pending`, `selected` and `linked` are the states this package owns, since they are affordances the runtime has no reason to know about; `drag`, `checked` and `disabled` stay qti-theme's. Only `pending` currently paints anything; `selected` and `linked` are documented but deliberately left unpainted until a rule for them is reviewed). Every app that renders the editor must import `core-css.css` alongside `@qti-components/theme`; nothing outside this package imports the two source files directly.
 
@@ -115,33 +113,19 @@ Does not own QTI composition logic, interaction-specific behavior, or app wiring
 
 The schema-version compatibility/migration pipeline (`compatibility`) and
 local-storage doc persistence (`local-storage-doc-persistence-extension`)
-used to live here but were moved into `apps/qti-prosekit-app` (`src/lib/compatibility`,
+used to live here but were moved into the editor application (now its own
+repository, at `src/lib/compatibility` and
 `src/extensions/local-storage-doc-persistence-extension`) — they're only
 needed by the app that persists raw ProseMirror JSON, not by the public
 extension surface. The `virtual-cursor` plugin was removed outright; it had
 no consumers.
-
-### `packages/prose-qti-ui` (`@citolab/prose-qti-ui`)
-
-Private package. Canonical source for copyable UI components distributed via the shadcn-style registry. Unlike `prose-qti` and `prose-extensions`, `prosekit` is a required (non-optional) peer dependency here — the attributes panel and interaction insert menu import it directly rather than behind an optional subpath.
-
-Owns:
-- `src/components/attributes-panel/` — generic attributes panel web component, resolving each selected node's fields via `getNodeAttributePanelMetadataByNodeTypeName` (`@citolab/prose-qti/core/interactions/composer`)
-- `src/components/choice-attributes-editor/` — choice interaction attribute editor
-- `src/components/extended-text-attributes-editor/` — extended text attribute editor
-- `src/components/text-entry-attributes-editor/` — text entry attribute editor
-- `src/components/rubric-block-attributes-editor/` — rubric block attribute editor (not independently registry-published; bundled via this package's root entry)
-- `src/components/interaction-insert-menu/` — interaction insertion UI
-- `src/editor-context/` — `editorContext` (generic ProseKit editor context) and `qtiEditorContext` (`QtiEditorContextValue`), the Lit contexts the above components consume. This replaced `@citolab/prose-qti/integration/editor-context`, which no longer exists.
-
-Does not own generic editor engine behavior or QTI composition logic.
 
 ### `packages/prose-ai` (`@citolab/prose-ai`)
 
 Private package. AI-related ProseKit extensions, vendored from upstream
 `@prosekit/ai` (the installed `prosekit`/`@prosekit/extensions` version
 doesn't yet export the `Commit` diffing helpers this package needs). Has no
-dependency on `prose-qti`, `prose-extensions`, or `prose-qti-ui` — it only
+dependency on `prose-qti` or `prose-extensions` — it only
 peer-depends on `prosekit` and depends on `prosemirror-changeset`.
 
 Owns:
@@ -155,21 +139,27 @@ Owns:
   buffering and flushing at safe tag boundaries
 
 Does not own QTI composition logic or app-level AI wiring (toolbar UI,
-prompt construction, model calls) — those stay in
-`apps/qti-prosekit-item/src/extensions/ai-extension.ts` and the app's
-`ai-chat`/`ai-check`/`ai-create`/`ai-stream-content` components.
+prompt construction, model calls) — those belong to the consuming
+application, in its own `ai-extension.ts` and
+`ai-chat`/`ai-check`/`ai-create`/`ai-stream-content` components. No app in
+this repository wires them up today.
 
 ### `apps/*`
 
 Owns:
-- Runnable demos and the main editor application
-- Full authoring flows
+- Runnable demos, the docs site, and cross-package tests
 - Integration references
-- App shell behavior (toolbars, panels, persistence wiring)
+- App shell behavior (toolbars, panels, persistence wiring) *in the demos*
+
+The full authoring application is not here; it lives in its own repository and consumes the
+published packages.
 
 Does not own reusable editor primitives, interaction behavior, or canonical composition logic.
 
-`apps/qti-prosekit-item/src/extensions/qti-extension.ts` shows the canonical pattern for assembling the QTI interactions extension in an app using `listInteractionDescriptors()`.
+`@citolab/prose-qti/integration/interactions/prosekit` ships `defineQtiInteractionsExtension()` and
+`defineQtiExtension()`, covering every registered interaction — that is the default an app should
+reach for. An app wanting a curated subset assembles its own extension from
+`listInteractionSchemaNodeSpecs({ include })` and `listSelectedInteractionPluginFactories({ include })`.
 
 ## Package Dependency Flow
 
@@ -178,12 +168,10 @@ Does not own reusable editor primitives, interaction behavior, or canonical comp
          ↓
 @citolab/prose-extensions   (generic ProseMirror/ProseKit extensions; depends on prose-qti)
          ↓
-@citolab/prose-qti-ui       (private UI; depends on both above)
-         ↓
-apps/*                      (consume all packages)
+apps/*  +  external editor applications   (consume the published packages)
 
 @citolab/prose-qti-node     (built from prose-qti's dist/node/ output at pack time; no
-                              dependency on prose-extensions/prose-qti-ui — consumed
+                              dependency on prose-extensions — consumed
                               directly by Node-only integrations, not by apps/*)
 
 @citolab/prose-ai           (private; peer-depends on prosekit only, no
@@ -240,11 +228,7 @@ Examples:
 - Descriptor objects
 - ProseKit integration surfaces (events, code panel, contexts)
 
-### Rule 5: Is it copyable starter UI rather than a stable package API?
-
-- If yes, it belongs in `packages/prose-qti-ui/src/`.
-
-### Rule 6: Is it only needed to demonstrate usage?
+### Rule 5: Is it only needed to demonstrate usage?
 
 - If yes, prefer Storybook stories first and `apps/*` only when a full integration shell is necessary.
 
@@ -252,7 +236,7 @@ Examples:
 
 Before generating code, answer these questions explicitly:
 
-1. Is this reusable package code, registry UI code, or app example code?
+1. Is this reusable package code or app example code?
 2. If it is a shared type or contract, does it belong in `packages/prose-qti/src/interfaces/`?
 3. If it is generic editor behavior, does it belong in `packages/prose-extensions/`?
 4. If it is QTI-specific, does it belong in `packages/prose-qti/`?
@@ -322,8 +306,6 @@ Primary documentation surface for:
 - Regression fixtures
 - Step-by-step editor assembly guidance
 
-(`packages/prose-qti-ui` also builds an installable component registry via `pnpm registry:build`, but this is an in-house scaffolding tool, not a documented product surface.)
-
 ## Tests
 
 Unit tests live next to package source. Integration tests cover cross-package contracts. App tests stay thin and cover only app shell behavior.
@@ -347,7 +329,7 @@ export const CURRENT_SCHEMA_VERSION = 7;
 
 ### The migration pipeline
 
-Migrations live in `apps/qti-prosekit-app/src/lib/compatibility/migrations/`, one file per transition, named `json-vN-to-vM.ts`. The chain is unbroken from 1 to `CURRENT_SCHEMA_VERSION`; `ladder.browser.test.ts` asserts that, because a gap would let a document at that version pass through untransformed.
+Migrations live in the editor application's own repository, at `src/lib/compatibility/migrations/`, one file per transition, named `json-vN-to-vM.ts`. The chain is unbroken from 1 to `CURRENT_SCHEMA_VERSION`; `ladder.browser.test.ts` asserts that, because a gap would let a document at that version pass through untransformed.
 
 | Step | Transition | What it does |
 | --- | --- | --- |

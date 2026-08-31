@@ -48,7 +48,6 @@ export default defineConfig({
       exclude: [
         '@qti-components/base',
         '@qti-components/interactions',
-        '@citolab/prose-qti-ui',
         '@citolab/prose-qti/components/register',
         '@citolab/prose-qti/components/shared',
         '@citolab/prose-qti/components/choice',

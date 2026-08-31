@@ -157,16 +157,6 @@ wcConfigs['flat/recommended'], // Storybook-specific rules
     // Allow direct package path imports in Storybook config
     'no-restricted-imports': 'off'
   }
-}, // Schema tooling: repo-root scripts, not a package. They deliberately reach into the app
-// to build the real composed editor schema — that is the thing they exist to inspect.
-{
-  files: ['schema/**/*.{ts,mjs}'],
-  rules: {
-    'import/no-relative-packages': 'off',
-    'no-restricted-imports': 'off',
-    // They run under Node, never in a browser.
-    'import/no-nodejs-modules': 'off'
-  }
 }, {
   files: ['**/*.cjs'],
   languageOptions: {

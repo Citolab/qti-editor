@@ -33,7 +33,6 @@ const consumers = [
   { dir: 'apps/e2e', packages: ['@qti-components/theme', '@citolab/qti-components'] },
   { dir: 'apps/qti-prosemirror-item', packages: ['@qti-components/theme', '@qti-components/transformers'] },
   { dir: 'apps/qti-prosekit-item', packages: ['@qti-components/theme'] },
-  { dir: 'apps/qti-prosekit-app', packages: ['@qti-components/theme'] },
   { dir: 'apps/site', packages: ['@qti-components/theme'] },
 ];
 
