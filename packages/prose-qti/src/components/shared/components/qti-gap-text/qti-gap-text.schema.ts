@@ -1,7 +1,12 @@
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
+/*
+ * No `group: 'block'`: a gap-match chip is only ever legal inside a `qti-gap-match-interaction`,
+ * and `qtiGapMatchInteraction` names it directly (`qtiPrompt? qtiGapText+ paragraph+`). Loose at
+ * item-body level it is not valid QTI, and while it was in the group it was also what ProseMirror
+ * auto-inserted there. See "The block group" in schema/create-qti-schema.ts.
+ */
 export const qtiGapTextNodeSpec: NodeSpec = {
-  group: 'block',
   content: 'text*',
   placeholder: 'Enter gap text…',
   attrs: {

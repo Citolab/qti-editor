@@ -51,7 +51,7 @@ yalc:
 link:
 	pnpm run link
 
-# Restore pinned pkg.pr.new qti-components dependencies before commit.
+# Leave source-link mode: restore the catalog's published qti-components packages.
 [group('primary')]
 unlink:
 	pnpm run unlink

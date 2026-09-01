@@ -35,6 +35,51 @@ import type { NodeSpec } from 'prosemirror-model';
  * HTML, and rubric blocks in particular already contain `<ul>`/`<li>`. `paragraph` is re-declared
  * into the `richtext` group because `tableNodes` uses `cellContent: 'richtext+'`.
  *
+ * ## The block group
+ *
+ * `block` means "may appear in an item body". It is not a convenience label for "is a block-level
+ * node", and putting an interaction-INTERNAL node in it is a bug, not a widening.
+ *
+ * Every "what block goes here?" question ProseMirror answers reads the same thing: the FIRST
+ * qualifying edge of the content expression it is standing in. `ContentMatch.defaultType` (behind
+ * `createAndFill` and prosemirror-gapcursor's reachability guess) wants the first non-text type
+ * with no required attrs; `defaultBlockAt` (behind `createParagraphNear`, which is in the base
+ * Enter chain) wants the first *textblock*; `findWrapping` (behind `replaceRange`, so behind
+ * typing) returns the shortest wrapping and breaks ties the same way. For a bare group reference
+ * that ordering is whichever member registered first — an implementation detail of how the specs
+ * happen to be assembled, and not something any host can steer.
+ *
+ * So a node in `block` is not merely *permitted* in an item body; it is a candidate for being put
+ * there by the editor on its own initiative. `qtiGapText` was, and pressing Enter in an item body
+ * inserted a gap-match chip: `<qti-gap-text/>` loose at item-body level, which is not valid QTI.
+ *
+ * These nodes therefore declare NO group and are reached only by being named in their parent's
+ * content expression, which is also the only place they are legal:
+ *
+ *   qtiGapText                 <- qtiGapMatchInteraction
+ *   qtiPromptParagraph         <- qtiPrompt
+ *   qtiSimpleChoiceParagraph   <- qtiSimpleChoice
+ *   qtiSimpleMatchSet          <- qtiMatchInteraction, qtiMatchInteractionTabular
+ *   qtiSimpleAssociableChoice  <- qtiSimpleMatchSet
+ *
+ * `qtiPrompt`, `qtiSimpleChoice` and `qtiSimpleAssociableChoiceParagraph` already declared no
+ * group, so this is the existing convention rather than a new one.
+ *
+ * Two things this does NOT fix, both worth knowing before relying on it:
+ *
+ *   - It narrows what is legal, so a document that already had one of these at item-body level
+ *     becomes invalid rather than merely odd. Hosts that persist documents need a migration; the
+ *     full-assessment app's compatibility ladder is where that lives.
+ *   - It does not make `paragraph` win the lookups above. Pruning only promotes the next candidate
+ *     — measured, `heading` — so a host that wants a specific answer must still say so, either in
+ *     its `doc` content expression (`(paragraph | block)*`, the trick `defineQtiDoc` uses) or in a
+ *     command. Pruning removes nodes that were never eligible; it does not choose between the ones
+ *     that are.
+ *
+ * `imgSelectPoint` is the remaining node in the same position — `group: 'block qtiMedia'`, named by
+ * `qtiSelectPointInteraction`. It is an atom, so it cannot win `defaultBlockAt`, but it can win
+ * `defaultType`. Left as it is for now, deliberately, not overlooked.
+ *
  * ## doc attributes
  *
  * `identifier` and `title` are required, with no defaults. They are hoisted from the item-body on

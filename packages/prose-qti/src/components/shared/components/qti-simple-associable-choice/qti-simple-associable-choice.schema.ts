@@ -1,7 +1,11 @@
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
+/*
+ * No `group: 'block'`: outside a match set this is not addressable by a response declaration, and
+ * `qtiSimpleMatchSet` names it directly (`qtiSimpleAssociableChoice+`).
+ * See "The block group" in schema/create-qti-schema.ts.
+ */
 export const qtiSimpleAssociableChoiceNodeSpec: NodeSpec = {
-  group: 'block',
   placeholder: 'Enter matching option…',
   content: 'qtiSimpleAssociableChoiceParagraph | qtiMedia',
   attrs: {
