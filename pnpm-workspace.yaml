@@ -6,37 +6,39 @@ packages:
 
 # Every @qti-components/* pin, in ONE place.
 #
-# These are pkg.pr.new prereleases built from qti-components' `editor` branch, pinned by commit
-# sha. They are NOT the npm release train — npm's @qti-components/* is a diverged line (theme
-# 1.6.0 there vs 1.5.0 here), so a registry range would silently swap out the editor-branch work.
-# The pkgr URLs stay until that branch lands on npm.
+# These are the npm release train. The editor-branch work that used to require pkg.pr.new
+# prereleases landed on npm on 2026-09-01 (base/theme/interactions-core and the four
+# interactions that went 2.0.0).
 #
-# Consumers write `"@qti-components/theme": "catalog:"`. Syncing to a new components build is now
-# one sed over this file instead of twenty pins across seven package.json files.
+# @qti-components/corrections is the one exception: it has never been published to npm, so its
+# entry below is still a pkg.pr.new URL. Nothing in this workspace consumes it, so the URL is
+# inert here - it is qti-editor-full-assessment that actually installs it.
 #
-# Nothing downstream sees `catalog:` — pnpm substitutes the concrete URL at pack/publish time,
-# so the published @citolab/prose-qti manifest is byte-identical to what it was before this moved
-# (verified by packing a test workspace). A consumer therefore does not need pnpm.
+# Consumers write `"@qti-components/theme": "catalog:"`. Bumping is now one edit to this file
+# instead of twenty pins across seven package.json files.
+#
+# Nothing downstream sees `catalog:` - pnpm substitutes the concrete spec at pack/publish time,
+# so the published @citolab/prose-qti manifest carries these ranges. A consumer does not need pnpm.
 catalog:
-  '@citolab/qti-components': 'https://pkg.pr.new/Citolab/qti-components/@citolab/qti-components@9a2532b'
-  '@qti-components/associate-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/associate-interaction@9a2532b'
-  '@qti-components/base': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/base@9a2532b'
-  '@qti-components/choice-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/choice-interaction@9a2532b'
+  '@citolab/qti-components': '^8.0.0'
+  '@qti-components/associate-interaction': '^1.1.6'
+  '@qti-components/base': '^2.0.0'
+  '@qti-components/choice-interaction': '^1.1.5'
   '@qti-components/corrections': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/corrections@9a2532b'
-  '@qti-components/elements': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/elements@9a2532b'
-  '@qti-components/extended-text-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/extended-text-interaction@9a2532b'
-  '@qti-components/gap-match-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/gap-match-interaction@9a2532b'
-  '@qti-components/hottext-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/hottext-interaction@9a2532b'
-  '@qti-components/inline-choice-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/inline-choice-interaction@9a2532b'
-  '@qti-components/interactions-core': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/interactions-core@9a2532b'
-  '@qti-components/item': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/item@9a2532b'
-  '@qti-components/match-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/match-interaction@9a2532b'
-  '@qti-components/order-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/order-interaction@9a2532b'
-  '@qti-components/processing': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/processing@9a2532b'
-  '@qti-components/select-point-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/select-point-interaction@9a2532b'
-  '@qti-components/text-entry-interaction': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/text-entry-interaction@9a2532b'
-  '@qti-components/theme': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/theme@9a2532b'
-  '@qti-components/transformers': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/transformers@9a2532b'
+  '@qti-components/elements': '^1.6.4'
+  '@qti-components/extended-text-interaction': '^1.1.5'
+  '@qti-components/gap-match-interaction': '^1.2.0'
+  '@qti-components/hottext-interaction': '^1.2.0'
+  '@qti-components/inline-choice-interaction': '^2.0.0'
+  '@qti-components/interactions-core': '^2.0.0'
+  '@qti-components/item': '^1.4.2'
+  '@qti-components/match-interaction': '^2.0.0'
+  '@qti-components/order-interaction': '^2.0.0'
+  '@qti-components/processing': '^1.3.4'
+  '@qti-components/select-point-interaction': '^1.1.5'
+  '@qti-components/text-entry-interaction': '^1.1.5'
+  '@qti-components/theme': '^2.0.0'
+  '@qti-components/transformers': '^1.7.1'
 
 # The cem CLI ships as a platform binary and needs its postinstall to run.
 onlyBuiltDependencies:
