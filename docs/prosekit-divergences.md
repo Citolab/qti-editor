@@ -80,6 +80,41 @@ author looking at an empty feedback box containing an empty table.
 **Replaced by** `defineQtiDoc`, `content: '(paragraph | block)+'`. The accepted node set is unchanged
 — paragraph is already in `block` — only the filler preference changes.
 
+### Gap cursor — reachable, but typing opens the wrong node
+
+`defineGapCursor()` gets ProseMirror's gap cursor into the extension union, but two more decisions
+are still wrong by default for a schema with more than one textblock in its `block` group.
+
+**Reachability.** A gap cursor is only offered where `GapCursor.valid` guesses a textblock could go,
+and it guesses by reading `contentMatchAt(index).defaultType.isTextblock` — not by checking every
+admitted type. For `doc`'s `content: 'heading paragraph qtiItemDivider block*'` and
+`qtiLayoutDivNodeSpec`'s `content: 'block+'`, `defaultType` (the first admitted type with no required
+attributes) is `qtiItemDivider`, which is not a textblock, so the guess is no at every position even
+though `paragraph` is legitimately in `block`. Every interaction here is `isolating`, so this is also
+the *only* way to reach the collapsed space between two adjacent interactions — there is no fallback.
+
+**Replaced by** `allowGapCursor: true` on the `doc` spec (`apps/qti-prosekit-app/src/extensions/locked-header-extension.ts`)
+and on `qtiLayoutDivNodeSpec` (`packages/prose-qti/src/schema/qti-layout-div.ts`) — the override the
+library provides for exactly this, rather than giving `qtiItemDivider` a required attribute to stop
+it winning `defaultType` (that default is also read by `createAndFill` and every auto-insertion path,
+so moving it to fix a cursor would be trading one bug for another). Tables are deliberately not
+given this: `table` → `tableRow` → `tableCell` really does not admit a textblock between rows or
+cells, so the heuristic's "no" there is correct.
+
+**Typed content.** Reachable is not the same as correct once you type. The default path
+(`replaceRange` → `findWrapping`) wraps the typed text in whichever textblock is shortest to reach,
+and ties among same-depth textblocks break on schema registration order — an implementation detail
+of how extensions happen to be unioned, not something authored per schema. Measured order here is
+`qtiSimpleChoiceParagraph, qtiPromptParagraph, heading, paragraph`, so typing at a gap between two
+interactions produced an interaction-internal paragraph loose at item-body level, then a stray
+`heading` — never `paragraph`, which sorts last.
+
+**Replaced by** `defineGapCursorParagraph()` (`packages/prose-extensions/src/prosekit/gap-cursor-paragraph.ts`),
+a plugin with a `handleTextInput` that runs before the default handling and inserts a `paragraph`
+by name whenever the selection is a `GapCursor`. `defineBasicExtension()` includes it alongside
+`defineGapCursor()`. Neither half works alone: `allowGapCursor` without this still opens the wrong
+node, and this without `allowGapCursor` never fires because there is no gap cursor to catch.
+
 ---
 
 ## Two traps when patching a ProseKit node spec
