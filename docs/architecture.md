@@ -379,5 +379,5 @@ Typical commands:
 
 - `pnpm --filter @citolab/prose-qti typecheck`
 - `pnpm --filter @citolab/prose-extensions typecheck`
-- `pnpm --filter @qti-editor/prosekit-app build`
+- `pnpm --filter @qti-editor/prosemirror-item build`
 - `pnpm -r --filter "./packages/**" run typecheck`
