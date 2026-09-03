@@ -25,11 +25,25 @@ import { insertMatchInteraction } from '@citolab/prose-qti/components/match';
 insertMatchInteraction(view.state, view.dispatch, view);
 ```
 
+This inserts the drag-and-drop presentation. A tabular presentation is available as a separate
+insert command:
+
+```ts
+import { insertMatchInteractionTabular } from '@citolab/prose-qti/components/match';
+
+insertMatchInteractionTabular(view.state, view.dispatch, view);
+```
+
+Both commands produce the same `qti-match-interaction` element and the same matching semantics —
+the tabular variant just carries a `qti-match-tabular` class, which is what the runtime component
+uses to render it as a grid instead of drag targets. Pick the presentation up front rather than
+inserting one and changing its class afterwards.
+
 This package integrates with `@qti-components/match-interaction`.
 
 ## What it does
 
-- Inserts a `qti-match-interaction` structure with matchable sets.
+- Inserts a `qti-match-interaction` structure with matchable sets, in either a drag-and-drop or a tabular presentation.
 - Supports authoring row and column labels directly in the editor.
 - Keeps matching semantics and QTI serialization tied to structured interaction nodes.
 
@@ -38,3 +52,4 @@ This package integrates with `@qti-components/match-interaction`.
 - Edit row and column labels directly in the table cells.
 - Pressing `Enter` inside a choice inserts a new sibling choice into the same set the cursor is in — it no longer adds a matching entry to the other set.
 - In drag-and-drop mode, click a placed chip to open a small popover offering to remove it.
+- In tabular mode, the attributes panel exposes an optional heading for the first column, above the row choices.
