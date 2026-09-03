@@ -126,8 +126,9 @@ streaming HTML insertion into `[from, to)`:
 
 ## Consumer
 
-`apps/qti-prosekit-item/src/extensions/ai-extension.ts` shows the intended
-composition: one `CommitRecorder` per editor instance, combined with
-`defineAiDiff()` and `createStreamingPlugin()` in a single `union(...)`
-extension, consumed by the app's `ai-chat`, `ai-check`, `ai-create`, and
-`ai-stream-content` toolbar components.
+The intended composition is one `CommitRecorder` per editor instance, combined
+with `defineAiDiff()` and `createStreamingPlugin()` in a single `union(...)`
+extension. `apps/qti-prosekit-item`, the app that previously wired this up
+(`ai-extension.ts` plus `ai-chat`/`ai-check`/`ai-create`/`ai-stream-content`
+toolbar components), was removed and moved to a separate repo — no app in
+this repository currently consumes this package.

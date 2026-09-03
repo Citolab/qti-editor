@@ -51,4 +51,13 @@ when the HTML itself cannot supply the image:
   duplicates what the HTML already describes. Earlier versions of this plugin trusted it more freely,
   which is why a plain text paste from Word could sprout an unrelated picture, or a pasted figure
   could come in twice.
+  
+## Clipboard images
+
+Word, Excel, PowerPoint and Outlook all put a single flattened bitmap of the whole selection on the clipboard, alongside the real HTML, as a fallback for apps that cannot read HTML. The plugin only ever trusts that bitmap as image content in the two cases where it can't mean anything else:
+
+- the clipboard has no usable HTML at all (a screenshot, or an image dragged in from the desktop) — the bitmap is inserted as the pasted image;
+- the HTML is nothing but unloadable image placeholders (e.g. `file:///…/clip_image001.png` `src` values left behind by "copy a single picture out of Word") — the bitmap data hydrates those placeholders one for one.
+
+Any other paste — text, tables, or a mix of text and real images — uses the HTML as-is and ignores the clipboard bitmap, so a normal Word paste no longer sprouts an extra, unrelated picture or duplicates an image that was already in the HTML.
 

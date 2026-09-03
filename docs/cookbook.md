@@ -15,6 +15,8 @@ you can run from this checkout.
 | `apps/qti-prosemirror-item` | Raw ProseMirror with QTI roundtrip. No ProseKit. Runs via `pnpm dev`. Installs `@citolab/prose-qti`/`@citolab/prose-extensions` as pinned npm ranges rather than `workspace:*`, so it also exercises the packages the way an external consumer would. |
 | `apps/site` | Astro documentation site. |
 
+`apps/qti-prosekit-item` — the minimal ProseKit + QTI example — was removed from this repo and moved to a separate repository; it is no longer available here.
+
 ## How To Use These Surfaces
 
 Use **Storybook** when you want to understand:
