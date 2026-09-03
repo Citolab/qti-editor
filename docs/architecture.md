@@ -185,6 +185,8 @@ apps/*  +  external editor applications   (consume the published packages)
 
 `packages/prose-qti-node` is also published, but its rules differ: it has a single `.` export, an esbuild bundle of `prose-qti`'s `dist/node/index.js` (`scripts/bundle-node.mjs`), not a `tsc` mirror of `src/`. There is no subpath wildcard to keep in sync — only one entry point to rebuild whenever `prose-qti`'s node entry changes.
 
+`packages/prose-qti`'s `sideEffects` array has the same dual-spelling requirement as `exports`, for the opposite reason: it must list both `./dist/components/**/register.js` (what a consumer's bundler tree-shakes) and `./src/components/**/register.ts` (what this workspace's own apps resolve to via `tsconfig` paths). A pattern naming only one spelling lets a bundler drop every `register` side-effect import against the other, which deletes the whole custom-element layer silently — no build error, the editor just renders unstyled `HTMLElement`s. `packages/prose-qti/src/side-effects.node.test.ts` asserts both patterns stay present and every module defining a custom element is still named `register`, which is the filename convention the patterns match on.
+
 Cross-package dependencies within this repo (e.g. `prose-extensions` depending on `prose-qti`) use the pnpm `workspace:*` protocol rather than a pinned version — see [release-plan.md](release-plan.md#internal-package-dependencies).
 
 ## Placement Decision Rules
