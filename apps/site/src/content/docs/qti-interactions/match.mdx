@@ -41,6 +41,19 @@ inserting one and changing its class afterwards.
 
 This package integrates with `@qti-components/match-interaction`.
 
+## Drag-and-drop vs. tabular
+
+The package provides two presentations of the same match semantics:
+
+- **Drag-and-drop** (`insertMatchInteraction`) — candidates drag choices from a source set onto a target set.
+- **Tabular** (`insertMatchInteractionTabular`) — candidates check cells in a grid, one row per source choice, one column per target choice. Both variants serialize to `qti-match-interaction`; the tabular one also carries a `qti-match-tabular` class so it round-trips back into the same presentation.
+
+```ts
+import { insertMatchInteractionTabular } from '@citolab/prose-qti/components/match';
+
+insertMatchInteractionTabular(view.state, view.dispatch, view);
+```
+
 ## What it does
 
 - Inserts a `qti-match-interaction` structure with matchable sets, in either a drag-and-drop or a tabular presentation.
