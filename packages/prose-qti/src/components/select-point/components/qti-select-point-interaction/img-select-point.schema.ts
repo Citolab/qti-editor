@@ -31,7 +31,7 @@ export const imgSelectPointNodeSpec: NodeSpec = {
        * of its container rather than at its own size, and round-tripped as a select-point image.
        * The priority matches the paragraph rules that solve the same problem for `<p>`.
        */
-      context: 'qtiSelectPointInteraction/',
+      context: 'qtiSelectPointInteraction//',
       priority: 60,
       getAttrs: (node: Node | string) => {
         if (!isElementLike(node)) return {};

@@ -43,7 +43,7 @@ import { findUnrepresentableElements, TRANSPARENT_WRAPPER_TAGS } from '@citolab/
 // files reach into this app the same way — `import/no-relative-packages` is simply switched off for
 // `*.stories.ts` in eslint.config, and this module is not a story file.
 /* eslint-disable-next-line import/no-relative-packages */
-import { attributesPanelPlugin } from '../../qti-prosemirror-item/src/components/attributes-panel-plugin';
+import { attributesPanelPlugin } from '../../qti-example-editor/src/components/attributes-panel-plugin';
 
 /*
  * Shared child custom elements.
@@ -151,7 +151,7 @@ export function createRegressionEditor({
     // node spec moved into the package. Previously re-declared here from a relative app import.
 
     /*
-     * Lists and tables, copied from apps/qti-prosemirror-item/src/schema.ts so the stories carry the
+     * Lists and tables, copied from apps/qti-example-editor/src/schema.ts so the stories carry the
      * same rich-text vocabulary the shipping editor does. Both are plain ProseMirror, not QTI: an
      * item body is HTML, and rubric blocks in particular already contain <ul>/<li>.
      *
@@ -197,7 +197,7 @@ export function createRegressionEditor({
     /*
      * Standard ProseMirror list & table editing — not QTI-specific. Enter splits a list item,
      * Tab / Shift-Tab indents list items or moves between table cells, plus column resizing and
-     * cell selection. Mirrors tableListPlugins in apps/qti-prosemirror-item/src/main.ts.
+     * cell selection. Mirrors tableListPlugins in apps/qti-example-editor/src/main.ts.
      *
      * Sits after the interaction keymap and before baseKeymap, so an interaction's own Enter wins
      * inside an interaction and unhandled keys still fall through to the base bindings.

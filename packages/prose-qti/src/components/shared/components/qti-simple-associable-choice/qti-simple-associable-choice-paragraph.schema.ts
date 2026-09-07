@@ -14,7 +14,7 @@ export const qtiSimpleAssociableChoiceParagraphNodeSpec: NodeSpec = {
    * `qtiLayoutDiv` first, whose context makes the more specific rules win. Items whose body is not
    * wrapped in one hit it immediately.
    */
-  parseDOM: [{ tag: 'p', context: 'qtiSimpleAssociableChoice/', priority: 60 }],
+  parseDOM: [{ tag: 'p', context: 'qtiSimpleAssociableChoice//', priority: 60 }],
   toDOM(): DOMOutputSpec {
     return ['p', 0];
   }

@@ -8,7 +8,7 @@
  *
  * It needs no new fixture. ITEM015 is the gap-match item; imported into an editor that knows only
  * `qti-choice-interaction`, its interaction is content the schema cannot hold. That is the same
- * situation as `apps/qti-prosemirror-item` opening a real item with ten descriptors registered, and
+ * situation as `apps/qti-example-editor` opening a real item with ten descriptors registered, and
  * the same situation the full editor is in when someone imports an item using an interaction nobody
  * has written a descriptor for yet.
  *
