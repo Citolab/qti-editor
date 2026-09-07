@@ -50,22 +50,26 @@ let harnessSeq = 0;
 
 /**
  * The import map's contents are static for the duration of a test run, so
- * fetch it once (per origin) instead of re-fetching on every mount.
+ * fetch it once per origin instead of re-fetching on every mount.
  */
-let importMapPromise: Promise<{ imports: Record<string, string> }> | null = null;
+const importMapPromises = new Map<string, Promise<{ imports: Record<string, string> }>>();
 
 function fetchImportMap(origin: string): Promise<{ imports: Record<string, string> }> {
-  importMapPromise ??= (async () => {
-    const response = await fetch(`${origin}/qti-runtime/import-map.json`);
-    if (!response.ok) {
-      throw new Error(
-        `[runtime-harness] Could not fetch /qti-runtime/import-map.json (${response.status}). ` +
-          'Run `node scripts/vendor-qti-runtime.mjs` (or `pnpm test`, which runs it as globalSetup) first.',
-      );
-    }
-    return (await response.json()) as { imports: Record<string, string> };
-  })();
-  return importMapPromise;
+  let promise = importMapPromises.get(origin);
+  if (!promise) {
+    promise = (async () => {
+      const response = await fetch(`${origin}/qti-runtime/import-map.json`);
+      if (!response.ok) {
+        throw new Error(
+          `[runtime-harness] Could not fetch /qti-runtime/import-map.json (${response.status}). ` +
+            'Run `node scripts/vendor-qti-runtime.mjs` (or `pnpm test`, which runs it as globalSetup) first.',
+        );
+      }
+      return (await response.json()) as { imports: Record<string, string> };
+    })();
+    importMapPromises.set(origin, promise);
+  }
+  return promise;
 }
 
 /**

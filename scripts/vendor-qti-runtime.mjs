@@ -99,7 +99,30 @@ function compareVersions(a, b) {
   if (!aPre && bPre) return 1;
   if (aPre && !bPre) return -1;
   if (!aPre && !bPre) return 0;
-  return aPre < bPre ? -1 : aPre > bPre ? 1 : 0;
+  return comparePrerelease(aPre, bPre);
+}
+
+/** Compares dot-separated prerelease identifiers, treating numeric segments numerically (per semver). */
+function comparePrerelease(a, b) {
+  const aIds = a.split('.');
+  const bIds = b.split('.');
+  for (let i = 0; i < Math.max(aIds.length, bIds.length); i++) {
+    const aId = aIds[i];
+    const bId = bIds[i];
+    if (aId === undefined) return -1;
+    if (bId === undefined) return 1;
+    if (aId === bId) continue;
+    const aNum = /^\d+$/.test(aId) ? Number(aId) : null;
+    const bNum = /^\d+$/.test(bId) ? Number(bId) : null;
+    if (aNum !== null && bNum !== null) {
+      if (aNum !== bNum) return aNum - bNum;
+      continue;
+    }
+    if (aNum !== null) return -1; // numeric identifiers sort before alphanumeric ones
+    if (bNum !== null) return 1;
+    return aId < bId ? -1 : 1;
+  }
+  return 0;
 }
 
 /** Locates an installed package directory, including pnpm's content-store layout. */
