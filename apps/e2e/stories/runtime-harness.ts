@@ -130,10 +130,20 @@ export async function mountQtiRuntime(itemXml: string): Promise<RuntimeHarness> 
   // Resolve runtime URLs against the parent's origin — relative URLs in a
   // srcdoc iframe don't resolve to /qti-runtime/ reliably.
   const origin = window.location.origin;
+
+  // @citolab/qti-components@9's dist bundle no longer inlines `lit` /
+  // `lit-html` / `@lit/context` — they're bare specifiers. `public/` is
+  // served as-is (no import rewriting), so `scripts/vendor-qti-runtime.mjs`
+  // vendors those deps and writes an import map resolving them; inject it
+  // here so the runtime's bare imports resolve inside the iframe.
+  const importMapResponse = await fetch(`${origin}/qti-runtime/import-map.json`);
+  const importMap = (await importMapResponse.text()).split('/qti-runtime/').join(`${origin}/qti-runtime/`);
+
   const srcdoc = `<!doctype html>
 <html>
   <head>
     <link rel="stylesheet" href="${origin}/qti-runtime/item.css">
+    <script type="importmap">${importMap}</script>
     <script type="module">
       import * as QTI from '${origin}/qti-runtime/index.js';
       window.__QTI_READY__ = true;
