@@ -153,6 +153,7 @@ function copyPackageJsFiles(srcPkgDir, destPkgDir, outSpecifiers) {
 const vendorDestRoot = path.join(destDir, 'vendor');
 const importMap = { imports: {} };
 const vendoredPackages = new Set();
+const unresolved = [];
 
 // BFS: vendoring a package can introduce its own bare specifiers (e.g. `lit`
 // itself imports `@lit/reactive-element` and `lit-element`) — keep resolving
@@ -167,9 +168,8 @@ while (pending.size > 0) {
 
   const pkgDir = findPackageDir(pkgName);
   if (!pkgDir) {
-    console.error(
-      `[vendor-qti-runtime] Could not locate installed package for bare specifier "${pkgName}" — skipping.`,
-    );
+    unresolved.push(pkgName);
+    console.error(`[vendor-qti-runtime] Could not locate installed package for bare specifier "${pkgName}".`);
     continue;
   }
   const pkgJson = JSON.parse(fs.readFileSync(path.join(pkgDir, 'package.json'), 'utf8'));
@@ -185,6 +185,14 @@ while (pending.size > 0) {
     const dep = packageNameOf(spec);
     if (!vendoredPackages.has(dep)) pending.add(dep);
   }
+}
+
+if (unresolved.length > 0) {
+  console.error(
+    `[vendor-qti-runtime] Failed to resolve ${unresolved.length} bare-specifier package(s): ${unresolved.join(', ')}. ` +
+      'The runtime iframe would fail to load with an unresolved import. Run `pnpm install` and retry.',
+  );
+  process.exit(1);
 }
 
 fs.writeFileSync(path.join(destDir, 'import-map.json'), `${JSON.stringify(importMap, null, 2)}\n`);

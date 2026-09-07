@@ -137,6 +137,12 @@ export async function mountQtiRuntime(itemXml: string): Promise<RuntimeHarness> 
   // vendors those deps and writes an import map resolving them; inject it
   // here so the runtime's bare imports resolve inside the iframe.
   const importMapResponse = await fetch(`${origin}/qti-runtime/import-map.json`);
+  if (!importMapResponse.ok) {
+    throw new Error(
+      `[runtime-harness] Could not fetch /qti-runtime/import-map.json (${importMapResponse.status}). ` +
+        'Run `node scripts/vendor-qti-runtime.mjs` (or `pnpm test`, which runs it as globalSetup) first.',
+    );
+  }
   const importMap = (await importMapResponse.text()).split('/qti-runtime/').join(`${origin}/qti-runtime/`);
 
   const srcdoc = `<!doctype html>
