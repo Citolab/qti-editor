@@ -143,13 +143,18 @@ export async function mountQtiRuntime(itemXml: string): Promise<RuntimeHarness> 
         'Run `node scripts/vendor-qti-runtime.mjs` (or `pnpm test`, which runs it as globalSetup) first.',
     );
   }
-  const importMap = (await importMapResponse.text()).split('/qti-runtime/').join(`${origin}/qti-runtime/`);
+  const relativeImportMap = (await importMapResponse.json()) as { imports: Record<string, string> };
+  const importMap = {
+    imports: Object.fromEntries(
+      Object.entries(relativeImportMap.imports).map(([specifier, url]) => [specifier, `${origin}${url}`]),
+    ),
+  };
 
   const srcdoc = `<!doctype html>
 <html>
   <head>
     <link rel="stylesheet" href="${origin}/qti-runtime/item.css">
-    <script type="importmap">${importMap}</script>
+    <script type="importmap">${JSON.stringify(importMap).replace(/</g, '\\u003c')}</script>
     <script type="module">
       import * as QTI from '${origin}/qti-runtime/index.js';
       window.__QTI_READY__ = true;
