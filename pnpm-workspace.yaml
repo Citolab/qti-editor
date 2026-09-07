@@ -20,7 +20,7 @@ packages:
 # Nothing downstream sees `catalog:` - pnpm substitutes the concrete spec at pack/publish time,
 # so the published @citolab/prose-qti manifest carries these ranges. A consumer does not need pnpm.
 catalog:
-  '@citolab/qti-components': '^8.0.0'
+  '@citolab/qti-components': '^9.0.0'
   '@qti-components/associate-interaction': '^1.1.6'
   '@qti-components/base': '^2.0.0'
   '@qti-components/choice-interaction': '^1.1.5'

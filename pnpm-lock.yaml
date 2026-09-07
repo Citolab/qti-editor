@@ -7,8 +7,8 @@ settings:
 catalogs:
   default:
     '@citolab/qti-components':
-      specifier: ^8.0.0
-      version: 8.0.0
+      specifier: ^9.0.0
+      version: 9.0.0
     '@qti-components/base':
       specifier: ^2.0.0
       version: 2.0.0
@@ -249,7 +249,7 @@ importers:
         version: link:../../packages/prose-qti
       '@citolab/qti-components':
         specifier: 'catalog:'
-        version: 8.0.0
+        version: 9.0.0
       '@qti-components/theme':
         specifier: 'catalog:'
         version: 2.0.0
@@ -739,8 +739,8 @@ packages:
     peerDependencies:
       storybook: ^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0 || ^10.5.0-0 || ^10.6.0-0
 
-  '@citolab/qti-components@8.0.0':
-    resolution: {integrity: sha512-/ymj85JJxGdNjyacRUQ5PslOP409BOLhN4/ClU6oJ/46UoVFQippWI+61Pl8Y5GEUmkUzDDw8ScPVUE9HfbH/g==}
+  '@citolab/qti-components@9.0.0':
+    resolution: {integrity: sha512-f2GZWxcPU9YQ9tRvs+SIBxebjCm31lPPNiA7wZhe+gbYr25iQsSXaayUduUp0sfIHC/IwK853JWwVyy7Y0y1SQ==}
 
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
@@ -7405,7 +7405,7 @@ snapshots:
       - '@chromatic-com/playwright'
       - '@chromatic-com/vitest'
 
-  '@citolab/qti-components@8.0.0':
+  '@citolab/qti-components@9.0.0':
     dependencies:
       '@heximal/templates': 0.1.5
       '@lit/context': 1.1.6
