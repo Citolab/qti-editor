@@ -49,6 +49,26 @@ const TIMEOUT_MS = 5000;
 let harnessSeq = 0;
 
 /**
+ * The import map's contents are static for the duration of a test run, so
+ * fetch it once (per origin) instead of re-fetching on every mount.
+ */
+let importMapPromise: Promise<{ imports: Record<string, string> }> | null = null;
+
+function fetchImportMap(origin: string): Promise<{ imports: Record<string, string> }> {
+  importMapPromise ??= (async () => {
+    const response = await fetch(`${origin}/qti-runtime/import-map.json`);
+    if (!response.ok) {
+      throw new Error(
+        `[runtime-harness] Could not fetch /qti-runtime/import-map.json (${response.status}). ` +
+          'Run `node scripts/vendor-qti-runtime.mjs` (or `pnpm test`, which runs it as globalSetup) first.',
+      );
+    }
+    return (await response.json()) as { imports: Record<string, string> };
+  })();
+  return importMapPromise;
+}
+
+/**
  * Places a draggable onto a drop target using the component's KEYBOARD
  * placement protocol — real trusted key events, no staging.
  *
@@ -136,14 +156,7 @@ export async function mountQtiRuntime(itemXml: string): Promise<RuntimeHarness> 
   // served as-is (no import rewriting), so `scripts/vendor-qti-runtime.mjs`
   // vendors those deps and writes an import map resolving them; inject it
   // here so the runtime's bare imports resolve inside the iframe.
-  const importMapResponse = await fetch(`${origin}/qti-runtime/import-map.json`);
-  if (!importMapResponse.ok) {
-    throw new Error(
-      `[runtime-harness] Could not fetch /qti-runtime/import-map.json (${importMapResponse.status}). ` +
-        'Run `node scripts/vendor-qti-runtime.mjs` (or `pnpm test`, which runs it as globalSetup) first.',
-    );
-  }
-  const relativeImportMap = (await importMapResponse.json()) as { imports: Record<string, string> };
+  const relativeImportMap = await fetchImportMap(origin);
   const importMap = {
     imports: Object.fromEntries(
       Object.entries(relativeImportMap.imports).map(([specifier, url]) => [specifier, `${origin}${url}`]),

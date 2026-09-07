@@ -85,6 +85,23 @@ function packageNameOf(specifier) {
   return specifier.startsWith('@') ? segments.slice(0, 2).join('/') : segments[0];
 }
 
+/** Compares two semver-like version strings numerically (ascending), so "2.10.0" > "2.9.0". */
+function compareVersions(a, b) {
+  const [aCore, aPre] = a.split('-');
+  const [bCore, bPre] = b.split('-');
+  const aParts = aCore.split('.').map(Number);
+  const bParts = bCore.split('.').map(Number);
+  for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+    const diff = (aParts[i] ?? 0) - (bParts[i] ?? 0);
+    if (diff !== 0) return diff;
+  }
+  // No prerelease tag outranks any prerelease tag (e.g. 1.0.0 > 1.0.0-rc.1).
+  if (!aPre && bPre) return 1;
+  if (aPre && !bPre) return -1;
+  if (!aPre && !bPre) return 0;
+  return aPre < bPre ? -1 : aPre > bPre ? 1 : 0;
+}
+
 /** Locates an installed package directory, including pnpm's content-store layout. */
 function findPackageDir(pkgName) {
   const direct = [
@@ -100,7 +117,7 @@ function findPackageDir(pkgName) {
     const entry = fs
       .readdirSync(base)
       .filter(e => e.startsWith(storeKey))
-      .sort()
+      .sort((a, b) => compareVersions(a.slice(storeKey.length), b.slice(storeKey.length)))
       .at(-1);
     if (!entry) continue;
     const pkgDir = path.join(base, entry, 'node_modules', pkgName);
