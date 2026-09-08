@@ -41,6 +41,7 @@ import {
   parseItemBody
 } from '@citolab/prose-qti/item-roundtrip';
 import { findUnrepresentableElements, TRANSPARENT_WRAPPER_TAGS } from '@citolab/prose-qti/schema-recovery';
+import { listInteractionDecoratorPluginFactories } from '@citolab/prose-qti/core/interactions/composer';
 
 import { qtiTransformTest } from '@qti-components/transformers';
 
@@ -111,10 +112,17 @@ const backspaceCommand = chainCommands(...descriptors.flatMap(descriptor => desc
  * descriptor's own plugins. The keymap returns false when no interaction handles
  * the key, so compose these *before* the list-split and `keymap(baseKeymap)`
  * keymaps so the QTI overrides win and unhandled keys fall through.
+ *
+ * The decorator plugins come last and are a separate descriptor field on purpose:
+ * they are authoring affordances (hover boundary, add/remove buttons, settings
+ * pill), so a read-only or player host installs `pluginFactories` and stops. This
+ * app is an editor, so it opts in — and pairs them with the matching opt-in
+ * `@citolab/prose-qti/decorations.css` (imported from `app.css`).
  */
 export const qtiPlugins: Plugin[] = [
   keymap({ Enter: enterCommand, Backspace: backspaceCommand }),
-  ...descriptors.flatMap(descriptor => descriptor.pluginFactories?.map(factory => factory()) ?? [])
+  ...descriptors.flatMap(descriptor => descriptor.pluginFactories?.map(factory => factory()) ?? []),
+  ...listInteractionDecoratorPluginFactories().map(factory => factory())
 ];
 
 const TEST_BASE = '/qti/kennisnet';

@@ -8,6 +8,7 @@ import { insertChoiceInteraction, insertSimpleChoiceOnEnter } from './components
 import { qtiChoiceInteractionNodeSpec } from './components/qti-choice-interaction/qti-choice-interaction.schema.js';
 import { choiceInteractionComposerMetadata, choiceNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
 import { choiceComposerHandler } from './composer/handler.js';
+import { createChoiceInteractionDecoratorPlugin } from './extensions/choice-decorations.js';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
@@ -24,6 +25,7 @@ export const choiceInteractionDescriptor = {
   ],
   insertCommand: insertChoiceInteraction,
   enterCommand: insertSimpleChoiceOnEnter,
+  decoratorPluginFactories: [createChoiceInteractionDecoratorPlugin],
   composerMetadata: choiceInteractionComposerMetadata,
   composerHandler: choiceComposerHandler,
   attributePanelMetadata: choiceNodeAttributePanelMetadataByNodeTypeName,

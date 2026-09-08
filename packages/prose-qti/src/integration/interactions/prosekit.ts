@@ -10,6 +10,7 @@ import { defineBasicExtension } from '@citolab/prose-extensions/prosekit';
 import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
 
 import {
+  listInteractionDecoratorPluginFactories,
   listInteractionDescriptors,
   listInteractionPluginFactories,
   listInteractionSchemaNodeSpecs,
@@ -82,9 +83,28 @@ export function defineQtiInteractionsExtension() {
   return union(...nodeSpecExtensions, defineKeymap(keymap), ...pluginExtensions);
 }
 
+/**
+ * Editor-only affordance decorations for every interaction that ships one
+ * (currently choice): the hover boundary, the per-choice ×, the trailing + and
+ * the settings pill.
+ *
+ * Deliberately NOT folded into `defineQtiExtension()`. These are an opinion
+ * about how authoring should feel, so a read-only or player host must not get
+ * them by default — hosts compose this extension themselves, and pair it with
+ * the opt-in `@citolab/prose-qti/decorations.css` stylesheet.
+ */
+export function defineQtiDecorationsExtension() {
+  const decoratorExtensions = listInteractionDecoratorPluginFactories().map(pluginFactory =>
+    definePlugin(pluginFactory),
+  );
+
+  return union(...decoratorExtensions);
+}
+
 export function defineQtiExtension() {
   return union(defineBasicExtension(), defineQtiInteractionsExtension());
 }
 
 export type QtiExtension = ReturnType<typeof defineQtiExtension>;
 export type QtiInteractionsExtension = ReturnType<typeof defineQtiInteractionsExtension>;
+export type QtiDecorationsExtension = ReturnType<typeof defineQtiDecorationsExtension>;

@@ -14,7 +14,7 @@
  * are consumed here through narrow imports.
  */
 
-import { EditorState } from 'prosemirror-state';
+import { EditorState, NodeSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap, toggleMark, chainCommands } from 'prosemirror-commands';
@@ -49,15 +49,13 @@ import {
   deleteColumn,
   deleteTable
 } from 'prosemirror-tables';
-import { imagePlugin, startImageUpload } from 'prosemirror-image-plugin';
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
-// qti-layout-* wrappers: the node spec and the lock both come from the package now. Keeping the
-// wrappers immutable is not this app's decision to make differently from every other host.
-import { qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
 // The notice is the package's, so both this editor and the regression story show the same one.
 import { renderSchemaGapNotice } from '@citolab/prose-qti/schema-recovery/notice';
+// The action pill's host-facing contract, shared by every interaction decorator.
+import { QTI_OPEN_NODE_SETTINGS_EVENT } from '@citolab/prose-qti/components/shared';
 
-import { attributesPanelPlugin } from './components/attributes-panel-plugin.js';
+import { attributesPanelPlugin, attributesPanelScopeKey } from './components/attributes-panel-plugin.js';
 import {
   descriptors,
   editableAttrs,
@@ -66,7 +64,7 @@ import {
   importQtiItem,
   exportQtiItem
 } from './prosemirror-qti.js';
-import { appSchema as schema, imagePluginSettings } from './schema.js';
+import { appSchema as schema } from './schema.js';
 // Example app-level widget: edit a selected text-entry interaction's correct
 // response with a plain <textarea> (the package ships only the data model).
 import { textEntryWidgetPlugin } from './components/text-entry-widget.js';
@@ -75,10 +73,9 @@ import 'prosemirror-view/style/prosemirror.css';
 import 'prosemirror-gapcursor/style/gapcursor.css';
 import 'prosemirror-menu/style/menu.css';
 import 'prosemirror-tables/style/tables.css';
-import 'prosemirror-image-plugin/dist/styles/common.css';
-import 'prosemirror-image-plugin/dist/styles/withoutResize.css';
 
 import type { MarkType, Node as ProseMirrorNode } from 'prosemirror-model';
+import type { QtiOpenNodeSettingsDetail } from '@citolab/prose-qti/components/shared';
 import type { Command } from 'prosemirror-state';
 import type { Plugin } from 'prosemirror-state';
 
@@ -135,28 +132,6 @@ const insertInteractionDropdown = new Dropdown(
   { label: 'Insert' }
 );
 
-const insertImage: Command = (_state, _dispatch, view) => {
-  if (!view) return true;
-
-  const picker = Object.assign(document.createElement('input'), {
-    type: 'file',
-    accept: 'image/*'
-  });
-
-  picker.addEventListener(
-    'change',
-    () => {
-      const file = picker.files?.[0];
-      if (!file) return;
-      startImageUpload(view, file, imagePluginSettings.defaultAlt, imagePluginSettings, schema);
-    },
-    { once: true }
-  );
-
-  picker.click();
-  return true;
-};
-
 /** Insert a 3×3 table (first row as header cells) at the selection. */
 const insertTable: Command = (state, dispatch) => {
   const { table, table_row, table_cell, table_header } = schema.nodes;
@@ -177,8 +152,7 @@ const menuContent: MenuElement[][] = [
   [undoItem, redoItem],
   [
     cmdItem(wrapInList(schema.nodes.bullet_list), icons.bulletList, 'Wrap in bullet list'),
-    cmdItem(wrapInList(schema.nodes.ordered_list), icons.orderedList, 'Wrap in ordered list'),
-    cmdItem(insertImage, { text: '🖼' }, 'Insert image')
+    cmdItem(wrapInList(schema.nodes.ordered_list), icons.orderedList, 'Wrap in ordered list')
   ],
   [
     cmdItem(insertTable, { text: '\u25A6' }, 'Insert table'),
@@ -204,10 +178,6 @@ const editorPlugins: Plugin[] = [
   ...qtiPlugins,
   // Example: textarea widget for a selected text-entry interaction's correct response.
   textEntryWidgetPlugin(),
-  // Keep qti-layout-* wrappers immutable while their content stays editable.
-  qtiLayoutDivLockPlugin,
-  // Plugin-provided image upload support: toolbar picker + paste/drop image files.
-  imagePlugin(imagePluginSettings),
   ...tableListPlugins,
   keymap(baseKeymap),
   dropCursor(),
@@ -230,6 +200,36 @@ function mountEditor(container: HTMLElement, doc: ProseMirrorNode, panelEl: HTML
       view.updateState(view.state.apply(tr));
     }
   });
+
+  /*
+   * The decorations' settings action only dispatches an event — it deliberately does not know
+   * what a host's properties UI is. This app has one, so the pill scopes it: the panel drops to the
+   * interaction and whatever is selected inside it, instead of listing the chain from the document
+   * down.
+   *
+   * That is the difference between the pill and simply clicking into the interaction, which already
+   * showed the interaction as one section among five. A control labelled "settings" is promising
+   * that interaction's settings; scoping is what makes the label true.
+   *
+   * Selecting the node as well is what keeps it visibly active — the decorator emits the pill only
+   * while the selection is inside the interaction, and the ring follows the pill. It also gives the
+   * scope its exit: the panel's plugin state drops the scope as soon as the selection leaves, so
+   * clicking anywhere else restores the full chain with nothing to wire.
+   *
+   * Listened for on the container rather than `view.dom` because the pill is a widget decoration
+   * that can sit outside the editable root's subtree; the event bubbles and is `composed`, so the
+   * container catches it either way.
+   */
+  container.addEventListener(QTI_OPEN_NODE_SETTINGS_EVENT, event => {
+    const { pos } = (event as CustomEvent<QtiOpenNodeSettingsDetail>).detail;
+    if (!view.state.doc.nodeAt(pos)) return;
+
+    view.dispatch(
+      view.state.tr.setSelection(NodeSelection.create(view.state.doc, pos)).setMeta(attributesPanelScopeKey, pos)
+    );
+    view.focus();
+  });
+
   return view;
 }
 

@@ -245,6 +245,7 @@
       "default": "./dist/components/text-entry/*"
     },
     "./core-css.css": "./dist/core-css/core-css.css",
+    "./decorations.css": "./dist/core-css/decorations.css",
     "./qti-prose.css": "./dist/qti-prose.css",
     "./transformers": {
       "types": "./dist/transformers.d.ts",

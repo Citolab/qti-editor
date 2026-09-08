@@ -22,29 +22,32 @@
  * Reading the topology is still possible, and now has one answer rather than two that can disagree:
  * `createQtiSchema` in @citolab/prose-qti/schema.
  *
- * ## The one thing still composed here
+ * ## Nothing is composed on top, and that is the point
  *
- * `prosemirror-image-plugin` rewrites the `image` node spec to add its own node view and upload
- * placeholder handling. That is an editing-experience concern belonging to this app, not to the
- * document format, so it is applied as a last step over the package's schema rather than pushed
- * upstream.
+ * `prosemirror-image-plugin` used to be applied here through `updateImageNode()`, to add its node
+ * view and upload placeholder handling. That was filed as an editing-experience concern belonging
+ * to this app rather than to the document format, which is sound — but the function is not what its
+ * name suggests. `updateImageNode` does not extend the `image` spec, it REPLACES it, `parseDOM` and
+ * `toDOM` included, with rules for its own `div.imagePluginRoot` wrapper.
+ *
+ * So the app's schema had no rule matching an `<img>` at all. ProseMirror's `DOMParser` handles an
+ * element it has no rule for by skipping it and parsing its children in its place, and an `<img>`
+ * has no children — every authored image was dropped on import. Export broke in the same move:
+ * `exportItemXml` serializes with `DOMSerializer.fromSchema`, so an inserted image came back out as
+ * `<div class="imagePluginRoot" imageplugin-src="…">` inside a `<p>`, which is not valid QTI.
+ *
+ * Neither failure could reach the schema-gap notice, which is why it went unnoticed for so long:
+ * `findUnrepresentableElements` asks whether a node TYPE exists, not whether a parse rule reaches
+ * it, and `image` existed the whole time. Silently unparseable is the one class of loss that notice
+ * is blind to.
+ *
+ * The trade was a file picker and drag/paste upload against losing the author's images, so the
+ * plugin was removed rather than patched. The package's `image` node already models
+ * `src`/`alt`/`title`/`width`/`height` and roundtrips `<img>` faithfully, which is all this app
+ * needs. A host that does want uploads must re-add the plugin AND restore the QTI `parseDOM`/`toDOM`
+ * over its rewrite — never take `updateImageNode`'s output as-is.
  */
 
-import { defaultSettings, updateImageNode } from 'prosemirror-image-plugin';
-import { Schema } from 'prosemirror-model';
 import { createQtiSchema } from '@citolab/prose-qti/schema';
 
-export const imagePluginSettings = {
-  ...defaultSettings,
-  isBlock: false,
-  hasTitle: false,
-  enableResize: false,
-  defaultAlt: 'Image'
-};
-
-const qtiSchema = createQtiSchema();
-
-export const appSchema = new Schema({
-  marks: qtiSchema.spec.marks,
-  nodes: updateImageNode(qtiSchema.spec.nodes, imagePluginSettings)
-});
+export const appSchema = createQtiSchema();
