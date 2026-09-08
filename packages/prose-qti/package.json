@@ -1,6 +1,6 @@
 {
   "name": "@citolab/prose-qti",
-  "version": "1.14.0",
+  "version": "1.21.0",
   "description": "QTI functionality for ProseMirror-based editors.",
   "repository": {
     "type": "git",
@@ -255,7 +255,8 @@
   "scripts": {
     "build": "tsc -p ./tsconfig.json && mkdir -p dist/core-css dist/schema-recovery/notice && cp src/core-css/*.css dist/core-css/ && cp src/schema-recovery/notice/*.css dist/schema-recovery/notice/ && cp src/qti-prose.css dist/qti-prose.css",
     "typecheck": "tsc --noEmit -p ./tsconfig.json",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "publish": "node ../../tools/publish-if-needed.mjs"
   },
   "dependencies": {
     "@citolab/prose-extensions": "workspace:*",

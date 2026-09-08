@@ -33,10 +33,37 @@ Keep private:
 
 ### Packages
 
-- Versioning is commit-message driven via `multi-semantic-release` (see `release.config.cjs`), not Changesets — there is no version PR step. Each publishable package is tagged and released independently as `<name>@<version>` based on Angular-style conventional commits (`fix:`, `feat:`, etc.) touching that package's path.
-- The release workflow (`.github/workflows/release.yml`) runs after `CI: push-quality` succeeds on `main`, and only proceeds when the triggering push touched a release-relevant path (`package.json`, `pnpm-lock.yaml`, `packages/prose-qti/`, `packages/prose-qti-node/`, `packages/prose-extensions/`, or the release workflow itself). `packages/prose-qti-node/` is listed explicitly rather than relying on the `packages/prose-qti/` prefix to catch it — that pattern doesn't match, since `-node` sits before the slash, so a change touching only the new package would otherwise never trigger a release.
-- Release publishes with `pnpm publish --provenance`, which rewrites each package's internal `workspace:*` dependency ranges (see below) to real published semver ranges before publishing — no `NPM_TOKEN` is required because npm trusted publishing (OIDC) is configured.
-- A successful release commits the bumped `package.json` and `CHANGELOG.md` back to `main` with `chore(release): <version> [skip ci]`, which is filtered back out of the release-relevant-paths check so it does not retrigger itself.
+- Versioning is **Changesets**-driven, matching `qti-components`. A PR that changes published
+  behaviour carries a changeset (`pnpm run changeset`) declaring the affected packages and bump
+  level; those markdown files accumulate under `.changeset/` on `main`.
+- **Nothing publishes on merge.** Releasing is a deliberate act: run the
+  `Manual: release and publish packages (changesets)` workflow
+  (`.github/workflows/release.yml`) from the Actions tab when the accumulated set is worth a
+  release. It takes a `branch` (default `main`) and a `dry_run` flag; a dry run prints
+  `changeset status` and a snapshot version preview, then reverts, without committing, tagging or
+  publishing anything.
+- The filename `release.yml` is load-bearing: npm trusted publishing binds each package to a
+  repository plus a workflow filename, so renaming the file breaks publishing. The workflow's
+  `name:` is cosmetic and matches `qti-components`.
+- A real run applies `changeset version`, regenerates `custom-elements.json`, commits
+  `chore(release): changesets version [skip ci]`, builds via `pnpm build:packages` (dependency
+  order matters — prose-qti resolves prose-extensions through a project reference), publishes, tags
+  each package as `<name>@<version>`, pushes commit and tags, and opens a GitHub release for
+  `@citolab/prose-qti`.
+- Publishing goes through `tools/publish-if-needed.mjs`, which is idempotent: it asks npm whether
+  `<name>@<version>` exists and skips it if so. `changeset publish` is deliberately not used — see
+  the comment in the workflow.
+- No `NPM_TOKEN` is required: npm trusted publishing (OIDC) is configured, and
+  `--provenance` uses the GitHub Actions OIDC token.
+- Unlike the previous `multi-semantic-release` setup, the committed `package.json` `version` field
+  **is** the source of truth and is committed back. Under semantic-release it deliberately was not,
+  so the manifests drifted behind npm (prose-qti sat at 1.14.0 while npm had 1.21.0). The migration
+  resynced all three to their published versions; keeping them accurate now matters, because
+  Changesets computes the next version from the manifest and an already-published result is
+  silently skipped rather than failing.
+- CI runs an **advisory** `changeset-check` job on pull requests. It reports whether a changeset is
+  present but never fails: a PR touching no published behaviour legitimately has none, and blocking
+  would only train people to add empty ones.
 
 ### Internal Package Dependencies
 

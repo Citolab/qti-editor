@@ -5,7 +5,7 @@
 # Not in CI. Every check below gates a HUMAN commit — a developer about to push code — and none of
 # them has a subject when the committer is a robot.
 #
-# This is not hypothetical tidiness. It broke the release: multi-semantic-release commits the
+# This is not hypothetical tidiness. It broke the release: the release workflow commits the
 # version bump itself, that commit fired this hook, and the hook ran the browser tests, which died
 # with "Executable doesn't exist at .../chrome-headless-shell" because the release job installs no
 # Playwright browsers and has no reason to. The release then failed having published nothing, so
