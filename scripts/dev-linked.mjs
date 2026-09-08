@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
  * Linked dev mode — runs the qti-components build watcher and the editor
- * (qti-prosemirror-item) in parallel so changes in qti-components rebuild and
+ * (qti-example-editor) in parallel so changes in qti-components rebuild and
  * propagate into the editor via yalc.
  *
  * Defaults to the prosemirror-item app on port 5175. Override the editor app
- * with `EDITOR_APP=dev:prosekit-app pnpm dev:linked` (uses the package script
+ * with `EDITOR_APP=<script-name> pnpm dev:linked` (uses the package script
  * names). Override the qti-components path with `QTI_COMPONENTS_PATH=...`.
  *
  * Preflight:

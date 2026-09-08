@@ -58,3 +58,33 @@ if (choice) {
 `createSimpleChoiceNode` returns `null` if the schema does not have `qtiSimpleChoice`/`qtiSimpleChoiceParagraph` nodes.
 
 The default i18n messages also include `choice.addOption`, `choice.removeOption` and `interaction.settings`, so a host building such an affordance can label it without hardcoding English.
+
+## Built-in editor decorations (opt-in)
+
+Rather than building the affordance above yourself, you can opt into the ready-made one: hovering a choice interaction reveals a boundary and a per-choice remove (`×`) button, a trailing `+` appends a new choice, and a settings pill floats above the interaction while the selection sits inside it. These are view-only decorations — they never enter the document, so exported XML is unaffected — and they are **not** included by default, since a read-only or player host must not get authoring chrome it never asked for.
+
+Enable them by adding the decorator plugins and their stylesheet:
+
+```ts
+import { listInteractionDecoratorPluginFactories } from '@citolab/prose-qti/core/interactions/composer';
+import '@citolab/prose-qti/decorations.css';
+
+const decoratorPlugins = listInteractionDecoratorPluginFactories().map(pluginFactory => pluginFactory());
+
+const plugins = [...qtiPlugins, ...decoratorPlugins /* , … */];
+```
+
+Use `listSelectedInteractionDecoratorPluginFactories({ include: ['qti-choice-interaction'] })` instead if you only want decorations for a subset of interactions. If your integration uses ProseKit rather than raw ProseMirror plugins, `defineQtiDecorationsExtension()` from `@citolab/prose-qti/integration/interactions/prosekit` wraps the same factories as a ProseKit extension.
+
+Choice is currently the only interaction with a decorator; the plumbing (`decoratorPluginFactories` on `InteractionDescriptor`) is generic, so more may follow.
+
+The floating pill also exposes select, copy and delete — all self-contained, so they work with no wiring from your host — plus settings, which has no default behavior. Clicking it dispatches a `qti:node-settings:open` `CustomEvent` (bubbling, composed) on the editor view's DOM, carrying a detail of `` { nodeTypeName, tagName, pos, attrs } ``; listen for it to open your own attribute panel for that node:
+
+```ts
+import { QTI_OPEN_NODE_SETTINGS_EVENT, type QtiOpenNodeSettingsDetail } from '@citolab/prose-qti/components/shared';
+
+view.dom.addEventListener(QTI_OPEN_NODE_SETTINGS_EVENT, event => {
+  const { nodeTypeName, tagName, pos, attrs } = (event as CustomEvent<QtiOpenNodeSettingsDetail>).detail;
+  // open your properties UI for the node at `pos`
+});
+```

@@ -8,7 +8,7 @@
 default:
 	@just --list --unsorted
 
-# Start the editor dev server (qti-prosemirror-item) with HMR
+# Start the editor dev server (qti-example-editor) with HMR
 [group('primary')]
 dev:
 	pnpm run dev:prosemirror-item
@@ -41,7 +41,7 @@ vrt:
 screenshots:
 	pnpm run test:vrt:update
 
-# Linked dev: yalc-couple local qti-components + run its build→yalc:push watcher alongside the qti-prosemirror-item app (HMR / full refresh on push)
+# Linked dev: yalc-couple local qti-components + run its build→yalc:push watcher alongside the qti-example-editor app (HMR / full refresh on push)
 [group('primary')]
 yalc:
 	pnpm run dev:linked
