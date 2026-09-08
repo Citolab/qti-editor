@@ -18,12 +18,6 @@ To move to newer components releases, edit the ranges in `pnpm-workspace.yaml`
 and run `pnpm install`. Commit the workspace file and `pnpm-lock.yaml` together
 so teammates and CI resolve the same versions.
 
-One exception remains: `@qti-components/corrections` has never been published to
-npm, so its catalog entry is still a `pkg.pr.new` URL. Nothing in this workspace
-consumes it, so pnpm never resolves it here — it is the extracted
-`qti-editor-full-assessment` repository that actually installs that package, and
-it is the last pkgr dependency anywhere.
-
 ## Deterministic local link workflow (no yalc)
 
 For fast local iteration, this repo includes deterministic link/unlink commands
