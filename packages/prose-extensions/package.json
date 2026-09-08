@@ -1,6 +1,6 @@
 {
   "name": "@citolab/prose-extensions",
-  "version": "1.5.0",
+  "version": "1.6.1",
   "description": "Extensions for QTI Editor",
   "repository": {
     "type": "git",
@@ -60,7 +60,8 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "publish": "node ../../tools/publish-if-needed.mjs"
   },
   "dependencies": {
     "lit": "^3.3.3"

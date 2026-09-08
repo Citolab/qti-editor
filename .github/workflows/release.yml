@@ -1,112 +1,197 @@
-name: Release Packages
+# Mirrors qti-components' release lane: changesets accumulate on main, and a human decides when
+# the set is worth a release. Nothing publishes on merge.
+#
+# The FILENAME is load-bearing and must stay `release.yml`: npm trusted publishing binds a
+# package to a repository plus a workflow filename, and the OIDC exchange is rejected if the
+# publish comes from anywhere else. Renaming this file silently breaks publishing for all three
+# packages. The `name:` below is cosmetic by comparison and matches qti-components so the two
+# repos read the same in the Actions sidebar.
+name: "Manual: release and publish packages (changesets)"
 
 on:
-  workflow_run:
-    workflows:
-      - "CI: push-quality"
-    types:
-      - completed
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to release from'
+        required: false
+        default: 'main'
+        type: string
+      dry_run:
+        description: 'Dry-run (no commits, tags, or publishes)'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
-  id-token: write
-  issues: write
   pull-requests: write
+  id-token: write
 
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      should_release: ${{ steps.filter.outputs.should_release }}
-    steps:
-      - name: Checkout triggering commit
-        if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' }}
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-          fetch-depth: 2
-
-      - name: Detect release-relevant changes
-        id: filter
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "should_release=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if [ "${{ github.event.workflow_run.conclusion }}" != "success" ] || [ "${{ github.event.workflow_run.event }}" != "push" ] || [ "${{ github.event.workflow_run.head_branch }}" != "main" ]; then
-            echo "should_release=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          changed_files="$(git diff --name-only HEAD^ HEAD)"
-          if echo "$changed_files" | grep -Eq '^(package\.json$|pnpm-lock\.yaml$|packages/prose-qti/|packages/prose-qti-node/|packages/prose-extensions/|\.github/workflows/release\.yml$)'; then
-            echo "should_release=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "should_release=false" >> "$GITHUB_OUTPUT"
-          fi
-
   release:
-    needs: changes
-    if: ${{ needs.changes.outputs.should_release == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
         with:
           token: ${{ secrets.RELEASE_BOT_TOKEN || secrets.GITHUB_TOKEN }}
-          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
+          ref: ${{ inputs.branch || 'main' }}
           fetch-depth: 0
-          fetch-tags: true
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: 24
-          cache: pnpm
-          registry-url: https://registry.npmjs.org/
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org/'
 
       # Trusted publishing needs npm >= 11.5.1: the OIDC token exchange that authenticates the
       # publish lives in the npm CLI, not in pnpm. `pnpm publish` on pnpm 10 delegates to npm, so
-      # this is the CLI that actually talks to the registry — whatever npm ships with Node 24 is
-      # not guaranteed to clear that bar, and a too-old npm fails as an auth error rather than as
-      # a version error.
+      # this is the CLI that actually talks to the registry, and a too-old npm fails as an auth
+      # error rather than as a version error.
       #
       # NOTE: pnpm 11 implements `publish` natively and no longer delegates. When this repo moves
-      # to pnpm 11, the publishCmd in release.config.cjs must call `npm publish` directly or the
-      # OIDC exchange disappears with the delegation.
-      - name: Ensure npm supports trusted publishing
-        run: |
-          npm install -g npm@latest
-          npm --version
+      # to pnpm 11, tools/publish-if-needed.mjs must call `npm publish` directly or the OIDC
+      # exchange disappears with the delegation.
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # `pnpm build:packages`, not two --filter calls, because ORDER MATTERS and this had it
-      # backwards: prose-qti resolves prose-extensions through a TypeScript project reference, so
-      # building prose-qti first fails with TS6305 ("Output file ... has not been built from source
-      # file"). build:packages uses `--sort`, which builds them in dependency order — the same
-      # script CI runs, so the two cannot drift again.
-      #
-      # It stayed hidden because the release job had never reached this step: CI failures and the
-      # path filter stopped the workflow earlier every previous time.
-      - name: Build publishable packages
-        run: pnpm build:packages
-
-      - name: Configure git
+      - name: Configure git for release commit
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Release
+      # qti-components runs `changeset:check-umbrella` here. It is deliberately absent:
+      # that gate exists because its umbrella reaches every workspace package through
+      # devDependencies, which Changesets hard-codes to produce no dependent bump. In this
+      # repo @citolab/prose-qti depends on @citolab/prose-extensions through `dependencies`
+      # (`workspace:*`), which Changesets bumps natively. See .changeset/README.md.
+
+      - name: Dry-run release status
+        if: ${{ inputs.dry_run }}
         run: |
-          git fetch --tags --force
-          pnpm exec multi-semantic-release --ignore-private-packages --deps.bump=ignore
+          if ls .changeset/*.md >/dev/null 2>&1; then
+            pnpm run changeset:status
+          else
+            echo "No pending changesets."
+          fi
+
+      - name: Dry-run version preview (snapshot)
+        if: ${{ inputs.dry_run }}
         env:
+          # @changesets/changelog-github resolves PR and author links through the API,
+          # so the preview needs the same token the real version step uses.
           GITHUB_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          if ! ls .changeset/*.md >/dev/null 2>&1; then
+            exit 0
+          fi
+
+          pnpm exec changeset version --snapshot dryrun
+
+          echo "Preview of version/changelog changes:"
+          git --no-pager diff -- .changeset packages || true
+
+          # Revert preview mutations; dry-run should not leave repository changes behind.
+          git checkout -- .changeset packages
+
+      - name: Apply changeset versions
+        id: version
+        if: ${{ !inputs.dry_run }}
+        env:
+          # @changesets/changelog-github resolves PR and author links through the API.
+          GITHUB_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          pnpm run changeset:version
+
+          # Keep the committed custom-elements manifest aligned with versioned sources.
+          pnpm run cem
+
+          if git diff --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "No pending changesets. Nothing to release."
+            exit 0
+          fi
+
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+
+      - name: Commit release version updates
+        if: ${{ !inputs.dry_run && steps.version.outputs.has_changes == 'true' }}
+        run: |
+          git add .changeset packages custom-elements.json
+          git commit -m "chore(release): changesets version [skip ci]"
+
+      - name: Build publishable packages
+        if: ${{ !inputs.dry_run && steps.version.outputs.has_changes == 'true' }}
+        # `build:packages`, not per-package --filter calls, because ORDER MATTERS: prose-qti
+        # resolves prose-extensions through a TypeScript project reference, so building it first
+        # fails with TS6305. build:packages uses `--sort`, which builds in dependency order — the
+        # same script CI runs, so the two cannot drift.
+        run: pnpm run build:packages
+
+      - name: Configure npm for OIDC trusted publishing
+        if: ${{ !inputs.dry_run }}
+        run: |
+          # Remove any .npmrc that setup-node created (it contains an _authToken placeholder
+          # which overrides OIDC when set to empty/missing)
+          rm -f .npmrc "$HOME/.npmrc"
+
+          # Write a clean .npmrc — no _authToken so npm falls back to OIDC
+          printf '%s\n' 'registry=https://registry.npmjs.org/' 'provenance=true' > "$HOME/.npmrc"
+
+      # `changeset publish` is deliberately not used, matching qti-components: @changesets/cli
+      # 3.0.1 reads `response.info.versions` in getUnpublishedPackages without checking it exists,
+      # and its pnpm code path can return a response that has no `versions` array. The step below
+      # publishes through tools/publish-if-needed.mjs, which is idempotent and skips versions
+      # already on npm, and tags come from `changeset:tag`. This repo is not in changesets
+      # pre-release mode, so there are no dist-tags for it to get right.
+      - name: Publish packages to npm
+        if: ${{ !inputs.dry_run && steps.version.outputs.has_changes == 'true' }}
+        shell: bash
+        run: |
+          for var in $(env | grep -oP '^npm_config_\w+' | grep -vE '^npm_config_(registry|provenance|cache|userconfig)$'); do
+            unset "$var"
+          done
+          pnpm run ci:publish:missing
+        env:
+          NPM_CONFIG_PROVENANCE: 'true'
+          PNPM_GIT_CHECKS: 'false'
+
+      - name: Tag published packages
+        if: ${{ !inputs.dry_run && steps.version.outputs.has_changes == 'true' }}
+        run: pnpm run changeset:tag
+
+      # Push the commit and the tags as separate refspecs rather than relying on
+      # `--follow-tags`. `changeset:tag` writes one annotated tag per package, and pushing them
+      # explicitly keeps that independent of whatever tag-following behaviour the commit push
+      # happens to have.
+      - name: Push release commit and tags
+        if: ${{ !inputs.dry_run && steps.version.outputs.has_changes == 'true' }}
+        run: |
+          git push origin HEAD
+          git push origin --tags
+
+      # qti-components announces its single umbrella package. This repo publishes three on
+      # independent versions, so the release announces @citolab/prose-qti — the package a host
+      # actually installs — and the other two are discoverable through their pushed tags.
+      - name: Create GitHub release for the flagship package
+        if: ${{ !inputs.dry_run && steps.version.outputs.has_changes == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          version=$(node -p "require('./packages/prose-qti/package.json').version")
+          tag="@citolab/prose-qti@${version}"
+
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists."
+            exit 0
+          fi
+
+          notes=$(node tools/changesets/release-notes.mjs packages/prose-qti "$version")
+          gh release create "$tag" --title "@citolab/prose-qti ${version}" --notes "$notes"

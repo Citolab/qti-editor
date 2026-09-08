@@ -1,6 +1,6 @@
 {
   "name": "@citolab/prose-qti-node",
-  "version": "0.0.1",
+  "version": "1.1.13",
   "description": "QTI 3.0 <-> ProseMirror conversion for plain Node. No browser, no web components.",
   "license": "GPL-3.0-only",
   "type": "module",
@@ -25,7 +25,8 @@
   },
   "scripts": {
     "build": "node scripts/bundle-node.mjs && node scripts/bundle-types.mjs",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "publish": "node ../../tools/publish-if-needed.mjs"
   },
   "dependencies": {
     "linkedom": "^0.18.13",
