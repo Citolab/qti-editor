@@ -148,3 +148,19 @@ export function listSelectedInteractionPluginFactories(options?: {
 
   return descriptors.flatMap(descriptor => descriptor.pluginFactories ?? []);
 }
+
+export function listInteractionDecoratorPluginFactories(): ReadonlyArray<
+  NonNullable<InteractionDescriptor['decoratorPluginFactories']>[number]
+> {
+  return registeredDescriptors.flatMap(descriptor => descriptor.decoratorPluginFactories ?? []);
+}
+
+export function listSelectedInteractionDecoratorPluginFactories(options?: {
+  include?: string[];
+}): ReadonlyArray<NonNullable<InteractionDescriptor['decoratorPluginFactories']>[number]> {
+  const descriptors = options?.include
+    ? registeredDescriptors.filter(descriptor => options.include!.includes(descriptor.tagName))
+    : registeredDescriptors;
+
+  return descriptors.flatMap(descriptor => descriptor.decoratorPluginFactories ?? []);
+}

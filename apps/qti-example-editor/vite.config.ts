@@ -10,6 +10,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const publicDir = fileURLToPath(new URL('../../public', import.meta.url));
 const proseQtiCoreCssSrcFile = fileURLToPath(new URL('../../packages/prose-qti/src/core-css/core-css.css', import.meta.url));
+const proseQtiDecorationsCssSrcFile = fileURLToPath(new URL('../../packages/prose-qti/src/core-css/decorations.css', import.meta.url));
 
 export default defineConfig({
   publicDir,
@@ -23,6 +24,11 @@ export default defineConfig({
         // so style edits hot-reload without rebuilding @citolab/prose-qti.
         find: /^@citolab\/prose-qti\/core-css\.css$/,
         replacement: proseQtiCoreCssSrcFile,
+      },
+      {
+        // Same for the opt-in decorations stylesheet.
+        find: /^@citolab\/prose-qti\/decorations\.css$/,
+        replacement: proseQtiDecorationsCssSrcFile,
       },
     ],
     // The QTI interaction edit components are Lit elements; dedupe Lit so a

@@ -16,7 +16,7 @@
  * No ProseKit imports — works with raw ProseMirror.
  */
 
-import { NodeSelection, Plugin, type EditorState } from 'prosemirror-state';
+import { NodeSelection, Plugin, PluginKey, type EditorState } from 'prosemirror-state';
 
 import type { Node as ProseMirrorNode } from 'prosemirror-model';
 import type { EditorView } from 'prosemirror-view';
@@ -79,9 +79,38 @@ export const collectAncestorChain = (state: EditorState): ChainEntry[] => {
   return chain;
 };
 
+/**
+ * Scope: when set, the panel shows one node and its descendants instead of the whole ancestor chain.
+ *
+ * The chain from the document root down is the right default — it is how you reach the item's own
+ * `identifier`, or a layout wrapper's `class`. But a control labelled "settings" on an interaction
+ * is promising that interaction's settings, and answering with five sections starting at `doc` is
+ * not that. Scoping lets a caller say "this node is the subject now" without changing what the
+ * panel is able to display.
+ *
+ * Held in plugin state rather than on the view, so it maps through document changes like any other
+ * position and survives an undo that moves the node.
+ */
+export const attributesPanelScopeKey = new PluginKey<number | null>('attributes-panel-scope');
+
+/** Scope the panel to the node at `pos`. Pass `null` to show the full chain again. */
+export function scopeAttributesPanel(view: EditorView, pos: number | null): void {
+  view.dispatch(view.state.tr.setMeta(attributesPanelScopeKey, pos));
+}
+
+/**
+ * Keep only the scoped node and anything inside it.
+ *
+ * Entries are ordered outermost first and carry their document position, so an ancestor of the
+ * scoped node always sorts before it and a descendant after — one comparison does the whole filter.
+ * The doc entry uses DOC_POS (-1), so it drops out for free.
+ */
+const applyScope = (chain: ChainEntry[], scope: number | null): ChainEntry[] =>
+  scope == null ? chain : chain.filter(entry => entry.pos >= scope);
+
 /** Stable signature of the chain (types + positions) — used to avoid needless re-renders. */
-const chainSignature = (chain: ChainEntry[]): string =>
-  chain.map(entry => `${entry.type}@${entry.pos}`).join('|');
+const chainSignature = (chain: ChainEntry[], scope: number | null): string =>
+  `${scope ?? 'all'}::${chain.map(entry => `${entry.type}@${entry.pos}`).join('|')}`;
 
 /**
  * PluginView that keeps the side panel in sync with the selection. State and
@@ -121,8 +150,9 @@ export class AttributesPanelView {
    * ancestor chain changes; otherwise refresh unfocused input values in place.
    */
   #sync(): void {
-    const chain = collectAncestorChain(this.#view.state);
-    const nextSignature = chainSignature(chain);
+    const scope = attributesPanelScopeKey.getState(this.#view.state) ?? null;
+    const chain = applyScope(collectAncestorChain(this.#view.state), scope);
+    const nextSignature = chainSignature(chain, scope);
     if (nextSignature !== this.#signature) {
       this.#signature = nextSignature;
       this.#render(chain);
@@ -255,7 +285,27 @@ export const attributesPanelPlugin = (panelEl: HTMLElement, options: AttributesP
   const editableAttrs: Record<string, ReadonlySet<string>> = Object.fromEntries(
     Object.entries(options.editableAttrs ?? {}).map(([type, attrs]) => [type, new Set(attrs)]),
   );
-  return new Plugin({
+  return new Plugin<number | null>({
+    key: attributesPanelScopeKey,
+    state: {
+      init: () => null,
+      /**
+       * A scope survives edits but not a selection that walks out of it, which is what makes
+       * "click anywhere else to get the full chain back" free rather than another event to wire.
+       */
+      apply(tr, value, _oldState, newState) {
+        const meta = tr.getMeta(attributesPanelScopeKey) as number | null | undefined;
+        if (meta !== undefined) return meta;
+        if (value == null) return null;
+
+        const pos = tr.mapping.map(value, -1);
+        const node = newState.doc.nodeAt(pos);
+        if (!node) return null;
+
+        const { from, to } = newState.selection;
+        return from >= pos && to <= pos + node.nodeSize ? pos : null;
+      },
+    },
     view: (view: EditorView) => new AttributesPanelView(view, panelEl, editableAttrs),
   });
 };

@@ -115,8 +115,18 @@ export interface RegressionEditor {
    * the editor's "save" output.
    */
   exportAssessmentItemDoc: (doc: ProseMirrorNode) => Document;
-  /** Mount the editor into `container`, optionally wiring the attributes panel. */
-  mountEditor: (container: HTMLElement, options?: { panelEl?: HTMLElement }) => EditorView;
+  /**
+   * Mount the editor into `container`, optionally wiring the attributes panel.
+   *
+   * `decorations` installs the interaction's editor affordances (hover boundary, add/remove
+   * buttons, settings pill) — opt-in per mount rather than part of the stack, because the
+   * decorators are opt-in for real hosts too and most stories are about the roundtrip, not the
+   * affordances.
+   */
+  mountEditor: (
+    container: HTMLElement,
+    options?: { panelEl?: HTMLElement; decorations?: boolean }
+  ) => EditorView;
   /**
    * What this item's schema cannot represent in the fixture, asked before the parse.
    *
@@ -251,10 +261,15 @@ export function createRegressionEditor({
       { ignoreTags: TRANSPARENT_WRAPPER_TAGS, ...options }
     );
 
-  const mountEditor = (container: HTMLElement, options: { panelEl?: HTMLElement } = {}): EditorView => {
-    const plugins = options.panelEl
-      ? [...editorPlugins, attributesPanelPlugin(options.panelEl, { editableAttrs })]
-      : editorPlugins;
+  const mountEditor = (
+    container: HTMLElement,
+    options: { panelEl?: HTMLElement; decorations?: boolean } = {}
+  ): EditorView => {
+    const plugins = [
+      ...editorPlugins,
+      ...(options.decorations ? (descriptor.decoratorPluginFactories ?? []).map(factory => factory()) : []),
+      ...(options.panelEl ? [attributesPanelPlugin(options.panelEl, { editableAttrs })] : [])
+    ];
 
     const view = new EditorView(container, {
       state: EditorState.create({ doc: importItem(), schema, plugins }),

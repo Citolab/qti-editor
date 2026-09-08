@@ -24,6 +24,7 @@ export * from './components/qti-gap-text/qti-gap-text.schema.js';
 export * from './components/dummy-drag/dummy-drag.js';
 
 export * from './extensions/chip-menu.js';
+export * from './extensions/node-decorations.js';
 export * from './extensions/selection-menu.js';
 
 export * from './commands/enter.js';

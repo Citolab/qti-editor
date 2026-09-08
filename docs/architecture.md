@@ -300,6 +300,62 @@ export function defineQtiInteractionsExtension(options?: { include?: string[] })
 }
 ```
 
+### Editor decorations — opt-in, and one per interaction
+
+`decoratorPluginFactories` is a second, deliberately separate plugin field on the descriptor. It
+carries the *authoring affordances* — the hover boundary, the add/remove buttons, the node-action
+pill — while `pluginFactories` carries the interaction's runtime behaviour.
+
+The split exists because `pluginFactories` is installed unconditionally by every host
+(`defineQtiInteractionsExtension()`), and a read-only or player host must not grow authoring
+affordances. Hosts opt in through `defineQtiDecorationsExtension()` (ProseKit) or
+`listInteractionDecoratorPluginFactories()` (plain ProseMirror), paired with the equally opt-in
+`@citolab/prose-qti/decorations.css`.
+
+The intended end state is **a decorator per interaction**, all of the same shape, and almost all of
+that shape is already shared. `components/shared/extensions/node-decorations.ts` owns:
+
+- the icon set and the button factory, so every affordance in every decorator is the same element
+  with the same event handling
+- the **node-action pill** and its four defaults — select, settings, copy, delete, as icon-only
+  buttons. These are node-level operations that mean the same thing for every interaction, so no
+  decorator should reimplement them. `select` puts a `NodeSelection` on the interaction, so the node
+  itself becomes what Backspace, Ctrl-C and a drag act on — the operations the pill has no button
+  for. `nodeActionsWidget({ pos, nodeTypeName, tagName, anchorName })` is the whole integration;
+  pass `actions` to extend or replace the set.
+- `QTI_OPEN_NODE_SETTINGS_EVENT` / `QtiOpenNodeSettingsDetail`, generic over
+  `nodeTypeName` / `tagName`, so every decorator emits the same event and a host wires it once
+
+**Why settings is an event and the others are not:** select, copy and delete are self-contained —
+their correct behaviour follows from the node, the schema and the clipboard — so they do the work and
+a host gets them for free. Settings has no default — what a properties UI *is* belongs to the host —
+so the pill only reports that it was asked for. A host with no listener gets an inert settings
+button and three that work.
+
+**Copy is a real clipboard write**, via `view.serializeForClipboard`, not an insert-below: where a
+copy belongs is the author's decision, and often it is another item entirely. The payload carries
+ProseMirror's own `data-pm-slice` attribute, so a paste inside the editor reconstructs the node
+faithfully and a paste elsewhere yields sensible HTML.
+
+Before serialising, copy re-mints every identifier in the subtree (`remintIdentifiers`) and rewrites
+references through the same mapping. That is a correctness requirement, not tidiness: two
+interactions sharing one `responseIdentifier` bind to a single response variable at delivery, and an
+un-remapped `correctResponse` would name the original's choices. **Known limitation:** two pastes of
+one copy carry the same minted identifiers, so the second needs another copy. Fixing that properly
+means re-minting on *paste*, which belongs with the paste rescue in `schema/paste-rescue.ts`.
+
+What is left per interaction is only the add/remove semantics — what "another one of these" is, and
+when one may be added or removed. Styling is shared too: the `.qti-decoration*` classes and the
+`--qti-edit-*` custom properties in `packages/prose-qti/src/core-css/decorations.css`, so the whole
+family retargets from a handful of variables rather than by restating selectors.
+
+`components/choice/extensions/choice-decorations.ts` is the reference implementation; follow it when
+adding the next one, and add to the shared module rather than the interaction if the next one needs
+something this one does not. Order, match, gap-match and associate are the natural candidates. Note
+that the per-choice widgets are emitted *after* the node they decorate — CSS anchor positioning
+cannot anchor an element to its own ancestor — and that anchor names are minted per document
+position, because duplicate names collapse every anchored box onto the last one.
+
 ## Storybook's Role
 
 Primary documentation surface for:

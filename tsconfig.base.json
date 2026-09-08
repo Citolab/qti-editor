@@ -75,6 +75,9 @@
       "@citolab/prose-qti/core-css.css": [
         "packages/prose-qti/src/core-css/core-css.css"
       ],
+      "@citolab/prose-qti/decorations.css": [
+        "packages/prose-qti/src/core-css/decorations.css"
+      ],
       "@citolab/prose-qti/interfaces": [
         "packages/prose-qti/src/interfaces/index.ts"
       ],

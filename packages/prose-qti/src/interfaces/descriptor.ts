@@ -64,6 +64,14 @@ export interface InteractionDescriptor {
    * them in framework-specific adapters such as ProseKit extensions.
    */
   pluginFactories?: Array<() => Plugin>;
+  /**
+   * Editor-only affordance decorations (hover boundary, add/remove buttons).
+   * Kept apart from `pluginFactories`, which every host installs unconditionally:
+   * these are an opinion about how authoring should feel, and a read-only or
+   * player host must not get them. Hosts opt in via
+   * `defineQtiDecorationsExtension()` / `listInteractionDecoratorPluginFactories()`.
+   */
+  decoratorPluginFactories?: Array<() => Plugin>;
   composerMetadata: InteractionComposerMetadata;
   /**
    * Handler that normalises the interaction element for QTI XML output.
