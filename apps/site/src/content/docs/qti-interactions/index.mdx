@@ -39,7 +39,7 @@ import '@citolab/prose-qti/components/choice/register.js';
 
 Each interaction subpath exports:
 
-- **`*InteractionDescriptor`** — `tagName`, `insertCommand`, `enterCommand`, `backspaceCommand`, `pluginFactories`, `attributePanelMetadata`, `nodeSpecs`
+- **`*InteractionDescriptor`** — `tagName`, `insertCommand`, `enterCommand`, `backspaceCommand`, `pluginFactories`, `decoratorPluginFactories`, `attributePanelMetadata`, `nodeSpecs`
 - **`qti*InteractionNodeSpec`** — ProseMirror node spec (also reachable via `descriptor.nodeSpecs`)
 - **`register.js`** — side-effect module that defines the Lit custom element used by the node view
 
@@ -70,6 +70,11 @@ const qtiPlugins = [
   ...descriptors.flatMap(d => d.pluginFactories?.map(factory => factory()) ?? []),
 ];
 ```
+
+Some interactions (currently choice) also expose `decoratorPluginFactories` — opt-in authoring
+affordances (hover boundary, add/remove buttons, a settings pill) kept separate from the plugins
+above so a read-only or player host isn't forced to install them. See [Choice
+Interaction](/docs/qti-interactions/choice/#built-in-editor-decorations-opt-in) for how to turn them on.
 
 ## Inserting an interaction
 

@@ -61,6 +61,7 @@ import { extendedTextInteractionDescriptor } from '@citolab/prose-qti/components
 import { textEntryInteractionDescriptor }    from '@citolab/prose-qti/components/text-entry';
 // …import the rest the same way
 import { exportItemXml, importItemFromUrl } from '@citolab/prose-qti/item-roundtrip';
+import { listInteractionDecoratorPluginFactories } from '@citolab/prose-qti/core/interactions/composer';
 
 // Side-effect imports register the Lit custom elements used by the node views.
 import '@citolab/prose-qti/components/choice/register.js';
@@ -99,6 +100,9 @@ const backspaceCommand = chainCommands(...descriptors.flatMap(d => d.backspaceCo
 export const qtiPlugins: Plugin[] = [
   keymap({ Enter: enterCommand, Backspace: backspaceCommand }),
   ...descriptors.flatMap(d => d.pluginFactories?.map(factory => factory()) ?? []),
+  // Opt-in authoring affordances (hover boundary, add/remove buttons, settings pill) — currently
+  // shipped by the choice descriptor. Drop this line for a read-only or player host.
+  ...listInteractionDecoratorPluginFactories().map(factory => factory()),
 ];
 
 export function importQtiItem(href: string, schema: Schema): Promise<ProseMirrorNode> {
@@ -118,6 +122,7 @@ Each `InteractionDescriptor` exposes:
 | `insertCommand` | ProseMirror command that inserts the interaction at the selection |
 | `enterCommand` / `backspaceCommand` | Optional interaction-aware key commands |
 | `pluginFactories` | Plugin factories the interaction needs at runtime |
+| `decoratorPluginFactories` | Optional, opt-in authoring affordances (hover boundary, add/remove buttons, settings pill) — see [Editor decorations](#editor-decorations-opt-in) below |
 | `attributePanelMetadata` | Per-node-type metadata: `nodeTypeName`, `editableAttributes` |
 | `nodeSpecs` | The ProseMirror node specs the interaction contributes (also re-exported as `qti*InteractionNodeSpec`) |
 
@@ -165,6 +170,37 @@ document.querySelector('#export-btn')!.addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 ```
+
+## Editor decorations (opt-in)
+
+`qtiPlugins` above already folds in `listInteractionDecoratorPluginFactories()`, so the boilerplate's
+choice interaction gets its hover boundary, add/remove buttons and settings pill for free. Pair it
+with the matching stylesheet:
+
+```css
+@import '@citolab/prose-qti/decorations.css';
+```
+
+The settings pill dispatches a bubbling, composed `QTI_OPEN_NODE_SETTINGS_EVENT` rather than opening
+anything itself — wire a listener on the editor container to select the node and scope your own
+attributes panel to it:
+
+```ts
+import { QTI_OPEN_NODE_SETTINGS_EVENT } from '@citolab/prose-qti/components/shared';
+import { NodeSelection } from 'prosemirror-state';
+import type { QtiOpenNodeSettingsDetail } from '@citolab/prose-qti/components/shared';
+
+container.addEventListener(QTI_OPEN_NODE_SETTINGS_EVENT, event => {
+  const { pos } = (event as CustomEvent<QtiOpenNodeSettingsDetail>).detail;
+  if (!view.state.doc.nodeAt(pos)) return;
+  view.dispatch(view.state.tr.setSelection(NodeSelection.create(view.state.doc, pos)));
+  view.focus();
+});
+```
+
+See [Choice Interaction](/docs/qti-interactions/choice/#built-in-editor-decorations-opt-in) for what the
+decorator provides and how to opt out of it (drop `decoratorPluginFactories` from `qtiPlugins` and
+the stylesheet import) for a read-only or player build.
 
 ## Toolbar
 
