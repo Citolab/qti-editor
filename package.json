@@ -40,6 +40,8 @@
     "typecheck": "pnpm typecheck:packages && pnpm typecheck:e2e",
     "typecheck:packages": "pnpm -r --filter \"./packages/*\" run typecheck",
     "typecheck:e2e": "tsc --noEmit -p apps/e2e/tsconfig.json",
+    "ai:pack": "node scripts/pack-ai-packages.mjs",
+    "ai:portability": "node scripts/pack-ai-packages.mjs && node scripts/check-ai-portability.mjs",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
     "storybook": "storybook dev -p 6008",

@@ -1,0 +1,50 @@
+{
+  "name": "@citolab/qti-ai-prosemirror",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "GPL-3.0-only",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./prosekit": {
+      "types": "./dist/prosekit.d.ts",
+      "default": "./dist/prosekit.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@citolab/qti-ai-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "prosemirror-model": "^1.25.8",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.41.9",
+    "prosekit": "^0.21.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Citolab/qti-editor",
+    "directory": "packages/qti-ai-prosemirror"
+  },
+  "peerDependenciesMeta": {
+    "prosekit": {
+      "optional": true
+    }
+  }
+}

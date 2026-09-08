@@ -438,3 +438,7 @@ Typical commands:
 - `pnpm --filter @citolab/prose-extensions typecheck`
 - `pnpm --filter @qti-editor/prosemirror-item build`
 - `pnpm -r --filter "./packages/**" run typecheck`
+
+## Conversational authoring packages
+
+The optional `qti-ai-core`, `qti-ai-prosemirror`, and `qti-ai-ui` packages own reusable conversation contracts, proposal preparation/review, and Lit controls respectively. QTI schema and composition remain in prose-qti. The AI adapter consumes the host schema and optional capability annotations; it does not create a second QTI schema. Azure transport and Coco shell composition remain in the consuming app. Core contracts here describe conversations rather than the QTI descriptor model. New proposals are staged until accepted, so rejection never restores a previous document.
