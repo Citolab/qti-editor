@@ -12,7 +12,7 @@ you can run from this checkout.
 
 | App | Description |
 |-----|-------------|
-| `apps/qti-prosemirror-item` | Raw ProseMirror with QTI roundtrip. No ProseKit. Runs via `pnpm dev`. Installs `@citolab/prose-qti`/`@citolab/prose-extensions` as pinned npm ranges rather than `workspace:*`, so it also exercises the packages the way an external consumer would. |
+| `apps/qti-example-editor` | Raw ProseMirror with QTI roundtrip. No ProseKit. Runs via `pnpm dev`. Installs `@citolab/prose-qti`/`@citolab/prose-extensions` as pinned npm ranges rather than `workspace:*`, so it also exercises the packages the way an external consumer would. |
 | `apps/site` | Astro documentation site. |
 
 `apps/qti-prosekit-item` — the minimal ProseKit + QTI example — was removed from this repo and moved to a separate repository; it is no longer available here.
@@ -25,7 +25,7 @@ Use **Storybook** when you want to understand:
 - what each panel, extension, and utility does in isolation
 - how ProseMirror-native primitives relate to ProseKit-first assembly
 
-Use **`apps/qti-prosemirror-item`** when you want to:
+Use **`apps/qti-example-editor`** when you want to:
 - see the minimal setup for a QTI editor without ProseKit
 - exercise the packages the way an external consumer would (it installs them as pinned npm ranges,
   not `workspace:*`)
@@ -83,5 +83,5 @@ automatically.
 The target repository model is:
 - Storybook for guided editor-building documentation and regression presets
 - Packages (`@citolab/prose-qti`, `@citolab/prose-extensions`) for the reusable architecture
-- `apps/qti-prosemirror-item` as the in-repo integration example
+- `apps/qti-example-editor` as the in-repo integration example
 - the extracted editor repository for realistic end-to-end integration

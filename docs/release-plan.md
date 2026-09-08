@@ -52,7 +52,7 @@ Keep private:
 
 ## Operational Notes
 
-- `apps/qti-prosemirror-item` is a reference example and is not deployed to Firebase.
+- `apps/qti-example-editor` is a reference example and is not deployed to Firebase.
 - There is only one hosting target left here (`hosting:site`). The `hosting:editor` target moved to
   the editor's own repository, which deploys to the same Firebase project and site
   (`qti-editor-playground`) so its URL did not change.
