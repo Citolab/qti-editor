@@ -6,8 +6,8 @@
  * this package's authoring affordances on top of it.
  *
  * A consuming app writes `@import '@citolab/prose-qti/qti-prose.css';` and is done. It does not name
- * `@qti-components/theme`, does not declare it, and therefore never has to move a pkg.pr.new pin
- * when this package moves to a new components build. That was the point: the implementing party
+ * `@qti-components/theme`, does not declare it, and therefore never has to track which components
+ * version this package moves to. That was the point: the implementing party
  * should not have to know which qti-components build the editor is built against.
  *
  * ## The order below is load-bearing, and that is the other reason this file exists

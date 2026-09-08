@@ -7,11 +7,11 @@ settings:
 catalogs:
   default:
     '@citolab/qti-components':
-      specifier: ^9.0.0
-      version: 9.0.0
+      specifier: ^9.1.0
+      version: 9.1.0
     '@qti-components/base':
-      specifier: ^2.0.0
-      version: 2.0.0
+      specifier: ^2.2.0
+      version: 2.2.0
     '@qti-components/choice-interaction':
       specifier: ^1.1.5
       version: 1.1.5
@@ -25,11 +25,11 @@ catalogs:
       specifier: ^1.2.0
       version: 1.2.0
     '@qti-components/inline-choice-interaction':
-      specifier: ^2.0.0
-      version: 2.0.0
+      specifier: ^2.0.1
+      version: 2.0.1
     '@qti-components/interactions-core':
-      specifier: ^2.0.0
-      version: 2.0.0
+      specifier: ^2.1.2
+      version: 2.1.2
     '@qti-components/match-interaction':
       specifier: ^2.0.0
       version: 2.0.0
@@ -40,14 +40,14 @@ catalogs:
       specifier: ^1.1.5
       version: 1.1.5
     '@qti-components/text-entry-interaction':
-      specifier: ^1.1.5
-      version: 1.1.5
+      specifier: ^1.1.6
+      version: 1.1.6
     '@qti-components/theme':
-      specifier: ^2.0.0
-      version: 2.0.0
+      specifier: ^2.2.0
+      version: 2.2.0
     '@qti-components/transformers':
-      specifier: ^1.7.1
-      version: 1.7.1
+      specifier: ^1.7.2
+      version: 1.7.2
 
 overrides:
   prosekit: ^0.21.4
@@ -78,7 +78,7 @@ importers:
         version: 0.11.0
       '@qti-components/theme':
         specifier: 'catalog:'
-        version: 2.0.0
+        version: 2.2.0
       '@semantic-release/changelog':
         specifier: ^6.0.3
         version: 6.0.3(semantic-release@24.2.9(typescript@5.9.3))
@@ -102,13 +102,13 @@ importers:
         version: 10.5.9(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))
       '@storybook/addon-docs':
         specifier: ^10.5.5
-        version: 10.5.9(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(esbuild@0.28.2)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
+        version: 10.5.9(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
       '@storybook/addon-vitest':
         specifier: ^10.5.5
         version: 10.5.9(@vitest/browser-playwright@4.1.11)(@vitest/browser@4.1.11)(@vitest/runner@4.1.11)(react@18.3.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vitest@4.1.11)
       '@storybook/web-components-vite':
         specifier: ^10.5.5
-        version: 10.5.9(esbuild@0.28.2)(lit@3.3.3)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
+        version: 10.5.9(esbuild@0.27.7)(lit@3.3.3)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
@@ -139,6 +139,9 @@ importers:
       concurrently:
         specifier: ^9.2.4
         version: 9.2.4
+      esbuild:
+        specifier: ^0.27.7
+        version: 0.27.7
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)
@@ -249,10 +252,10 @@ importers:
         version: link:../../packages/prose-qti
       '@citolab/qti-components':
         specifier: 'catalog:'
-        version: 9.0.0
+        version: 9.1.0
       '@qti-components/theme':
         specifier: 'catalog:'
-        version: 2.0.0
+        version: 2.2.0
       lit:
         specifier: ^3.3.3
         version: 3.3.3
@@ -283,7 +286,7 @@ importers:
         version: link:../../packages/prose-qti-node
       '@storybook/web-components-vite':
         specifier: ^10.5.5
-        version: 10.5.9(esbuild@0.28.2)(lit@3.3.3)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
+        version: 10.5.9(esbuild@0.27.7)(lit@3.3.3)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
       linkedom:
         specifier: ^0.18.13
         version: 0.18.13
@@ -310,10 +313,10 @@ importers:
         version: 2.1.2
       '@qti-components/theme':
         specifier: 'catalog:'
-        version: 2.0.0
+        version: 2.2.0
       '@qti-components/transformers':
         specifier: 'catalog:'
-        version: 1.7.1
+        version: 1.7.2
       lit:
         specifier: ^3.3.3
         version: 3.3.3
@@ -392,7 +395,7 @@ importers:
         version: 1.1.6
       '@qti-components/theme':
         specifier: 'catalog:'
-        version: 2.0.0
+        version: 2.2.0
       astro:
         specifier: ^5.7.2
         version: 5.18.1(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.1)(tsx@4.23.12)(typescript@5.9.3)(yaml@2.9.0)
@@ -502,7 +505,7 @@ importers:
         version: 1.1.6
       '@qti-components/base':
         specifier: 'catalog:'
-        version: 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+        version: 2.2.0(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/choice-interaction':
         specifier: 'catalog:'
         version: 1.1.5(@lit/context@1.1.6)(lit@3.3.3)
@@ -517,10 +520,10 @@ importers:
         version: 1.2.0(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/inline-choice-interaction':
         specifier: 'catalog:'
-        version: 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+        version: 2.0.1(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/interactions-core':
         specifier: 'catalog:'
-        version: 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+        version: 2.1.2(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/match-interaction':
         specifier: 'catalog:'
         version: 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
@@ -532,13 +535,13 @@ importers:
         version: 1.1.5(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/text-entry-interaction':
         specifier: 'catalog:'
-        version: 1.1.5(@lit/context@1.1.6)(lit@3.3.3)
+        version: 1.1.6(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/theme':
         specifier: 'catalog:'
-        version: 2.0.0
+        version: 2.2.0
       '@qti-components/transformers':
         specifier: 'catalog:'
-        version: 1.7.1
+        version: 1.7.2
       lit:
         specifier: ^3.3.3
         version: 3.3.3
@@ -736,8 +739,8 @@ packages:
     peerDependencies:
       storybook: ^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0 || ^10.5.0-0 || ^10.6.0-0
 
-  '@citolab/qti-components@9.0.0':
-    resolution: {integrity: sha512-f2GZWxcPU9YQ9tRvs+SIBxebjCm31lPPNiA7wZhe+gbYr25iQsSXaayUduUp0sfIHC/IwK853JWwVyy7Y0y1SQ==}
+  '@citolab/qti-components@9.1.0':
+    resolution: {integrity: sha512-uyQU13GoZtdhBu8TKdRD4i1Xumrdop6IFtui9ZDUHyMOFOfsF7oHzuOnAgOUXR+C3XKiwHGGYbRp1GZ3ayhy8w==}
 
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
@@ -2068,8 +2071,8 @@ packages:
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  '@qti-components/base@2.0.0':
-    resolution: {integrity: sha512-M1HQnYKOgp5TeeGPkSa23GyArKXzUcD7fIN+n4xyH3tfCqvjMinMel5AacrVcrsT9AwD6GwUibQMgAf81lLh0w==}
+  '@qti-components/base@2.2.0':
+    resolution: {integrity: sha512-b5ZLdVjq048S1leVIggyXui2LkDC0maKWM77hoqQAW92DO2ZyqkJPZopSsM4nCUI0uFmqrQC8TJ0NCUPq5T/Lw==}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2098,14 +2101,14 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/inline-choice-interaction@2.0.0':
-    resolution: {integrity: sha512-JYh662RvU4TyeBAcn9DoWADFSTzgQdiS2hzR9rFtIV2RhofTCYgQqB6Olo9iNrMrjYEq7XsuzUZ9GwuWpEjDrg==}
+  '@qti-components/inline-choice-interaction@2.0.1':
+    resolution: {integrity: sha512-rPTVGI0BH7t5J+2AgROAYnlAX+LSJwTJuejJ2UIJy38LIRFlmD8h/xypuomc1q57I4x0kaI7+H/P9WbtLgVPEQ==}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/interactions-core@2.0.0':
-    resolution: {integrity: sha512-icgTJVeU3ngRRbiAUgpn+uKxv7kXHcnyvW5Ud/PGQSZrliAefLPg/Ub2X6f5XFlva9p5PQaZjfsq5zvOXtk0YQ==}
+  '@qti-components/interactions-core@2.1.2':
+    resolution: {integrity: sha512-se62qi8slTQ6sLlNJv8QE7zmyUV/om/pTJtBmb60yW7rVXZe902SWZ2xPqLPvFTPTjLkRfGeMZdvZyK3hk06WQ==}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -2128,17 +2131,17 @@ packages:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/text-entry-interaction@1.1.5':
-    resolution: {integrity: sha512-3RgMGH8aijjT1SnHOY9UeK37uwHRjvkbHqDiKRCMwV+YcFcngC5lSRccCuh+bBSyr/fJo65x5nWVCGm1MtNpOw==}
+  '@qti-components/text-entry-interaction@1.1.6':
+    resolution: {integrity: sha512-ZAeKO3sWsJHpgrKvo0xnlG5yryymX2GAtNPvm7shS6gQx1IwsvKoIkanP0W3jVIRHCXICgU7qa5ib39JcL4sAw==}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
 
-  '@qti-components/theme@2.0.0':
-    resolution: {integrity: sha512-BYCF4zJZCnstltjhto0tdWVqSUGW0lxU9WiUrzPZcQmiRsD2oJ4wvjnxILyde40znEczH/sJ2oqYzhSoFrC2Ng==}
+  '@qti-components/theme@2.2.0':
+    resolution: {integrity: sha512-ASQtOPjsvL8zIH31NAuJqw9olZwEeYcxaBEYzmmn7dJp7lclu/dDSPKshbl+y0fMCoTdEF9av0ihh8ChWu+02w==}
 
-  '@qti-components/transformers@1.7.1':
-    resolution: {integrity: sha512-Ol8s3zpzTncvfFY7YM7SNTmKODs68IkWQnDODpxKDof4PV26yqT7POg/LmLdfin8A/xTvNNOdgJ+QNEgta1VZA==}
+  '@qti-components/transformers@1.7.2':
+    resolution: {integrity: sha512-N+72oVIWy3uw2BF/O3iDZiSM+DQ+mkW/I48DKr++N44b0D6A6sRkfT8lah7xw2RmPl1bABfgdKygOak6LuVGVQ==}
 
   '@qti-components/utilities@1.3.3':
     resolution: {integrity: sha512-7IQDh3liBDsiGPcvJAW5UPU5ZdhwOEHimQNW8Cq/0NcAUup8fFn3WZL1XY3FvkhmZr9XOUAhb596Lxna4W/dGw==}
@@ -7392,7 +7395,7 @@ snapshots:
       - '@chromatic-com/playwright'
       - '@chromatic-com/vitest'
 
-  '@citolab/qti-components@9.0.0':
+  '@citolab/qti-components@9.1.0':
     dependencies:
       '@heximal/templates': 0.1.5
       '@lit/context': 1.1.6
@@ -8584,7 +8587,7 @@ snapshots:
       '@pwrs/cem-win32-arm64': 0.11.0
       '@pwrs/cem-win32-x64': 0.11.0
 
-  '@qti-components/base@2.0.0(@lit/context@1.1.6)(lit@3.3.3)':
+  '@qti-components/base@2.2.0(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/utilities': 1.3.3(lit@3.3.3)
@@ -8593,47 +8596,47 @@ snapshots:
   '@qti-components/choice-interaction@1.1.5(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:
       '@lit/context': 1.1.6
-      '@qti-components/base': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
-      '@qti-components/interactions-core': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/base': 2.2.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/interactions-core': 2.1.2(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/utilities': 1.3.3(lit@3.3.3)
       lit: 3.3.3
 
   '@qti-components/extended-text-interaction@1.1.5(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:
       '@lit/context': 1.1.6
-      '@qti-components/base': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
-      '@qti-components/interactions-core': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/base': 2.2.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/interactions-core': 2.1.2(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/utilities': 1.3.3(lit@3.3.3)
       lit: 3.3.3
 
   '@qti-components/gap-match-interaction@1.2.0(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:
       '@lit/context': 1.1.6
-      '@qti-components/base': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
-      '@qti-components/interactions-core': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/base': 2.2.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/interactions-core': 2.1.2(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/utilities': 1.3.3(lit@3.3.3)
       lit: 3.3.3
 
   '@qti-components/hottext-interaction@1.2.0(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:
       '@lit/context': 1.1.6
-      '@qti-components/base': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
-      '@qti-components/interactions-core': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/base': 2.2.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/interactions-core': 2.1.2(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/utilities': 1.3.3(lit@3.3.3)
       lit: 3.3.3
 
-  '@qti-components/inline-choice-interaction@2.0.0(@lit/context@1.1.6)(lit@3.3.3)':
+  '@qti-components/inline-choice-interaction@2.0.1(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:
       '@lit/context': 1.1.6
-      '@qti-components/base': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
-      '@qti-components/interactions-core': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/base': 2.2.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/interactions-core': 2.1.2(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/utilities': 1.3.3(lit@3.3.3)
       lit: 3.3.3
 
-  '@qti-components/interactions-core@2.0.0(@lit/context@1.1.6)(lit@3.3.3)':
+  '@qti-components/interactions-core@2.1.2(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:
       '@lit/context': 1.1.6
-      '@qti-components/base': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/base': 2.2.0(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/utilities': 1.3.3(lit@3.3.3)
       lit: 3.3.3
       observable-polyfill: 0.0.29
@@ -8641,38 +8644,38 @@ snapshots:
   '@qti-components/match-interaction@2.0.0(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:
       '@lit/context': 1.1.6
-      '@qti-components/base': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
-      '@qti-components/interactions-core': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/base': 2.2.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/interactions-core': 2.1.2(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/utilities': 1.3.3(lit@3.3.3)
       lit: 3.3.3
 
   '@qti-components/order-interaction@2.0.0(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:
       '@lit/context': 1.1.6
-      '@qti-components/base': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
-      '@qti-components/interactions-core': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/base': 2.2.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/interactions-core': 2.1.2(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/utilities': 1.3.3(lit@3.3.3)
       lit: 3.3.3
 
   '@qti-components/select-point-interaction@1.1.5(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:
       '@lit/context': 1.1.6
-      '@qti-components/base': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
-      '@qti-components/interactions-core': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/base': 2.2.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/interactions-core': 2.1.2(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/utilities': 1.3.3(lit@3.3.3)
       lit: 3.3.3
 
-  '@qti-components/text-entry-interaction@1.1.5(@lit/context@1.1.6)(lit@3.3.3)':
+  '@qti-components/text-entry-interaction@1.1.6(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:
       '@lit/context': 1.1.6
-      '@qti-components/base': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
-      '@qti-components/interactions-core': 2.0.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/base': 2.2.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/interactions-core': 2.1.2(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/utilities': 1.3.3(lit@3.3.3)
       lit: 3.3.3
 
-  '@qti-components/theme@2.0.0': {}
+  '@qti-components/theme@2.2.0': {}
 
-  '@qti-components/transformers@1.7.1': {}
+  '@qti-components/transformers@1.7.2': {}
 
   '@qti-components/utilities@1.3.3(lit@3.3.3)':
     dependencies:
@@ -8988,10 +8991,10 @@ snapshots:
       axe-core: 4.11.2
       storybook: 10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1)
 
-  '@storybook/addon-docs@10.5.9(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(esbuild@0.28.2)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
+  '@storybook/addon-docs@10.5.9(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
     dependencies:
       '@mdx-js/react': 3.1.1(@types/react@18.3.28)(react@18.3.1)
-      '@storybook/csf-plugin': 10.5.9(esbuild@0.28.2)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
+      '@storybook/csf-plugin': 10.5.9(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
       '@storybook/icons': 2.1.0(react@18.3.1)
       '@storybook/react-dom-shim': 10.5.9(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))
       react: 18.3.1
@@ -9020,9 +9023,9 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  '@storybook/builder-vite@10.5.9(esbuild@0.28.2)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
+  '@storybook/builder-vite@10.5.9(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
     dependencies:
-      '@storybook/csf-plugin': 10.5.9(esbuild@0.28.2)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
+      '@storybook/csf-plugin': 10.5.9(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
       storybook: 10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1)
       ts-dedent: 2.2.0
       vite: 6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0)
@@ -9031,9 +9034,9 @@ snapshots:
       - rollup
       - webpack
 
-  '@storybook/builder-vite@10.5.9(esbuild@0.28.2)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
+  '@storybook/builder-vite@10.5.9(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
     dependencies:
-      '@storybook/csf-plugin': 10.5.9(esbuild@0.28.2)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
+      '@storybook/csf-plugin': 10.5.9(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
       storybook: 10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1)
       ts-dedent: 2.2.0
       vite: 6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0)
@@ -9042,21 +9045,21 @@ snapshots:
       - rollup
       - webpack
 
-  '@storybook/csf-plugin@10.5.9(esbuild@0.28.2)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
+  '@storybook/csf-plugin@10.5.9(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
     dependencies:
       storybook: 10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1)
       unplugin: 2.3.11
     optionalDependencies:
-      esbuild: 0.28.2
+      esbuild: 0.27.7
       rollup: 4.60.1
       vite: 6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0)
 
-  '@storybook/csf-plugin@10.5.9(esbuild@0.28.2)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
+  '@storybook/csf-plugin@10.5.9(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
     dependencies:
       storybook: 10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1)
       unplugin: 2.3.11
     optionalDependencies:
-      esbuild: 0.28.2
+      esbuild: 0.27.7
       rollup: 4.60.1
       vite: 6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0)
 
@@ -9075,9 +9078,9 @@ snapshots:
       '@types/react': 18.3.28
       '@types/react-dom': 18.3.7(@types/react@18.3.28)
 
-  '@storybook/web-components-vite@10.5.9(esbuild@0.28.2)(lit@3.3.3)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
+  '@storybook/web-components-vite@10.5.9(esbuild@0.27.7)(lit@3.3.3)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
     dependencies:
-      '@storybook/builder-vite': 10.5.9(esbuild@0.28.2)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
+      '@storybook/builder-vite': 10.5.9(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
       '@storybook/web-components': 10.5.9(lit@3.3.3)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))
       storybook: 10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1)
       vite: 6.4.3(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0)
@@ -9087,9 +9090,9 @@ snapshots:
       - rollup
       - webpack
 
-  '@storybook/web-components-vite@10.5.9(esbuild@0.28.2)(lit@3.3.3)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
+  '@storybook/web-components-vite@10.5.9(esbuild@0.27.7)(lit@3.3.3)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))':
     dependencies:
-      '@storybook/builder-vite': 10.5.9(esbuild@0.28.2)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
+      '@storybook/builder-vite': 10.5.9(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
       '@storybook/web-components': 10.5.9(lit@3.3.3)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))
       storybook: 10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1)
       vite: 6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0)

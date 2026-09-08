@@ -5,8 +5,8 @@
  * editor host actually uses — loading an item, reading an assessment test — so hosts were declaring
  * `@qti-components/transformers` themselves. Under pnpm they had no choice: it is this package's
  * dependency, and an isolated `node_modules` will not let a consumer import what it has not
- * declared. Declaring it meant pinning a pkg.pr.new URL, which meant a sha the host had to remember
- * to bump. qti-editor-angular sat two builds behind on exactly this.
+ * declared. Declaring it meant tracking the components version themselves, which meant one more
+ * pin the host had to remember to bump. qti-editor-angular sat two builds behind on exactly this.
  *
  * Re-exporting moves that from the host to here. `@citolab/prose-qti/transformers` is the same
  * module by a name the host already depends on, so the pin lives in one repo and updates when this

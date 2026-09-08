@@ -10,35 +10,30 @@ packages:
 # prereleases landed on npm on 2026-09-01 (base/theme/interactions-core and the four
 # interactions that went 2.0.0).
 #
-# @qti-components/corrections is the one exception: it has never been published to npm, so its
-# entry below is still a pkg.pr.new URL. Nothing in this workspace consumes it, so the URL is
-# inert here - it is qti-editor-full-assessment that actually installs it.
-#
 # Consumers write `"@qti-components/theme": "catalog:"`. Bumping is now one edit to this file
 # instead of twenty pins across seven package.json files.
 #
 # Nothing downstream sees `catalog:` - pnpm substitutes the concrete spec at pack/publish time,
 # so the published @citolab/prose-qti manifest carries these ranges. A consumer does not need pnpm.
 catalog:
-  '@citolab/qti-components': '^9.0.0'
+  '@citolab/qti-components': '^9.1.0'
   '@qti-components/associate-interaction': '^1.1.6'
-  '@qti-components/base': '^2.0.0'
+  '@qti-components/base': '^2.2.0'
   '@qti-components/choice-interaction': '^1.1.5'
-  '@qti-components/corrections': 'https://pkg.pr.new/Citolab/qti-components/@qti-components/corrections@9a2532b'
-  '@qti-components/elements': '^1.6.4'
+  '@qti-components/elements': '^1.7.0'
   '@qti-components/extended-text-interaction': '^1.1.5'
   '@qti-components/gap-match-interaction': '^1.2.0'
   '@qti-components/hottext-interaction': '^1.2.0'
-  '@qti-components/inline-choice-interaction': '^2.0.0'
-  '@qti-components/interactions-core': '^2.0.0'
-  '@qti-components/item': '^1.4.2'
+  '@qti-components/inline-choice-interaction': '^2.0.1'
+  '@qti-components/interactions-core': '^2.1.2'
+  '@qti-components/item': '^1.4.4'
   '@qti-components/match-interaction': '^2.0.0'
   '@qti-components/order-interaction': '^2.0.0'
-  '@qti-components/processing': '^1.3.4'
+  '@qti-components/processing': '^1.5.0'
   '@qti-components/select-point-interaction': '^1.1.5'
-  '@qti-components/text-entry-interaction': '^1.1.5'
-  '@qti-components/theme': '^2.0.0'
-  '@qti-components/transformers': '^1.7.1'
+  '@qti-components/text-entry-interaction': '^1.1.6'
+  '@qti-components/theme': '^2.2.0'
+  '@qti-components/transformers': '^1.7.2'
 
 # The cem CLI ships as a platform binary and needs its postinstall to run.
 onlyBuiltDependencies:
