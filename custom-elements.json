@@ -2,39 +2,6 @@
   "schemaVersion": "2.1.0",
   "elements": [
     {
-      "tagName": "qti-associate-interaction",
-      "description": "Editor component for qti-associate-interaction. Choices are shown in a pool; click a choice then click a drop slot to form a pair.",
-      "module": "packages/prose-qti/src/components/associate/components/qti-associate-interaction/qti-associate-interaction.js",
-      "attributes": [
-        {
-          "name": "response-identifier",
-          "required": true,
-          "type": "string",
-          "description": "Identifier of the response variable this interaction is bound to; the response variable has base-type `directedPair`."
-        },
-        {
-          "name": "max-associations",
-          "type": "number",
-          "description": "Maximum number of pairs the candidate may create. `0` means unlimited."
-        },
-        {
-          "name": "min-associations",
-          "type": "number",
-          "description": "Minimum number of pairs the candidate must create before the interaction counts as answered."
-        },
-        {
-          "name": "shuffle",
-          "type": "boolean",
-          "description": "Whether the delivery engine may randomise the order of the choices. Honoured at delivery, not in the editor."
-        },
-        {
-          "name": "correct-response",
-          "type": "string",
-          "description": "Answer key held on the element while authoring. One `source target` pair per association, space inside the pair and comma between pairs (`A P,C M`). Converted to and from `qti-correct-response` on import/export."
-        }
-      ]
-    },
-    {
       "tagName": "qti-choice-interaction",
       "description": "Editor component for qti-choice-interaction. Presents a list of `qti-simple-choice` children; clicking a choice's control marks it as the correct response.",
       "module": "packages/prose-qti/src/components/choice/components/qti-choice-interaction/qti-choice-interaction.js",
@@ -136,13 +103,13 @@
           "name": "data-assigned-label",
           "type": "string | null",
           "default": "null",
-          "description": "Editor-specific, written by the parent interaction: the label text of the choice currently filling this gap, so the gap can render the chip without looking the choice up again."
+          "description": "The chip this gap is painting, reflected so it stays inspectable from outside. Derived from the correction state rather than pushed in by the interaction. When the parent wrote it, the label could lag the state that named it — a gap filled by a chip created in the same transaction painted a raw `GAP_TEXT_<uuid>`, because the parent's label cache had not seen the chip yet. Read from the state at render time there is nothing to be out of date."
         }
       ]
     },
     {
       "tagName": "qti-gap-match-interaction",
-      "description": "Editor component for qti-gap-match-interaction. Authoring is inline: click a gap-text source → every empty `<qti-gap>` pulses red-dashed (via `:state(pending)` on the gap host) → click a gap to commit. Click the × inside a filled gap's `<dummy-drag>` to clear it. Escape / outside click cancels pending. Selection state lives in {@link PendingSelectionController}; this class owns the association map, label cache, lightdom visual sync, and change event emission.",
+      "description": "Editor component for qti-gap-match-interaction. Authoring is inline: click a `qti-gap-text`, then click a gap to link them. Escape or a click outside cancels a pending pick. ## What this class owns, and what it no longer does It owns the correction state — the list of `{ drag, drop }` links — and publishes it on {@link correctionContext} for the elements inside it. `correct-response` is *derived* from that list and written back to the ProseMirror node, which stays what is persisted; the list is the live model between those writes. It used to also paint every child: a `querySelectorAll` sweep on each change, setting custom states and a label attribute on each gap. That needed a MutationObserver to catch children ProseMirror had added, a label cache to avoid re-reading them, and an `isApplyingVisualState` guard so the sweep's own writes would not re-trigger it — and the cache could still be a step behind the DOM, which is exactly how a gap came to paint a raw `GAP_TEXT_<uuid>` as its label. Children now subscribe to the state and paint themselves, so all of that is gone. The one observer left watches the pool for label edits, because the words an author types are part of the published state and nothing else would notice them changing.",
       "module": "packages/prose-qti/src/components/gap-match/components/qti-gap-match-interaction/qti-gap-match-interaction.js",
       "attributes": [
         {
