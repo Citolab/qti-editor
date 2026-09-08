@@ -20,6 +20,7 @@ Use this package when you build your ProseMirror `Schema` by hand (see the [Type
 - `qtiBasicNodes` — `prosemirror-schema-basic`'s node specs with the `image` node's `parseDOM`/`toDOM` replaced to round-trip `width`/`height`, plus a `qtiLayoutDiv` node for the QTI layout wrappers.
 - `qtiBasicMarks` — `prosemirror-schema-basic`'s marks, unchanged, re-exported for a single consistent import path.
 - `qtiLayoutDivLockPlugin` — an optional ProseMirror plugin that keeps `qtiLayoutDiv` wrappers from being added or removed by editing. Not included automatically; add it to your plugin list.
+- `qtiPasteRescuePlugin` — an optional ProseMirror plugin that fixes up a multi-block paste landing in a slot that only holds one block. Not included automatically; add it to your plugin list.
 
 Nothing is removed from `prosemirror-schema-basic` — one node is overridden and one is added.
 
@@ -38,6 +39,30 @@ const plugins = [...otherPlugins, qtiLayoutDivLockPlugin];
 ```
 
 It rejects any transaction that would change how many `qtiLayoutDiv` nodes the document contains, and leaves everything else — including re-classing a wrapper — untouched. It is a separate export rather than automatic, so a host that genuinely wants editable grids simply omits it from its plugin list.
+
+## Paste rescue (`qtiPasteRescuePlugin`)
+
+Some interaction slots hold exactly one block — a choice's text, a prompt, an associable choice's
+content. Pasting two or more blocks into one of those has nowhere to go: ProseMirror's own fitting
+logic closes out of the slot and reopens it for the remainder, which splits one choice (or one
+prompt) into two.
+
+`qtiPasteRescuePlugin` rewrites a paste like that so it fits instead of splitting: a slot that
+repeats (`qtiSimpleChoice+`) gets one new sibling per pasted block, each with its own identifier; a
+slot that does not repeat (`qtiPrompt?`) gets every pasted block joined into the one slot it has.
+Which interactions and slots this applies to is not hardcoded — it asks the schema itself whether the
+target already accepts more than one block, so it keeps working as interactions are added or their
+content models change.
+
+```ts
+import { qtiPasteRescuePlugin } from '@citolab/prose-qti/schema';
+
+const plugins = [...otherPlugins, qtiPasteRescuePlugin];
+```
+
+Order relative to a semantic-paste plugin (see [ProseMirror Plugins](/docs/prosemirror-plugins/))
+does not matter — that one runs on the clipboard HTML, this one runs on the already-parsed slice, and
+ProseMirror always runs the two stages in that order.
 
 ## Typical usage
 

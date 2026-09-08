@@ -92,7 +92,7 @@ Also found while assessing revival: `packages/prose-qti/src/components/order/int
 
 ## 10. e2e stories rendered an unstyled editor — **fixed**
 
-The regression stories imported only `prosemirror-view/style/prosemirror.css`. The shipping editors load two more (`apps/qti-prosemirror-item/src/app.css`, and the extracted editor app's own `src/style.css`):
+The regression stories imported only `prosemirror-view/style/prosemirror.css`. The shipping editors load two more (`apps/qti-example-editor/src/app.css`, and the extracted editor app's own `src/style.css`):
 
 ```css
 @import '@qti-components/theme/item.css';
@@ -287,3 +287,10 @@ Two bugs stacked on top of each other in `qti-layout-row`-nested interactions (i
 - **Not fixed by this**: `imgSelectPoint` (named by `qtiSelectPointInteraction`) stays in `block qtiMedia` — it is an atom, so it cannot win `defaultBlockAt`, but it can still win `defaultType`. Recorded as a known gap in the test itself rather than silently left out.
 - **Migration**: this narrows the schema, so a document that already had one of these nodes loose at item-body level is now invalid rather than merely odd. Hosts that persist documents need to migrate them; that ladder lives in the extracted `qti-editor-full-assessment` repository, not here.
 - **Where to look**: `packages/prose-qti/src/schema/create-qti-schema.ts` ("The block group" section) and `block-group.browser.test.ts`.
+
+## 21. Pasting a copy of a choice, prompt or associable choice split its interaction in two — **fixed**
+
+`qtiSimpleChoice`, `qtiPrompt` and `qtiSimpleAssociableChoice` each hold exactly one child block, and their `parseDOM` context guards (added for finding 16) read `context: 'qtiChoiceInteraction/'` — "the immediate parent is the interaction". That is true when parsing a whole item body, but never true for a paste: `ParseContext.matchesContext` resolves against the node the cursor is actually in (`qtiSimpleChoiceParagraph`, one level deeper), not the interaction, so the guard never matched a paste. A pasted `<qti-simple-choice>` — including one copied out of this same editor — fell through to the plain `paragraph` rule instead, lost its identifier, and produced a block legal in neither the choice nor the interaction. ProseMirror's fitter then closed out of both and reopened the interaction for the remainder, splitting one interaction into two that shared a `responseIdentifier` until the composer's duplicate guard renamed one at save time. Fixing the guard alone was not enough: a multi-block paste still has nowhere to put a second block, and the fitter still invents a fresh single-child container with the schema-default identifier when it needs a slot.
+
+- **Resolution**: the context guards on all three node specs were widened from `/` (immediate parent) to `//` (ancestor at any depth), which is what a cursor position can actually satisfy — see the notes on `qti-simple-choice.schema.ts`, `qti-simple-choice-paragraph.schema.ts` and the associable-choice equivalents. `qtiPasteRescuePlugin` (`packages/prose-qti/src/schema/paste-rescue.ts`, opt-in — documented for consumers under "QTI Base Schema" on the site) then rewrites a multi-block paste into that slot instead of letting the fitter split it: a repeating slot (`qtiSimpleChoice+`) gets one sibling per pasted block with a real identifier carried across; a non-repeating slot (`qtiPrompt?`) gets every block joined into the one it has.
+- **Where to look**: `packages/prose-qti/src/schema/paste-rescue.ts` and `paste-rescue.browser.test.ts`; the guard widening lives in each affected node's `.schema.ts`.

@@ -32,7 +32,7 @@ packages/
   prose-ai/            ← @citolab/prose-ai  (private, AI extensions vendored from @prosekit/ai)
 
 apps/
-  qti-prosemirror-item/ ← @qti-editor/prosemirror-item  (raw ProseMirror example)
+  qti-example-editor/  ← @qti-editor/prosemirror-item  (raw ProseMirror example)
   site/                ← @qti-editor/site  (Astro documentation site)
   e2e/                 (end-to-end tests)
 ```
@@ -89,6 +89,7 @@ Interaction components: `choice`, `extended-text`, `gap-match`, `hottext`, `inli
 - The `image` node in this module preserves `width` and `height` attributes on parse/serialize so QTI XML image dimensions survive import and roundtrip.
 - Nothing is removed from the basic set. A `createQtiBasicNodes(...)` helper used to offer trimming and defaulted to dropping `blockquote`; it had no callers and its premise was wrong — QTI permits `blockquote`, `hr`, `pre` and `code` in an item body. A host wanting a narrower document builds its own `nodes` object.
 - `qtiLayoutDivNodeSpec` (included in `qtiBasicNodes.qtiLayoutDiv`) models the author-written `<div class="qti-layout-row">`/`-colN` grid wrappers; `qtiLayoutDivLockPlugin` is the accompanying opt-in plugin that stops a transaction from adding or removing a wrapper, since nothing in either host editor can author a new one. Both used to live duplicated across the two host apps and moved here for the same reason `qtiBasicNodes` did — one definition instead of two that drift. The spec also sets `allowGapCursor: true`, since a `block+` content model's default-type heuristic (used by `prosemirror-gapcursor` to decide whether a position is reachable) picks the first admitted type with no required attributes, which is never a textblock here — without the override, two block interactions sitting side by side inside a `qti-layout-row` have no writable space between them.
+- `paste-rescue.ts` (`qtiPasteRescuePlugin`, opt-in) fixes pasting two or more blocks into a slot that holds exactly one (`qtiSimpleChoice`, `qtiPrompt`, `qtiSimpleAssociableChoice`): left to ProseMirror's own fitter, that splits one interaction into two sharing a `responseIdentifier` rather than erroring, since `isolating: true` is not consulted for the frontier the fitter closes and reopens. The plugin runs in `transformPasted`, after `parseDOM` and after any semantic-paste plugin's `transformPastedHTML`, and asks the schema itself (`contentMatch.matchType`) whether the target already accepts more than one block rather than naming interactions, so a widened content model silently stops being rescued instead of needing to be un-special-cased. See `paste-rescue.browser.test.ts` for the fan-out (repeating slot) vs. join (non-repeating slot) cases.
 
 ### `packages/prose-qti-node` (`@citolab/prose-qti-node`)
 

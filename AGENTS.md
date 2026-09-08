@@ -9,7 +9,7 @@
 - **This repository is packages-first.** The full editor application was extracted to its own
   repository (`qti-editor-full-assessment`) and consumes these packages from npm. There is no
   application here to build or deploy beyond the docs site.
-- Example app: `apps/qti-prosemirror-item/` (minimal pure-ProseMirror; the realistic integration
+- Example app: `apps/qti-example-editor/` (minimal pure-ProseMirror; the realistic integration
   surface for the packages)
 - Cross-package interaction tests: `apps/e2e/` (Storybook stories + `*.browser.test.ts`)
 - Docs site app: `apps/site/` (Astro). Its rendered content lives in `apps/site/src/content/docs/` — this is what docs-sync automation updates, and it is distinct from the `docs/` folder below.
@@ -22,7 +22,7 @@
 - Install dependencies: `pnpm install`
 - Build the publishable packages: `pnpm build:packages` (there is no root `build`; it used to mean
   "build the editor app" and the app has moved out)
-- Start the example app: `pnpm dev` (runs `apps/qti-prosemirror-item`)
+- Start the example app: `pnpm dev` (runs `apps/qti-example-editor`)
 - Start the docs site: `pnpm site:dev`
 - Typecheck: `pnpm typecheck`
 - Tests: `pnpm test`

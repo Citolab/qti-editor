@@ -4,7 +4,7 @@ description: Embed QTI Editor in a TypeScript project using pure ProseMirror.
 slug: docs/frameworks/vanilla
 ---
 
-This guide mirrors the [`qti-prosemirror-item`](https://github.com/Citolab/qti-editor/tree/main/apps/qti-prosemirror-item) boilerplate — a minimal pure-ProseMirror QTI roundtrip editor. Use it as the reference shape for your own integration.
+This guide mirrors the [`qti-example-editor`](https://github.com/Citolab/qti-editor/tree/main/apps/qti-example-editor) boilerplate — a minimal pure-ProseMirror QTI roundtrip editor. Use it as the reference shape for your own integration.
 
 :::note
 QTI Editor is a composable kit — it provides the QTI building blocks that slot into an existing ProseMirror instance. It does not ship integration packages for specific frameworks or third-party libraries. The pattern below is one way to wire things together; how you integrate the kit into your application is up to you.
@@ -189,7 +189,7 @@ const insertInteractionDropdown = new Dropdown(
 
 ## Attributes panel
 
-The boilerplate ships its own local attributes-panel ProseMirror plugin — a small file that renders the selected node's attribute chain into a side panel and applies edits via transactions. See [`attributes-panel-plugin.ts`](https://github.com/Citolab/qti-editor/blob/main/apps/qti-prosemirror-item/src/components/attributes-panel-plugin.ts) in the boilerplate; it consumes the `editableAttrs` allowlist exported from `prosemirror-qti.ts`.
+The boilerplate ships its own local attributes-panel ProseMirror plugin — a small file that renders the selected node's attribute chain into a side panel and applies edits via transactions. See [`attributes-panel-plugin.ts`](https://github.com/Citolab/qti-editor/blob/main/apps/qti-example-editor/src/components/attributes-panel-plugin.ts) in the boilerplate; it consumes the `editableAttrs` allowlist exported from `prosemirror-qti.ts`.
 
 ```ts
 import { attributesPanelPlugin } from './components/attributes-panel-plugin.js';

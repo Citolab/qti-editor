@@ -1,6 +1,6 @@
 /**
  * Landing-page demo — composition root. Mounts a real pure-ProseMirror QTI
- * editor (the `qti-prosemirror-item` shape, see `/docs/frameworks/vanilla`)
+ * editor (the `qti-example-editor` shape, see `/docs/frameworks/vanilla`)
  * into the page, wired to the "Insert choice" / "Insert text entry" /
  * "Download item.xml" buttons.
  */
