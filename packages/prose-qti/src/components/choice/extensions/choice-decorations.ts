@@ -37,7 +37,7 @@ import { translateQti } from '../../shared/i18n/index.js';
 import {
   createDecorationButton,
   nodeActionsWidget,
-  nodeBeforeWidget,
+  nodeBeforeWidget
 } from '../../shared/extensions/node-decorations.js';
 import { createSimpleChoiceNode } from '../components/qti-choice-interaction/commands/insert-choice-interaction.commands.js';
 
@@ -125,16 +125,20 @@ function buildDecorations(state: EditorState): DecorationSet {
 
     const interactionEnd = pos + node.nodeSize;
     const selectionInside = state.selection.from >= pos && state.selection.to <= interactionEnd;
-    const choiceCount = node.childCount - 1; // minus the prompt
+    // Count the choices themselves. The prompt is optional (`qtiPrompt? qtiSimpleChoice+`), so
+    // `childCount - 1` under-counted promptless interactions by one and a two-choice interaction
+    // imported without a prompt offered no × at all.
+    let choiceCount = 0;
+    node.forEach(child => {
+      if (child.type.name === CHOICE_NODE_NAME) choiceCount++;
+    });
 
     // Anchor names have to be unique per decorated node: when several elements share one name the
     // browser binds every anchored box to the LAST of them, which would stack all the ×'s on the
     // final choice. Names are derived from the node's position, so they stay stable for as long as
     // the node does.
     const interactionAnchor = `--qti-choice-interaction-${pos}`;
-    decorations.push(
-      Decoration.node(pos, interactionEnd, { style: `anchor-name: ${interactionAnchor}` }),
-    );
+    decorations.push(Decoration.node(pos, interactionEnd, { style: `anchor-name: ${interactionAnchor}` }));
 
     if (selectionInside) {
       decorations.push(
@@ -142,8 +146,8 @@ function buildDecorations(state: EditorState): DecorationSet {
           pos: interactionEnd,
           nodeTypeName: INTERACTION_NODE_NAME,
           tagName: INTERACTION_TAG_NAME,
-          anchorName: interactionAnchor,
-        }),
+          anchorName: interactionAnchor
+        })
       );
     }
 
@@ -154,9 +158,7 @@ function buildDecorations(state: EditorState): DecorationSet {
       const afterChoice = choicePos + child.nodeSize;
       const choiceAnchor = `--qti-simple-choice-${choicePos}`;
 
-      decorations.push(
-        Decoration.node(choicePos, afterChoice, { style: `anchor-name: ${choiceAnchor}` }),
-      );
+      decorations.push(Decoration.node(choicePos, afterChoice, { style: `anchor-name: ${choiceAnchor}` }));
 
       // The schema requires `qtiSimpleChoice+`: with one choice left there is nothing to remove, so
       // the affordance isn't offered.
@@ -172,7 +174,7 @@ function buildDecorations(state: EditorState): DecorationSet {
               iconSize: 14,
               label: translateQti('choice.removeOption', { target: view.dom }),
               anchorName: choiceAnchor,
-              onClick: () => removeChoiceAt(view, getPos()),
+              onClick: () => removeChoiceAt(view, getPos())
             }),
           {
             // side 0 keeps the × ahead of the trailing `+` widget where the last choice's boundary
@@ -195,9 +197,9 @@ function buildDecorations(state: EditorState): DecorationSet {
              */
             key: `qti-choice-remove-${child.attrs.identifier}-${choicePos}`,
             ignoreSelection: true,
-            stopEvent: () => true,
-          },
-        ),
+            stopEvent: () => true
+          }
+        )
       );
     });
 
@@ -210,10 +212,10 @@ function buildDecorations(state: EditorState): DecorationSet {
             icon: 'plus',
             iconSize: 16,
             label: translateQti('choice.addOption', { target: view.dom }),
-            onClick: () => appendChoiceAt(view, getPos()),
+            onClick: () => appendChoiceAt(view, getPos())
           }),
-        { side: 1, key: `qti-choice-add-${pos}`, ignoreSelection: true, stopEvent: () => true },
-      ),
+        { side: 1, key: `qti-choice-add-${pos}`, ignoreSelection: true, stopEvent: () => true }
+      )
     );
 
     // Choice interactions don't nest.
@@ -227,7 +229,7 @@ export function createChoiceInteractionDecoratorPlugin(): Plugin {
   return new Plugin({
     key: choiceDecoratorPluginKey,
     props: {
-      decorations: buildDecorations,
-    },
+      decorations: buildDecorations
+    }
   });
 }
