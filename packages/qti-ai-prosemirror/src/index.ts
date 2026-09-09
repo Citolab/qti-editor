@@ -104,7 +104,7 @@ export function captureAuthoringContext(
       selected: t.pos >= 0 && t.pos <= to && t.pos + t.node.nodeSize >= from
     })),
     responseRules:
-      'correctResponse: comma-separated identifiers, or strings for text entry; directed pairs are comma-separated "source target". maxChoices: 1 radio, 0 unlimited checkboxes, n>1 at most n checkboxes. Preserve identifiers on replacements; mint unique identifiers for insertions. score defaults to 1.'
+      'correctResponse: comma-separated identifiers, or strings for text entry; order: every choice identifier exactly once, comma-separated, in the intended order (e.g. "B,C,A"); directed pairs are comma-separated "source target". maxChoices: 1 radio, 0 unlimited checkboxes, n>1 at most n checkboxes. Preserve identifiers and the response identifier on replacements and conversions; mint unique identifiers for insertions. score defaults to 1.'
   };
 }
 function lookup(view: EditorView, reply: AuthoringReply, options: AuthoringOptions): AuthoringSnapshot {
