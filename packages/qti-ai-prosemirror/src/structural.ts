@@ -77,7 +77,7 @@ export function validateResponses(doc: PmNode): void {
   const responses = new Set<string>();
   doc.descendants(node => {
     const attrs = node.attrs;
-    if (Object.hasOwn(attrs, 'responseIdentifier')) {
+    if ('responseIdentifier' in attrs) {
       const id = attrs.responseIdentifier;
       if (typeof id !== 'string' || !/^[A-Za-z_][\w.-]*$/.test(id) || responses.has(id))
         throw new Error('Interactions need unique response identifiers.');

@@ -27,6 +27,18 @@
       "@citolab/prose-ai": [
         "packages/prose-ai/src/index.ts"
       ],
+      "@citolab/qti-ai-core": [
+        "packages/qti-ai-core/src/index.ts"
+      ],
+      "@citolab/qti-ai-prosemirror": [
+        "packages/qti-ai-prosemirror/src/index.ts"
+      ],
+      "@citolab/qti-ai-prosemirror/prosekit": [
+        "packages/qti-ai-prosemirror/src/prosekit.ts"
+      ],
+      "@citolab/qti-ai-ui": [
+        "packages/qti-ai-ui/src/index.ts"
+      ],
       "@citolab/prose-extensions": [
         "packages/prose-extensions/src/index.ts"
       ],

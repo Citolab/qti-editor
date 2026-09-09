@@ -31,7 +31,7 @@
     "firebase:deploy:hosting": "pnpm deploy:build && firebase deploy --only hosting",
     "firebase:deploy:site": "pnpm deploy:build:site && firebase deploy --only hosting:site",
     "firebase:deploy:rules": "firebase deploy --only firestore:rules",
-    "build:packages": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/prose-extensions\" --filter \"./packages/prose-qti\" --filter \"./packages/prose-qti-node\" run build",
+    "build:packages": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/prose-extensions\" --filter \"./packages/prose-qti\" --filter \"./packages/prose-qti-node\" --filter \"./packages/qti-ai-core\" --filter \"./packages/qti-ai-prosemirror\" --filter \"./packages/qti-ai-ui\" run build",
     "cem": "cem generate && node scripts/cem-filter.mjs node_modules/.cache/cem/custom-elements.raw.json custom-elements.json",
     "test": "vitest run",
     "test:watch": "vitest",
