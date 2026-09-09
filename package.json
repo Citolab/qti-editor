@@ -42,6 +42,8 @@
     "typecheck:e2e": "tsc --noEmit -p apps/e2e/tsconfig.json",
     "ai:pack": "node scripts/pack-ai-packages.mjs",
     "ai:portability": "node scripts/pack-ai-packages.mjs && node scripts/check-ai-portability.mjs",
+    "ai:matrix": "node scripts/ai-support-matrix.mjs",
+    "ai:matrix:check": "node scripts/ai-support-matrix.mjs --check",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
     "storybook": "storybook dev -p 6008",

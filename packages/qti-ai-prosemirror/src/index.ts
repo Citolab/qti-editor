@@ -1,99 +1,24 @@
 import { DOMParser, DOMSerializer, type Node as PmNode, type Schema } from 'prosemirror-model';
 import { Plugin, PluginKey, type Transaction } from 'prosemirror-state';
-import { fingerprint, parseAuthoringReply, type AuthoringReply, type Operation } from '@citolab/qti-ai-core';
+import { parseAuthoringReply, type AuthoringReply, type Operation } from '@citolab/qti-ai-core';
+
+import {
+  applyVocabulary,
+  attributeValueError,
+  createCapabilities,
+  tagOf,
+  type CapabilityOptions
+} from './capabilities.js';
 
 import type { Fragment } from 'prosemirror-model';
 import type { EditorView } from 'prosemirror-view';
 
-export interface VocabularyGroup {
-  id: string;
-  options: { value: string; label: string }[];
-}
-export interface NodeCapability {
-  tag: string;
-  content: string;
-  group: string;
-  attributes: Record<string, { type: string; default: unknown; htmlName?: string }>;
-  vocabulary: VocabularyGroup[];
-}
-export interface Capabilities {
-  version: 1;
-  id: string;
-  nodes: Record<string, NodeCapability>;
-  marks: string[];
-}
-export interface AuthoringOptions {
-  vocabulary?: Record<string, VocabularyGroup[]>;
+export * from './capabilities.js';
+export { BASELINE_VERSION, attributeAnnotations, vocabularyBaseline } from './baseline.js';
+
+export interface AuthoringOptions extends CapabilityOptions {
   /** Host veto/semantic validator. Throw to prevent preparing or accepting an invalid result. */
   validateDocument?: (doc: PmNode) => void;
-  allowAttribute?: (nodeType: string, attribute: string) => boolean;
-}
-const HTML_NAMES: Record<string, string> = {
-  correctResponse: 'correct-response',
-  responseIdentifier: 'response-identifier',
-  maxChoices: 'max-choices',
-  minChoices: 'min-choices',
-  caseSensitive: 'case-sensitive',
-  placeholderText: 'placeholder-text',
-  matchMax: 'match-max',
-  matchMin: 'match-min',
-  expectedLength: 'expected-length',
-  expectedLines: 'expected-lines',
-  areaMappings: 'area-mappings',
-  minAssociations: 'min-associations',
-  maxAssociations: 'max-associations'
-};
-const choiceGroups: VocabularyGroup[] = [
-  { id: 'columns', options: [1, 2, 3, 4, 5].map(n => ({ value: `qti-choices-stacking-${n}`, label: `${n} columns` })) },
-  {
-    id: 'labels',
-    options: ['none', 'decimal', 'lower-alpha', 'upper-alpha'].map(n => ({ value: `qti-labels-${n}`, label: n }))
-  },
-  {
-    id: 'suffix',
-    options: ['none', 'period', 'parenthesis'].map(n => ({ value: `qti-labels-suffix-${n}`, label: n }))
-  },
-  { id: 'orientation', options: ['horizontal', 'vertical'].map(n => ({ value: `qti-orientation-${n}`, label: n })) },
-  { id: 'inputControl', options: [{ value: 'qti-input-control-hidden', label: 'Hide radio buttons / checkboxes' }] }
-];
-/** Defaults are intentionally limited to verified vocabulary; hosts can extend or remove groups. */
-export const defaultVocabulary: Record<string, VocabularyGroup[]> = { qtiChoiceInteraction: choiceGroups };
-function tagOf(schema: Schema, name: string): string {
-  const type = schema.nodes[name];
-  try {
-    const out = type.spec.toDOM?.(type.create());
-    return Array.isArray(out) ? String(out[0]) : '';
-  } catch {
-    return '';
-  }
-}
-export function createCapabilities(schema: Schema, options: AuthoringOptions = {}): Capabilities {
-  const nodes: Capabilities['nodes'] = {};
-  for (const [name, type] of Object.entries(schema.nodes)) {
-    const attributes: NodeCapability['attributes'] = {};
-    for (const [attr, spec] of Object.entries(type.spec.attrs ?? {})) {
-      if (options.allowAttribute && !options.allowAttribute(name, attr)) continue;
-      attributes[attr] = {
-        type:
-          attr === 'correctResponse'
-            ? 'string|string[]|null'
-            : spec.default == null
-              ? 'string|null'
-              : typeof spec.default,
-        default: spec.default ?? null,
-        htmlName: HTML_NAMES[attr] ?? (attr === attr.toLowerCase() ? attr : undefined)
-      };
-    }
-    nodes[name] = {
-      tag: tagOf(schema, name),
-      content: type.spec.content ?? '',
-      group: type.spec.group ?? '',
-      attributes,
-      vocabulary: 'class' in attributes ? ((options.vocabulary ?? defaultVocabulary)[name] ?? []) : []
-    };
-  }
-  const data = { version: 1 as const, nodes, marks: Object.keys(schema.marks) };
-  return { ...data, id: fingerprint(data) };
 }
 interface Target {
   id: string;
@@ -329,30 +254,17 @@ function build(view: EditorView, reply: AuthoringReply, options: AuthoringOption
       const cap = caps.nodes[node.type.name];
       if (op.kind === 'setVocabulary') {
         const group = cap.vocabulary.find(g => g.id === op.group);
-        if (!group || (op.value !== null && !group.options.some(o => o.value === op.value)))
-          throw new Error('Unsupported vocabulary option.');
-        const tokens = String(next.class ?? '')
-          .split(/\s+/)
-          .filter(Boolean)
-          .filter(t => !group.options.some(o => o.value === t));
-        if (op.value) tokens.push(op.value);
-        next.class = [...new Set(tokens)].join(' ') || null;
-      } else
+        if (!group) throw new Error(`Unsupported vocabulary group: ${op.group}`);
+        next.class = applyVocabulary(next.class, group, op.value);
+      } else {
         for (const [attr, value] of Object.entries(op.attributes)) {
           const spec = cap.attributes[attr];
-          if (!spec || ['responseIdentifier', 'identifier', 'class'].includes(attr))
-            throw new Error(`Attribute cannot be changed directly: ${attr}`);
-          const valid =
-            spec.type === 'string|string[]|null'
-              ? value === null ||
-                typeof value === 'string' ||
-                (Array.isArray(value) && value.every(v => typeof v === 'string'))
-              : spec.type === 'string|null'
-                ? value === null || typeof value === 'string'
-                : typeof value === spec.type;
-          if (!valid) throw new Error(`Invalid value for ${attr}`);
+          if (!spec) throw new Error(`Unknown attribute: ${attr}`);
+          const error = attributeValueError(attr, spec, value);
+          if (error) throw new Error(error);
           next[attr] = value;
         }
+      }
       tr.setNodeMarkup(pos, undefined, next);
     }
   }

@@ -30,6 +30,23 @@ Flow:
 
 Nothing is applied until acceptance, so rejection never restores an earlier document.
 
-Vocabulary groups (`defaultVocabulary`) are mutually exclusive class tokens: selecting an option
-replaces the group's other tokens and preserves unrelated classes. Hosts can pass their own
-`vocabulary`, an `allowAttribute` filter and a `validateDocument` veto through `AuthoringOptions`.
+## Effective manifest
+
+`createCapabilities(schema, options)` derives the host's manifest (version 2) by annotating the
+actual schema with the versioned baseline in `baseline.ts`:
+
+- Every attribute gets an explicit `type` (`string`, `integer`, `number`, `boolean`, `response`,
+  `enum`), `nullable`, `min`/`values` where relevant, an `editable` flag, and EN/NL descriptions.
+  Types are never inferred from a `null` default alone.
+- The HTML attribute name is found by probing the node's `toDOM`, so `imageSrc → src` and
+  `dataPrompt → data-prompt` come out right; the baseline name is only a fallback.
+- Vocabulary groups are mutually exclusive class tokens per node type (`vocabularyBaseline`):
+  selecting an option replaces the group's other tokens and preserves unrelated classes; `null`
+  clears the group. Each group states its `support.rendering` (`components` when the pinned
+  `@qti-components` packages style it, otherwise `unverified`) and `support.export`.
+- The `id` fingerprints the whole manifest, so a host with a different schema, vocabulary or
+  attribute filter gets a different id and stale proposals are refused.
+
+Hosts customize through `AuthoringOptions`: `vocabulary` (per node, `[]` disables), `annotations`
+(per attribute), `allowAttribute` and a `validateDocument` veto. `docs/ai-support-matrix.md` in
+the repository is generated from this manifest (`pnpm ai:matrix`).
