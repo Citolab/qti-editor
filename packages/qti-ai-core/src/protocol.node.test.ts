@@ -37,4 +37,19 @@ describe('authoring protocol', () => {
       }).suggestions
     ).toHaveLength(1);
   });
+  it('accepts remove and convert, and rejects a convert without a type', () => {
+    const ops = [
+      { kind: 'remove', target: 'n2' },
+      {
+        kind: 'convert',
+        target: 'n1',
+        to: 'qtiOrderInteraction',
+        html: '<qti-order-interaction></qti-order-interaction>'
+      }
+    ];
+    expect(parseAuthoringReply({ ...reply, operations: ops }).operations).toHaveLength(2);
+    expect(() =>
+      parseAuthoringReply({ ...reply, operations: [{ kind: 'convert', target: 'n1', html: '<p></p>' }] })
+    ).toThrow();
+  });
 });

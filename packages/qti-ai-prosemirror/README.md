@@ -30,6 +30,19 @@ Flow:
 
 Nothing is applied until acceptance, so rejection never restores an earlier document.
 
+## Structural operations
+
+- `remove` deletes one node. When it sits inside an interaction (a distractor, a gap, a hottext),
+  the interaction's `correctResponse` is remapped: entries and pairs that named the removed
+  identifier are dropped, and an emptied answer key becomes `null` rather than a dangling reference.
+- `convert` replaces one interaction with another type. The model supplies the new interaction as
+  HTML; the code insists on exactly one node of the requested type, keeps the item's
+  `responseIdentifier` (and the score unless the HTML sets one), and validates the answer key for
+  the new type: single identifiers for choice and hottext, one for inline choice, a full permutation
+  for order, `"source target"` pairs for match and gap match.
+
+`validateResponses(doc)` is the shared invariant check and is exported for hosts.
+
 ## Effective manifest
 
 `createCapabilities(schema, options)` derives the host's manifest (version 2) by annotating the

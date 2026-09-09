@@ -15,7 +15,14 @@ export type Operation =
   | { kind: 'setAttributes'; target: string; attributes: Record<string, unknown> }
   | { kind: 'setVocabulary'; target: string; group: string; value: string | null }
   | { kind: 'replace'; target: string; html: string }
-  | { kind: 'insert'; target: string; html: string };
+  | { kind: 'insert'; target: string; html: string }
+  /** Remove one node (a distractor, a gap, a passage). Responses that referenced it are remapped. */
+  | { kind: 'remove'; target: string }
+  /**
+   * Replace one interaction with another type, keeping the response identifier. `html` is the
+   * model's new interaction; the host validates structure, response and scoring for the new type.
+   */
+  | { kind: 'convert'; target: string; to: string; html: string };
 export interface AuthoringReply {
   version: 1;
   requestId: string;
@@ -73,7 +80,9 @@ export function parseAuthoringReply(value: unknown): AuthoringReply {
         throw new Error('Invalid vocabulary operation.');
     } else if (op.kind === 'insert' || op.kind === 'replace') {
       if (!text(op.html, 100000)) throw new Error('Invalid HTML operation.');
-    } else throw new Error('Unsupported operation.');
+    } else if (op.kind === 'convert') {
+      if (!text(op.to, 100) || !text(op.html, 100000)) throw new Error('Invalid convert operation.');
+    } else if (op.kind !== 'remove') throw new Error('Unsupported operation.');
   }
   const ids = new Set<string>();
   for (const s of value.suggestions) {

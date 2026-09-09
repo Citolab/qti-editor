@@ -9,11 +9,13 @@ import {
   tagOf,
   type CapabilityOptions
 } from './capabilities.js';
+import { childIdentifiers, isInteraction, remapResponse, validateResponses } from './structural.js';
 
 import type { Fragment } from 'prosemirror-model';
 import type { EditorView } from 'prosemirror-view';
 
 export * from './capabilities.js';
+export { childIdentifiers, isInteraction, remapResponse, responseEntries, validateResponses } from './structural.js';
 export { BASELINE_VERSION, attributeAnnotations, vocabularyBaseline } from './baseline.js';
 
 export interface AuthoringOptions extends CapabilityOptions {
@@ -175,59 +177,6 @@ function safeHtml(html: string, view: EditorView): Fragment {
   }
   return parsed.content;
 }
-function validateResponses(doc: PmNode) {
-  const responses = new Set<string>();
-  doc.descendants(node => {
-    const attrs = node.attrs;
-    if (Object.hasOwn(attrs, 'responseIdentifier')) {
-      const id = attrs.responseIdentifier;
-      if (typeof id !== 'string' || !/^[A-Za-z_][\w.-]*$/.test(id) || responses.has(id))
-        throw new Error('Interactions need unique response identifiers.');
-      responses.add(id);
-    }
-    if (typeof attrs.score === 'number' && (!Number.isFinite(attrs.score) || attrs.score < 0))
-      throw new Error('Score must be nonnegative.');
-    for (const name of ['maxChoices', 'minChoices', 'matchMax', 'matchMin']) {
-      if (name in attrs && (!Number.isInteger(attrs[name]) || attrs[name] < 0))
-        throw new Error(`${name} must be a nonnegative integer.`);
-    }
-    if (
-      ![
-        'qtiChoiceInteraction',
-        'qtiOrderInteraction',
-        'qtiInlineChoiceInteraction',
-        'qtiHottextInteraction',
-        'qtiGapMatchInteraction',
-        'qtiMatchInteraction',
-        'qtiMatchInteractionTabular'
-      ].includes(node.type.name)
-    )
-      return;
-    const ids = new Set<string>();
-    node.descendants(child => {
-      if (child.attrs.identifier) {
-        if (ids.has(child.attrs.identifier)) throw new Error('Duplicate answer identifier.');
-        ids.add(child.attrs.identifier);
-      }
-    });
-    const correct = Array.isArray(attrs.correctResponse)
-      ? attrs.correctResponse
-      : String(attrs.correctResponse ?? '')
-          .split(',')
-          .filter(Boolean);
-    if (
-      correct.some((v: string) =>
-        v
-          .trim()
-          .split(/\s+/)
-          .some(id => !ids.has(id))
-      )
-    )
-      throw new Error('Correct answers reference missing choices.');
-    if (attrs.maxChoices > 0 && correct.length > attrs.maxChoices)
-      throw new Error('Correct answers exceed maxChoices.');
-  });
-}
 function build(view: EditorView, reply: AuthoringReply, options: AuthoringOptions): Transaction {
   const snapshot = lookup(view, reply, options);
   const caps = createCapabilities(view.state.schema, options);
@@ -239,7 +188,45 @@ function build(view: EditorView, reply: AuthoringReply, options: AuthoringOption
   const tr = view.state.tr;
   for (const op of reply.operations) {
     const { node, pos } = targetAt(tr, snapshot, op.target);
-    if (op.kind === 'insert' || op.kind === 'replace') {
+    if (op.kind === 'remove') {
+      if (pos < 0) throw new Error('Remove a specific node, not the whole item.');
+      const $pos = tr.doc.resolve(pos);
+      // The enclosing interaction, if any: a gap sits in a paragraph inside its interaction.
+      let depth = $pos.depth;
+      while (depth > 0 && !isInteraction($pos.node(depth))) depth--;
+      const interaction = depth > 0 ? $pos.node(depth) : null;
+      tr.delete(pos, pos + node.nodeSize);
+      // A removed distractor, gap or hottext must leave the interaction's answer key coherent.
+      if (interaction) {
+        const removed = childIdentifiers(node);
+        if (removed.size) {
+          const interactionPos = $pos.before(depth);
+          const current = tr.doc.nodeAt(interactionPos)!;
+          tr.setNodeMarkup(interactionPos, undefined, {
+            ...current.attrs,
+            correctResponse: remapResponse(interaction, removed)
+          });
+        }
+      }
+    } else if (op.kind === 'convert') {
+      if (pos < 0 || !isInteraction(node)) throw new Error('Convert an interaction, not arbitrary content.');
+      const content = safeHtml(op.html, view);
+      const replacement = content.childCount === 1 ? content.firstChild : null;
+      if (!replacement || replacement.type.name !== op.to || !isInteraction(replacement))
+        throw new Error(`The conversion must produce exactly one ${op.to}.`);
+      if (replacement.type.name === node.type.name) throw new Error('Conversion needs a different interaction type.');
+      // The response identifier is the item's, not the model's: keep it so declarations and scoring follow.
+      const attrs: Record<string, unknown> = {
+        ...replacement.attrs,
+        responseIdentifier: node.attrs.responseIdentifier
+      };
+      // Parsing fills a missing score with the default, so ask the HTML itself whether one was given.
+      const probe = view.dom.ownerDocument.createElement('div');
+      probe.innerHTML = op.html;
+      if ('score' in replacement.attrs && !probe.firstElementChild?.hasAttribute('score'))
+        attrs.score = node.attrs.score ?? 1;
+      tr.replaceWith(pos, pos + node.nodeSize, replacement.type.create(attrs, replacement.content, replacement.marks));
+    } else if (op.kind === 'insert' || op.kind === 'replace') {
       const content = safeHtml(op.html, view);
       if (pos < 0) {
         if (op.kind === 'replace') throw new Error('Replace a specific target, not the whole item.');
@@ -289,7 +276,9 @@ export function prepareProposal(view: EditorView, raw: unknown, options: Authori
             .join(', ')}`
         : op.kind === 'setVocabulary'
           ? `${op.target}: ${op.group} → ${op.value ?? 'default'}`
-          : `${op.kind}: ${op.target}`
+          : op.kind === 'convert'
+            ? `${op.target}: convert → ${op.to}`
+            : `${op.kind}: ${op.target}`
     )
   };
 }

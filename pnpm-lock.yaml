@@ -266,6 +266,9 @@ importers:
       '@citolab/prose-qti-node':
         specifier: workspace:*
         version: link:../../packages/prose-qti-node
+      '@citolab/qti-ai-prosemirror':
+        specifier: workspace:*
+        version: link:../../packages/qti-ai-prosemirror
       '@storybook/web-components-vite':
         specifier: ^10.5.5
         version: 10.5.9(esbuild@0.27.7)(lit@3.3.3)(rollup@4.60.1)(storybook@10.5.9(@types/react@18.3.28)(prettier@3.8.1)(react@18.3.1))(vite@6.4.3(@types/node@24.12.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)(yaml@2.9.0))
