@@ -294,3 +294,11 @@ Two bugs stacked on top of each other in `qti-layout-row`-nested interactions (i
 
 - **Resolution**: the context guards on all three node specs were widened from `/` (immediate parent) to `//` (ancestor at any depth), which is what a cursor position can actually satisfy — see the notes on `qti-simple-choice.schema.ts`, `qti-simple-choice-paragraph.schema.ts` and the associable-choice equivalents. `qtiPasteRescuePlugin` (`packages/prose-qti/src/schema/paste-rescue.ts`, opt-in — documented for consumers under "QTI Base Schema" on the site) then rewrites a multi-block paste into that slot instead of letting the fitter split it: a repeating slot (`qtiSimpleChoice+`) gets one sibling per pasted block with a real identifier carried across; a non-repeating slot (`qtiPrompt?`) gets every block joined into the one it has.
 - **Where to look**: `packages/prose-qti/src/schema/paste-rescue.ts` and `paste-rescue.browser.test.ts`; the guard widening lives in each affected node's `.schema.ts`.
+
+## 22. Promptless choice interactions showed no remove (`×`) affordance — **fixed**
+
+`qtiChoiceInteraction`'s content expression is `qtiPrompt? qtiSimpleChoice+` — the prompt is optional — but `choice-decorations.ts`'s `buildDecorations` counted choices as `node.childCount - 1`, assuming a prompt was always the first child. Most Kennisnet items in the regression corpus import their choice interactions without a `qti-prompt`, so a real two-choice interaction was undercounted as having one choice, which is at-or-under the "nothing left to remove" floor — every choice's × affordance was suppressed.
+
+- **Consequence**: an author working on one of these (the common case, not an edge case) could add choices but never remove one through the built-in decorator.
+- **Resolution**: count `qtiSimpleChoice` children directly instead of inferring the prompt's presence from the total. See `choice-decorations.ts`.
+- **Pinned by**: two new cases in `choice-decorations.browser.test.ts` — a promptless two-choice interaction shows two ×; a promptless single choice shows none.
