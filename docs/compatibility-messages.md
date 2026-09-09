@@ -1,39 +1,39 @@
 # Replacing the compatibility messages
 
-When a document or an imported item contains something the schema cannot hold, the editor says so.
-This is how to change what it says — a translation, a house style, a name for your own node types —
-without forking anything.
+When an imported item contains something the schema cannot hold, the editor says so. This is how to
+change what it says — a translation, a house style, a name for your own node types — without forking
+anything.
 
-**The contract is the facts, not the sentence.** Every removal is reported as a
-`CompatibilityChange`: a `kind`, a `code`, the type involved, and an excerpt of the content. The
-English `message` on it is a *fallback* — for logs, and for cases a host has written no phrasing for.
-Nothing in this repo parses it. Neither should you.
+**The contract is the facts, not the sentence.** Every finding is reported as a `SchemaGapChange`: a
+`kind`, a `code`, the type involved, and an excerpt of the content. The English `message` on it is a
+*fallback* — for logs, and for cases a host has written no phrasing for. Nothing in this repo parses
+it. Neither should you.
+
+`SchemaGapChange` is declared by `schema-gaps` itself rather than imported, so the module stays
+liftable. It remains structurally assignable to `CompatibilityChange`: `SchemaGapCode` is a subset of
+`CompatibilityChangeCode`, so a host that models a migration ladder as well can keep both kinds of
+change in one list with no adapter.
 
 ## The kinds
 
-Six, and they are a closed set. `switch` on `change.kind` and the compiler will tell you what you
-missed.
+One, and it is declared as a closed set anyway. `switch` on `change.kind` and the compiler will tell
+you what you missed when a second scan is added.
 
 | kind | what happened | fields worth reading |
 |---|---|---|
-| `unwrapped-node` | a stored node's type is not in the schema; its children took its place | `nodeType`, `data.unwrappedChildren`, `data.excerpt` |
-| `dropped-mark` | a mark type is not in the schema; the text it covered was kept | `nodeType` (the node it was on), `data.markType`, `data.excerpt` |
-| `reset-attribute` | the stored value failed the spec's `validate`, so the default applies | `nodeType`, `attributeName`, `data.rejectedValue` |
-| `dropped-attribute` | the schema does not declare that attribute at all | `nodeType`, `attributeName` |
-| `dropped-entry` | an entry in the content array was not a node | `path` |
 | `unrepresentable-element` | an element in imported markup that no `parseDOM` rule matches | `nodeType` (tag name), `data.unwrappedChildren`, `data.excerpt` |
 
-`unrepresentable-element` is deliberately separate from `unwrapped-node` even though `DOMParser`
-unwraps it the same way, because the two want different sentences: one is *"this element has no
-equivalent in this editor"* about a file being imported, the other is *"this was removed from your
-saved document"* about work already done.
+Two scans produce it, and they are told apart by `code` rather than by `kind`, because the sentence
+they want is the same: *"this has no equivalent in this editor"*, about a file being imported.
+`findUnrepresentableElements` uses `UNKNOWN_NODE_PRESERVED` for an element the schema cannot match;
+`findUnrepresentableResponseProcessing` uses `UNSUPPORTED_CONTENT_PRESERVED` for scoring the editor
+cannot model.
 
-Changes from the **migration ladder** carry no `kind` — they describe edits rather than removals.
-`recoveryKindOf(change)` returns `undefined` for those.
-
-Every removal also carries `data.siteId`, which correlates it with the `RecoverySite` the editor marks
-in the document. Only sites the editor could resolve are offered for navigation; see
-`recovery-channel.ts` in the full editor.
+The five kinds that described **JSON salvage** — `unwrapped-node`, `dropped-mark`,
+`reset-attribute`, `dropped-attribute`, `dropped-entry` — were removed on 2026-09-08 along with
+`salvageJsonDocument` and the recovery-marker plugin, and so were `recoveryKindOf`, `siteIdOf`,
+`excerptOf` and `data.siteId`. Nothing in this repo produced or read them. The module was called
+`schema-recovery` until the same date; the `Recovery*` type names went with it.
 
 ## Three seams, by where you sit
 
@@ -41,38 +41,49 @@ in the document. Only sites the editor could resolve are offered for navigation;
 
 Pass `getMessage` to whichever function produces the changes. It receives the whole change — `kind`
 included — and returns a replacement, or `undefined` to keep the built-in English. The default is
-already set when your resolver runs, so overriding two kinds and ignoring the rest is the normal case.
+already set when your resolver runs, so overriding the cases you care about and ignoring the rest is
+the normal case.
 
 ```ts
-import { salvageJsonDocument, findUnrepresentableElements } from '@citolab/prose-qti/schema-recovery';
+import {
+  findUnrepresentableElements,
+  TRANSPARENT_WRAPPER_TAGS,
+  type SchemaGapMessageResolver,
+} from '@citolab/prose-extensions/schema-gaps';
 
-const messages: RecoveryMessageResolver = change => {
+const messages: SchemaGapMessageResolver = change => {
   switch (change.kind) {
-    case 'unwrapped-node':
-      return `«${change.nodeType}» is verwijderd`;
-    case 'dropped-mark':
-      return `opmaak ${String(change.data?.markType)} is verwijderd`;
+    case 'unrepresentable-element':
+      return `«${change.nodeType}» kan hier niet worden weergegeven`;
     default:
       return undefined; // keep the built-in English
   }
 };
 
-salvageJsonDocument(schema, doc, { getMessage: messages });
-findUnrepresentableElements(schema, itemBody, { getMessage: messages });
+findUnrepresentableElements(schema, itemBody, {
+  getMessage: messages,
+  ignoreTags: TRANSPARENT_WRAPPER_TAGS,
+});
 ```
 
-Marker tooltips are separate, because they are rendered rather than reported:
+A resolver can narrow further on the fields it is handed — `change.code` to tell an unmatched element
+from unmodellable scoring, `change.nodeType` for a phrasing per tag.
+
+The response-processing scan takes the same `getMessage`, passed through the entry point that reaches
+it:
 
 ```ts
-createRecoveryMarkerPlugin({ describeSite: site => myTooltip(site.site) });
+const { itemBody, scoringGaps } = itemBodyAndGapsFromString(xml, { getMessage: messages });
 ```
+
+It is not a separate exported function on purpose — see `architecture.md`; the scan needs the whole
+item, which is destroyed before any caller of `itemBodyFromString` gets a value back.
 
 Migration *steps* have had the same seam for longer, with an older signature —
 `getMessage: (code, data) => string | null | undefined` on `composeJsonStep`. A
 resolver written against it adapts in one line: `change => existing(change.code, change.data ?? {})`.
-The recovery functions take the whole change because `code` alone cannot tell their cases apart:
-three of the six share two codes, and `nodeType` / `attributeName` are fields on the change rather
-than entries in `data`.
+The recovery functions take the whole change because `code` alone cannot tell their cases apart, and
+`nodeType` is a field on the change rather than an entry in `data`.
 
 There is deliberately **no** global registry to call at startup. Two consumers on one page would
 fight over one mutable table and a test would have to remember to reset it; a per-call option carries
@@ -118,41 +129,38 @@ itself — `qtiGapMatchInteraction` becomes "gap match interaction" — which is
 works for the long tail, since the types that show up here are by definition the ones the schema no
 longer has. Add entries for the ones worth saying differently.
 
-### Rendering the notice yourself (`@citolab/prose-qti/schema-recovery/notice`)
+### Rendering the notice yourself
 
-`renderSchemaGapNotice` is a plain-DOM renderer for a `SchemaGapOutcome` — no Lit, no React, no
-template library — so a host without a framework does not have to write one to find out what its
-import dropped. It has no i18n library to hook into and cannot pick one for its hosts, so it takes a
-partial messages object; anything omitted keeps the English.
+**No package ships a notice.** `@citolab/prose-extensions/schema-gaps` reports the findings and
+stops there, because the shape of the answer is the consumer's: a banner above the editor, a line in
+a log, a row in a panel that is already on screen, a dialog that blocks the save. A renderer in the
+package would be one of those choices imposed on all of them.
 
-```ts
-import { renderSchemaGapNotice } from '@citolab/prose-qti/schema-recovery/notice';
-import '@citolab/prose-qti/schema-recovery/notice.css'; // optional; the markup reads unstyled
+What you get instead is the data, and the fields are the contract: each change carries a `kind`, a
+`code`, `nodeType` (the tag name) and `data.excerpt` (the author's own text, quoted). Group them,
+count them, phrase them however suits.
 
-renderSchemaGapNotice(host, gaps, {
-  messages: {
-    heading: count => `${count} elementen passen niet in deze editor.`,
-    occurrences: count => ` (${count}×)`,
-    quote: excerpt => ` → „${excerpt}”`,
-  },
-});
-```
+Two implementations to read, deliberately unlike each other:
 
-The stylesheet is keyed on classes the function applies itself (`SCHEMA_GAP_NOTICE_CLASS` and
-friends, exported for exactly this), never on an element id, so it carries no assumption about where
-in a host's layout the notice sits. Positioning is the host's business.
+| where | shape |
+|---|---|
+| `apps/qti-example-editor/src/components/schema-gap-notice.ts` | plain DOM, no framework, one line per element type, its own stylesheet beside it |
+| `qti-editor-full-assessment`'s `compatibility-notice.tsx` | React + i18next, grouped, dismissable, with a download-the-original button |
 
-Both editors in this repo use it, which is why it is here and not in either of them.
+The first is about 100 lines and is the one to copy if you have no framework. Note what it does *not*
+read: `change.message`. It renders from the facts and leaves the English to logs — which is why
+`getMessage` above and a notice's own wording are separate seams.
 
-`heading` is a function of the count rather than a template with a placeholder, because languages
-disagree about plurals and a template decides those rules on the translator's behalf.
+`heading` in that implementation is a function of the count rather than a template with a
+placeholder, because languages disagree about plurals and a template decides those rules on the
+translator's behalf. Worth keeping if you copy it.
 
 ## What is not overridable
 
 - **Severity and grouping.** Which bucket a kind falls into is a judgement about the content, not
   about wording, and a host that wants a different arrangement should render the changes itself —
   they are data.
-- **The excerpt.** It is the author's own text, quoted. The DOM scan takes an `excerptLimit` (60 by
-  default); JSON salvage does not, and quotes 60 characters.
+- **The excerpt.** It is the author's own text, quoted. Both scans take an `excerptLimit` — 60
+  characters by default for the DOM scan, 80 for the response-processing scan.
 - **The English fallback.** By design: a resolver that returns nothing, or throws, must cost the
   reader a translation rather than the record of what happened.

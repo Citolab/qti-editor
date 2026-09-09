@@ -1,0 +1,39 @@
+/*
+ * Styling for `renderSchemaGapNotice` — what this editor's schema could not represent in the opened
+ * item. Both live in this app: `@citolab/prose-extensions/schema-gaps` reports the findings and
+ * leaves the saying of them to whoever is doing the importing.
+ *
+ * Keyed on the classes the renderer applies itself rather than on an element id, so the notice can
+ * be dropped anywhere in the layout. Positioning is deliberately absent.
+ */
+.pm-schema-gap-notice {
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid #fcd34d;
+  background: #fef3c7;
+  color: #78350f;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.pm-schema-gap-notice[hidden] {
+  display: none;
+}
+
+.pm-schema-gap-notice .pm-schema-gap-notice-heading {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+}
+
+.pm-schema-gap-notice ul {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+
+.pm-schema-gap-notice code {
+  font-size: 0.9em;
+}
+
+.pm-schema-gap-notice .pm-schema-gap-notice-quote {
+  font-style: italic;
+  opacity: 0.85;
+}

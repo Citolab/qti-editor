@@ -9,3 +9,10 @@ export { roundtripInteractions } from './roundtrip-interactions';
 export { roundtripItemBody } from './roundtrip-item-body';
 export { reduceToItemBody } from './reduce-to-item-body';
 export { roundtripQtiItem } from './roundtrip-qti-item';
+// The scoring-gap scan. Here rather than left inside `_shared` because `_shared` is not an exported
+// subpath, so a self-reference into it would emit an import no consumer of this package can resolve
+// — and because `item-roundtrip` needs it to build `itemBodyAndGapsFromString`.
+export {
+  findUnrepresentableResponseProcessing,
+  type FindUnrepresentableResponseProcessingOptions,
+} from './_shared/index.js';

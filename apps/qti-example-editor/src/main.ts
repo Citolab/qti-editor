@@ -50,12 +50,11 @@ import {
   deleteTable
 } from 'prosemirror-tables';
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
-// The notice is the package's, so both this editor and the regression story show the same one.
-import { renderSchemaGapNotice } from '@citolab/prose-qti/schema-recovery/notice';
 // The action pill's host-facing contract, shared by every interaction decorator.
 import { QTI_OPEN_NODE_SETTINGS_EVENT } from '@citolab/prose-qti/components/shared';
 
 import { attributesPanelPlugin, attributesPanelScopeKey } from './components/attributes-panel-plugin.js';
+import { renderSchemaGapNotice } from './components/schema-gap-notice.js';
 import {
   descriptors,
   editableAttrs,

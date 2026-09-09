@@ -1,7 +1,7 @@
 /**
  * Dropped content, at the level where it has consequences.
  *
- * The unit tests in `packages/prose-qti/src/schema-recovery/` prove the scan's rules and the app
+ * The unit tests in `packages/prose-extensions/src/prosemirror/schema-gaps/` prove the scan's rules and the app
  * tests prove it is wired up. Neither can answer the question an author would ask: *if the editor
  * dropped it, what happens to my item when I save?* That needs the whole pipeline — import, edit,
  * export — which is what this suite has.

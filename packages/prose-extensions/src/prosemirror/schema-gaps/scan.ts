@@ -1,24 +1,18 @@
 import { withHostMessage } from './messages.js';
 
-import type { PreservedFragment } from '@citolab/prose-qti/interfaces';
-import type { RecoveryChange, RecoveryMessageOptions, SchemaGapOutcome } from './types.js';
+import type {
+  SchemaGapChange,
+  SchemaGapFragment,
+  SchemaGapMessageOptions,
+  SchemaGapOutcome,
+} from './types.js';
 import type { MarkSpec, NodeSpec, Schema } from 'prosemirror-model';
 
 /**
- * Wrappers whose children *are* the content, so unwrapping them loses nothing an author would miss.
+ * Wrappers whose children *are* the content, so unwrapping them loses nothing a reader would miss.
  *
- * Pass these as `ignoreTags` when scanning QTI markup. They are the measured answer to a real
- * problem: across all sixteen Kennisnet sample items, these were the ONLY findings — one
- * `qti-content-body` inside almost every `qti-rubric-block`, plus a `thead`/`tbody` pair in the one
- * item with a table. Every finding was true (no rule matches them, and they are dropped) and none
- * was worth telling anyone, because the text inside them parses in their place and reads identically.
- *
- * A notice that fires on every single import is a notice nobody reads, and the next one — the one
- * about an interaction that really did go missing — is read no more carefully. So these are named
- * explicitly rather than guessed at by a heuristic, and anything not on this list still speaks.
- *
- * QTI 3 nests content bodies (`qti-rubric-block`, `qti-feedback-*`, `qti-template-*`) the same way,
- * and HTML's table sections are structural in exactly the same sense.
+ * Extend rather than replace when you have wrappers of your own:
+ * `ignoreTags: [...TRANSPARENT_WRAPPER_TAGS, 'my-content-body']`.
  */
 export const TRANSPARENT_WRAPPER_TAGS: readonly string[] = [
   'qti-content-body',
@@ -28,7 +22,7 @@ export const TRANSPARENT_WRAPPER_TAGS: readonly string[] = [
   'colgroup',
 ];
 
-export interface FindUnrepresentableOptions extends RecoveryMessageOptions {
+export interface FindUnrepresentableOptions extends SchemaGapMessageOptions {
   /** Tag names to pass over — content the host knows is consumed elsewhere rather than lost. */
   ignoreTags?: readonly string[];
   /** Maximum characters of quoted text per finding. */
@@ -40,9 +34,9 @@ export interface FindUnrepresentableOptions extends RecoveryMessageOptions {
  *
  * ProseMirror's `DOMParser` is silently lenient: an element no `parseDOM` rule matches is skipped
  * and its children are parsed in its place. That is the right behaviour — losing a wrapper beats
- * losing a document — but it is invisible. Importing QTI XML into an editor whose schema models a
- * subset of the standard therefore drops content with no error, no warning, and no trace, and the
- * narrower the editor's schema the more it drops.
+ * losing a document — but it is invisible. Importing markup into an editor whose schema models a
+ * subset of it therefore drops content with no error, no warning, and no trace, and the narrower the
+ * editor's schema the more it drops.
  *
  * This is the missing half: ask the schema what it can match before handing it the tree, and report
  * what it cannot. Every finding is preserved as the element's own `outerHTML`, so the content exists
@@ -68,8 +62,8 @@ export function findUnrepresentableElements(
   const ignored = new Set((options.ignoreTags ?? []).map(tag => tag.toLowerCase()));
   const excerptLimit = options.excerptLimit ?? 60;
 
-  const changes: RecoveryChange[] = [];
-  const preserved: PreservedFragment[] = [];
+  const changes: SchemaGapChange[] = [];
+  const preserved: SchemaGapFragment[] = [];
 
   for (const element of Array.from(root.querySelectorAll('*'))) {
     const tagName = element.localName.toLowerCase();
@@ -86,7 +80,7 @@ export function findUnrepresentableElements(
       payload: element.outerHTML,
       nodeType: tagName,
     });
-    const change: RecoveryChange = {
+    const change: SchemaGapChange = {
       kind: 'unrepresentable-element',
       code: 'UNKNOWN_NODE_PRESERVED',
       severity: 'warning',
@@ -101,7 +95,7 @@ export function findUnrepresentableElements(
       },
     };
     // The built-in English first, the host's wording over the top of it — see
-    // `RecoveryMessageResolver` for why the order matters, and `withHostMessage` for why a resolver
+    // `SchemaGapMessageResolver` for why the order matters, and `withHostMessage` for why a resolver
     // that throws costs a translation rather than the scan.
     changes.push(withHostMessage(change, options.getMessage));
   }

@@ -34,9 +34,16 @@ import {
   constrainedShiftEnd,
   constrainedShiftHome
 } from '@citolab/prose-qti/components/shared';
-import { exportItemXml, importItemFromString, itemBodyFromString } from '@citolab/prose-qti/item-roundtrip';
+import {
+  exportItemXml,
+  importItemFromString,
+  itemBodyFromString
+} from '@citolab/prose-qti/item-roundtrip';
 import { qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
-import { findUnrepresentableElements, TRANSPARENT_WRAPPER_TAGS } from '@citolab/prose-qti/schema-recovery';
+import {
+  TRANSPARENT_WRAPPER_TAGS,
+  findUnrepresentableElements,
+} from '@citolab/prose-extensions/schema-gaps';
 
 // Relative rather than by package specifier: `@qti-editor/prosemirror-item` has no tsconfig path
 // mapping and is not linked into node_modules, so the specifier form does not resolve. The story
@@ -81,7 +88,7 @@ import './editor-canvas.css';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 import type { RoundtripTransform } from '@citolab/prose-qti/item-roundtrip';
-import type { RecoveryMessageOptions, SchemaGapOutcome } from '@citolab/prose-qti/schema-recovery';
+import type { SchemaGapMessageOptions, SchemaGapOutcome } from '@citolab/prose-extensions/schema-gaps';
 
 /** Where the fixtures' relative `src` attributes are rebased to. */
 const ASSET_BASE_PATH = '/qti/kennisnet';
@@ -139,7 +146,7 @@ export interface RegressionEditor {
    * Takes `getMessage` so a story can show what a host reading the report in its own language sees;
    * omit it for the built-in English.
    */
-  findImportGaps: (options?: RecoveryMessageOptions) => SchemaGapOutcome;
+  findImportGaps: (options?: SchemaGapMessageOptions) => SchemaGapOutcome;
 }
 
 export function createRegressionEditor({
@@ -251,7 +258,7 @@ export function createRegressionEditor({
 
   // Scanned AFTER the roundtrip transforms have run, so nothing they consume is mistaken for lost
   // content, and BEFORE the parse, which is where content is actually lost.
-  const findImportGaps = (options: RecoveryMessageOptions = {}): SchemaGapOutcome =>
+  const findImportGaps = (options: SchemaGapMessageOptions = {}): SchemaGapOutcome =>
     findUnrepresentableElements(
       schema,
       itemBodyFromString(sourceXML, {

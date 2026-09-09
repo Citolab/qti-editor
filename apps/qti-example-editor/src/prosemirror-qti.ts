@@ -37,10 +37,13 @@ import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-b
 import {
   defaultRoundtripTransforms,
   exportItemXml,
-  itemBodyFromUrl,
+  itemBodyAndGapsFromUrl,
   parseItemBody
 } from '@citolab/prose-qti/item-roundtrip';
-import { findUnrepresentableElements, TRANSPARENT_WRAPPER_TAGS } from '@citolab/prose-qti/schema-recovery';
+import {
+  TRANSPARENT_WRAPPER_TAGS,
+  findUnrepresentableElements,
+} from '@citolab/prose-extensions/schema-gaps';
 import { listInteractionDecoratorPluginFactories } from '@citolab/prose-qti/core/interactions/composer';
 
 import { qtiTransformTest } from '@qti-components/transformers';
@@ -63,7 +66,7 @@ import '@citolab/prose-qti/components/shared/components/qti-gap/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-gap-text/register.js';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
-import type { SchemaGapOutcome } from '@citolab/prose-qti/schema-recovery';
+import type { SchemaGapOutcome } from '@citolab/prose-extensions/schema-gaps';
 import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
 import type { Plugin } from 'prosemirror-state';
 
@@ -147,7 +150,11 @@ export async function loadQtiItems(): Promise<{ href: string; identifier: string
  * is and no transform is needed.
  */
 export async function importQtiItem(href: string, schema: Schema): Promise<ImportedQtiItem> {
-  const itemBody = await itemBodyFromUrl(href, { transforms: [...defaultRoundtripTransforms] });
+  // `itemBodyAndGapsFromUrl` rather than `itemBodyFromUrl`: the scoring scan has to read the whole
+  // `<qti-assessment-item>`, and by the time a plain item-body comes back its root is gone.
+  const { itemBody, scoringGaps } = await itemBodyAndGapsFromUrl(href, {
+    transforms: [...defaultRoundtripTransforms],
+  });
 
   /*
    * Ask the schema what it cannot represent, before parsing rather than after.
@@ -158,9 +165,16 @@ export async function importQtiItem(href: string, schema: Schema): Promise<Impor
    * document records that anything was dropped, and the narrower the schema the more it drops, so
    * the only moment the question can be answered is this one.
    */
-  const gaps = findUnrepresentableElements(schema, itemBody.documentElement, {
+  const elementGaps = findUnrepresentableElements(schema, itemBody.documentElement, {
     ignoreTags: TRANSPARENT_WRAPPER_TAGS,
   });
+
+  // One outcome, because the reader wants one notice. An interaction the schema cannot hold and a
+  // scoring model the editor cannot run are the same news to whoever wrote the question.
+  const gaps: SchemaGapOutcome = {
+    changes: [...elementGaps.changes, ...scoringGaps.changes],
+    preservedFragments: [...elementGaps.preservedFragments, ...scoringGaps.preservedFragments],
+  };
 
   return { doc: parseItemBody(itemBody, schema), gaps };
 }

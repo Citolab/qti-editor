@@ -5,7 +5,7 @@
 /* Opt-in: the editor affordance decorations, pairing with the decorator plugins. */
 @import '@citolab/prose-qti/decorations.css';
 /* Styling for the schema-gap notice, from the package that renders it. */
-@import '@citolab/prose-qti/schema-recovery/notice.css';
+@import './components/schema-gap-notice.css';
 
 :root {
   --border: #d8dde3;

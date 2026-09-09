@@ -1,18 +1,18 @@
 /**
  * The notice's own behaviour, with no editor and no QTI in sight.
  *
- * Split from the app test that used to own this when the component moved into the package: what a
- * *given* schema can and cannot represent is a question about that schema, and belongs with it, but
- * how a finding is rendered and worded is neither app's business. Hand-built outcomes here rather
- * than scanned ones, so each assertion is about the rendering and nothing else.
+ * Separate from `schema-gaps.browser.test.ts` next door, which asks what this editor's schema can
+ * and cannot represent in the sample corpus. That is a question about the schema; this is a question
+ * about the rendering, so the outcomes below are hand-built rather than scanned and every assertion
+ * is about the markup and the wording.
  */
 import { describe, expect, test } from 'vitest';
 
-import { renderSchemaGapNotice, SCHEMA_GAP_NOTICE_CLASS } from './index.js';
+import { renderSchemaGapNotice, SCHEMA_GAP_NOTICE_CLASS } from './schema-gap-notice.js';
 
-import type { RecoveryChange, SchemaGapOutcome } from '../types.js';
+import type { SchemaGapChange, SchemaGapOutcome } from '@citolab/prose-extensions/schema-gaps';
 
-const change = (tagName: string, excerpt?: string): RecoveryChange => ({
+const change = (tagName: string, excerpt?: string): SchemaGapChange => ({
   kind: 'unrepresentable-element',
   code: 'UNKNOWN_NODE_PRESERVED',
   severity: 'warning',
@@ -21,7 +21,7 @@ const change = (tagName: string, excerpt?: string): RecoveryChange => ({
   data: excerpt ? { excerpt } : {},
 });
 
-const outcome = (...changes: RecoveryChange[]): SchemaGapOutcome => ({
+const outcome = (...changes: SchemaGapChange[]): SchemaGapOutcome => ({
   changes,
   preservedFragments: [],
 });
