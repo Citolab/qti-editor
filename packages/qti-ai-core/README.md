@@ -16,5 +16,17 @@ provider SDK: the package describes conversations, not the QTI schema.
   translates into (text, reply, status, complete, cancelled, error).
 - `fingerprint(value)`: non-cryptographic identity for a serialized capability manifest.
 
+## Wire form
+
+`ConversationEvent`s travel as Server-Sent Events, one JSON event per `data:` frame:
+
+- Servers: `encodeSseEvent(event)` frames an event; `parseAuthoringReply` validates the envelope
+  before it is forwarded as a `reply`. A provider adapter (Azure, OpenAI, a local model) translates
+  its own stream into `text* status* reply? (complete | cancelled | error)`.
+- Browsers: `createSseTransport({ url })` is a `ConversationTransport` over POST + SSE. Every event
+  it yields is validated (`parseConversationEvent`) and carries the request's own `requestId`; the
+  stream always ends with exactly one terminal event, synthesized if the server did not send one;
+  aborting the signal yields `cancelled` and nothing after it. `fetch` is injectable.
+
 Pair it with `@citolab/qti-ai-prosemirror` for target capture and atomic application, and with
 `@citolab/qti-ai-ui` for optional Lit review controls.

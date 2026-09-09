@@ -113,3 +113,5 @@ export function readAuthoringStream(raw: string, complete = false): { prose: str
   if (!match) throw new Error('The authoring reply was incomplete or used an unsupported format.');
   return { prose, reply: parseAuthoringReply(JSON.parse(match[1])) };
 }
+
+export * from './transport.js';
