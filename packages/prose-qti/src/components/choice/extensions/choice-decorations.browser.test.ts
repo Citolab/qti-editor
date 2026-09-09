@@ -18,7 +18,10 @@ import { afterEach, describe, expect, test } from 'vitest';
 
 import { defineQtiExtension } from '../../../integration/interactions/prosekit.js';
 import { insertOrderInteraction } from '../../order/components/qti-order-interaction/qti-order-interaction.commands.js';
-import { insertChoiceInteraction, insertSimpleChoiceOnEnter } from '../components/qti-choice-interaction/qti-choice-interaction.commands.js';
+import {
+  insertChoiceInteraction,
+  insertSimpleChoiceOnEnter
+} from '../components/qti-choice-interaction/qti-choice-interaction.commands.js';
 import { QTI_OPEN_NODE_SETTINGS_EVENT } from '../../shared/extensions/node-decorations.js';
 import { createChoiceInteractionDecoratorPlugin } from './choice-decorations.js';
 
@@ -41,7 +44,7 @@ afterEach(() => {
 function mount(command: Command): EditorView {
   const state = EditorState.create({
     doc: schema.nodes.doc.createChecked(null, [schema.nodes.paragraph.createChecked()]),
-    schema,
+    schema
   });
 
   let seeded: EditorState | null = null;
@@ -54,9 +57,10 @@ function mount(command: Command): EditorView {
   // end up the last node in the document. The pill test needs somewhere outside every interaction
   // to put the caret, so give the document a trailing paragraph unconditionally.
   const seededDoc = (seeded as EditorState).doc;
-  const doc = seededDoc.lastChild?.type.name === 'paragraph'
-    ? seededDoc
-    : schema.nodes.doc.createChecked(null, [...seededDoc.children, schema.nodes.paragraph.createChecked()]);
+  const doc =
+    seededDoc.lastChild?.type.name === 'paragraph'
+      ? seededDoc
+      : schema.nodes.doc.createChecked(null, [...seededDoc.children, schema.nodes.paragraph.createChecked()]);
 
   const host = document.createElement('div');
   document.body.appendChild(host);
@@ -65,11 +69,11 @@ function mount(command: Command): EditorView {
     state: EditorState.create({
       doc,
       schema,
-      plugins: [createChoiceInteractionDecoratorPlugin()],
+      plugins: [createChoiceInteractionDecoratorPlugin()]
     }),
     dispatchTransaction(tr) {
       view.updateState(view.state.apply(tr));
-    },
+    }
   });
 
   mounted.push({ view, host });
@@ -91,11 +95,11 @@ function anchorWiring(view: EditorView): { names: string[]; refs: string[] } {
   const root = view.dom.parentElement!;
   return {
     names: Array.from(root.querySelectorAll<HTMLElement>('qti-simple-choice')).map(el =>
-      el.style.getPropertyValue('anchor-name'),
+      el.style.getPropertyValue('anchor-name')
     ),
     refs: Array.from(root.querySelectorAll<HTMLElement>('.qti-decoration--remove')).map(el =>
-      el.style.getPropertyValue('position-anchor'),
-    ),
+      el.style.getPropertyValue('position-anchor')
+    )
   };
 }
 
@@ -234,8 +238,8 @@ describe('choice interaction decorations', () => {
     view.dispatch(
       view.state.tr.setNodeMarkup(pos, undefined, {
         ...interaction.attrs,
-        correctResponse: `${first},${second}`,
-      }),
+        correctResponse: `${first},${second}`
+      })
     );
 
     decorations(view, 'remove')[0].click();
@@ -294,7 +298,7 @@ describe('choice interaction decorations', () => {
       'qti-decoration__action qti-decoration__action--select',
       'qti-decoration__action qti-decoration__action--settings',
       'qti-decoration__action qti-decoration__action--copy',
-      'qti-decoration__action qti-decoration__action--delete qti-decoration__action--destructive',
+      'qti-decoration__action qti-decoration__action--delete qti-decoration__action--destructive'
     ]);
 
     // No rendered text on any of them — the names are carried accessibly instead, which is what
@@ -330,9 +334,7 @@ describe('choice interaction decorations', () => {
     // The interaction is marked selected in the DOM, which is what decorations.css paints the
     // full-strength ring off. There is no node view for this interaction, so ProseMirror sets the
     // class itself rather than delegating to a `selectNode` hook.
-    expect(view.dom.querySelector('qti-choice-interaction')!.classList).toContain(
-      'ProseMirror-selectednode',
-    );
+    expect(view.dom.querySelector('qti-choice-interaction')!.classList).toContain('ProseMirror-selectednode');
   });
 
   test('copy writes the interaction to the clipboard with fresh identifiers, and changes nothing', async () => {
@@ -342,7 +344,7 @@ describe('choice interaction decorations', () => {
     const [first, second] = choices(view.state.doc).map(choice => choice.identifier);
 
     view.dispatch(
-      view.state.tr.setNodeMarkup(pos, undefined, { ...original.attrs, correctResponse: `${first},${second}` }),
+      view.state.tr.setNodeMarkup(pos, undefined, { ...original.attrs, correctResponse: `${first},${second}` })
     );
     const before = view.state.doc.toJSON();
 
@@ -368,18 +370,14 @@ describe('choice interaction decorations', () => {
     expect(copied.getAttribute('response-identifier')).not.toBe(original.attrs.responseIdentifier);
     expect(copied.getAttribute('response-identifier')).toMatch(/^RESPONSE_/);
 
-    const copiedIds = Array.from(copied.querySelectorAll('qti-simple-choice')).map(el =>
-      el.getAttribute('identifier'),
-    );
+    const copiedIds = Array.from(copied.querySelectorAll('qti-simple-choice')).map(el => el.getAttribute('identifier'));
     expect(copiedIds).toHaveLength(3);
     for (const identifier of copiedIds) expect(identifier).toMatch(/^SIMPLE_CHOICE_/);
     expect(copiedIds).not.toContain(first);
 
     // And the copy's correct answer names the copy's own choices, not the original's.
     expect(copied.getAttribute('correct-response')).toBe(`${copiedIds[0]},${copiedIds[1]}`);
-    expect(view.state.doc.nodeAt(interactionPos(view.state.doc))!.attrs.correctResponse).toBe(
-      `${first},${second}`,
-    );
+    expect(view.state.doc.nodeAt(interactionPos(view.state.doc))!.attrs.correctResponse).toBe(`${first},${second}`);
   });
 
   test('delete removes the interaction, and keeps the document valid when it was the only block', () => {
@@ -444,5 +442,42 @@ describe('choice interaction decorations', () => {
     expect(decorations(view, 'remove')).toHaveLength(0);
     expect(decorations(view, 'add')).toHaveLength(0);
     expect(decorations(view, 'actions')).toHaveLength(0);
+  });
+});
+
+describe('promptless interactions', () => {
+  /** A choice interaction built straight from the schema, with no qtiPrompt, in a live view. */
+  function mountPromptless(choiceCount: number): EditorView {
+    const choice = (id: string) =>
+      schema.nodes.qtiSimpleChoice.createChecked(
+        { identifier: id },
+        schema.nodes.qtiSimpleChoiceParagraph.createChecked(null, schema.text(`Choice ${id}`))
+      );
+    const ids = ['A', 'B', 'C'].slice(0, choiceCount);
+    const interaction = schema.nodes.qtiChoiceInteraction.createChecked(
+      { responseIdentifier: 'RESPONSE', maxChoices: 1 },
+      ids.map(choice)
+    );
+    const doc = schema.nodes.doc.createChecked(null, [interaction, schema.nodes.paragraph.createChecked()]);
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const view = new EditorView(host, {
+      state: EditorState.create({ doc, schema, plugins: [createChoiceInteractionDecoratorPlugin()] })
+    });
+    mounted.push({ view, host });
+    // Caret inside the first choice: the decorator emits the row affordances for the selected interaction.
+    view.dispatch(view.state.tr.setSelection(TextSelection.create(view.state.doc, 3)));
+    return view;
+  }
+
+  test('a two-choice interaction without a prompt still offers a × per choice', () => {
+    const view = mountPromptless(2);
+    expect(view.dom.querySelectorAll('.qti-decoration--remove')).toHaveLength(2);
+  });
+
+  test('a single remaining choice offers no ×, prompt or not', () => {
+    const view = mountPromptless(1);
+    expect(view.dom.querySelectorAll('.qti-decoration--remove')).toHaveLength(0);
+    expect(view.dom.querySelectorAll('.qti-decoration--add')).toHaveLength(1);
   });
 });
