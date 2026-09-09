@@ -1,4 +1,4 @@
-import type { Node as PmNode } from 'prosemirror-model';
+import { Fragment, type Node as PmNode } from 'prosemirror-model';
 
 /*
  * Structural transformations: what the code guarantees when the model adds, removes or converts.
@@ -125,4 +125,48 @@ export function validateResponses(doc: PmNode): void {
         break;
     }
   });
+}
+
+/** Response identifiers declared anywhere in a node tree. */
+export function responseIdentifiers(node: PmNode): Set<string> {
+  const ids = new Set<string>();
+  const visit = (n: PmNode) => {
+    if (typeof n.attrs.responseIdentifier === 'string' && n.attrs.responseIdentifier)
+      ids.add(n.attrs.responseIdentifier);
+    n.forEach(visit);
+  };
+  visit(node);
+  return ids;
+}
+
+/**
+ * The same content with every interaction's response identifier made unique against `taken`.
+ *
+ * Minting identifiers is the code's job, not the model's: the model sees the item, but it also
+ * reuses "RESPONSE" out of habit, and a proposal refused for that alone is a proposal the author
+ * has to ask for twice. A missing identifier is minted too. Identifiers that are already unique
+ * are left exactly as they are.
+ */
+export function withUniqueResponseIdentifiers(content: Fragment, taken: Set<string>): Fragment {
+  const used = new Set(taken);
+  const mint = (base: string) => {
+    let n = 2;
+    let candidate = base;
+    while (used.has(candidate)) candidate = `${base}_${n++}`;
+    return candidate;
+  };
+  const visit = (node: PmNode): PmNode => {
+    const children = Fragment.from(node.content.content.map(visit));
+    if (!('responseIdentifier' in node.attrs) || !isInteraction(node)) {
+      return node.content === children ? node : node.copy(children);
+    }
+    const current =
+      typeof node.attrs.responseIdentifier === 'string' && node.attrs.responseIdentifier
+        ? node.attrs.responseIdentifier
+        : null;
+    const id = current && !used.has(current) ? current : mint(current ?? 'RESPONSE');
+    used.add(id);
+    return node.type.create({ ...node.attrs, responseIdentifier: id }, children, node.marks);
+  };
+  return Fragment.from(content.content.map(visit));
 }

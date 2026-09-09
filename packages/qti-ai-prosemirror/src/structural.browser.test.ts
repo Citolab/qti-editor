@@ -259,4 +259,30 @@ describe('convert', () => {
       close();
     }
   });
+
+  test('inserted interactions get unique response identifiers minted by the code', () => {
+    const { view, close } = mount(CHOICE);
+    try {
+      const { target, reply } = proposal(view, []);
+      reply.operations.push({
+        kind: 'insert',
+        target: target('qtiChoiceInteraction'),
+        html:
+          '<p>Planten nemen <qti-text-entry-interaction response-identifier="RESPONSE" correct-response="koolstofdioxide"></qti-text-entry-interaction> op.</p>' +
+          '<qti-extended-text-interaction><qti-prompt><p>Leg uit.</p></qti-prompt></qti-extended-text-interaction>'
+      });
+      acceptProposal(view, prepareProposal(view, reply));
+      expect(find(view.state.doc, 'qtiChoiceInteraction')!.attrs.responseIdentifier, 'existing untouched').toBe(
+        'RESPONSE'
+      );
+      expect(find(view.state.doc, 'qtiTextEntryInteraction')!.attrs.responseIdentifier, 'collision renamed').toBe(
+        'RESPONSE_2'
+      );
+      expect(find(view.state.doc, 'qtiExtendedTextInteraction')!.attrs.responseIdentifier, 'missing one minted').toBe(
+        'RESPONSE_3'
+      );
+    } finally {
+      close();
+    }
+  });
 });

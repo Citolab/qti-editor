@@ -9,13 +9,28 @@ import {
   tagOf,
   type CapabilityOptions
 } from './capabilities.js';
-import { childIdentifiers, isInteraction, remapResponse, validateResponses } from './structural.js';
+import {
+  childIdentifiers,
+  isInteraction,
+  remapResponse,
+  responseIdentifiers,
+  validateResponses,
+  withUniqueResponseIdentifiers
+} from './structural.js';
 
 import type { Fragment } from 'prosemirror-model';
 import type { EditorView } from 'prosemirror-view';
 
 export * from './capabilities.js';
-export { childIdentifiers, isInteraction, remapResponse, responseEntries, validateResponses } from './structural.js';
+export {
+  childIdentifiers,
+  isInteraction,
+  remapResponse,
+  responseEntries,
+  responseIdentifiers,
+  validateResponses,
+  withUniqueResponseIdentifiers
+} from './structural.js';
 export { BASELINE_VERSION, attributeAnnotations, vocabularyBaseline } from './baseline.js';
 
 export interface AuthoringOptions extends CapabilityOptions {
@@ -210,7 +225,9 @@ function build(view: EditorView, reply: AuthoringReply, options: AuthoringOption
       }
     } else if (op.kind === 'convert') {
       if (pos < 0 || !isInteraction(node)) throw new Error('Convert an interaction, not arbitrary content.');
-      const content = safeHtml(op.html, view);
+      const taken = responseIdentifiers(tr.doc);
+      for (const id of responseIdentifiers(node)) taken.delete(id);
+      const content = withUniqueResponseIdentifiers(safeHtml(op.html, view), taken);
       const replacement = content.childCount === 1 ? content.firstChild : null;
       if (!replacement || replacement.type.name !== op.to || !isInteraction(replacement))
         throw new Error(`The conversion must produce exactly one ${op.to}.`);
@@ -227,7 +244,10 @@ function build(view: EditorView, reply: AuthoringReply, options: AuthoringOption
         attrs.score = node.attrs.score ?? 1;
       tr.replaceWith(pos, pos + node.nodeSize, replacement.type.create(attrs, replacement.content, replacement.marks));
     } else if (op.kind === 'insert' || op.kind === 'replace') {
-      const content = safeHtml(op.html, view);
+      // Identifiers already in the item are taken; a replaced node's own are free again.
+      const taken = responseIdentifiers(tr.doc);
+      if (op.kind === 'replace' && pos >= 0) for (const id of responseIdentifiers(node)) taken.delete(id);
+      const content = withUniqueResponseIdentifiers(safeHtml(op.html, view), taken);
       if (pos < 0) {
         if (op.kind === 'replace') throw new Error('Replace a specific target, not the whole item.');
         if (tr.doc.childCount === 1 && tr.doc.firstChild?.isTextblock && !tr.doc.firstChild.content.size)
