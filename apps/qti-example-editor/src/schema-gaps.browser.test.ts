@@ -7,10 +7,13 @@
  *
  * Two halves, pulling opposite ways: nothing to report on the corpus this editor is built for, and a
  * named finding when an item uses something it does not model. The notice's own rendering and wording
- * are tested with the component, in `packages/prose-qti/src/schema-recovery/notice/`.
+ * are tested next door, in `components/schema-gap-notice.browser.test.ts`.
  */
 import { defaultRoundtripTransforms, itemBodyFromString } from '@citolab/prose-qti/item-roundtrip';
-import { findUnrepresentableElements, TRANSPARENT_WRAPPER_TAGS } from '@citolab/prose-qti/schema-recovery';
+import {
+  TRANSPARENT_WRAPPER_TAGS,
+  findUnrepresentableElements,
+} from '@citolab/prose-extensions/schema-gaps';
 import { expect, test } from 'vitest';
 
 import { appSchema } from './schema.js';

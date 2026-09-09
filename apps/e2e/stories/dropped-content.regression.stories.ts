@@ -20,25 +20,20 @@
  * first one alone, nothing tells you anything is wrong, which is exactly the complaint that started
  * this work.
  *
- * The notice above the editor is `renderSchemaGapNotice` from `@citolab/prose-qti/schema-recovery` —
- * the shipping component, not a mock-up, so what is on screen here is what a host sees. It is the
- * package's rather than either app's precisely so that this story can show it without reaching into
- * an app it is not part of.
+ * ## There is no notice on screen here, on purpose
  *
- * ## In Dutch, on purpose
+ * There used to be. `@citolab/prose-extensions/schema-gaps` ships the scan and no renderer — saying
+ * the news is the consumer's job, and the shape of that answer differs per consumer, so there is no
+ * longer a shipping component for a story to show. `apps/qti-example-editor` has its own; so does
+ * `qti-editor-full-assessment`, through React and i18next. Rendering one *here* would mean either
+ * reaching into an app this story is not part of, or building a mock-up and then asserting against
+ * it — a test of itself.
  *
- * Not decoration. Every word of this feature is replaceable from outside — see
- * `docs/compatibility-messages.md` — and a seam nobody has exercised is a seam that works until the
- * day someone needs it. The Kennisnet items are Dutch, their authors are Dutch, so this is also
- * simply the truer picture of what the notice looks like in use.
- *
- * Both seams appear here, and they are different:
- *
- *   - `DUTCH_NOTICE_MESSAGES` replaces the notice's own sentences, which is what shows on screen.
- *   - `dutchRecoveryMessage` replaces the `message` on each change, which is what a host logs,
- *     forwards or renders its own way. The notice deliberately does NOT display it — it renders from
- *     the facts (`kind`, `nodeType`, `data.excerpt`) — so that override is asserted in the test file
- *     rather than visible in the story.
+ * So this pair now shows the loss in the document, which is the part that needs seeing: flip between
+ * the two stories and the draggable words fall out of the sentence. What the scan *reports* about
+ * that loss — the tag name, the count, the author's own words, and the Dutch `getMessage` override
+ * (`dutchRecoveryMessage`) — is asserted in `dropped-content.regression.browser.test.ts`, against
+ * the data rather than against markup.
  *
  * No ProseKit imports.
  */
@@ -49,10 +44,6 @@ import { expect } from 'storybook/test';
 import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
 import { gapMatchInteractionDescriptor } from '@citolab/prose-qti/components/gap-match';
 import { roundtripGapMatch, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
-import {
-  renderSchemaGapNotice,
-  SCHEMA_GAP_NOTICE_CLASS,
-} from '@citolab/prose-qti/schema-recovery/notice';
 
 import { createRegressionEditor } from './prosemirror-base';
 import sourceXML from './fixtures/ITEM015.xml?raw';
@@ -63,44 +54,26 @@ import '@citolab/prose-qti/components/gap-match/register.js';
 import 'prosemirror-view/style/prosemirror.css';
 import '@qti-components/theme/item.css';
 import '@citolab/prose-qti/core-css.css';
-import '@citolab/prose-qti/schema-recovery/notice.css';
 import './kennisnet.css';
 import './dropped-content.css';
 
 import type { RegressionEditor } from './prosemirror-base';
-import type { SchemaGapNoticeMessages } from '@citolab/prose-qti/schema-recovery/notice';
-import type { RecoveryMessageResolver } from '@citolab/prose-qti/schema-recovery';
+import type { SchemaGapMessageResolver } from '@citolab/prose-extensions/schema-gaps';
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
-
-/**
- * The notice, in Dutch.
- *
- * `heading` is a function of the count rather than a template, because Dutch and English disagree
- * about how the number changes the sentence and a placeholder would settle that on the translator's
- * behalf. The quotation marks are the Dutch pair („…”), which is also the quickest way to see at a
- * glance that the override took effect rather than being appended to the English.
- */
-export const DUTCH_NOTICE_MESSAGES: SchemaGapNoticeMessages = {
-  heading: count => (count === 1
-    ? 'Deze editor kan 1 element in dit item niet weergeven. De inhoud is bewaard, het element zelf niet.'
-    : `Deze editor kan ${count} elementen in dit item niet weergeven. Hun inhoud is bewaard, de elementen zelf niet.`),
-  occurrences: count => ` (${count}×)`,
-  quote: excerpt => ` — „${excerpt}”`,
-};
 
 /**
  * The change messages, in Dutch.
  *
  * Dispatches on `kind`, which is the point of it being a declared field: no reading of optional data
  * fields to work out which case this is. Returning `undefined` for a kind keeps the built-in English,
- * which is why a host can translate the two cases it cares about and leave the rest.
+ * which is why a host can translate the cases it cares about and leave the rest — and why this stays
+ * a `switch` over the union rather than an `if`, so a second kind arrives as a compiler complaint
+ * here rather than as silent English in the notice.
  */
-export const dutchRecoveryMessage: RecoveryMessageResolver = change => {
+export const dutchRecoveryMessage: SchemaGapMessageResolver = change => {
   switch (change.kind) {
     case 'unrepresentable-element':
       return `<${change.nodeType}> kan hier niet worden weergegeven; de inhoud is bewaard.`;
-    case 'unwrapped-node':
-      return `Het element «${change.nodeType}» is verwijderd; de inhoud eronder is bewaard.`;
     default:
       return undefined;
   }
@@ -149,14 +122,13 @@ const meta: Meta = {
     'exportAsStranger',
     'mountStrangerEditor',
     'findNativeGaps',
-    'DUTCH_NOTICE_MESSAGES',
     'dutchRecoveryMessage'
   ]
 };
 export default meta;
 
-/** Editor with the Dutch import notice above it, exactly as the minimal editor lays it out. */
-function renderWithNotice(editor: RegressionEditor) {
+/** The editor and its attributes panel, laid out as the minimal editor lays them out. */
+function renderEditor(editor: RegressionEditor) {
   let panelEl: HTMLElement | null = null;
   return html`
     <div class="regression-layout">
@@ -167,18 +139,6 @@ function renderWithNotice(editor: RegressionEditor) {
         })}
       ></aside>
       <div class="dropped-content-pane">
-        <div
-          role="status"
-          hidden
-          ${ref(el => {
-            if (!el) return;
-            renderSchemaGapNotice(
-              el as HTMLElement,
-              editor.findImportGaps({ getMessage: dutchRecoveryMessage }),
-              { messages: DUTCH_NOTICE_MESSAGES },
-            );
-          })}
-        ></div>
         <div
           class="regression-item editor-container"
           ${ref(el => {
@@ -194,48 +154,36 @@ function renderWithNotice(editor: RegressionEditor) {
  * ITEM015 in an editor that has no gap-match node.
  *
  * The interaction is gone: `basisch` and `zuur` were its draggable options and now sit as loose text,
- * and the sentence they belonged in has two holes where the gaps were. Without the notice, nothing on
- * screen would say so — which is the whole reason the notice exists.
+ * and the sentence they belonged in has two holes where the gaps were. Nothing on screen says so,
+ * which is the point of the story — the loss is silent, and a consumer that does not render the scan
+ * result ships exactly this.
  */
 export const GapMatchInAChoiceOnlyEditor: StoryObj = {
-  render: () => renderWithNotice(strangerEditor),
+  render: () => renderEditor(strangerEditor),
   play: async ({ canvasElement }) => {
-    const notice = canvasElement.querySelector<HTMLElement>(`.${SCHEMA_GAP_NOTICE_CLASS}`);
-
-    // The notice is showing, and it names the element that was dropped.
-    await expect(notice).not.toBeNull();
-    await expect(notice!.hidden).toBe(false);
-    await expect(notice!.textContent).toContain('<qti-gap-match-interaction>');
-
-    // In Dutch, and the English is replaced rather than added to.
-    await expect(notice!.textContent).toContain('Deze editor kan');
-    await expect(notice!.textContent).toContain('niet weergeven');
-    await expect(notice!.textContent).not.toContain('no equivalent');
-
-    // The author's own words come through the translation untouched — they are their content, not
-    // ours to phrase. („…” rather than “…” because the wrapping is the part we translated.)
-    await expect(notice!.textContent).toContain('„basisch');
-
-    // The interaction really is absent from the editor — the notice is not describing a phantom.
+    // The interaction is absent from the editor.
     await expect(canvasElement.querySelector('qti-gap-match-interaction')).toBeNull();
+
+    // Its options survive as loose prose — this is what "unwrapped, not refused" looks like to an
+    // author, and why the excerpt in the report quotes their words rather than a type name.
+    await expect(canvasElement.textContent).toContain('basisch');
+
+    // And the item around the hole still rendered, so the loss is bounded rather than total.
+    await expect(canvasElement.querySelector('.editor-container')?.textContent?.trim().length ?? 0)
+      .toBeGreaterThan(0);
   }
 };
 
 /**
  * The control: the same fixture, the same transforms, an editor that models the interaction.
  *
- * Nothing is reported and the notice stays hidden. Worth having next to the story above for the same
- * reason the test file has it — a warning that fires either way is not a warning.
+ * Worth having next to the story above for the same reason the test file has it — a difference that
+ * shows up either way is not a difference.
  */
 export const GapMatchInItsOwnEditor: StoryObj = {
-  render: () => renderWithNotice(nativeEditor),
+  render: () => renderEditor(nativeEditor),
   play: async ({ canvasElement }) => {
-    const notice = canvasElement.querySelector<HTMLElement>(`.${SCHEMA_GAP_NOTICE_CLASS}`);
-
-    await expect(notice!.hidden).toBe(true);
-    await expect(notice!.textContent).toBe('');
-
-    // The interaction is present, so there was nothing to report.
+    // The interaction is present, so there was nothing to report in the first place.
     await expect(canvasElement.querySelector('qti-gap-match-interaction')).not.toBeNull();
   }
 };

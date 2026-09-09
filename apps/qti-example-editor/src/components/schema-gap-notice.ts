@@ -1,25 +1,28 @@
 /**
- * A plain-DOM notice for what a schema could not represent.
+ * This editor's notice for what its schema could not represent.
  *
- * The finding comes from `findUnrepresentableElements`; this says it in a page. It lives in the
- * package rather than in an app because two editors need the same sentence — and because a host
- * without a framework should not have to write this to find out what its import dropped.
+ * The finding comes from `findUnrepresentableElements` (`@citolab/prose-extensions/schema-gaps`);
+ * this says it in a page. **It is this app's, not the package's.** The package ships the API — a
+ * `SchemaGapOutcome` whose changes carry a `kind`, a `code`, the tag name and an excerpt of the
+ * author's own text — and deliberately ships no renderer, because the shape of the answer is the
+ * consumer's call: a banner here, a log line elsewhere, a row in an existing panel somewhere else.
+ * `qti-editor-full-assessment` makes the opposite choice and renders the same data through React and
+ * i18next.
  *
- * Deliberately framework-free: `document.createElement`, no Lit, no React, no template library. It is
- * rendered into a host element the caller owns, so a React or Lit host can wrap it in whatever it
- * likes, and a host with strong opinions can ignore it entirely and render `outcome.changes` itself —
- * they are data, and the fields are the contract (see `docs/compatibility-messages.md`).
+ * Framework-free on purpose even so: `document.createElement`, no Lit, no template library, because
+ * this app has none. It renders into a host element the caller owns.
  *
- * Styling ships alongside as `@citolab/prose-qti/schema-recovery/notice.css`, keyed on classes this
- * function applies itself. Import it or don't; the markup is legible unstyled.
+ * Styling is `./schema-gap-notice.css`, keyed on classes this function applies itself rather than on
+ * an element id, so it carries no assumption about where in the layout the notice sits. Positioning
+ * is the caller's business.
  */
 
-import type { RecoveryChange, SchemaGapOutcome } from '../types.js';
+import type { SchemaGapChange, SchemaGapOutcome } from '@citolab/prose-extensions/schema-gaps';
 
 /** Class names this notice applies, exported so a host can target or restyle them. */
-export const SCHEMA_GAP_NOTICE_CLASS = 'qti-schema-gap-notice';
-export const SCHEMA_GAP_NOTICE_HEADING_CLASS = 'qti-schema-gap-notice-heading';
-export const SCHEMA_GAP_NOTICE_QUOTE_CLASS = 'qti-schema-gap-notice-quote';
+export const SCHEMA_GAP_NOTICE_CLASS = 'pm-schema-gap-notice';
+export const SCHEMA_GAP_NOTICE_HEADING_CLASS = 'pm-schema-gap-notice-heading';
+export const SCHEMA_GAP_NOTICE_QUOTE_CLASS = 'pm-schema-gap-notice-quote';
 
 /**
  * Every word this notice can say, so none of them are welded into it.
@@ -127,7 +130,7 @@ function groupByTag(outcome: SchemaGapOutcome): TagFinding[] {
   return [...byTag.values()];
 }
 
-function excerptOf(change: RecoveryChange): string | undefined {
+function excerptOf(change: SchemaGapChange): string | undefined {
   return typeof change.data?.excerpt === 'string' && change.data.excerpt.length > 0
     ? change.data.excerpt
     : undefined;

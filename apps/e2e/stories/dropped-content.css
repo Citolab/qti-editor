@@ -1,12 +1,12 @@
 /*
- * Layout for the dropped-content stories: notice above, editor below.
+ * Layout for the dropped-content stories.
  *
- * The notice's own styling is NOT here and is not copied from anywhere — it comes from
- * `@citolab/prose-qti/schema-recovery/notice.css`, imported by the story alongside the component that
- * renders it. Both live in the package for the same reason: an app is not a place other apps or
- * stories may reach into, so anything two of them need belongs somewhere both can depend on.
+ * There is no notice above the editor any more — `@citolab/prose-extensions/schema-gaps` ships the
+ * scan and no renderer, so there is no shipping component for a story to show, and rendering one
+ * here would mean either reaching into an app this story is not part of or asserting against a
+ * mock-up of its own. See the story's docblock.
  *
- * This file owns the one thing the story really does own — stacking the two.
+ * What is left is the column the editor sits in, which is the one thing the story really does own.
  */
 
 .dropped-content-pane {

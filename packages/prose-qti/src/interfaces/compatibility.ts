@@ -1,27 +1,29 @@
 /**
- * Shared types for schema compatibility, document migration, and preservation.
+ * The change log and the set-aside content a compatibility pass reports.
  *
  * Pure TypeScript — no runtime dependencies.
- */
-
-/**
- * The single, unified document schema version targeted by both the JSON and
- * HTML migration pipelines. Bump this when a new migration step is added and
- * register the matching step in the migrations module.
  *
- * Version history:
- *   v1 — Baseline (no version marker).
- *   v2 — Normalize legacy hyphenated/camelCase attribute names.
- *   v3 — Rename correctResponse → rubricScoringBlock on qtiExtendedTextInteraction.
- *   v4 — Lift rubricScoringBlock into a sibling qtiRubricBlock node.
- *   v5 — Convert prosekit flat `list` nodes to bullet_list/ordered_list + list_item.
- *   v6 — Convert legacy `bold`/`italic` marks to `strong`/`em`.
- *   v7 — Carry stored `image` width/height across the block -> inline move and the
- *        `number` -> `string|null` attribute change.
+ * This file used to carry the document-migration vocabulary as well — `CURRENT_SCHEMA_VERSION`,
+ * `MigrationStep`, `MigrationContext`, `MigrationResult`, `MigrateDocumentOptions`,
+ * `CompatibilityMetadata` and `CompatibilitySourceKind`. All of it moved to the one app that
+ * versions and migrates stored documents, at `src/lib/compatibility/types.ts` in the
+ * `qti-editor-full-assessment` repository, beside the ladder and the registry that give the types
+ * meaning. Nothing in this package ever referenced them: the migration engine was never here, only
+ * its type declarations, and a schema version this package cannot bump is a number it should not
+ * own. `docs/testing-findings.md` (finding 20) already put the ladder there on purpose.
+ *
+ * **Nothing in this repository imports these types any more.** `schema-gaps` did, until it was
+ * decoupled so it could be lifted out and released on its own; it now declares its own narrowed
+ * `SchemaGapChange` and `SchemaGapFragment`. That costs nothing at the boundary, because TypeScript
+ * is structural: `SchemaGapCode` is a subset of `CompatibilityChangeCode`, so a gap finding is still
+ * assignable to a `CompatibilityChange` with no import and no adapter, and a host that models both a
+ * migration ladder and a gap scan can put them in one list.
+ *
+ * These declarations therefore survive for one reason only: the `qti-editor-full-assessment`
+ * application imports `CompatibilityChange` and `CompatibilityReport` from
+ * `@citolab/prose-qti/interfaces` today. If that app stops needing them, this file and
+ * `compatibility-report.ts` have no consumer left anywhere.
  */
-export const CURRENT_SCHEMA_VERSION = 7;
-
-export type CompatibilitySourceKind = 'json' | 'html' | 'xml' | 'dom' | 'unknown';
 
 export type CompatibilitySeverity = 'info' | 'warning' | 'error';
 
@@ -44,11 +46,6 @@ export type CompatibilityChangeCode =
   // to a document — it reports that no change was made, and why.
   | 'DOCUMENT_UNREADABLE';
 
-export interface DocumentVersion {
-  value: number;
-  label?: string;
-}
-
 export interface CompatibilityChange {
   code: CompatibilityChangeCode;
   severity: CompatibilitySeverity;
@@ -68,44 +65,4 @@ export interface PreservedFragment {
   nodeType?: string;
   attributeName?: string;
   sourceVersion?: number;
-}
-
-export interface CompatibilityMetadata {
-  source: CompatibilitySourceKind;
-  documentVersion?: number | null;
-  [key: string]: unknown;
-}
-
-export interface MigrationResult<TDocument> {
-  document: TDocument;
-  sourceVersion: number;
-  targetVersion: number;
-  changes: CompatibilityChange[];
-  preservedFragments: PreservedFragment[];
-  appliedStepIds: string[];
-  metadata: CompatibilityMetadata;
-}
-
-export interface MigrationContext {
-  readonly sourceVersion: number;
-  readonly targetVersion: number;
-  readonly metadata: CompatibilityMetadata;
-  addChange(change: CompatibilityChange): void;
-  preserve(fragment: PreservedFragment): void;
-}
-
-export interface MigrationStep<TDocument> {
-  id: string;
-  fromVersion: number;
-  toVersion: number;
-  description?: string;
-  migrate(document: TDocument, context: MigrationContext): TDocument;
-}
-
-export interface MigrateDocumentOptions {
-  source: CompatibilitySourceKind;
-  targetVersion: number;
-  sourceVersion?: number | null;
-  fallbackVersion?: number;
-  metadata?: Record<string, unknown>;
 }

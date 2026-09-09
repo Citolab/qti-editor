@@ -16,18 +16,18 @@
  * It must run on the FULL item, BEFORE `reduceToItemBody`.
  */
 
-import { withHostMessage } from '@citolab/prose-qti/schema-recovery';
+import { withHostMessage } from '@citolab/prose-extensions/schema-gaps';
 
 import { analyzeResponseProcessing } from './response-processing.js';
 
-import type { PreservedFragment } from '@citolab/prose-qti/interfaces';
 import type {
-  RecoveryChange,
-  RecoveryMessageOptions,
+  SchemaGapChange,
+  SchemaGapFragment,
+  SchemaGapMessageOptions,
   SchemaGapOutcome,
-} from '@citolab/prose-qti/schema-recovery';
+} from '@citolab/prose-extensions/schema-gaps';
 
-export interface FindUnrepresentableResponseProcessingOptions extends RecoveryMessageOptions {
+export interface FindUnrepresentableResponseProcessingOptions extends SchemaGapMessageOptions {
   /** Longest quoted excerpt of a reported rule. Default 80. */
   excerptLimit?: number;
 }
@@ -45,8 +45,8 @@ export function findUnrepresentableResponseProcessing(
   options: FindUnrepresentableResponseProcessingOptions = {},
 ): SchemaGapOutcome {
   const excerptLimit = options.excerptLimit ?? 80;
-  const changes: RecoveryChange[] = [];
-  const preservedFragments: PreservedFragment[] = [];
+  const changes: SchemaGapChange[] = [];
+  const preservedFragments: SchemaGapFragment[] = [];
 
   const processing = itemDoc.querySelector('qti-response-processing');
   if (!processing) return { changes, preservedFragments };
@@ -67,7 +67,7 @@ export function findUnrepresentableResponseProcessing(
       nodeType: tagName,
     });
 
-    const change: RecoveryChange = {
+    const change: SchemaGapChange = {
       // The same kind the DOM scan uses, and for the same reason its docblock
       // gives: the sentence wanted here is "this has no equivalent in this
       // editor" about a file being imported.

@@ -401,16 +401,29 @@ Migrations live in the editor application's own repository, at `src/lib/compatib
 
 To add a migration: bump `CURRENT_SCHEMA_VERSION`, add a `json-vN-to-vM.ts` file, register it in `compatibility/migrations/index.ts`, add a `schema/document-corpus/v<N>.json` fixture for the shape you left behind, and cover the new step's branches in `ladder.browser.test.ts`. Two suites, two questions: the corpus asks whether an old document still opens (real schema, frozen fixtures), the ladder test asks whether each step does what it says and reports what it did (no schema, hand-built shapes — a step's `warning` paths are unreachable from a single fixture).
 
-### When the ladder is not enough
+### What an import cannot represent
 
-A schema change can outrun the migration ladder, and a document that cannot be loaded must not come back as silence. `@citolab/prose-qti/schema-recovery` is the layer for that case — pure ProseMirror, used by both editors:
+An editor's schema models a subset of QTI, and importing markup it cannot hold must not come back as silence. **`@citolab/prose-extensions/schema-gaps`** is the layer for that case — in `prose-extensions` rather than `prose-qti` because it knows nothing about QTI: it takes a `Schema` and an `Element` and reports the difference.
 
-- `findSchemaViolation` — the explicit `Node.check()` neither ProseMirror nor ProseKit performs on load
-- `salvageJsonDocument` — unwrap unknown nodes keeping their children, drop unknown marks keeping the text, reset attribute values the schema rejects; everything removed is recorded *and* preserved verbatim
 - `findUnrepresentableElements` — what a schema cannot match in DOM it is about to parse, which is the only moment `DOMParser`'s silent unwrapping can be observed
-- `createRecoveryMarkerPlugin` — decorations at the places content was removed from
+- `TRANSPARENT_WRAPPER_TAGS` — the wrappers (`qti-content-body`, `thead`/`tbody`/`tfoot`/`colgroup`) whose children *are* the content, so a finding about one is true and worthless
+- `withHostMessage` + `getMessage` — every sentence replaceable from outside; see [compatibility-messages.md](compatibility-messages.md)
 
-The ladder, storage keys, quarantine and wording stay in the app. What every removal says is replaceable without forking: see [compatibility-messages.md](compatibility-messages.md). The full account of the design, including what is still open, is in `plans/surface-silent-document-load-failures.md`.
+Every import in it is `import type` — `prosemirror-model` included — so it has no runtime dependencies and no cross-package imports at all.
+
+**The wrapper list names one QTI tag on purpose.** It was split for one release — HTML wrappers here, `qti-content-body` in `prose-qti` — and that was a mistake: it stranded a lone constant in `item-roundtrip`, a module about the transform pipeline that never used it, and made every call site import the scan from one package and the scan's argument from another. It is a list of tag-name strings; it creates no dependency and leaks no QTI concept into the API, and the concept it encodes is generic. One module owns the question.
+
+The one piece of QTI gap knowledge that cannot move is the response-processing scan, which reads QTI response processing and produces the same `SchemaGapOutcome` for scoring the editor cannot model. The editor holds three models (`match_correct`, `map_response`, `map_response_point`) and QTI response processing is a general-purpose program, so an item scored any other way imports looking perfectly fine and is worth zero marks.
+
+Reaching it needs `itemBodyAndGapsFromString` / `itemBodyAndGapsFromUrl` (`@citolab/prose-qti/item-roundtrip`), which return `{ itemBody, scoringGaps }`. It has to be an entry point of its own rather than something a caller assembles: the scan needs the whole `<qti-assessment-item>`, and `reduceToItemBody` has already discarded that root by the time `itemBodyFromString` returns — so the data is gone before any caller gets a value back. The scan itself stays internal; `runRoundtrip` hands it the item mid-pipeline, after the transforms (a transform that folded scoring onto an interaction has made it representable) and before the reduction.
+
+The two outcomes stay separate because they answer to different inputs — one to the caller's schema, one to the editor's scoring models — and each import path spreads them into one `SchemaGapOutcome`, because the reader wants one notice. Both of `apps/qti-example-editor` and `qti-editor-full-assessment`'s two import doors do this.
+
+This was written long before it was reachable: for several releases the scan had no caller and no test, because nothing could hand it a full item. `packages/prose-qti/src/item-roundtrip/scoring-gaps.browser.test.ts` covers it through the real pipeline for that reason — a test that called the scan directly would have passed against the version where nothing could reach it.
+
+**It ships no notice.** Saying the news is the consumer's job, and the shape of that answer is theirs: the data to say it with is `SchemaGapOutcome.changes` — a `kind`, a `code`, the tag name, an excerpt of the author's own text. `apps/qti-example-editor/src/components/schema-gap-notice.ts` is one implementation (plain DOM, its own stylesheet); `qti-editor-full-assessment` renders the same data through React and i18next. The `dropped-content` regression story in `apps/e2e` therefore shows the loss in the document rather than a notice, and asserts what the scan reports against the data.
+
+The module used to live in `prose-qti` and be called `schema-recovery`, and it used to be wider. `findSchemaViolation`, `salvageJsonDocument`, `resolveRecoverySites` and `createRecoveryMarkerPlugin` — the JSON-salvage path and the in-editor markers for it — were removed on 2026-09-08: no editor in this repo ever called them, and the one application that did dropped the feature rather than owning it. Nothing recovers anything now, hence the name. `plans/surface-silent-document-load-failures.md` is the historical record of that design, not a description of the code.
 
 ## Roundtrip-QTI Format
 
