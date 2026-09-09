@@ -21,6 +21,7 @@ The package exposes a small set of convenience helpers:
 - `importItemFromString`
 - `importItemFromUrl`
 - `importItemXmlDoc`
+- `itemBodyAndGapsFromString` / `itemBodyAndGapsFromUrl` (see [Scoring gaps](#scoring-gaps) below)
 - `exportItemXml`
 - `exportItemXmlDoc`
 
@@ -66,6 +67,31 @@ interaction's content expression now leads with `qtiPrompt?` and `ensureInteract
   is lossless. It now cleans up after an author who left a prompt blank, rather than after us. It is
   part of `defaultRoundtripExportTransforms` and runs automatically; pass `{ transforms: [] }` to
   disable it, or your own list to customize.
+
+## Scoring gaps
+
+The editor's ProseMirror schema only models three response-processing templates —
+`match_correct`, `map_response`, `map_response_point`. An item scored any other way still imports
+and exports cleanly, but is worth zero marks in the editor, with nothing to say so unless you ask.
+
+`itemBodyAndGapsFromString` and `itemBodyAndGapsFromUrl` are the way to ask. They run the same
+import pipeline as `importItemFromString` / `importItemFromUrl`, but return both the item body and
+what the item's response processing could not be represented as:
+
+```ts
+import { itemBodyAndGapsFromString } from '@citolab/prose-qti/item-roundtrip';
+import { findUnrepresentableElements, TRANSPARENT_WRAPPER_TAGS } from '@citolab/prose-extensions/schema-gaps';
+
+const { itemBody, scoringGaps } = itemBodyAndGapsFromString(xml);
+const elementGaps = findUnrepresentableElements(schema, itemBody.documentElement, {
+  ignoreTags: TRANSPARENT_WRAPPER_TAGS,
+});
+```
+
+`scoringGaps` is a `SchemaGapOutcome` from [Schema Gaps](/docs/prosemirror-plugins/schema-gaps/) —
+the same shape `findUnrepresentableElements` returns, so both can feed one notice. Silence is the
+expected result for items scored by the three standard models; a notice that fired on every import
+would teach readers to dismiss the one time it matters.
 
 ## Notes
 
