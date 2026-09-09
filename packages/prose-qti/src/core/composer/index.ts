@@ -194,6 +194,10 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
   const itemTitle = itemContext.title?.trim() || 'Untitled Item';
 
   root.setAttribute('xmlns', QTI_NS);
+  // Declared explicitly. A browser XMLSerializer adds xmlns:xsi for a namespaced attribute on its
+  // own; the Node serializer behind pmToQti3 does not, and libxml then refuses the document with
+  // "namespace prefix xsi for schemaLocation is not defined" before it ever reaches the XSD.
+  root.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xsi', XSI_NS);
   root.setAttributeNS(XSI_NS, 'xsi:schemaLocation', SCHEMA_LOCATION);
   root.setAttribute('identifier', itemIdentifier);
   root.setAttribute('title', itemTitle);
