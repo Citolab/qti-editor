@@ -125,6 +125,7 @@ export default defineConfig({
             { label: 'Block Select', slug: 'docs/prosemirror-plugins/block-select' },
             { label: 'Node Attrs Sync', slug: 'docs/prosemirror-plugins/node-attrs-sync' },
             { label: 'Semantic Paste', slug: 'docs/prosemirror-plugins/paste-semantic-html' },
+            { label: 'Schema Gaps', slug: 'docs/prosemirror-plugins/schema-gaps' },
           ],
         },
         {

@@ -1,0 +1,75 @@
+---
+title: Schema Gaps
+description: Find what a schema cannot represent in markup before it is parsed, and preserve it.
+slug: docs/prosemirror-plugins/schema-gaps
+---
+
+`schema-gaps` answers one question: *what will parsing this DOM lose?* ProseMirror's `DOMParser` is
+silently lenient — an element no `parseDOM` rule matches is skipped and its children are parsed in
+its place, which is the right behaviour for keeping a document loadable, but it happens with no
+error, no warning and no trace. `findUnrepresentableElements` runs the same match test `DOMParser`
+does, ahead of the actual parse, and reports every element that will be dropped along with the
+content that was lost.
+
+It knows nothing about QTI or any other vocabulary: it takes a ProseMirror `Schema` and a DOM
+`Element` and reports the difference.
+
+## Install
+
+```bash
+pnpm add @citolab/prose-extensions
+```
+
+## Usage
+
+```ts
+import { findUnrepresentableElements } from '@citolab/prose-extensions/schema-gaps';
+
+const outcome = findUnrepresentableElements(schema, root);
+
+outcome.changes; // one entry per element the schema could not match
+outcome.preservedFragments; // the removed markup, verbatim, for each one
+```
+
+Pass `ignoreTags` for wrappers whose children *are* the content, so unwrapping them is not worth
+reporting — `TRANSPARENT_WRAPPER_TAGS` covers the common HTML ones (`thead`, `tbody`, `tfoot`,
+`colgroup`) plus one QTI tag (`qti-content-body`):
+
+```ts
+import { findUnrepresentableElements, TRANSPARENT_WRAPPER_TAGS } from '@citolab/prose-extensions/schema-gaps';
+
+findUnrepresentableElements(schema, root, {
+  ignoreTags: [...TRANSPARENT_WRAPPER_TAGS, 'my-content-body'],
+});
+```
+
+## When to use
+
+Use this before importing external markup into an editor whose schema models a subset of it — the
+narrower the schema, the more silent loss there is to catch. It does not ship a notice: what you get
+back is data (`kind`, `code`, the tag name, an excerpt of the author's own text), and rendering it —
+a banner, a log line, a row in an existing panel — is left to your app.
+
+## Custom wording
+
+Every finding's `message` is an English fallback for logs and for cases you have not written
+wording for. Pass `getMessage` to replace it per finding; return `undefined` to keep the built-in
+text:
+
+```ts
+import type { SchemaGapMessageResolver } from '@citolab/prose-extensions/schema-gaps';
+
+const messages: SchemaGapMessageResolver = change => {
+  switch (change.kind) {
+    case 'unrepresentable-element':
+      return `«${change.nodeType}» kan hier niet worden weergegeven`;
+    default:
+      return undefined;
+  }
+};
+
+findUnrepresentableElements(schema, root, { getMessage: messages });
+```
+
+A resolver that throws costs that one finding's translation, not the scan — the built-in English is
+kept and the rest of the findings are unaffected.
