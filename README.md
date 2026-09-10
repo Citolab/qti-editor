@@ -1,11 +1,9 @@
 # qti-editor
 
-A ProseMirror-based editor for authoring QTI 3.0 assessment items.
+A ProseMirror-based editor kit to aid authoring QTI 3.0 assessment items in a WYSIWYG (what you see is what you get) style.
 
-It is a monorepo of composable pieces — interaction nodes, schema, serialization, UI components —
-that assemble into a full editor or drop into your own tooling piecemeal. The rendering half comes
-from [qti-components](https://github.com/Citolab/qti-components): the same custom elements that
-display an item to a candidate display it to its author, so what you edit is what gets sat.
+This is a monorepo of composable pieces — interaction nodes, schema, serialization, UI components —
+that you can assemble into a full editor or drop into your own tooling piecemeal. It renders QTI interactions using our [qti-components](https://github.com/Citolab/qti-components): the same custom elements that render to a user when they take a test, you what you see is truly what you get.
 
 Full documentation: **[qti-editor.citolab.nl](https://qti-editor.citolab.nl/)**.
 
@@ -15,7 +13,7 @@ Prerequisites: [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/).
 
 ```sh
 pnpm install
-pnpm dev          # the editor, http://localhost:5175
+pnpm dev          # runs the example editor, http://localhost:5175
 ```
 
 `pnpm dev` watches the packages, so a change in `packages/` reloads the app. Other entry points:
@@ -33,60 +31,32 @@ pnpm test:vrt     # visual regression against the committed baselines
 An item is a ProseMirror document whose nodes are QTI elements. The schema is composed from
 **interaction descriptors**: each interaction contributes its node specs, commands, plugins and
 composer metadata, and the schema, the Insert menu and the attributes panel are all derived from that
-one registry. Adding an interaction means adding a descriptor rather than editing six files.
+one registry.
 
-The editor saves a QTI **item body**, not a whole assessment item, and carries authoring state —
-which answer is correct, what an interaction is worth — as attributes on the elements themselves.
-Export folds those into standard response declarations and strips them, so what leaves the editor is
-plain QTI 3.0 with no editor-specific markup. See
-[the roundtrip format](./docs/roundtrip-format.md).
-
-None of that conversion needs a browser. The same pipeline ships separately as
-`@citolab/prose-qti-node`, which is what makes batch import, CI checks and generator feedback
-possible — see the [Node API](./docs/node-api.md).
+The editor saves a QTI **item body**, not a whole assessment item, and carries authoring state (which answer is correct, what an interaction is worth) 
+as attributes on the elements themselves. Export folds those into standard response declarations and strips them, so what leaves the editor is
+plain QTI 3.0 with no editor-specific markup. See [the roundtrip format](./docs/roundtrip-format.md).
 
 ## Packages
 
 | package | published | what it is |
 |---|---|---|
-| `@citolab/prose-qti` | yes | schema, interaction descriptors, item roundtrip — the editor |
-| `@citolab/prose-qti-node` | yes | the same conversion, for plain Node. No browser, no components |
-| `@citolab/prose-extensions` | yes | ProseMirror extensions not specific to QTI |
-| `@citolab/prose-ai` | no | authoring assistance, experimental |
+| `@citolab/prose-qti` | yes | the editor core: schema, interaction descriptors, item roundtrip |
+| `@citolab/prose-qti-node` | yes | conversion package for usage in plain Node |
+| `@citolab/prose-extensions` | yes | custom ProseMirror extensions not specific to QTI |
 
-**Building an editor?** Declare `@citolab/prose-qti` and nothing else from the QTI stack. The item
-stylesheet and the QTI transformers are re-exported from it — `@citolab/prose-qti/qti-prose.css` and
-`@citolab/prose-qti/transformers` — so which qti-components build the editor is pinned against stays
-this repo's problem rather than the host's.
+**Building a QTI editor?** Importing `@citolab/prose-qti` will add QTI support to your new or existing ProseMirror instance. 
+The item stylesheet and the QTI transformers are re-exported from it through `@citolab/prose-qti/qti-prose.css` and
+`@citolab/prose-qti/transformers`.
 
-**Converting QTI in a script, a server or CI?** Declare `@citolab/prose-qti-node` instead. It is the
-same conversion code, bundled, and it installs ~30 packages with no `@qti-components` and no `lit` —
-where the editor package brings the whole component graph a browser needs and a script does not.
+**Converting QTI in a script, a server or CI?** Use `@citolab/prose-qti-node` instead. It is the
+same conversion code, bundled, and it installs ~30 packages with no `@qti-components` and no `lit` dependencies —
+useful when you need only the script, not an in-browser experience.
 
 ## Documentation
 
-- [docs/architecture.md](./docs/architecture.md) — package topology and ownership rules
-- [docs/roundtrip-format.md](./docs/roundtrip-format.md) — the format the editor reads and writes,
-  and how `correct-response`, `score` and select-point's area mappings survive a round trip
-- [docs/node-api.md](./docs/node-api.md) — converting QTI outside a browser, and validating generated
-  HTML against the schema
-- [docs/prosekit-divergences.md](./docs/prosekit-divergences.md) — where ProseKit's nodes differ from
-  ProseMirror's, which of them we replace and why, and the two traps when patching a ProseKit spec
-- [docs/cookbook.md](./docs/cookbook.md) — where to learn and assemble editors from this checkout
-  (Storybook), and where the full editor application now lives
-- [docs/compatibility-messages.md](./docs/compatibility-messages.md) — replacing the schema-gap
-  messages the editor reports for content it can't represent, without forking anything
-- [docs/syncing-with-qti-components.md](./docs/syncing-with-qti-components.md) — how this repo's
-  `@qti-components/*` versions are pinned and updated against the sibling qti-components repo
-- [docs/regression-item-alignment-playbook.md](./docs/regression-item-alignment-playbook.md) — keeping
-  regression item numbers and fixtures aligned between qti-components and qti-editor
-- [docs/testing-findings.md](./docs/testing-findings.md) — running log of product bugs and upstream
-  gaps surfaced while building the regression suite, and their status
-- [docs/release-plan.md](./docs/release-plan.md) — this repo's two delivery channels (npm packages,
-  docs site) and what each covers
+Please refer to **[qti-editor.citolab.nl](https://qti-editor.citolab.nl/)** for full documentation.
 
 ## Contributing
 
-CI runs build, lint, typecheck, unit and browser tests, Storybook and the docs site on every push.
-Visual regression baselines live in `apps/e2e/stories/__vrt__` and are committed — a re-blessed
-screenshot is a claim to check, not a formality.
+We welcome your contributions! Please read [CONTRIBUTING.md](./CONTRIBUTING.md).
