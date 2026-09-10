@@ -45,7 +45,7 @@ import {
   findUnrepresentableElements,
 } from '@citolab/prose-extensions/schema-gaps';
 
-// Relative rather than by package specifier: `@qti-editor/prosemirror-item` has no tsconfig path
+// Relative rather than by package specifier: `@qti-editor/example-editor` has no tsconfig path
 // mapping and is not linked into node_modules, so the specifier form does not resolve. The story
 // files reach into this app the same way — `import/no-relative-packages` is simply switched off for
 // `*.stories.ts` in eslint.config, and this module is not a story file.

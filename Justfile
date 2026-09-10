@@ -11,7 +11,7 @@ default:
 # Start the editor dev server (qti-example-editor) with HMR
 [group('primary')]
 dev:
-	pnpm run dev:prosemirror-item
+	pnpm run dev:example-editor
 
 # Run the test suite. Extra args pass through to vitest: `just test qti-gap`, `just test --project browser`
 [group('primary')]

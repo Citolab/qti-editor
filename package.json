@@ -20,8 +20,8 @@
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "dev": "pnpm --filter @qti-editor/prosemirror-item dev",
-    "dev:prosemirror-item": "pnpm --filter @qti-editor/prosemirror-item dev",
+    "dev": "pnpm --filter @qti-editor/example-editor dev",
+    "dev:example-editor": "pnpm --filter @qti-editor/example-editor dev",
     "site:dev": "pnpm --filter @qti-editor/site dev",
     "build:workspace-deps": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/prose-extensions\" --filter \"./packages/prose-qti\" run build",
     "build:core-deps": "QTI_SKIP_CORE_PREBUILD=1 pnpm -r --sort --workspace-concurrency=1 --filter \"./packages/prose-extensions\" --filter \"./packages/prose-qti\" run build",

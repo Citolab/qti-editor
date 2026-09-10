@@ -4,7 +4,7 @@
  * (qti-example-editor) in parallel so changes in qti-components rebuild and
  * propagate into the editor via yalc.
  *
- * Defaults to the prosemirror-item app on port 5175. Override the editor app
+ * Defaults to the example-editor app on port 5175. Override the editor app
  * with `EDITOR_APP=<script-name> pnpm dev:linked` (uses the package script
  * names). Override the qti-components path with `QTI_COMPONENTS_PATH=...`.
  *
@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const qtiPath = process.env.QTI_COMPONENTS_PATH || '/Users/patrickklein/Projects/Edtech/QTI/QTI-Components';
-const editorScript = process.env.EDITOR_APP || 'dev:prosemirror-item';
+const editorScript = process.env.EDITOR_APP || 'dev:example-editor';
 
 if (!existsSync(qtiPath)) {
   console.error(`❌ qti-components workspace not found at ${qtiPath}`);

@@ -32,7 +32,7 @@ packages/
   prose-ai/            ← @citolab/prose-ai  (private, AI extensions vendored from @prosekit/ai)
 
 apps/
-  qti-example-editor/  ← @qti-editor/prosemirror-item  (raw ProseMirror example)
+  qti-example-editor/  ← @qti-editor/example-editor  (raw ProseMirror example)
   site/                ← @qti-editor/site  (Astro documentation site)
   e2e/                 (end-to-end tests)
 ```
@@ -449,5 +449,5 @@ Typical commands:
 
 - `pnpm --filter @citolab/prose-qti typecheck`
 - `pnpm --filter @citolab/prose-extensions typecheck`
-- `pnpm --filter @qti-editor/prosemirror-item build`
+- `pnpm --filter @qti-editor/example-editor build`
 - `pnpm -r --filter "./packages/**" run typecheck`

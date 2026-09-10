@@ -2,7 +2,7 @@
 
 A ProseMirror-based editor for authoring QTI 3.0 assessment items.
 
-It is a monorepo of composable packages — interaction nodes, schema, serialization, UI components —
+It is a monorepo of composable pieces — interaction nodes, schema, serialization, UI components —
 that assemble into a full editor or drop into your own tooling piecemeal. The rendering half comes
 from [qti-components](https://github.com/Citolab/qti-components): the same custom elements that
 display an item to a candidate display it to its author, so what you edit is what gets sat.
@@ -26,7 +26,7 @@ pnpm test         # unit + browser tests
 pnpm test:vrt     # visual regression against the committed baselines
 ```
 
-`just` wraps all of these — run it with no arguments for the menu.
+`just` wraps the common ones (`dev`, `test`, `vrt`) — run it with no arguments for the menu.
 
 ## How it fits together
 
@@ -72,6 +72,18 @@ where the editor package brings the whole component graph a browser needs and a 
   HTML against the schema
 - [docs/prosekit-divergences.md](./docs/prosekit-divergences.md) — where ProseKit's nodes differ from
   ProseMirror's, which of them we replace and why, and the two traps when patching a ProseKit spec
+- [docs/cookbook.md](./docs/cookbook.md) — where to learn and assemble editors from this checkout
+  (Storybook), and where the full editor application now lives
+- [docs/compatibility-messages.md](./docs/compatibility-messages.md) — replacing the schema-gap
+  messages the editor reports for content it can't represent, without forking anything
+- [docs/syncing-with-qti-components.md](./docs/syncing-with-qti-components.md) — how this repo's
+  `@qti-components/*` versions are pinned and updated against the sibling qti-components repo
+- [docs/regression-item-alignment-playbook.md](./docs/regression-item-alignment-playbook.md) — keeping
+  regression item numbers and fixtures aligned between qti-components and qti-editor
+- [docs/testing-findings.md](./docs/testing-findings.md) — running log of product bugs and upstream
+  gaps surfaced while building the regression suite, and their status
+- [docs/release-plan.md](./docs/release-plan.md) — this repo's two delivery channels (npm packages,
+  docs site) and what each covers
 
 ## Contributing
 
