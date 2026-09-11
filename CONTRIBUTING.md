@@ -8,8 +8,7 @@
 
 ## Project Structure
 
-- `packages/` — npm packages (`prose-qti`, `prose-qti-node`, `prose-extensions` are published;
-  `prose-ai` is private)
+- `packages/` — npm packages (`prose-qti`, `prose-qti-node`, `prose-extensions`), all published
 - `apps/qti-example-editor` — the reference editor used for local dev; not deployed
 - `apps/site` — documentation site (Astro + Starlight), deployed to Firebase Hosting
 - `apps/e2e` — end-to-end and visual-regression tests, including the committed VRT baselines in

@@ -14,7 +14,6 @@
 - Cross-package interaction tests: `apps/e2e/` (Storybook stories + `*.browser.test.ts`)
 - Docs site app: `apps/site/` (Astro). Its rendered content lives in `apps/site/src/content/docs/` — this is what docs-sync automation updates, and it is distinct from the `docs/` folder below.
 - QTI and editor packages: `packages/prose-qti/`, `packages/prose-extensions/`, `packages/prose-qti-node/`
-- AI extensions package: `packages/prose-ai/` (private, vendored from `@prosekit/ai`)
 - Canonical architecture reference: `docs/architecture.md`. Also see `docs/cookbook.md` (editor-building patterns) and `docs/syncing-with-qti-components.md` (local qti-components dependency workflow).
 - Skill catalog and definitions: `SKILLS.md`
 

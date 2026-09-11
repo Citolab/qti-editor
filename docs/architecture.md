@@ -29,7 +29,6 @@ packages/
   prose-qti/           ← @citolab/prose-qti   (QTI core + interactions + integration)
   prose-qti-node/      ← @citolab/prose-qti-node  (Node-only re-bundle of prose-qti's conversion API)
   prose-extensions/    ← @citolab/prose-extensions  (generic ProseMirror/ProseKit extensions)
-  prose-ai/            ← @citolab/prose-ai  (private, AI extensions vendored from @prosekit/ai)
 
 apps/
   qti-example-editor/  ← @qti-editor/example-editor  (raw ProseMirror example)
@@ -121,30 +120,6 @@ needed by the app that persists raw ProseMirror JSON, not by the public
 extension surface. The `virtual-cursor` plugin was removed outright; it had
 no consumers.
 
-### `packages/prose-ai` (`@citolab/prose-ai`)
-
-Private package. AI-related ProseKit extensions, vendored from upstream
-`@prosekit/ai` (the installed `prosekit`/`@prosekit/extensions` version
-doesn't yet export the `Commit` diffing helpers this package needs). Has no
-dependency on `prose-qti` or `prose-extensions` — it only
-peer-depends on `prosekit` and depends on `prosemirror-changeset`.
-
-Owns:
-- `src/ai-diff.ts` — track-changes-style accept/reject decorations and
-  commands for an AI-produced `Commit`
-- `src/commit-helpers.ts` — `Commit`/`ChangeSet` diffing helpers inlined from
-  upstream `@prosekit/extensions` pending that export landing there
-- `src/html-bridge.ts` — HTML ⇄ ProseMirror serialize/parse helpers for
-  round-tripping content with an AI service
-- `src/stream-content-command.ts` — incremental HTML-streaming insertion,
-  buffering and flushing at safe tag boundaries
-
-Does not own QTI composition logic or app-level AI wiring (toolbar UI,
-prompt construction, model calls) — those belong to the consuming
-application, in its own `ai-extension.ts` and
-`ai-chat`/`ai-check`/`ai-create`/`ai-stream-content` components. No app in
-this repository wires them up today.
-
 ### `apps/*`
 
 Owns:
@@ -174,10 +149,6 @@ apps/*  +  external editor applications   (consume the published packages)
 @citolab/prose-qti-node     (built from prose-qti's dist/node/ output at pack time; no
                               dependency on prose-extensions — consumed
                               directly by Node-only integrations, not by apps/*)
-
-@citolab/prose-ai           (private; peer-depends on prosekit only, no
-                              dependency on the chain above — consumed
-                              directly by apps/*)
 ```
 
 ## Package Exports

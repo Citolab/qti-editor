@@ -6,9 +6,48 @@ settings:
 
 catalogs:
   default:
+    '@citolab/qti-components':
+      specifier: ^9.1.0
+      version: 9.1.0
+    '@qti-components/base':
+      specifier: ^2.2.0
+      version: 2.2.0
+    '@qti-components/choice-interaction':
+      specifier: ^1.1.5
+      version: 1.1.5
+    '@qti-components/extended-text-interaction':
+      specifier: ^1.1.5
+      version: 1.1.5
+    '@qti-components/gap-match-interaction':
+      specifier: ^1.2.0
+      version: 1.2.0
+    '@qti-components/hottext-interaction':
+      specifier: ^1.2.0
+      version: 1.2.0
+    '@qti-components/inline-choice-interaction':
+      specifier: ^2.0.1
+      version: 2.0.1
+    '@qti-components/interactions-core':
+      specifier: ^2.1.2
+      version: 2.1.2
+    '@qti-components/match-interaction':
+      specifier: ^2.0.0
+      version: 2.0.0
+    '@qti-components/order-interaction':
+      specifier: ^2.0.0
+      version: 2.0.0
+    '@qti-components/select-point-interaction':
+      specifier: ^1.1.5
+      version: 1.1.5
+    '@qti-components/text-entry-interaction':
+      specifier: ^1.1.6
+      version: 1.1.6
     '@qti-components/theme':
       specifier: ^2.2.0
       version: 2.2.0
+    '@qti-components/transformers':
+      specifier: ^1.7.2
+      version: 1.7.2
 
 overrides:
   prosekit: ^0.21.4
@@ -394,15 +433,6 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
-
-  packages/prose-ai:
-    dependencies:
-      prosekit:
-        specifier: ^0.21.4
-        version: 0.21.4(@shikijs/types@4.2.0)(@types/hast@3.0.4)(prosemirror-model@1.25.9)(prosemirror-state@1.4.4)(prosemirror-transform@1.12.0)(prosemirror-view@1.41.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      prosemirror-changeset:
-        specifier: ^2.4.1
-        version: 2.4.1
 
   packages/prose-extensions:
     dependencies:
