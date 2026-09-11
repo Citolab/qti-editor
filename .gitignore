@@ -41,3 +41,6 @@ hosting/*
 *.code-workspace
 # TypeScript incremental build state (emitted by composite projects)
 *.tsbuildinfo
+
+# `npm pack` staging for tarballs vendored into QTI-Coco/vendor — the committed copy lives there.
+dist-packs

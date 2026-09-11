@@ -122,13 +122,17 @@ function interactionPos(doc: PmNode): number {
   return found;
 }
 
-/** Put the caret inside the interaction's first choice — the "clicked into" state. */
+/**
+ * Click into the interaction's first choice — the "clicked into" state. The `pointer` meta is what
+ * ProseMirror puts on a mouse-driven selection change, and it is what arms the decorator: a
+ * selection set any other way (arrow keys, a command) shows nothing.
+ */
 function selectInsideInteraction(view: EditorView): void {
   const pos = interactionPos(view.state.doc);
   const interaction = view.state.doc.nodeAt(pos)!;
   // +1 into the interaction, past the prompt, +2 into the choice's paragraph.
   const choicePos = pos + 1 + interaction.child(0).nodeSize;
-  view.dispatch(view.state.tr.setSelection(TextSelection.create(view.state.doc, choicePos + 2)));
+  view.dispatch(view.state.tr.setSelection(TextSelection.create(view.state.doc, choicePos + 2)).setMeta('pointer', true));
 }
 
 /** Put the caret in the trailing paragraph, outside every interaction. */
@@ -198,6 +202,7 @@ describe('choice interaction decorations', () => {
 
   test('+ appends a choice structurally identical to the one Enter inserts', () => {
     const view = mount(insertChoiceInteraction);
+    selectInsideInteraction(view);
 
     const addButtons = decorations(view, 'add');
     expect(addButtons).toHaveLength(1);
@@ -264,6 +269,40 @@ describe('choice interaction decorations', () => {
 
     selectOutsideInteraction(view);
     expect(decorations(view, 'actions')).toHaveLength(0);
+  });
+
+  test('typing inside the interaction hides the pill and the + until the next click', () => {
+    const view = mount(insertChoiceInteraction);
+    selectInsideInteraction(view);
+    expect(decorations(view, 'actions')).toHaveLength(1);
+    expect(decorations(view, 'add')).toHaveLength(1);
+
+    view.dispatch(view.state.tr.insertText('x'));
+    // The caret is still inside the interaction — only the edit hid them.
+    expect(decorations(view, 'actions')).toHaveLength(0);
+    expect(decorations(view, 'add')).toHaveLength(0);
+    // The × is a hover affordance, not a "clicked into" one, and stays.
+    expect(decorations(view, 'remove')).toHaveLength(3);
+
+    // Moving the caret with the keyboard is not a click: still hidden.
+    view.dispatch(view.state.tr.setSelection(TextSelection.create(view.state.doc, view.state.selection.from - 1)));
+    expect(decorations(view, 'actions')).toHaveLength(0);
+
+    selectInsideInteraction(view);
+    expect(decorations(view, 'actions')).toHaveLength(1);
+    expect(decorations(view, 'add')).toHaveLength(1);
+  });
+
+  test('Escape hides the pill and the + without moving the selection or claiming the key', () => {
+    const view = mount(insertChoiceInteraction);
+    selectInsideInteraction(view);
+    const before = view.state.selection;
+
+    const handled = view.someProp('handleKeyDown', f => f(view, new KeyboardEvent('keydown', { key: 'Escape' })));
+    expect(handled).toBeFalsy();
+    expect(view.state.selection.eq(before)).toBe(true);
+    expect(decorations(view, 'actions')).toHaveLength(0);
+    expect(decorations(view, 'add')).toHaveLength(0);
   });
 
   test('the settings action reports the interaction the host should open, and mutates nothing', () => {
@@ -465,8 +504,8 @@ describe('promptless interactions', () => {
       state: EditorState.create({ doc, schema, plugins: [createChoiceInteractionDecoratorPlugin()] })
     });
     mounted.push({ view, host });
-    // Caret inside the first choice: the decorator emits the row affordances for the selected interaction.
-    view.dispatch(view.state.tr.setSelection(TextSelection.create(view.state.doc, 3)));
+    // Click into the first choice: the decorator emits the row affordances for the selected interaction.
+    view.dispatch(view.state.tr.setSelection(TextSelection.create(view.state.doc, 3)).setMeta('pointer', true));
     return view;
   }
 

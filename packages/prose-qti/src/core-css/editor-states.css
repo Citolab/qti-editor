@@ -25,6 +25,18 @@
     /* Drop targets, or the order interaction host, while a drag source is pending. */
   }
 
+  /* qti-components paints qti-simple-choice with the runtime button surface
+     (`--button-background-color`/`--qti-component-background-color`) — a white card by default. In
+     the editor a choice should read as part of whatever surface it sits on (the document
+     background, or the "clicked into" wash decorations.css paints on the parent interaction) rather
+     than punching that card out of it, so this replaces the theme's background outright with
+     `transparent`, which is exactly what "follow the surface behind it" means for a background.
+     Skipped for `.qti-input-control-hidden`, where the choice's own background *is* the
+     checked-state visual (see qti-components' item.css) and must keep painting it. */
+  qti-choice-interaction:not(.qti-input-control-hidden) qti-simple-choice {
+    background-color: transparent;
+  }
+
   /* qti-hottext-interaction.qti-unselected-hidden qti-hottext {
     text-decoration: underline dotted #c6cad0;
     text-underline-offset: 0.2em;

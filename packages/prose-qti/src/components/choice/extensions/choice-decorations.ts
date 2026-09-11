@@ -4,7 +4,8 @@
  * Widget decorations that give the choice interaction its mouse affordances:
  *
  *   ×   per `qtiSimpleChoice`, pinned to the right of the row, revealed on hover
- *   +   below the last choice but inside the interaction, appends a new choice
+ *   +   after the last choice, anchored below it, appends a new choice; emitted only while the
+ *       selection sits inside the interaction
  *   pill  select / settings / duplicate / delete, floating above the interaction and emitted only while
  *         the selection sits inside it
  *
@@ -44,7 +45,18 @@ import { createSimpleChoiceNode } from '../components/qti-choice-interaction/com
 import type { EditorState } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 
-const choiceDecoratorPluginKey = new PluginKey('qti-choice-interaction-decorations');
+interface ChoiceDecoratorPluginState {
+  /**
+   * Whether the "clicked into" affordances — the `+`, the pill and the gray wash — may show. Set by
+   * a mouse click (ProseMirror tags those selection transactions with the `pointer` meta), cleared
+   * by any edit or by Escape. Deliberately NOT re-armed by other selection changes: moving the caret
+   * with the arrow keys while typing must not bring the wash back. Which interaction they show on
+   * is still decided per node in `buildDecorations`, from the selection.
+   */
+  active: boolean;
+}
+
+const choiceDecoratorPluginKey = new PluginKey<ChoiceDecoratorPluginState>('qti-choice-interaction-decorations');
 
 const INTERACTION_NODE_NAME = 'qtiChoiceInteraction';
 const INTERACTION_TAG_NAME = 'qti-choice-interaction';
@@ -105,16 +117,16 @@ function appendChoiceAt(view: EditorView, widgetPos: number | undefined): void {
 
 /**
  * Decorations are derived fresh from state on every doc *and* selection change, which is what makes
- * the "pill only while the selection is inside" rule free.
+ * the "only while the selection is inside" rule free for the `+` and the pill.
  *
- * Placement rule: the × and the pill are emitted *after* the node they belong to — the × between
- * its choice and the next, the pill just after the whole interaction. That keeps them out of the
+ * Placement rule: every widget is emitted *after* the node it belongs to — the × after its choice,
+ * the `+` after the last choice, the pill after the whole interaction. That keeps them out of the
  * custom elements' slotted content and, more importantly, makes the decorated node a *preceding
  * sibling*: CSS anchor positioning refuses to anchor an element to its own ancestor, so a widget
- * nested inside the choice could never anchor to it. Only the `+` stays inside, because it is laid
- * out in flow rather than anchored.
+ * nested inside the choice could never anchor to it. All three are anchored, none sit in flow, so
+ * none of them moves the document around it.
  */
-function buildDecorations(state: EditorState): DecorationSet {
+function buildDecorations(state: EditorState, active: boolean): DecorationSet {
   const interactionType = state.schema.nodes[INTERACTION_NODE_NAME];
   if (!interactionType) return DecorationSet.empty;
 
@@ -124,7 +136,7 @@ function buildDecorations(state: EditorState): DecorationSet {
     if (node.type !== interactionType) return true;
 
     const interactionEnd = pos + node.nodeSize;
-    const selectionInside = state.selection.from >= pos && state.selection.to <= interactionEnd;
+    const selectionInside = active && state.selection.from >= pos && state.selection.to <= interactionEnd;
     // Count the choices themselves. The prompt is optional (`qtiPrompt? qtiSimpleChoice+`), so
     // `childCount - 1` under-counted promptless interactions by one and a two-choice interaction
     // imported without a prompt offered no × at all.
@@ -151,12 +163,15 @@ function buildDecorations(state: EditorState): DecorationSet {
       );
     }
 
+    let lastChoiceAnchor: string | undefined;
+
     node.forEach((child, offset) => {
       if (child.type.name !== CHOICE_NODE_NAME) return;
 
       const choicePos = pos + 1 + offset;
       const afterChoice = choicePos + child.nodeSize;
       const choiceAnchor = `--qti-simple-choice-${choicePos}`;
+      lastChoiceAnchor = choiceAnchor;
 
       decorations.push(Decoration.node(choicePos, afterChoice, { style: `anchor-name: ${choiceAnchor}` }));
 
@@ -203,20 +218,25 @@ function buildDecorations(state: EditorState): DecorationSet {
       );
     });
 
-    decorations.push(
-      Decoration.widget(
-        interactionEnd - 1,
-        (view, getPos) =>
-          createDecorationButton({
-            className: 'qti-decoration qti-decoration--add',
-            icon: 'plus',
-            iconSize: 16,
-            label: translateQti('choice.addOption', { target: view.dom }),
-            onClick: () => appendChoiceAt(view, getPos())
-          }),
-        { side: 1, key: `qti-choice-add-${pos}`, ignoreSelection: true, stopEvent: () => true }
-      )
-    );
+    if (selectionInside && lastChoiceAnchor) {
+      decorations.push(
+        Decoration.widget(
+          interactionEnd - 1,
+          (view, getPos) =>
+            createDecorationButton({
+              className: 'qti-decoration qti-decoration--add',
+              icon: 'plus',
+              iconSize: 16,
+              label: translateQti('choice.addOption', { target: view.dom }),
+              anchorName: lastChoiceAnchor,
+              onClick: () => appendChoiceAt(view, getPos())
+            }),
+          // Keyed on the position for the same reason the × is: the anchor it references is minted
+          // from the last choice's position, so the element must be rebuilt when that moves.
+          { side: 1, key: `qti-choice-add-${pos}-${lastChoiceAnchor}`, ignoreSelection: true, stopEvent: () => true }
+        )
+      );
+    }
 
     // Choice interactions don't nest.
     return false;
@@ -225,11 +245,27 @@ function buildDecorations(state: EditorState): DecorationSet {
   return DecorationSet.create(state.doc, decorations);
 }
 
-export function createChoiceInteractionDecoratorPlugin(): Plugin {
-  return new Plugin({
+export function createChoiceInteractionDecoratorPlugin(): Plugin<ChoiceDecoratorPluginState> {
+  return new Plugin<ChoiceDecoratorPluginState>({
     key: choiceDecoratorPluginKey,
+    state: {
+      init: () => ({ active: false }),
+      apply: (tr, prev) => {
+        // Escape (the meta) or any edit hides the affordances; only a click brings them back. Order
+        // matters: a keystroke both changes the doc and moves the selection.
+        if (tr.getMeta(choiceDecoratorPluginKey) || tr.docChanged) return { active: false };
+        if (tr.getMeta('pointer')) return { active: true };
+        return prev;
+      }
+    },
     props: {
-      decorations: buildDecorations
+      decorations: state => buildDecorations(state, choiceDecoratorPluginKey.getState(state)?.active ?? false),
+      handleKeyDown: (view, event) => {
+        if (event.key !== 'Escape' || !choiceDecoratorPluginKey.getState(view.state)?.active) return false;
+        view.dispatch(view.state.tr.setMeta(choiceDecoratorPluginKey, true));
+        // Not claimed: a host may bind Escape as well (close a panel, blur the editor).
+        return false;
+      }
     }
   });
 }

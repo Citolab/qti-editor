@@ -16,7 +16,7 @@
 
 import { html } from 'lit';
 import { ref } from 'lit/directives/ref.js';
-import { expect } from 'storybook/test';
+import { expect, waitFor } from 'storybook/test';
 import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
 import { roundtripChoice, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
 
@@ -154,31 +154,39 @@ function renderWithDecorations() {
   `;
 }
 
-/** Hovered: the interaction's boundary tint, the per-choice outlines, and the hovered row's ×. */
+/**
+ * Hovered: only the hovered row's × appears. The interaction itself paints nothing on hover — no
+ * boundary tint, no per-choice outline — and, absent a click, no pill and no `+` either.
+ */
 export const DecorationsHovered: StoryObj = {
   render: renderWithDecorations,
   play: async ({ canvasElement }) => {
     const choice = canvasElement.querySelector<HTMLElement>('qti-choice-interaction qti-simple-choice');
     if (!choice) throw new Error('no qti-simple-choice to hover');
 
-    // Hovering a row rather than the block: it puts both states in one capture, since the row's
-    // hover is nested inside the interaction's.
     await hoverForReal(choice);
 
-    // Assert the hover actually landed. A capture is a silent test: if the pointer never arrived,
-    // the screenshot is simply the idle state and the baseline records nothing.
+    // Assert the hover actually landed: the row's × is the one thing hover reveals. A capture is a
+    // silent test — if the pointer never arrived, the screenshot is simply the idle state.
+    const remove = choice.nextElementSibling as HTMLElement | null;
+    await expect(remove?.classList.contains('qti-decoration--remove')).toBe(true);
+    // Polled: the reveal is a 150ms opacity transition, so the first frame still reads 0.
+    await waitFor(() => expect(getComputedStyle(remove!).opacity).toBe('1'));
+
+    // And that hover alone paints nothing on the block.
     const interaction = choice.closest('qti-choice-interaction')!;
-    await expect(getComputedStyle(interaction).backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
-    await expect(getComputedStyle(choice).outlineStyle).toBe('dashed');
+    await expect(getComputedStyle(interaction).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    await expect(getComputedStyle(choice).outlineStyle).toBe('none');
+    await expect(interaction.nextElementSibling?.classList.contains('qti-decoration--actions') ?? false).toBe(false);
   }
 };
 
 /**
- * Clicked into: the active ring and the action pill — settings, copy, delete.
+ * Clicked into: the gray wash, the action pill — select, settings, copy, delete — and the `+` under
+ * the last choice. No ring: the wash is the whole "active" signal.
  *
- * The pointer is parked outside the interaction afterwards, because the ring's rule deliberately
- * suppresses the hover tint — leaving the pointer inside would capture the two states fighting
- * rather than the active one.
+ * The pointer is parked outside the interaction afterwards so no row's × is in the capture; that is
+ * the hovered story's business.
  */
 export const DecorationsActive: StoryObj = {
   render: renderWithDecorations,
@@ -197,15 +205,15 @@ export const DecorationsActive: StoryObj = {
      */
     await hoverForReal(awayFromInteraction(canvasElement));
 
-    // The ring is the pill's own condition read off the DOM, so asserting the ring asserts both.
+    // The wash is the pill's own condition read off the DOM, so asserting the pill asserts both.
     const interaction = choice.closest('qti-choice-interaction')!;
     const pill = interaction.nextElementSibling;
     await expect(pill?.classList.contains('qti-decoration--actions')).toBe(true);
     await expect(pill!.querySelectorAll('.qti-decoration__action').length).toBe(4);
+    await expect(interaction.querySelector('.qti-decoration--add')).not.toBeNull();
 
-    // That the ring is painted at all, not how thickly — its weight and colour are tokens, and the
-    // capture below is what pins those. Asserting the value here only made a retune fail twice.
-    await expect(getComputedStyle(interaction).outlineStyle).toBe('solid');
-    await expect(getComputedStyle(interaction).outlineWidth).not.toBe('0px');
+    // Painted at all, not which gray — the colour is a token, and the capture below pins it.
+    await expect(getComputedStyle(interaction).backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+    await expect(getComputedStyle(interaction).outlineStyle).toBe('none');
   }
 };

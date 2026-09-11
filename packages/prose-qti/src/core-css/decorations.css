@@ -7,21 +7,22 @@
  *
  * Styles the widget decorations emitted by the per-interaction decorators — currently only
  * components/choice/extensions/choice-decorations.ts, which contributes the per-choice ×, the
- * trailing + and the node-action pill (select / settings / duplicate / delete).
+ * `+`, and the node-action pill (select / settings / duplicate / delete). All three are absolutely
+ * positioned and anchored to the node they decorate, so none of them ever displaces document
+ * content. Only the action pill has a visible surface of its own (white, fully rounded, drop
+ * shadow) — the × and the `+` are bare glyphs in the same neutral ink as the rest of the editor
+ * chrome, not brand-colored and not boxed.
  *
- * The × and the pill are rendered as *siblings* of what they decorate (the decorator emits them
- * after the choice / after the interaction) and are placed with CSS anchor positioning. Two reasons
- * that beats the usual `position: relative` parent + absolute child: the anchor keeps working even
- * if the theme stops positioning the host, and — decisively — an element can never anchor to its
- * own ancestor, so a widget nested inside the choice could not be anchored to it at all.
+ * The ×, the `+` and the pill are all rendered as *siblings* of what they decorate (the decorator
+ * emits them after the choice / after the interaction) and are placed with CSS anchor positioning.
+ * Two reasons that beats the usual `position: relative` parent + absolute child: the anchor keeps
+ * working even if the theme stops positioning the host, and — decisively — an element can never
+ * anchor to its own ancestor, so a widget nested inside the choice could not be anchored to it at
+ * all.
  *
  * ## This file declares the tokens AND the rules that consume them
  *
- * The branch this came from assumed core-css.css already painted the hover tint through
- * `.ProseMirror [response-identifier]:hover`, and therefore only re-pointed
- * `--qti-edit-interaction-hover-bg`. No such rule and no `--qti-edit-*` declaration exists in this
- * package — core-css/editor-states.css is deliberately paint-free — so nothing was painted. Every
- * `--qti-edit-*` token below is declared here, and so is every rule that reads one.
+ * Every `--qti-edit-*` token below is declared here, and so is every rule that reads one.
  *
  * No `@layer` is involved, on purpose. Layers order RULES, and rule precedence is not the problem
  * here: the point of the token block is that an app re-points a variable, which layering cannot
@@ -32,49 +33,42 @@
  *
  *   a. Generic token block + shared `.qti-decoration` base — the contract every future decorator
  *      inherits, retargetable from the variables alone rather than by restating selectors.
- *   b. Choice-specific block — the states and sizing that belong to qti-choice-interaction.
+ *   b. Choice-specific block — row sizing for qti-choice-interaction. The interaction previously
+ *      also painted a hover boundary tint, a dashed per-choice outline, and "clicked into" /
+ *      selected-node rings; all of that — and the tokens that fed only it — has been removed as a
+ *      first step in redesigning these states, so the × / + / pill decorations are currently the
+ *      only visual affordance on the interaction.
  *
- * Palette is aliased from @qti-components/theme; never replicate values.
+ * Palette is aliased from @qti-components/theme, with one deliberate exception:
+ * `--qti-edit-decoration-fg` is a plain neutral, not aliased to `--qti-border-color` — in this
+ * theme that token chains straight back to `--qti-primary`, which is exactly the brand tint
+ * decoration icons are meant to stay clear of. Otherwise, never replicate values.
  */
 
 /* ══ a. Generic — tokens and the shared decoration base ═══════════════════ */
 
 :root {
-  /* Decoration affordances (×, +, action pill) */
-  --qti-edit-decoration-fg: var(--qti-border-color, #9b77a9);
-  --qti-edit-decoration-accent: var(--qti-primary, #581d70);
+  /* Icon colour for every decoration glyph — ×, +, and the pill's own actions alike. Deliberately
+     NOT `var(--qti-border-color, …)`: in this theme that resolves to `--qti-primary`, so icons read
+     as brand-colored rather than as plain editor chrome. A flat neutral dark keeps them looking like
+     UI, not like themed content. */
+  --qti-edit-decoration-fg: #374151;
   --qti-edit-decoration-danger: var(--qti-error, #df0000);
   --qti-edit-decoration-hover-bg: var(--qti-hover-bg, #f9fafb);
-  /* Action-pill fill *and* the active ring — one affordance in two states. */
-  --qti-edit-decoration-actions-bg: var(--qti-info, #007ac3);
-  --qti-edit-decoration-actions-fg: var(--qti-primary-fg, #fff);
-  /* Hover wash for a button *inside* the pill: an alpha wash, so it reads on the pill's own fill
-     whatever that has been re-pointed to, rather than assuming a light ground. */
-  --qti-edit-decoration-action-hover-bg: rgb(255 255 255 / 22%);
-  --qti-edit-decoration-radius: var(--qti-field-border-radius, 0.25rem);
+  /* Only the action pill (select/settings/duplicate/delete, grouped) has a surface of its own:
+     white, drop-shadowed, fully rounded. The × and the + are bare glyphs and never read these. A
+     radius this large always clamps to half of the pill's height, which is what makes it read as a
+     stadium/pill shape rather than a rounded rectangle. */
+  --qti-edit-decoration-bg: var(--qti-surface-bg, #fff);
+  --qti-edit-decoration-shadow: 0 1px 3px color-mix(in srgb, black 20%, transparent);
+  --qti-edit-decoration-radius: 9999px;
   /* Stroke weight for every decoration glyph. `stroke-width` is a presentation attribute, so a CSS
      declaration overrides the one the icon factory writes — which is what keeps the icon weight
      tunable from here rather than from TypeScript. */
   --qti-edit-decoration-icon-stroke: 1.5;
 
-  /* Interaction boundary revealed on hover */
-  --qti-edit-interaction-hover-bg: color-mix(in srgb, var(--qti-info, #007ac3) 5%, white);
-  --qti-edit-interaction-hover-radius: 0.25rem;
-  /* Doubles as the boundary's padding and the active ring's offset. */
-  --qti-edit-interaction-hover-inset: 0.5rem;
-  --qti-edit-child-outline: 1px dashed color-mix(in srgb, var(--qti-info, #007ac3) 28%, transparent);
-
-  /*
-   * The "clicked into" ring.
-   *
-   * A hairline in a diluted version of the pill's own colour, not the pill's colour at full
-   * strength: the ring outlines the author's content, so at 3px solid it read as the loudest thing
-   * on the page and fought the interaction inside it. Derived from
-   * `--qti-edit-decoration-actions-bg` rather than declared independently, so a themed pill colour
-   * still moves the ring with it.
-   */
-  --qti-edit-decoration-ring-width: 1px;
-  --qti-edit-decoration-ring-color: color-mix(in srgb, var(--qti-edit-decoration-actions-bg) 55%, transparent);
+  /* Wash painted on an interaction while the selection sits inside it ("clicked into"). */
+  --qti-edit-interaction-active-bg: var(--qti-hover-bg, #f3f4f6);
 }
 
 /* Base for anything a decorator emits — the standalone buttons and the action pill alike. */
@@ -90,8 +84,8 @@
   stroke-width: var(--qti-edit-decoration-icon-stroke, 1.5);
 }
 
-/* Button reset, shared by the standalone affordances and the pill's own actions. Grouped rather
-   than folded into `.qti-decoration`, because the pill is a container, not a button. */
+/* Button reset, shared by every decoration control: the standalone ×, the standalone +, and each
+   action inside the row. */
 .qti-decoration--remove,
 .qti-decoration--add,
 .qti-decoration__action {
@@ -128,7 +122,6 @@
   position-visibility: anchors-valid;
   width: 1.625rem;
   height: 1.625rem;
-  border-radius: var(--qti-edit-decoration-radius);
   opacity: 0;
 }
 
@@ -145,14 +138,18 @@ qti-simple-choice:hover + .qti-decoration--remove,
   color: var(--qti-edit-decoration-danger);
 }
 
-/* + — the one decoration that stays inside the interaction, in flow, below the last child. No
-   anchoring: normal layout already puts it where it belongs. */
+/* + — anchored below the last choice, flush with its left edge, the same way the × is anchored to
+   its row. Absolutely positioned rather than laid out in flow, so it never adds height to the
+   interaction, and emitted only while the selection sits inside the interaction (see `active` in
+   choice-decorations.ts) rather than being permanently on screen. */
 .qti-decoration--add {
+  position: absolute;
+  left: anchor(left);
+  top: anchor(bottom);
+  margin-top: var(--qti-padding-vertical, 0.5rem);
+  position-visibility: anchors-valid;
   width: 1.25rem;
   height: 1.25rem;
-  margin-top: var(--qti-padding-vertical, 0.5rem);
-  border-radius: 50%;
-  color: var(--qti-edit-decoration-accent);
 }
 
 .qti-decoration--add:hover {
@@ -160,7 +157,8 @@ qti-simple-choice:hover + .qti-decoration--remove,
 }
 
 /* Action pill — floats above the interaction, rendered only while the selection sits inside it.
-   Holds the node-level actions every decorator gets by default: select, settings, duplicate, delete.
+   Holds the node-level actions every decorator gets by default: select, settings, duplicate, delete,
+   grouped together in one white, fully rounded, drop-shadowed pill — not four separate ones.
 
    `position-try-fallbacks` drops it below the block when there is not room above (first block in
    the document, under the sticky toolbar), instead of letting it disappear behind the chrome.
@@ -177,34 +175,33 @@ qti-simple-choice:hover + .qti-decoration--remove,
   align-items: stretch;
   overflow: hidden;
   border-radius: var(--qti-edit-decoration-radius);
-  background: var(--qti-edit-decoration-actions-bg);
-  color: var(--qti-edit-decoration-actions-fg);
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--qti-edit-decoration-actions-bg) 25%, transparent);
+  background: var(--qti-edit-decoration-bg);
+  box-shadow: var(--qti-edit-decoration-shadow);
 }
 
-/* Actions inherit the pill's colour rather than the idle icon colour: on the pill they are white on
-   the fill, not standalone glyphs on the page. Square, since they are all icon-only — their names
-   live in `title` / `aria-label`. */
+/* Square, since they are all icon-only — their names live in `title` / `aria-label`. Transparent by
+   default so the shared pill's own white fill shows through; only the hover wash paints. */
 .qti-decoration__action {
   width: 1.75rem;
   height: 1.75rem;
-  color: inherit;
 }
 
 .qti-decoration__action:hover,
 .qti-decoration__action:focus-visible {
-  background: var(--qti-edit-decoration-action-hover-bg);
+  background: var(--qti-edit-decoration-hover-bg);
 }
 
-/* Delete sits apart and lights up red on hover. The hairline is the only thing between it and
-   duplicate, which is enough to stop a mis-click without turning the pill into a grid. */
+/* Delete sits apart and turns red on hover/focus, the same way the standalone × does. The hairline
+   is the only thing between it and duplicate, which is enough to stop a mis-click without turning
+   the pill into a grid. */
 .qti-decoration__action--destructive {
-  border-left: 1px solid var(--qti-edit-decoration-action-hover-bg);
+  border-left: 1px solid color-mix(in srgb, var(--qti-edit-decoration-fg) 25%, transparent);
 }
 
 .qti-decoration__action--destructive:hover,
 .qti-decoration__action--destructive:focus-visible {
-  background: var(--qti-edit-decoration-danger);
+  background: var(--qti-edit-decoration-hover-bg);
+  color: var(--qti-edit-decoration-danger);
 }
 
 @position-try --qti-node-actions-below {
@@ -214,77 +211,14 @@ qti-simple-choice:hover + .qti-decoration--remove,
   margin-top: var(--qti-padding-vertical, 0.5rem);
 }
 
-/* ══ b. Choice interaction — boundary, active ring, row sizing ════════════ */
-
-/* The hover boundary. A spread box-shadow rather than padding, so nothing in the document reflows
-   as the pointer arrives. */
-qti-choice-interaction {
-  border-radius: var(--qti-edit-interaction-hover-radius);
-  transition:
-    background-color var(--qti-motion-duration-fast, 150ms) ease,
-    box-shadow var(--qti-motion-duration-fast, 150ms) ease;
-}
-
-qti-choice-interaction:hover {
-  background-color: var(--qti-edit-interaction-hover-bg);
-  box-shadow: 0 0 0 var(--qti-edit-interaction-hover-inset) var(--qti-edit-interaction-hover-bg);
-}
-
-/* Hovering the block also outlines each choice inside it, so the boundary says what it contains and
-   not merely where it ends. Suppressed while the interaction is active — see below. */
-qti-choice-interaction:hover qti-simple-choice {
-  outline: var(--qti-edit-child-outline);
-  outline-offset: 2px;
-}
+/* ══ b. Choice interaction — active state, row sizing ══════════════════════ */
 
 /* "Clicked into" has no native selector — ProseMirror keeps DOM focus on the editable root, so
    `:focus-within` never matches the interaction. But the decorator emits the action pill as the
    interaction's next sibling exactly while the selection is inside it, so `:has(+ …)` reads that
-   state straight off the DOM. If the pill's visibility rule ever changes, this ring follows it —
-   they are deliberately the same condition.
-
-   The ring's colour is derived from the pill's and its offset is the boundary's own inset: the
-   ring, the pill and the hover tint are one affordance seen in three states, so a themed --qti-info
-   moves all three together. */
+   state straight off the DOM. */
 qti-choice-interaction:has(+ .qti-decoration--actions) {
-  outline: var(--qti-edit-decoration-ring-width) solid var(--qti-edit-decoration-ring-color);
-  outline-offset: var(--qti-edit-interaction-hover-inset);
-}
-
-/* Whole-node selection — what the pill's `select` action leaves behind, and what a click on the
-   block's own border produces. ProseMirror marks the node's DOM with `.ProseMirror-selectednode`, so
-   unlike "clicked into" this one *does* have a selector. Rendered as the same ring at full strength
-   rather than a different affordance: it is the same boundary, held harder, because the node itself
-   is now what Backspace and Ctrl-C act on. The hover tint drops for the same reason it does while
-   active. */
-qti-choice-interaction.ProseMirror-selectednode,
-qti-choice-interaction.ProseMirror-selectednode:hover {
-  outline: calc(var(--qti-edit-decoration-ring-width) * 2) solid var(--qti-edit-decoration-actions-bg);
-  outline-offset: var(--qti-edit-interaction-hover-inset);
-  background-color: transparent;
-  box-shadow: none;
-}
-
-qti-choice-interaction.ProseMirror-selectednode:hover qti-simple-choice {
-  outline: none;
-}
-
-/* While active, the ring is the only strong signal: drop the tint and the per-child outlines, since
-   all three at once reads as noise. */
-qti-choice-interaction:has(+ .qti-decoration--actions):hover {
-  background-color: transparent;
-  box-shadow: none;
-}
-
-qti-choice-interaction:has(+ .qti-decoration--actions):hover qti-simple-choice {
-  outline: none;
-}
-
-/* Choices carry the theme's white surface, which would punch white cards out of the tint. Drop it
-   for the duration of the hover so the block reads as one surface. Skipped for
-   `qti-input-control-hidden`, where the choice background *is* the checked-state visual. */
-qti-choice-interaction:not(.qti-input-control-hidden):hover qti-simple-choice {
-  background: transparent;
+  background-color: var(--qti-edit-interaction-active-bg);
 }
 
 /* The theme sizes choices `fit-content` (runtime chips hug their text). In the editor the row is an
