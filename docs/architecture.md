@@ -275,8 +275,14 @@ export function defineQtiInteractionsExtension(options?: { include?: string[] })
 ### Editor decorations — opt-in, and one per interaction
 
 `decoratorPluginFactories` is a second, deliberately separate plugin field on the descriptor. It
-carries the *authoring affordances* — the hover boundary, the add/remove buttons, the node-action
-pill — while `pluginFactories` carries the interaction's runtime behaviour.
+carries the *authoring affordances* — the add/remove buttons and the node-action pill — while
+`pluginFactories` carries the interaction's runtime behaviour.
+
+For choice, the add button and the pill are gated on an `active` flag armed by a mouse click
+(ProseMirror's `pointer` transaction meta) and cleared by `Escape` or any edit — not by caret
+movement, so navigating with arrow keys while typing doesn't bring them back. The per-choice remove
+button is unconditional and just relies on CSS `:hover`. See
+`components/choice/extensions/choice-decorations.ts`.
 
 The split exists because `pluginFactories` is installed unconditionally by every host
 (`defineQtiInteractionsExtension()`), and a read-only or player host must not grow authoring

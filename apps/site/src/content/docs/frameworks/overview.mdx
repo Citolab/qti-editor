@@ -26,7 +26,7 @@ The boilerplate splits its editor across three files:
 
 - **`schema.ts`** — the document topology. Each interaction's `qti*InteractionNodeSpec` is spread into one literal `Schema` with explicit `content` and `group` rules.
 - **`prosemirror-qti.ts`** — the QTI integration layer. Imports each `*InteractionDescriptor` explicitly, derives the `qtiPlugins` array and `editableAttrs` allowlist from them, and exposes the `importItemFromUrl` / `exportItemXml` roundtrip helpers from `@citolab/prose-qti/item-roundtrip`.
-- **`main.ts`** — the composition root. `new EditorView(...)` + `EditorState.create({ doc, plugins })`, with `qtiPlugins` ordered before the list-split and `keymap(baseKeymap)` so the QTI Enter/Backspace overrides win and unhandled keys fall through. It also wires the opt-in [editor decorations](/docs/frameworks/vanilla/#editor-decorations-opt-in) — hover boundary, add/remove buttons, and a settings pill that dispatches an event for the host's own attributes panel to handle.
+- **`main.ts`** — the composition root. `new EditorView(...)` + `EditorState.create({ doc, plugins })`, with `qtiPlugins` ordered before the list-split and `keymap(baseKeymap)` so the QTI Enter/Backspace overrides win and unhandled keys fall through. It also wires the opt-in [editor decorations](/docs/frameworks/vanilla/#editor-decorations-opt-in) — a per-choice remove button, an add button and a settings pill shown when clicked into, dispatching an event for the host's own attributes panel to handle.
 
 ## qti-components
 
