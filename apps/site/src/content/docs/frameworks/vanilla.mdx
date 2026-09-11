@@ -100,8 +100,9 @@ const backspaceCommand = chainCommands(...descriptors.flatMap(d => d.backspaceCo
 export const qtiPlugins: Plugin[] = [
   keymap({ Enter: enterCommand, Backspace: backspaceCommand }),
   ...descriptors.flatMap(d => d.pluginFactories?.map(factory => factory()) ?? []),
-  // Opt-in authoring affordances (hover boundary, add/remove buttons, settings pill) — currently
-  // shipped by the choice descriptor. Drop this line for a read-only or player host.
+  // Opt-in authoring affordances (a per-choice remove button, a click-activated add button,
+  // settings pill) — currently shipped by the choice descriptor. Drop this line for a read-only
+  // or player host.
   ...listInteractionDecoratorPluginFactories().map(factory => factory()),
 ];
 
@@ -122,7 +123,7 @@ Each `InteractionDescriptor` exposes:
 | `insertCommand` | ProseMirror command that inserts the interaction at the selection |
 | `enterCommand` / `backspaceCommand` | Optional interaction-aware key commands |
 | `pluginFactories` | Plugin factories the interaction needs at runtime |
-| `decoratorPluginFactories` | Optional, opt-in authoring affordances (hover boundary, add/remove buttons, settings pill) — see [Editor decorations](#editor-decorations-opt-in) below |
+| `decoratorPluginFactories` | Optional, opt-in authoring affordances (a per-choice remove button, a click-activated add button, settings pill) — see [Editor decorations](#editor-decorations-opt-in) below |
 | `attributePanelMetadata` | Per-node-type metadata: `nodeTypeName`, `editableAttributes` |
 | `nodeSpecs` | The ProseMirror node specs the interaction contributes (also re-exported as `qti*InteractionNodeSpec`) |
 
@@ -174,8 +175,8 @@ document.querySelector('#export-btn')!.addEventListener('click', () => {
 ## Editor decorations (opt-in)
 
 `qtiPlugins` above already folds in `listInteractionDecoratorPluginFactories()`, so the boilerplate's
-choice interaction gets its hover boundary, add/remove buttons and settings pill for free. Pair it
-with the matching stylesheet:
+choice interaction gets its per-choice remove button, click-activated add button and settings pill
+for free. Pair it with the matching stylesheet:
 
 ```css
 @import '@citolab/prose-qti/decorations.css';

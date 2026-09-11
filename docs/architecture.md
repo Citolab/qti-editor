@@ -275,7 +275,7 @@ export function defineQtiInteractionsExtension(options?: { include?: string[] })
 ### Editor decorations — opt-in, and one per interaction
 
 `decoratorPluginFactories` is a second, deliberately separate plugin field on the descriptor. It
-carries the *authoring affordances* — the hover boundary, the add/remove buttons, the node-action
+carries the *authoring affordances* — the per-choice remove button, the add button, the node-action
 pill — while `pluginFactories` carries the interaction's runtime behaviour.
 
 The split exists because `pluginFactories` is installed unconditionally by every host
@@ -327,6 +327,14 @@ something this one does not. Order, match, gap-match and associate are the natur
 that the per-choice widgets are emitted *after* the node they decorate — CSS anchor positioning
 cannot anchor an element to its own ancestor — and that anchor names are minted per document
 position, because duplicate names collapse every anchored box onto the last one.
+
+The choice decorator distinguishes two levels of "shown": the per-row remove (`×`) is always
+rendered and only needs CSS `:hover` on its row; the add button and the node-action pill also
+require the interaction to be *active*, a single boolean the plugin tracks in its own state —
+armed by a click (ProseMirror's `pointer` transaction meta) and cleared by any document change or by
+`Escape`, but deliberately not by ordinary selection changes, so moving the caret with the arrow
+keys does not dismiss them. `buildDecorations` still recomputes on every doc/selection change; only
+whether the add button and pill are eligible to appear depends on `active`.
 
 ## Storybook's Role
 
