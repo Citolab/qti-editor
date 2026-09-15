@@ -1,27 +1,33 @@
+import { qtiGapNodeSpec, qtiGapTextNodeSpec, qtiPromptNodeSpec, qtiPromptParagraphNodeSpec } from '../shared';
 import {
-  qtiGapNodeSpec,
-  qtiGapTextNodeSpec,
-  qtiPromptNodeSpec,
-  qtiPromptParagraphNodeSpec,
-} from '../shared';
-import { insertGapMatchInteraction, qtiGapMatchBackspaceCommand, qtiGapMatchEnterCommand } from './components/qti-gap-match-interaction/qti-gap-match-interaction.commands.js';
+  insertGapMatchInteraction,
+  qtiGapMatchBackspaceCommand,
+  qtiGapMatchEnterCommand
+} from './components/qti-gap-match-interaction/qti-gap-match-interaction.commands.js';
 import { qtiGapMatchInteractionNodeSpec } from './components/qti-gap-match-interaction/qti-gap-match-interaction.schema.js';
-import { gapMatchInteractionComposerMetadata, gapMatchNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
+import {
+  gapMatchInteractionComposerMetadata,
+  gapMatchNodeAttributePanelMetadataByNodeTypeName
+} from './composer/metadata.js';
 import { gapMatchComposerHandler } from './composer/handler.js';
 import { createGapMatchNodeViewPlugin } from './extensions/node-view.js';
-import { createChipMenuPlugin } from '../shared';
+import { createChipMenuPlugin, createInteractionDecoratorPlugin } from '../shared';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
 export const gapMatchInteractionDescriptor = {
   tagName: 'qti-gap-match-interaction',
   nodeTypeName: 'qtiGapMatchInteraction',
+  decoratorPluginFactories: [
+    () =>
+      createInteractionDecoratorPlugin({ nodeTypeName: 'qtiGapMatchInteraction', tagName: 'qti-gap-match-interaction' })
+  ],
   nodeSpecs: [
     { name: 'qtiGapMatchInteraction', spec: qtiGapMatchInteractionNodeSpec },
     { name: 'qtiPrompt', spec: qtiPromptNodeSpec },
     { name: 'qtiPromptParagraph', spec: qtiPromptParagraphNodeSpec },
     { name: 'qtiGapText', spec: qtiGapTextNodeSpec },
-    { name: 'qtiGap', spec: qtiGapNodeSpec },
+    { name: 'qtiGap', spec: qtiGapNodeSpec }
   ],
   pluginFactories: [createGapMatchNodeViewPlugin, () => createChipMenuPlugin('gap-match')],
   insertCommand: insertGapMatchInteraction,
@@ -29,5 +35,5 @@ export const gapMatchInteractionDescriptor = {
   backspaceCommand: qtiGapMatchBackspaceCommand,
   composerMetadata: gapMatchInteractionComposerMetadata,
   composerHandler: gapMatchComposerHandler,
-  attributePanelMetadata: gapMatchNodeAttributePanelMetadataByNodeTypeName,
+  attributePanelMetadata: gapMatchNodeAttributePanelMetadataByNodeTypeName
 } satisfies InteractionDescriptor;

@@ -23,9 +23,11 @@
  * `qti:node-settings:open` contract. What is left here is the only part that is actually about
  * choices: what "one of these" is, and when another may be added or removed.
  *
- * So a decorator for order, match, gap-match or associate is this file with a different
- * add/remove pair. Follow it, and add to the shared module rather than here if the next one needs
- * something this one does not.
+ * The other interactions use the generic decorator in
+ * `components/shared/extensions/interaction-decorations.ts` (wash + pill, nothing type-specific);
+ * this file shares its activation rule and active class. So a decorator for order, match, gap-match
+ * or associate is this file with a different add/remove pair. Follow it, and add to the shared
+ * module rather than here if the next one needs something this one does not.
  *
  * Installed opt-in via the descriptor's `decoratorPluginFactories` — never through
  * `pluginFactories`, which every host installs unconditionally.
@@ -36,6 +38,13 @@ import { Decoration, DecorationSet } from 'prosemirror-view';
 
 import { translateQti } from '../../shared/i18n/index.js';
 import {
+  applyDecoratorActivation,
+  handleDecoratorEscape,
+  QTI_ACTIVE_INTERACTION_CLASS,
+  selectionInsideNode,
+  type DecoratorActivationState
+} from '../../shared/extensions/interaction-decorations.js';
+import {
   createDecorationButton,
   nodeActionsWidget,
   nodeBeforeWidget
@@ -45,16 +54,7 @@ import { createSimpleChoiceNode } from '../components/qti-choice-interaction/com
 import type { EditorState } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 
-interface ChoiceDecoratorPluginState {
-  /**
-   * Whether the "clicked into" affordances — the `+`, the pill and the gray wash — may show. Set by
-   * a mouse click (ProseMirror tags those selection transactions with the `pointer` meta), cleared
-   * by any edit or by Escape. Deliberately NOT re-armed by other selection changes: moving the caret
-   * with the arrow keys while typing must not bring the wash back. Which interaction they show on
-   * is still decided per node in `buildDecorations`, from the selection.
-   */
-  active: boolean;
-}
+type ChoiceDecoratorPluginState = DecoratorActivationState;
 
 const choiceDecoratorPluginKey = new PluginKey<ChoiceDecoratorPluginState>('qti-choice-interaction-decorations');
 
@@ -136,7 +136,7 @@ function buildDecorations(state: EditorState, active: boolean): DecorationSet {
     if (node.type !== interactionType) return true;
 
     const interactionEnd = pos + node.nodeSize;
-    const selectionInside = active && state.selection.from >= pos && state.selection.to <= interactionEnd;
+    const selectionInside = active && selectionInsideNode(state, pos, interactionEnd);
     // Count the choices themselves. The prompt is optional (`qtiPrompt? qtiSimpleChoice+`), so
     // `childCount - 1` under-counted promptless interactions by one and a two-choice interaction
     // imported without a prompt offered no × at all.
@@ -150,7 +150,12 @@ function buildDecorations(state: EditorState, active: boolean): DecorationSet {
     // final choice. Names are derived from the node's position, so they stay stable for as long as
     // the node does.
     const interactionAnchor = `--qti-choice-interaction-${pos}`;
-    decorations.push(Decoration.node(pos, interactionEnd, { style: `anchor-name: ${interactionAnchor}` }));
+    decorations.push(
+      Decoration.node(pos, interactionEnd, {
+        style: `anchor-name: ${interactionAnchor}`,
+        ...(selectionInside ? { class: QTI_ACTIVE_INTERACTION_CLASS } : {})
+      })
+    );
 
     if (selectionInside) {
       decorations.push(
@@ -250,22 +255,11 @@ export function createChoiceInteractionDecoratorPlugin(): Plugin<ChoiceDecorator
     key: choiceDecoratorPluginKey,
     state: {
       init: () => ({ active: false }),
-      apply: (tr, prev) => {
-        // Escape (the meta) or any edit hides the affordances; only a click brings them back. Order
-        // matters: a keystroke both changes the doc and moves the selection.
-        if (tr.getMeta(choiceDecoratorPluginKey) || tr.docChanged) return { active: false };
-        if (tr.getMeta('pointer')) return { active: true };
-        return prev;
-      }
+      apply: (tr, prev) => applyDecoratorActivation(choiceDecoratorPluginKey, tr, prev)
     },
     props: {
       decorations: state => buildDecorations(state, choiceDecoratorPluginKey.getState(state)?.active ?? false),
-      handleKeyDown: (view, event) => {
-        if (event.key !== 'Escape' || !choiceDecoratorPluginKey.getState(view.state)?.active) return false;
-        view.dispatch(view.state.tr.setMeta(choiceDecoratorPluginKey, true));
-        // Not claimed: a host may bind Escape as well (close a panel, blur the editor).
-        return false;
-      }
+      handleKeyDown: (view, event) => handleDecoratorEscape(choiceDecoratorPluginKey, view, event)
     }
   });
 }

@@ -211,15 +211,17 @@ qti-simple-choice:hover + .qti-decoration--remove,
   margin-top: var(--qti-padding-vertical, 0.5rem);
 }
 
-/* ══ b. Choice interaction — active state, row sizing ══════════════════════ */
+/* ══ b. Every interaction — active state ═══════════════════════════════════ */
 
 /* "Clicked into" has no native selector — ProseMirror keeps DOM focus on the editable root, so
-   `:focus-within` never matches the interaction. But the decorator emits the action pill as the
-   interaction's next sibling exactly while the selection is inside it, so `:has(+ …)` reads that
-   state straight off the DOM. */
-qti-choice-interaction:has(+ .qti-decoration--actions) {
+   `:focus-within` never matches the interaction. The decorators put this class on the interaction's
+   element exactly while the selection sits inside it and the pill is up, for every interaction
+   type alike (see `QTI_ACTIVE_INTERACTION_CLASS`). */
+.qti-interaction--active {
   background-color: var(--qti-edit-interaction-active-bg);
 }
+
+/* ══ c. Choice interaction — row sizing ════════════════════════════════════ */
 
 /* The theme sizes choices `fit-content` (runtime chips hug their text). In the editor the row is an
    authoring surface: it must span the block so the × can pin to the right edge, the way the design
