@@ -3,31 +3,33 @@ import {
   qtiPromptParagraphNodeSpec,
   qtiSimpleMatchSetNodeSpec,
   qtiSimpleAssociableChoiceNodeSpec,
-  qtiSimpleAssociableChoiceParagraphNodeSpec,
+  qtiSimpleAssociableChoiceParagraphNodeSpec
 } from '../shared';
 import {
   insertMatchInteraction,
   insertMatchInteractionTabular,
-  insertSimpleAssociableChoiceOnEnter,
+  insertSimpleAssociableChoiceOnEnter
 } from './components/qti-match-interaction/qti-match-interaction.commands.js';
 import { qtiMatchInteractionNodeSpec } from './components/qti-match-interaction/qti-match-interaction.schema.js';
 import { qtiMatchInteractionTabularNodeSpec } from './components/qti-match-interaction/qti-match-interaction-tabular.schema.js';
 import {
   matchInteractionComposerMetadata,
-  matchNodeAttributePanelMetadataByNodeTypeName,
+  matchNodeAttributePanelMetadataByNodeTypeName
 } from './composer/metadata.js';
 import { matchComposerHandler } from './composer/handler.js';
 import { createQtiMatchTabularNodeViewPlugin } from './extensions/tabular-node-view.js';
-import { createChipMenuPlugin } from '../shared';
+import { createChipMenuPlugin, createInteractionDecoratorPlugin } from '../shared';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
-
 
 export const matchInteractionDescriptor = {
   tagName: 'qti-match-interaction',
   nodeTypeName: 'qtiMatchInteraction',
+  decoratorPluginFactories: [
+    () => createInteractionDecoratorPlugin({ nodeTypeName: 'qtiMatchInteraction', tagName: 'qti-match-interaction' })
+  ],
   baseSchemaDependencies: {
-    nodeGroups: ['qtiMedia'],
+    nodeGroups: ['qtiMedia']
   },
   nodeSpecs: [
     { name: 'qtiMatchInteractionTabular', spec: qtiMatchInteractionTabularNodeSpec },
@@ -36,21 +38,25 @@ export const matchInteractionDescriptor = {
     { name: 'qtiPromptParagraph', spec: qtiPromptParagraphNodeSpec },
     { name: 'qtiSimpleMatchSet', spec: qtiSimpleMatchSetNodeSpec },
     { name: 'qtiSimpleAssociableChoice', spec: qtiSimpleAssociableChoiceNodeSpec },
-    { name: 'qtiSimpleAssociableChoiceParagraph', spec: qtiSimpleAssociableChoiceParagraphNodeSpec },
+    { name: 'qtiSimpleAssociableChoiceParagraph', spec: qtiSimpleAssociableChoiceParagraphNodeSpec }
   ],
   pluginFactories: [() => createChipMenuPlugin('match')],
   insertCommand: insertMatchInteraction,
   enterCommand: insertSimpleAssociableChoiceOnEnter,
   composerMetadata: matchInteractionComposerMetadata,
   composerHandler: matchComposerHandler,
-  attributePanelMetadata: matchNodeAttributePanelMetadataByNodeTypeName,
+  attributePanelMetadata: matchNodeAttributePanelMetadataByNodeTypeName
 } satisfies InteractionDescriptor;
 
 export const matchInteractionTabularDescriptor = {
   tagName: 'qti-match-interaction',
   nodeTypeName: 'qtiMatchInteractionTabular',
+  decoratorPluginFactories: [
+    () =>
+      createInteractionDecoratorPlugin({ nodeTypeName: 'qtiMatchInteractionTabular', tagName: 'qti-match-interaction' })
+  ],
   baseSchemaDependencies: {
-    nodeGroups: ['qtiMedia'],
+    nodeGroups: ['qtiMedia']
   },
   nodeSpecs: [
     { name: 'qtiMatchInteractionTabular', spec: qtiMatchInteractionTabularNodeSpec },
@@ -58,12 +64,12 @@ export const matchInteractionTabularDescriptor = {
     { name: 'qtiPromptParagraph', spec: qtiPromptParagraphNodeSpec },
     { name: 'qtiSimpleMatchSet', spec: qtiSimpleMatchSetNodeSpec },
     { name: 'qtiSimpleAssociableChoice', spec: qtiSimpleAssociableChoiceNodeSpec },
-    { name: 'qtiSimpleAssociableChoiceParagraph', spec: qtiSimpleAssociableChoiceParagraphNodeSpec },
+    { name: 'qtiSimpleAssociableChoiceParagraph', spec: qtiSimpleAssociableChoiceParagraphNodeSpec }
   ],
   pluginFactories: [createQtiMatchTabularNodeViewPlugin, () => createChipMenuPlugin('match-tabular')],
   insertCommand: insertMatchInteractionTabular,
   enterCommand: insertSimpleAssociableChoiceOnEnter,
   composerMetadata: matchInteractionComposerMetadata,
   composerHandler: matchComposerHandler,
-  attributePanelMetadata: matchNodeAttributePanelMetadataByNodeTypeName,
+  attributePanelMetadata: matchNodeAttributePanelMetadataByNodeTypeName
 } satisfies InteractionDescriptor;

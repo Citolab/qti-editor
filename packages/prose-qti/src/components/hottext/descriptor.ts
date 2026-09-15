@@ -5,21 +5,26 @@ import { hottextComposerHandler } from './composer/handler.js';
 import { createHottextWrapSelectionPlugin } from './extensions/wrap-selection.js';
 import {
   hottextInteractionComposerMetadata,
-  hottextNodeAttributePanelMetadataByNodeTypeName,
+  hottextNodeAttributePanelMetadataByNodeTypeName
 } from './composer/metadata.js';
+import { createInteractionDecoratorPlugin } from '../shared';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
 export const hottextInteractionDescriptor = {
   tagName: 'qti-hottext-interaction',
   nodeTypeName: 'qtiHottextInteraction',
+  decoratorPluginFactories: [
+    () =>
+      createInteractionDecoratorPlugin({ nodeTypeName: 'qtiHottextInteraction', tagName: 'qti-hottext-interaction' })
+  ],
   nodeSpecs: [
     { name: 'qtiHottextInteraction', spec: qtiHottextInteractionNodeSpec },
-    { name: 'qtiHottext', spec: qtiHottextNodeSpec },
+    { name: 'qtiHottext', spec: qtiHottextNodeSpec }
   ],
   pluginFactories: [createHottextWrapSelectionPlugin],
   insertCommand: insertHottextInteraction,
   composerMetadata: hottextInteractionComposerMetadata,
   composerHandler: hottextComposerHandler,
-  attributePanelMetadata: hottextNodeAttributePanelMetadataByNodeTypeName,
+  attributePanelMetadata: hottextNodeAttributePanelMetadataByNodeTypeName
 } satisfies InteractionDescriptor;

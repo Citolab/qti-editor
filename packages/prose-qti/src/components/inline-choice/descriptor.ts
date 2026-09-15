@@ -1,26 +1,33 @@
-
 import {
   insertInlineChoiceInteraction,
   insertInlineChoiceOnEnter,
-  deleteInlineChoiceOnBackspace,
+  deleteInlineChoiceOnBackspace
 } from './components/qti-inline-choice-interaction/qti-inline-choice-interaction.commands.js';
 import { qtiInlineChoiceInteractionNodeSpec } from './components/qti-inline-choice-interaction/qti-inline-choice-interaction.schema.js';
 import { qtiInlineChoiceNodeSpec } from './components/qti-inline-choice-interaction/qti-inline-choice.schema.js';
 import {
   inlineChoiceInteractionComposerMetadata,
-  inlineChoiceNodeAttributePanelMetadataByNodeTypeName,
+  inlineChoiceNodeAttributePanelMetadataByNodeTypeName
 } from './composer/metadata.js';
 import { inlineChoiceComposerHandler } from './composer/handler.js';
 import { createInlineChoiceCorrectResponseClickPlugin } from './extensions/correct-response-click.js';
+import { createInteractionDecoratorPlugin } from '../shared';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
 export const inlineChoiceInteractionDescriptor = {
   tagName: 'qti-inline-choice-interaction',
   nodeTypeName: 'qtiInlineChoiceInteraction',
+  decoratorPluginFactories: [
+    () =>
+      createInteractionDecoratorPlugin({
+        nodeTypeName: 'qtiInlineChoiceInteraction',
+        tagName: 'qti-inline-choice-interaction'
+      })
+  ],
   nodeSpecs: [
     { name: 'qtiInlineChoiceInteraction', spec: qtiInlineChoiceInteractionNodeSpec },
-    { name: 'qtiInlineChoice', spec: qtiInlineChoiceNodeSpec },
+    { name: 'qtiInlineChoice', spec: qtiInlineChoiceNodeSpec }
   ],
   pluginFactories: [createInlineChoiceCorrectResponseClickPlugin],
   insertCommand: insertInlineChoiceInteraction,
@@ -28,5 +35,5 @@ export const inlineChoiceInteractionDescriptor = {
   backspaceCommand: deleteInlineChoiceOnBackspace,
   composerMetadata: inlineChoiceInteractionComposerMetadata,
   composerHandler: inlineChoiceComposerHandler,
-  attributePanelMetadata: inlineChoiceNodeAttributePanelMetadataByNodeTypeName,
+  attributePanelMetadata: inlineChoiceNodeAttributePanelMetadataByNodeTypeName
 } satisfies InteractionDescriptor;

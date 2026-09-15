@@ -1,13 +1,16 @@
-
 import {
+  createInteractionDecoratorPlugin,
   qtiPromptNodeSpec,
-  qtiPromptParagraphNodeSpec,
+  qtiPromptParagraphNodeSpec
 } from '@citolab/prose-qti/components/shared';
 
 import { insertSelectPointInteraction } from './components/qti-select-point-interaction/qti-select-point-interaction.commands.js';
 import { qtiSelectPointInteractionNodeSpec } from './components/qti-select-point-interaction/qti-select-point-interaction.schema.js';
 import { imgSelectPointNodeSpec } from './components/qti-select-point-interaction/img-select-point.schema.js';
-import { selectPointInteractionComposerMetadata, selectPointNodeAttributePanelMetadataByNodeTypeName } from './composer/metadata.js';
+import {
+  selectPointInteractionComposerMetadata,
+  selectPointNodeAttributePanelMetadataByNodeTypeName
+} from './composer/metadata.js';
 import { selectPointComposerHandler } from './composer/handler.js';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
@@ -15,14 +18,21 @@ import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 export const selectPointInteractionDescriptor = {
   tagName: 'qti-select-point-interaction',
   nodeTypeName: 'qtiSelectPointInteraction',
+  decoratorPluginFactories: [
+    () =>
+      createInteractionDecoratorPlugin({
+        nodeTypeName: 'qtiSelectPointInteraction',
+        tagName: 'qti-select-point-interaction'
+      })
+  ],
   nodeSpecs: [
     { name: 'qtiSelectPointInteraction', spec: qtiSelectPointInteractionNodeSpec },
     { name: 'qtiPrompt', spec: qtiPromptNodeSpec },
     { name: 'qtiPromptParagraph', spec: qtiPromptParagraphNodeSpec },
-    { name: 'imgSelectPoint', spec: imgSelectPointNodeSpec },
+    { name: 'imgSelectPoint', spec: imgSelectPointNodeSpec }
   ],
   insertCommand: insertSelectPointInteraction,
   composerMetadata: selectPointInteractionComposerMetadata,
   composerHandler: selectPointComposerHandler,
-  attributePanelMetadata: selectPointNodeAttributePanelMetadataByNodeTypeName,
+  attributePanelMetadata: selectPointNodeAttributePanelMetadataByNodeTypeName
 } satisfies InteractionDescriptor;
