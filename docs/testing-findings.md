@@ -302,3 +302,11 @@ Two bugs stacked on top of each other in `qti-layout-row`-nested interactions (i
 - **Consequence**: an author working on one of these (the common case, not an edge case) could add choices but never remove one through the built-in decorator.
 - **Resolution**: count `qtiSimpleChoice` children directly instead of inferring the prompt's presence from the total. See `choice-decorations.ts`.
 - **Pinned by**: two new cases in `choice-decorations.browser.test.ts` — a promptless two-choice interaction shows two ×; a promptless single choice shows none.
+
+## 23. `pmToQti3` exported assessment items libxml rejected for an undeclared `xsi` prefix — **fixed**
+
+`buildAssessmentItemXml` (`packages/prose-qti/src/core/composer/index.ts`) sets `xsi:schemaLocation` via `setAttributeNS`, which is enough in a browser: `XMLSerializer` notices the namespaced attribute and adds the matching `xmlns:xsi` declaration on its own. The Node serializer behind `pmToQti3` (`@citolab/prose-qti-node`, no browser `XMLSerializer` involved) does not do that inference, so the exported document carried `xsi:schemaLocation` with no `xmlns:xsi` declaration anywhere. libxml then rejected the export with "namespace prefix xsi for schemaLocation is not defined" before validation ever reached the XSD.
+
+- **Why it only showed up in Node**: browser-side export and the roundtrip regression suite (which reads the DOM back rather than validating raw serialized bytes with libxml) never exercised the code path that cares whether the declaration is literally in the string.
+- **Resolution**: declare `xmlns:xsi` explicitly with `setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xsi', XSI_NS)` before setting `xsi:schemaLocation`, so both serializers emit an identical, self-contained document.
+- **Where to look**: `packages/prose-qti/src/core/composer/index.ts`.

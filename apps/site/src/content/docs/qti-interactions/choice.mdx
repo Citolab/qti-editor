@@ -76,7 +76,7 @@ const plugins = [...qtiPlugins, ...decoratorPlugins /* , … */];
 
 Use `listSelectedInteractionDecoratorPluginFactories({ include: ['qti-choice-interaction'] })` instead if you only want decorations for a subset of interactions. If your integration uses ProseKit rather than raw ProseMirror plugins, `defineQtiDecorationsExtension()` from `@citolab/prose-qti/integration/interactions/prosekit` wraps the same factories as a ProseKit extension.
 
-Choice is currently the only interaction with a decorator; the plumbing (`decoratorPluginFactories` on `InteractionDescriptor`) is generic, so more may follow.
+Every interaction gets a decorator — the click-to-activate wash and the settings pill are shared by all of them. Choice is the one with its own add/remove affordances (the per-choice `×` and the trailing `+`) on top of that shared base, since "another one of these" is specific to each interaction and the rest have nothing type-specific yet.
 
 The floating pill also exposes select, copy and delete — all self-contained, so they work with no wiring from your host — plus settings, which has no default behavior. Clicking it dispatches a `qti:node-settings:open` `CustomEvent` (bubbling, composed) on the editor view's DOM, carrying a detail of `` { nodeTypeName, tagName, pos, attrs } ``; listen for it to open your own attribute panel for that node:
 
