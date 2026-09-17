@@ -10,7 +10,7 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
  * note on the same change in qti-simple-choice.schema.ts.
  */
 export const qtiSimpleChoiceParagraphNodeSpec: NodeSpec = {
-  content: 'text*',
+  content: '(text | image)*',
   parseDOM: [{ tag: 'p', context: 'qtiSimpleChoice//', priority: 60 }],
   toDOM(): DOMOutputSpec {
     return ['p', 0];

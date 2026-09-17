@@ -441,39 +441,58 @@ describe('pasting into a prompt, whose parent allows `qtiPrompt?`', () => {
   });
 });
 
+function choiceAt(view: EditorView, index: number): PmNode {
+  const choices: PmNode[] = [];
+  view.state.doc.descendants((node) => {
+    if (node.type.name === 'qtiSimpleChoice') choices.push(node);
+  });
+  const choice = choices[index];
+  if (!choice) throw new Error(`No qtiSimpleChoice at index ${index}`);
+  return choice;
+}
+
 // ---------------------------------------------------------------------------
-// Flattening what cannot survive `text*`
+// What the widened choice paragraph now carries
 // ---------------------------------------------------------------------------
 
-describe('content that the target cannot represent', () => {
-  test('an image contributes its alt text', () => {
+describe('an image pasted into a choice', () => {
+  test('survives as an image rather than as its alt text', () => {
     const view = mount(choiceItem());
     cursorAtEndOf(view, 'Ja');
-    paste(view, '<p>alpha</p><p><img src="https://example.test/x.png" alt="rode bloedcel"></p>');
+    // An alt the prompt does not already contain, so "nowhere in the document" means what it says.
+    paste(view, '<p>alpha</p><p><img src="https://example.test/x.png" alt="microscoopfoto"></p>');
 
-    expect(outline(view.state.doc)).toContain('qtiSimpleChoiceParagraph "rode bloedcel"');
-    expect(countOf(view.state.doc, 'image')).toBe(0);
+    expect(countOf(view.state.doc, 'image')).toBe(1);
+    expect(view.state.doc.textContent).not.toContain('microscoopfoto');
   });
 
-  test('an image with no alt contributes nothing rather than an empty sibling', () => {
+  test('one without an alt lands in its own choice instead of being dropped', () => {
     const view = mount(choiceItem());
     cursorAtEndOf(view, 'Ja');
     paste(view, '<p>alpha</p><p><img src="https://example.test/x.png"></p>');
 
-    // Asserted as a whole outline on purpose. Counting choices alone passes even when the document
-    // is broken: unrescued, this splits into two interactions holding one choice each, and
-    // "there are two choices" is true of both the correct and the corrupt document.
+    // Asserted as a whole outline: only the full shape shows the paste did not split the interaction.
     expect(outline(view.state.doc)).toBe(
       'qtiChoiceInteraction [RESPONSE_ORIG]\n' +
         '  qtiPrompt\n' +
         '    qtiPromptParagraph "Vervoeren rode bloedcellen zuurstof?"\n' +
         '  qtiSimpleChoice [SIMPLE_CHOICE_1]\n' +
         '    qtiSimpleChoiceParagraph "Jaalpha"\n' +
+        '  qtiSimpleChoice [SIMPLE_CHOICE_<minted>]\n' +
+        '    qtiSimpleChoiceParagraph ""\n' +
         '  qtiSimpleChoice [SIMPLE_CHOICE_2]\n' +
         '    qtiSimpleChoiceParagraph "Nee"\n',
     );
+    // Specifically the minted choice: the outline above is blind to which choice the image reached.
+    expect(countOf(choiceAt(view, 1), 'image')).toBe(1);
   });
+});
 
+// ---------------------------------------------------------------------------
+// Flattening what the target still cannot represent
+// ---------------------------------------------------------------------------
+
+describe('content that the target cannot represent', () => {
   test('ASSUMPTION: a bulleted list fans out one choice per list item', () => {
     const view = mount(choiceItem());
     cursorAtEndOf(view, 'Ja');

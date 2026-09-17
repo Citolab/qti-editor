@@ -108,7 +108,8 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
   const promptFromChild = sourceElement.querySelector('qti-prompt')?.textContent;
   const prompt = toNonEmptyString(promptFromChild ?? null);
 
-  const imageElement = sourceElement.querySelector('img');
+  // `:scope >` so a picture inside the prompt is not mistaken for the select-point graphic.
+  const imageElement = sourceElement.querySelector(':scope > img');
   const imageSrc = toNonEmptyString(imageElement?.getAttribute('src') ?? null);
   const imageAlt = toNonEmptyString(imageElement?.getAttribute('alt') ?? null);
   const imageWidth = toNonEmptyString(imageElement?.getAttribute('width') ?? null);
