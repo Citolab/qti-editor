@@ -61,7 +61,7 @@ The default i18n messages also include `choice.addOption`, `choice.removeOption`
 
 ## Built-in editor decorations (opt-in)
 
-Rather than building the affordance above yourself, you can opt into the ready-made one: hovering a choice interaction reveals a boundary and a per-choice remove (`×`) button, a trailing `+` appends a new choice, and a settings pill floats above the interaction while the selection sits inside it. These are view-only decorations — they never enter the document, so exported XML is unaffected — and they are **not** included by default, since a read-only or player host must not get authoring chrome it never asked for.
+Rather than building the affordance above yourself, you can opt into the ready-made one: hovering a choice reveals its remove (`×`) button, and clicking into a choice interaction paints a light gray wash and shows a trailing `+` that appends a new choice plus a settings pill above the interaction. Typing or pressing `Escape` hides the `+` and the pill again; moving the caret with the arrow keys does not — only the next click does. These are view-only decorations — they never enter the document, so exported XML is unaffected — and they are **not** included by default, since a read-only or player host must not get authoring chrome it never asked for.
 
 Enable them by adding the decorator plugins and their stylesheet:
 
