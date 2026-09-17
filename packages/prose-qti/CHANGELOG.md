@@ -1,5 +1,24 @@
 # @citolab/prose-qti
 
+## 1.23.0
+
+### Minor Changes
+
+- [`ad53f41`](https://github.com/Citolab/qti-editor/commit/ad53f41d5776cb73d8c5c6793f53f656d3841b3d) Thanks [@herrKlein](https://github.com/herrKlein)! - Choice interaction decorator: a click into the interaction paints a gray wash and shows the `+`
+  and the action pill; typing or Escape hides them and only the next click brings them back. The
+  hover tint, dashed per-choice outline and selection rings are removed, the `+` is anchored below
+  the last choice instead of taking up space, icons use a neutral ink, and `editor-states.css` makes
+  `qti-simple-choice` transparent in the editor. The exported assessment item now declares
+  `xmlns:xsi` explicitly so Node-side serialization validates.
+
+### Patch Changes
+
+- [`d72becd`](https://github.com/Citolab/qti-editor/commit/d72becdfbdbed8c944182f2b1c49032ee14e80e7) Thanks [@herrKlein](https://github.com/herrKlein)! - Choice decorator: offer the remove (×) affordance on interactions without a `qti-prompt`. The
+  decorator counted choices as `childCount - 1`, assuming a prompt that the schema makes optional, so
+  promptless two-choice interactions showed no × at all.
+- Updated dependencies [[`3fb7ccd`](https://github.com/Citolab/qti-editor/commit/3fb7ccd46432849f6a1c6a3e4bb99e7ea9a508c7)]:
+  - @citolab/prose-extensions@1.7.0
+
 ## 1.22.0
 
 ### Minor Changes
