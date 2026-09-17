@@ -303,9 +303,10 @@ Two bugs stacked on top of each other in `qti-layout-row`-nested interactions (i
 - **Resolution**: count `qtiSimpleChoice` children directly instead of inferring the prompt's presence from the total. See `choice-decorations.ts`.
 - **Pinned by**: two new cases in `choice-decorations.browser.test.ts` — a promptless two-choice interaction shows two ×; a promptless single choice shows none.
 
-## 23. Node-side export declared `xsi:schemaLocation` without its namespace prefix — **fixed**
+## 23. `pmToQti3` exported assessment items libxml rejected for an undeclared `xsi` prefix — **fixed**
 
-`buildAssessmentItemXml` (`packages/prose-qti/src/core/composer/index.ts`) sets `xsi:schemaLocation` via `setAttributeNS`, but never declared the `xsi` prefix itself. A browser `XMLSerializer` adds that declaration automatically for any namespaced attribute, so export from the editor always looked fine — but the Node serializer behind `pmToQti3` does not, and libxml then rejected the document with `namespace prefix xsi for schemaLocation is not defined` before it ever reached the XSD.
+`buildAssessmentItemXml` (`packages/prose-qti/src/core/composer/index.ts`) sets `xsi:schemaLocation` via `setAttributeNS`, which is enough in a browser: `XMLSerializer` notices the namespaced attribute and adds the matching `xmlns:xsi` declaration on its own. The Node serializer behind `pmToQti3` (`@citolab/prose-qti-node`, no browser `XMLSerializer` involved) does not do that inference, so the exported document carried `xsi:schemaLocation` with no `xmlns:xsi` declaration anywhere. libxml then rejected the export with "namespace prefix xsi for schemaLocation is not defined" before validation ever reached the XSD.
 
-- **Resolution**: declare `xmlns:xsi` explicitly through the XMLNS namespace (`root.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xsi', XSI_NS)`) before setting `xsi:schemaLocation`, so browser output is byte-identical to before and Node output now carries the declaration too.
-- **Where to look**: `packages/prose-qti/src/core/composer/index.ts`. The Node/browser output comparison in `packages/prose-qti-node/src/node-conversion.node.test.ts` normalizes past this specific attribute rather than asserting it, since linkedom's serializer has other declaration differences from the browser that are equally serializer-only.
+- **Why it only showed up in Node**: browser-side export and the roundtrip regression suite (which reads the DOM back rather than validating raw serialized bytes with libxml) never exercised the code path that cares whether the declaration is literally in the string.
+- **Resolution**: declare `xmlns:xsi` explicitly with `setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xsi', XSI_NS)` before setting `xsi:schemaLocation`, so both serializers emit an identical, self-contained document.
+- **Where to look**: `packages/prose-qti/src/core/composer/index.ts`.

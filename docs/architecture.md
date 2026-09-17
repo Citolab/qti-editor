@@ -272,7 +272,7 @@ export function defineQtiInteractionsExtension(options?: { include?: string[] })
 }
 ```
 
-### Editor decorations — opt-in, and one per interaction
+### Editor decorations — opt-in, one per interaction
 
 `decoratorPluginFactories` is a second, deliberately separate plugin field on the descriptor. It
 carries the *authoring affordances* — the add/remove buttons and the node-action pill — while
@@ -290,8 +290,23 @@ affordances. Hosts opt in through `defineQtiDecorationsExtension()` (ProseKit) o
 `listInteractionDecoratorPluginFactories()` (plain ProseMirror), paired with the equally opt-in
 `@citolab/prose-qti/decorations.css`.
 
-The intended end state is **a decorator per interaction**, all of the same shape, and almost all of
-that shape is already shared. `components/shared/extensions/node-decorations.ts` owns:
+Every interaction now has a decorator. Eight of them (extended-text, gap-match, hottext,
+inline-choice, match, order, select-point, text-entry) install the generic one straight from
+`components/shared/extensions/interaction-decorations.ts` — `createInteractionDecoratorPlugin({
+nodeTypeName, tagName })` gives a wash + pill and nothing type-specific, since "add another one of
+these" is not yet generic across interactions. Choice is the one with something to add: its own
+`components/choice/extensions/choice-decorations.ts` shares the same activation rule and active
+class from `interaction-decorations.ts`, and layers the per-choice `×` and the trailing `+` on top.
+
+An interaction is "active" once a click lands inside it (ProseMirror tags that transaction's
+selection with the `pointer` meta); typing or Escape clears it, and moving the caret with the
+keyboard deliberately does not bring it back — only the next click does. That state is what gates
+the pill and, for choice, the `+`; the per-choice `×` is additionally hover-revealed once its
+interaction is active. `applyDecoratorActivation` / `handleDecoratorEscape` in
+`interaction-decorations.ts` implement the rule once so every decorator arms and disarms together.
+
+`components/shared/extensions/node-decorations.ts` owns the rest — the pieces every decorator
+needs regardless of activation:
 
 - the icon set and the button factory, so every affordance in every decorator is the same element
   with the same event handling
@@ -322,17 +337,19 @@ un-remapped `correctResponse` would name the original's choices. **Known limitat
 one copy carry the same minted identifiers, so the second needs another copy. Fixing that properly
 means re-minting on *paste*, which belongs with the paste rescue in `schema/paste-rescue.ts`.
 
-What is left per interaction is only the add/remove semantics — what "another one of these" is, and
-when one may be added or removed. Styling is shared too: the `.qti-decoration*` classes and the
-`--qti-edit-*` custom properties in `packages/prose-qti/src/core-css/decorations.css`, so the whole
-family retargets from a handful of variables rather than by restating selectors.
+What is left per interaction, if it needs anything at all, is only the add/remove semantics — what
+"another one of these" is, and when one may be added or removed. Styling is shared too: the
+`.qti-decoration*` classes and the `--qti-edit-*` custom properties in
+`packages/prose-qti/src/core-css/decorations.css`, so the whole family retargets from a handful of
+variables rather than by restating selectors.
 
-`components/choice/extensions/choice-decorations.ts` is the reference implementation; follow it when
-adding the next one, and add to the shared module rather than the interaction if the next one needs
-something this one does not. Order, match, gap-match and associate are the natural candidates. Note
-that the per-choice widgets are emitted *after* the node they decorate — CSS anchor positioning
-cannot anchor an element to its own ancestor — and that anchor names are minted per document
-position, because duplicate names collapse every anchored box onto the last one.
+`components/choice/extensions/choice-decorations.ts` is the reference implementation for a
+decorator that adds its own affordances on top of the shared wash + pill; follow it if order, match
+or gap-match ever need their own add/remove buttons, and add to the shared module rather than the
+interaction if the next one needs something this one does not. Note that the per-choice widgets are
+emitted *after* the node they decorate — CSS anchor positioning cannot anchor an element to its own
+ancestor — and that anchor names are minted per document position, because duplicate names collapse
+every anchored box onto the last one.
 
 The choice decorator distinguishes two levels of "shown": the per-row remove (`×`) is always
 rendered and only needs CSS `:hover` on its row; the add button and the node-action pill also

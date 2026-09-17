@@ -44,9 +44,9 @@ If you'd rather manage the two stylesheets yourself (e.g. to share `@qti-compone
 
 See `apps/qti-example-editor/src/app.css` for the reference import order.
 
-Interactions that ship an editor decorator (currently choice — see [Choice
-Interaction](/docs/qti-interactions/choice/#built-in-editor-decorations-opt-in)) need a second, opt-in
-stylesheet on top of the mandatory one above:
+Every interaction ships an editor decorator (see [Choice
+Interaction](/docs/qti-interactions/choice/#built-in-editor-decorations-opt-in)) and needs a second,
+opt-in stylesheet on top of the mandatory one above:
 
 ```css
 @import '@citolab/prose-qti/decorations.css';
