@@ -272,7 +272,7 @@ export function defineQtiInteractionsExtension(options?: { include?: string[] })
 }
 ```
 
-### Editor decorations — opt-in, and one per interaction
+### Editor decorations — opt-in, one per interaction
 
 `decoratorPluginFactories` is a second, deliberately separate plugin field on the descriptor. It
 carries the *authoring affordances* — the add/remove buttons and the node-action pill — while
