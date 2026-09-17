@@ -290,8 +290,18 @@ affordances. Hosts opt in through `defineQtiDecorationsExtension()` (ProseKit) o
 `listInteractionDecoratorPluginFactories()` (plain ProseMirror), paired with the equally opt-in
 `@citolab/prose-qti/decorations.css`.
 
-The intended end state is **a decorator per interaction**, all of the same shape, and almost all of
-that shape is already shared. `components/shared/extensions/node-decorations.ts` owns:
+Every interaction has a decorator, and almost all of that shape is shared. Two modules own it:
+
+`components/shared/extensions/interaction-decorations.ts`'s `createInteractionDecoratorPlugin`
+is the generic decorator — the "clicked into" wash and the node-action pill, nothing type-specific —
+and a descriptor installs it directly via `decoratorPluginFactories` when that is all it needs. That
+covers most interactions: order, match (both its flat and tabular node types), gap-match, hottext,
+extended-text, inline-choice, select-point and text-entry all register it as-is. The module also
+exports the activation state machine behind it — `applyDecoratorActivation`,
+`handleDecoratorEscape`, `selectionInsideNode`, `QTI_ACTIVE_INTERACTION_CLASS` — so a decorator that
+needs more than wash-and-pill builds on the same primitives instead of re-deriving them.
+
+`components/shared/extensions/node-decorations.ts` owns:
 
 - the icon set and the button factory, so every affordance in every decorator is the same element
   with the same event handling
@@ -322,17 +332,21 @@ un-remapped `correctResponse` would name the original's choices. **Known limitat
 one copy carry the same minted identifiers, so the second needs another copy. Fixing that properly
 means re-minting on *paste*, which belongs with the paste rescue in `schema/paste-rescue.ts`.
 
-What is left per interaction is only the add/remove semantics — what "another one of these" is, and
-when one may be added or removed. Styling is shared too: the `.qti-decoration*` classes and the
-`--qti-edit-*` custom properties in `packages/prose-qti/src/core-css/decorations.css`, so the whole
-family retargets from a handful of variables rather than by restating selectors.
+What is left, when an interaction needs more than wash-and-pill, is only the add/remove semantics —
+what "another one of these" is, and when one may be added or removed. Styling is shared too: the
+`.qti-decoration*` classes and the `--qti-edit-*` custom properties in
+`packages/prose-qti/src/core-css/decorations.css`, so the whole family retargets from a handful of
+variables rather than by restating selectors.
 
-`components/choice/extensions/choice-decorations.ts` is the reference implementation; follow it when
-adding the next one, and add to the shared module rather than the interaction if the next one needs
-something this one does not. Order, match, gap-match and associate are the natural candidates. Note
-that the per-choice widgets are emitted *after* the node they decorate — CSS anchor positioning
-cannot anchor an element to its own ancestor — and that anchor names are minted per document
-position, because duplicate names collapse every anchored box onto the last one.
+Choice is the one interaction that needs it: its `×`/`+` affordances for individual choices
+live in `components/choice/extensions/choice-decorations.ts`, whose
+`createChoiceInteractionDecoratorPlugin` builds on `interaction-decorations.ts`'s shared activation
+rule and active class rather than duplicating them. Follow it when the next interaction needs
+per-node affordances beyond wash-and-pill, and add to the shared module rather than the interaction
+if the next one needs something this one does not. Note that the per-choice widgets are emitted
+*after* the node they decorate — CSS anchor positioning cannot anchor an element to its own ancestor
+— and that anchor names are minted per document position, because duplicate names collapse every
+anchored box onto the last one.
 
 The choice decorator distinguishes two levels of "shown": the per-row remove (`×`) is always
 rendered and only needs CSS `:hover` on its row; the add button and the node-action pill also
