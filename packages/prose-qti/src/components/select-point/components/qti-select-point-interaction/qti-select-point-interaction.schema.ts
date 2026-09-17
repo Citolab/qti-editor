@@ -64,7 +64,8 @@ function buildImgSelectPointNode(schema: Schema, node: HTMLElement): ProseMirror
   const imgSelectPointType = schema.nodes.imgSelectPoint;
   if (!imgSelectPointType) return null;
 
-  const image = node.querySelector('img');
+  // `:scope >` so a picture inside the prompt is not mistaken for the select-point graphic.
+  const image = node.querySelector(':scope > img');
   const imageSrc = image?.getAttribute('src') || null;
   const imageAlt = image?.getAttribute('alt') || null;
   const imageWidth = parseNumberAttribute(image?.getAttribute('width') || null);

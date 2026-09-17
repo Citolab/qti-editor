@@ -88,6 +88,12 @@ Round-tripping is lossless in both directions: `area-mappings` composes back int
 so a third-party item that never had it imports without it. That is a documented one-way attribute,
 not a bug to fix.
 
+A select-point **prompt** is the other one. It carries text alone: import reads it with `textContent`
+and compose rebuilds it from that string, so a picture placed in the prompt survives the roundtrip
+format — which `pmToHtml` writes without the composer — but not the QTI 3.0 export. Every other
+interaction keeps its prompt as authored. Same category as `case-sensitive`: a documented one-way
+limitation rather than a bug.
+
 ## Adding an authoring attribute
 
 1. Add it to `strippedAttributes` in the interaction's `composer/metadata.ts`, so export strips it.

@@ -7,3 +7,7 @@ nodes were `text*`, so an authored `<img>` â€” a picture as the answer itself â€
 and a pasted one was flattened to its `alt` text; `removeEmptyPrompts` then dropped a prompt whose
 only content was that picture, because it keyed emptiness on text alone. Content widened to
 `(text | image)*`, leaving the other inline nodes out.
+
+`qtiPromptParagraph` is shared, so select-point prompts can now hold an image too. Its two
+`querySelector('img')` lookups are scoped to `:scope > img`, as the live component already does, so
+a picture in the prompt is never mistaken for the select-point graphic.
