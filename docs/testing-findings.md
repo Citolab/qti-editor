@@ -310,3 +310,10 @@ Two bugs stacked on top of each other in `qti-layout-row`-nested interactions (i
 - **Why it only showed up in Node**: browser-side export and the roundtrip regression suite (which reads the DOM back rather than validating raw serialized bytes with libxml) never exercised the code path that cares whether the declaration is literally in the string.
 - **Resolution**: declare `xmlns:xsi` explicitly with `setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xsi', XSI_NS)` before setting `xsi:schemaLocation`, so both serializers emit an identical, self-contained document.
 - **Where to look**: `packages/prose-qti/src/core/composer/index.ts`.
+
+## 24. `qti-inline-choice-interaction` kept its focused look after the dropdown closed on an outside click — **fixed**
+
+`QtiInlineChoiceInteraction` renders with `delegatesFocus: true`, so its trigger `<button>` stays the shadow root's active element once clicked. The base `InteractionPanel` mixin (`components/shared/mixins/interaction-panel.ts`) only auto-closes an open panel on an outside `pointerdown` when `shouldClosePanelOnOutsidePointerDown()` is true, which by default is false while the host sits inside a ProseMirror surface — so inline-choice previously relied on that default and left the dropdown (and its focused styling) open when authoring.
+
+- **Resolution**: `qti-inline-choice-interaction.ts` now overrides `shouldClosePanelOnOutsidePointerDown()` to always return `true`, and adds `onPanelOpenChanged()` to blur both the shadow root's active element and the host itself whenever the panel closes, so the trigger does not retain its focused appearance after an outside click.
+- **Where to look**: `packages/prose-qti/src/components/inline-choice/components/qti-inline-choice-interaction/qti-inline-choice-interaction.ts`.
