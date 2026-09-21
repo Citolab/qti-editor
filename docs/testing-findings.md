@@ -317,3 +317,13 @@ Two bugs stacked on top of each other in `qti-layout-row`-nested interactions (i
 
 - **Resolution**: `qti-inline-choice-interaction.ts` now overrides `shouldClosePanelOnOutsidePointerDown()` to always return `true`, and adds `onPanelOpenChanged()` to blur both the shadow root's active element and the host itself whenever the panel closes, so the trigger does not retain its focused appearance after an outside click.
 - **Where to look**: `packages/prose-qti/src/components/inline-choice/components/qti-inline-choice-interaction/qti-inline-choice-interaction.ts`.
+
+## 25. Mounting `qti-inline-choice-interaction` anywhere but directly under `doc` hangs the tab — **upstream** (`@qti-components/interactions-core`)
+
+Moving the inline-choice dropdown to a native popover (finding context: it now mixes in `MenuAutoSizeMixin` so the trigger stays sized to the widest option without the old in-flow grid layout) surfaced a pre-existing hang in that mixin: mounting the component anywhere other than directly under the ProseMirror `doc` node — a table cell, a blockquote, any nesting — hangs the browser tab.
+
+- **Bisected to**: `shouldAutoSizeMenu()` / `updateMenuWidth()` in `MenuAutoSizeMixin` (`@qti-components/interactions-core`, published — not this repo, so no local fix without a release). Disabling auto-sizing makes the exact same nested mount, click included, run clean.
+- **Verified not caused by this repo's own measure-sandbox workaround**: the sandbox exists to stop a *different* loop (measuring slotted light-DOM rows in place re-triggers `slotchange`); this hang reproduces even with that workaround in place, whenever the host itself is nested.
+- **Test handling**: `apps/e2e/stories/inline-choice-interaction.stories.ts`'s `InlineChoiceInTable` story needs a nested mount (a table cell) to exercise the popover-escapes-clipping behavior this migration and the earlier `:state(open)`/table-wrapper fix (see the `InteractionPanel` paragraph in `docs/architecture.md`) both target, so it monkeypatches `shouldAutoSizeMenu()` to `false` on the registered class before mounting — scoped to that one story's Storybook tab, not a repo-wide fix. `InlineChoiceInSentence` mounts directly under `doc` and is unaffected, so it is the story that actually exercises auto-sizing.
+- **Fix**: needs a release of `@qti-components/interactions-core` with the mixin bug fixed; remove the story's workaround once that lands.
+- **Where to look**: `apps/e2e/stories/inline-choice-interaction.stories.ts` (file header and `mountTableEditor`).
