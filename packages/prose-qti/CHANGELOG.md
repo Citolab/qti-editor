@@ -1,5 +1,30 @@
 # @citolab/prose-qti
 
+## 1.23.1
+
+### Patch Changes
+
+- [#67](https://github.com/Citolab/qti-editor/pull/67) [`5596485`](https://github.com/Citolab/qti-editor/commit/55964853b6ced784933fbfa5e2a2707986b0de63) Thanks [@feyst](https://github.com/feyst)! - An image inside a `qti-simple-choice` or a `qti-prompt` survives the round trip. Both paragraph
+  nodes were `text*`, so an authored `<img>` — a picture as the answer itself — was dropped on import
+  and a pasted one was flattened to its `alt` text; `removeEmptyPrompts` then dropped a prompt whose
+  only content was that picture, because it keyed emptiness on text alone. Content widened to
+  `(text | image)*`, leaving the other inline nodes out.
+  
+  `qtiPromptParagraph` is shared, so select-point prompts can now hold an image too. Its two
+  `querySelector('img')` lookups are scoped to `:scope > img`, as the live component already does, so
+  a picture in the prompt is never mistaken for the select-point graphic.
+
+- [`66c7d18`](https://github.com/Citolab/qti-editor/commit/66c7d18a1adac0f7a172ecf128801a31dd98d88c) Thanks [@denisebroekman](https://github.com/denisebroekman)! - An open `qti-inline-choice-interaction` menu inside a table cell was invisible, not just clipped
+  at the edge — ProseMirror's table wrapper scrolls horizontally and the table itself clips for its
+  own layout, and the menu is deliberately in-flow (it's what sizes the trigger), so both caught it
+  in full.
+  
+  `InteractionPanel` now reflects its own open state as the transient `:state(open)` via
+  `ElementInternals`, and a document-level rule lifts that table's overflow while the state is set.
+  The interaction never learns a table is even possible, let alone which implementation — and any
+  future panel-based interaction gets the same table safety for free, since the rule matches the
+  state, not the tag.
+
 ## 1.23.0
 
 ### Minor Changes
