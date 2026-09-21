@@ -221,6 +221,25 @@ qti-simple-choice:hover + .qti-decoration--remove,
   background-color: var(--qti-edit-interaction-active-bg);
 }
 
+/* The `+` is anchored below the last choice and out of flow (see the "Structure" note in
+   choice-decorations.ts), so nothing reserves room for it — in a longer document the content right
+   after the interaction covers it. Only qti-choice-interaction ever emits a trailing `+` (the other
+   interactions use the generic wash+pill decorator, with nothing below the interaction to clear),
+   so only it gets the extra bottom margin, and only while active, matching when the `+` itself is
+   rendered. Transitioned so clicking into a choice doesn't shove the following content down with no
+   warning. */
+qti-choice-interaction {
+  transition: margin-bottom var(--qti-motion-duration-fast, 150ms) ease;
+}
+
+qti-choice-interaction.qti-interaction--active {
+  /* Clears the `+`: its own offset below the last choice (margin-top, `--qti-padding-vertical`)
+     plus its height (1.25rem), with one more `--qti-padding-vertical` so it isn't flush against
+     whatever follows. Kept in the same units as `.qti-decoration--add` below so the two move
+     together. */
+  margin-bottom: calc(var(--qti-padding-vertical, 0.5rem) * 2 + 1.25rem);
+}
+
 /* ══ c. Choice interaction — row sizing ════════════════════════════════════ */
 
 /* The theme sizes choices `fit-content` (runtime chips hug their text). In the editor the row is an
