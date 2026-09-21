@@ -56,6 +56,20 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
     return false;
   }
 
+  protected override shouldClosePanelOnOutsidePointerDown(): boolean {
+    return true;
+  }
+
+  protected override onPanelOpenChanged(open: boolean): void {
+    if (open) return;
+
+    // `delegatesFocus` makes the trigger the active element inside the shadow root. Blur both
+    // layers so the interaction does not retain its focused styling after an outside click.
+    const activeElement = this.shadowRoot?.activeElement;
+    if (activeElement instanceof HTMLElement) activeElement.blur();
+    this.blur();
+  }
+
   override render() {
     return html`
       <button
