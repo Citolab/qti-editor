@@ -9,7 +9,6 @@ import {
 } from '../../../shared';
 import styles from './qti-inline-choice-interaction.styles.js';
 
-
 /**
  * Editor component for qti-inline-choice-interaction — a dropdown embedded in running text,
  * holding `qti-inline-choice` options.
@@ -31,6 +30,8 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
   };
 
   static override styles = styles;
+
+  private readonly internals = this.attachInternals();
 
   @state()
   private _correctChoiceText: string | null = null;
@@ -61,6 +62,9 @@ export class QtiInlineChoiceInteraction extends InteractionPanel {
   }
 
   protected override onPanelOpenChanged(open: boolean): void {
+    if (open) this.internals.states.add('open');
+    else this.internals.states.delete('open');
+
     if (open) return;
 
     // `delegatesFocus` makes the trigger the active element inside the shadow root. Blur both

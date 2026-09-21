@@ -1,0 +1,22 @@
+/*
+ * Layout consequences of an interaction's own custom `:state(...)`. An interaction reflects its
+ * transient state (open, dragging, invalid, ...) via `ElementInternals`; this file is where a
+ * document-level rule reacts to that state without the interaction needing to know what's
+ * reacting, or the reactor needing to know which interaction it is.
+ */
+
+/*
+ * A panel-based interaction's menu is deliberately in-flow for sizing (see `InteractionPanel`
+ * and, for the inline-choice trigger specifically, its own styles module), but that means its
+ * open state paints beyond the table cell that contains it. ProseMirror's table wrapper and
+ * table both clip overflow (the wrapper for horizontal scrolling, the table for its own layout),
+ * which otherwise cuts the menu off at the bottom row.
+ *
+ * `InteractionPanel` reflects its own open/closed state as the transient `:state(open)`; this
+ * rule owns the table integration on top of that, so no interaction needs to know a table is
+ * even possible, let alone which implementation.
+ */
+.ProseMirror .tableWrapper:has(:state(open)),
+.ProseMirror .tableWrapper:has(:state(open)) > table {
+  overflow: visible;
+}

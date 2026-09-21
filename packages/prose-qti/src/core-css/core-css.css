@@ -4,6 +4,8 @@
  * Keep the split source files separate for review:
  * - core-layout.css: mandatory structural fixes for editor-rendered QTI.
  * - editor-states.css: editor-only state hooks for QTI elements.
+ * - interaction-state-layout.css: layout consequences of an interaction's own `:state(...)`.
  */
 @import './core-layout.css';
 @import './editor-states.css';
+@import './interaction-state-layout.css';
