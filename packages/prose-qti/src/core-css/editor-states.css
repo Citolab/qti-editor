@@ -10,7 +10,10 @@
   qti-gap-text:state(selected),
   qti-simple-choice:state(selected),
   qti-simple-associable-choice:state(selected) {
-    /* Drag sources selected by PendingSelectionController. */
+    /* Drag sources selected by PendingSelectionController — the "you're holding this" cue. */
+    outline: 2px solid var(--qti-primary, #0175aa);
+    outline-offset: 2px;
+    background: color-mix(in srgb, var(--qti-primary, #0175aa) 10%, transparent);
   }
 
   qti-gap-text:state(linked),
@@ -21,8 +24,10 @@
   qti-gap:state(pending),
   qti-simple-associable-choice:state(pending),
   qti-order-interaction:state(pending)::part(drop) {
-    background: #f3f4f6;
     /* Drop targets, or the order interaction host, while a drag source is pending. */
+    background: color-mix(in srgb, var(--qti-primary, #0175aa) 8%, transparent);
+    outline: 2px dashed var(--qti-primary, #0175aa);
+    outline-offset: 2px;
   }
 
   /* qti-components paints qti-simple-choice with the runtime button surface
