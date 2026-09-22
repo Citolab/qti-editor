@@ -7,7 +7,7 @@ import {
   hottextInteractionComposerMetadata,
   hottextNodeAttributePanelMetadataByNodeTypeName
 } from './composer/metadata.js';
-import { createInteractionDecoratorPlugin } from '../shared';
+import { createAnchorWrapperNodeViewPlugin, createInteractionDecoratorPlugin } from '../shared';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
@@ -22,7 +22,10 @@ export const hottextInteractionDescriptor = {
     { name: 'qtiHottextInteraction', spec: qtiHottextInteractionNodeSpec },
     { name: 'qtiHottext', spec: qtiHottextNodeSpec }
   ],
-  pluginFactories: [createHottextWrapSelectionPlugin],
+  pluginFactories: [
+    createHottextWrapSelectionPlugin,
+    () => createAnchorWrapperNodeViewPlugin({ nodeTypeName: 'qtiHottextInteraction', display: 'block' })
+  ],
   insertCommand: insertHottextInteraction,
   composerMetadata: hottextInteractionComposerMetadata,
   composerHandler: hottextComposerHandler,
