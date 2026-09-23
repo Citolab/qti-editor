@@ -220,6 +220,13 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     defineTable(),
     // Table's own spec has no priority override, so a plain patch reaches it.
     defineNodeSpec({ name: 'table', group: 'block richtext' }),
+    // ProseKit's cell content is 'block+'. `createAndFill()` picks whichever `block`-group node
+    // sorts first to fill a new empty cell, and since interaction nodes are also `group: 'block'`,
+    // that was not paragraph — every inserted table came out pre-filled with a question. Naming
+    // paragraph as the first alternative makes it the filler without narrowing what a cell accepts:
+    // interactions stay legal content, same reasoning as `defineQtiDoc` above.
+    defineNodeSpec({ name: 'tableCell', content: '(paragraph | block)+' }),
+    defineNodeSpec({ name: 'tableHeaderCell', content: '(paragraph | block)+' }),
     // Marks
     defineEm(),
     defineStrong(),
