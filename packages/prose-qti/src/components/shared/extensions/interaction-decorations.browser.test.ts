@@ -29,6 +29,7 @@ import {
 import { insertOrderInteraction } from '../../order/components/qti-order-interaction/qti-order-interaction.commands.js';
 import { insertSelectPointInteraction } from '../../select-point/components/qti-select-point-interaction/qti-select-point-interaction.commands.js';
 import { insertTextEntryInteraction } from '../../text-entry/components/qti-text-entry-interaction/qti-text-entry-interaction.commands.js';
+import { QTI_INTERACTION_ANCHOR_WRAPPER_CLASS } from './interaction-anchor-node-view.js';
 import { QTI_ACTIVE_INTERACTION_CLASS } from './interaction-decorations.js';
 import { QTI_OPEN_NODE_SETTINGS_EVENT } from './node-decorations.js';
 
@@ -168,7 +169,12 @@ describe.each(CASES)('$nodeTypeName', testCase => {
     expect(pills(view)).toHaveLength(1);
     const washed = active(view);
     expect(washed).toHaveLength(1);
-    expect(washed[0].tagName.toLowerCase()).toBe(testCase.tagName);
+    // The washed element is the interaction's anchor wrapper, not the interaction's own custom
+    // element — the wrapper is what carries `anchor-name` now, so the interaction's own internal
+    // use of that property (inline-choice's dropdown) is never overwritten. See
+    // interaction-anchor-node-view.ts.
+    expect(washed[0].classList.contains(QTI_INTERACTION_ANCHOR_WRAPPER_CLASS)).toBe(true);
+    expect(washed[0].querySelector(testCase.tagName)).not.toBeNull();
     // The pill anchors to the interaction it follows.
     expect(pills(view)[0].style.getPropertyValue('position-anchor')).toBe(
       washed[0].style.getPropertyValue('anchor-name')

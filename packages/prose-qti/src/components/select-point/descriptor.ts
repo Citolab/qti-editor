@@ -1,4 +1,5 @@
 import {
+  createAnchorWrapperNodeViewPlugin,
   createInteractionDecoratorPlugin,
   qtiPromptNodeSpec,
   qtiPromptParagraphNodeSpec
@@ -30,6 +31,9 @@ export const selectPointInteractionDescriptor = {
     { name: 'qtiPrompt', spec: qtiPromptNodeSpec },
     { name: 'qtiPromptParagraph', spec: qtiPromptParagraphNodeSpec },
     { name: 'imgSelectPoint', spec: imgSelectPointNodeSpec }
+  ],
+  pluginFactories: [
+    () => createAnchorWrapperNodeViewPlugin({ nodeTypeName: 'qtiSelectPointInteraction', display: 'block' })
   ],
   insertCommand: insertSelectPointInteraction,
   composerMetadata: selectPointInteractionComposerMetadata,

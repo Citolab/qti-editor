@@ -5,7 +5,7 @@ import {
   textEntryNodeAttributePanelMetadataByNodeTypeName
 } from './composer/metadata.js';
 import { textEntryComposerHandler } from './composer/handler.js';
-import { createInteractionDecoratorPlugin } from '../shared';
+import { createAnchorWrapperNodeViewPlugin, createInteractionDecoratorPlugin } from '../shared';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
@@ -20,6 +20,9 @@ export const textEntryInteractionDescriptor = {
       })
   ],
   nodeSpecs: [{ name: 'qtiTextEntryInteraction', spec: qtiTextEntryInteractionNodeSpec }],
+  pluginFactories: [
+    () => createAnchorWrapperNodeViewPlugin({ nodeTypeName: 'qtiTextEntryInteraction', display: 'inline' })
+  ],
   insertCommand: insertTextEntryInteraction,
   composerMetadata: textEntryInteractionComposerMetadata,
   composerHandler: textEntryComposerHandler,

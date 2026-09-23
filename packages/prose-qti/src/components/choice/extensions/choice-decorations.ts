@@ -149,6 +149,17 @@ function buildDecorations(state: EditorState, active: boolean): DecorationSet {
     // browser binds every anchored box to the LAST of them, which would stack all the ×'s on the
     // final choice. Names are derived from the node's position, so they stay stable for as long as
     // the node does.
+    //
+    // This writes `anchor-name` as an inline style directly on `qti-choice-interaction`'s own
+    // element (via `Decoration.node`, below) — harmless today, because the component has no
+    // internal use of that property. It would NOT be harmless if it ever did: an inline style
+    // always wins over a `:host` rule from the element's own shadow root, so a component that
+    // needs `anchor-name` for something of its own (as `qti-inline-choice-interaction` does, for
+    // its dropdown popover) would have it silently overwritten — which is exactly the bug fixed in
+    // the other nine interactions by `interaction-anchor-node-view.ts`'s wrapper NodeView. If
+    // `qti-choice-interaction` (or `qti-simple-choice`, decorated the same way below) ever grows
+    // its own `anchor-name` use, give it the same treatment rather than writing this decoration on
+    // its own element.
     const interactionAnchor = `--qti-choice-interaction-${pos}`;
     decorations.push(
       Decoration.node(pos, interactionEnd, {
@@ -178,6 +189,8 @@ function buildDecorations(state: EditorState, active: boolean): DecorationSet {
       const choiceAnchor = `--qti-simple-choice-${choicePos}`;
       lastChoiceAnchor = choiceAnchor;
 
+      // Same latent risk as `interactionAnchor` above: harmless only because `qti-simple-choice`
+      // has no internal `anchor-name` use of its own today.
       decorations.push(Decoration.node(choicePos, afterChoice, { style: `anchor-name: ${choiceAnchor}` }));
 
       // The schema requires `qtiSimpleChoice+`: with one choice left there is nothing to remove, so

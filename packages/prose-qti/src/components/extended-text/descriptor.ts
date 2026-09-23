@@ -1,4 +1,9 @@
-import { createInteractionDecoratorPlugin, qtiPromptNodeSpec, qtiPromptParagraphNodeSpec } from '../shared';
+import {
+  createAnchorWrapperNodeViewPlugin,
+  createInteractionDecoratorPlugin,
+  qtiPromptNodeSpec,
+  qtiPromptParagraphNodeSpec
+} from '../shared';
 import { insertExtendedTextInteraction } from './components/qti-extended-text-interaction/qti-extended-text-interaction.commands.js';
 import { qtiExtendedTextInteractionNodeSpec } from './components/qti-extended-text-interaction/qti-extended-text-interaction.schema.js';
 import {
@@ -23,6 +28,9 @@ export const extendedTextInteractionDescriptor = {
     { name: 'qtiExtendedTextInteraction', spec: qtiExtendedTextInteractionNodeSpec },
     { name: 'qtiPrompt', spec: qtiPromptNodeSpec },
     { name: 'qtiPromptParagraph', spec: qtiPromptParagraphNodeSpec }
+  ],
+  pluginFactories: [
+    () => createAnchorWrapperNodeViewPlugin({ nodeTypeName: 'qtiExtendedTextInteraction', display: 'block' })
   ],
   insertCommand: insertExtendedTextInteraction,
   composerMetadata: extendedTextInteractionComposerMetadata,

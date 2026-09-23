@@ -1,5 +1,7 @@
 import { Plugin, PluginKey } from 'prosemirror-state';
 
+import { QTI_INTERACTION_ANCHOR_WRAPPER_CLASS } from '../../shared/extensions/interaction-anchor-node-view.js';
+
 import type { Node as PmNode } from 'prosemirror-model';
 import type { ViewMutationRecord } from 'prosemirror-view';
 
@@ -44,8 +46,14 @@ export function createGapMatchNodeViewPlugin(): Plugin {
           const dom = document.createElement('qti-gap-match-interaction');
           applyAttrs(dom, node.attrs);
 
+          // The wrapper — not `dom` itself — is what the generic interaction decorator sets
+          // `anchor-name` on. See interaction-anchor-node-view.ts for why.
+          const wrapper = document.createElement('div');
+          wrapper.className = QTI_INTERACTION_ANCHOR_WRAPPER_CLASS;
+          wrapper.appendChild(dom);
+
           return {
-            dom,
+            dom: wrapper,
             contentDOM: dom,
             update(newNode: PmNode): boolean {
               if (newNode.type.name !== 'qtiGapMatchInteraction') return false;

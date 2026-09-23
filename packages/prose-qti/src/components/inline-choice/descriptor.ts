@@ -11,7 +11,7 @@ import {
 } from './composer/metadata.js';
 import { inlineChoiceComposerHandler } from './composer/handler.js';
 import { createInlineChoiceCorrectResponseClickPlugin } from './extensions/correct-response-click.js';
-import { createInteractionDecoratorPlugin } from '../shared';
+import { createAnchorWrapperNodeViewPlugin, createInteractionDecoratorPlugin } from '../shared';
 
 import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 
@@ -29,7 +29,10 @@ export const inlineChoiceInteractionDescriptor = {
     { name: 'qtiInlineChoiceInteraction', spec: qtiInlineChoiceInteractionNodeSpec },
     { name: 'qtiInlineChoice', spec: qtiInlineChoiceNodeSpec }
   ],
-  pluginFactories: [createInlineChoiceCorrectResponseClickPlugin],
+  pluginFactories: [
+    createInlineChoiceCorrectResponseClickPlugin,
+    () => createAnchorWrapperNodeViewPlugin({ nodeTypeName: 'qtiInlineChoiceInteraction', display: 'inline' })
+  ],
   insertCommand: insertInlineChoiceInteraction,
   enterCommand: insertInlineChoiceOnEnter,
   backspaceCommand: deleteInlineChoiceOnBackspace,
