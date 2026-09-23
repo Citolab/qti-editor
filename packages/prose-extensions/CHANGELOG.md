@@ -1,5 +1,18 @@
 # @citolab/prose-extensions
 
+## 1.7.1
+
+### Patch Changes
+
+- [#75](https://github.com/Citolab/qti-editor/pull/75) [`dd4d078`](https://github.com/Citolab/qti-editor/commit/dd4d078350ef0b92b3720e367aad2fd24d725c37) Thanks [@denisebroekman](https://github.com/denisebroekman)! - Inserting a table filled every cell with a question (interaction) instead of a blank paragraph.
+  ProseKit's table cell content expression is `block+`, and QTI interaction nodes are also
+  `group: 'block'`, so when a new cell is auto-filled, `ContentMatch.defaultType` picked whichever
+  `block`-group node sorts first — which was an interaction, not `paragraph`.
+  
+  Cells now accept `(paragraph | block)+`: the same content is admitted (paragraph was already in
+  `block`, so interactions are still legal in a cell), but paragraph is named first and wins the
+  fill, matching the same fix already applied to the empty document in `defineQtiDoc`.
+
 ## 1.7.0
 
 ### Minor Changes
