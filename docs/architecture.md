@@ -305,6 +305,24 @@ exports the activation state machine behind it — `applyDecoratorActivation`,
 `handleDecoratorEscape`, `selectionInsideNode`, `QTI_ACTIVE_INTERACTION_CLASS` — so a decorator that
 needs more than wash-and-pill builds on the same primitives instead of re-deriving them.
 
+`createInteractionDecoratorPlugin` writes its `anchor-name` as an inline style via
+`Decoration.node`, which lands on whatever DOM element the node reports as its NodeView's `dom` —
+the interaction's own custom element, absent a NodeView. That collided with
+`qti-inline-choice-interaction`, which needs `anchor-name` on that same element for its own
+dropdown popover (above): the decorator's inline style always wins over a `:host` rule, so it
+silently overwrote the popover's anchor and the dropdown lost its `anchor()` position. Every
+decorated interaction now installs a NodeView from
+`components/shared/extensions/interaction-anchor-node-view.ts`'s
+`createAnchorWrapperNodeViewPlugin({ nodeTypeName, display })`, which wraps the interaction's own
+`toDOM` output (rebuilt via `DOMSerializer.renderSpec`, so it stays byte-for-byte what the
+default renderer would have produced) in a bare `<div>`/`<span>` — `display: 'inline'` for an
+inline-group node so prose keeps flowing around it, `'block'` otherwise — with no box of its own
+beyond the tag's default. The wrapper, not the interaction's element, becomes the node's `dom`, so
+`anchor-name` and the "clicked into" wash class land there instead, and an interaction's own use of
+that property is never touched. `choice`'s decorator (below) sets `anchor-name` directly on
+`qti-choice-interaction`/`qti-simple-choice` without this wrapper — harmless only because neither
+has an `anchor-name` use of its own today; give it the same wrapper if that changes.
+
 `components/shared/extensions/node-decorations.ts` owns:
 
 - the icon set and the button factory, so every affordance in every decorator is the same element
