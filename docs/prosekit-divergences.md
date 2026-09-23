@@ -80,6 +80,17 @@ author looking at an empty feedback box containing an empty table.
 **Replaced by** `defineQtiDoc`, `content: '(paragraph | block)+'`. The accepted node set is unchanged
 — paragraph is already in `block` — only the filler preference changes.
 
+### `tableCell` / `tableHeaderCell` — same trap, a new cell fills with the wrong node
+
+`defineTable()`'s cell content is also a bare `block+`, and QTI interaction nodes are `group:
+'block'` too, so `createAndFill()` auto-filling a newly-inserted cell picked whichever `block`-group
+node registered first — an interaction, not `paragraph`. Inserting a table filled every cell with a
+question.
+
+**Replaced by** patching `tableCell` and `tableHeaderCell` to `content: '(paragraph | block)+'`
+(`packages/prose-extensions/src/prosekit/basic.ts`) — the identical fix as `defineQtiDoc` above, for
+the identical reason: the accepted node set is unchanged, only the filler preference changes.
+
 ### Gap cursor — reachable, but typing opens the wrong node
 
 `defineGapCursor()` gets ProseMirror's gap cursor into the extension union, but two more decisions

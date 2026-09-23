@@ -334,3 +334,10 @@ Moving the inline-choice dropdown to a native popover (finding context: it now m
 
 - **Resolution**: every decorated interaction now installs a NodeView, via the new `createAnchorWrapperNodeViewPlugin` (`components/shared/extensions/interaction-anchor-node-view.ts`), that wraps the interaction's own rendered element in a bare `<div>`/`<span>` with no box of its own. The wrapper — not the interaction's element — is what `Decoration.node` targets, so the decorator's `anchor-name` and wash class land there instead, and the interaction's own `anchor-name` use is never touched. `qti-choice-interaction`/`qti-simple-choice` (choice's own decorator, `choice-decorations.ts`) still write `anchor-name` directly without this wrapper, harmless only because neither has an `anchor-name` use of its own yet.
 - **Where to look**: `packages/prose-qti/src/components/shared/extensions/interaction-anchor-node-view.ts`; each interaction's `descriptor.ts` (or, for gap-match and match-tabular, their own hand-written NodeView) wires it in.
+
+## 27. Inserting a table filled every cell with an interaction node — **fixed**
+
+Same trap as finding 16's third bullet, recurring in a different node. ProseKit's table cell content expression is a bare `content: 'block+'`, and QTI interaction nodes are also `group: 'block'`, so `createAndFill()` auto-filling a newly-inserted cell picked whichever `block`-group node sorts first — not `paragraph`. Every table inserted into the editor came out pre-filled with a question in each cell instead of a blank paragraph.
+
+- **Resolution**: `tableCell` and `tableHeaderCell` are now patched to `content: '(paragraph | block)+'` (`packages/prose-extensions/src/prosekit/basic.ts`), naming paragraph first so it wins the fill — the same fix already applied to the empty document in `defineQtiDoc` (finding 16). The accepted node set is unchanged; interactions are still legal content in a cell.
+- **Where to look**: `packages/prose-extensions/src/prosekit/basic.ts`; see also [prosekit-divergences.md](prosekit-divergences.md)'s `doc` and `tableCell`/`tableHeaderCell` sections for the underlying `ContentMatch.defaultType` mechanism.
