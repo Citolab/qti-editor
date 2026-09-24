@@ -9,6 +9,7 @@
  * - @qti-editor/prosemirror-plugins/node-attrs-sync - Node attributes synchronization
  * - @qti-editor/prosemirror-plugins/paste-semantic-html - Semantic paste normalization
  * - @qti-editor/prosemirror-plugins/schema-gaps - What a schema cannot represent in imported markup
+ * - @qti-editor/prosemirror-plugins/clear-formatting - Generic mark/block-type reset within a range
  */
 
 // Re-export everything from submodules for convenience
@@ -16,3 +17,4 @@ export * from './block-select/index.js';
 export * from './node-attrs-sync/index.js';
 export * from './paste-semantic-html/index.js';
 export * from './schema-gaps/index.js';
+export * from './clear-formatting/index.js';

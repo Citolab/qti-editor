@@ -56,6 +56,10 @@
       "types": "./dist/prosemirror/schema-gaps/index.d.ts",
       "default": "./dist/prosemirror/schema-gaps/index.js"
     },
+    "./clear-formatting": {
+      "types": "./dist/prosemirror/clear-formatting/index.d.ts",
+      "default": "./dist/prosemirror/clear-formatting/index.js"
+    },
     "./prosekit/basic": {
       "types": "./dist/prosekit/basic.d.ts",
       "default": "./dist/prosekit/basic.js"
