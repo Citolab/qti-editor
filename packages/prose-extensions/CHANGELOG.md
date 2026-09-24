@@ -1,5 +1,14 @@
 # @citolab/prose-extensions
 
+## 1.8.0
+
+### Minor Changes
+
+- [`523241c`](https://github.com/Citolab/qti-editor/commit/523241c7ce4d645a4c3cf03b31a7366b7ff806f4) Thanks [@denisebroekman](https://github.com/denisebroekman)! - New `@citolab/prose-extensions/clear-formatting` entry point: `clearFormattingInRange` strips every
+  mark and flattens block structure (headings, blockquotes, lists — including nested ones) back to
+  plain paragraphs within a given document range. Generic ProseMirror transform with no QTI knowledge;
+  a wrapper only partially covered by the range is left in place rather than dissolved.
+
 ## 1.7.1
 
 ### Patch Changes
