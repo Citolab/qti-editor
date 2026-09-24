@@ -104,13 +104,22 @@ export function clearFormattingInRange(
     return out;
   }
 
-  // 2. Dissolve the outermost dissolvable wrapper nodes fully contained in
-  // [from, to]. Nested wrappers are handled inside `flatten`, so this only
-  // collects the top-level ones.
+  // 2. Dissolve the outermost dissolvable wrapper nodes whose *reachable text*
+  // is fully contained in [from, to]. Nested wrappers are handled inside
+  // `flatten`, so this only collects the top-level ones.
+  //
+  // Checked against the innermost text boundary, not `pos+1`/`pos+nodeSize-1`:
+  // a wrapper's immediate child is often itself a non-leaf node (blockquote's
+  // child is a paragraph; a list-item's child is a paragraph too), so pos+1
+  // only reaches the child's own opening delimiter, not its text. A selection
+  // that merely spans "all the text inside this wrapper" — clicking into it
+  // and selecting its line, or triple-clicking it — never reaches past that
+  // structural delimiter, so comparing against it would refuse to dissolve
+  // the wrapper for exactly the selections a real user produces.
   const wrappers: Array<{ pos: number; node: ProseMirrorNode }> = [];
   tr.doc.nodesBetween(from, to, (node, pos) => {
     if (!dissolvableTypeNames.has(node.type.name)) return true;
-    if (pos < from || pos + node.nodeSize > to) return true; // only fully-contained wrappers
+    if (firstReachablePos(node, pos) < from || lastReachablePos(node, pos) > to) return true; // only fully-contained wrappers
     wrappers.push({ pos, node });
     return false;
   });
@@ -126,10 +135,12 @@ export function clearFormattingInRange(
   from = tr.mapping.map(from, -1);
   to = tr.mapping.map(to, 1);
 
-  // 3. Reset every remaining non-target textblock in [from, to] to the target type.
+  // 3. Reset every remaining non-target textblock in [from, to] to the target
+  // type. Same containment check as step 2, and for the same reason: "select
+  // this heading's text" must be enough to retype it.
   tr.doc.nodesBetween(from, to, (node, pos) => {
     if (!node.isTextblock || node.type === targetType) return true;
-    if (pos < from || pos + node.nodeSize > to) return true; // only fully-contained textblocks
+    if (firstReachablePos(node, pos) < from || lastReachablePos(node, pos) > to) return true; // only fully-contained textblocks
     const $pos = tr.doc.resolve(pos);
     if (!$pos.parent.canReplaceWith($pos.index(), $pos.index() + 1, targetType)) return true;
     tr.setNodeMarkup(pos, targetType, null, node.marks);
@@ -138,4 +149,31 @@ export function clearFormattingInRange(
   });
 
   return changed;
+}
+
+/**
+ * The earliest position actually reachable by a text selection inside `node`
+ * (which sits at `pos`): `pos + 1`, then stepped one further inward for every
+ * non-leaf, non-text node encountered while always following `firstChild` —
+ * i.e. the first real content, not just the node's own opening delimiter.
+ */
+function firstReachablePos(node: ProseMirrorNode, pos: number): number {
+  let innerPos = pos + 1;
+  let child = node.firstChild;
+  while (child && !child.isText && !child.isLeaf) {
+    innerPos += 1;
+    child = child.firstChild;
+  }
+  return innerPos;
+}
+
+/** The mirror of {@link firstReachablePos}, following `lastChild` from the end. */
+function lastReachablePos(node: ProseMirrorNode, pos: number): number {
+  let innerPos = pos + node.nodeSize - 1;
+  let child = node.lastChild;
+  while (child && !child.isText && !child.isLeaf) {
+    innerPos -= 1;
+    child = child.lastChild;
+  }
+  return innerPos;
 }
