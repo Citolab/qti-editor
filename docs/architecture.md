@@ -169,9 +169,9 @@ reach for. An app wanting a curated subset assembles its own extension from
 ## Package Dependency Flow
 
 ```
-@citolab/prose-qti          (QTI + interfaces + integration; depends on @qti-components/*)
+@citolab/prose-extensions   (generic ProseMirror/ProseKit extensions; no dependency on prose-qti)
          ↓
-@citolab/prose-extensions   (generic ProseMirror/ProseKit extensions; depends on prose-qti)
+@citolab/prose-qti          (QTI + interfaces + integration; depends on @qti-components/* and prose-extensions)
          ↓
 apps/*  +  external editor applications   (consume the published packages)
 
@@ -188,7 +188,7 @@ apps/*  +  external editor applications   (consume the published packages)
 
 `packages/prose-qti`'s `sideEffects` array has the same dual-spelling requirement as `exports`, for the opposite reason: it must list both `./dist/components/**/register.js` (what a consumer's bundler tree-shakes) and `./src/components/**/register.ts` (what this workspace's own apps resolve to via `tsconfig` paths). A pattern naming only one spelling lets a bundler drop every `register` side-effect import against the other, which deletes the whole custom-element layer silently — no build error, the editor just renders unstyled `HTMLElement`s. `packages/prose-qti/src/side-effects.node.test.ts` asserts both patterns stay present and every module defining a custom element is still named `register`, which is the filename convention the patterns match on.
 
-Cross-package dependencies within this repo (e.g. `prose-extensions` depending on `prose-qti`) use the pnpm `workspace:*` protocol rather than a pinned version — see [release-plan.md](release-plan.md#internal-package-dependencies).
+Cross-package dependencies within this repo (e.g. `prose-qti` depending on `prose-extensions`, for the `clear-formatting` command's underlying transform) use the pnpm `workspace:*` protocol rather than a pinned version — see [release-plan.md](release-plan.md#internal-package-dependencies).
 
 ## Placement Decision Rules
 
@@ -218,6 +218,7 @@ Examples:
 - Attribute syncing
 - Schema compatibility migrations
 - ProseKit wrappers for standard text extensions
+- A mark/block-type reset over a plain range, with no notion of interaction nodes (`clear-formatting`)
 
 ### Rule 4: Is it QTI semantics, interaction behavior, or ProseKit assembly?
 
@@ -230,6 +231,7 @@ Examples:
 - Interaction node specs and commands
 - Descriptor objects
 - ProseKit integration surfaces (events, code panel, contexts)
+- Cross-cutting editing commands that must skip over interaction subtrees (`src/commands/`, e.g. the `clearFormatting` command)
 
 ### Rule 5: Is it only needed to demonstrate usage?
 
@@ -318,6 +320,25 @@ The split exists because `pluginFactories` is installed unconditionally by every
 affordances. Hosts opt in through `defineQtiDecorationsExtension()` (ProseKit) or
 `listInteractionDecoratorPluginFactories()` (plain ProseMirror), paired with the equally opt-in
 `@citolab/prose-qti/decorations.css`.
+
+### Clear formatting — opt-in editing command
+
+`src/commands/clear-formatting.commands.ts` exports `clearFormatting(): Command` — a plain
+`prosemirror-state` command, not tied to ProseKit. It resets the current selection back to plain
+paragraphs (marks stripped, headings/blockquotes/lists collapsed) while leaving any interaction the
+selection spans completely untouched: `collectSafeRanges` splits the selection into the maximal
+sub-ranges that never contain, at any depth, a node whose type is a registered interaction
+(`listInteractionDescriptors()`), and the actual mark/block-type reset for each safe sub-range is
+delegated to `@citolab/prose-extensions/clear-formatting`'s `clearFormattingInRange` — a generic,
+QTI-agnostic transform with no notion of interactions at all. Published as the
+`@citolab/prose-qti/commands` subpath.
+
+Like the decorations above, this is an authoring affordance a read-only or player host has no
+reason to load, so it is deliberately **not** folded into `defineQtiInteractionsExtension()` or
+`defineQtiExtension()`. `@citolab/prose-qti/integration/interactions/prosekit`'s
+`defineClearFormattingExtension()` wraps it as a ProseKit extension (a `defineCommands({
+clearFormatting })` entry plus a `Mod-\` keymap binding) for hosts that want it; a plain-ProseMirror
+host binds `clearFormatting()` to its own keymap/toolbar entry directly instead.
 
 Every interaction has a decorator, and almost all of that shape is shared. Two modules own it:
 

@@ -1,5 +1,12 @@
 # @citolab/prose-qti
 
+## 1.24.1
+
+### Patch Changes
+
+- Updated dependencies [[`919e693`](https://github.com/Citolab/qti-editor/commit/919e693e24fc17b5cae606c97354539d9d9d5e2f)]:
+  - @citolab/prose-extensions@1.8.1
+
 ## 1.24.0
 
 ### Minor Changes
