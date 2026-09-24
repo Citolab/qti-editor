@@ -76,8 +76,13 @@ Interaction components: `choice`, `extended-text`, `gap-match`, `hottext`, `inli
 - `item-context` (re-exported from `./integration`) — `itemContext`, `ItemContext`, `itemContextVariables`
 - `save-xml` (re-exported from `./integration`) — `xmlFromNode`, `xmlToHTML`
 - `save-qti-item` (re-exported from `./integration`) — `qtiItemFromProsemirror`
-- `interactions/prosekit` (subpath only, not re-exported from `./integration`) — `defineQtiInteractionsExtension`, `defineQtiExtension`, `registerQtiInteractionElements` (deprecated no-op kept for backwards compatibility)
+- `interactions/prosekit` (subpath only, not re-exported from `./integration`) — `defineQtiInteractionsExtension`, `defineQtiExtension`, `defineQtiDecorationsExtension`, `defineClearFormattingExtension`, `registerQtiInteractionElements` (deprecated no-op kept for backwards compatibility)
 - Shared document types: `QtiDocumentJson`, `QtiNodeJson` (re-exported from `./integration`)
+
+`src/commands/` (published as the `./commands` subpath, not re-exported from the package root) owns
+cross-cutting editing commands that are QTI-aware (they know about interaction nodes) but not tied
+to any single interaction and not part of composition/serialization — currently just `clearFormatting`
+(see [Clear formatting](#clear-formatting--opt-in-editing-command) below).
 
 `src/item-export/`, `src/item-roundtrip/`, `src/qti3-item-import/` own QTI serialization and import transforms. `editorContext`/`qtiEditorContext` and multi-item/package-building support were moved out of this package and now live in the consuming application — this package's export surface is single-item only.
 
@@ -110,6 +115,8 @@ Owns:
 - `src/prosemirror/block-select` — block selection plugin
 - `src/prosemirror/node-attrs-sync` — node attribute synchronization
 - `src/prosemirror/paste-semantic-html` — paste HTML handling
+- `src/prosemirror/schema-gaps` — finds and preserves markup a schema cannot represent
+- `src/prosemirror/clear-formatting` — `clearFormattingInRange(tr, range, options?)`: strips every mark and flattens structural wrappers/textblocks back to a plain paragraph within a range, mutating the given `Transaction` in place. Has no notion of QTI or interaction nodes — a caller needing to leave some subtree untouched excludes it from `range` itself; `@citolab/prose-qti`'s `clearFormatting` command (see [Clear formatting](#clear-formatting--opt-in-editing-command) below) is that caller.
 - `src/prosemirror/prosekit-extensions.ts` — ProseKit extension wrappers (`blockSelectExtension`, `nodeAttrsSyncExtension`, `defineSemanticPasteExtension`) for the plugins above, published as the `./prosekit-extensions` subpath; importing from here requires the `prosekit` peer dependency
 - `src/prosekit/` — ProseKit-specific wrappers for marks/lists (`defineEm`, `defineStrong`, `defineList`), plus `defineBasicExtension()` — the shared QTI-shaped ProseKit base (doc/text/paragraph/heading/list/image/table nodes, `em`/`strong` marks, base keymap/commands/history/gap cursor) that every app's own `basic-extension.ts` composes on top of with its own additions (hard break, virtual selection, AI, etc.) rather than redefining the base itself. Four of these (`doc`, `list`, the `em`/`strong` marks, `image`) are rebuilt rather than patched because ProseKit's own spec does not serialise to what QTI needs — see [prosekit-divergences.md](prosekit-divergences.md). `gap-cursor-paragraph.ts` (`defineGapCursorParagraph()`) is a fifth ProseKit correction, paired with `allowGapCursor: true` on a schema's `doc`/wrapper node specs rather than replacing a spec outright — see the same doc.
 
@@ -144,9 +151,9 @@ reach for. An app wanting a curated subset assembles its own extension from
 ## Package Dependency Flow
 
 ```
-@citolab/prose-qti          (QTI + interfaces + integration; depends on @qti-components/*)
+@citolab/prose-extensions   (generic ProseMirror/ProseKit extensions; no dependency on prose-qti)
          ↓
-@citolab/prose-extensions   (generic ProseMirror/ProseKit extensions; depends on prose-qti)
+@citolab/prose-qti          (QTI + interfaces + integration; depends on @qti-components/* and prose-extensions)
          ↓
 apps/*  +  external editor applications   (consume the published packages)
 
@@ -163,7 +170,7 @@ apps/*  +  external editor applications   (consume the published packages)
 
 `packages/prose-qti`'s `sideEffects` array has the same dual-spelling requirement as `exports`, for the opposite reason: it must list both `./dist/components/**/register.js` (what a consumer's bundler tree-shakes) and `./src/components/**/register.ts` (what this workspace's own apps resolve to via `tsconfig` paths). A pattern naming only one spelling lets a bundler drop every `register` side-effect import against the other, which deletes the whole custom-element layer silently — no build error, the editor just renders unstyled `HTMLElement`s. `packages/prose-qti/src/side-effects.node.test.ts` asserts both patterns stay present and every module defining a custom element is still named `register`, which is the filename convention the patterns match on.
 
-Cross-package dependencies within this repo (e.g. `prose-extensions` depending on `prose-qti`) use the pnpm `workspace:*` protocol rather than a pinned version — see [release-plan.md](release-plan.md#internal-package-dependencies).
+Cross-package dependencies within this repo (e.g. `prose-qti` depending on `prose-extensions`, for the `clear-formatting` command's underlying transform) use the pnpm `workspace:*` protocol rather than a pinned version — see [release-plan.md](release-plan.md#internal-package-dependencies).
 
 ## Placement Decision Rules
 
@@ -193,6 +200,7 @@ Examples:
 - Attribute syncing
 - Schema compatibility migrations
 - ProseKit wrappers for standard text extensions
+- A mark/block-type reset over a plain range, with no notion of interaction nodes (`clear-formatting`)
 
 ### Rule 4: Is it QTI semantics, interaction behavior, or ProseKit assembly?
 
@@ -205,6 +213,7 @@ Examples:
 - Interaction node specs and commands
 - Descriptor objects
 - ProseKit integration surfaces (events, code panel, contexts)
+- Cross-cutting editing commands that must skip over interaction subtrees (`src/commands/`, e.g. the `clearFormatting` command)
 
 ### Rule 5: Is it only needed to demonstrate usage?
 
@@ -293,6 +302,25 @@ The split exists because `pluginFactories` is installed unconditionally by every
 affordances. Hosts opt in through `defineQtiDecorationsExtension()` (ProseKit) or
 `listInteractionDecoratorPluginFactories()` (plain ProseMirror), paired with the equally opt-in
 `@citolab/prose-qti/decorations.css`.
+
+### Clear formatting — opt-in editing command
+
+`src/commands/clear-formatting.commands.ts` exports `clearFormatting(): Command` — a plain
+`prosemirror-state` command, not tied to ProseKit. It resets the current selection back to plain
+paragraphs (marks stripped, headings/blockquotes/lists collapsed) while leaving any interaction the
+selection spans completely untouched: `collectSafeRanges` splits the selection into the maximal
+sub-ranges that never contain, at any depth, a node whose type is a registered interaction
+(`listInteractionDescriptors()`), and the actual mark/block-type reset for each safe sub-range is
+delegated to `@citolab/prose-extensions/clear-formatting`'s `clearFormattingInRange` — a generic,
+QTI-agnostic transform with no notion of interactions at all. Published as the
+`@citolab/prose-qti/commands` subpath.
+
+Like the decorations above, this is an authoring affordance a read-only or player host has no
+reason to load, so it is deliberately **not** folded into `defineQtiInteractionsExtension()` or
+`defineQtiExtension()`. `@citolab/prose-qti/integration/interactions/prosekit`'s
+`defineClearFormattingExtension()` wraps it as a ProseKit extension (a `defineCommands({
+clearFormatting })` entry plus a `Mod-\` keymap binding) for hosts that want it; a plain-ProseMirror
+host binds `clearFormatting()` to its own keymap/toolbar entry directly instead.
 
 Every interaction has a decorator, and almost all of that shape is shared. Two modules own it:
 

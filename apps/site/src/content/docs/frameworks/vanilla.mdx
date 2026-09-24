@@ -62,6 +62,7 @@ import { textEntryInteractionDescriptor }    from '@citolab/prose-qti/components
 // …import the rest the same way
 import { exportItemXml, importItemFromUrl } from '@citolab/prose-qti/item-roundtrip';
 import { listInteractionDecoratorPluginFactories } from '@citolab/prose-qti/core/interactions/composer';
+import { clearFormatting } from '@citolab/prose-qti/commands';
 
 // Side-effect imports register the Lit custom elements used by the node views.
 import '@citolab/prose-qti/components/choice/register.js';
@@ -99,6 +100,9 @@ const backspaceCommand = chainCommands(...descriptors.flatMap(d => d.backspaceCo
 
 export const qtiPlugins: Plugin[] = [
   keymap({ Enter: enterCommand, Backspace: backspaceCommand }),
+  // Resets the selection back to plain paragraphs, skipping over any interaction it spans. An
+  // authoring affordance like the decorators below — drop this line for a read-only or player host.
+  keymap({ 'Mod-\\': clearFormatting() }),
   ...descriptors.flatMap(d => d.pluginFactories?.map(factory => factory()) ?? []),
   // Opt-in authoring affordances (per-choice remove button, add button, settings pill shown on
   // click) — currently shipped by the choice descriptor. Drop this line for a read-only or player
@@ -211,6 +215,7 @@ Use `prosemirror-menu` for an Insert dropdown built from the descriptors:
 ```ts
 import { menuBar, MenuItem, Dropdown } from 'prosemirror-menu';
 import { descriptors } from './prosemirror-qti.js';
+import { clearFormatting } from '@citolab/prose-qti/commands';
 
 const insertInteractionDropdown = new Dropdown(
   descriptors.map(descriptor => new MenuItem({
@@ -222,7 +227,14 @@ const insertInteractionDropdown = new Dropdown(
   { label: 'Insert' }
 );
 
-// Add `menuBar({ content: [[insertInteractionDropdown], …] })` to your plugin stack.
+const clearFormattingItem = new MenuItem({
+  run:    clearFormatting(),
+  enable: state => clearFormatting()(state),
+  label:  'Clear formatting',
+  title:  'Clear formatting',
+});
+
+// Add `menuBar({ content: [[insertInteractionDropdown], [clearFormattingItem], …] })` to your plugin stack.
 ```
 
 ## Attributes panel
