@@ -79,10 +79,20 @@ Interaction components: `choice`, `extended-text`, `gap-match`, `hottext`, `inli
 - `interactions/prosekit` (subpath only, not re-exported from `./integration`) — `defineQtiInteractionsExtension`, `defineQtiExtension`, `defineQtiDecorationsExtension`, `defineClearFormattingExtension`, `registerQtiInteractionElements` (deprecated no-op kept for backwards compatibility)
 - Shared document types: `QtiDocumentJson`, `QtiNodeJson` (re-exported from `./integration`)
 
-`src/commands/` (published as the `./commands` subpath, not re-exported from the package root) owns
-cross-cutting editing commands that are QTI-aware (they know about interaction nodes) but not tied
-to any single interaction and not part of composition/serialization — currently just `clearFormatting`
-(see [Clear formatting](#clear-formatting--opt-in-editing-command) below).
+`src/commands/` owns cross-cutting editing commands: QTI-aware, but not tied to any single
+interaction and not part of composition/serialization (that stays in `core/`). `clearFormatting()`
+(`@citolab/prose-qti/commands`) resets the current selection to plain paragraphs — every mark
+stripped, headings/blockquotes/lists flattened — while leaving any spanned interaction (including
+`qtiRubricBlock`) completely untouched: `collectSafeRanges` splits `[from, to]` into the maximal
+sub-ranges that never contain an interaction node at any depth, since interaction nodes are not
+reliably distinguishable from plain content by schema `group` alone (see the schema notes in
+`create-qti-schema.ts`). The actual mark-stripping/flattening primitive is generic and lives in
+`@citolab/prose-extensions/clear-formatting` (`clearFormattingInRange`) — this command is only the
+QTI-aware wrapper that decides which ranges are safe to hand it.
+`defineClearFormattingExtension()` (`interactions/prosekit`) wraps the command as a ProseKit
+`clearFormatting` command bound to `Mod-\`. Like `defineQtiDecorationsExtension()`, it is
+deliberately not folded into `defineQtiExtension()`: this is an authoring affordance, not something
+a read-only or player host needs, so a host unions it in explicitly.
 
 `src/item-export/`, `src/item-roundtrip/`, `src/qti3-item-import/` own QTI serialization and import transforms. `editorContext`/`qtiEditorContext` and multi-item/package-building support were moved out of this package and now live in the consuming application — this package's export surface is single-item only.
 
@@ -116,7 +126,15 @@ Owns:
 - `src/prosemirror/node-attrs-sync` — node attribute synchronization
 - `src/prosemirror/paste-semantic-html` — paste HTML handling
 - `src/prosemirror/schema-gaps` — finds and preserves markup a schema cannot represent
-- `src/prosemirror/clear-formatting` — `clearFormattingInRange(tr, range, options?)`: strips every mark and flattens structural wrappers/textblocks back to a plain paragraph within a range, mutating the given `Transaction` in place. Has no notion of QTI or interaction nodes — a caller needing to leave some subtree untouched excludes it from `range` itself; `@citolab/prose-qti`'s `clearFormatting` command (see [Clear formatting](#clear-formatting--opt-in-editing-command) below) is that caller.
+- `src/prosemirror/clear-formatting` (`clearFormattingInRange`) — strips every mark and flattens
+  wrapper/list/textblock structure back to plain paragraphs within a given range, mutating a
+  `Transaction` in place. Knows nothing about QTI or interaction nodes; a caller that must leave
+  some subtree untouched excludes it from the range(s) it passes in — see `@citolab/prose-qti`'s
+  `clearFormatting()` command above for that split. Dissolving a wrapper or resetting a textblock is
+  gated on the innermost text boundary it actually reaches, not its own opening/closing token —
+  otherwise a selection no more generous than "click into this blockquote and select its line" would
+  silently fail to dissolve it, since that selection shape never reaches past the wrapper's own
+  delimiters.
 - `src/prosemirror/prosekit-extensions.ts` — ProseKit extension wrappers (`blockSelectExtension`, `nodeAttrsSyncExtension`, `defineSemanticPasteExtension`) for the plugins above, published as the `./prosekit-extensions` subpath; importing from here requires the `prosekit` peer dependency
 - `src/prosekit/` — ProseKit-specific wrappers for marks/lists (`defineEm`, `defineStrong`, `defineList`), plus `defineBasicExtension()` — the shared QTI-shaped ProseKit base (doc/text/paragraph/heading/list/image/table nodes, `em`/`strong` marks, base keymap/commands/history/gap cursor) that every app's own `basic-extension.ts` composes on top of with its own additions (hard break, virtual selection, AI, etc.) rather than redefining the base itself. Four of these (`doc`, `list`, the `em`/`strong` marks, `image`) are rebuilt rather than patched because ProseKit's own spec does not serialise to what QTI needs — see [prosekit-divergences.md](prosekit-divergences.md). `gap-cursor-paragraph.ts` (`defineGapCursorParagraph()`) is a fifth ProseKit correction, paired with `allowGapCursor: true` on a schema's `doc`/wrapper node specs rather than replacing a spec outright — see the same doc.
 
