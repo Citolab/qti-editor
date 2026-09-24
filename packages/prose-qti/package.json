@@ -31,6 +31,10 @@
       "types": "./dist/core/interactions/composer.d.ts",
       "default": "./dist/core/interactions/composer.js"
     },
+    "./commands": {
+      "types": "./dist/commands/index.d.ts",
+      "default": "./dist/commands/index.js"
+    },
     "./interfaces": {
       "types": "./dist/interfaces/index.d.ts",
       "default": "./dist/interfaces/index.js"

@@ -7,7 +7,7 @@
 // registers the item divider.
 import '@citolab/prose-qti/components/register';
 import { defineBasicExtension } from '@citolab/prose-extensions/prosekit';
-import { defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
+import { defineCommands, defineKeymap, defineNodeSpec, definePlugin, union, type Extension } from 'prosekit/core';
 
 import {
   listInteractionDecoratorPluginFactories,
@@ -15,6 +15,7 @@ import {
   listInteractionPluginFactories,
   listInteractionSchemaNodeSpecs,
 } from '@citolab/prose-qti/core/interactions/composer';
+import { clearFormatting } from '@citolab/prose-qti/commands';
 import {
   constrainedHome,
   constrainedShiftHome,
@@ -99,6 +100,21 @@ export function defineQtiDecorationsExtension() {
   );
 
   return union(...decoratorExtensions);
+}
+
+/**
+ * "Opmaak wissen" (clear formatting): resets the selection back to plain
+ * paragraphs, skipping over any interaction it spans. Deliberately NOT folded
+ * into `defineQtiExtension()`, same reasoning as `defineQtiDecorationsExtension`
+ * above — this is an authoring affordance, not something a read-only or
+ * player host needs. Hosts that want it union it in and bind it to whatever
+ * UI/keymap they prefer.
+ */
+export function defineClearFormattingExtension() {
+  return union(
+    defineCommands({ clearFormatting: () => clearFormatting() }),
+    defineKeymap({ 'Mod-\\': clearFormatting() }),
+  );
 }
 
 export function defineQtiExtension() {
