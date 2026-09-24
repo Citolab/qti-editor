@@ -1,0 +1,56 @@
+---
+title: Clear Formatting
+description: Strip marks and flatten block structure back to plain paragraphs within a range.
+slug: docs/prosemirror-plugins/clear-formatting
+---
+
+`clear-formatting` answers "reset this selection to plain text": every mark in the range is stripped, and structural wrappers (`blockquote`, bullet/ordered lists) and non-paragraph textblocks (headings, and the like) are flattened or reset back to plain paragraphs.
+
+It knows nothing about QTI or any other vocabulary: it takes a ProseMirror `Transaction` and a `{ from, to }` range.
+
+## Install
+
+```bash
+pnpm add @citolab/prose-extensions
+```
+
+## Usage
+
+```ts
+import { clearFormattingInRange } from '@citolab/prose-extensions/clear-formatting';
+
+const tr = state.tr;
+const changed = clearFormattingInRange(tr, { from: state.selection.from, to: state.selection.to });
+if (changed) dispatch(tr);
+```
+
+Pass `wrapperTypeNames` / `listTypeNames` / `listItemTypeName` / `targetTextblockTypeName` if your schema's node names differ from the ProseMirror defaults (`blockquote`, `bullet_list`/`ordered_list`/`list_item`, `paragraph`).
+
+A wrapper or textblock only needs to be reached at the innermost point a real text selection can get to, not at its own opening/closing token: clicking into a blockquote and selecting its line, or triple-clicking a heading, never selects past the node's own delimiters, and that is still enough to dissolve or reset it.
+
+Calling this more than once against the same `tr` (for example, once per selected sub-range around content you want to skip): map each range through `tr.mapping` first, and apply ranges in reverse document order so an earlier edit never invalidates a not-yet-processed range.
+
+## When to use
+
+Use this for a "clear formatting" toolbar command or keybinding. It has no notion of content that must be left untouched (an embedded widget or interaction, for example) — a caller that needs to skip such subtrees excludes them from the range(s) it passes in, one range per gap.
+
+## QTI editors
+
+`@citolab/prose-qti/commands` builds on this for QTI documents. `clearFormatting()` is a ProseMirror `Command` that resets the current selection to plain paragraphs while leaving any QTI interaction it spans (including `qtiRubricBlock`) completely untouched — it splits the selection into the sub-ranges that never enter an interaction, then runs each one through `clearFormattingInRange`.
+
+```ts
+import { clearFormatting } from '@citolab/prose-qti/commands';
+```
+
+If your app is built on ProseKit, `defineClearFormattingExtension()` from `@citolab/prose-qti/integration/interactions/prosekit` wraps it as a `clearFormatting` command bound to `Mod-\`:
+
+```ts
+import { union } from 'prosekit/core';
+import { defineQtiExtension, defineClearFormattingExtension } from '@citolab/prose-qti/integration/interactions/prosekit';
+
+const editor = createEditor({
+  extension: union(defineQtiExtension(), defineClearFormattingExtension()),
+});
+```
+
+It is deliberately not part of `defineQtiExtension()` — like `defineQtiDecorationsExtension()` (see [Choice Interaction](/docs/qti-interactions/choice/)), this is an authoring affordance a read-only or player host must not get by default, so a host unions it in explicitly.
