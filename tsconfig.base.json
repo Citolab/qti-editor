@@ -54,6 +54,15 @@
       "@citolab/prose-extensions/schema-gaps": [
         "packages/prose-extensions/src/prosemirror/schema-gaps/index.ts"
       ],
+      "@citolab/prose-extensions/clear-formatting": [
+        "packages/prose-extensions/src/prosemirror/clear-formatting/index.ts"
+      ],
+      "@citolab/prose-extensions/prosekit/basic": [
+        "packages/prose-extensions/src/prosekit/basic.ts"
+      ],
+      "@citolab/prose-extensions/prosemirror/*": [
+        "packages/prose-extensions/src/prosemirror/*"
+      ],
       "@citolab/prose-qti": [
         "packages/prose-qti/src/index.ts"
       ],
