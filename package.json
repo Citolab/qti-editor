@@ -1,24 +1,10 @@
 {
   "name": "@qti-editor/root",
-  "pnpm": {
-    "overrides": {
-      "prosekit": "^0.21.4",
-      "prosemirror-commands": "^1.7.1",
-      "prosemirror-history": "^1.5.0",
-      "prosemirror-inputrules": "^1.5.1",
-      "prosemirror-keymap": "^1.2.3",
-      "prosemirror-model": "^1.25.8",
-      "prosemirror-schema-basic": "^1.2.4",
-      "prosemirror-schema-list": "^1.5.1",
-      "prosemirror-state": "^1.4.4",
-      "prosemirror-view": "^1.41.9"
-    }
-  },
   "version": "0.1.0",
   "description": "QTI Editor built with ProseMirror, ProseKit, and modular plugins",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@11.25.0",
   "scripts": {
     "dev": "pnpm --filter @qti-editor/example-editor dev",
     "dev:example-editor": "pnpm --filter @qti-editor/example-editor dev",

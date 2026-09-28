@@ -4,6 +4,19 @@ packages:
   - "packages/*/*"
   - "packages/*/*/*"
 
+# Moved from package.json `pnpm.overrides`: pnpm 11 no longer reads the `pnpm` field.
+overrides:
+  prosekit: ^0.21.4
+  prosemirror-commands: ^1.7.1
+  prosemirror-history: ^1.5.0
+  prosemirror-inputrules: ^1.5.1
+  prosemirror-keymap: ^1.2.3
+  prosemirror-model: ^1.25.8
+  prosemirror-schema-basic: ^1.2.4
+  prosemirror-schema-list: ^1.5.1
+  prosemirror-state: ^1.4.4
+  prosemirror-view: ^1.41.9
+
 # Every @qti-components/* pin, in ONE place.
 #
 # These are the npm release train. The editor-branch work that used to require pkg.pr.new
@@ -35,6 +48,10 @@ catalog:
   '@qti-components/theme': '^2.2.0'
   '@qti-components/transformers': '^1.7.2'
 
-# The cem CLI ships as a platform binary and needs its postinstall to run.
-onlyBuiltDependencies:
-  - "@pwrs/cem"
+# Dependencies whose install scripts may run. The cem CLI ships as a platform binary and needs
+# its postinstall; the rest match qti-components.
+allowBuilds:
+  "@pwrs/cem": true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
