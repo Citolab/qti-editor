@@ -85,6 +85,10 @@ function detectTextListType(el: HTMLElement): 'ol' | 'ul' | null {
 }
 
 function getListInfo(el: HTMLElement): ListInfo | null {
+  // Only paragraph-like blocks can be list paragraphs. A list item this pass made is never one: re-detecting it
+  // (its text still starts with the marker when Word put the marker in a span) recursed without end.
+  if (!/^(P|DIV)$/i.test(el.tagName)) return null;
+
   if (isWordListParagraph(el)) {
     const marker = getWordListMarkerText(el);
     const detected = detectListTypeFromMarker(marker) ?? detectTextListType(el) ?? 'ul';
@@ -209,21 +213,28 @@ function stripLeadingTextMarker(html: string): string {
   );
 }
 
+/** Strips the typed marker ("1. ", "A) ", "– ") from the first text, also when it sits in an inline element (Word: a span). */
+function stripLeadingTextMarkerFromTree(el: HTMLElement) {
+  const walker = el.ownerDocument.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    if (!(node.nodeValue ?? '').trim()) continue;
+    node.nodeValue = stripLeadingTextMarker(node.nodeValue ?? '');
+    return;
+  }
+}
+
 function makeListItemContent(el: HTMLElement, source: 'word' | 'text'): string {
   const clone = el.cloneNode(true) as HTMLElement;
 
   clone.querySelectorAll('o\\:p').forEach((node) => node.remove());
   removeWordListMarkerFromElement(clone);
   removeNbspFromTree(clone);
+  if (source === 'text') stripLeadingTextMarkerFromTree(clone);
 
   let html = clone.innerHTML
     .replace(/<a name="[^"]*"><\/a>/gi, '')
     .replace(/<a name="[^"]*">/gi, '')
     .trim();
-
-  if (source === 'text') {
-    html = stripLeadingTextMarker(html);
-  }
 
   html = html.replace(/(<o:p>\s*<\/o:p>)/gi, '').trim();
 

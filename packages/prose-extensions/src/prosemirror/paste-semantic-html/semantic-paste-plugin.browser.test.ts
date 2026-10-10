@@ -17,7 +17,7 @@ import { describe, expect, test } from 'vitest'
 
 import { defineBasicExtension } from '../../prosekit/basic.js'
 import { defineSemanticPasteExtension } from './extension.js'
-import { createSemanticPastePlugin } from './semantic-paste-plugin.js'
+import { createSemanticPastePlugin, makeHtmlSemantic } from './semantic-paste-plugin.js'
 
 import type { Node as PmNode } from 'prosemirror-model'
 import type { EditorView } from 'prosemirror-view'
@@ -188,5 +188,26 @@ describe('counting the clipboard images', () => {
     } finally {
       destroy()
     }
+  })
+})
+
+describe('typed list markers inside inline elements', () => {
+  // Word writes a typed "– …" or "1. …" line as <p><span>– …</span></p>. That used to recurse without end (the new
+  // list item was detected as a list paragraph again, its text still starting with the marker), and the paste
+  // silently inserted nothing.
+  test.each([
+    ['<p><span>– eerst uit te leggen</span></p>', 'ul', 'eerst uit te leggen'],
+    ['<p class="Meerkeuze-item"><span lang="NL">A. Alle inwoners</span></p>', 'ol', 'Alle inwoners'],
+    ['<p><span>1. Wat is rood?</span></p>', 'ol', 'Wat is rood?'],
+  ])('%s becomes a list without the marker', (html, list, text) => {
+    const out = new DOMParser().parseFromString(makeHtmlSemantic(html), 'text/html').body
+    expect(out.firstElementChild?.tagName.toLowerCase()).toBe(list)
+    expect(out.querySelectorAll('li')).toHaveLength(1)
+    expect(out.querySelector('li')?.textContent).toBe(text)
+  })
+
+  test('a list item is never turned into a list of its own', () => {
+    const out = new DOMParser().parseFromString(makeHtmlSemantic('<ul><li><span>– al een lijst</span></li></ul>'), 'text/html').body
+    expect(out.querySelectorAll('ul')).toHaveLength(1)
   })
 })
