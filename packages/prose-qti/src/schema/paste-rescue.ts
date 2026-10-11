@@ -29,7 +29,8 @@
  *   - Where it does not repeat (`qtiPrompt?`), the runs are joined into the single slot with a
  *     space between them.
  *
- * Runs carry an identifier when the slice had one. A fresh one is minted when it did not, and also
+ * Runs carry an identifier when the slice had one. A fresh one is minted — by the editor's
+ * identifier strategy, see `createIdentifierStrategyPlugin` — when it did not, and also
  * when keeping it would duplicate an identifier already in the target — pasting a copy of a choice
  * back into its own interaction must not produce two choices a response declaration cannot tell
  * apart.
@@ -50,8 +51,17 @@
 import { Fragment, Slice } from 'prosemirror-model';
 import { Plugin } from 'prosemirror-state';
 
+import {
+  collectIdentifiers,
+  createIdentifierMinter,
+  interactionTagName,
+  isInteractionNode,
+} from '../components/shared/identifiers/identifier-strategy.js';
+
 import type { Node as PmNode, NodeType, ResolvedPos } from 'prosemirror-model';
+import type { EditorState } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
+import type { OptionIdentifierRole } from '../components/shared/identifiers/identifier-strategy.js';
 
 /** One rebuilt block: its inline content, and the identifier it arrived with, if any. */
 type Run = {
@@ -121,7 +131,7 @@ function identifierPrefix($from: ResolvedPos, target: Target): string {
       return target.parent.type.name === 'qtiOrderInteraction' ? 'CHOICE' : 'SIMPLE_CHOICE';
     case 'qtiSimpleAssociableChoice':
       // `qtiSimpleMatchSet{2}`: the first set is the source, the second the target.
-      return $from.index(target.parentDepth - 1) === 0 ? 'SOURCE' : 'TARGET';
+      return isFirstMatchSet($from, target) ? 'SOURCE' : 'TARGET';
     default:
       // Anything registered later: `qtiSomeThing` -> `SOME_THING`, which is the convention the
       // three cases above all follow.
@@ -130,6 +140,42 @@ function identifierPrefix($from: ResolvedPos, target: Target): string {
         .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
         .toUpperCase();
   }
+}
+
+/**
+ * Whether the target's match set is the interaction's first one (the sources).
+ *
+ * Counted among the match sets rather than read off the raw child index: a `qtiPrompt` before the
+ * sets puts the first set at index 1, which used to make a paste into the sources mint `TARGET_`.
+ */
+function isFirstMatchSet($from: ResolvedPos, target: Target): boolean {
+  const interaction = $from.node(target.parentDepth - 1);
+  const setIndex = $from.index(target.parentDepth - 1);
+  for (let index = 0; index < setIndex; index += 1) {
+    if (interaction.child(index).type === target.parent.type) return false;
+  }
+  return true;
+}
+
+/** What the minted identifier is for, as the identifier strategy sees it. */
+function identifierRole($from: ResolvedPos, target: Target): OptionIdentifierRole {
+  switch (target.container.type.name) {
+    case 'qtiSimpleChoice':
+      return 'choice';
+    case 'qtiSimpleAssociableChoice':
+      return isFirstMatchSet($from, target) ? 'source' : 'target';
+    default:
+      return 'other';
+  }
+}
+
+/** The interaction around the target, for the strategy's `interactionType` and `existing`. */
+function enclosingInteraction($from: ResolvedPos, target: Target): PmNode | null {
+  for (let depth = target.parentDepth; depth >= 0; depth -= 1) {
+    const node = $from.node(depth);
+    if (isInteractionNode(node)) return node;
+  }
+  return null;
 }
 
 /** Identifiers already used by siblings of `container` under `parent`. */
@@ -256,11 +302,24 @@ function runsOf(content: Fragment, target: Target): Run[] {
  * content merges into the block the cursor is in — the first container node is never inserted, and
  * its attributes are therefore the existing container's rather than a wasted minted identifier.
  */
-function fanOut(runs: Run[], target: Target, $from: ResolvedPos): Slice {
+function fanOut(runs: Run[], target: Target, state: EditorState): Slice {
+  const { $from } = state.selection;
   const containerType = target.container.type;
   const hasIdentifier = Boolean(containerType.spec.attrs?.identifier);
   const used = usedIdentifiers(target.parent, containerType);
   const prefix = hasIdentifier ? identifierPrefix($from, target) : '';
+  const role = identifierRole($from, target);
+  const interaction = enclosingInteraction($from, target);
+  // Reserve everything already used in the interaction, and every identifier the slice may keep, so
+  // a minted one can collide with neither — not even with a kept one further down the slice.
+  const reserved = [
+    ...collectIdentifiers(interaction ?? target.parent),
+    ...runs.slice(1).flatMap(run => (run.identifier ? [run.identifier] : [])),
+  ];
+  const mint = createIdentifierMinter(state).forInteraction(
+    interaction ? interactionTagName(interaction.type.name) : '',
+    reserved,
+  );
 
   const nodes = runs.map((run, index) => {
     const slotNode = target.slot.create(null, Fragment.fromArray(run.inline.slice()));
@@ -268,7 +327,7 @@ function fanOut(runs: Run[], target: Target, $from: ResolvedPos): Slice {
     if (!hasIdentifier) return containerType.create(null, slotNode);
 
     const identifier =
-      run.identifier && !used.has(run.identifier) ? run.identifier : `${prefix}_${crypto.randomUUID()}`;
+      run.identifier && !used.has(run.identifier) ? run.identifier : mint(role, prefix);
     used.add(identifier);
     return containerType.create({ identifier }, slotNode);
   });
@@ -314,7 +373,7 @@ export const qtiPasteRescuePlugin = new Plugin({
       // is right: left alone it would still split the interaction on its way to being discarded.
       if (runs.length === 0) return Slice.empty;
 
-      return target.repeats ? fanOut(runs, target, view.state.selection.$from) : join(runs, target);
+      return target.repeats ? fanOut(runs, target, view.state) : join(runs, target);
     },
   },
 });

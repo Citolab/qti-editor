@@ -102,7 +102,8 @@ function removeChoiceAt(view: EditorView, widgetPos: number | undefined): void {
 function appendChoiceAt(view: EditorView, widgetPos: number | undefined): void {
   if (widgetPos == null) return;
   const { state } = view;
-  const choice = createSimpleChoiceNode(state.schema);
+  // The widget sits inside the interaction, so its parent is the interaction the choice joins.
+  const choice = createSimpleChoiceNode(state.schema, state, state.doc.resolve(widgetPos).parent);
   if (!choice) return;
 
   // The widget sits at the end of the interaction's content, which is exactly where the new choice

@@ -6,10 +6,12 @@
  */
 
 import { iterResponseValues } from '@citolab/prose-qti/components/shared';
+import { uuidIdentifierStrategy } from '@citolab/prose-qti/components/shared/identifiers/identifier-strategy.js';
 
 import { getInteractionComposerHandler } from '../interactions/composer.js';
 
 import type { InteractionResponseDeclaration, ResponseProcessingKind } from '@citolab/prose-qti/interfaces';
+import type { IdentifierStrategy } from '@citolab/prose-qti/components/shared/identifiers/identifier-strategy.js';
 
 export {
   getStrippedAttributeSources,
@@ -24,6 +26,11 @@ export interface ComposerItemContext {
   title?: string;
   itemBody?: Document;
   items?: Array<{ identifier?: string; title?: string }>;
+  /**
+   * Mints the replacement when two interactions share a `response-identifier` (e.g. after a
+   * node-selection copy). Defaults to `uuidIdentifierStrategy` (`RESPONSE_<uuid>`).
+   */
+  identifierStrategy?: IdentifierStrategy;
 }
 
 /**
@@ -217,7 +224,7 @@ export function buildAssessmentItemXml(itemContext?: ComposerItemContext): strin
       ? (xmlDoc.importNode(sourceBodyRoot, true) as Element)
       : xmlDoc.createElementNS(QTI_NS, 'qti-item-body');
 
-  const { declarations, responseTemplate, maxScore, hasAutomatedProcessing } = composeAndNormalizeItemBody(composedItemBody, xmlDoc);
+  const { declarations, responseTemplate, maxScore, hasAutomatedProcessing } = composeAndNormalizeItemBody(composedItemBody, xmlDoc, itemContext.identifierStrategy);
 
   declarations.forEach(declaration => {
     const responseDeclaration = xmlDoc.createElementNS(QTI_NS, 'qti-response-declaration');
@@ -374,6 +381,7 @@ export function buildMultipleAssessmentItemsXml(itemContext?: ComposerItemContex
       title: perItem?.title?.trim() || `${baseTitle} ${itemNumber}`,
       lang,
       itemBody: fragmentDoc,
+      identifierStrategy: itemContext.identifierStrategy,
     };
 
     return buildAssessmentItemXml(fragmentContext);
@@ -471,12 +479,22 @@ export function getItemFragmentXmls(itemContext?: ComposerItemContext): Array<{ 
     return {
       identifier: uniqueIdentifier,
       title,
-      xml: buildAssessmentItemXml({ identifier: uniqueIdentifier, title, lang, itemBody: fragmentDoc }),
+      xml: buildAssessmentItemXml({
+        identifier: uniqueIdentifier,
+        title,
+        lang,
+        itemBody: fragmentDoc,
+        identifierStrategy: itemContext.identifierStrategy,
+      }),
     };
   });
 }
 
-function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
+function composeAndNormalizeItemBody(
+  itemBody: Element,
+  xmlDoc: Document,
+  identifierStrategy: IdentifierStrategy = uuidIdentifierStrategy,
+): {
   declarations: ResponseDeclaration[];
   responseTemplate: string;
   maxScore: number;
@@ -524,7 +542,15 @@ function composeAndNormalizeItemBody(itemBody: Element, xmlDoc: Document): {
       if (composeResult.responseDeclaration) {
         const declaration = composeResult.responseDeclaration;
         if (seenIdentifiers.has(declaration.identifier)) {
-          const freshId = `RESPONSE_${crypto.randomUUID()}`;
+          const inUse = Array.from(itemBody.querySelectorAll('[response-identifier]'), element =>
+            element.getAttribute('response-identifier') ?? '',
+          ).filter(Boolean);
+          const freshId = identifierStrategy.responseIdentifier({
+            interactionType: tagName,
+            prefix: 'RESPONSE',
+            doc: null,
+            existing: [...new Set([...seenIdentifiers, ...inUse])],
+          });
           composeResult.normalizedElement.setAttribute('response-identifier', freshId);
           declaration.identifier = freshId;
         }

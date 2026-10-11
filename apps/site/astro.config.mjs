@@ -107,6 +107,7 @@ export default defineConfig({
             { label: 'Order Interaction', slug: 'docs/qti-interactions/order' },
             { label: 'Select Point Interaction', slug: 'docs/qti-interactions/select-point' },
             { label: 'Text Entry Interaction', slug: 'docs/qti-interactions/text-entry' },
+            { label: 'Identifiers', slug: 'docs/qti-interactions/identifiers' },
           ],
         },
         {

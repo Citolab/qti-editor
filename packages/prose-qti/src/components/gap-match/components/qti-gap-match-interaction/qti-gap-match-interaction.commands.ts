@@ -3,7 +3,12 @@ import { TextSelection } from 'prosemirror-state';
 import { createInsertBlockInteractionCommand } from '../../../shared/commands/insert.js';
 import { createInsertSiblingOnEnterCommand } from '../../../shared/commands/enter.js';
 import { translateQti } from '../../../shared';
+import {
+  createIdentifierMinter,
+  findSelectionInteraction,
+} from '../../../shared/identifiers/identifier-strategy.js';
 
+import type { Node as ProseMirrorNode } from 'prosemirror-model';
 import type { Command } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 
@@ -23,7 +28,9 @@ export const insertGapMatchInteraction: Command = (state, dispatch, view?: Edito
         return null;
       }
 
-      const responseIdentifier = `RESPONSE_${crypto.randomUUID()}`;
+      const minter = createIdentifierMinter(currentState);
+      const responseIdentifier = minter.responseIdentifier('qti-gap-match-interaction');
+      const optionIdentifier = minter.forInteraction('qti-gap-match-interaction');
       const prompt = promptType.create(
         null,
         promptParagraphType.create(null, schema.text(translateQti('prompt.gapMatch.default', { target }))),
@@ -31,21 +38,21 @@ export const insertGapMatchInteraction: Command = (state, dispatch, view?: Edito
 
       const texts = [
         gapTextType.create(
-          { identifier: `GAP_TEXT_${crypto.randomUUID()}`, matchMax: 1 },
+          { identifier: optionIdentifier('gapText', 'GAP_TEXT'), matchMax: 1 },
           schema.text(translateQti('gapMatch.text.paris', { target })),
         ),
         gapTextType.create(
-          { identifier: `GAP_TEXT_${crypto.randomUUID()}`, matchMax: 1 },
+          { identifier: optionIdentifier('gapText', 'GAP_TEXT'), matchMax: 1 },
           schema.text(translateQti('gapMatch.text.madrid', { target })),
         ),
         gapTextType.create(
-          { identifier: `GAP_TEXT_${crypto.randomUUID()}`, matchMax: 1 },
+          { identifier: optionIdentifier('gapText', 'GAP_TEXT'), matchMax: 1 },
           schema.text(translateQti('gapMatch.text.rome', { target })),
         ),
       ];
 
-      const firstGap = gapType.create({ identifier: `GAP_${crypto.randomUUID()}` });
-      const secondGap = gapType.create({ identifier: `GAP_${crypto.randomUUID()}` });
+      const firstGap = gapType.create({ identifier: optionIdentifier('gap', 'GAP') });
+      const secondGap = gapType.create({ identifier: optionIdentifier('gap', 'GAP') });
 
       const firstSentence = paragraphType.create(null, [
         schema.text(translateQti('gapMatch.sample.beforeFrance', { target })),
@@ -79,10 +86,14 @@ export const insertGapTextOnEnter: Command = (state, dispatch) => {
   const result = createInsertSiblingOnEnterCommand({
     ancestorNodeName: 'qtiGapText',
     selectionOffset: 1,
-    createSiblingNode: () =>
-      gapTextType.create(
-        { identifier: `GAP_TEXT_${crypto.randomUUID()}`, matchMax: 1 },
-      ),
+    createSiblingNode: currentState =>
+      gapTextType.create({
+        identifier: createIdentifierMinter(currentState).forInteraction(
+          'qti-gap-match-interaction',
+          findSelectionInteraction(currentState),
+        )('gapText', 'GAP_TEXT'),
+        matchMax: 1,
+      }),
   })(state, dispatch);
 
   return result;
@@ -162,22 +173,24 @@ export const insertGap: Command = (state, dispatch) => {
 
   // Check if we're inside a gap-match interaction
   const { $from } = selection;
-  let insideGapMatch = false;
+  let gapMatch: ProseMirrorNode | null = null;
   for (let depth = $from.depth; depth >= 0; depth -= 1) {
     if ($from.node(depth).type === gapMatchType) {
-      insideGapMatch = true;
+      gapMatch = $from.node(depth);
       break;
     }
   }
-  
-  if (!insideGapMatch) return false;
+
+  if (!gapMatch) return false;
 
   // Check if we can insert an inline node here
   if (!$from.parent.type.inlineContent) return false;
 
   if (!dispatch) return true;
 
-  const gap = gapType.create({ identifier: `GAP_${crypto.randomUUID()}` });
+  const gap = gapType.create({
+    identifier: createIdentifierMinter(state).forInteraction('qti-gap-match-interaction', gapMatch)('gap', 'GAP'),
+  });
   const tr = state.tr.replaceSelectionWith(gap);
   dispatch(tr);
   return true;

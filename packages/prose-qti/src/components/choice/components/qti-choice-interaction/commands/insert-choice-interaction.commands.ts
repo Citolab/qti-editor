@@ -1,9 +1,13 @@
 import { createInsertSiblingOnEnterCommand } from '@citolab/prose-qti/components/shared/commands/enter.js';
 import { createInsertBlockInteractionCommand } from '@citolab/prose-qti/components/shared/commands/insert.js';
 import { translateQti } from '@citolab/prose-qti/components/shared';
+import {
+  createIdentifierMinter,
+  findSelectionInteraction,
+} from '@citolab/prose-qti/components/shared/identifiers/identifier-strategy.js';
 
 import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
-import type { Command } from 'prosemirror-state';
+import type { Command, EditorState } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 
 /**
@@ -19,13 +23,25 @@ import type { EditorView } from 'prosemirror-view';
  * and differ on WHERE it goes. Enter also has to handle exiting the interaction on an empty
  * trailing choice, which an insert-at-position caller has no notion of, so sharing a whole command
  * would force one caller into the other's shape.
+ *
+ * Pass the editor `state` and the `interaction` the choice will join so the identifier comes from
+ * the editor's identifier strategy and is free within that interaction. Without them it is the
+ * default `SIMPLE_CHOICE_<uuid>`.
  */
-export function createSimpleChoiceNode(schema: Schema): ProseMirrorNode | null {
+export function createSimpleChoiceNode(
+  schema: Schema,
+  state?: EditorState | null,
+  interaction?: ProseMirrorNode | null,
+): ProseMirrorNode | null {
   const choiceType = schema.nodes.qtiSimpleChoice;
   const paragraphType = schema.nodes.qtiSimpleChoiceParagraph;
   if (!choiceType || !paragraphType) return null;
 
-  return choiceType.create({ identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` }, paragraphType.create());
+  const identifier = createIdentifierMinter(state).forInteraction('qti-choice-interaction', interaction)(
+    'choice',
+    'SIMPLE_CHOICE',
+  );
+  return choiceType.create({ identifier }, paragraphType.create());
 }
 
 /**
@@ -46,7 +62,9 @@ export const insertChoiceInteraction: Command = (state, dispatch, view?: EditorV
         return null;
       }
 
-      const responseIdentifier = `RESPONSE_${crypto.randomUUID()}`;
+      const minter = createIdentifierMinter(currentState);
+      const responseIdentifier = minter.responseIdentifier('qti-choice-interaction');
+      const choiceIdentifier = minter.forInteraction('qti-choice-interaction');
       const prompt = promptType.create(
         null,
         promptParagraphType.create(null, schema.text(translateQti('prompt.choice.default', { target }))),
@@ -54,15 +72,15 @@ export const insertChoiceInteraction: Command = (state, dispatch, view?: EditorV
 
       const choices = [
         choiceType.create(
-          { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
+          { identifier: choiceIdentifier('choice', 'SIMPLE_CHOICE') },
           choiceParagraphType.create(null, schema.text(translateQti('choice.optionA', { target })))
         ),
         choiceType.create(
-          { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
+          { identifier: choiceIdentifier('choice', 'SIMPLE_CHOICE') },
           choiceParagraphType.create(null, schema.text(translateQti('choice.optionB', { target })))
         ),
         choiceType.create(
-          { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
+          { identifier: choiceIdentifier('choice', 'SIMPLE_CHOICE') },
           choiceParagraphType.create(null, schema.text(translateQti('choice.optionC', { target })))
         )
       ];
@@ -85,7 +103,8 @@ export const insertSimpleChoiceOnEnter: Command = (state, dispatch) => {
   return createInsertSiblingOnEnterCommand({
     ancestorNodeName: 'qtiSimpleChoice',
     selectionOffset: 2,
-    createSiblingNode: currentState => createSimpleChoiceNode(currentState.schema),
+    createSiblingNode: currentState =>
+      createSimpleChoiceNode(currentState.schema, currentState, findSelectionInteraction(currentState)),
     // Enter on an empty trailing choice exits the interaction into a new
     // paragraph below it, instead of adding another empty choice.
     createExitNode: currentState => currentState.schema.nodes.paragraph?.create() ?? null,

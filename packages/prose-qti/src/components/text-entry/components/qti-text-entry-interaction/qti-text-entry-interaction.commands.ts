@@ -1,3 +1,5 @@
+import { createIdentifierMinter } from '../../../shared/identifiers/identifier-strategy.js';
+
 import type { Command, EditorState } from 'prosemirror-state';
 
 const isInsideInteraction = (state: EditorState): boolean => {
@@ -30,7 +32,7 @@ export const insertTextEntryInteraction: Command = (state, dispatch) => {
   if (!type) return false;
 
   const textEntry = type.create({
-    responseIdentifier: `RESPONSE_${crypto.randomUUID()}`
+    responseIdentifier: createIdentifierMinter(state).responseIdentifier('qti-text-entry-interaction'),
   });
 
   if (dispatch) {

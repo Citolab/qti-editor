@@ -6,6 +6,7 @@
 
 import { createInsertBlockInteractionCommand } from '../../../shared/commands/insert.js';
 import { translateQti } from '../../../shared';
+import { createIdentifierMinter } from '../../../shared/identifiers/identifier-strategy.js';
 
 import type { Command } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
@@ -25,7 +26,7 @@ export const insertExtendedTextInteraction: Command = (state, dispatch, view?: E
         return null;
       }
 
-      const responseIdentifier = `RESPONSE_${crypto.randomUUID()}`;
+      const responseIdentifier = createIdentifierMinter(currentState).responseIdentifier('qti-extended-text-interaction');
       const prompt = promptType.create(
         null,
         promptParagraphType.create(null, schema.text(translateQti('prompt.extendedText.default', { target: view?.dom ?? null }))),

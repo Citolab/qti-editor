@@ -9,6 +9,7 @@ import { chainCommands, splitBlock } from 'prosemirror-commands';
 
 import { createInsertBlockInteractionCommand } from '../../../shared/commands/insert.js';
 import { translateQti } from '../../../shared';
+import { createIdentifierMinter } from '../../../shared/identifiers/identifier-strategy.js';
 
 import type { Command } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
@@ -45,7 +46,9 @@ function createMatchInteractionNode(
     return null;
   }
 
-  const responseIdentifier = `RESPONSE_${crypto.randomUUID()}`;
+  const minter = createIdentifierMinter(currentState);
+  const responseIdentifier = minter.responseIdentifier('qti-match-interaction');
+  const optionIdentifier = minter.forInteraction('qti-match-interaction');
   const prompt = promptType.create(
     null,
     promptParagraphType.create(null, schema.text(translateQti(options.promptKey, { target }))),
@@ -53,7 +56,7 @@ function createMatchInteractionNode(
 
   const choice = (prefix: 'SOURCE' | 'TARGET', matchMax: number, labelKey: string) =>
     associableChoiceType.create(
-      { identifier: `${prefix}_${crypto.randomUUID()}`, matchMax },
+      { identifier: optionIdentifier(prefix === 'SOURCE' ? 'source' : 'target', prefix), matchMax },
       associableChoiceParagraphType.create(null, schema.text(translateQti(labelKey, { target }))),
     );
 
@@ -190,7 +193,10 @@ export const insertSimpleAssociableChoiceOnEnter: Command = (state, dispatch) =>
   })();
   const sourceSibling = choiceType.create(
     {
-      identifier: `${isSourceSet ? 'SOURCE' : 'TARGET'}_${crypto.randomUUID()}`,
+      identifier: createIdentifierMinter(state).forInteraction(
+        'qti-match-interaction',
+        interactionDepth >= 0 ? selection.$from.node(interactionDepth) : null,
+      )(isSourceSet ? 'source' : 'target', isSourceSet ? 'SOURCE' : 'TARGET'),
       matchMax: isSourceSet ? 1 : sourceCount,
     },
     paragraphType.create()

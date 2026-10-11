@@ -7,12 +7,15 @@ import {
 import { xmlFromNode } from './pm-xml.js';
 
 import type { DOMSerializer, Node as ProseMirrorNode } from 'prosemirror-model';
+import type { IdentifierStrategy } from '@citolab/prose-qti/components/shared/identifiers/identifier-strategy.js';
 
 export interface QtiComposeContext {
   identifier?: string;
   lang?: string;
   title?: string;
   items?: Array<{ identifier?: string; title?: string }>;
+  /** See `ComposerItemContext.identifierStrategy`. */
+  identifierStrategy?: IdentifierStrategy;
 }
 
 /**
@@ -33,6 +36,7 @@ export function buildItemBodyContext(
     title: context?.title,
     items: context?.items,
     itemBody,
+    identifierStrategy: context?.identifierStrategy,
   };
 }
 

@@ -1,0 +1,73 @@
+---
+title: Identifiers
+description: Choose how new response and option identifiers are generated — UUIDs (default) or short readable ones.
+slug: docs/qti-interactions/identifiers
+---
+
+Inserting an interaction, pressing Enter on a choice, adding a gap, pasting several paragraphs into a choice, or copying an interaction all create new QTI identifiers. Which identifiers are generated is decided by an **identifier strategy**.
+
+| Strategy | Responses | Choices, inline choices, hottexts, order, gap texts | Match sources / targets | Gaps |
+| --- | --- | --- | --- | --- |
+| `uuidIdentifierStrategy` (default) | `RESPONSE_<uuid>` | `SIMPLE_CHOICE_<uuid>`, `INLINE_CHOICE_<uuid>`, `HOTTEXT_<uuid>`, `CHOICE_<uuid>`, `GAP_TEXT_<uuid>` | `SOURCE_<uuid>` / `TARGET_<uuid>` | `GAP_<uuid>` |
+| `readableIdentifierStrategy` | `RESPONSE`, `RESPONSE2`, `RESPONSE3`, … | `A`, `B`, `C`, … `Z`, `AA` | `S1`, `S2`, … / `T1`, `T2`, … | `G1`, `G2`, … |
+
+The readable strategy always takes the lowest identifier that is still free. Option identifiers are unique within their interaction, so two choice interactions each have their own `A`, `B`, `C`.
+
+If you configure nothing, the default applies and the identifiers are exactly what earlier versions generated.
+
+## Configure it
+
+ProseKit:
+
+```ts
+import { createEditor } from 'prosekit/core';
+import { readableIdentifierStrategy } from '@citolab/prose-qti';
+import { defineQtiExtension } from '@citolab/prose-qti/integration/interactions/prosekit';
+
+const editor = createEditor({
+  extension: defineQtiExtension({ identifierStrategy: readableIdentifierStrategy }),
+});
+```
+
+`defineQtiInteractionsExtension()` takes the same option. A host that builds its own union can add `defineIdentifierStrategyExtension(strategy)` instead.
+
+Plain ProseMirror:
+
+```ts
+import { createIdentifierStrategyPlugin, readableIdentifierStrategy } from '@citolab/prose-qti';
+
+const state = EditorState.create({
+  schema,
+  plugins: [...otherPlugins, createIdentifierStrategyPlugin(readableIdentifierStrategy)],
+});
+```
+
+Install the strategy once. ProseMirror rejects two plugins with the same key.
+
+The composer renames a response identifier that two interactions share. To make that rename use your strategy too, pass it to the export as well: `qtiItemFromProsemirror(doc, { identifierStrategy })`, `exportItemXml(doc, schema, { identifierStrategy })` or `buildAssessmentItemXml({ ..., identifierStrategy })`.
+
+## Write your own
+
+```ts
+import type { IdentifierStrategy } from '@citolab/prose-qti';
+
+const nextFree = (existing: readonly string[], make: (n: number) => string) => {
+  for (let n = 1; ; n += 1) if (!existing.includes(make(n))) return make(n);
+};
+
+const strategy: IdentifierStrategy = {
+  responseIdentifier: ({ existing }) => nextFree(existing, n => `R${n}`),
+  optionIdentifier: ({ prefix, existing }) => nextFree(existing, n => `${prefix}_${n}`),
+};
+```
+
+Both methods get:
+
+- `interactionType`: the QTI tag, for example `qti-choice-interaction`.
+- `prefix`: the prefix the default scheme uses at this spot (`RESPONSE`, `SIMPLE_CHOICE`, `GAP_TEXT`, …).
+- `existing`: the identifiers that are already taken. For responses, that is every response identifier in the document. For options, it is every identifier inside the same interaction. Identifiers created earlier in the same operation are included.
+- `doc`: the current ProseMirror document, or `null` at export time.
+
+`optionIdentifier` also gets `role`, which is one of `choice`, `source`, `target`, `gap`, `gapText`, `area` or `other`.
+
+Never return an identifier that is in `existing`. A custom interaction can create identifiers the same way with `createIdentifierMinter(state)`.

@@ -1,5 +1,7 @@
 import { NodeSelection, TextSelection } from 'prosemirror-state';
 
+import { createIdentifierMinter } from '../../../shared/identifiers/identifier-strategy.js';
+
 import type { Command } from 'prosemirror-state';
 
 function isSelectionInsideInlineChoiceInteraction(state: Parameters<Command>[0]): boolean {
@@ -27,22 +29,25 @@ export const insertInlineChoiceInteraction: Command = (state, dispatch) => {
   if (!interactionType || !inlineChoiceType) return false;
   if (isSelectionInsideInlineChoiceInteraction(state)) return false;
 
+  const minter = createIdentifierMinter(state);
+  const responseIdentifier = minter.responseIdentifier('qti-inline-choice-interaction');
+  const choiceIdentifier = minter.forInteraction('qti-inline-choice-interaction');
   const interaction = interactionType.create(
     {
-      responseIdentifier: `RESPONSE_${crypto.randomUUID()}`,
+      responseIdentifier,
       shuffle: false
     },
     [
       inlineChoiceType.create(
-        { identifier: `INLINE_CHOICE_${crypto.randomUUID()}` },
+        { identifier: choiceIdentifier('choice', 'INLINE_CHOICE') },
         schema.text('Gloucester')
       ),
       inlineChoiceType.create(
-        { identifier: `INLINE_CHOICE_${crypto.randomUUID()}` },
+        { identifier: choiceIdentifier('choice', 'INLINE_CHOICE') },
         schema.text('Lancaster')
       ),
       inlineChoiceType.create(
-        { identifier: `INLINE_CHOICE_${crypto.randomUUID()}` },
+        { identifier: choiceIdentifier('choice', 'INLINE_CHOICE') },
         schema.text('York')
       )
     ]
@@ -85,7 +90,12 @@ export const insertInlineChoiceOnEnter: Command = (state, dispatch) => {
 
   const insertPos = $from.after(ancestorDepth);
   const newNode = inlineChoiceType.create(
-    { identifier: `INLINE_CHOICE_${crypto.randomUUID()}` },
+    {
+      identifier: createIdentifierMinter(state).forInteraction(
+        'qti-inline-choice-interaction',
+        ancestorDepth > 0 ? $from.node(ancestorDepth - 1) : null,
+      )('choice', 'INLINE_CHOICE'),
+    },
     state.schema.text(' '),
   );
   const tr = state.tr.insert(insertPos, newNode);

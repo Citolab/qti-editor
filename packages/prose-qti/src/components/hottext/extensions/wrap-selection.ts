@@ -1,5 +1,6 @@
 import { Plugin, PluginKey, TextSelection } from 'prosemirror-state';
 
+import { createIdentifierMinter } from '../../shared/identifiers/identifier-strategy.js';
 import { HOTTEXT_REMOVE_EVENT } from '../components/qti-hottext/qti-hottext.js';
 import { parseCorrectResponse } from '../utils/parse-correct-response.js';
 
@@ -100,7 +101,12 @@ function wrapSelectedTextAsHottext(view: EditorView, interactionElement: HTMLEle
   }
 
   const hottextNode = hottextType.create(
-    { identifier: `HOTTEXT_${crypto.randomUUID()}` },
+    {
+      identifier: createIdentifierMinter(state).forInteraction('qti-hottext-interaction', interactionNode)(
+        'choice',
+        'HOTTEXT',
+      ),
+    },
     inlineContent,
   );
 

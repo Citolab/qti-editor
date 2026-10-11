@@ -1,4 +1,5 @@
 import { translateQti } from '@citolab/prose-qti/components/shared';
+import { createIdentifierMinter } from '@citolab/prose-qti/components/shared/identifiers/identifier-strategy.js';
 
 import type { Fragment, Node as ProseMirrorNode } from 'prosemirror-model';
 import type { EditorView } from 'prosemirror-view';
@@ -231,16 +232,19 @@ export function convertListToChoiceInteraction(view: EditorView): boolean {
   const promptText = plan.promptText ?? translateQti('prompt.choice.selectOne', { target: view.dom });
   const prompt = promptType.create(null, promptParagraphType.create(null, schema.text(promptText)));
 
+  const minter = createIdentifierMinter(state);
+  const responseIdentifier = minter.responseIdentifier('qti-choice-interaction');
+  const choiceIdentifier = minter.forInteraction('qti-choice-interaction');
   const choices = plan.choiceContents.map(content => {
     const paragraphContent = content ?? schema.text(translateQti('choice.option', { target: view.dom }));
     return choiceType.create(
-      { identifier: `SIMPLE_CHOICE_${crypto.randomUUID()}` },
+      { identifier: choiceIdentifier('choice', 'SIMPLE_CHOICE') },
       choiceParagraphType.create(null, paragraphContent)
     );
   });
 
   const interaction = interactionType.create(
-    { responseIdentifier: `RESPONSE_${crypto.randomUUID()}`, maxChoices: 1 },
+    { responseIdentifier, maxChoices: 1 },
     [prompt, ...choices]
   );
 

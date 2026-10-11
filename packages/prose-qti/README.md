@@ -206,7 +206,7 @@ and `context.title` are auto-generated from the content if omitted.
 import { defineQtiInteractionsExtension, defineQtiExtension } from '@citolab/prose-qti/integration/interactions/prosekit';
 ```
 
-#### defineQtiInteractionsExtension(): Extension
+#### defineQtiInteractionsExtension(options?: QtiExtensionOptions): Extension
 
 Assembles **all** registered interaction descriptors into one ProseKit
 extension: node specs, a keymap (Enter/Backspace dispatch tried in
@@ -222,7 +222,7 @@ your own extension. No app in this repo currently demonstrates that pattern;
 the full-authoring application that used to (`apps/qti-prosekit-app`) has
 moved to its own repository and consumes the published package instead.
 
-#### defineQtiExtension(): Extension
+#### defineQtiExtension(options?: QtiExtensionOptions): Extension
 
 `union(defineBasicExtension(), defineQtiInteractionsExtension())` — a complete
 editor in one call: every QTI interaction on top of the shared prose base from
@@ -234,6 +234,44 @@ cosmetic. ProseKit ships a single flat `list` node that serialises to
 content is `ul` / `ol` / `li` with `strong` / `em`, which is what
 `@qti-components/theme` styles and what QTI XML round-trips. The shared base
 substitutes both.
+
+#### Identifier strategy — `QtiExtensionOptions.identifierStrategy`
+
+Every route that mints an identifier (insert commands, Enter on a choice / gap
+text / associable choice, the add-answer decoration, hottext wrapping, gap
+insertion, the paste rescue, the copy action's re-mint, and the composer's
+duplicate-response guard) asks an `IdentifierStrategy`:
+
+```ts
+interface IdentifierStrategy {
+  responseIdentifier(ctx: ResponseIdentifierContext): string;
+  optionIdentifier(ctx: OptionIdentifierContext): string; // ctx.role: choice | source | target | gap | gapText | area | other
+}
+// both contexts: { interactionType /* QTI tag */, prefix /* built-in UUID prefix */, existing /* ids already taken */, doc }
+```
+
+The default, `uuidIdentifierStrategy`, produces what this package has always
+produced (`RESPONSE_<uuid>`, `SIMPLE_CHOICE_<uuid>`, `GAP_TEXT_<uuid>`, …), so
+hosts that pass nothing are unaffected. `readableIdentifierStrategy` gives
+`RESPONSE`, `RESPONSE2`, … for responses; `A`, `B`, `C` for choices, inline
+choices, hottexts, order choices and gap texts; `S1`/`T1` for match sources and
+targets; `G1` for gaps — always the lowest free one (option identifiers are
+unique within their interaction).
+
+```ts
+import { readableIdentifierStrategy } from '@citolab/prose-qti';
+import { defineQtiExtension } from '@citolab/prose-qti/integration/interactions/prosekit';
+
+createEditor({ extension: defineQtiExtension({ identifierStrategy: readableIdentifierStrategy }) });
+```
+
+Plain ProseMirror: add `createIdentifierStrategyPlugin(strategy)` to your
+plugins. A host that builds its own ProseKit union can use
+`defineIdentifierStrategyExtension(strategy)`. Install it once — ProseMirror
+rejects two plugins with the same key. For the composer's duplicate guard,
+pass the same strategy as `identifierStrategy` in `ComposerItemContext` /
+`QtiComposeContext` / `RoundtripExportContext`. `createIdentifierMinter(state)`
+is exported for custom interactions that need to mint identifiers the same way.
 
 #### registerQtiInteractionElements(): void
 

@@ -33,6 +33,8 @@ export * from './commands/enter.js';
 export * from './commands/home-end.js';
 export * from './commands/insert.js';
 
+export * from './identifiers/identifier-strategy.js';
+
 export * from './composer/types.js';
 export * from './composer/metadata.js';
 export * from './composer/stripped-attributes.js';

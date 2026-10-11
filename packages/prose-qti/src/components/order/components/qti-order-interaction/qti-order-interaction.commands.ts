@@ -3,7 +3,9 @@ import { chainCommands, splitBlock } from 'prosemirror-commands';
 import { createInsertSiblingOnEnterCommand } from '../../../shared/commands/enter.js';
 import { createInsertBlockInteractionCommand } from '../../../shared/commands/insert.js';
 import { translateQti } from '../../../shared';
+import { createIdentifierMinter } from '../../../shared/identifiers/identifier-strategy.js';
 
+import type { Node as ProseMirrorNode } from 'prosemirror-model';
 import type { Command } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 
@@ -22,16 +24,18 @@ export const insertOrderInteraction: Command = (state, dispatch, view?: EditorVi
         return null;
       }
 
-      const responseIdentifier = `RESPONSE_${crypto.randomUUID()}`;
+      const minter = createIdentifierMinter(currentState);
+      const responseIdentifier = minter.responseIdentifier('qti-order-interaction');
+      const choiceIdentifier = minter.forInteraction('qti-order-interaction');
       const prompt = promptType.create(
         null,
         promptParagraphType.create(null, schema.text(translateQti('prompt.order.default', { target })))
       );
 
       const choices = [
-        choiceType.create({ identifier: `CHOICE_${crypto.randomUUID()}` }, choiceParagraphType.create(null, schema.text(translateQti('choice.itemA', { target })))),
-        choiceType.create({ identifier: `CHOICE_${crypto.randomUUID()}` }, choiceParagraphType.create(null, schema.text(translateQti('choice.itemB', { target })))),
-        choiceType.create({ identifier: `CHOICE_${crypto.randomUUID()}` }, choiceParagraphType.create(null, schema.text(translateQti('choice.itemC', { target })))),
+        choiceType.create({ identifier: choiceIdentifier('choice', 'CHOICE') }, choiceParagraphType.create(null, schema.text(translateQti('choice.itemA', { target })))),
+        choiceType.create({ identifier: choiceIdentifier('choice', 'CHOICE') }, choiceParagraphType.create(null, schema.text(translateQti('choice.itemB', { target })))),
+        choiceType.create({ identifier: choiceIdentifier('choice', 'CHOICE') }, choiceParagraphType.create(null, schema.text(translateQti('choice.itemC', { target })))),
       ];
 
       return interactionType.create({ responseIdentifier }, [prompt, ...choices]);
@@ -47,21 +51,26 @@ export const insertOrderChoiceOnEnter: Command = (state, dispatch) => {
 
   // Only act when inside a qtiOrderInteraction
   const { selection } = state;
-  let insideOrder = false;
+  let orderInteraction: ProseMirrorNode | null = null;
   for (let depth = selection.$from.depth; depth >= 0; depth--) {
     if (selection.$from.node(depth).type.name === 'qtiOrderInteraction') {
-      insideOrder = true;
+      orderInteraction = selection.$from.node(depth);
       break;
     }
   }
-  if (!insideOrder) return false;
+  if (!orderInteraction) return false;
 
   return createInsertSiblingOnEnterCommand({
     ancestorNodeName: 'qtiSimpleChoice',
     selectionOffset: 2,
-    createSiblingNode: () =>
+    createSiblingNode: currentState =>
       choiceType.create(
-        { identifier: `CHOICE_${crypto.randomUUID()}` },
+        {
+          identifier: createIdentifierMinter(currentState).forInteraction('qti-order-interaction', orderInteraction)(
+            'choice',
+            'CHOICE',
+          ),
+        },
         paragraphType.create()
       ),
   })(state, dispatch);

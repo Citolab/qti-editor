@@ -17,11 +17,14 @@ import { buildSingleAssessmentItemXml, formatXml } from "@citolab/prose-qti/core
 import { defaultRoundtripExportTransforms, type RoundtripExportTransform } from './strip-empty-prompts.js';
 
 import type { Node as ProseMirrorNode, Schema } from 'prosemirror-model';
+import type { IdentifierStrategy } from '@citolab/prose-qti/components/shared/identifiers/identifier-strategy.js';
 
 export interface RoundtripExportContext {
   identifier: string;
   title: string;
   lang?: string;
+  /** See `ComposerItemContext.identifierStrategy`. */
+  identifierStrategy?: IdentifierStrategy;
 }
 
 /** Resolve the export context, defaulting `identifier` / `title` from the doc attrs. */
@@ -30,6 +33,7 @@ function resolveContext(doc: ProseMirrorNode, context?: Partial<RoundtripExportC
     identifier: context?.identifier ?? (doc.attrs.identifier as string),
     title: context?.title ?? (doc.attrs.title as string),
     lang: context?.lang,
+    identifierStrategy: context?.identifierStrategy,
   };
 }
 

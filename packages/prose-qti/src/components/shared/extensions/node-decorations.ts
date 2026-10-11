@@ -38,10 +38,17 @@ import { NodeSelection, TextSelection } from 'prosemirror-state';
 import { Decoration } from 'prosemirror-view';
 
 import { translateQti } from '../i18n/index.js';
+import {
+  collectResponseIdentifiers,
+  getIdentifierStrategy,
+  interactionTagName,
+  isInteractionNode,
+} from '../identifiers/identifier-strategy.js';
 
 import type { Node as ProseMirrorNode } from 'prosemirror-model';
 import type { EditorState } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
+import type { IdentifierStrategy, OptionIdentifierRole } from '../identifiers/identifier-strategy.js';
 
 /** Fired when the settings action of an interaction's pill is clicked. */
 export const QTI_OPEN_NODE_SETTINGS_EVENT = 'qti:node-settings:open';
@@ -197,22 +204,81 @@ function remapValue(value: unknown, mapping: Map<string, string>): unknown {
   return value;
 }
 
-/** Every identifier in `node`'s subtree, mapped to a freshly minted replacement. */
-function collectIdentifierMapping(node: ProseMirrorNode): Map<string, string> {
-  const mapping = new Map<string, string>();
+/** What a node's `identifier` is for, as the identifier strategy sees it. */
+function optionRole(typeName: string, matchSetOrdinal: number): OptionIdentifierRole {
+  switch (typeName) {
+    case 'qtiSimpleChoice':
+    case 'qtiInlineChoice':
+    case 'qtiHottext':
+      return 'choice';
+    case 'qtiSimpleAssociableChoice':
+      return matchSetOrdinal === 0 ? 'source' : 'target';
+    case 'qtiGap':
+      return 'gap';
+    case 'qtiGapText':
+    case 'qtiGapImg':
+      return 'gapText';
+    default:
+      return 'other';
+  }
+}
 
-  const visit = (current: ProseMirrorNode) => {
+export interface RemintIdentifiersOptions {
+  /** Defaults to `uuidIdentifierStrategy`. Pass `getIdentifierStrategy(view.state)` from an editor. */
+  strategy?: IdentifierStrategy;
+  /** The document the copy will be pasted into, so new response identifiers do not collide with it. */
+  doc?: ProseMirrorNode | null;
+  /** QTI tag of `node` when it is an interaction whose tag is not derivable from its type name. */
+  interactionType?: string;
+}
+
+/** Every identifier in `node`'s subtree, mapped to a freshly minted replacement. */
+function collectIdentifierMapping(node: ProseMirrorNode, options: RemintIdentifiersOptions): Map<string, string> {
+  const { strategy = getIdentifierStrategy(null), doc = null } = options;
+  const mapping = new Map<string, string>();
+  const responses = collectResponseIdentifiers(doc);
+  // Option identifiers are scoped per interaction: each copied interaction starts afresh.
+  const scopes = new Map<ProseMirrorNode | null, string[]>();
+
+  const visit = (
+    current: ProseMirrorNode,
+    interaction: ProseMirrorNode | null,
+    interactionType: string,
+    matchSetOrdinal: number,
+  ) => {
+    if (isInteractionNode(current)) {
+      interaction = current;
+      interactionType =
+        current === node && options.interactionType ? options.interactionType : interactionTagName(current.type.name);
+    }
     const { identifier, responseIdentifier } = current.attrs;
     if (typeof identifier === 'string' && identifier && !mapping.has(identifier)) {
-      mapping.set(identifier, `${identifierPrefix(current.type.name)}_${crypto.randomUUID()}`);
+      const existing = scopes.get(interaction) ?? [];
+      scopes.set(interaction, existing);
+      const minted = strategy.optionIdentifier({
+        interactionType,
+        role: optionRole(current.type.name, matchSetOrdinal),
+        prefix: identifierPrefix(current.type.name),
+        doc,
+        existing: existing.slice(),
+      });
+      existing.push(minted);
+      mapping.set(identifier, minted);
     }
     if (typeof responseIdentifier === 'string' && responseIdentifier && !mapping.has(responseIdentifier)) {
-      mapping.set(responseIdentifier, `RESPONSE_${crypto.randomUUID()}`);
+      const minted = strategy.responseIdentifier({ interactionType, prefix: 'RESPONSE', doc, existing: responses.slice() });
+      responses.push(minted);
+      mapping.set(responseIdentifier, minted);
     }
-    current.forEach(child => visit(child));
+    let ordinal = 0;
+    current.forEach(child => {
+      const isMatchSet = child.type.name === 'qtiSimpleMatchSet';
+      visit(child, interaction, interactionType, isMatchSet ? ordinal : matchSetOrdinal);
+      if (isMatchSet) ordinal += 1;
+    });
   };
 
-  visit(node);
+  visit(node, null, options.interactionType ?? '', 0);
   return mapping;
 }
 
@@ -226,13 +292,15 @@ function collectIdentifierMapping(node: ProseMirrorNode): Map<string, string> {
  * through the same mapping — which is what carries `correctResponse` across, including the
  * space-joined directed pairs the match and gap-match interactions use.
  *
+ * New identifiers come from `options.strategy` (default: `<PREFIX>_<uuid>`).
+ *
  * The author's own identifier is deliberately not preserved. Every identifier in a copy that is
  * pasted beside its original collides, so there is nothing to keep; minting `SIMPLE_CHOICE_<uuid>`
  * instead makes the result identical in shape to a freshly inserted interaction and idempotent under
  * repeated copying, where preserving a stem would grow it each time.
  */
-export function remintIdentifiers(node: ProseMirrorNode): ProseMirrorNode {
-  const mapping = collectIdentifierMapping(node);
+export function remintIdentifiers(node: ProseMirrorNode, options: RemintIdentifiersOptions = {}): ProseMirrorNode {
+  const mapping = collectIdentifierMapping(node, options);
   if (mapping.size === 0) return node.copy(node.content);
 
   const rebuild = (current: ProseMirrorNode): ProseMirrorNode => {
@@ -290,8 +358,13 @@ export function openNodeSettings({ view, pos, node, nodeTypeName, tagName }: Nod
  * that for good means re-minting on paste instead, which belongs with the paste rescue in the schema
  * package rather than here.
  */
-export async function copyNodeToClipboard({ view, node }: NodeActionContext): Promise<void> {
-  const slice = new Slice(Fragment.from(remintIdentifiers(node)), 0, 0);
+export async function copyNodeToClipboard({ view, node, tagName }: NodeActionContext): Promise<void> {
+  const reminted = remintIdentifiers(node, {
+    strategy: getIdentifierStrategy(view.state),
+    doc: view.state.doc,
+    interactionType: tagName,
+  });
+  const slice = new Slice(Fragment.from(reminted), 0, 0);
   const { dom, text } = view.serializeForClipboard(slice);
   const html = dom.innerHTML;
 

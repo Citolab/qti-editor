@@ -17,6 +17,10 @@ import {
 } from '@citolab/prose-qti/core/interactions/composer';
 import { clearFormatting } from '@citolab/prose-qti/commands';
 import {
+  createIdentifierStrategyPlugin,
+  type IdentifierStrategy,
+} from '@citolab/prose-qti/components/shared/identifiers/identifier-strategy.js';
+import {
   constrainedHome,
   constrainedShiftHome,
   constrainedEnd,
@@ -36,7 +40,26 @@ export function registerQtiInteractionElements() {
   // Intentionally empty: registration happens through side-effect imports.
 }
 
-export function defineQtiInteractionsExtension() {
+export interface QtiExtensionOptions {
+  /**
+   * How new response and option identifiers are minted — on insert, Enter, add-answer, paste rescue
+   * and the copy action. Omit it to keep the default `RESPONSE_<uuid>` / `SIMPLE_CHOICE_<uuid>`
+   * identifiers; pass `readableIdentifierStrategy` for `RESPONSE`, `RESPONSE2`, `A`, `B`, `S1`, `T1`,
+   * `G1`, or your own `IdentifierStrategy`.
+   */
+  identifierStrategy?: IdentifierStrategy;
+}
+
+/**
+ * Install an identifier strategy on its own, for hosts that assemble their own extension rather than
+ * calling `defineQtiExtension()`. Do not combine with `{ identifierStrategy }` on the QTI extension:
+ * ProseMirror rejects two plugins with the same key.
+ */
+export function defineIdentifierStrategyExtension(strategy: IdentifierStrategy) {
+  return definePlugin(createIdentifierStrategyPlugin(strategy));
+}
+
+export function defineQtiInteractionsExtension(options: QtiExtensionOptions = {}) {
   const descriptors = listInteractionDescriptors();
 
   const nodeSpecExtensions: Extension[] = listInteractionSchemaNodeSpecs().map(({ name, spec }) =>
@@ -81,6 +104,10 @@ export function defineQtiInteractionsExtension() {
 
   const pluginExtensions = listInteractionPluginFactories().map(pluginFactory => definePlugin(pluginFactory));
 
+  if (options.identifierStrategy) {
+    pluginExtensions.push(defineIdentifierStrategyExtension(options.identifierStrategy));
+  }
+
   return union(...nodeSpecExtensions, defineKeymap(keymap), ...pluginExtensions);
 }
 
@@ -117,8 +144,8 @@ export function defineClearFormattingExtension() {
   );
 }
 
-export function defineQtiExtension() {
-  return union(defineBasicExtension(), defineQtiInteractionsExtension());
+export function defineQtiExtension(options: QtiExtensionOptions = {}) {
+  return union(defineBasicExtension(), defineQtiInteractionsExtension(options));
 }
 
 export type QtiExtension = ReturnType<typeof defineQtiExtension>;

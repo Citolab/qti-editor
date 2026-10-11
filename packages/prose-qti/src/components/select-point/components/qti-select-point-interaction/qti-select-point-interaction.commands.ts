@@ -1,5 +1,6 @@
 import { createInsertBlockInteractionCommand } from '@citolab/prose-qti/components/shared/commands/insert.js';
 import { translateQti } from '@citolab/prose-qti/components/shared';
+import { createIdentifierMinter } from '@citolab/prose-qti/components/shared/identifiers/identifier-strategy.js';
 
 import type { Command } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
@@ -25,7 +26,7 @@ export const insertSelectPointInteraction: Command = (state, dispatch, view?: Ed
       const imgSelectPoint = imgSelectPointType.create();
 
       return interactionType.create({
-        responseIdentifier: `RESPONSE_${crypto.randomUUID()}`,
+        responseIdentifier: createIdentifierMinter(currentState).responseIdentifier('qti-select-point-interaction'),
         maxChoices: 0,
         minChoices: 0,
         areaMappings: '[]',
