@@ -25,8 +25,8 @@ import type { NodeSpec } from 'prosemirror-model';
  *
  * This is the one measured against the regression corpus: with it, a Node roundtrip of every ITEM
  * fixture reproduces the committed snapshots — 16/16 today. The ProseKit path has never been measured
- * against the corpus and does not carry `qtiLayoutDiv`, so building conversion on it would silently
- * drop author layout.
+ * against the corpus. It carries `qtiLayoutDiv` only through `defineQtiBaseNodesExtension()` (in
+ * `defineQtiExtension()`); a ProseKit host composed without it silently drops author layout.
  *
  * ## Why lists and tables are in here
  *

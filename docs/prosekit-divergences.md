@@ -91,6 +91,11 @@ question.
 (`packages/prose-extensions/src/prosekit/basic.ts`) — the identical fix as `defineQtiDoc` above, for
 the identical reason: the accepted node set is unchanged, only the filler preference changes.
 
+`defineQtiBaseNodesExtension()` (`@citolab/prose-qti/integration/interactions/prosekit`) registers
+`qtiLayoutDiv` with the same `(paragraph | block)+`. Its spec says `block+`, and ProseKit sorts that
+later registration first, so the first admitted type was the layout div itself and filling a column
+recursed until the stack overflowed.
+
 ### Gap cursor — reachable, but typing opens the wrong node
 
 `defineGapCursor()` gets ProseMirror's gap cursor into the extension union, but two more decisions

@@ -42,11 +42,13 @@ It rejects any transaction that would change how many `qtiLayoutDiv` nodes the d
 
 ## Shared-stimulus placeholder (`qtiSharedStimulus`)
 
-`<div class="qti-shared-stimulus" data-stimulus-idref="Stimulus1"></div>` marks where the player puts the shared text an item's `<qti-assessment-stimulus-ref identifier="Stimulus1">` points at. qti-components fills it: `qti-assessment-stimulus-ref` looks up `[data-stimulus-idref]` in its item and loads the stimulus into it.
+`<div class="qti-shared-stimulus" data-stimulus-idref="Stimulus1"></div>` marks where the player puts the shared text an item's `<qti-assessment-stimulus-ref identifier="Stimulus1">` points at. This is a qti-components runtime convention rather than QTI-spec vocabulary: `qti-assessment-stimulus-ref` looks up `[data-stimulus-idref]` in its item, empties it and loads the stimulus into it.
 
-The div is empty in the item, so the node is an atom with two attributes, `stimulusIdref` and `class`, both written back as they were read. Nothing inserts one; it arrives from imported QTI and can be moved or deleted like any block. `data-stimulus-idref` is required, which keeps the node out of ProseMirror's filler lookups: an empty document or a new table cell still fills with a paragraph.
+The div is empty in the item, so the node is an atom. Only an empty `div[data-stimulus-idref]` matches. The attribute also appears on elements that have content, such as a Cito dialog trigger wrapping an image, and an atom would delete that content, so those elements are left to the other rules. `stimulusIdref`, `class`, `id` and any other `data-*` attribute are written back as they were read. Nothing inserts one; it arrives from imported QTI and can be moved or deleted like any block. `data-stimulus-idref` is required, which keeps the node out of ProseMirror's filler lookups: an empty document or a new table cell still fills with a paragraph.
 
-ProseKit hosts get it from `defineQtiExtension()`; a host composing its own base adds `defineQtiSharedStimulusExtension()` (from `@citolab/prose-qti/integration/interactions/prosekit`), or `defineNodeSpec({ name: 'qtiSharedStimulus', ...qtiSharedStimulusNodeSpec })`.
+In the editor, `core-css.css` draws the empty slot as a dashed box labelled with its identifier, so an author can see what they are selecting. Set `--qti-edit-shared-stimulus-label` to translate the label.
+
+ProseKit hosts get it from `defineQtiExtension()`. A host composing its own base adds `defineQtiBaseNodesExtension()` from `@citolab/prose-qti/integration/interactions/prosekit`, which brings the layout wrappers (`qtiLayoutDiv`) as well.
 
 The `<qti-assessment-stimulus-ref>` itself sits outside the item body, so like the item's other declarations it is the host's to keep when it writes the item back.
 
