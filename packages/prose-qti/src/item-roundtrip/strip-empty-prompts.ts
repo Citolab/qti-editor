@@ -15,12 +15,15 @@
 export type RoundtripExportTransform = (itemBody: XMLDocument) => void;
 
 /**
- * Remove every `<qti-prompt>` whose text content is empty (or whitespace-only).
- * Idempotent; safe to apply to any item-body document.
+ * Remove every `<qti-prompt>` whose text content is empty (or whitespace-only) and
+ * that holds no media. A prompt that is only an `img`, `audio` or `video` (a picture
+ * prompt, a spoken question) is authored content and is kept — the same rule as
+ * `removeEmptyPrompts` on compose. Idempotent; safe to apply to any item-body document.
  */
 export const stripEmptyPrompts: RoundtripExportTransform = (itemBody: XMLDocument): void => {
   for (const prompt of Array.from(itemBody.querySelectorAll('qti-prompt'))) {
     if (prompt.textContent && prompt.textContent.trim().length > 0) continue;
+    if (prompt.querySelector('img, audio, video')) continue;
     prompt.parentNode?.removeChild(prompt);
   }
 };
