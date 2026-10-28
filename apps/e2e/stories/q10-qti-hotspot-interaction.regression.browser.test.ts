@@ -280,6 +280,21 @@ test('pressing an area selects its choice in ProseMirror; Delete removes it and 
   expect(q10.correct()).toEqual(['C']);
 });
 
+test('with an area selected, arrow keys select the next choice and typing changes nothing', async () => {
+  const q10 = await mountHotspot({ mountEditor, exportAssessmentItemDoc });
+
+  await q10.press(77, 115);
+  expect(q10.selectedChoice()).toBe('A');
+  await userEvent.keyboard('{ArrowRight}');
+  expect(q10.selectedChoice()).toBe('B');
+  // The drawing follows ProseMirror's selection.
+  await expect.poll(() => q10.interaction.shadowRoot?.querySelector('[data-identifier="B"] .area--selected')).not.toBeNull();
+
+  await userEvent.keyboard('x{Enter}');
+  expect(q10.choices().map(choice => choice.identifier)).toEqual(['A', 'B', 'C', 'D']);
+  expect(q10.selectedChoice()).toBe('B');
+});
+
 test('dragging a choice moves it; Delete area removes it and its place in the answer key', async () => {
   const q10 = await mountHotspot({ mountEditor, exportAssessmentItemDoc });
 
