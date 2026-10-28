@@ -155,7 +155,7 @@ const MOD = navigator.platform.toLowerCase().includes('mac') ? 'Meta' : 'Control
  */
 async function mountHotspot(
   editor: Pick<RegressionEditor, 'mountEditor' | 'exportAssessmentItemDoc'>,
-  { index = 0, panel = false, size = { width: 206, height: 280 } } = {},
+  { index = 0, panel = false, size = { width: 206, height: 280 }, loaded = true } = {},
 ) {
   const host = document.createElement('div');
   host.style.width = '800px';
@@ -169,7 +169,8 @@ async function mountHotspot(
 
   const interaction = host.querySelectorAll<HTMLElement>('qti-hotspot-interaction')[index];
   const picture = interaction.querySelector<HTMLImageElement | HTMLObjectElement>(':scope > img, :scope > object')!;
-  if (picture instanceof HTMLImageElement) {
+  // `loaded: false` for a picture that is meant not to load.
+  if (loaded && picture instanceof HTMLImageElement) {
     // Under a full parallel run the picture can take longer than the default second to load.
     await expect.poll(() => picture.complete && picture.naturalWidth > 0, { timeout: 10_000 }).toBe(true);
   }
@@ -189,7 +190,7 @@ async function mountHotspot(
   // hints change as the author switches tools.
   const target = () => page.elementLocator(interaction);
   const button = async (text: string) => page.elementLocator(await findByShadowText(interaction, text));
-  const press = (x: number, y: number, options: { button?: 'left' | 'right' } = {}) =>
+  const press = (x: number, y: number, options: { button?: 'left' | 'right'; modifiers?: Array<'Shift'> } = {}) =>
     userEvent.click(target(), { position: at(x, y), ...options });
   const doublePress = (x: number, y: number) => userEvent.dblClick(target(), { position: at(x, y) });
   const drag = (from: [number, number], to: [number, number]) =>
@@ -616,4 +617,146 @@ test("an imported ellipse is resized by its two radius handles", async () => {
   await q10.drag([150, 245], [150, 255]);
   expectCoords(c().coords, [150, 235, 30, 20]);
   expect(c().shape).toBe('ellipse');
+});
+
+/*
+ * The magic wand, on a flat-colour picture made here: two blue lakes on white, split by a 2 px dark
+ * dike, and an answer area A in the white on the right. 200x100 in the item's coordinate space:
+ *
+ *   left lake    x 20–80,   y 20–80
+ *   dike         x 80–82
+ *   right lake   x 82–140,  y 20–80
+ *   A            x 150–190, y 50–90
+ *
+ * `scale` draws it at that many times the size, so its pixels are not its coordinate space.
+ */
+function lakesPicture(scale = 1): string {
+  const canvas = document.createElement('canvas');
+  canvas.width = 200 * scale;
+  canvas.height = 100 * scale;
+  const context = canvas.getContext('2d')!;
+  context.scale(scale, scale);
+  context.fillStyle = '#ffffff';
+  context.fillRect(0, 0, 200, 100);
+  context.fillStyle = '#3b82f6';
+  context.fillRect(20, 20, 60, 60);
+  context.fillRect(82, 20, 58, 60);
+  context.fillStyle = '#1f2937';
+  context.fillRect(80, 20, 2, 60);
+  return canvas.toDataURL('image/png');
+}
+
+function lakesEditor(src: string) {
+  return createRegressionEditor({
+    descriptor: hotspotInteractionDescriptor,
+    sourceXML: `<?xml version="1.0" encoding="UTF-8"?>
+<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" identifier="lakes" title="Lakes" adaptive="false" time-dependent="false">
+  <qti-response-declaration identifier="RESPONSE" cardinality="single" base-type="identifier">
+    <qti-correct-response><qti-value>A</qti-value></qti-correct-response>
+  </qti-response-declaration>
+  <qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float">
+    <qti-default-value><qti-value>0</qti-value></qti-default-value>
+  </qti-outcome-declaration>
+  <qti-item-body>
+    <qti-hotspot-interaction response-identifier="RESPONSE" max-choices="1">
+      <qti-prompt>Click the lake.</qti-prompt>
+      <img src="${src}" width="200" height="100" alt="Two lakes split by a dike"/>
+      <qti-hotspot-choice identifier="A" shape="rect" coords="150,50,190,90"/>
+    </qti-hotspot-interaction>
+  </qti-item-body>
+  <qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct.xml"/>
+</qti-assessment-item>`,
+    transforms: () => [roundtripInteractions, roundtripItemBody],
+  });
+}
+
+const LAKES = { width: 200, height: 100 };
+const LEFT_LAKE = '20,20,80,20,80,80,20,80';
+const BOTH_LAKES = '20,20,140,20,140,80,20,80';
+const findText = (lakes: Hotspot, text: string) => findByShadowText(lakes.interaction, text, { exact: false });
+
+test('the magic wand outlines a region as a polygon, Shift+click adds the next one, and the area scores', async () => {
+  const lakes = await mountHotspot(lakesEditor(lakesPicture()), { size: LAKES });
+
+  await (await lakes.button('Magic wand')).click();
+  await userEvent.hover(lakes.interaction, { position: lakes.at(50, 50) });
+  await lakes.press(50, 50);
+
+  await expect.poll(() => lakes.choices().length).toBe(2);
+  expect(lakes.choices()[1]).toMatchObject({ shape: 'poly', coords: LEFT_LAKE });
+  expect(lakes.selectedChoice()).toBe(lakes.choices()[1].identifier);
+  await findText(lakes, 'Shift+click a neighbouring region');
+
+  // Shift+click the other lake: one area round both, the dike included.
+  const drawn = lakes.choices()[1].identifier!;
+  await lakes.press(110, 50, { modifiers: ['Shift'] });
+  await expect.poll(() => lakes.choices()[1].coords).toBe(BOTH_LAKES);
+  expect(lakes.choices()[1].identifier).toBe(drawn);
+  // Making and extending an area never touches the answer key (max-choices 1: one value, still A's).
+  expect(lakes.correct()).toEqual(['A']);
+
+  // The white around the lakes is the background, not a region.
+  await lakes.press(10, 90);
+  await findText(lakes, 'No clear region here');
+  expect(lakes.choices()).toHaveLength(2);
+
+  // Escape puts the wand away; the wand's area is still selected, so the hint is how to edit it.
+  await userEvent.keyboard('{Escape}');
+  await findText(lakes, 'Double-click an edge to add a point');
+
+  // Make it the answer instead of A, and play the exported item.
+  await lakes.press(70, 30);
+  expect(lakes.selectedChoice()).toBe(drawn);
+  await (await lakes.button('Mark as correct')).click();
+  await lakes.press(170, 70);
+  await (await lakes.button('Unmark as correct')).click();
+  expect(lakes.correct()).toEqual([drawn]);
+
+  const xml = serialize(lakes.exported());
+  expect(await scoreClicking(xml, [drawn])).toEqual({ response: drawn, score: 1 });
+  expect((await scoreClicking(xml, ['A'])).score).toBe(0);
+});
+
+test('a double-click with the magic wand makes one area, not two', async () => {
+  const lakes = await mountHotspot(lakesEditor(lakesPicture()), { size: LAKES });
+
+  await (await lakes.button('Magic wand')).click();
+  await lakes.doublePress(50, 50);
+
+  await expect.poll(() => lakes.choices().length).toBe(2);
+  // Give a second area every chance to appear.
+  await lakes.press(10, 90);
+  await findText(lakes, 'No clear region here');
+  expect(lakes.choices().map(choice => choice.coords)).toEqual(['150,50,190,90', LEFT_LAKE]);
+
+  // So does a Shift+click inside the area it already covers.
+  await lakes.press(40, 60, { modifiers: ['Shift'] });
+  expect(lakes.choices()).toHaveLength(2);
+  expect(lakes.choices()[1].coords).toBe(LEFT_LAKE);
+});
+
+test('the magic wand works in the picture’s coordinate space when its pixels are larger', async () => {
+  // Drawn at twice the size of its width / height; the wand reads it at its own 400x200.
+  const lakes = await mountHotspot(lakesEditor(lakesPicture(2)), { size: LAKES });
+
+  await (await lakes.button('Magic wand')).click();
+  await lakes.press(50, 50);
+  await expect.poll(() => lakes.choices()[1]?.coords).toBe(LEFT_LAKE);
+});
+
+test('a picture the wand cannot read gives a message, and the wand tries again next time', async () => {
+  // Stands in for a picture from another site without CORS: either way the pixels cannot be read.
+  const broken = await mountHotspot(lakesEditor('/qti/conformance/does-not-exist.png'), { size: LAKES, loaded: false });
+
+  const wand = await broken.button('Magic wand');
+  await wand.click();
+  await findText(broken, 'The magic wand cannot read this image');
+  await findText(broken, 'Click an area to select it');
+
+  await (await broken.button('Select')).click();
+  await expect.poll(() => queryByShadowText(broken.interaction, /cannot read this image/)).toBeNull();
+  // Not given up on: a second try reads the picture again, and says so again.
+  await expect.element(wand).toBeEnabled();
+  await wand.click();
+  await findText(broken, 'The magic wand cannot read this image');
 });

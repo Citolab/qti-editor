@@ -38,9 +38,10 @@ import { readObjectFallback, type ImageFallbackPart } from './img-hotspot.schema
 import styles from './qti-hotspot-interaction.styles.js';
 
 import type { TemplateResult } from 'lit';
+import type { MagicWand, WandArea } from '@citolab/prose-qti/components/shared/graphic/magic-wand.js';
 
-/** `poly` is drawn point by point. */
-type DrawMode = 'select' | DrawableAreaShape | 'poly';
+/** `poly` is drawn point by point; `wand` outlines the region under a click. */
+type DrawMode = 'select' | DrawableAreaShape | 'poly' | 'wand';
 
 /** A `qti-hotspot-choice` as the editor draws it, read from the light-DOM element. */
 interface HotspotArea {
@@ -63,6 +64,29 @@ const HANDLE_SCREEN_PX = 10;
 /** The class ProseMirror puts on the DOM of a node a `NodeSelection` selects. */
 const SELECTED_NODE_CLASS = 'ProseMirror-selectednode';
 
+/**
+ * The magic wand over one picture, once it is being read. Kept while the wand is the tool, so moving
+ * the pointer and clicking do not read the picture again, and dropped when the author puts it away.
+ */
+interface WandSource {
+  src: string;
+  size: AreaSize;
+  wand: Promise<MagicWand | null>;
+}
+
+/**
+ * The magic wand for the picture at `src`, or `null` when its pixels cannot be read. Its code is
+ * loaded on first use, so an editor whose authors never pick the wand never loads it.
+ */
+async function createMagicWand(src: string, size: AreaSize): Promise<MagicWand | null> {
+  const [{ MagicWand }, { readImagePixels }] = await Promise.all([
+    import('@citolab/prose-qti/components/shared/graphic/magic-wand.js'),
+    import('@citolab/prose-qti/components/shared/graphic/image-pixels.js'),
+  ]);
+  const pixels = await readImagePixels(src);
+  return pixels ? new MagicWand(pixels, size) : null;
+}
+
 /** The light-DOM children the drawing is made from; mutations anywhere else are not its business. */
 const GRAPHIC_CHILDREN = new Set(['qti-hotspot-choice', 'img', 'object']);
 
@@ -77,6 +101,10 @@ const GRAPHIC_CHILDREN = new Set(['qti-hotspot-choice', 'img', 'object']);
  * and a double-click on an edge adds a point, on a point removes it. Ellipses from an imported item
  * are moved and resized by their radii; `default` (the whole picture) is selected, marked and
  * deleted only.
+ *
+ * The magic wand outlines the coloured region under a click as a polygon; Shift+click adds the
+ * region under the pointer to the area the wand made last. Its code and the picture's pixels are
+ * loaded when the author picks it, and let go when they put it away.
  *
  * A polygon whose `coords` repeat the first point at the end (some items close their polygons) is
  * edited without the repeat, and written back with it, so the item keeps its own convention. One
@@ -124,6 +152,8 @@ export class QtiHotspotInteractionEdit extends Interaction {
   /** The points of the polygon being drawn, and where the pointer is, for its next edge. */
   @state() private _polyDraft: AreaPoint[] | null = null;
   @state() private _polyHover: AreaPoint | null = null;
+  /** The region the magic wand would outline at the pointer. */
+  @state() private _wandPreview: number[] | null = null;
 
   readonly #i18n = new QtiI18nController(this);
   #image: HTMLImageElement | HTMLObjectElement | null = null;
@@ -132,6 +162,11 @@ export class QtiHotspotInteractionEdit extends Interaction {
   #attributeObserver: MutationObserver | null = null;
   #fileInput = createRef<HTMLInputElement>();
   #surface = createRef<HTMLElement>();
+  #wandSource: WandSource | null = null;
+  /** The area the wand made last, which Shift+click adds to. */
+  #wandArea: WandArea | null = null;
+  #wandHover: { point: AreaPoint; shift: boolean } | null = null;
+  #wandFrame = 0;
 
   /**
    * The toolbar shows while the author works in this interaction: the caret is in it (its prompt),
@@ -177,6 +212,7 @@ export class QtiHotspotInteractionEdit extends Interaction {
     this.#attributeObserver = null;
     this.#image?.removeEventListener('load', this.#onImageLoad);
     this.#image = null;
+    this.#releaseWand();
   }
 
   #isGraphicChild(node: Node): boolean {
@@ -217,6 +253,7 @@ export class QtiHotspotInteractionEdit extends Interaction {
     if (src !== this._imageSrc) {
       this._imageSrc = src;
       this._imageSize = null;
+      this.#releaseWand();
     }
     void this.#resolveImageSize();
   }
@@ -316,6 +353,12 @@ export class QtiHotspotInteractionEdit extends Interaction {
       this.#addPolyPoint(point);
       return;
     }
+    if (this._drawMode === 'wand') {
+      // Focused for Escape and Shift, as while drawing a polygon.
+      this.#surface.value?.focus({ preventScroll: true });
+      void this.#pickWithWand(point, event.shiftKey);
+      return;
+    }
 
     let gesture: Gesture | null = null;
     if (this._drawMode !== 'select') {
@@ -342,6 +385,12 @@ export class QtiHotspotInteractionEdit extends Interaction {
   #onPointerMove(event: PointerEvent) {
     if (this._drawMode === 'poly' && this._polyDraft) {
       this._polyHover = this.#toImagePoint(event);
+      return;
+    }
+    if (this._drawMode === 'wand') {
+      const point = this.#toImagePoint(event);
+      this.#wandHover = point ? { point, shift: event.shiftKey } : null;
+      this.#scheduleWandPreview();
       return;
     }
 
@@ -388,6 +437,8 @@ export class QtiHotspotInteractionEdit extends Interaction {
 
   #onPointerLeave() {
     this._polyHover = null;
+    this.#wandHover = null;
+    this._wandPreview = null;
   }
 
   /**
@@ -417,11 +468,19 @@ export class QtiHotspotInteractionEdit extends Interaction {
 
   /**
    * While a polygon is being drawn, the picture has the keyboard: Enter finishes the polygon, Escape
-   * cancels it (and with no polygon started, puts the tool away). Only those keys are taken; every
-   * other key goes on as usual, and ProseMirror leaves keys from the picture alone
-   * (`hotspot-choice-editing.ts`), so document-level shortcuts still see them.
+   * cancels it (and with no polygon started, puts the tool away). With the wand, Escape puts it away
+   * and Shift shows what Shift+click would make. Only those keys are taken; every other key goes on
+   * as usual, and ProseMirror leaves keys from the picture alone (`hotspot-choice-editing.ts`), so
+   * document-level shortcuts still see them.
    */
   #onKeyDown(event: KeyboardEvent) {
+    if (this._drawMode === 'wand') {
+      if (event.key === 'Shift') this.#setWandShift(true);
+      if (event.key !== 'Escape') return;
+      this.#setDrawMode('select');
+      event.preventDefault();
+      return;
+    }
     if (this._drawMode !== 'poly') return;
     if (event.key === 'Enter') {
       this.#finishPolygon();
@@ -432,6 +491,16 @@ export class QtiHotspotInteractionEdit extends Interaction {
       return;
     }
     event.preventDefault();
+  }
+
+  #onKeyUp(event: KeyboardEvent) {
+    if (event.key === 'Shift' && this._drawMode === 'wand') this.#setWandShift(false);
+  }
+
+  #setWandShift(shift: boolean) {
+    if (!this.#wandHover || this.#wandHover.shift === shift) return;
+    this.#wandHover = { ...this.#wandHover, shift };
+    this.#scheduleWandPreview();
   }
 
   /**
@@ -454,6 +523,8 @@ export class QtiHotspotInteractionEdit extends Interaction {
     this._polyDraft = null;
     this._polyHover = null;
     this._notice = null;
+    if (mode === 'wand') void this.#loadWand();
+    else this.#releaseWand();
   }
 
   /**
@@ -491,6 +562,98 @@ export class QtiHotspotInteractionEdit extends Interaction {
   #cancelPolygon() {
     this._polyDraft = null;
     this._polyHover = null;
+  }
+
+  /**
+   * The wand for the current picture and size. Read once while the wand is the tool; a read that
+   * failed (the picture did not load, or may not be read) is tried again the next time.
+   */
+  #loadWand(): Promise<MagicWand | null> {
+    const src = this._imageSrc;
+    const size = this._imageSize;
+    if (!src || !size) return Promise.resolve(null);
+    const cached = this.#wandSource;
+    if (cached?.src === src && cached.size.width === size.width && cached.size.height === size.height) return cached.wand;
+
+    const source: WandSource = { src, size, wand: Promise.resolve(null) };
+    source.wand = createMagicWand(src, size)
+      .catch(() => null)
+      .then(wand => {
+        if (wand || this.#wandSource !== source) return wand;
+        this.#wandSource = null;
+        this._notice = this.#i18n.t('graphic.wand.unreadable');
+        if (this._drawMode === 'wand') this._drawMode = 'select';
+        return null;
+      });
+    this.#wandSource = source;
+    return source.wand;
+  }
+
+  /** Let go of the picture's pixels and the last region's mask: the wand is put away. */
+  #releaseWand() {
+    cancelAnimationFrame(this.#wandFrame);
+    this.#wandFrame = 0;
+    this.#wandSource = null;
+    this.#wandArea = null;
+    this.#wandHover = null;
+    this._wandPreview = null;
+  }
+
+  /** The wand area Shift+click adds to, while it still exists as the wand left it. */
+  #extendableWandArea(): WandArea | null {
+    const last = this.#wandArea;
+    if (!last) return null;
+    const area = this._areas.find(candidate => candidate.identifier === last.identifier);
+    return area && formatCoords(area.values) === last.coords ? last : null;
+  }
+
+  /** At most one preview per frame; flooding a region is the expensive part. */
+  #scheduleWandPreview() {
+    if (this.#wandFrame) return;
+    this.#wandFrame = requestAnimationFrame(() => {
+      this.#wandFrame = 0;
+      const hover = this.#wandHover;
+      if (!hover) {
+        this._wandPreview = null;
+        return;
+      }
+      void this.#loadWand().then(wand => {
+        if (!wand || this._drawMode !== 'wand' || this.#wandHover !== hover) return;
+        this._wandPreview = wand.preview(hover.point, hover.shift ? this.#extendableWandArea() : null);
+      });
+    });
+  }
+
+  /**
+   * A wand click: a new polygon around the region there, or with Shift, that region added to the
+   * last one. A click that would give the last area again — the second press of a double-click, or
+   * a Shift+click inside it — does nothing.
+   */
+  async #pickWithWand(point: AreaPoint, shift: boolean) {
+    const wand = await this.#loadWand();
+    // The author may have put the wand away while the picture was being read.
+    if (!wand || this._drawMode !== 'wand') return;
+    const last = this.#extendableWandArea();
+    const extend = shift ? last : null;
+    const result = wand.pick(point, extend);
+    if ('miss' in result) {
+      this._notice = this.#i18n.t(result.miss === 'notTouching' ? 'graphic.wand.notTouching' : 'graphic.wand.noRegion');
+      return;
+    }
+
+    this._notice = null;
+    this._wandPreview = null;
+    const coords = formatCoords(result.coords);
+    if (coords === last?.coords) return;
+    const extended = extend && this._areas.find(candidate => candidate.identifier === extend.identifier);
+    if (extended) {
+      this.#emitAttrs(extended.element, 'qtiHotspotChoice', 'qti-hotspot-choice', { coords });
+      this.#wandArea = { identifier: extended.identifier, coords, mask: result.mask };
+      return;
+    }
+    // The plugin names the new choice and selects it; that is the identifier returned.
+    const identifier = this.#requestEdit({ op: 'add', shape: 'poly', coords });
+    this.#wandArea = identifier ? { identifier, coords, mask: result.mask } : null;
   }
 
   #endGesture(event: PointerEvent) {
@@ -619,6 +782,7 @@ export class QtiHotspotInteractionEdit extends Interaction {
       )}
       ${draft ? this.#renderShape(draft.shape, draft.coords, 'area area--draft', size) : nothing}
       ${this.#renderPolyDraft(handleSize)}
+      ${this._wandPreview ? this.#renderShape('poly', this._wandPreview, 'area area--draft area--wand', size) : nothing}
     `;
   }
 
@@ -659,6 +823,7 @@ export class QtiHotspotInteractionEdit extends Interaction {
           ? html`
               ${mode('select', t('hotspot.mode.select'))} ${mode('circle', t('hotspot.mode.circle'))}
               ${mode('rect', t('hotspot.mode.rect'))} ${mode('poly', t('graphic.mode.poly'))}
+              ${mode('wand', t('graphic.mode.wand'))}
               ${selected
                 ? html`
                     <span class="separator"></span>
@@ -698,6 +863,7 @@ export class QtiHotspotInteractionEdit extends Interaction {
     const selected = this._areas.find(area => area.identifier === this._selected);
     const t = (key: string) => this.#i18n.t(key);
     if (this._drawMode === 'poly') return t('graphic.hint.poly');
+    if (this._drawMode === 'wand') return t(this.#extendableWandArea() ? 'graphic.hint.wandExtend' : 'graphic.hint.wand');
     if (this._drawMode !== 'select') return t('graphic.hint.draw');
     if (!selected) return t('graphic.hint.select');
     return selected.shape === 'poly' ? `${t('graphic.hint.area')} ${t('graphic.hint.polyPoints')}` : t('graphic.hint.area');
@@ -721,6 +887,7 @@ export class QtiHotspotInteractionEdit extends Interaction {
         @pointerleave=${this.#onPointerLeave}
         @dblclick=${this.#onDoubleClick}
         @keydown=${this.#onKeyDown}
+        @keyup=${this.#onKeyUp}
         @beforeinput=${this.#onBeforeInput}
       >
         <slot @slotchange=${() => this.#syncImage()}></slot>

@@ -374,7 +374,8 @@ export function isNearPoint(a: AreaPoint, b: AreaPoint, tolerance: number): bool
   return Math.abs(a.x - b.x) <= tolerance && Math.abs(a.y - b.y) <= tolerance;
 }
 
-function distanceToSegment(point: AreaPoint, start: AreaPoint, end: AreaPoint): number {
+/** The distance from `point` to the segment from `start` to `end`. */
+export function distanceToSegment(point: AreaPoint, start: AreaPoint, end: AreaPoint): number {
   const dx = end.x - start.x;
   const dy = end.y - start.y;
   const length = dx * dx + dy * dy;

@@ -78,11 +78,12 @@ const styles: CSSResultGroup = [
 
     .surface[data-mode='circle'],
     .surface[data-mode='rect'],
-    .surface[data-mode='poly'] {
+    .surface[data-mode='poly'],
+    .surface[data-mode='wand'] {
       cursor: crosshair;
     }
 
-    /* Focused by a press while a polygon is drawn, for Enter and Escape; not a tab stop. */
+    /* Focused by a press while a polygon is drawn or the wand is out, for its keys; not a tab stop. */
     .surface:focus {
       outline: none;
     }
@@ -117,6 +118,10 @@ const styles: CSSResultGroup = [
       fill: none;
       stroke-dasharray: 4 4;
       pointer-events: none;
+    }
+
+    .area--wand {
+      fill: color-mix(in srgb, var(--qti-primary, #2563eb) 10%, transparent);
     }
 
     .handle {
