@@ -25,6 +25,7 @@ import { defineText, type TextExtension } from 'prosekit/extensions/text'
 import { defineGapCursorParagraph } from './gap-cursor-paragraph.js'
 import { defineList, type ListExtension, type ListOptions } from './list.js'
 import { defineEm, defineStrong, type EmExtension, type StrongExtension } from './strong-em.js'
+import { defineTableDeletion } from './table-deletion.js'
 
 /**
  * The base every ProseKit-based QTI editor in this repo builds on.
@@ -238,5 +239,7 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     // The gap cursor decides where you can type; this decides what typing there produces. See the
     // module note — the default picks whichever textblock sorts first, which is not `paragraph`.
     defineGapCursorParagraph(),
+    // Backspace / Delete on a fully selected table removes it; prosemirror-tables only empties it.
+    defineTableDeletion(),
   ) as BasicExtension
 }
