@@ -7,6 +7,7 @@ import {
   isValidArea,
   draftToArea,
   formatCoords,
+  growAreaCoords,
   insertPolyPoint,
   moveAreaCoords,
   nearestPolyEdge,
@@ -150,6 +151,40 @@ describe('polygon points', () => {
         { x: 0, y: 0 },
       ]),
     ).toEqual([0, 0, 10, 0, 10, 10]);
+  });
+});
+
+describe('growAreaCoords', () => {
+  const size = { width: 600, height: 400 };
+
+  test('grows and shrinks a rect around its centre', () => {
+    expect(growAreaCoords('rect', [100, 50, 220, 110], 10, size)).toEqual([90, 40, 230, 120]);
+    expect(growAreaCoords('rect', [100, 50, 220, 110], -10, size)).toEqual([110, 60, 210, 100]);
+  });
+
+  test('stops a growing rect at the image edge and a shrinking one at its minimum size', () => {
+    expect(growAreaCoords('rect', [0, 0, 50, 50], 10, size)).toEqual([0, 0, 60, 60]);
+    expect(growAreaCoords('rect', [100, 100, 110, 140], -10, size)).toEqual([105, 105, 106, 136]);
+  });
+
+  test('changes a circle radius within the image', () => {
+    expect(growAreaCoords('circle', [300, 200, 40], 10, size)).toEqual([300, 200, 50]);
+    expect(growAreaCoords('circle', [300, 200, 40], 500, size)).toEqual([300, 200, 200]);
+    expect(growAreaCoords('circle', [300, 200, 40], -500, size)).toEqual([300, 200, 1]);
+  });
+
+  test('changes both ellipse radii within the image', () => {
+    expect(growAreaCoords('ellipse', [300, 200, 40, 20], 10, size)).toEqual([300, 200, 50, 30]);
+    expect(growAreaCoords('ellipse', [300, 380, 40, 10], 50, size)).toEqual([300, 380, 90, 20]);
+  });
+
+  test('scales a polygon about its centre and refuses to leave the image', () => {
+    expect(growAreaCoords('poly', [100, 100, 200, 100, 150, 180], 10, size)).toEqual([90, 92, 210, 92, 150, 188]);
+    expect(growAreaCoords('poly', [0, 0, 100, 0, 50, 80], 10, size)).toEqual([0, 0, 100, 0, 50, 80]);
+  });
+
+  test('leaves default alone', () => {
+    expect(growAreaCoords('default', [], 10, size)).toEqual([]);
   });
 });
 

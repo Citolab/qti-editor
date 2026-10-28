@@ -11,7 +11,9 @@ import {
   clientToImagePoint,
   closePolygon,
   draftToArea,
+  areaBounds,
   formatCoords,
+  growAreaCoords,
   insertPolyPoint,
   isAreaShape,
   isNearPoint,
@@ -30,6 +32,12 @@ import {
 import { renderAreaShape } from '@citolab/prose-qti/components/shared/graphic/area-shape.js';
 import { isHttpUrl, loadImageSize, readFileAsDataUrl } from '@citolab/prose-qti/components/shared/graphic/image-source.js';
 
+import {
+  KEY_MOVE_STEP,
+  KEY_SHIFT_STEP,
+  QTI_HOTSPOT_AREA_KEY_EVENT,
+  type QtiHotspotAreaKeyDetail,
+} from '../../extensions/hotspot-area-keys.js';
 import {
   QTI_HOTSPOT_CHOICES_EDIT_EVENT,
   type QtiHotspotChoicesEditDetail,
@@ -77,6 +85,11 @@ const GRAPHIC_CHILDREN = new Set(['qti-hotspot-choice', 'img', 'object']);
  * and a double-click on an edge adds a point, on a point removes it. Ellipses from an imported item
  * are moved and resized by their radii; `default` (the whole picture) is selected, marked and
  * deleted only.
+ *
+ * The keyboard works on ProseMirror's selection, so it needs no focus of its own: with an area
+ * selected, arrow keys select the next one, Alt + arrow keys move it (1 px, with Shift 10 px), + / −
+ * resize it, Delete removes it and Escape selects the interaction (`hotspot-area-keys.ts`). A
+ * status line for screen readers says which area is selected and where it is.
  *
  * A polygon whose `coords` repeat the first point at the end (some items close their polygons) is
  * edited without the repeat, and written back with it, so the item keeps its own convention. One
@@ -148,6 +161,7 @@ export class QtiHotspotInteractionEdit extends Interaction {
   override connectedCallback(): void {
     super.connectedCallback();
     document.addEventListener('selectionchange', this.#onSelectionChange);
+    this.addEventListener(QTI_HOTSPOT_AREA_KEY_EVENT, this.#onAreaKey);
     // ProseMirror adds and removes choice elements as choices come and go, and replaces one whenever
     // its attributes change; it toggles the selected class in place. The drawing follows the
     // picture and the choices only, so a keystroke in the prompt does not rebuild it.
@@ -171,6 +185,7 @@ export class QtiHotspotInteractionEdit extends Interaction {
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     document.removeEventListener('selectionchange', this.#onSelectionChange);
+    this.removeEventListener(QTI_HOTSPOT_AREA_KEY_EVENT, this.#onAreaKey);
     this.#childObserver?.disconnect();
     this.#childObserver = null;
     this.#attributeObserver?.disconnect();
@@ -433,6 +448,24 @@ export class QtiHotspotInteractionEdit extends Interaction {
     }
     event.preventDefault();
   }
+
+  /**
+   * A key the plugin read on a selected area: move or resize it within the picture. Cancelled to
+   * tell the plugin it was applied — also when the area is already at the picture's edge, so the key
+   * does nothing else (Alt + ← would go back in the browser's history).
+   */
+  #onAreaKey = (event: Event) => {
+    const { identifier, command } = (event as CustomEvent<QtiHotspotAreaKeyDetail>).detail;
+    const area = this._areas.find(candidate => candidate.identifier === identifier);
+    const size = this._imageSize;
+    if (!area || !size) return;
+    event.preventDefault();
+    const values =
+      command.kind === 'move'
+        ? moveAreaCoords(area.shape, area.values, command.dx, command.dy, size)
+        : growAreaCoords(area.shape, area.values, command.delta, size);
+    this.#setCoords(area, values);
+  };
 
   /**
    * The picture holds no text. While it has focus the DOM selection is still ProseMirror's, so the
@@ -700,7 +733,26 @@ export class QtiHotspotInteractionEdit extends Interaction {
     if (this._drawMode === 'poly') return t('graphic.hint.poly');
     if (this._drawMode !== 'select') return t('graphic.hint.draw');
     if (!selected) return t('graphic.hint.select');
-    return selected.shape === 'poly' ? `${t('graphic.hint.area')} ${t('graphic.hint.polyPoints')}` : t('graphic.hint.area');
+    const keys = this.#i18n.t('graphic.hint.keyboard', { step: KEY_MOVE_STEP, shiftStep: KEY_SHIFT_STEP });
+    const points = selected.shape === 'poly' ? ` ${t('graphic.hint.polyPoints')}` : '';
+    return `${t('graphic.hint.area')}${points} ${keys}`;
+  }
+
+  /** For screen readers: which area is selected, and where it is now. Empty with none selected. */
+  #status(): string {
+    const index = this._areas.findIndex(area => area.identifier === this._selected);
+    if (index < 0) return '';
+    const area = this._areas[index];
+    const place = { number: index + 1, count: this._areas.length, shape: this.#i18n.t(`graphic.shape.${area.shape}`) };
+    if (area.shape === 'default') return this.#i18n.t('graphic.status.whole', place);
+    const bounds = areaBounds(area.shape, this.#valuesOf(area));
+    return this.#i18n.t('graphic.status.area', {
+      ...place,
+      x: Math.round(bounds.x),
+      y: Math.round(bounds.y),
+      width: Math.round(bounds.width),
+      height: Math.round(bounds.height),
+    });
   }
 
   override render() {
@@ -708,6 +760,7 @@ export class QtiHotspotInteractionEdit extends Interaction {
     return html`
       <slot name="prompt"></slot>
       ${this._cursorInside ? this.#renderToolbar() : nothing}
+      <div class="status" role="status">${this.#status()}</div>
       <input ${ref(this.#fileInput)} type="file" accept="image/*" @change=${this.#onFileChange} />
       <div
         ${ref(this.#surface)}

@@ -17,11 +17,17 @@
  *   add     a drawn area becomes a new choice, with an identifier made here, and is selected.
  *   remove  the choice is deleted and the interaction selected.
  *
- * With a choice selected, ProseMirror's own Delete / Backspace remove it. Whatever removes a choice —
- * those keys, cut, the toolbar, an undo — the `appendTransaction` here drops it from its
- * interaction's correct response in the same history step: an answer key naming a choice that no
- * longer exists would make the item unanswerable. Typing and paste do nothing while a choice is
- * selected (ProseMirror would replace the area with whatever fits, which is nothing).
+ * With a choice selected, ProseMirror's own Delete / Backspace remove it and its arrow keys select
+ * the next or previous one. Alt + arrow keys and + / − move and resize it: the plugin reads the key
+ * (`hotspot-area-keys.ts`) and asks the component, which knows the picture's coordinate space, to
+ * apply it. Escape selects the interaction. Those keys are not stopped, only kept from doing anything
+ * else, so document-level listeners still see them; with no choice selected the plugin takes none.
+ *
+ * Whatever removes a choice — those keys, cut, the toolbar, an undo — the `appendTransaction` here
+ * drops it from its interaction's correct response in the same history step: an answer key naming
+ * a choice that no longer exists would make the item unanswerable. Typing and paste do nothing
+ * while a choice is selected (ProseMirror would replace the area with whatever fits, which is
+ * nothing).
  *
  * Keys and clipboard events from inside the component's shadow root — its drawing surface while a
  * polygon is drawn, its toolbar buttons — are the component's: ProseMirror leaves them alone, since
@@ -36,6 +42,8 @@
 import { NodeSelection, Plugin, PluginKey } from 'prosemirror-state';
 
 import { iterResponseValues, parseResponseAttribute } from '@citolab/prose-qti/components/shared/response/codec.js';
+
+import { QTI_HOTSPOT_AREA_KEY_EVENT, hotspotAreaKeyCommand, type QtiHotspotAreaKeyDetail } from './hotspot-area-keys.js';
 
 import type { Node as PmNode } from 'prosemirror-model';
 import type { EditorState, Transaction } from 'prosemirror-state';
@@ -188,6 +196,28 @@ function choiceSelected(state: EditorState): boolean {
   return selection instanceof NodeSelection && selection.node.type.name === CHOICE_NODE_TYPE;
 }
 
+/** The keys for a selected choice; see `hotspot-area-keys.ts`. Whether the key did something. */
+function handleChoiceKey(view: EditorView, event: KeyboardEvent): boolean {
+  const { selection } = view.state;
+  if (!(selection instanceof NodeSelection) || selection.node.type.name !== CHOICE_NODE_TYPE) return false;
+
+  if (event.key === 'Escape' && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+    const interactionPos = selection.$from.before();
+    view.dispatch(view.state.tr.setSelection(NodeSelection.create(view.state.doc, interactionPos)));
+    return true;
+  }
+
+  const command = hotspotAreaKeyCommand(event);
+  const host = command ? view.nodeDOM(selection.from)?.parentElement : null;
+  if (!command || host?.localName !== 'qti-hotspot-interaction') return false;
+  const request = new CustomEvent<QtiHotspotAreaKeyDetail>(QTI_HOTSPOT_AREA_KEY_EVENT, {
+    detail: { identifier: String(selection.node.attrs.identifier), command },
+    cancelable: true,
+  });
+  host.dispatchEvent(request);
+  return request.defaultPrevented;
+}
+
 export function createHotspotChoiceEditingPlugin(): Plugin {
   return new Plugin({
     key: new PluginKey('qti-hotspot-choice-editing'),
@@ -198,6 +228,7 @@ export function createHotspotChoiceEditingPlugin(): Plugin {
     props: {
       handleTextInput: view => choiceSelected(view.state),
       handlePaste: view => choiceSelected(view.state),
+      handleKeyDown: handleChoiceKey,
       handleDOMEvents: {
         keydown: (_view, event) => fromHotspotComponent(event) && !isUndoRedo(event),
         keypress: (_view, event) => fromHotspotComponent(event),

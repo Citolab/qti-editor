@@ -14,7 +14,7 @@
  * they all draw, hit-test and move areas identically. `area-shape.ts` renders an area as SVG. Every function that produces coordinates rounds
  * them to whole pixels, which is what an author-facing `coords` attribute holds.
  *
- * The polygon and ellipse helpers are ported from qti-construction's `prose-qti-graphic`
+ * The polygon, ellipse and grow helpers are ported from qti-construction's `prose-qti-graphic`
  * (`geometry.ts`, `cardEditing.ts`), reshaped to this module's `(shape, values)` signatures.
  *
  * A polygon is not checked for self-intersection: dragging a point across an edge gives a bow tie,
@@ -372,6 +372,63 @@ export function closePolygon(values: readonly number[]): number[] {
 /** Whether `a` and `b` are within `tolerance` of each other on both axes. */
 export function isNearPoint(a: AreaPoint, b: AreaPoint, tolerance: number): boolean {
   return Math.abs(a.x - b.x) <= tolerance && Math.abs(a.y - b.y) <= tolerance;
+}
+
+/**
+ * Grow (`delta` > 0) or shrink the area by `delta` pixels on every side, around its centre: a
+ * rect's edges, a circle's radius, an ellipse's radii, a polygon scaled about the centre of its
+ * bounding box. It stays inside the image: a rect or radius that would cross an edge stops there,
+ * and a polygon that would leave the image does not grow at all. `default` is left alone.
+ */
+export function growAreaCoords(shape: AreaShape, values: readonly number[], delta: number, size: AreaSize): number[] {
+  if (!isValidArea(shape, values) || delta === 0) return [...values];
+
+  switch (shape) {
+    case 'rect': {
+      const bounds = areaBounds(shape, values);
+      // Shrinking stops at the minimum size, with the centre where it was.
+      const d = Math.max(delta, -Math.max(0, Math.min(bounds.width, bounds.height) - MIN_AREA_SIZE) / 2);
+      return round([
+        clamp(bounds.x - d, 0, size.width),
+        clamp(bounds.y - d, 0, size.height),
+        clamp(bounds.x + bounds.width + d, 0, size.width),
+        clamp(bounds.y + bounds.height + d, 0, size.height),
+      ]);
+    }
+    case 'circle': {
+      const [cx, cy, r] = values;
+      const fits = Math.min(cx, cy, size.width - cx, size.height - cy);
+      return round([cx, cy, clamp(r + delta, MIN_AREA_SIZE, Math.max(MIN_AREA_SIZE, fits))]);
+    }
+    case 'ellipse': {
+      const [cx, cy, rx, ry] = values;
+      return round([
+        cx,
+        cy,
+        clamp(rx + delta, MIN_AREA_SIZE, Math.max(MIN_AREA_SIZE, Math.min(cx, size.width - cx))),
+        clamp(ry + delta, MIN_AREA_SIZE, Math.max(MIN_AREA_SIZE, Math.min(cy, size.height - cy))),
+      ]);
+    }
+    case 'poly': {
+      const bounds = areaBounds(shape, values);
+      const cx = bounds.x + bounds.width / 2;
+      const cy = bounds.y + bounds.height / 2;
+      const factor = Math.max(
+        MIN_AREA_SIZE / Math.max(1, Math.min(bounds.width, bounds.height)),
+        1 + (2 * delta) / Math.max(1, Math.max(bounds.width, bounds.height)),
+      );
+      const next = values.map((value, index) => (index % 2 === 0 ? cx + (value - cx) * factor : cy + (value - cy) * factor));
+      const nextBounds = areaBounds(shape, next);
+      const outside =
+        nextBounds.x < 0 ||
+        nextBounds.y < 0 ||
+        nextBounds.x + nextBounds.width > size.width ||
+        nextBounds.y + nextBounds.height > size.height;
+      return outside ? [...values] : round(next);
+    }
+    case 'default':
+      return [...values];
+  }
 }
 
 function distanceToSegment(point: AreaPoint, start: AreaPoint, end: AreaPoint): number {
