@@ -1,6 +1,12 @@
-import { parseResponseAttribute, serializeResponseAttribute } from '../../../shared';
+import { parseResponseAttribute, qtiAttributes, serializeResponseAttribute } from '../../../shared';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+
+const keptAttributes = qtiAttributes({
+  required: 'required',
+  minChoices: { name: 'min-choices', type: 'integer' },
+  dataMinSelectionsMessage: 'data-min-selections-message',
+});
 
 export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
   attrs: {
@@ -10,10 +16,7 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
     correctResponse: { default: null },
     score: { default: 1 },
     dataPrompt: { default: null },
-    // Kept as authored, so a round trip does not drop them; no editing UI. `null` = not written.
-    // `required` holds the attribute's text, so an explicit `required="false"` survives as well.
-    required: { default: null },
-    minChoices: { default: null },
+    ...keptAttributes.attrs,
   },
   content: 'qtiInlineChoice+',
   inline: true,
@@ -24,7 +27,6 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
       getAttrs: (node: Node | string) => {
         if (!(node instanceof HTMLElement)) return {};
         const scoreAttr = node.getAttribute('score');
-        const minChoices = node.getAttribute('min-choices');
         return {
           responseIdentifier: node.getAttribute('response-identifier'),
           shuffle: node.getAttribute('shuffle') === 'true',
@@ -32,8 +34,7 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
           correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
           dataPrompt: node.getAttribute('data-prompt') || null,
-          required: node.getAttribute('required'),
-          minChoices: minChoices ? parseInt(minChoices, 10) : null,
+          ...keptAttributes.parse(node),
         };
       },
       // The interaction and its choices are inline, so ProseMirror treats the
@@ -72,14 +73,8 @@ export const qtiInlineChoiceInteractionNodeSpec: NodeSpec = {
     if (node.attrs.dataPrompt) {
       attrs['data-prompt'] = node.attrs.dataPrompt;
     }
-    if (node.attrs.required) {
-      attrs.required = node.attrs.required;
-    }
-    if (node.attrs.minChoices != null) {
-      attrs['min-choices'] = String(node.attrs.minChoices);
-    }
 
-    return ['qti-inline-choice-interaction', attrs, 0];
+    return ['qti-inline-choice-interaction', { ...attrs, ...keptAttributes.domAttrs(node.attrs) }, 0];
   },
   selectable: true,
   isolating: true

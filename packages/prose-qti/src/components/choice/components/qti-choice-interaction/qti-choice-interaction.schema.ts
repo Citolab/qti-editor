@@ -1,6 +1,24 @@
-import { parseResponseAttribute, serializeResponseAttribute } from '@citolab/prose-qti/components/shared';
+import { parseResponseAttribute, qtiAttributes, serializeResponseAttribute } from '@citolab/prose-qti/components/shared';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+
+const keptAttributes = qtiAttributes({
+  minChoices: { name: 'min-choices', type: 'integer' },
+  dataMinSelectionsMessage: 'data-min-selections-message',
+  dataMaxSelectionsMessage: 'data-max-selections-message',
+});
+
+/**
+ * `orientation` on a choice interaction is superseded by the `qti-orientation-*` class, which the
+ * class editor manages and the runtime gives precedence. An imported attribute becomes that class,
+ * so the author sees and can change it; a class that already names an orientation wins, as it does
+ * at runtime. Keeping the attribute as well would export two spellings that can disagree.
+ */
+function classWithOrientation(className: string | null, orientation: string | null): string | null {
+  if (orientation !== 'horizontal' && orientation !== 'vertical') return className || null;
+  if (/(^|\s)qti-orientation-/.test(className ?? '')) return className || null;
+  return [className, `qti-orientation-${orientation}`].filter(Boolean).join(' ');
+}
 
 export const qtiChoiceInteractionNodeSpec: NodeSpec = {
   group: 'block',
@@ -14,9 +32,7 @@ export const qtiChoiceInteractionNodeSpec: NodeSpec = {
     // Standard QTI `shuffle` flag: when true the choices are presented in a
     // randomized order at delivery time (choices with `fixed` keep their spot).
     shuffle: { default: false },
-    // Kept as authored, so a round trip does not drop them; no editing UI. `null` = not written.
-    minChoices: { default: null },
-    orientation: { default: null },
+    ...keptAttributes.attrs,
   },
   parseDOM: [
     {
@@ -26,16 +42,14 @@ export const qtiChoiceInteractionNodeSpec: NodeSpec = {
         const maxChoices = node.getAttribute('max-choices');
         const className = node.getAttribute('class');
         const scoreAttr = node.getAttribute('score');
-        const minChoices = node.getAttribute('min-choices');
         return {
           maxChoices: maxChoices ? parseInt(maxChoices, 10) : 0,
-          class: className || null,
+          class: classWithOrientation(className, node.getAttribute('orientation')),
           correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
           shuffle: node.getAttribute('shuffle') === 'true',
-          minChoices: minChoices ? parseInt(minChoices, 10) : null,
-          orientation: node.getAttribute('orientation'),
+          ...keptAttributes.parse(node),
         };
       }
     }
@@ -49,9 +63,7 @@ export const qtiChoiceInteractionNodeSpec: NodeSpec = {
     attrs.score = String(node.attrs.score ?? 1);
     // Only emit `shuffle` when set, so unshuffled-by-default interactions stay clean.
     if (node.attrs.shuffle) attrs.shuffle = 'true';
-    if (node.attrs.minChoices != null) attrs['min-choices'] = String(node.attrs.minChoices);
-    if (node.attrs.orientation) attrs.orientation = node.attrs.orientation;
-    return ['qti-choice-interaction', attrs, 0];
+    return ['qti-choice-interaction', { ...attrs, ...keptAttributes.domAttrs(node.attrs) }, 0];
   },
   defining: true,
   isolating: true

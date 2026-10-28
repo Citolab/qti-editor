@@ -19,7 +19,7 @@
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
     <div class="qti-layout-row">
       <div class="qti-layout-col5">
-        <qti-choice-interaction max-choices="0" response-identifier="RESPONSE" shuffle="true" min-choices="0">
+        <qti-choice-interaction max-choices="0" response-identifier="RESPONSE" shuffle="true">
           <qti-prompt>
             <p>Welke van de volgende landen zijn volledig door één enkel ander land ingesloten?</p>
           </qti-prompt>

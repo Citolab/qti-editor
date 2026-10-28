@@ -1,4 +1,9 @@
-import { getStrippedAttributeSources, parseResponseAttribute, stripAttributesFromElement } from '../../../shared';
+import {
+  getStrippedAttributeSources,
+  parseResponseAttribute,
+  reconcileKeptConstraint,
+  stripAttributesFromElement,
+} from '../../../shared';
 import { orderInteractionComposerMetadata } from '../../composer/metadata.js';
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '../../../shared/composer/types.js';
@@ -21,6 +26,26 @@ export function composeOrderInteractionElement(sourceElement: Element, xmlDoc: D
 
   stripAttributesFromElement(normalizedElement, metadata);
   const strippedAttributes = getStrippedAttributeSources(metadata);
+
+  // An imported `max-choices` must leave room for the correct order the author has since edited
+  // (adding a choice lengthens it), and `min-choices` must stay within both.
+  const choiceCount = normalizedElement.querySelectorAll(':scope > qti-simple-choice').length;
+  const orderedCount = Array.isArray(correctResponse) ? correctResponse.length : correctResponse ? 1 : 0;
+  const context = { tagName: metadata.tagName, responseIdentifier };
+  const maxChoices = reconcileKeptConstraint(
+    normalizedElement,
+    'max-choices',
+    { min: orderedCount, zeroIsUnlimited: true },
+    { ...context, reason: 'allows fewer choices than the correct order uses' },
+    warnings,
+  );
+  reconcileKeptConstraint(
+    normalizedElement,
+    'min-choices',
+    { max: maxChoices ? Math.min(maxChoices, choiceCount) : choiceCount },
+    { ...context, reason: 'asks for more choices than can be ordered' },
+    warnings,
+  );
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
   if (!responseIdentifier) {

@@ -1,4 +1,13 @@
+import { qtiAttributes } from '../../../shared/qti-attributes.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+
+const keptAttributes = qtiAttributes({
+  minChoices: { name: 'min-choices', type: 'integer' },
+  maxChoices: { name: 'max-choices', type: 'integer' },
+  dataMinSelectionsMessage: 'data-min-selections-message',
+  dataMaxSelectionsMessage: 'data-max-selections-message',
+});
 
 export const qtiOrderInteractionNodeSpec: NodeSpec = {
   group: 'block',
@@ -10,9 +19,7 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
     correctResponse: { default: null },
     responseIdentifier: { default: null },
     score: { default: 1 },
-    // Kept as authored, so a round trip does not drop them; no editing UI. `null` = not written.
-    minChoices: { default: null },
-    maxChoices: { default: null },
+    ...keptAttributes.attrs,
   },
   parseDOM: [
     {
@@ -20,8 +27,6 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
       getAttrs: (node: Node | string) => {
         if (!(node instanceof HTMLElement)) return {};
         const scoreAttr = node.getAttribute('score');
-        const minChoices = node.getAttribute('min-choices');
-        const maxChoices = node.getAttribute('max-choices');
         return {
           shuffle: node.getAttribute('shuffle') === 'true',
           orientation: node.getAttribute('orientation') || 'vertical',
@@ -29,8 +34,7 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
           correctResponse: node.getAttribute('correct-response') || null,
           responseIdentifier: node.getAttribute('response-identifier') || null,
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
-          minChoices: minChoices ? parseInt(minChoices, 10) : null,
-          maxChoices: maxChoices ? parseInt(maxChoices, 10) : null,
+          ...keptAttributes.parse(node),
         };
       },
     },
@@ -64,10 +68,8 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
     // correctResponse is a comma-separated identifier list (qti-components
     // convention) — pass through as-is.
     if (node.attrs.correctResponse) attrs['correct-response'] = node.attrs.correctResponse;
-    if (node.attrs.minChoices != null) attrs['min-choices'] = String(node.attrs.minChoices);
-    if (node.attrs.maxChoices != null) attrs['max-choices'] = String(node.attrs.maxChoices);
     attrs.score = String(node.attrs.score ?? 1);
-    return ['qti-order-interaction', attrs, 0];
+    return ['qti-order-interaction', { ...attrs, ...keptAttributes.domAttrs(node.attrs) }, 0];
   },
   defining: true,
   isolating: true,

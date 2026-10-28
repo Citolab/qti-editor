@@ -1,3 +1,4 @@
+import { reconcileKeptConstraint } from '../../../shared/composer/kept-constraints.js';
 import { getStrippedAttributeSources, stripAttributesFromElement } from '../../../shared/composer/stripped-attributes.js';
 import { parseResponseAttribute } from '../../../shared/response/codec.js';
 import { removeEmptyPrompts } from '../../../shared/components/qti-prompt/qti-prompt.compose.js';
@@ -25,6 +26,7 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
   const correctResponse = parseResponseAttribute(sourceElement.getAttribute('correct-response'));
   const maxChoices = toFiniteNumber(sourceElement.getAttribute('max-choices'), 1);
+  const minChoices = toFiniteNumber(sourceElement.getAttribute('min-choices'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
   stripAttributesFromElement(normalizedElement, metadata);
@@ -32,8 +34,21 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   const strippedAttributes = getStrippedAttributeSources(metadata);
 
   normalizedElement.setAttribute('max-choices', String(maxChoices));
-  // `min-choices` stays as the node wrote it: absent on a new interaction, as authored on an
-  // imported one — `min-choices="0"` included, which this used to strip.
+  if (minChoices > 0) {
+    normalizedElement.setAttribute('min-choices', String(minChoices));
+    // `max-choices` follows the correct response (one answer → 1), so an imported `min-choices`
+    // can end up above it, or above the number of choices left.
+    const choiceCount = normalizedElement.querySelectorAll(':scope > qti-simple-choice').length;
+    reconcileKeptConstraint(
+      normalizedElement,
+      'min-choices',
+      { max: maxChoices > 0 ? Math.min(maxChoices, choiceCount) : choiceCount },
+      { tagName: metadata.tagName, responseIdentifier, reason: 'asks for more choices than can be selected' },
+      warnings,
+    );
+  } else {
+    normalizedElement.removeAttribute('min-choices');
+  }
 
   // QTI spec: max-choices=0 means unlimited, max-choices=1 means single selection
   const isMultiple = maxChoices !== 1;
