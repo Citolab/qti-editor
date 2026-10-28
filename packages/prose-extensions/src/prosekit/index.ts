@@ -21,5 +21,6 @@ export {
   defineBasicExtension,
   type BasicExtension,
   type BasicExtensionOptions,
+  type DivExtension,
   type SpanExtension,
 } from './basic.js'

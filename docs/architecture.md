@@ -141,7 +141,9 @@ Owns:
   `BaseSequenceXBaseDType` group) on one list of node and mark types, `GLOBAL_ATTR_NODES` /
   `GLOBAL_ATTR_MARKS`; the ProseKit layer applies the same list with `defineNodeGlobalAttrs` /
   `defineMarkGlobalAttrs`. `spanMarkSpec`: a `<span>` with any of those four, one mark for all of
-  them. `createUniqueIdsPlugin`: clears an id an edit copied. `phrasingMarkSpecs`: one mark per QTI 3 phrasing element prosemirror-schema-basic lacks
+  them. `divNodeSpec` / `withDivParagraph`: a `<div>` of blocks with any of them as a `div` node, and a
+  `<div>` of inline content as a paragraph written as a div; which custom elements are inline is the
+  caller's (prose-qti passes `QTI_INLINE_ELEMENTS`). `createUniqueIdsPlugin`: clears an id an edit copied. `phrasingMarkSpecs`: one mark per QTI 3 phrasing element prosemirror-schema-basic lacks
   (`b`, `i`, `q`, `sub`, `sup`, `abbr`, …), named for its tag and in one nesting order for both
   schemas. `tableCaptionSpec`: a table's `<caption>` as a `caption` attribute on the table node
   rather than a child (prosemirror-tables reads every child of a table as a row). Plain text only;

@@ -1,4 +1,6 @@
-import { withGlobalAttrs } from '@citolab/prose-extensions/html-schema';
+import { withDivParagraph, withGlobalAttrs } from '@citolab/prose-extensions/html-schema';
+
+import { QTI_INLINE_ELEMENTS } from '../../../../schema/qti-inline-elements.js';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
@@ -12,10 +14,16 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
  * note on the same change in qti-simple-choice.schema.ts.
  */
 // `class`, `id`, `lang` and `xml:lang`, in both schemas: see `global-attrs.ts` in prose-extensions.
-export const qtiSimpleChoiceParagraphNodeSpec: NodeSpec = withGlobalAttrs({
-  content: '(text | image)*',
-  parseDOM: [{ tag: 'p', context: 'qtiSimpleChoice//', priority: 60 }],
-  toDOM(): DOMOutputSpec {
-    return ['p', 0];
-  },
-});
+// A `<div>` of inline content is this paragraph written as a div (`withDivParagraph`).
+export const qtiSimpleChoiceParagraphNodeSpec: NodeSpec = withGlobalAttrs(
+  withDivParagraph(
+    {
+      content: '(text | image)*',
+      parseDOM: [{ tag: 'p', context: 'qtiSimpleChoice//', priority: 60 }],
+      toDOM(): DOMOutputSpec {
+        return ['p', 0];
+      },
+    },
+    { inlineElements: QTI_INLINE_ELEMENTS },
+  ),
+);

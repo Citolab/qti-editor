@@ -1,4 +1,6 @@
-import { withGlobalAttrs } from '@citolab/prose-extensions/html-schema';
+import { withDivParagraph, withGlobalAttrs } from '@citolab/prose-extensions/html-schema';
+
+import { QTI_INLINE_ELEMENTS } from '../../../../schema/qti-inline-elements.js';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
@@ -18,10 +20,16 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
  * all; this rule is widened for consistency with the others, and is inert without it.
  */
 // `class`, `id`, `lang` and `xml:lang`, in both schemas: see `global-attrs.ts` in prose-extensions.
-export const qtiPromptParagraphNodeSpec: NodeSpec = withGlobalAttrs({
-  content: '(text | image)*',
-  parseDOM: [{ tag: 'p', context: 'qtiPrompt//', priority: 60 }],
-  toDOM(): DOMOutputSpec {
-    return ['p', 0];
-  },
-});
+// A `<div>` of inline content is this paragraph written as a div (`withDivParagraph`).
+export const qtiPromptParagraphNodeSpec: NodeSpec = withGlobalAttrs(
+  withDivParagraph(
+    {
+      content: '(text | image)*',
+      parseDOM: [{ tag: 'p', context: 'qtiPrompt//', priority: 60 }],
+      toDOM(): DOMOutputSpec {
+        return ['p', 0];
+      },
+    },
+    { inlineElements: QTI_INLINE_ELEMENTS },
+  ),
+);

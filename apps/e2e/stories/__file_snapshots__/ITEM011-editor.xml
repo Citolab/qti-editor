@@ -27,7 +27,7 @@
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
     <p>Selecteer het woord dat duidt op oorzaak:</p>
     <qti-hottext-interaction max-choices="1" response-identifier="RESPONSE1">
-      <p>De productiviteit <qti-hottext identifier="ht_daalde">daalde</qti-hottext> aanzienlijk <qti-hottext identifier="ht_door">door</qti-hottext> een <qti-hottext identifier="ht_tekort">tekort</qti-hottext> aan grondstoffen.</p>
+      <div class="qti-margin-s-5 qti-italic">De productiviteit <qti-hottext identifier="ht_daalde">daalde</qti-hottext> aanzienlijk <qti-hottext identifier="ht_door">door</qti-hottext> een <qti-hottext identifier="ht_tekort">tekort</qti-hottext> aan grondstoffen.</div>
     </qti-hottext-interaction>
     <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
       <qti-content-body>
@@ -35,20 +35,24 @@
           <strong>Uitleg:</strong> Het woord <em>door</em> geeft in deze zin de oorzaak aan. Het beschrijft waarom de productiviteit daalde, namelijk als gevolg van een tekort aan grondstoffen. De andere woorden beschrijven respectievelijk de handeling (<em>daalde</em>) en de oorzaak zelf (<em>tekort</em>), maar niet het oorzakelijke verband.</p>
         </qti-content-body>
       </qti-rubric-block>
-      <p>Selecteer het synoniem van 'onderzoek':</p>
-      <qti-hottext-interaction max-choices="1" response-identifier="RESPONSE2">
-        <p>In het <qti-hottext identifier="ht_rapport">rapport</qti-hottext> wordt beschreven hoe de <qti-hottext identifier="ht_analyse">analyse</qti-hottext> tot stand is gekomen.</p>
-      </qti-hottext-interaction>
+      <div class="qti-padding-t-5">
+        <p>Selecteer het synoniem van 'onderzoek':</p>
+        <qti-hottext-interaction max-choices="1" response-identifier="RESPONSE2">
+          <div class="qti-padding-s-5 qti-italic">In het <qti-hottext identifier="ht_rapport">rapport</qti-hottext> wordt beschreven hoe de <qti-hottext identifier="ht_analyse">analyse</qti-hottext> tot stand is gekomen.</div>
+        </qti-hottext-interaction>
+      </div>
       <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
         <qti-content-body>
           <p>
             <strong>Uitleg:</strong> Het woord <em>analyse</em> fungeert in deze context als synoniem van <em>onderzoek</em>. Een analyse is een vorm van systematisch onderzoek waarbij gegevens worden bestudeerd om tot inzichten te komen. Het woord <em>rapport</em> verwijst alleen naar de uitwerking of het document van een onderzoek, niet naar het onderzoek zelf.</p>
           </qti-content-body>
         </qti-rubric-block>
-        <p>Selecteer het woord dat een voordeel aanduidt:</p>
-        <qti-hottext-interaction max-choices="1" response-identifier="RESPONSE3">
-          <p>Een hybride <qti-hottext identifier="ht_werkmodel">werkmodel</qti-hottext> biedt meer <qti-hottext identifier="ht_flexibiliteit">flexibiliteit</qti-hottext> voor <qti-hottext identifier="ht_medewerkers">medewerkers</qti-hottext>.</p>
-        </qti-hottext-interaction>
+        <div class="qti-padding-t-5">
+          <p>Selecteer het woord dat een voordeel aanduidt:</p>
+          <qti-hottext-interaction max-choices="1" response-identifier="RESPONSE3">
+            <div class="qti-padding-s-5 qti-italic">Een hybride <qti-hottext identifier="ht_werkmodel">werkmodel</qti-hottext> biedt meer <qti-hottext identifier="ht_flexibiliteit">flexibiliteit</qti-hottext> voor <qti-hottext identifier="ht_medewerkers">medewerkers</qti-hottext>.</div>
+          </qti-hottext-interaction>
+        </div>
         <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
           <qti-content-body>
             <p>

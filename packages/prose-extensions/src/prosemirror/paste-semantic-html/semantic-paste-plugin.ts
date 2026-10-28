@@ -1,6 +1,8 @@
 import { DOMParser as ProseMirrorDOMParser } from 'prosemirror-model';
 import { Plugin, PluginKey } from 'prosemirror-state';
 
+import { isInlineContentDiv } from '../html-schema/index.js';
+
 import type { Slice } from 'prosemirror-model';
 import type { EditorView } from 'prosemirror-view';
 
@@ -426,6 +428,11 @@ export interface SemanticPasteOptions {
    * (`qti-*`): those classes mean the same thing wherever they were copied from.
    */
   keepClass?: (token: string) => boolean;
+  /**
+   * Custom elements that sit inside a line of text, for telling a `<div>` of text from a `<div>` of
+   * blocks (see `isInlineContentDiv`). prose-qti's options pass QTI's inline elements.
+   */
+  inlineElements?: readonly string[];
 }
 
 const keepNoClass = () => false;
@@ -441,6 +448,9 @@ const keepNoClass = () => false;
  * - **Ids.** Copied from another document they collide, or point at nothing. All are dropped.
  * - **`<b>` / `<i>`.** Word, Google Docs and most web pages write bold and italic that way, and the
  *   author expects the editor's own bold and italic: they become `<strong>` / `<em>`.
+ * - **Bare `<div>`s of text** become `<p>`. Web pages are built of them, and the editor writes a div
+ *   of text back as a div (`withDivParagraph`), which is right for an item authored that way and
+ *   wrong for a paste. A div that kept a class after the step above stays a div.
  *
  * HTML that a ProseMirror editor put on the clipboard (its `data-pm-slice` marker) is left alone.
  * That is a copy out of this editor, or out of any other ProseMirror-based editor — whose classes
@@ -450,7 +460,8 @@ const keepNoClass = () => false;
  * Runs last: the Word clean-up above reads `Mso*` classes and `div#label`, and `walk` has already
  * unwrapped Google Docs' `<b style="font-weight:normal">`.
  */
-function normalizeForeignMarkup(root: HTMLElement, keepClass: (token: string) => boolean) {
+function normalizeForeignMarkup(root: HTMLElement, options: SemanticPasteOptions) {
+  const keepClass = options.keepClass ?? keepNoClass;
   if (root.querySelector('[data-pm-slice]')) return;
 
   root.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
@@ -464,6 +475,13 @@ function normalizeForeignMarkup(root: HTMLElement, keepClass: (token: string) =>
     replacement.append(...Array.from(el.childNodes));
     for (const attr of Array.from(el.attributes)) replacement.setAttribute(attr.name, attr.value);
     el.replaceWith(replacement);
+  });
+  root.querySelectorAll('div:not([class])').forEach((div) => {
+    if (!isInlineContentDiv(div, options)) return;
+    const paragraph = div.ownerDocument.createElement('p');
+    paragraph.append(...Array.from(div.childNodes));
+    for (const attr of Array.from(div.attributes)) paragraph.setAttribute(attr.name, attr.value);
+    div.replaceWith(paragraph);
   });
 }
 
@@ -484,7 +502,7 @@ export function makeHtmlSemantic(html: string, options: SemanticPasteOptions = {
   doc.querySelectorAll('[style*="mso-list:Ignore"], [style*="mso-list:ignore"]').forEach((el) => el.remove());
   doc.querySelectorAll('o\\:p').forEach((el) => el.remove());
 
-  normalizeForeignMarkup(doc.body, options.keepClass ?? keepNoClass);
+  normalizeForeignMarkup(doc.body, options);
 
   return doc.body.innerHTML
     .replace(/\u00A0/g, ' ')
