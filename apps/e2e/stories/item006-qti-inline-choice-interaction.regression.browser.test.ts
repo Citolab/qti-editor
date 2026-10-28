@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
-import { findByShadowText } from 'shadow-dom-testing-library';
+import { findByShadowRole, findByShadowText } from 'shadow-dom-testing-library';
+import { userEvent } from 'vitest/browser';
 
 import {
   exportAssessmentItemDoc,
@@ -107,4 +108,45 @@ test('exported ITEM006 item-body carries exactly three qti-inline-choice options
     'choice_onveranderd',
   ]);
   expect(choices.map(choice => choice.textContent?.trim())).toEqual(['lager', 'hoger', 'onveranderd']);
+});
+
+test('attributes panel renders qti-inline-choice identifier read-only and fixed as a checkbox', async () => {
+  const host = document.createElement('div');
+  const panel = document.createElement('div');
+  document.body.append(host, panel);
+  const view = mountEditor(host, { panelEl: panel });
+
+  // Open the dropdown, then put the cursor in an option's label so the panel shows its
+  // qtiInlineChoice section. The trigger is the interaction's one native button.
+  await userEvent.click(await findByShadowRole(host, 'button', { expanded: false }));
+  await userEvent.click(await findByShadowText(host, 'lager'));
+
+  const section = panel.querySelector<HTMLElement>('fieldset[data-node-type="qtiInlineChoice"]');
+  expect(section).not.toBeNull();
+
+  const identifierInput = section!.querySelector<HTMLInputElement>('input[data-attr-key="identifier"]');
+  expect(identifierInput?.disabled).toBe(true);
+  expect(identifierInput?.value).toBe('choice_lager');
+
+  const fixedInput = section!.querySelector<HTMLInputElement>('input[data-attr-key="fixed"]');
+  expect(fixedInput).not.toBeNull();
+  expect(fixedInput!.type).toBe('checkbox');
+  expect(fixedInput!.disabled).toBe(false);
+  expect(fixedInput!.checked).toBe(false);
+
+  // Ticking it exports `fixed="true"` on that option only.
+  await userEvent.click(fixedInput!);
+
+  const options = Array.from(
+    exportAssessmentItemDoc(view.state.doc).querySelectorAll('qti-inline-choice-interaction > qti-inline-choice'),
+  );
+  expect(options.map(option => [option.getAttribute('identifier'), option.getAttribute('fixed')])).toEqual([
+    ['choice_lager', 'true'],
+    ['choice_hoger', null],
+    ['choice_onveranderd', null],
+  ]);
+
+  view.destroy();
+  host.remove();
+  panel.remove();
 });

@@ -1,4 +1,8 @@
+import { parseQtiInteger, qtiAttributes } from '../../qti-attributes.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+
+const keptAttributes = qtiAttributes({ matchGroup: 'match-group' });
 
 /*
  * No `group: 'block'`: a gap-match chip is only ever legal inside a `qti-gap-match-interaction`,
@@ -12,11 +16,9 @@ export const qtiGapTextNodeSpec: NodeSpec = {
   attrs: {
     identifier: { default: null },
     matchMax: { default: 1 },
-    // Kept as authored, so a round trip does not drop them; no editing UI. `null` = not written.
-    class: { default: null },
-    showHide: { default: null },
-    matchGroup: { default: null },
-    matchMin: { default: null },
+    // As on `qti-simple-associable-choice`: 0, the XSD default, is not written.
+    matchMin: { default: 0 },
+    ...keptAttributes.attrs,
   },
   parseDOM: [
     {
@@ -24,25 +26,20 @@ export const qtiGapTextNodeSpec: NodeSpec = {
       getAttrs: (node: Node | string) => {
         if (!(node instanceof HTMLElement)) return {};
         const matchMax = node.getAttribute('match-max');
-        const matchMin = node.getAttribute('match-min');
         return {
           identifier: node.getAttribute('identifier'),
           matchMax: matchMax ? parseInt(matchMax, 10) : 1,
-          class: node.getAttribute('class') || null,
-          showHide: node.getAttribute('show-hide'),
-          matchGroup: node.getAttribute('match-group'),
-          matchMin: matchMin ? parseInt(matchMin, 10) : null,
+          matchMin: parseQtiInteger(node.getAttribute('match-min')) ?? 0,
+          ...keptAttributes.parse(node),
         };
       },
     },
   ],
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {};
-    if (node.attrs.class) attrs.class = node.attrs.class;
-    if (node.attrs.showHide) attrs['show-hide'] = node.attrs.showHide;
-    if (node.attrs.matchGroup) attrs['match-group'] = node.attrs.matchGroup;
-    if (node.attrs.matchMin != null) attrs['match-min'] = String(node.attrs.matchMin);
     if (node.attrs.identifier) attrs.identifier = node.attrs.identifier;
+    Object.assign(attrs, keptAttributes.domAttrs(node.attrs));
+    if (node.attrs.matchMin > 0) attrs['match-min'] = String(node.attrs.matchMin);
     if (node.attrs.matchMax > 1) attrs['match-max'] = String(node.attrs.matchMax);
     return ['qti-gap-text', attrs, 0];
   },

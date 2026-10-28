@@ -23,16 +23,16 @@
           <qti-prompt>
             <p>Welke van de volgende landen zijn volledig door één enkel ander land ingesloten?</p>
           </qti-prompt>
-          <qti-simple-choice identifier="choice1" show-hide="show">
+          <qti-simple-choice identifier="choice1">
             <p>Lesotho</p>
           </qti-simple-choice>
-          <qti-simple-choice identifier="choice2" show-hide="show">
+          <qti-simple-choice identifier="choice2">
             <p>San Marino</p>
           </qti-simple-choice>
-          <qti-simple-choice identifier="choice3" show-hide="show">
+          <qti-simple-choice identifier="choice3">
             <p>Bolivia</p>
           </qti-simple-choice>
-          <qti-simple-choice identifier="choice4" show-hide="show">
+          <qti-simple-choice identifier="choice4">
             <p>Vaticaanstad</p>
           </qti-simple-choice>
         </qti-choice-interaction>

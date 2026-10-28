@@ -1,4 +1,8 @@
+import { qtiAttributes } from '../../qti-attributes.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+
+const keptAttributes = qtiAttributes({ matchGroup: 'match-group' });
 
 /*
  * No `group: 'block'`: outside a match set this is not addressable by a response declaration, and
@@ -13,10 +17,7 @@ export const qtiSimpleAssociableChoiceNodeSpec: NodeSpec = {
     matchMax: { default: 1 },
     matchMin: { default: 0 },
     fixed: { default: false },
-    // Kept as authored, so a round trip does not drop them; no editing UI. `null` = not written.
-    class: { default: null },
-    showHide: { default: null },
-    matchGroup: { default: null },
+    ...keptAttributes.attrs,
   },
   parseDOM: [
     {
@@ -30,9 +31,7 @@ export const qtiSimpleAssociableChoiceNodeSpec: NodeSpec = {
           matchMax: matchMax ? parseInt(matchMax, 10) : 1,
           matchMin: matchMin ? parseInt(matchMin, 10) : 0,
           fixed: node.getAttribute('fixed') === 'true',
-          class: node.getAttribute('class') || null,
-          showHide: node.getAttribute('show-hide'),
-          matchGroup: node.getAttribute('match-group'),
+          ...keptAttributes.parse(node),
         };
       }
     }
@@ -40,11 +39,9 @@ export const qtiSimpleAssociableChoiceNodeSpec: NodeSpec = {
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {
       identifier: node.attrs.identifier,
-      'match-max': String(node.attrs.matchMax)
+      'match-max': String(node.attrs.matchMax),
+      ...keptAttributes.domAttrs(node.attrs),
     };
-    if (node.attrs.class) attrs.class = node.attrs.class;
-    if (node.attrs.showHide) attrs['show-hide'] = node.attrs.showHide;
-    if (node.attrs.matchGroup) attrs['match-group'] = node.attrs.matchGroup;
     if (node.attrs.matchMin > 0) {
       attrs['match-min'] = String(node.attrs.matchMin);
     }

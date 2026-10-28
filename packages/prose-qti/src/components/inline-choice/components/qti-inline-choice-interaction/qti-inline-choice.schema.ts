@@ -7,9 +7,6 @@ export const qtiInlineChoiceNodeSpec: NodeSpec = {
     // Standard QTI `fixed` flag, as on `qti-simple-choice`: the choice keeps its place when the
     // interaction shuffles.
     fixed: { default: false },
-    // Kept as authored, so a round trip does not drop them; no editing UI. `null` = not written.
-    class: { default: null },
-    showHide: { default: null },
   },
   content: 'text*',
   inline: true,
@@ -22,8 +19,6 @@ export const qtiInlineChoiceNodeSpec: NodeSpec = {
         return {
           identifier: node.getAttribute('identifier') || 'A',
           fixed: node.getAttribute('fixed') === 'true',
-          class: node.getAttribute('class') || null,
-          showHide: node.getAttribute('show-hide'),
         };
       }
     }
@@ -31,8 +26,6 @@ export const qtiInlineChoiceNodeSpec: NodeSpec = {
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = { identifier: node.attrs.identifier };
     if (node.attrs.fixed) attrs.fixed = 'true';
-    if (node.attrs.class) attrs.class = node.attrs.class;
-    if (node.attrs.showHide) attrs['show-hide'] = node.attrs.showHide;
     return ['qti-inline-choice', attrs, 0];
   },
   selectable: true

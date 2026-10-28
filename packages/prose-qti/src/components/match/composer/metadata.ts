@@ -52,9 +52,9 @@ export const matchNodeAttributePanelMetadataByNodeTypeName: Record<string, NodeA
   },
   [SIMPLE_ASSOCIABLE_CHOICE_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: SIMPLE_ASSOCIABLE_CHOICE_NODE_TYPE,
-    // `identifier`, `matchMax` and `matchMin` are derived from the match set's
-    // structure and the correct-response authoring, not hand-edited, so they are
-    // read-only here. Only `fixed` (shuffle pinning) stays editable.
-    editableAttributes: ['fixed','matchMax'],
+    // `identifier` is what the correct response pairs refer to, so it is read-only.
+    // `matchMin` and `matchGroup` can make the correct response unreachable, so the
+    // author sees and can change them, like `matchMax`.
+    editableAttributes: ['fixed', 'matchMax', 'matchMin', 'matchGroup'],
   },
 };
