@@ -52,6 +52,14 @@ export interface FindUnrepresentableOptions extends SchemaGapMessageOptions {
  *
  * Style-based mark rules are not considered: they match inline CSS, not elements, and an element
  * carrying only a `style` rule's property still needs a tag rule to be reached at all.
+ *
+ * ## It stops where the parser stops
+ *
+ * `DOMParser` does not look inside an element it reads as a leaf node: the leaf is created and the
+ * element's content is never parsed. So the scan does not look there either. What happens to that
+ * content is the leaf node's business — a `mathml` atom keeps the whole formula as its source —
+ * and reporting each `<mi>` and `<mo>` inside a formula the schema holds as "removed" would be a
+ * false alarm on every maths item.
  */
 export function findUnrepresentableElements(
   schema: Schema,
@@ -59,6 +67,7 @@ export function findUnrepresentableElements(
   options: FindUnrepresentableOptions = {},
 ): SchemaGapOutcome {
   const selectors = tagSelectorsOf(schema);
+  const leafSelectors = leafTagSelectorsOf(schema);
   const ignored = new Set((options.ignoreTags ?? []).map(tag => tag.toLowerCase()));
   const excerptLimit = options.excerptLimit ?? 60;
 
@@ -69,6 +78,7 @@ export function findUnrepresentableElements(
     const tagName = element.localName.toLowerCase();
     if (ignored.has(tagName)) continue;
     if (selectors.some(selector => safeMatches(element, selector))) continue;
+    if (isInsideLeaf(element, root, leafSelectors)) continue;
 
     const path = domPath(element, root);
     const excerpt = excerptOfElement(element, excerptLimit);
@@ -117,6 +127,28 @@ function tagSelectorsOf(schema: Schema): string[] {
   for (const type of Object.values(schema.marks)) collect(type.spec);
 
   return [...selectors];
+}
+
+/** The tag selectors of the leaf nodes — the elements whose content the parser never reads. */
+function leafTagSelectorsOf(schema: Schema): string[] {
+  const selectors = new Set<string>();
+  for (const type of Object.values(schema.nodes)) {
+    if (!type.isLeaf) continue;
+    for (const rule of type.spec.parseDOM ?? []) {
+      if (typeof rule.tag === 'string' && rule.tag.length > 0) selectors.add(rule.tag);
+    }
+  }
+  return [...selectors];
+}
+
+/** Whether an ancestor of `element`, below `root`, is read as a leaf node. */
+function isInsideLeaf(element: Element, root: Element, leafSelectors: readonly string[]): boolean {
+  if (leafSelectors.length === 0) return false;
+  for (let current = element.parentElement; current && current !== root; current = current.parentElement) {
+    const ancestor: Element = current;
+    if (leafSelectors.some(selector => safeMatches(ancestor, selector))) return true;
+  }
+  return false;
 }
 
 /**

@@ -17,12 +17,18 @@ Use this package when you build your ProseMirror `Schema` by hand (see the [Type
 
 ## What it provides
 
-- `qtiBasicNodes` — `prosemirror-schema-basic`'s node specs with the `image` node's `parseDOM`/`toDOM` replaced to round-trip `width`/`height`, plus a `qtiLayoutDiv` node for the QTI layout wrappers.
+- `qtiBasicNodes` — `prosemirror-schema-basic`'s node specs with the `image` node's `parseDOM`/`toDOM` replaced to round-trip `width`/`height`, plus a `qtiLayoutDiv` node for the QTI layout wrappers and a `mathml` node for `<math>` formulas.
 - `qtiBasicMarks` — `prosemirror-schema-basic`'s marks, unchanged, re-exported for a single consistent import path.
 - `qtiLayoutDivLockPlugin` — an optional ProseMirror plugin that keeps `qtiLayoutDiv` wrappers from being added or removed by editing. Not included automatically; add it to your plugin list.
 - `qtiPasteRescuePlugin` — an optional ProseMirror plugin that fixes up a multi-block paste landing in a slot that only holds one block. Not included automatically; add it to your plugin list.
 
-Nothing is removed from `prosemirror-schema-basic` — one node is overridden and one is added.
+Nothing is removed from `prosemirror-schema-basic` — one node is overridden and two are added.
+
+## Formulas (`mathml`)
+
+`qtiBasicNodes.mathml` keeps a `<math>` element whole, as an inline atom holding the formula's MathML as its `source` attribute. Without it, a maths item lost every formula on import: ProseMirror skips elements it has no rule for, so only their digits and operators were left, run together as text. The formula renders as real MathML in the editor and is exported in the MathML namespace, with `xmlns="http://www.w3.org/1998/Math/MathML"` on `<math>`. It is not edited in the text; change its source instead.
+
+Choice and prompt paragraphs (`qtiSimpleChoiceParagraph`, `qtiPromptParagraph`) admit `(text | image | mathml)*`, so a schema that includes them must define both `image` and `mathml`.
 
 ## Layout wrappers (`qtiLayoutDiv`)
 
@@ -78,6 +84,7 @@ export const appSchema = new Schema({
     paragraph: { ...qtiBasicNodes.paragraph, content: 'inline*', group: 'block richtext' },
     text:      qtiBasicNodes.text,
     image:     qtiBasicNodes.image,
+    mathml:    qtiBasicNodes.mathml,
 
     // QTI interactions
     qtiChoiceInteraction: { ...qtiChoiceInteractionNodeSpec },

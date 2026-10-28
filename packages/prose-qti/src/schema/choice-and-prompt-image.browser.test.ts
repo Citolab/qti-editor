@@ -1,6 +1,7 @@
 /**
  * `text*` left an authored `<img>` in a choice or prompt with no node to parse into, so it was dropped.
- * `(text | image)*` rather than `inline*`; the last test is what keeps the other inline nodes out.
+ * `(text | image | mathml)*` rather than `inline*` (the formula is covered by `mathml.browser.test.ts`);
+ * the last test is what keeps the other inline nodes out.
  */
 import { describe, expect, test } from 'vitest';
 

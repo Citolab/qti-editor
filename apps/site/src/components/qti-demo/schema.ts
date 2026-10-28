@@ -6,6 +6,7 @@
 
 import { Schema } from 'prosemirror-model';
 import { nodes as basicNodes, marks } from 'prosemirror-schema-basic';
+import { mathmlNodeSpec } from '@citolab/prose-extensions/mathml';
 import { qtiChoiceInteractionNodeSpec } from '@citolab/prose-qti/components/choice';
 import { qtiTextEntryInteractionNodeSpec } from '@citolab/prose-qti/components/text-entry';
 import {
@@ -21,6 +22,10 @@ export const demoSchema = new Schema({
     doc: { content: 'block+', attrs: { identifier: {}, title: {} } },
     paragraph: { ...basicNodes.paragraph, content: 'inline*', group: 'block' },
     text: basicNodes.text,
+    // Choice and prompt paragraphs are `(text | image | mathml)*`, so a schema holding them has to
+    // define both: without them the Schema constructor throws and the demo never mounts.
+    image: basicNodes.image,
+    mathml: mathmlNodeSpec,
 
     // QTI shared building blocks
     qtiPrompt: { ...qtiPromptNodeSpec },

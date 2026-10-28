@@ -7,6 +7,7 @@ import {
   union,
   type BaseCommandsExtension,
   type BaseKeymapExtension,
+  type Extension,
   type HistoryExtension,
   type Union,
 } from 'prosekit/core'
@@ -22,6 +23,7 @@ import {
 import { defineTable, type TableExtension } from 'prosekit/extensions/table'
 import { defineText, type TextExtension } from 'prosekit/extensions/text'
 
+import { mathmlNodeSpec } from '../prosemirror/mathml/index.js'
 import { defineGapCursorParagraph } from './gap-cursor-paragraph.js'
 import { defineList, type ListExtension, type ListOptions } from './list.js'
 import { defineEm, defineStrong, type EmExtension, type StrongExtension } from './strong-em.js'
@@ -180,6 +182,9 @@ function defineQtiParagraph(): ParagraphExtension {
   ) as unknown as ParagraphExtension
 }
 
+/** The `mathml` node: see `mathmlNodeSpec` in `@citolab/prose-extensions/mathml`. */
+export type MathmlExtension = Extension<{ Nodes: { mathml: { source: string } } }>
+
 export type BasicExtension = Union<
   [
     // Nodes
@@ -189,6 +194,7 @@ export type BasicExtension = Union<
     HeadingExtension,
     ListExtension,
     ImageExtension,
+    MathmlExtension,
     TableExtension,
     // Marks
     EmExtension,
@@ -217,6 +223,9 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     defineHeading(),
     defineList(options?.list),
     defineQtiImage(),
+    // `<math>`, kept whole as an inline atom. In the base, beside `image`, because choice and prompt
+    // paragraphs name both in their content (`(text | image | mathml)*`).
+    defineNodeSpec({ name: 'mathml', ...mathmlNodeSpec }),
     defineTable(),
     // Table's own spec has no priority override, so a plain patch reaches it.
     defineNodeSpec({ name: 'table', group: 'block richtext' }),

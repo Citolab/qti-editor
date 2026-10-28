@@ -27,6 +27,14 @@ const schema = new Schema({
       toDOM: () => ['img'],
     },
     text: { group: 'inline' },
+    // A leaf the parser reads whole, children and all — like a MathML formula held as its source.
+    formula: {
+      group: 'inline',
+      inline: true,
+      atom: true,
+      parseDOM: [{ tag: 'x-formula' }],
+      toDOM: () => ['x-formula'],
+    },
   },
   marks: {
     em: { parseDOM: [{ tag: 'em' }], toDOM: () => ['em', 0] },
@@ -65,6 +73,16 @@ describe('findUnrepresentableElements', () => {
   test('stays silent on everything the schema can parse', () => {
     const outcome = findUnrepresentableElements(schema, parse('<p><em>a</em></p><img src="a.png">'));
     expect(outcome.changes).toEqual([]);
+  });
+
+  test('does not look inside a leaf, because the parser does not either', () => {
+    const outcome = findUnrepresentableElements(schema, parse('<p><x-formula><x-fraction>½</x-fraction></x-formula></p>'));
+    expect(outcome.changes).toEqual([]);
+  });
+
+  test('still reports the same element outside a leaf', () => {
+    const outcome = findUnrepresentableElements(schema, parse('<p><x-fraction>½</x-fraction></p>'));
+    expect(outcome.changes.map(change => change.nodeType)).toEqual(['x-fraction']);
   });
 
   test('honours ignoreTags for content the host knows is consumed elsewhere', () => {

@@ -60,6 +60,10 @@
       "types": "./dist/prosemirror/clear-formatting/index.d.ts",
       "default": "./dist/prosemirror/clear-formatting/index.js"
     },
+    "./mathml": {
+      "types": "./dist/prosemirror/mathml/index.d.ts",
+      "default": "./dist/prosemirror/mathml/index.js"
+    },
     "./prosekit/basic": {
       "types": "./dist/prosekit/basic.d.ts",
       "default": "./dist/prosekit/basic.js"
