@@ -23,6 +23,7 @@ import { defineTable, type TableExtension } from 'prosekit/extensions/table'
 import { defineText, type TextExtension } from 'prosekit/extensions/text'
 
 import { defineGapCursorParagraph } from './gap-cursor-paragraph.js'
+import { defineLang, type LangExtension } from './lang.js'
 import { defineList, type ListExtension, type ListOptions } from './list.js'
 import { defineEm, defineStrong, type EmExtension, type StrongExtension } from './strong-em.js'
 
@@ -193,6 +194,7 @@ export type BasicExtension = Union<
     // Marks
     EmExtension,
     StrongExtension,
+    LangExtension,
     // Behaviour
     BaseKeymapExtension,
     BaseCommandsExtension,
@@ -230,6 +232,8 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     // Marks
     defineEm(),
     defineStrong(),
+    // `lang` on spans (a mark) and on paragraphs, headings and lists (an attribute).
+    defineLang(),
     // Behaviour
     defineBaseKeymap(),
     defineBaseCommands(),

@@ -3,6 +3,7 @@
 import { Schema } from 'prosemirror-model';
 import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
 import { tableNodes } from 'prosemirror-tables';
+import { withLangAttr } from '@citolab/prose-extensions/lang';
 
 import { listInteractionSchemaNodeSpecs } from '../core/interactions/composer.js';
 import { qtiBasicMarks, qtiBasicNodes } from './basic-qti-schema.js';
@@ -109,8 +110,8 @@ export function createQtiSchema(options: CreateQtiSchemaOptions = {}): Schema {
     ...qtiBasicNodes,
     // tableNodes' cellContent is `richtext+`, so paragraph has to join that group.
     paragraph: { ...qtiBasicNodes.paragraph, group: 'block richtext' },
-    ordered_list: { ...orderedList, content: 'list_item+', group: 'block richtext' },
-    bullet_list: { ...bulletList, content: 'list_item+', group: 'block richtext' },
+    ordered_list: withLangAttr({ ...orderedList, content: 'list_item+', group: 'block richtext' }),
+    bullet_list: withLangAttr({ ...bulletList, content: 'list_item+', group: 'block richtext' }),
     list_item: { ...listItem, content: 'paragraph (paragraph | bullet_list | ordered_list)*' },
     ...tableNodes({ tableGroup: 'block richtext', cellContent: 'richtext+', cellAttributes: {} }),
     ...interactionNodes,

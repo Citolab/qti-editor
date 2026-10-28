@@ -97,6 +97,17 @@ describe('qti3ToPm -> pmToQti3 reproduces the committed snapshots', () => {
   }
 });
 
+describe('xml:lang on content', () => {
+  test('a paragraph and a span keep their language, written back as xml:lang', () => {
+    const xml = `<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" identifier="LANG" title="Lang">
+      <qti-item-body><p xml:lang="en">Hi <span xml:lang="fr">toi</span></p></qti-item-body>
+    </qti-assessment-item>`;
+    const out = canonical(pmToQti3(qti3ToPm(xml)));
+    expect(out).toContain('<p xml:lang="en">Hi<span xml:lang="fr">toi</span></p>');
+    expect(out).not.toMatch(/ lang=/);
+  });
+});
+
 describe('the HTML boundary', () => {
   test('pmToHtml and htmlToPm are inverses for simple prose', () => {
     const doc = htmlToPm('<p>Water boils at 100 degrees.</p>', { identifier: 'X', title: 'X' });

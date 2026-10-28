@@ -14,3 +14,4 @@ export {
   type BasicExtension,
   type BasicExtensionOptions,
 } from './basic.js'
+export { defineLang, type LangExtension, type LangMarkExtension } from './lang.js'

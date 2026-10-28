@@ -22,6 +22,7 @@
 import { DOMSerializer, type Node as ProseMirrorNode, type Schema } from 'prosemirror-model';
 
 const QTI_NS = 'http://www.imsglobal.org/xsd/imsqtiasi_v3p0';
+const XML_NS = 'http://www.w3.org/XML/1998/namespace';
 
 export interface RoundtripXmlContext {
   identifier: string;
@@ -51,6 +52,7 @@ export function pmToRoundtripXml(
   const fragment = serializer.serializeFragment(node.content, { document: xmlDoc });
   const wrapper = xmlDoc.createElement('div');
   wrapper.appendChild(fragment);
+  restoreXmlLang(wrapper);
 
   const attrs = [`xmlns="${QTI_NS}"`];
   if (context.lang) attrs.push(`xml:lang="${escapeXmlAttribute(context.lang)}"`);
@@ -62,4 +64,21 @@ export function pmToRoundtripXml(
   });
 
   return `<qti-item-body ${attrs.join(' ')}>${inner}</qti-item-body>`;
+}
+
+/**
+ * Every `lang` the schema wrote becomes `xml:lang` again.
+ *
+ * The import re-hosts the item body as HTML (`importXmlAsHtml` keeps an attribute's local name), so
+ * an authored `xml:lang` reaches the schema as `lang`, and the schema writes `lang` back — which is
+ * what the editor's own HTML DOM needs, and what QTI does not have: its content model carries
+ * `xml:lang`. Translated here, at the one point every export passes, rather than in each node's
+ * `toDOM`, which also renders the editor view.
+ */
+function restoreXmlLang(root: Element): void {
+  for (const element of Array.from(root.querySelectorAll('[lang]'))) {
+    const lang = element.getAttribute('lang');
+    element.removeAttribute('lang');
+    if (lang) element.setAttributeNS(XML_NS, 'xml:lang', lang);
+  }
 }

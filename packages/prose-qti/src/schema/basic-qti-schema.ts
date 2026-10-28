@@ -1,3 +1,4 @@
+import { langMarkSpec, withLangAttr } from '@citolab/prose-extensions/lang';
 import { nodes as basicNodes, marks as basicMarks } from 'prosemirror-schema-basic';
 
 import { qtiLayoutDivNodeSpec } from './qti-layout-div.js';
@@ -67,7 +68,7 @@ const qtiImageNodeSpec: NodeSpec = {
 };
 
 /**
- * prosemirror-schema-basic, extended. One override and one addition — nothing is removed.
+ * prosemirror-schema-basic, extended. Overrides and one addition — nothing is removed.
  *
  * ## Nothing is removed, deliberately
  *
@@ -89,10 +90,17 @@ const qtiImageNodeSpec: NodeSpec = {
 export const qtiBasicNodes = {
   ...basicNodes,
   /*
-   * The only override. prosemirror-schema-basic's image models src/alt/title and drops width and
+   * prosemirror-schema-basic's image models src/alt/title and drops width and
    * height outright, so an authored `<img width="120">` came back without its dimensions.
    */
   image: qtiImageNodeSpec,
+  /*
+   * `lang`, which `importXmlAsHtml` makes of an authored `xml:lang`. Without the attribute the
+   * language of a paragraph or heading was dropped on import; `pmToRoundtripXml` writes it back as
+   * `xml:lang`. The lists get it in `createQtiSchema`, where they are assembled.
+   */
+  paragraph: withLangAttr(basicNodes.paragraph),
+  heading: withLangAttr(basicNodes.heading),
   /*
    * In the basic set rather than opt-in, because omitting it is not a smaller schema — it is a
    * lossy one. Without this node the author's `<div class="qti-layout-row">` wrappers are dropped
@@ -103,8 +111,11 @@ export const qtiBasicNodes = {
 };
 
 /**
- * Unmodified. Re-exported so a host takes its nodes and marks from one place, and so the name does
- * not have to change if a QTI-specific mark is ever needed. `code` — one of the four elements QTI
- * permits that people expect to find in the node set — lives here, as a mark, not a node.
+ * prosemirror-schema-basic's marks, plus `lang`. Re-exported so a host takes its nodes and marks
+ * from one place. `code` — one of the four elements QTI permits that people expect to find in the
+ * node set — lives here, as a mark, not a node.
+ *
+ * `lang` is `<span xml:lang="…">` (a phrase in another language), held as HTML `lang` — the import
+ * turns `xml:lang` into `lang` — and written back as `xml:lang` by `pmToRoundtripXml`.
  */
-export const qtiBasicMarks = basicMarks;
+export const qtiBasicMarks = { ...basicMarks, lang: langMarkSpec };
