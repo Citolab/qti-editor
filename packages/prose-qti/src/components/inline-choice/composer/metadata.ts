@@ -42,6 +42,8 @@ export const inlineChoiceNodeAttributePanelMetadataByNodeTypeName = {
   },
   [INLINE_CHOICE_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: INLINE_CHOICE_NODE_TYPE,
-    editableAttributes: [],
+    // `fixed` is user-editable, as on `qti-simple-choice`; `identifier` is omitted so the panel
+    // renders it disabled.
+    editableAttributes: ['fixed'],
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;

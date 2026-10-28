@@ -7,7 +7,10 @@ export const qtiSimpleChoiceNodeSpec: NodeSpec = {
     identifier: { default: 'A' },
     // Standard QTI `fixed` flag: when true the choice keeps its position and is
     // not shuffled. Boolean so the attributes panel renders it as a checkbox.
-    fixed: { default: false }
+    fixed: { default: false },
+    // Kept as authored, so a round trip does not drop them; no editing UI. `null` = not written.
+    class: { default: null },
+    showHide: { default: null },
   },
   /*
    * ## Why `//` and not `/`
@@ -42,7 +45,9 @@ export const qtiSimpleChoiceNodeSpec: NodeSpec = {
         if (!(node instanceof HTMLElement)) return {};
         return {
           identifier: node.getAttribute('identifier') || 'A',
-          fixed: node.getAttribute('fixed') === 'true'
+          fixed: node.getAttribute('fixed') === 'true',
+          class: node.getAttribute('class') || null,
+          showHide: node.getAttribute('show-hide'),
         };
       }
     },
@@ -53,13 +58,17 @@ export const qtiSimpleChoiceNodeSpec: NodeSpec = {
         if (!(node instanceof HTMLElement)) return {};
         return {
           identifier: node.getAttribute('identifier') || 'A',
-          fixed: node.getAttribute('fixed') === 'true'
+          fixed: node.getAttribute('fixed') === 'true',
+          class: node.getAttribute('class') || null,
+          showHide: node.getAttribute('show-hide'),
         };
       }
     }
   ],
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = { identifier: node.attrs.identifier };
+    if (node.attrs.class) attrs.class = node.attrs.class;
+    if (node.attrs.showHide) attrs['show-hide'] = node.attrs.showHide;
     // Only emit `fixed` when set, so unshuffled-by-default choices stay clean.
     if (node.attrs.fixed) attrs.fixed = 'true';
     return ['qti-simple-choice', attrs, 0];
