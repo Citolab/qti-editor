@@ -348,3 +348,13 @@ Same trap as finding 16's third bullet, recurring in a different node. ProseKit'
 
 - **Resolution**: containment is now checked against the innermost position a text selection can actually reach — `firstReachablePos`/`lastReachablePos` step inward from `pos`/`pos + nodeSize` through every non-leaf, non-text child. A regression case pins a heading preceded by a sibling (so its own start position is `> 0`) selected only by its own text, which the old whole-document-selection tests could not have caught.
 - **Where to look**: `packages/prose-extensions/src/prosemirror/clear-formatting/clear-formatting.ts` (`firstReachablePos`, `lastReachablePos`); `clear-formatting.browser.test.ts` for the regression cases.
+
+## 29. Drag-drop match paints a source on the wrong side when a target shares its identifier — **open**
+
+QTI wants a choice identifier unique within the item, but the XSD cannot enforce it (`IdentifierDType` is an `xs:NCName`, not an `xs:ID`), and imported match tables do reuse identifiers across the two `qti-simple-match-set`s (rows `1 2 3`, columns `1 2`). `QtiMatchInteractionEdit.publishCorrection` now keeps the identifiers per set, so the answer key of such an item is no longer pruned, in either mode. What is still wrong is the drag-drop (chips) painting.
+
+- **Cause**: each `qti-simple-associable-choice` asks `correction.roleOf(this.identifier)` for its own role (`syncFromCorrection`). `roleOf` has one answer per identifier, and the target set is filled last, so a source whose identifier a target also uses is told it is a `drop`: it is painted as a drop zone, and shows the chips linked to the target of the same name.
+- **Not affected**: tabular mode (no chips, the choices are the grid's headings), and the drag-drop controller's own match-max lookups (`getSourceMatchMax` / `getTargetMatchMax` in `match-drag-drop.ts` query their own set).
+- **Fix**: resolve the role per element (which set the choice sits in) rather than per identifier. That changes the shared `CorrectionState.roleOf` contract that gap-match and order also implement, so it was left out of the answer-key fix.
+- **Test handling**: `qti-match-interaction.browser.test.ts` pins only the answer key in drag-drop mode, not the painting.
+- **Where to look**: `packages/prose-qti/src/components/match/components/qti-match-interaction/qti-match-interaction.ts` (`publishCorrection`); `packages/prose-qti/src/components/shared/components/qti-simple-associable-choice/qti-simple-associable-choice.ts` (`syncFromCorrection`).

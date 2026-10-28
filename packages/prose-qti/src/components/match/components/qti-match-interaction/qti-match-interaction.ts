@@ -193,6 +193,11 @@ export class QtiMatchInteractionEdit extends Interaction implements TabularHost,
     const roles = new Map<string, CorrectionRole>();
     const labels = new Map<string, string>();
     const limits = new Map<string, number>();
+    // Identifiers per set, kept apart from `roles`. QTI wants a choice identifier unique within the
+    // item, but nothing enforces it and imported tables do reuse one across the sets (rows `1 2 3`,
+    // columns `1 2`). One role per identifier would make it look missing from one of the sets, and
+    // prune every link naming it from the answer key.
+    const ids = { drag: new Set<string>(), drop: new Set<string>() };
 
     for (const [choices, role] of [
       [sources, 'drag'],
@@ -201,7 +206,11 @@ export class QtiMatchInteractionEdit extends Interaction implements TabularHost,
       for (const choice of choices) {
         const identifier = choice.getAttribute('identifier');
         if (!identifier) continue;
+        ids[role].add(identifier);
         roles.set(identifier, role);
+        // `labelOf` and `limitOf` are asked about drags only, so a target must not overwrite a
+        // source of the same identifier here.
+        if (role !== 'drag') continue;
         labels.set(identifier, labelOfChoice(choice));
         const raw = choice.getAttribute('match-max');
         const limit = raw ? Number(raw) : 1;
@@ -213,7 +222,7 @@ export class QtiMatchInteractionEdit extends Interaction implements TabularHost,
     // gap-match's `live`. Before ProseMirror attaches them every identifier looks missing.
     const present = roles.size > 0;
     const live = present
-      ? links.filter(link => roles.get(link.drag) === 'drag' && roles.get(link.drop) === 'drop')
+      ? links.filter(link => ids.drag.has(link.drag) && ids.drop.has(link.drop))
       : [...links];
 
     this.correction.setValue({
