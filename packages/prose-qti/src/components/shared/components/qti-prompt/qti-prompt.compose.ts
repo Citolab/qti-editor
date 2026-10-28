@@ -8,12 +8,16 @@
  * the lossless roundtrip-xml subformat keeps the authored editor state intact.
  */
 
-/** Remove every `qti-prompt` with nothing authored in it. A picture counts; text alone is not the test. */
+/**
+ * Remove every `qti-prompt` with nothing authored in it. Text alone is not the test: a picture, a
+ * sound or a film counts too (a spoken question, a picture prompt). QTI 3.0 allows `img`, `audio`
+ * and `video` in `qti-prompt`.
+ */
 export function removeEmptyPrompts(element: Element): void {
   const prompts = Array.from(element.getElementsByTagName('qti-prompt'));
   for (const prompt of prompts) {
     if ((prompt.textContent ?? '').trim().length > 0) continue;
-    if (prompt.querySelector('img')) continue;
+    if (prompt.querySelector('img, audio, video')) continue;
     prompt.parentNode?.removeChild(prompt);
   }
 }

@@ -1,4 +1,4 @@
-/** A picture-only prompt has no text, so keying emptiness on `textContent` dropped it on compose. */
+/** A media-only prompt (picture, sound, film) has no text, so keying emptiness on `textContent` dropped it on compose. */
 import { describe, expect, test } from 'vitest';
 
 import { removeEmptyPrompts } from './qti-prompt.compose.js';
@@ -37,6 +37,21 @@ describe('removeEmptyPrompts', () => {
 
   test('keeps a prompt whose only content is an image', () => {
     const host = interactionWith('<p><img src="https://example.test/x.png" alt="microscoopfoto"></p>');
+    removeEmptyPrompts(host);
+
+    expect(promptCount(host)).toBe(1);
+  });
+
+  test('keeps a prompt whose only content is audio', () => {
+    const host = interactionWith('<audio controls="true"><source src="a.mp3" type="audio/mpeg"></audio>');
+    removeEmptyPrompts(host);
+
+    expect(promptCount(host)).toBe(1);
+    expect(host.querySelector('qti-prompt audio source')?.getAttribute('src')).toBe('a.mp3');
+  });
+
+  test('keeps a prompt whose only content is a video', () => {
+    const host = interactionWith('<video controls="true"><source src="v.mp4" type="video/mp4"></video>');
     removeEmptyPrompts(host);
 
     expect(promptCount(host)).toBe(1);
