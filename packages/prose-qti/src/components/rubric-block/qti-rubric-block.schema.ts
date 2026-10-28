@@ -7,6 +7,20 @@ export const QTI_RUBRIC_BLOCK_USE_VALUES = USE_VALUES;
 export const QTI_RUBRIC_BLOCK_VIEW_VALUES = VIEW_VALUES;
 
 /**
+ * The class this node used to write on every rubric block, whatever the author had. Nothing keys on
+ * it — the editor's CSS and qti-components' theme both select the `qti-rubric-block` element, and
+ * the runtime only reads the author's tokens (`qti-rubric-inline`, …) — so it is no longer written,
+ * and dropped on parse so items saved with it come back clean.
+ */
+const LEGACY_EDITOR_CLASS = 'qti-rubric-block';
+
+/** The author's class tokens, without the legacy editor class; null when none are left. */
+function authorClass(dom: HTMLElement): string | null {
+  const tokens = (dom.getAttribute('class') ?? '').split(/\s+/).filter(token => token && token !== LEGACY_EDITOR_CLASS);
+  return tokens.length > 0 ? tokens.join(' ') : null;
+}
+
+/**
  * QTI Rubric Block node specification.
  *
  * Authors instructions / scoring / navigation rubrics inside qti-item-body.
@@ -46,6 +60,10 @@ export const qtiRubricBlockNodeSpec: NodeSpec = {
   attrs: {
     use: { default: 'instructions' },
     view: { default: 'author' },
+    // The author's, kept as written. `class` carries the runtime's placement tokens
+    // (`qti-rubric-inline`, `qti-rubric-discretionary-placement`), so losing it moves the block.
+    class: { default: null },
+    id: { default: null },
   },
   parseDOM: [
     {
@@ -59,19 +77,16 @@ export const qtiRubricBlockNodeSpec: NodeSpec = {
         return {
           use: dom.getAttribute('use') ?? 'instructions',
           view: dom.getAttribute('view') ?? 'author',
+          class: authorClass(dom),
+          id: dom.getAttribute('id') || null,
         };
       },
     },
   ],
   toDOM(node): DOMOutputSpec {
-    return [
-      'qti-rubric-block',
-      {
-        use: node.attrs.use,
-        view: node.attrs.view,
-        class: 'qti-rubric-block',
-      },
-      ['qti-content-body', {}, 0],
-    ];
+    const attrs: Record<string, string> = { use: node.attrs.use, view: node.attrs.view };
+    if (node.attrs.class) attrs.class = node.attrs.class as string;
+    if (node.attrs.id) attrs.id = node.attrs.id as string;
+    return ['qti-rubric-block', attrs, ['qti-content-body', {}, 0]];
   },
 };

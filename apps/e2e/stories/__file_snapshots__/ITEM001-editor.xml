@@ -38,7 +38,7 @@
         </qti-choice-interaction>
       </div>
     </div>
-    <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
+    <qti-rubric-block use="scoring" view="scorer">
       <qti-content-body>
         <p>Xenon — atoommassa ≈ 131,29 u; Tin ≈ 118,71 u; Jodium ≈ 126,90 u</p>
       </qti-content-body>

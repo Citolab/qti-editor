@@ -45,7 +45,7 @@
     <p>
       <img src="/qti/kennisnet/resources/icons-physics.png" alt="Eenheden"/>
     </p>
-    <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
+    <qti-rubric-block use="scoring" view="scorer">
       <qti-content-body>
         <ul>
           <li>
