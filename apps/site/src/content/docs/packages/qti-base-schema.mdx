@@ -17,12 +17,12 @@ Use this package when you build your ProseMirror `Schema` by hand (see the [Type
 
 ## What it provides
 
-- `qtiBasicNodes` — `prosemirror-schema-basic`'s node specs with the `image` node's `parseDOM`/`toDOM` replaced to round-trip `width`/`height`, plus a `qtiLayoutDiv` node for the QTI layout wrappers.
+- `qtiBasicNodes` — `prosemirror-schema-basic`'s node specs with the `image` node's `parseDOM`/`toDOM` replaced to round-trip `width`/`height`, plus a `qtiLayoutDiv` node for the QTI layout wrappers and a `qtiSharedStimulus` node for the shared-stimulus placeholder.
 - `qtiBasicMarks` — `prosemirror-schema-basic`'s marks, unchanged, re-exported for a single consistent import path.
 - `qtiLayoutDivLockPlugin` — an optional ProseMirror plugin that keeps `qtiLayoutDiv` wrappers from being added or removed by editing. Not included automatically; add it to your plugin list.
 - `qtiPasteRescuePlugin` — an optional ProseMirror plugin that fixes up a multi-block paste landing in a slot that only holds one block. Not included automatically; add it to your plugin list.
 
-Nothing is removed from `prosemirror-schema-basic` — one node is overridden and one is added.
+Nothing is removed from `prosemirror-schema-basic` — one node is overridden and two are added.
 
 ## Layout wrappers (`qtiLayoutDiv`)
 
@@ -39,6 +39,16 @@ const plugins = [...otherPlugins, qtiLayoutDivLockPlugin];
 ```
 
 It rejects any transaction that would change how many `qtiLayoutDiv` nodes the document contains, and leaves everything else — including re-classing a wrapper — untouched. It is a separate export rather than automatic, so a host that genuinely wants editable grids simply omits it from its plugin list.
+
+## Shared-stimulus placeholder (`qtiSharedStimulus`)
+
+`<div class="qti-shared-stimulus" data-stimulus-idref="Stimulus1"></div>` marks where the player puts the shared text an item's `<qti-assessment-stimulus-ref identifier="Stimulus1">` points at. qti-components fills it: `qti-assessment-stimulus-ref` looks up `[data-stimulus-idref]` in its item and loads the stimulus into it.
+
+The div is empty in the item, so the node is an atom with two attributes, `stimulusIdref` and `class`, both written back as they were read. Nothing inserts one; it arrives from imported QTI and can be moved or deleted like any block. `data-stimulus-idref` is required, which keeps the node out of ProseMirror's filler lookups: an empty document or a new table cell still fills with a paragraph.
+
+ProseKit hosts get it from `defineQtiExtension()`; a host composing its own base adds `defineQtiSharedStimulusExtension()` (from `@citolab/prose-qti/integration/interactions/prosekit`), or `defineNodeSpec({ name: 'qtiSharedStimulus', ...qtiSharedStimulusNodeSpec })`.
+
+The `<qti-assessment-stimulus-ref>` itself sits outside the item body, so like the item's other declarations it is the host's to keep when it writes the item back.
 
 ## Paste rescue (`qtiPasteRescuePlugin`)
 

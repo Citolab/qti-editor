@@ -97,6 +97,21 @@ describe('qti3ToPm -> pmToQti3 reproduces the committed snapshots', () => {
   }
 });
 
+describe('content outside the regression corpus', () => {
+  test('a shared-stimulus placeholder survives qti3ToPm -> pmToQti3', () => {
+    // No ITEM fixture has one, so the corpus above cannot catch it being dropped.
+    const item = `<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" identifier="STIM" title="S" time-dependent="false">
+      <qti-item-body><div class="qti-shared-stimulus" data-stimulus-idref="Stimulus1"></div><p>Question</p></qti-item-body>
+    </qti-assessment-item>`;
+    const exported = new DOMParser().parseFromString(pmToQti3(qti3ToPm(item)), 'text/xml');
+    const placeholder = exported.getElementsByTagName('qti-item-body')[0].firstElementChild;
+    expect(placeholder?.localName).toBe('div');
+    expect(placeholder?.getAttribute('class')).toBe('qti-shared-stimulus');
+    expect(placeholder?.getAttribute('data-stimulus-idref')).toBe('Stimulus1');
+    expect(placeholder?.childNodes.length).toBe(0);
+  });
+});
+
 describe('the HTML boundary', () => {
   test('pmToHtml and htmlToPm are inverses for simple prose', () => {
     const doc = htmlToPm('<p>Water boils at 100 degrees.</p>', { identifier: 'X', title: 'X' });

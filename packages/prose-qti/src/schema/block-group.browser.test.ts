@@ -53,6 +53,7 @@ const BLOCK_GROUP_MEMBERS = [
   'bullet_list',
   'table',
   'qtiLayoutDiv',
+  'qtiSharedStimulus',
   'qtiRubricBlock',
   // Interactions — the whole point of the group.
   'qtiChoiceInteraction',

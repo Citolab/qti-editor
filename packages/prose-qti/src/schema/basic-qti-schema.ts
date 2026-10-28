@@ -1,6 +1,7 @@
 import { nodes as basicNodes, marks as basicMarks } from 'prosemirror-schema-basic';
 
 import { qtiLayoutDivNodeSpec } from './qti-layout-div.js';
+import { qtiSharedStimulusNodeSpec } from './qti-shared-stimulus.js';
 
 import type { NodeSpec } from 'prosemirror-model';
 
@@ -67,7 +68,7 @@ const qtiImageNodeSpec: NodeSpec = {
 };
 
 /**
- * prosemirror-schema-basic, extended. One override and one addition — nothing is removed.
+ * prosemirror-schema-basic, extended. One override and two additions — nothing is removed.
  *
  * ## Nothing is removed, deliberately
  *
@@ -99,7 +100,12 @@ export const qtiBasicNodes = {
    * on import, and every consumer that forgot to add it was silently losing them. See
    * qti-layout-div.ts.
    */
-  qtiLayoutDiv: qtiLayoutDivNodeSpec
+  qtiLayoutDiv: qtiLayoutDivNodeSpec,
+  /*
+   * Same reasoning: author-written, read by the runtime, and dropped on import without a node. See
+   * qti-shared-stimulus.ts.
+   */
+  qtiSharedStimulus: qtiSharedStimulusNodeSpec
 };
 
 /**

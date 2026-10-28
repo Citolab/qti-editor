@@ -16,6 +16,7 @@ import {
   listInteractionSchemaNodeSpecs,
 } from '@citolab/prose-qti/core/interactions/composer';
 import { clearFormatting } from '@citolab/prose-qti/commands';
+import { qtiSharedStimulusNodeSpec } from '@citolab/prose-qti/schema';
 import {
   constrainedHome,
   constrainedShiftHome,
@@ -117,8 +118,17 @@ export function defineClearFormattingExtension() {
   );
 }
 
+/**
+ * The shared-stimulus placeholder, as a ProseKit node. Item-body content rather than an
+ * interaction, so it is not in `defineQtiInteractionsExtension()`; `defineQtiExtension()` includes
+ * it, and a host composing its own base unions this in beside it. See `qtiSharedStimulusNodeSpec`.
+ */
+export function defineQtiSharedStimulusExtension() {
+  return defineNodeSpec({ name: 'qtiSharedStimulus', ...qtiSharedStimulusNodeSpec });
+}
+
 export function defineQtiExtension() {
-  return union(defineBasicExtension(), defineQtiInteractionsExtension());
+  return union(defineBasicExtension(), defineQtiInteractionsExtension(), defineQtiSharedStimulusExtension());
 }
 
 export type QtiExtension = ReturnType<typeof defineQtiExtension>;
