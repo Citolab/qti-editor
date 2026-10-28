@@ -98,17 +98,20 @@ are still wrong by default for a schema with more than one textblock in its `blo
 
 **Reachability.** A gap cursor is only offered where `GapCursor.valid` guesses a textblock could go,
 and it guesses by reading `contentMatchAt(index).defaultType.isTextblock` — not by checking every
-admitted type. `qtiLayoutDivNodeSpec`'s `content: 'block+'` hits this: `defaultType` (the first
-admitted type with no required attributes) is `qtiItemDivider`, which is not a textblock, so the
-guess is no at every position even though `paragraph` is legitimately in `block`. Every interaction
-here is `isolating`, so this is also the *only* way to reach the collapsed space between two adjacent
-interactions — there is no fallback. The same failure hits any host `doc` whose own content
+admitted type. `qtiLayoutDivNodeSpec` used to say `content: 'block+'` and hit this: `defaultType`
+(the first admitted type with no required attributes) was `qtiItemDivider`, which is not a
+textblock, so the guess was no at every position even though `paragraph` is legitimately in `block`.
+Its content is now `(paragraph | block)+`, the same fix as `doc` and `tableCell` above, which makes
+`defaultType` a paragraph (and keeps an emptied column from filling with the wrong node). Every
+interaction here is `isolating`, so this is also the *only* way to reach the collapsed space between
+two adjacent interactions — there is no fallback. The same failure hits any host `doc` whose own content
 expression puts a non-textblock first (a locked-header layout opening with `heading`, say);
 `defineQtiDoc`'s `content: '(paragraph | block)+'` avoids it only because `paragraph` happens to be
 named first.
 
-**Replaced by** `allowGapCursor: true` on `qtiLayoutDivNodeSpec` (`packages/prose-qti/src/schema/qti-layout-div.ts`)
-— the override the library provides for exactly this, rather than giving `qtiItemDivider` a required
+**Replaced by** `allowGapCursor: true` on `qtiLayoutDivNodeSpec` (`packages/prose-qti/src/schema/qti-layout-div.ts`),
+kept explicit now that the content expression gets the guess right as well — the override the
+library provides for exactly this, rather than giving `qtiItemDivider` a required
 attribute to stop it winning `defaultType` (that default is also read by `createAndFill` and every
 auto-insertion path, so moving it to fix a cursor would be trading one bug for another). A host `doc`
 that rewrites the content expression needs the same `allowGapCursor: true` on its own `doc` spec; no

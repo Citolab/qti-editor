@@ -67,7 +67,9 @@ export function isQtiLayoutClass(className: string | null): boolean {
 
 export const qtiLayoutDivNodeSpec: NodeSpec = {
   group: 'block',
-  content: 'block+',
+  // `paragraph` named first so an emptied column fills with one; it is in `block` anyway, so a
+  // column accepts the same content. See qti-layout-div.browser.test.ts for why `block+` did not.
+  content: '(paragraph | block)+',
   attrs: {
     class: { default: null }
   },
@@ -93,12 +95,13 @@ export const qtiLayoutDivNodeSpec: NodeSpec = {
   /*
    * Reachability of the collapsed space between the wrapper's children.
    *
-   * `content: 'block+'` admits a paragraph anywhere inside, so a gap cursor is always legitimate
+   * The content expression admits a paragraph anywhere inside, so a gap cursor is always legitimate
    * here — but prosemirror-gapcursor decides by reading `contentMatchAt(index).defaultType` and
    * asking whether THAT is a textblock. `defaultType` is the first admitted type with no required
-   * attributes, which for `block+` is `qtiItemDivider`, and a divider is not a textblock. So the
-   * guess says no at every position and two interactions sitting side by side in an imported
-   * `qti-layout-row` have no writable space between them at all.
+   * attributes. Under the old `block+` that depended on schema order (`qtiItemDivider` in the
+   * prosekit app), and a divider is not a textblock, so the guess said no at every position and two
+   * interactions sitting side by side in an imported `qti-layout-row` had no writable space between
+   * them at all. Naming `paragraph` first makes the guess right too; this keeps it explicit.
    *
    * `allowGapCursor` is the library's override for when the caller knows better than the heuristic.
    * See the longer note on the `doc` spec in the prosekit app's locked-header extension, which is
