@@ -175,6 +175,14 @@
       "types": "./dist/components/gap-match/*",
       "default": "./dist/components/gap-match/*"
     },
+    "./components/hotspot": {
+      "types": "./dist/components/hotspot/index.d.ts",
+      "default": "./dist/components/hotspot/index.js"
+    },
+    "./components/hotspot/*": {
+      "types": "./dist/components/hotspot/*",
+      "default": "./dist/components/hotspot/*"
+    },
     "./components/hottext": {
       "types": "./dist/components/hottext/index.d.ts",
       "default": "./dist/components/hottext/index.js"
@@ -260,6 +268,7 @@
     "@qti-components/choice-interaction": "catalog:",
     "@qti-components/extended-text-interaction": "catalog:",
     "@qti-components/gap-match-interaction": "catalog:",
+    "@qti-components/hotspot-interaction": "catalog:",
     "@qti-components/hottext-interaction": "catalog:",
     "@qti-components/inline-choice-interaction": "catalog:",
     "@qti-components/interactions-core": "catalog:",

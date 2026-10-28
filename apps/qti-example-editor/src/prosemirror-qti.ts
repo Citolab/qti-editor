@@ -19,7 +19,7 @@
  * elements (custom elements used by the node views).
  *
  * Supported interactions: choice, extended-text, text-entry, gap-match,
- * hottext, inline-choice, match, order, select-point (+ rubric block).
+ * hottext, inline-choice, match, order, select-point, hotspot (+ rubric block).
  */
 
 import { chainCommands } from 'prosemirror-commands';
@@ -33,6 +33,7 @@ import { inlineChoiceInteractionDescriptor } from '@citolab/prose-qti/components
 import { matchInteractionDescriptor } from '@citolab/prose-qti/components/match';
 import { orderInteractionDescriptor } from '@citolab/prose-qti/components/order';
 import { selectPointInteractionDescriptor } from '@citolab/prose-qti/components/select-point';
+import { hotspotInteractionDescriptor } from '@citolab/prose-qti/components/hotspot';
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
 import {
   defaultRoundtripTransforms,
@@ -58,6 +59,7 @@ import '@citolab/prose-qti/components/inline-choice/register.js';
 import '@citolab/prose-qti/components/match/register.js';
 import '@citolab/prose-qti/components/order/register.js';
 import '@citolab/prose-qti/components/select-point/register.js';
+import '@citolab/prose-qti/components/hotspot/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-prompt/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-simple-choice/register.js';
 import '@citolab/prose-qti/components/shared/components/qti-simple-associable-choice/register.js';
@@ -87,6 +89,7 @@ export const descriptors: InteractionDescriptor[] = [
   matchInteractionDescriptor,
   orderInteractionDescriptor,
   selectPointInteractionDescriptor,
+  hotspotInteractionDescriptor,
   qtiRubricBlockDescriptor
 ];
 
@@ -159,7 +162,7 @@ export async function importQtiItem(href: string, schema: Schema): Promise<Impor
   /*
    * Ask the schema what it cannot represent, before parsing rather than after.
    *
-   * This editor models ten interactions and the QTI standard has more, so a real item routinely
+   * This editor models eleven interactions and the QTI standard has more, so a real item routinely
    * contains elements it has no node for — and ProseMirror's `DOMParser` deals with those by
    * skipping the element and parsing its children in its place. Silently. Nothing in the parsed
    * document records that anything was dropped, and the narrower the schema the more it drops, so

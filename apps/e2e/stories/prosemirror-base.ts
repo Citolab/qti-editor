@@ -90,8 +90,8 @@ import type { InteractionDescriptor } from '@citolab/prose-qti/interfaces';
 import type { RoundtripTransform } from '@citolab/prose-qti/item-roundtrip';
 import type { SchemaGapMessageOptions, SchemaGapOutcome } from '@citolab/prose-extensions/schema-gaps';
 
-/** Where the fixtures' relative `src` attributes are rebased to. */
-const ASSET_BASE_PATH = '/qti/kennisnet';
+/** Where the Kennisnet fixtures' relative `src` attributes are rebased to. */
+const KENNISNET_ASSET_BASE_PATH = '/qti/kennisnet';
 
 export interface RegressionEditorOptions {
   /** The single interaction this item is built around. */
@@ -109,6 +109,11 @@ export interface RegressionEditorOptions {
    * over reaching for this.
    */
   extraNodes?: Record<string, NodeSpec>;
+  /**
+   * Where the fixture's relative asset URLs are rebased to, under `public/`. Defaults to the
+   * Kennisnet set's `/qti/kennisnet`; a fixture from another upstream set brings its own assets.
+   */
+  assetBasePath?: string;
 }
 
 export interface RegressionEditor {
@@ -153,7 +158,8 @@ export function createRegressionEditor({
   descriptor,
   sourceXML,
   transforms,
-  extraNodes
+  extraNodes,
+  assetBasePath = KENNISNET_ASSET_BASE_PATH
 }: RegressionEditorOptions): RegressionEditor {
   // The rubric block is item furniture rather than an interaction, so it belongs to the base; every
   // Kennisnet item carries one.
@@ -249,7 +255,7 @@ export function createRegressionEditor({
 
   const importItem = (): ProseMirrorNode =>
     importItemFromString(sourceXML, schema, {
-      assetBasePath: ASSET_BASE_PATH,
+      assetBasePath,
       transforms: transforms(schema)
     });
 
@@ -262,7 +268,7 @@ export function createRegressionEditor({
     findUnrepresentableElements(
       schema,
       itemBodyFromString(sourceXML, {
-        assetBasePath: ASSET_BASE_PATH,
+        assetBasePath,
         transforms: transforms(schema)
       }).documentElement,
       { ignoreTags: TRANSPARENT_WRAPPER_TAGS, ...options }

@@ -1,0 +1,57 @@
+---
+title: Hotspot Interaction
+description: Install and use the hotspot interaction.
+slug: docs/qti-interactions/hotspot
+---
+
+Hotspot interactions ask candidates to select one or more predefined areas of an image.
+
+## Install
+
+```bash
+pnpm add @citolab/prose-qti
+```
+
+The hotspot interaction is exposed as a subpath export from `@citolab/prose-qti`, so you import it from `@citolab/prose-qti/components/hotspot` and register the custom element with `@citolab/prose-qti/components/hotspot/register`.
+
+## Usage
+
+Use the register side effect once, then call the insert command from your editor integration:
+
+```ts
+import '@citolab/prose-qti/components/hotspot/register';
+import { insertHotspotInteraction } from '@citolab/prose-qti/components/hotspot';
+
+insertHotspotInteraction(view.state, view.dispatch, view);
+```
+
+This package integrates with `@qti-components/hotspot-interaction`.
+
+## What it does
+
+- Inserts a `qti-hotspot-interaction` block node: an optional prompt, the picture (`<img>` or `<object>`, kept as authored) and its `qti-hotspot-choice` areas.
+- Scores like a choice interaction: the correct response is the set of correct area identifiers, `max-choices` decides single or multiple cardinality, and the item uses `match_correct`.
+
+## What survives import and export
+
+- On `qti-hotspot-choice`: `identifier`, `shape`, `coords`, `hotspot-label`, `fixed`, `template-identifier`, `show-hide`, `class` and `aria-label`. A choice without an `identifier` gets a generated one (`HOTSPOT_1`, …), unique within the interaction.
+- On `qti-hotspot-interaction`: `response-identifier`, `max-choices`, `min-choices` and `class`.
+- On the picture: `src` / `data`, `alt`, `width`, `height`, `type` and `class`, and an `<object>`'s fallback content — its text and a fallback `<img>` with all its attributes. Any other element inside an `<object>` keeps only its text.
+
+Dropped on import: `id` on all three, `data-*` and `aria-*` on the interaction (such as the `data-min-selections-message` / `data-max-selections-message` an item may carry), and any other attribute not listed above.
+
+Scoring other than `match_correct` is not modelled. A hotspot scored with a `qti-mapping` (partial credit per area) keeps its answer key but not its mapping, and exports as `match_correct`, as choice does.
+
+## In the editor
+
+Click the picture to bring up the toolbar. Draw rectangles and circles on it, drag an area to move it, drag a selected area's handles to resize it, and use **Mark as correct** and **Delete area** on the selected one. `poly`, `ellipse` and `default` areas from an imported item are drawn and can be moved, but not reshaped.
+
+Selecting an area selects its `qti-hotspot-choice` in ProseMirror, so the attributes panel shows it (`hotspot-label`, `aria-label`, `fixed`) and Delete or Backspace removes it, dropping it from the correct response too. A press on the picture away from every area selects the whole interaction, as the pill's select action does.
+
+Marking works as in a choice interaction: with one correct area `max-choices` is 1, with more it is 0 (unlimited). If `max-choices` is lowered in the attributes panel below the number of correct areas, the editor says so, and export keeps only the first `max-choices` of them, with a `CORRECT_RESPONSE_EXCEEDS_MAX_CHOICES` composer warning, so the exported declaration is always valid.
+
+The interaction's structural edits (selecting, adding and deleting areas) need the plugin in the descriptor's `pluginFactories`, and moving, resizing and marking areas need the node-attrs-sync plugin — both are installed by `defineQtiInteractionsExtension()` plus `nodeAttrsSyncExtension`, as for every other interaction.
+
+## Runtime
+
+The `@citolab/qti-components` 9.1 runtime this repository's catalog pins does not position or register hotspots in an item whose markup is in the document before the runtime registers its elements, so hotspot items do not play on it. qti-components fixed this in `10.0.0-next.12`.

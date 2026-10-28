@@ -57,6 +57,12 @@ a number. `extractItemScore` reads `qti-response-processing` and:
 So a hand-written item with unusual response processing imports at `1` rather than failing. That is
 deliberate: a wrong score is visible and editable in the panel, an import error is not.
 
+In an item with several interactions, one number for the whole item is wrong for all but one of
+them. So the generic hoist (`roundtripInteractions`) first asks `buildScoreIndex` for the score of
+that interaction's own response — the increment of the `qti-response-condition` that matches it,
+or the largest `mapped-value` of its `qti-mapping` — and only falls back to `extractItemScore` when
+there is none.
+
 ## Select-point is the exception
 
 Every other interaction says "these are the right answers" with `qti-correct-response`. Select-point

@@ -36,6 +36,7 @@ catalog:
   '@qti-components/elements': '^1.7.0'
   '@qti-components/extended-text-interaction': '^1.1.5'
   '@qti-components/gap-match-interaction': '^1.2.0'
+  '@qti-components/hotspot-interaction': '^1.1.5'
   '@qti-components/hottext-interaction': '^1.2.0'
   '@qti-components/inline-choice-interaction': '^2.0.1'
   '@qti-components/interactions-core': '^2.1.2'

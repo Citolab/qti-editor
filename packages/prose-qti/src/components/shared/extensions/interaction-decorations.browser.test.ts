@@ -20,6 +20,7 @@ import {
 } from '../../../core/interactions/composer.js';
 import { insertExtendedTextInteraction } from '../../extended-text/components/qti-extended-text-interaction/qti-extended-text-interaction.commands.js';
 import { insertGapMatchInteraction } from '../../gap-match/components/qti-gap-match-interaction/qti-gap-match-interaction.commands.js';
+import { insertHotspotInteraction } from '../../hotspot/components/qti-hotspot-interaction/qti-hotspot-interaction.commands.js';
 import { insertHottextInteraction } from '../../hottext/components/qti-hottext-interaction/qti-hottext-interaction.commands.js';
 import { insertInlineChoiceInteraction } from '../../inline-choice/components/qti-inline-choice-interaction/qti-inline-choice-interaction.commands.js';
 import {
@@ -64,6 +65,7 @@ const CASES: Case[] = [
     tagName: 'qti-select-point-interaction',
     insert: insertSelectPointInteraction
   },
+  { nodeTypeName: 'qtiHotspotInteraction', tagName: 'qti-hotspot-interaction', insert: insertHotspotInteraction },
   { nodeTypeName: 'qtiGapMatchInteraction', tagName: 'qti-gap-match-interaction', insert: insertGapMatchInteraction },
   {
     nodeTypeName: 'qtiInlineChoiceInteraction',

@@ -21,6 +21,9 @@ catalogs:
     '@qti-components/gap-match-interaction':
       specifier: ^1.2.0
       version: 1.2.0
+    '@qti-components/hotspot-interaction':
+      specifier: ^1.1.5
+      version: 1.1.5
     '@qti-components/hottext-interaction':
       specifier: ^1.2.0
       version: 1.2.0
@@ -488,6 +491,9 @@ importers:
       '@qti-components/gap-match-interaction':
         specifier: 'catalog:'
         version: 1.2.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/hotspot-interaction':
+        specifier: 'catalog:'
+        version: 1.1.5(@lit/context@1.1.6)(lit@3.3.3)
       '@qti-components/hottext-interaction':
         specifier: 'catalog:'
         version: 1.2.0(@lit/context@1.1.6)(lit@3.3.3)
@@ -2066,6 +2072,12 @@ packages:
 
   '@qti-components/gap-match-interaction@1.2.0':
     resolution: {integrity: sha512-AiVxUhCrrddRM+0mijiHcmkSgD3S8ZsMa7lb1ffouoLIqu1SuC9iDMQpYPhptfHFGl3fnc9MsCr0tOXeRL41OQ==}
+    peerDependencies:
+      '@lit/context': ^1.1.6
+      lit: ^3.3.1
+
+  '@qti-components/hotspot-interaction@1.1.5':
+    resolution: {integrity: sha512-45T8REe0iJq8gWtTlsacj9mPN1qFUHd6ommdHPQPxGmKwSkqYwxD6ZyCkrDMkJ+CS+JDRKGtMfWD5NAVvjBcSQ==}
     peerDependencies:
       '@lit/context': ^1.1.6
       lit: ^3.3.1
@@ -7542,6 +7554,14 @@ snapshots:
       lit: 3.3.3
 
   '@qti-components/gap-match-interaction@1.2.0(@lit/context@1.1.6)(lit@3.3.3)':
+    dependencies:
+      '@lit/context': 1.1.6
+      '@qti-components/base': 2.2.0(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/interactions-core': 2.1.2(@lit/context@1.1.6)(lit@3.3.3)
+      '@qti-components/utilities': 1.3.3(lit@3.3.3)
+      lit: 3.3.3
+
+  '@qti-components/hotspot-interaction@1.1.5(@lit/context@1.1.6)(lit@3.3.3)':
     dependencies:
       '@lit/context': 1.1.6
       '@qti-components/base': 2.2.0(@lit/context@1.1.6)(lit@3.3.3)

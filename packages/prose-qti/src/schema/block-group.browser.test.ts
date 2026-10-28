@@ -58,6 +58,7 @@ const BLOCK_GROUP_MEMBERS = [
   'qtiChoiceInteraction',
   'qtiExtendedTextInteraction',
   'qtiGapMatchInteraction',
+  'qtiHotspotInteraction',
   'qtiHottextInteraction',
   'qtiMatchInteraction',
   'qtiMatchInteractionTabular',
@@ -84,6 +85,9 @@ describe('the block group', () => {
       'qtiSimpleChoiceParagraph',
       'qtiSimpleMatchSet',
       'qtiSimpleAssociableChoice',
+      // Groupless from the start: the hotspot interaction names both.
+      'imgHotspot',
+      'qtiHotspotChoice',
       // Already groupless before this rule was written down; asserted so they stay that way.
       'qtiPrompt',
       'qtiSimpleChoice',
@@ -104,6 +108,7 @@ describe('the block group', () => {
       'qtiHottextInteraction',
       'qtiExtendedTextInteraction',
       'qtiSelectPointInteraction',
+      'qtiHotspotInteraction',
       'qtiRubricBlock',
       'qtiLayoutDiv',
     ]) {
@@ -120,6 +125,8 @@ describe('the block group', () => {
       qtiSimpleChoiceParagraph: 'qtiSimpleChoice',
       qtiSimpleMatchSet: 'qtiMatchInteraction',
       qtiSimpleAssociableChoice: 'qtiSimpleMatchSet',
+      // At the start of the interaction; `qtiHotspotChoice` only follows the picture.
+      imgHotspot: 'qtiHotspotInteraction',
     };
     for (const [child, parent] of Object.entries(parents)) {
       const match = schema.nodes[parent].contentMatch.matchType(schema.nodes[child]);

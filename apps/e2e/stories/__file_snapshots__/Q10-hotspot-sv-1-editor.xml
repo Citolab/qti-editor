@@ -1,0 +1,130 @@
+<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="q10-hotspot-sv-1" title="Q10 Hotspot - (SV 1) - selections theming" adaptive="false" time-dependent="false" xml:lang="en">
+  <qti-response-declaration identifier="RESPONSE1" cardinality="multiple" base-type="identifier">
+    <qti-correct-response>
+      <qti-value>A</qti-value>
+      <qti-value>B</qti-value>
+      <qti-value>D</qti-value>
+    </qti-correct-response>
+  </qti-response-declaration>
+  <qti-response-declaration identifier="RESPONSE2" cardinality="single" base-type="identifier">
+    <qti-correct-response>
+      <qti-value>C</qti-value>
+    </qti-correct-response>
+  </qti-response-declaration>
+  <qti-response-declaration identifier="RESPONSE3" cardinality="multiple" base-type="identifier"/>
+  <qti-response-declaration identifier="RESPONSE4" cardinality="multiple" base-type="identifier"/>
+  <qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>0</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>4</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
+    <h3>Hotspot Selections Light</h3>
+    <hr/>
+    <p>The picture below illustrates four of the most popular destinations for air travelers arriving in the United Kingdom: London, Manchester, Edinburgh and Glasgow. Please choose all of the cities North of London.</p>
+    <qti-hotspot-interaction max-choices="0" response-identifier="RESPONSE1" class="qti-selections-light margin0auto">
+      <img src="/qti/conformance/Q10-hotspot/images/ukair.png" alt="Map of the United Kingdom" width="206" height="280"/>
+      <qti-hotspot-choice identifier="A" shape="circle" coords="77,115,10"/>
+      <qti-hotspot-choice identifier="B" shape="circle" coords="118,184,10"/>
+      <qti-hotspot-choice identifier="C" shape="circle" coords="150,235,10"/>
+      <qti-hotspot-choice identifier="D" shape="circle" coords="96,114,10"/>
+    </qti-hotspot-interaction>
+    <h3>Hotspot Selections Dark</h3>
+    <hr/>
+    <p>The picture below illustrates four of the most popular destinations for air travelers arriving in the United Kingdom: London, Manchester, Edinburgh and Glasgow. Please choose London.</p>
+    <qti-hotspot-interaction max-choices="1" response-identifier="RESPONSE2" class="qti-selections-dark margin0auto">
+      <img src="/qti/conformance/Q10-hotspot/images/ukair.png" alt="Map of the United Kingdom" width="206" height="280"/>
+      <qti-hotspot-choice identifier="A" shape="circle" coords="77,115,10"/>
+      <qti-hotspot-choice identifier="B" shape="circle" coords="118,184,10"/>
+      <qti-hotspot-choice identifier="C" shape="circle" coords="150,235,10"/>
+      <qti-hotspot-choice identifier="D" shape="circle" coords="96,114,10"/>
+    </qti-hotspot-interaction>
+    <p>
+      <br/>
+      <br/>
+    </p>
+    <h3>Hotspot Selections Light - Unselected Hidden</h3>
+    <hr/>
+    <p>The picture below illustrates four of the most popular destinations for air travelers arriving in the United Kingdom: London, Manchester, Edinburgh and Glasgow. Please choose all of the cities North of London.</p>
+    <qti-hotspot-interaction max-choices="0" response-identifier="RESPONSE3" class="qti-selections-light qti-unselected-hidden margin0auto">
+      <img src="/qti/conformance/Q10-hotspot/images/ukair.png" alt="Map of the United Kingdom" width="206" height="280"/>
+      <qti-hotspot-choice identifier="A" shape="circle" coords="77,115,10"/>
+      <qti-hotspot-choice identifier="B" shape="circle" coords="118,184,10"/>
+      <qti-hotspot-choice identifier="C" shape="circle" coords="150,235,10"/>
+      <qti-hotspot-choice identifier="D" shape="circle" coords="96,114,10"/>
+    </qti-hotspot-interaction>
+    <h3>Hotspot Selections Dark - Unselected Hidden</h3>
+    <hr/>
+    <p>The picture below illustrates four of the most popular destinations for air travelers arriving in the United Kingdom: London, Manchester, Edinburgh and Glasgow. Please choose all of the cities North of London.</p>
+    <qti-hotspot-interaction max-choices="0" response-identifier="RESPONSE4" class="qti-selections-dark qti-unselected-hidden margin0auto">
+      <img src="/qti/conformance/Q10-hotspot/images/ukair.png" alt="Map of the United Kingdom" width="206" height="280"/>
+      <qti-hotspot-choice identifier="A" shape="circle" coords="77,115,10"/>
+      <qti-hotspot-choice identifier="B" shape="circle" coords="118,184,10"/>
+      <qti-hotspot-choice identifier="C" shape="circle" coords="150,235,10"/>
+      <qti-hotspot-choice identifier="D" shape="circle" coords="96,114,10"/>
+    </qti-hotspot-interaction>
+  </qti-item-body>
+  <qti-response-processing>
+    <qti-response-condition>
+      <qti-response-if>
+        <qti-match>
+          <qti-variable identifier="RESPONSE1"/>
+          <qti-correct identifier="RESPONSE1"/>
+        </qti-match>
+        <qti-set-outcome-value identifier="SCORE">
+          <qti-sum>
+            <qti-variable identifier="SCORE"/>
+            <qti-base-value base-type="float">1</qti-base-value>
+          </qti-sum>
+        </qti-set-outcome-value>
+      </qti-response-if>
+    </qti-response-condition>
+    <qti-response-condition>
+      <qti-response-if>
+        <qti-match>
+          <qti-variable identifier="RESPONSE2"/>
+          <qti-correct identifier="RESPONSE2"/>
+        </qti-match>
+        <qti-set-outcome-value identifier="SCORE">
+          <qti-sum>
+            <qti-variable identifier="SCORE"/>
+            <qti-base-value base-type="float">1</qti-base-value>
+          </qti-sum>
+        </qti-set-outcome-value>
+      </qti-response-if>
+    </qti-response-condition>
+    <qti-response-condition>
+      <qti-response-if>
+        <qti-match>
+          <qti-variable identifier="RESPONSE3"/>
+          <qti-correct identifier="RESPONSE3"/>
+        </qti-match>
+        <qti-set-outcome-value identifier="SCORE">
+          <qti-sum>
+            <qti-variable identifier="SCORE"/>
+            <qti-base-value base-type="float">1</qti-base-value>
+          </qti-sum>
+        </qti-set-outcome-value>
+      </qti-response-if>
+    </qti-response-condition>
+    <qti-response-condition>
+      <qti-response-if>
+        <qti-match>
+          <qti-variable identifier="RESPONSE4"/>
+          <qti-correct identifier="RESPONSE4"/>
+        </qti-match>
+        <qti-set-outcome-value identifier="SCORE">
+          <qti-sum>
+            <qti-variable identifier="SCORE"/>
+            <qti-base-value base-type="float">1</qti-base-value>
+          </qti-sum>
+        </qti-set-outcome-value>
+      </qti-response-if>
+    </qti-response-condition>
+  </qti-response-processing>
+</qti-assessment-item>
