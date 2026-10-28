@@ -1,13 +1,6 @@
 /**
- * The rubric block's `class` and `id` through an import and an export.
- *
- * The node used to write `class="qti-rubric-block"` on every block and keep no class or id of its
- * own, so an author's tokens were replaced by the editor's. That is not cosmetic: qti-components
- * reads `qti-rubric-inline` and `qti-rubric-discretionary-placement` from the class to decide where
- * the block renders. Nothing reads `qti-rubric-block` as a class — the editor's CSS and the theme
- * both select the element — so it is no longer written, and dropped from items saved with it.
- *
- * Through `importItemFromString` and `exportItemXml`, the path an author's file takes.
+ * The rubric block's `class` through an import and an export (`importItemFromString` and
+ * `exportItemXml`, the path an author's file takes). Why it matters: see `qti-rubric-block.schema.ts`.
  */
 import { createEditor } from 'prosekit/core';
 import { describe, expect, test } from 'vitest';
@@ -37,21 +30,17 @@ function roundTrip(rubricAttrs: string): Element {
   return rubric;
 }
 
-describe('qti-rubric-block class and id', () => {
-  test("the author's class and id survive a round trip", () => {
-    const rubric = roundTrip(' class="qti-rubric-inline intro" id="rubric-intro"');
+describe('qti-rubric-block class', () => {
+  test("the author's class survives a round trip", () => {
+    const rubric = roundTrip(' class="qti-rubric-inline intro"');
 
     expect(rubric.getAttribute('class')).toBe('qti-rubric-inline intro');
-    expect(rubric.getAttribute('id')).toBe('rubric-intro');
     expect(rubric.getAttribute('use')).toBe('instructions');
     expect(rubric.getAttribute('view')).toBe('candidate');
   });
 
   test('a block without a class is written without one', () => {
-    const rubric = roundTrip('');
-
-    expect(rubric.hasAttribute('class')).toBe(false);
-    expect(rubric.hasAttribute('id')).toBe(false);
+    expect(roundTrip('').hasAttribute('class')).toBe(false);
   });
 
   test('the class an earlier export wrote is dropped, the rest kept', () => {

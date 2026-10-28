@@ -7,10 +7,9 @@ export const QTI_RUBRIC_BLOCK_USE_VALUES = USE_VALUES;
 export const QTI_RUBRIC_BLOCK_VIEW_VALUES = VIEW_VALUES;
 
 /**
- * The class this node used to write on every rubric block, whatever the author had. Nothing keys on
- * it — the editor's CSS and qti-components' theme both select the `qti-rubric-block` element, and
- * the runtime only reads the author's tokens (`qti-rubric-inline`, …) — so it is no longer written,
- * and dropped on parse so items saved with it come back clean.
+ * The class this node used to write on every rubric block in place of the author's. Nothing selects
+ * it (the editor's CSS and the theme select the element), so it is no longer written, and dropped
+ * on parse so items saved with it come back without it.
  */
 const LEGACY_EDITOR_CLASS = 'qti-rubric-block';
 
@@ -60,10 +59,9 @@ export const qtiRubricBlockNodeSpec: NodeSpec = {
   attrs: {
     use: { default: 'instructions' },
     view: { default: 'author' },
-    // The author's, kept as written. `class` carries the runtime's placement tokens
-    // (`qti-rubric-inline`, `qti-rubric-discretionary-placement`), so losing it moves the block.
+    // The author's class: qti-components reads `qti-rubric-inline` and
+    // `qti-rubric-discretionary-placement` from it to place the block.
     class: { default: null },
-    id: { default: null },
   },
   parseDOM: [
     {
@@ -78,7 +76,6 @@ export const qtiRubricBlockNodeSpec: NodeSpec = {
           use: dom.getAttribute('use') ?? 'instructions',
           view: dom.getAttribute('view') ?? 'author',
           class: authorClass(dom),
-          id: dom.getAttribute('id') || null,
         };
       },
     },
@@ -86,7 +83,6 @@ export const qtiRubricBlockNodeSpec: NodeSpec = {
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = { use: node.attrs.use, view: node.attrs.view };
     if (node.attrs.class) attrs.class = node.attrs.class as string;
-    if (node.attrs.id) attrs.id = node.attrs.id as string;
     return ['qti-rubric-block', attrs, ['qti-content-body', {}, 0]];
   },
 };
