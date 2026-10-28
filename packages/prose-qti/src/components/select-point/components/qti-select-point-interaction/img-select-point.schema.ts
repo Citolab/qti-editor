@@ -47,7 +47,8 @@ export const imgSelectPointNodeSpec: NodeSpec = {
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {};
     if (node.attrs.imageSrc) attrs.src = String(node.attrs.imageSrc);
-    if (node.attrs.imageAlt) attrs.alt = String(node.attrs.imageAlt);
+    // `alt=""` is kept: it is a decorative marker, and QTI requires `alt` on `img`.
+    if (typeof node.attrs.imageAlt === 'string') attrs.alt = node.attrs.imageAlt;
     if (node.attrs.imageWidth != null) attrs.width = String(node.attrs.imageWidth);
     if (node.attrs.imageHeight != null) attrs.height = String(node.attrs.imageHeight);
     return ['img', attrs];

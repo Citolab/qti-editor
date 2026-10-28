@@ -144,7 +144,8 @@ function defineQtiImage(): ImageExtension {
             if (typeof element === 'string') return { src: null }
             return {
               src: element.getAttribute('src') || null,
-              alt: element.getAttribute('alt') || null,
+              // Not `|| null`: `alt=""` marks the image as decorative and QTI requires `alt` on `img`.
+              alt: element.getAttribute('alt'),
               title: element.getAttribute('title') || null,
               width: element.getAttribute('width') || null,
               height: element.getAttribute('height') || null,

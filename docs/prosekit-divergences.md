@@ -65,6 +65,10 @@ Three divergences from `prosemirror-schema-basic`, each of which was a bug:
 not ProseKit's numbers: the sample items use `width="100%"` as well as `width="250"`, and a numeric
 attribute drops the percentage.
 
+`alt` is read as-is, so `alt=""` stays `""` rather than becoming "no alt": it marks a decorative
+image, and the QTI 3.0 XSD requires `alt` on `img`. An absent `alt` stays absent — inventing `""`
+would claim the image is decorative.
+
 `imgSelectPoint` is deliberately NOT this node — see its note in `schema/notes.ts`. There the image
 is the response surface and its coordinates are the answer key, so it must not be draggable or
 editable the way a decorative image is.
