@@ -84,10 +84,26 @@ function detectTextListType(el: HTMLElement): 'ol' | 'ul' | null {
   return null;
 }
 
+/** Block-level tags: a `div` holding one of these is a wrapper (Word's `WordSection1`), not a line. */
+const BLOCK_TAGS = new Set([
+  'ADDRESS', 'ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'DIV', 'DL', 'FIGURE', 'FOOTER', 'FORM', 'H1', 'H2',
+  'H3', 'H4', 'H5', 'H6', 'HEADER', 'HR', 'LI', 'MAIN', 'NAV', 'OL', 'P', 'PRE', 'SECTION', 'TABLE',
+  'UL',
+]);
+
+/**
+ * Only a paragraph, or a `div` used as a line, can be a list paragraph. Not a list item this pass
+ * made (re-detecting it recursed without end when the marker sat in a span), not a heading, cell or
+ * quote, and not a wrapper `div`, which would swallow all its paragraphs into one list item.
+ */
+function isListParagraphCandidate(el: HTMLElement): boolean {
+  if (el.tagName === 'P') return true;
+  if (el.tagName !== 'DIV') return false;
+  return !Array.from(el.children).some((child) => BLOCK_TAGS.has(child.tagName));
+}
+
 function getListInfo(el: HTMLElement): ListInfo | null {
-  // Only paragraph-like blocks can be list paragraphs. A list item this pass made is never one: re-detecting it
-  // (its text still starts with the marker when Word put the marker in a span) recursed without end.
-  if (!/^(P|DIV)$/i.test(el.tagName)) return null;
+  if (!isListParagraphCandidate(el)) return null;
 
   if (isWordListParagraph(el)) {
     const marker = getWordListMarkerText(el);
@@ -213,13 +229,19 @@ function stripLeadingTextMarker(html: string): string {
   );
 }
 
-/** Strips the typed marker ("1. ", "A) ", "– ") from the first text, also when it sits in an inline element (Word: a span). */
+/**
+ * Strips the typed marker ("1. ", "A) ", "– ") from the element's text, also when it sits in an
+ * inline element or is split over several (Word: `<span>1.</span> foo`).
+ */
 function stripLeadingTextMarkerFromTree(el: HTMLElement) {
+  const text = el.textContent ?? '';
+  let remaining = text.length - stripLeadingTextMarker(text).length;
   const walker = el.ownerDocument.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-    if (!(node.nodeValue ?? '').trim()) continue;
-    node.nodeValue = stripLeadingTextMarker(node.nodeValue ?? '');
-    return;
+  for (let node = walker.nextNode(); node && remaining > 0; node = walker.nextNode()) {
+    const value = node.nodeValue ?? '';
+    const cut = Math.min(remaining, value.length);
+    node.nodeValue = value.slice(cut);
+    remaining -= cut;
   }
 }
 
