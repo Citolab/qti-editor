@@ -11,7 +11,6 @@
  * - @qti-editor/prosemirror-plugins/schema-gaps - What a schema cannot represent in imported markup
  * - @qti-editor/prosemirror-plugins/clear-formatting - Generic mark/block-type reset within a range
  * - @qti-editor/prosemirror-plugins/html-schema - Plain HTML content specs that both schema paths share
- * - @qti-editor/prosemirror-plugins/semantic-marks - Mark specs for u, s, mark, q, sub, sup, span.qti-underline
  */
 
 // Re-export everything from submodules for convenience
@@ -21,4 +20,3 @@ export * from './paste-semantic-html/index.js';
 export * from './schema-gaps/index.js';
 export * from './clear-formatting/index.js';
 export * from './html-schema/index.js';
-export * from './semantic-marks/index.js';

@@ -103,10 +103,10 @@ describe('the HTML boundary', () => {
     expect(pmToHtml(doc)).toBe('<p>Water boils at 100 degrees.</p>');
   });
 
-  test('inline phrasing marks survive, including the qti-underline span', () => {
+  test('the QTI phrasing marks survive, with their own attributes', () => {
     const html =
-      '<p>H<sub>2</sub>O, 10<sup>3</sup>, <u>u</u>, <s>s</s>, <mark>m</mark>, <q>q</q>, <code>c</code>, ' +
-      '<span class="qti-underline">x</span></p>';
+      '<p>H<sub>2</sub>O, 10<sup>3</sup>, <b>b</b>, <i>i</i>, <q cite="https://example.org">q</q>, ' +
+      '<code>c</code>, <abbr>WHO</abbr>, <kbd>k</kbd>, <var>x</var>, <bdo dir="rtl">abc</bdo></p>';
     expect(pmToHtml(htmlToPm(html, { identifier: 'X', title: 'X' }))).toBe(html);
   });
 

@@ -1,16 +1,20 @@
 /**
- * `u`, `s`, `mark`, `q`, `code`, `sub`, `sup` and `<span class="qti-underline">` survive an import.
+ * The QTI 3 phrasing elements prosemirror-schema-basic has no mark for survive an import, and the
+ * HTML ones QTI does not have are not invented.
  *
- * Without a mark for them ProseMirror's parser unwraps the element and keeps the text, so the loss
- * was silent: the item opened looking right, and the first save wrote it back without its
- * underlines, struck-through options, subscripts and quotations. (`code` already survived the
- * roundtrip schema, which takes prosemirror-schema-basic's marks; the ProseKit base did not have it.)
+ * Without a mark ProseMirror's parser unwraps an element and keeps the text, so the loss was silent:
+ * the item opened looking right, and the first save wrote it back without its subscripts,
+ * quotations and abbreviations. `<b>` and `<i>` were rewritten as `<strong>` and `<em>`. (`code`
+ * already survived the roundtrip schema, which takes prosemirror-schema-basic's marks; the ProseKit
+ * base did not have it.)
  *
  * Both schemas are exercised: the roundtrip schema (`createQtiSchema`, the Node conversion's) and the
  * ProseKit one (`defineQtiExtension`, which the editors build on). They share their mark specs, so
  * they must also agree on nesting order — a document moved between them must not reshuffle its marks.
  */
 import { clearFormattingInRange } from '@citolab/prose-extensions/clear-formatting';
+import { PHRASING_MARK_TAGS } from '@citolab/prose-extensions/html-schema';
+import { findUnrepresentableElements } from '@citolab/prose-extensions/schema-gaps';
 import { createEditor } from 'prosekit/core';
 import { EditorState } from 'prosemirror-state';
 import { describe, expect, test } from 'vitest';
@@ -73,18 +77,25 @@ const html = (markup: string): string => {
 const roundtrip = (schema: Schema, body: string): string => pmToQti3(qti3ToPm(item(body), { schema }), { schema });
 
 const MARKS = [
-  ['u', '<p>Read the <u>underlined</u> word.</p>'],
-  ['s', '<p>Not <s>this</s> but that.</p>'],
-  ['mark', '<p>The <mark>highlighted</mark> part.</p>'],
+  ['b', '<p>A <b>bold</b> word.</p>'],
+  ['i', '<p>A <i>Latin</i> word.</p>'],
+  ['small', '<p>The <small>fine print</small>.</p>'],
+  ['big', '<p>A <big>big</big> word.</p>'],
+  ['tt', '<p>Type <tt>ls</tt>.</p>'],
+  ['abbr', '<p>The <abbr>WHO</abbr>.</p>'],
+  ['acronym', '<p>The <acronym>NATO</acronym>.</p>'],
+  ['cite', '<p>From <cite>Hamlet</cite>.</p>'],
+  ['dfn', '<p>A <dfn>noun</dfn> names a thing.</p>'],
+  ['kbd', '<p>Press <kbd>Enter</kbd>.</p>'],
+  ['samp', '<p>It prints <samp>OK</samp>.</p>'],
+  ['var', '<p>Solve for <var>x</var>.</p>'],
   ['q', '<p>She said <q>yes</q>.</p>'],
+  ['q, with cite', '<p>She said <q cite="https://example.org/a">yes</q>.</p>'],
   ['code', '<p>Call <code>print()</code>.</p>'],
   ['sub', '<p>H<sub>2</sub>O</p>'],
   ['sup', '<p>10<sup>3</sup> m</p>'],
-  ['qtiUnderline', '<p>Read the <span class="qti-underline">underlined</span> word.</p>'],
-  [
-    'qtiUnderline, with a second class',
-    '<p>Read the <span class="qti-underline extra">underlined</span> word.</p>',
-  ],
+  ['bdo, with dir and title', '<p>Read <bdo dir="rtl" title="reversed">abc</bdo>.</p>'],
+  ['bdi, with dir', '<p>User <bdi dir="rtl">إيان</bdi> wrote.</p>'],
 ] as const;
 
 describe.each(SCHEMAS)('in %s', (_label, schema) => {
@@ -95,26 +106,53 @@ describe.each(SCHEMAS)('in %s', (_label, schema) => {
   test('marks inside a simple choice survive too', () => {
     const body = `<qti-choice-interaction response-identifier="RESPONSE" max-choices="1">
       <qti-simple-choice identifier="A">CO<sub>2</sub></qti-simple-choice>
-      <qti-simple-choice identifier="B"><s>H<sub>2</sub>O</s></qti-simple-choice>
+      <qti-simple-choice identifier="B"><i>H<sub>2</sub>O</i></qti-simple-choice>
     </qti-choice-interaction>`;
     const xml = roundtrip(schema, body);
     // The choice's text is written inside a <p> on export — existing behaviour, not asserted here.
     expect(exported(xml, 'qti-simple-choice[identifier="A"] sub')).toBe(html('<sub>2</sub>'));
-    expect(exported(xml, 'qti-simple-choice[identifier="B"] s')).toBe(html('<s>H<sub>2</sub>O</s>'));
+    expect(exported(xml, 'qti-simple-choice[identifier="B"] i')).toBe(html('<i>H<sub>2</sub>O</i>'));
   });
 
   test('nested marks come back nested the same way, and a second round trip changes nothing', () => {
     // Written in rank order (outermost first), so the export has no reason to reorder them.
     const paragraph =
-      '<p><strong><u>a</u></strong> <em><sub>b</sub></em> <code><mark>c</mark></code> <s><q><sup>d</sup></q></s></p>';
+      '<p><strong><b>a</b></strong> <em><sub>b</sub></em> <code><kbd>c</kbd></code> <i><q><sup>d</sup></q></i></p>';
     expect(exported(roundtrip(schema, paragraph), 'p')).toBe(html(paragraph));
 
-    // Unformatted: `formatXml` puts a line break between `<strong>` and `<u>`, which re-imports as a
+    // Unformatted: `formatXml` puts a line break between `<strong>` and `<b>`, which re-imports as a
     // space inside the outer mark. That happens to `<strong><em>` today too — see
     // docs/testing-findings.md — and is not what this test is about.
     const first = qti3ToPm(item(paragraph), { schema });
     const second = qti3ToPm(exportItemXml(first, schema, undefined, { format: false }), { schema });
     expect(second.eq(first)).toBe(true);
+  });
+
+  test('<b> and <i> stay themselves instead of becoming <strong> and <em>', () => {
+    const doc = qti3ToPm(item('<p><b>a</b> <i>b</i> <strong>c</strong> <em>d</em></p>'), { schema });
+    const marks: string[] = [];
+    doc.descendants(node => {
+      if (node.isText) marks.push(node.marks.map(mark => mark.type.name).join('+'));
+    });
+    expect(marks.filter(Boolean)).toEqual(['b', 'i', 'strong', 'em']);
+  });
+
+  test("a <b style=\"font-weight: normal\"> (Google Docs' paste wrapper) is not bold", () => {
+    const doc = qti3ToPm(item('<p><b style="font-weight: normal">plain</b></p>'), { schema });
+    expect(doc.firstChild?.firstChild?.marks).toEqual([]);
+  });
+
+  test('u, s and mark are not QTI 3 elements: unwrapped, and the schema-gaps scan reports them', () => {
+    const paragraph = '<p><u>u</u> <s>s</s> <mark>m</mark></p>';
+    expect(exported(roundtrip(schema, paragraph), 'p')).toBe(html('<p>u s m</p>'));
+
+    const host = document.createElement('div');
+    host.innerHTML = paragraph;
+    expect(findUnrepresentableElements(schema, host).changes.map(change => change.nodeType)).toEqual([
+      'u',
+      's',
+      'mark',
+    ]);
   });
 
   test('clear formatting strips them', () => {
@@ -131,7 +169,7 @@ describe.each(SCHEMAS)('in %s', (_label, schema) => {
 });
 
 test('both schemas rank these marks the same, and after em / strong', () => {
-  const RANKED = ['code', 'u', 's', 'mark', 'q', 'sub', 'sup', 'qtiUnderline'];
+  const RANKED: string[] = ['code', ...PHRASING_MARK_TAGS];
   for (const [label, schema] of SCHEMAS) {
     const names = Object.keys(schema.marks);
     expect(names.filter(name => RANKED.includes(name)), label).toEqual(RANKED);

@@ -41,20 +41,24 @@ vocabulary.
 
 **Replaced by** `defineEm` / `defineStrong` (`prosekit/strong-em.ts`), named for the tags they emit.
 
-### `underline` / `strike` / `highlight` / `subscript` / `superscript`
+### `subscript` / `superscript` — and the phrasing elements ProseKit has no mark for
 
-ProseKit's marks for `<u>`, `<s>`, `<mark>`, `<sub>` and `<sup>` are named for what they look like, and
-their parse rules are generous: `strike` also reads `<strike>` and `<del>`, `underline` reads
-`<underline>`, and all of them read `text-decoration` / `vertical-align` styles — then serialise every
-one of those as the single canonical tag. `subscript` and `superscript` also exclude each other.
-For an item that is a rewrite: an exported `<del>` comes back as `<s>`, a styled span as `<u>`, and
-`<sub><sup>x</sup></sub>` loses one of the two.
+ProseKit's `subscript` / `superscript` are named for what they look like rather than the tag, read
+`vertical-align` styles as well as `<sub>` / `<sup>` and write them back as the tag, and exclude each
+other, so `<sub><sup>x</sup></sub>` loses one of the two. For most of QTI's other phrasing elements
+(`<q>`, `<abbr>`, `<kbd>`, `<var>`, …) ProseKit has no mark at all.
 
-**Replaced by** `defineSemanticMarks` (`prosekit/semantic-marks.ts`, specs in
-`prosemirror/semantic-marks`): marks named `u`, `s`, `mark`, `q`, `sub`, `sup` for the tags they emit,
-each parsing only its own tag, no exclusions, plus `code` (prosemirror-schema-basic's) and
-`qtiUnderline` for `<span class="qti-underline">`. Registered in reverse so the ProseKit schema ranks
-them the way `qtiBasicMarks` does — ProseKit ranks a later registration higher.
+**Not used.** `defineBasicExtension` never included ProseKit's marks for these. It registers
+`definePhrasingMarks` (`prosekit/phrasing-marks.ts`, specs in `prosemirror/html-schema`): one mark
+per QTI 3 phrasing element prosemirror-schema-basic lacks — `b`, `i`, `small`, `big`, `tt`, `abbr`,
+`acronym`, `cite`, `dfn`, `kbd`, `samp`, `var`, `q`, `sub`, `sup`, `bdo`, `bdi` — named for the tag,
+each parsing only its own tag, no exclusions, plus prosemirror-schema-basic's `code`. Registered in
+reverse so the ProseKit schema ranks them the way `qtiBasicMarks` does — ProseKit ranks a later
+registration higher. ProseKit's underline / strike / highlight are not replaced by anything: `u`, `s`
+and `mark` are not QTI 3 elements.
+
+A host that adds ProseKit's `defineSubscript()` / `defineSuperscript()` on top gets two marks per
+tag. Measured: the host's rank first, so they take the import, and they still exclude each other.
 
 ### `image` — block, no `alt`, size measured from layout
 

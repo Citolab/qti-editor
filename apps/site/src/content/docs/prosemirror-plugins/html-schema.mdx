@@ -18,6 +18,32 @@ Plain ProseMirror only: importing it does not need `prosekit`.
 pnpm add @citolab/prose-extensions
 ```
 
+## Phrasing marks
+
+`phrasingMarkSpecs` holds one mark per phrasing element of QTI 3 that `prosemirror-schema-basic`
+has no mark for: `b`, `i`, `small`, `big`, `tt`, `abbr`, `acronym`, `cite`, `dfn`, `kbd`, `samp`,
+`var`, `q`, `sub`, `sup`, `bdo` and `bdi`. Spread them after the basic marks:
+
+```ts
+import { marks as basicMarks } from 'prosemirror-schema-basic';
+import { phrasingMarkSpecs } from '@citolab/prose-extensions/html-schema';
+
+const marks = { ...basicMarks, ...phrasingMarkSpecs };
+```
+
+- Each mark is named for its tag, reads only that tag and writes it back. Nothing excludes anything,
+  so `<sub><sup>x</sup></sub>` keeps both.
+- `<b>` and `<i>` are kept as themselves; prosemirror-schema-basic's `strong` and `em` would
+  otherwise read them. The semantic paste plugin still turns a pasted `<b>` / `<i>` from another
+  application into `strong` / `em`.
+- `q` keeps `cite`, `bdo` keeps `dir` and `title`, `bdi` keeps `dir`.
+- `u`, `s`, `mark`, `del` and `ins` are not QTI 3 elements and have no mark. `ruby` is left out too.
+  Schema Gaps reports all of them.
+- ProseKit editors get the same marks, with `code`, from `definePhrasingMarks()` in
+  `@citolab/prose-extensions/prosekit`; `defineBasicExtension()` includes it. A host that also adds
+  ProseKit's `defineSubscript()` / `defineSuperscript()` has two marks per tag, and the host's take
+  the import.
+
 ## Table captions
 
 `tableCaptionSpec` is a fragment to spread over a table node spec. It keeps a `<caption>` as the
