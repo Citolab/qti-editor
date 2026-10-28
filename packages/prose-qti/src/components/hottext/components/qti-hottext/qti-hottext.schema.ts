@@ -3,7 +3,8 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 export const qtiHottextNodeSpec: NodeSpec = {
   inline: true,
   group: 'inline',
-  content: 'text*',
+  // A formula can be the selectable thing. With `text*` the parser lifted it out of the hottext.
+  content: '(text | mathml)*',
   marks: '_',
   attrs: {
     identifier: { default: null },

@@ -5,7 +5,9 @@ export const qtiInlineChoiceNodeSpec: NodeSpec = {
   attrs: {
     identifier: { default: 'A' }
   },
-  content: 'text*',
+  // A formula is an option like any other: 1EdTech's inline-choice-mathml.xml has nothing else. With
+  // `text*` the parser lifted each `<math>` out of its choice and left every choice empty.
+  content: '(text | mathml)*',
   inline: true,
   group: 'inline',
   parseDOM: [

@@ -104,8 +104,8 @@ export const qtiBasicNodes = {
   /*
    * `<math>`, as an inline atom holding the formula's MathML source. Without it every formula in a
    * maths item was dropped on import — ProseMirror skips the elements it has no rule for, so only
-   * the bare digits and operators were left, run together as text. The same spec is in
-   * `defineBasicExtension()`, so both schema paths keep it.
+   * the bare digits and operators were left, run together as text. The interaction registry
+   * (`listInteractionSchemaNodeSpecs`) delivers the same spec object, so the ProseKit path has it too.
    */
   mathml: mathmlNodeSpec
 };

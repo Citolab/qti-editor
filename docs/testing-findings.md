@@ -348,3 +348,18 @@ Same trap as finding 16's third bullet, recurring in a different node. ProseKit'
 
 - **Resolution**: containment is now checked against the innermost position a text selection can actually reach — `firstReachablePos`/`lastReachablePos` step inward from `pos`/`pos + nodeSize` through every non-leaf, non-text child. A regression case pins a heading preceded by a sibling (so its own start position is `> 0`) selected only by its own text, which the old whole-document-selection tests could not have caught.
 - **Where to look**: `packages/prose-extensions/src/prosemirror/clear-formatting/clear-formatting.ts` (`firstReachablePos`, `lastReachablePos`); `clear-formatting.browser.test.ts` for the regression cases.
+
+## 29. A table of gaps inside `qti-gap-match-interaction` is moved out of the interaction — **open**
+
+Found on 1EdTech's conformance item `gap-match-example-2.xml` (Q6, in `apps/e2e/stories/fixtures/qti-conformance/`). `qtiGapMatchInteraction` is `qtiPrompt? qtiGapText+ paragraph+`, so the item's `<div><table>` holding the eight `qti-gap`s cannot be placed inside the interaction: the parser closes the interaction and puts the table after it. The exported item has an interaction with gap texts and no gaps, and gaps outside any interaction. This is not new and not about MathML: it happens on `main` too.
+
+- **Test handling**: `apps/e2e/stories/mathml-conformance.browser.test.ts` pins it as `test.fails('keeps the gaps inside the interaction')`, which flips to a failure once the content model admits it.
+- **Fix**: widen the interaction's content to the block content QTI allows there (tables, divs, lists), with `paragraph` still named first so the filler does not change.
+
+## 30. Formulas in interaction text: the edit components show text where the runtime shows MathML — **partly fixed**
+
+`qti-inline-choice`, `qti-hottext` and `qti-gap-text` now hold a `mathml` node. Each renders its content through a `<slot>`, so the formula shows as MathML where it sits. Two places in the edit components copy text instead of nodes:
+
+- The `qti-inline-choice-interaction` trigger showed the correct choice's `textContent` (½ as "12"). **Fixed**: for a choice that holds a `<math>`, it now renders copies of the choice's nodes, as the runtime's trigger does.
+- A filled `qti-gap` in the gap-match edit view labels its chip with the dragged gap text's `textContent` (`CorrectionState.labelOf` returns a string), so a formula chip reads as its digits. **Open**. Fixing it means changing the correction context's label from a string to content, which every drop-target consumer reads.
+- Playwright's text engine does not match the text of a MathML formula (`getByText('a=c')` and a whitespace-tolerant pattern both time out in the runtime iframe), so the Q12 runtime test selects the choice by `identifier`.

@@ -28,7 +28,11 @@ Nothing is removed from `prosemirror-schema-basic` — one node is overridden an
 
 `qtiBasicNodes.mathml` keeps a `<math>` element whole, as an inline atom holding the formula's MathML as its `source` attribute. Without it, a maths item lost every formula on import: ProseMirror skips elements it has no rule for, so only their digits and operators were left, run together as text. The formula renders as real MathML in the editor and is exported in the MathML namespace, with `xmlns="http://www.w3.org/1998/Math/MathML"` on `<math>`. It is not edited in the text; change its source instead.
 
-Choice and prompt paragraphs (`qtiSimpleChoiceParagraph`, `qtiPromptParagraph`) admit `(text | image | mathml)*`, so a schema that includes them must define both `image` and `mathml`.
+A formula is held in running text and in every interaction text that can carry one: the choice and prompt paragraphs (`(text | image | mathml)*`), `qti-simple-associable-choice` (`inline*`), and `qti-inline-choice`, `qti-hottext` and `qti-gap-text` (`(text | mathml)*`).
+
+The node also comes with the interactions. `listInteractionSchemaNodeSpecs()` (and so `defineQtiInteractionsExtension()` and `defineQtiExtension()`) includes `mathml` for any selection, so a host that composes its own base gets it without adding it. A schema that lists the interaction node specs by hand, as in the example below, must define it, as it must define `image`.
+
+In the editor, add `createMathmlNodeViewPlugin()` from `@citolab/prose-extensions/mathml`; `listInteractionPluginFactories()` includes it. A MathML element has no `contentEditable` or `draggable` property, so without the plugin's wrapper the browser lets the caret into the formula and it cannot be dragged.
 
 ## Layout wrappers (`qtiLayoutDiv`)
 

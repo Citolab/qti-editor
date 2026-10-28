@@ -6,7 +6,7 @@ import type {
   SchemaGapMessageOptions,
   SchemaGapOutcome,
 } from './types.js';
-import type { MarkSpec, NodeSpec, Schema } from 'prosemirror-model';
+import type { MarkSpec, NodeSpec, NodeType, Schema } from 'prosemirror-model';
 
 /**
  * Wrappers whose children *are* the content, so unwrapping them loses nothing a reader would miss.
@@ -60,6 +60,18 @@ export interface FindUnrepresentableOptions extends SchemaGapMessageOptions {
  * content is the leaf node's business — a `mathml` atom keeps the whole formula as its source —
  * and reporting each `<mi>` and `<mo>` inside a formula the schema holds as "removed" would be a
  * false alarm on every maths item.
+ *
+ * ## An inline leaf where its parent cannot hold it
+ *
+ * A leaf the schema has a node for is still lost from its place when the node it sits in cannot
+ * contain it: the parser closes that node and puts the leaf after it. A formula in a `text*` node
+ * comes out of the node, and an interaction that held it is split around it. So an inline leaf is
+ * also reported when the nearest ancestor a node rule matches belongs only to node types that can
+ * neither hold it nor wrap it into something that can (`contentMatch.findWrapping`). Such a finding
+ * has the same `kind` and `code` as an unrepresentable element, and `data.movedOutOf` names the
+ * parent it was moved out of; a host message resolver can tell the two apart by that field. Like the
+ * rest of the scan it errs towards silence: if any node type the parent could be read as can hold
+ * the leaf, nothing is reported.
  */
 export function findUnrepresentableElements(
   schema: Schema,
@@ -67,7 +79,10 @@ export function findUnrepresentableElements(
   options: FindUnrepresentableOptions = {},
 ): SchemaGapOutcome {
   const selectors = tagSelectorsOf(schema);
-  const leafSelectors = leafTagSelectorsOf(schema);
+  const leafRules = nodeTagRulesOf(schema, type => type.isLeaf);
+  const leafSelectors = leafRules.map(rule => rule.selector);
+  const inlineLeafRules = leafRules.filter(rule => rule.type.isInline);
+  const containerRules = nodeTagRulesOf(schema, type => !type.isLeaf);
   const ignored = new Set((options.ignoreTags ?? []).map(tag => tag.toLowerCase()));
   const excerptLimit = options.excerptLimit ?? 60;
 
@@ -77,8 +92,38 @@ export function findUnrepresentableElements(
   for (const element of Array.from(root.querySelectorAll('*'))) {
     const tagName = element.localName.toLowerCase();
     if (ignored.has(tagName)) continue;
-    if (selectors.some(selector => safeMatches(element, selector))) continue;
     if (isInsideLeaf(element, root, leafSelectors)) continue;
+
+    if (matchesAny(element, selectors)) {
+      const leafType = inlineLeafRules.find(rule => safeMatches(element, rule.selector))?.type;
+      const parent = leafType ? refusingParentOf(element, leafType, root, schema, containerRules) : null;
+      if (!parent) continue;
+
+      const path = domPath(element, root);
+      const excerpt = excerptOfElement(element, excerptLimit);
+      const parentName = parent.localName.toLowerCase();
+      preserved.push({
+        path,
+        reason: `<${parentName}> cannot hold <${tagName}>, so the parser moves it out.`,
+        payload: element.outerHTML,
+        nodeType: tagName,
+      });
+      changes.push(
+        withHostMessage(
+          {
+            kind: 'unrepresentable-element',
+            code: 'UNKNOWN_NODE_PRESERVED',
+            severity: 'warning',
+            message: `Moved <${tagName}> out of <${parentName}>, which cannot hold it.`,
+            path,
+            nodeType: tagName,
+            data: { movedOutOf: parentName, ...(excerpt ? { excerpt } : {}) },
+          },
+          options.getMessage,
+        ),
+      );
+      continue;
+    }
 
     const path = domPath(element, root);
     const excerpt = excerptOfElement(element, excerptLimit);
@@ -129,26 +174,63 @@ function tagSelectorsOf(schema: Schema): string[] {
   return [...selectors];
 }
 
-/** The tag selectors of the leaf nodes — the elements whose content the parser never reads. */
-function leafTagSelectorsOf(schema: Schema): string[] {
-  const selectors = new Set<string>();
+interface NodeTagRule {
+  selector: string;
+  type: NodeType;
+}
+
+/** The tag selectors of the node types `include` accepts, each with its type. */
+function nodeTagRulesOf(schema: Schema, include: (type: NodeType) => boolean): NodeTagRule[] {
+  const rules: NodeTagRule[] = [];
   for (const type of Object.values(schema.nodes)) {
-    if (!type.isLeaf) continue;
+    if (!include(type)) continue;
     for (const rule of type.spec.parseDOM ?? []) {
-      if (typeof rule.tag === 'string' && rule.tag.length > 0) selectors.add(rule.tag);
+      if (typeof rule.tag === 'string' && rule.tag.length > 0) rules.push({ selector: rule.tag, type });
     }
   }
-  return [...selectors];
+  return rules;
 }
 
 /** Whether an ancestor of `element`, below `root`, is read as a leaf node. */
 function isInsideLeaf(element: Element, root: Element, leafSelectors: readonly string[]): boolean {
   if (leafSelectors.length === 0) return false;
   for (let current = element.parentElement; current && current !== root; current = current.parentElement) {
-    const ancestor: Element = current;
-    if (leafSelectors.some(selector => safeMatches(ancestor, selector))) return true;
+    if (matchesAny(current, leafSelectors)) return true;
   }
   return false;
+}
+
+/**
+ * The parent element that cannot hold a `leafType` node, or `null` when it can.
+ *
+ * The parent is the nearest ancestor a node rule matches (an element only a mark or no rule matches
+ * is passed through, as the parser passes through it), or `root`, read as the schema's top node.
+ * Its candidate types are every node type with a rule for it, `context` and `getAttrs` not
+ * consulted, so the answer is "refused" only when none of them can hold or wrap the leaf.
+ */
+function refusingParentOf(
+  element: Element,
+  leafType: NodeType,
+  root: Element,
+  schema: Schema,
+  containerRules: readonly NodeTagRule[],
+): Element | null {
+  const admits = (type: NodeType) => type.contentMatch.findWrapping(leafType) !== null;
+  for (let current = element.parentElement; current && current !== root; current = current.parentElement) {
+    const candidates = typesMatching(current, containerRules);
+    if (candidates.length > 0) return candidates.some(admits) ? null : current;
+  }
+  return admits(schema.topNodeType) ? null : root;
+}
+
+/** The node types whose rules match `element`. */
+function typesMatching(element: Element, rules: readonly NodeTagRule[]): NodeType[] {
+  return rules.filter(rule => safeMatches(element, rule.selector)).map(rule => rule.type);
+}
+
+/** Whether any of `selectors` matches `element`. */
+function matchesAny(element: Element, selectors: readonly string[]): boolean {
+  return selectors.some(selector => safeMatches(element, selector));
 }
 
 /**

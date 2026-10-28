@@ -8,6 +8,7 @@ import { orderInteractionDescriptor } from '@citolab/prose-qti/components/order'
 import { selectPointInteractionDescriptor } from '@citolab/prose-qti/components/select-point';
 import { textEntryInteractionDescriptor } from '@citolab/prose-qti/components/text-entry';
 import { qtiRubricBlockDescriptor } from '@citolab/prose-qti/components/rubric-block';
+import { createMathmlNodeViewPlugin, mathmlNodeSpec } from '@citolab/prose-extensions/mathml';
 
 import type {
   InteractionNodeSpecEntry,
@@ -51,6 +52,27 @@ const baseSchemaDependencyNodeSpecs = {
     },
   ],
 } satisfies Record<string, InteractionNodeSpecEntry[]>;
+
+/**
+ * Inline nodes the interactions' own content expressions name, delivered with every selection.
+ *
+ * `mathml` is named by the choice and prompt paragraphs, `qti-inline-choice`, `qti-hottext` and
+ * `qti-gap-text` (`(text | image | mathml)*`, `(text | mathml)*`), so a schema that has any of them
+ * and no `mathml` node throws "No node type or group 'mathml' found". Delivered here rather than
+ * left to the host's base schema, so a host that composes its own base (`defineBasicExtension()`
+ * plus these specs, or a hand-built one) gets it without a change. Always, rather than per
+ * descriptor: nine of the eleven need it, and a formula in running text needs it too.
+ *
+ * The spec is `@citolab/prose-extensions`' (MathML is W3C vocabulary, not QTI); `createQtiSchema()`
+ * also has it through `qtiBasicNodes`, the same object, so the two cannot disagree.
+ */
+const sharedInlineNodeSpecs: InteractionNodeSpecEntry[] = [{ name: 'mathml', spec: mathmlNodeSpec }];
+
+/**
+ * Editor-only plugins for {@link sharedInlineNodeSpecs}: the `mathml` node view, without which a
+ * formula is neither uneditable nor draggable in the browser (see `createMathmlNodeView`).
+ */
+const sharedInlinePluginFactories = [() => createMathmlNodeViewPlugin()];
 
 const metadataByTagName = new Map<string, InteractionComposerMetadata>(
   registeredDescriptors.map(d => [d.tagName, d.composerMetadata]),
@@ -116,6 +138,7 @@ export function listInteractionSchemaNodeSpecs(options?: {
   );
 
   const orderedNodeSpecs = [
+    ...sharedInlineNodeSpecs,
     ...(Array.from(requiredBaseNodeGroups) as Array<keyof typeof baseSchemaDependencyNodeSpecs>).flatMap(
       groupName => baseSchemaDependencyNodeSpecs[groupName] ?? [],
     ),
@@ -136,7 +159,7 @@ export function listInteractionSchemaNodeSpecs(options?: {
 export function listInteractionPluginFactories(): ReadonlyArray<
   NonNullable<InteractionDescriptor['pluginFactories']>[number]
 > {
-  return registeredDescriptors.flatMap(descriptor => descriptor.pluginFactories ?? []);
+  return [...sharedInlinePluginFactories, ...registeredDescriptors.flatMap(descriptor => descriptor.pluginFactories ?? [])];
 }
 
 export function listSelectedInteractionPluginFactories(options?: {
@@ -146,7 +169,7 @@ export function listSelectedInteractionPluginFactories(options?: {
     ? registeredDescriptors.filter(descriptor => options.include!.includes(descriptor.tagName))
     : registeredDescriptors;
 
-  return descriptors.flatMap(descriptor => descriptor.pluginFactories ?? []);
+  return [...sharedInlinePluginFactories, ...descriptors.flatMap(descriptor => descriptor.pluginFactories ?? [])];
 }
 
 export function listInteractionDecoratorPluginFactories(): ReadonlyArray<
