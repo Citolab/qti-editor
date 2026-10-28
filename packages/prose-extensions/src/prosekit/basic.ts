@@ -23,6 +23,7 @@ import { defineTable, type TableExtension } from 'prosekit/extensions/table'
 import { defineText, type TextExtension } from 'prosekit/extensions/text'
 
 import { tableCaptionSpec } from '../prosemirror/html-schema/index.js'
+import { defineMarkClassAndId, defineNodeClassAndId, defineUniqueIds } from './class-and-id.js'
 import { defineGapCursorParagraph } from './gap-cursor-paragraph.js'
 import { defineList, type ListExtension, type ListOptions } from './list.js'
 import { definePhrasingMarks, type PhrasingMarksExtension } from './phrasing-marks.js'
@@ -182,6 +183,24 @@ function defineQtiParagraph(): ParagraphExtension {
   ) as unknown as ParagraphExtension
 }
 
+/**
+ * The body nodes and marks that keep `class` and `id` (see `class-and-id.ts`). Every element of an
+ * item body this extension represents; `doc` and `text` have no element of their own.
+ */
+const NODES_WITH_CLASS_AND_ID = [
+  'paragraph',
+  'heading',
+  'bullet_list',
+  'ordered_list',
+  'list_item',
+  'image',
+  'table',
+  'tableRow',
+  'tableCell',
+  'tableHeaderCell',
+] as const
+const MARKS_WITH_CLASS_AND_ID = ['strong', 'em'] as const
+
 export type BasicExtension = Union<
   [
     // Nodes
@@ -237,6 +256,11 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     definePhrasingMarks(),
     defineEm(),
     defineStrong(),
+    // `class` / `id` on all of the above
+    ...NODES_WITH_CLASS_AND_ID.map(type => defineNodeClassAndId(type)),
+    ...MARKS_WITH_CLASS_AND_ID.map(type => defineMarkClassAndId(type)),
+    // …and a split or a paste must not leave two nodes with the same id.
+    defineUniqueIds(),
     // Behaviour
     defineBaseKeymap(),
     defineBaseCommands(),

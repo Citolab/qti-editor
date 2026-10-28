@@ -1,3 +1,5 @@
+import { classAndIdAttrSpecs, classAndIdDomAttrs, parseClassAndId } from '../../class-and-id.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 /*
@@ -8,12 +10,14 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
  */
 export const qtiSimpleMatchSetNodeSpec: NodeSpec = {
   content: 'qtiSimpleAssociableChoice+',
+  attrs: classAndIdAttrSpecs,
   parseDOM: [
     {
-      tag: 'qti-simple-match-set'
+      tag: 'qti-simple-match-set',
+      getAttrs: parseClassAndId
     }
   ],
-  toDOM(): DOMOutputSpec {
-    return ['qti-simple-match-set', {}, 0];
+  toDOM(node): DOMOutputSpec {
+    return ['qti-simple-match-set', classAndIdDomAttrs(node.attrs), 0];
   }
 };

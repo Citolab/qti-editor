@@ -221,3 +221,56 @@ describe('pasting bold and italic', () => {
     }
   })
 })
+
+describe('classes and ids on pasted content', () => {
+  /** `[class, id]` of every paragraph in the document. */
+  function paragraphAttrs(doc: PmNode): Array<[unknown, unknown]> {
+    const found: Array<[unknown, unknown]> = []
+    doc.descendants((node) => {
+      if (node.type.name === 'paragraph') found.push([node.attrs.class, node.attrs.id])
+    })
+    return found
+  }
+
+  test("Word's own classes are not imported; a qti-* class is", async () => {
+    const { view, destroy } = makeEditor()
+    try {
+      await paste(view, {
+        html: '<p class="MsoNormal">Plain</p><p class="MsoNormal qti-align-center" id="_Hlk1">Centred</p>',
+      })
+
+      expect(paragraphAttrs(view.state.doc)).toEqual([[null, null], ['qti-align-center', null]])
+    } finally {
+      destroy()
+    }
+  })
+
+  test("a web page's classes and ids are not imported", async () => {
+    const { view, destroy } = makeEditor()
+    try {
+      await paste(view, { html: '<p class="article-body" id="intro"><strong class="hl">Hello</strong></p>' })
+
+      expect(paragraphAttrs(view.state.doc)).toEqual([[null, null]])
+      let strong: unknown
+      view.state.doc.descendants((node) => {
+        const mark = node.marks.find((m) => m.type.name === 'strong')
+        if (mark) strong = mark.attrs.class
+      })
+      expect(strong).toBeNull()
+    } finally {
+      destroy()
+    }
+  })
+
+  test("content copied out of a ProseMirror editor keeps its classes", async () => {
+    const { view, destroy } = makeEditor()
+    try {
+      // What `serializeForClipboard` writes: the slice marker on the first element.
+      await paste(view, { html: '<p data-pm-slice="0 0 []" class="kader">Boxed</p>' })
+
+      expect(paragraphAttrs(view.state.doc)).toEqual([['kader', null]])
+    } finally {
+      destroy()
+    }
+  })
+})

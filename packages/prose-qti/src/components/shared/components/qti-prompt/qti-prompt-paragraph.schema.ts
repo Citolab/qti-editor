@@ -1,3 +1,5 @@
+import { classAndIdAttrSpecs, classAndIdDomAttrs, parseClassAndId } from '../../class-and-id.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 /*
@@ -17,8 +19,9 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
  */
 export const qtiPromptParagraphNodeSpec: NodeSpec = {
   content: '(text | image)*',
-  parseDOM: [{ tag: 'p', context: 'qtiPrompt//', priority: 60 }],
-  toDOM(): DOMOutputSpec {
-    return ['p', 0];
+  attrs: classAndIdAttrSpecs,
+  parseDOM: [{ tag: 'p', context: 'qtiPrompt//', priority: 60, getAttrs: parseClassAndId }],
+  toDOM(node): DOMOutputSpec {
+    return ['p', classAndIdDomAttrs(node.attrs), 0];
   },
 };

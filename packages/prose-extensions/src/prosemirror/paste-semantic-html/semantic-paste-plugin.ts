@@ -436,6 +436,34 @@ function foreignBoldItalicToStrongEm(root: HTMLElement) {
   });
 }
 
+/**
+ * Drop the classes and ids a paste from OUTSIDE the editor brings along.
+ *
+ * The editor's nodes keep `class` and `id` (prose-extensions' `class-and-id.ts`), which is right for
+ * an imported item and wrong for a clipboard: Word marks every paragraph `MsoNormal` and every
+ * table cell `xl65`, a web page brings its own stylesheet's vocabulary, and none of it means
+ * anything in a QTI item. Ids are worse — copied from another document they collide, or point at
+ * nothing.
+ *
+ * So for foreign HTML only the `qti-*` class tokens survive — the shared QTI CSS vocabulary
+ * (`qti-align-center`, `qti-underline` …), which means the same thing wherever it was copied from —
+ * and every id is dropped. HTML ProseMirror itself put on the clipboard (a copy out of this or
+ * another ProseMirror editor, recognisable by its `data-pm-slice` marker) is left alone: those
+ * classes are the author's own, and `defineUniqueIds` clears an id the paste duplicates.
+ *
+ * Runs last: the Word clean-up above reads `Mso*` classes and `div#label`.
+ */
+function stripForeignClassesAndIds(root: HTMLElement) {
+  if (root.querySelector('[data-pm-slice]')) return;
+
+  root.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+  root.querySelectorAll('[class]').forEach((el) => {
+    const kept = (el.getAttribute('class') ?? '').split(/\s+/).filter((token) => token.startsWith('qti-'));
+    if (kept.length > 0) el.setAttribute('class', kept.join(' '));
+    else el.removeAttribute('class');
+  });
+}
+
 export function makeHtmlSemantic(html: string): string {
   const parser = new window.DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
@@ -455,6 +483,8 @@ export function makeHtmlSemantic(html: string): string {
 
   // After `walk`, which has already unwrapped Google Docs' `<b style="font-weight:normal">`.
   foreignBoldItalicToStrongEm(doc.body);
+
+  stripForeignClassesAndIds(doc.body);
 
   return doc.body.innerHTML
     .replace(/\u00A0/g, ' ')

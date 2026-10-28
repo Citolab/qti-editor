@@ -151,7 +151,7 @@ node, and this without `allowGapCursor` never fires because there is no gap curs
 
 ---
 
-## Two traps when patching a ProseKit node spec
+## Three traps when patching a ProseKit node spec
 
 ### A later `defineNodeSpec` does not reliably win the merge
 
@@ -172,6 +172,19 @@ keymap — so the ProseKit spec never enters the union. That is what every `defi
 **What is genuinely patchable:** `table`. `defineNodeSpec({ name: 'table', group: 'block richtext' })`
 does reach it. Which is precisely what makes this confusing: the same shape works in one place and
 silently does nothing in another, with no error either way. Check the result rather than assuming.
+
+### `defineNodeAttr` misreads a `toDOM` without an attrs object
+
+`defineNodeAttr` wraps the type's `toDOM` and inserts its attribute into the result. It decides
+whether the second element of the output spec is the attrs object by asking `typeof === 'object'`,
+and an array is an object. prosemirror-tables' table writes `['table', ['tbody', 0]]`, so as soon as
+the table has an attribute of its own the wrapper took `['tbody', 0]` for its attrs: the table
+serialised as `<table 0="tbody" 1="0">` with its rows gone — measured, even with the new attribute
+at its default.
+
+**What works:** give the spec an explicit, empty attrs object — `['table', {}, ['tbody', 0]]` — which
+`defineBasicExtension` does for the table now that it carries `class` / `id`. Any node spec whose
+`toDOM` nests a child element straight after the tag needs the same before an attr is added to it.
 
 ### `white-space` inheritance crosses the shadow boundary
 

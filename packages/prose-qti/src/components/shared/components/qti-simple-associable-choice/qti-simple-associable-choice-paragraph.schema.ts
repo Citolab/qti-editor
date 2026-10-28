@@ -1,3 +1,5 @@
+import { classAndIdAttrSpecs, classAndIdDomAttrs, parseClassAndId } from '../../class-and-id.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiSimpleAssociableChoiceParagraphNodeSpec: NodeSpec = {
@@ -14,8 +16,9 @@ export const qtiSimpleAssociableChoiceParagraphNodeSpec: NodeSpec = {
    * `qtiLayoutDiv` first, whose context makes the more specific rules win. Items whose body is not
    * wrapped in one hit it immediately.
    */
-  parseDOM: [{ tag: 'p', context: 'qtiSimpleAssociableChoice//', priority: 60 }],
-  toDOM(): DOMOutputSpec {
-    return ['p', 0];
+  attrs: classAndIdAttrSpecs,
+  parseDOM: [{ tag: 'p', context: 'qtiSimpleAssociableChoice//', priority: 60, getAttrs: parseClassAndId }],
+  toDOM(node): DOMOutputSpec {
+    return ['p', classAndIdDomAttrs(node.attrs), 0];
   }
 };

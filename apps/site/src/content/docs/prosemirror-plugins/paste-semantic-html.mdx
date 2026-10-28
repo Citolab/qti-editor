@@ -44,6 +44,14 @@ their own when an item is imported, so without this step a pasted bold would not
 button. HTML that a ProseMirror editor put on the clipboard (it carries a `data-pm-slice` marker) is
 left as it is.
 
+## Classes and ids
+
+The editor's nodes keep the `class` and `id` they are given, which is right for an imported item and
+wrong for a clipboard: Word marks every paragraph `MsoNormal`, and a web page brings its own
+stylesheet's vocabulary and ids that collide with yours. So for HTML from outside the editor only the
+`qti-*` class tokens survive — the shared QTI CSS vocabulary, such as `qti-align-center` — and every
+id is dropped. HTML copied out of a ProseMirror editor (marked with `data-pm-slice`) is left as it is.
+
 ## Image paste handling
 
 Word, Excel, PowerPoint and Outlook all put a bitmap of the whole selection on the clipboard as a
