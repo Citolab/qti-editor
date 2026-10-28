@@ -52,15 +52,13 @@ describe('filling an empty layout column', () => {
     const view = (editor as unknown as { view: EditorView }).view;
     mounted.push({ view, host });
 
-    const source = document.createElement('div');
-    source.innerHTML = `
+    editor.setContent(`
       <div class="qti-layout-row">
         <div class="qti-layout-col6">
           <qti-extended-text-interaction response-identifier="RESPONSE"></qti-extended-text-interaction>
         </div>
         <div class="qti-layout-col6"><p>Tekst</p></div>
-      </div>`;
-    editor.setContent(source.firstElementChild!.outerHTML);
+      </div>`.trim());
 
     const columnOf = (doc: PmNode): PmNode => doc.child(0).child(0);
     expect(columnOf(view.state.doc).firstChild?.type.name).toBe('qtiExtendedTextInteraction');
