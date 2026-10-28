@@ -22,7 +22,7 @@ import {
 import { defineTable, type TableExtension } from 'prosekit/extensions/table'
 import { defineText, type TextExtension } from 'prosekit/extensions/text'
 
-import { tableCaptionSpec } from '../prosemirror/table-caption/index.js'
+import { tableCaptionSpec } from '../prosemirror/html-schema/index.js'
 import { defineGapCursorParagraph } from './gap-cursor-paragraph.js'
 import { defineList, type ListExtension, type ListOptions } from './list.js'
 import { defineEm, defineStrong, type EmExtension, type StrongExtension } from './strong-em.js'

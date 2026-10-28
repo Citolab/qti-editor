@@ -1,0 +1,39 @@
+---
+title: HTML Schema
+description: Plain HTML content specs that both QTI schema paths share, so neither drops what the other keeps.
+slug: docs/prosemirror-plugins/html-schema
+---
+
+`html-schema` holds the plain HTML parts of an item body that have no node or mark in
+`prosemirror-schema-basic`: ProseMirror node and mark specs, or fragments to spread over one. Both
+schema paths use the same definitions — `createQtiSchema()` in `@citolab/prose-qti` and
+`defineBasicExtension()` in `@citolab/prose-extensions/prosekit` — so an item keeps the same markup
+whichever one loads it.
+
+Plain ProseMirror only: importing it does not need `prosekit`.
+
+## Install
+
+```bash
+pnpm add @citolab/prose-extensions
+```
+
+## Table captions
+
+`tableCaptionSpec` is a fragment to spread over a table node spec. It keeps a `<caption>` as the
+table's `caption` attribute and writes it back as the table's first child:
+
+```ts
+import { tableNodes } from 'prosemirror-tables';
+import { tableCaptionSpec } from '@citolab/prose-extensions/html-schema';
+
+const tables = tableNodes({ tableGroup: 'block', cellContent: 'block+', cellAttributes: {} });
+const nodes = { ...tables, table: { ...tables.table, ...tableCaptionSpec } };
+```
+
+- The caption is an attribute, not a child node: prosemirror-tables reads every child of a table as
+  a row.
+- Only the caption's text is kept. [Schema Gaps](/docs/prosemirror-plugins/schema-gaps/) reports
+  any element inside a caption, such as an `<em>`.
+- `columnResizing`'s `TableView` builds the table DOM itself, so an editor that uses it does not show
+  the caption while editing. It is still exported.

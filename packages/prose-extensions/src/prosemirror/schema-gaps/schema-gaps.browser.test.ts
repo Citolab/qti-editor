@@ -67,6 +67,23 @@ describe('findUnrepresentableElements', () => {
     expect(outcome.changes).toEqual([]);
   });
 
+  test('reports the elements inside one an `ignore` rule skips, since their markup is not parsed', () => {
+    // A caption-like case: the parent rule reads the text, an `ignore` rule skips the element.
+    const withIgnore = new Schema({
+      nodes: schema.spec.nodes.update('paragraph', {
+        ...schema.spec.nodes.get('paragraph'),
+        parseDOM: [{ tag: 'p' }, { tag: 'aside', ignore: true }],
+      }),
+      marks: schema.spec.marks,
+    });
+
+    const outcome = findUnrepresentableElements(withIgnore, parse('<aside>plain <em>stressed</em></aside><p><em>kept</em></p>'));
+
+    expect(outcome.changes.map(change => [change.nodeType, change.data?.insideSkipped])).toEqual([['em', 'aside']]);
+    expect(outcome.changes[0].message).toBe('Removed <em> inside <aside>, whose content the schema does not keep as markup.');
+    expect(outcome.preservedFragments[0].payload).toBe('<em>stressed</em>');
+  });
+
   test('honours ignoreTags for content the host knows is consumed elsewhere', () => {
     const outcome = findUnrepresentableElements(schema, parse('<qti-response-declaration/>'), {
       ignoreTags: ['qti-response-declaration'],

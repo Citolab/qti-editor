@@ -3,7 +3,7 @@
 import { Schema } from 'prosemirror-model';
 import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
 import { tableNodes } from 'prosemirror-tables';
-import { tableCaptionSpec } from '@citolab/prose-extensions/table-caption';
+import { tableCaptionSpec } from '@citolab/prose-extensions/html-schema';
 
 import { listInteractionSchemaNodeSpecs } from '../core/interactions/composer.js';
 import { qtiBasicMarks, qtiBasicNodes } from './basic-qti-schema.js';

@@ -348,3 +348,10 @@ Same trap as finding 16's third bullet, recurring in a different node. ProseKit'
 
 - **Resolution**: containment is now checked against the innermost position a text selection can actually reach — `firstReachablePos`/`lastReachablePos` step inward from `pos`/`pos + nodeSize` through every non-leaf, non-text child. A regression case pins a heading preceded by a sibling (so its own start position is `> 0`) selected only by its own text, which the old whole-document-selection tests could not have caught.
 - **Where to look**: `packages/prose-extensions/src/prosemirror/clear-formatting/clear-formatting.ts` (`firstReachablePos`, `lastReachablePos`); `clear-formatting.browser.test.ts` for the regression cases.
+
+## 29. A table caption is carried and exported, but neither shown nor editable — **open**
+
+`tableCaptionSpec` (`packages/prose-extensions/src/prosemirror/html-schema/table-caption.ts`) keeps a `<caption>` as the table node's `caption` attribute and writes it back from `toDOM`. An editor that renders tables with prosemirror-tables' `columnResizing` plugin — ProseKit's `defineTable()` installs it, and so does the example editor — never calls that `toDOM`: its `TableView` builds the `<table>` itself. The caption therefore survives import and export but is not on screen while editing, and there is no UI to change it. Markup inside a caption (`<em>`, a link) is flattened to its text on import; `findUnrepresentableElements` reports each such element (`data.insideSkipped: 'caption'`), so the loss is visible.
+
+- **Fix**: a `TableView` subclass that renders the caption, or an attributes-panel field for it in the host. Neither is in this repo.
+- **Where to look**: `packages/prose-extensions/src/prosemirror/html-schema/table-caption.ts`; `packages/prose-qti/src/schema/table-caption.browser.test.ts`.

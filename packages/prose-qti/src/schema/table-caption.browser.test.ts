@@ -5,10 +5,12 @@
  * Before: the caption was dropped on import, and its text came back as a stray first row — so the
  * export carried a table with an extra row and no caption.
  */
+import { findUnrepresentableElements, TRANSPARENT_WRAPPER_TAGS } from '@citolab/prose-extensions/schema-gaps';
 import { TableMap } from 'prosemirror-tables';
 import { describe, expect, test } from 'vitest';
 
 import { pmToQti3, qti3ToPm } from '../item-roundtrip/convert.js';
+import { createQtiSchema } from './create-qti-schema.js';
 
 import type { Node as ProseMirrorNode } from 'prosemirror-model';
 
@@ -66,5 +68,17 @@ describe('a table caption through qti3ToPm → pmToQti3', () => {
   test('survives a second round trip unchanged', () => {
     const once = pmToQti3(qti3ToPm(ITEM));
     expect(pmToQti3(qti3ToPm(once))).toBe(once);
+  });
+});
+
+describe('markup inside a caption', () => {
+  test('is flattened to the caption text, and the schema-gaps scan reports it', () => {
+    const marked = ITEM.replace('<caption>Boiling points</caption>', '<caption>Boiling <em>points</em></caption>');
+    expect(tableOf(qti3ToPm(marked)).attrs.caption).toBe('Boiling points');
+
+    const host = document.createElement('div');
+    host.innerHTML = '<table><caption>Boiling <em>points</em></caption><tbody><tr><td><p>Water</p></td></tr></tbody></table>';
+    const gaps = findUnrepresentableElements(createQtiSchema(), host, { ignoreTags: TRANSPARENT_WRAPPER_TAGS });
+    expect(gaps.changes.map(change => [change.nodeType, change.data?.insideSkipped])).toEqual([['em', 'caption']]);
   });
 });

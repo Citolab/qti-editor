@@ -21,7 +21,14 @@ import type { DOMOutputSpec, NodeSpec, Node as ProseMirrorNode, TagParseRule } f
  *
  * The caption is stored as its text content, whitespace collapsed. Markup inside a caption (an
  * `<em>`, say) is not kept — QTI allows it, but it is rare, and holding it would need a content
- * hole the table node cannot have (see above).
+ * hole the table node cannot have (see above). `findUnrepresentableElements` (`schema-gaps`)
+ * reports each element inside a caption, because the `ignore` rule skips it.
+ *
+ * ## Not shown while editing
+ *
+ * `columnResizing`'s `TableView` (ProseKit's `defineTable()` installs it) builds its own table DOM
+ * and does not call `toDOM`, so an editor that uses it carries and exports the caption without
+ * displaying it. See `docs/testing-findings.md`.
  *
  * ## Use
  *
