@@ -1,4 +1,5 @@
 import { getStrippedAttributeSources, parseResponseAttribute, stripAttributesFromElement } from '../../../shared';
+import { reconcileAssociationLimits } from '../../../shared/composer/association-limits.js';
 import { gapMatchInteractionComposerMetadata } from '../../composer/metadata.js';
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@citolab/prose-qti/components/shared/composer/types.js';
@@ -29,7 +30,7 @@ export function composeGapMatchInteractionElement(sourceElement: Element, xmlDoc
   const strippedAttributes = getStrippedAttributeSources(metadata);
 
   normalizedElement.setAttribute('max-associations', String(maxAssociations >= 0 ? maxAssociations : 0));
-  normalizedElement.removeAttribute('min-associations');
+  reconcileAssociationLimits(normalizedElement, correctResponse, { tagName: metadata.tagName, responseIdentifier }, warnings);
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
   if (!responseIdentifier) {

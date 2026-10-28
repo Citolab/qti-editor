@@ -1,7 +1,14 @@
-import { parseResponseAttribute, serializeResponseAttribute } from '../../../shared';
+import { parseResponseAttribute, qtiAttributes, serializeResponseAttribute } from '../../../shared';
 import { hasTabularMatchClass } from './qti-match-interaction-tabular.schema.js';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+
+const keptAttributes = qtiAttributes({
+  maxAssociations: { name: 'max-associations', type: 'integer' },
+  minAssociations: { name: 'min-associations', type: 'integer' },
+  dataMinSelectionsMessage: 'data-min-selections-message',
+  dataMaxSelectionsMessage: 'data-max-selections-message',
+});
 
 export const qtiMatchInteractionNodeSpec: NodeSpec = {
   group: 'block',
@@ -12,6 +19,7 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
     correctResponse: { default: null },
     responseIdentifier: { default: null },
     score: { default: 1 },
+    ...keptAttributes.attrs,
   },
   parseDOM: [
     {
@@ -27,6 +35,7 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
           correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
+          ...keptAttributes.parse(node),
         };
       }
     }
@@ -45,7 +54,7 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
     if (cr) attrs['correct-response'] = cr;
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     attrs.score = String(node.attrs.score ?? 1);
-    return ['qti-match-interaction', attrs, 0];
+    return ['qti-match-interaction', { ...attrs, ...keptAttributes.domAttrs(node.attrs) }, 0];
   },
   defining: true,
   isolating: true

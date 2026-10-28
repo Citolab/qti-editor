@@ -1,4 +1,5 @@
 import { getStrippedAttributeSources, stripAttributesFromElement } from '../../../shared';
+import { reconcileAssociationLimits } from '../../../shared/composer/association-limits.js';
 import { matchInteractionComposerMetadata } from '../../composer/metadata.js';
 
 import type { ComposerWarning, InteractionComposeResult, InteractionResponseDeclaration } from '@citolab/prose-qti/components/shared/composer/types.js';
@@ -50,6 +51,7 @@ export function composeMatchInteractionElement(sourceElement: Element, xmlDoc: D
 
   stripAttributesFromElement(normalizedElement, metadata);
   const strippedAttributes = getStrippedAttributeSources(metadata);
+  reconcileAssociationLimits(normalizedElement, correctResponse, { tagName: metadata.tagName, responseIdentifier }, warnings);
 
   let responseDeclaration: InteractionResponseDeclaration | undefined;
   if (!responseIdentifier) {
