@@ -237,11 +237,11 @@ test('attributes panel renders qti-simple-choice identifier read-only and fixed 
   );
   expect(firstChoice?.getAttribute('fixed')).toBe('true');
 
-  // Other choices are unaffected and carry no `fixed` attribute.
+  // Other choices are unaffected: they keep the `fixed="false"` ITEM001 writes out on every choice.
   const secondChoice = exportAssessmentItemDoc(view.state.doc).querySelector(
     'qti-choice-interaction > qti-simple-choice[identifier="choice2"]',
   );
-  expect(secondChoice?.hasAttribute('fixed')).toBe(false);
+  expect(secondChoice?.getAttribute('fixed')).toBe('false');
 
   view.destroy();
   host.remove();
@@ -275,14 +275,15 @@ test('attributes panel renders qti-choice-interaction shuffle as a checkbox that
       ?.getAttribute('shuffle'),
   ).toBe('true');
 
-  // Toggling the checkbox off clears the boolean attr and drops `shuffle` from export.
+  // Toggling the checkbox off clears the boolean attr. ITEM001 spelled `shuffle` out, so the
+  // export keeps spelling it, now as "false"; an interaction that never had it writes nothing.
   await userEvent.click(shuffleInput!);
 
   expect(
     exportAssessmentItemDoc(view.state.doc)
       .querySelector('qti-choice-interaction')
-      ?.hasAttribute('shuffle'),
-  ).toBe(false);
+      ?.getAttribute('shuffle'),
+  ).toBe('false');
 
   view.destroy();
   host.remove();

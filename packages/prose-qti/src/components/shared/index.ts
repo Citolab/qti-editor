@@ -37,6 +37,7 @@ export * from './composer/types.js';
 export * from './composer/metadata.js';
 export * from './composer/stripped-attributes.js';
 export * from './response/codec.js';
+export * from './boolean-flag.js';
 export * from './i18n/index.js';
 
 export * from './drag-drop-states.js';

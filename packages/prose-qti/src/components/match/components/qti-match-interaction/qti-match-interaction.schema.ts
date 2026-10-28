@@ -1,4 +1,4 @@
-import { parseResponseAttribute, serializeResponseAttribute } from '../../../shared';
+import { parseResponseAttribute, serializeResponseAttribute, writeBooleanFlag } from '../../../shared';
 import { hasTabularMatchClass } from './qti-match-interaction-tabular.schema.js';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
@@ -8,6 +8,8 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
   content: 'qtiPrompt? qtiSimpleMatchSet{2}',
   attrs: {
     shuffle: { default: false },
+    // Whether the source wrote `shuffle` out, so an authored `shuffle="false"` survives; see writeBooleanFlag.
+    shuffleExplicit: { default: false },
     class: { default: null },
     correctResponse: { default: null },
     responseIdentifier: { default: null },
@@ -23,6 +25,7 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
         const scoreAttr = node.getAttribute('score');
         return {
           shuffle: node.getAttribute('shuffle') === 'true',
+          shuffleExplicit: node.hasAttribute('shuffle'),
           class: className || null,
           correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
@@ -33,9 +36,7 @@ export const qtiMatchInteractionNodeSpec: NodeSpec = {
   ],
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {};
-    if (node.attrs.shuffle) {
-      attrs['shuffle'] = 'true';
-    }
+    writeBooleanFlag(attrs, 'shuffle', node.attrs.shuffle, node.attrs.shuffleExplicit);
     if (node.attrs.class) attrs.class = node.attrs.class;
     // correctResponse is the canonical comma-joined `"src tgt"` form (same
     // convention as associate / order). The shared codec handles serialisation

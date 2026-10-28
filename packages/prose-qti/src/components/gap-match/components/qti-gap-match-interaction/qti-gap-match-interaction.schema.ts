@@ -1,4 +1,4 @@
-import { parseResponseAttribute, serializeResponseAttribute } from '../../../shared';
+import { parseResponseAttribute, serializeResponseAttribute, writeBooleanFlag } from '../../../shared';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
@@ -12,6 +12,8 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
   attrs: {
     maxAssociations: { default: 0 },
     shuffle: { default: false },
+    // Whether the source wrote `shuffle` out, so an authored `shuffle="false"` survives; see writeBooleanFlag.
+    shuffleExplicit: { default: false },
     class: { default: null },
     correctResponse: { default: null },
     responseIdentifier: { default: null },
@@ -27,6 +29,7 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
         return {
           maxAssociations: maxAssociations ? parseInt(maxAssociations, 10) : 0,
           shuffle: node.getAttribute('shuffle') === 'true',
+          shuffleExplicit: node.hasAttribute('shuffle'),
           class: node.getAttribute('class'),
           correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
@@ -39,9 +42,7 @@ export const qtiGapMatchInteractionNodeSpec: NodeSpec = {
     const attrs: Record<string, string> = {
       'max-associations': String(node.attrs.maxAssociations ?? 0),
     };
-    if (node.attrs.shuffle) {
-      attrs.shuffle = 'true';
-    }
+    writeBooleanFlag(attrs, 'shuffle', node.attrs.shuffle, node.attrs.shuffleExplicit);
     if (node.attrs.class) attrs.class = node.attrs.class;
     // correctResponse is the canonical comma-joined `"src tgt"` form (same as
     // associate / match / order). Composer + runtime accept the codec's

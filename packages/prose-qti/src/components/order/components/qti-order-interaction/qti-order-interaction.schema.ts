@@ -1,3 +1,5 @@
+import { writeBooleanFlag } from '../../../shared';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiOrderInteractionNodeSpec: NodeSpec = {
@@ -5,6 +7,8 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
   content: 'qtiPrompt? qtiSimpleChoice+',
   attrs: {
     shuffle: { default: false },
+    // Whether the source wrote `shuffle` out, so an authored `shuffle="false"` survives; see writeBooleanFlag.
+    shuffleExplicit: { default: false },
     orientation: { default: 'vertical' },
     class: { default: null },
     correctResponse: { default: null },
@@ -19,6 +23,7 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
         const scoreAttr = node.getAttribute('score');
         return {
           shuffle: node.getAttribute('shuffle') === 'true',
+          shuffleExplicit: node.hasAttribute('shuffle'),
           orientation: node.getAttribute('orientation') || 'vertical',
           class: node.getAttribute('class') || null,
           correctResponse: node.getAttribute('correct-response') || null,
@@ -31,7 +36,7 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {};
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
-    if (node.attrs.shuffle) attrs['shuffle'] = 'true';
+    writeBooleanFlag(attrs, 'shuffle', node.attrs.shuffle, node.attrs.shuffleExplicit);
     // Written even when it is the 'vertical' default — unless the class already spells the
     // orientation, in which case the class wins and this stays silent.
     //

@@ -26,13 +26,13 @@
           <qti-prompt>
             <p>Welke van de onderstaande elementen heeft de hoogste atoommassa?</p>
           </qti-prompt>
-          <qti-simple-choice identifier="choice1">
+          <qti-simple-choice identifier="choice1" fixed="false">
             <p>Tin (Sn)</p>
           </qti-simple-choice>
-          <qti-simple-choice identifier="choice2">
+          <qti-simple-choice identifier="choice2" fixed="false">
             <p>Jodium (I)</p>
           </qti-simple-choice>
-          <qti-simple-choice identifier="choice3">
+          <qti-simple-choice identifier="choice3" fixed="false">
             <p>Xenon (Xe)</p>
           </qti-simple-choice>
         </qti-choice-interaction>

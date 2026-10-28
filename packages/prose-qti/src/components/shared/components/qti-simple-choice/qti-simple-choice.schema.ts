@@ -1,3 +1,5 @@
+import { writeBooleanFlag } from '../../boolean-flag.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 export const qtiSimpleChoiceNodeSpec: NodeSpec = {
@@ -7,7 +9,9 @@ export const qtiSimpleChoiceNodeSpec: NodeSpec = {
     identifier: { default: 'A' },
     // Standard QTI `fixed` flag: when true the choice keeps its position and is
     // not shuffled. Boolean so the attributes panel renders it as a checkbox.
-    fixed: { default: false }
+    fixed: { default: false },
+    // Whether the source wrote `fixed` out, so an authored `fixed="false"` survives; see writeBooleanFlag.
+    fixedExplicit: { default: false },
   },
   /*
    * ## Why `//` and not `/`
@@ -42,7 +46,8 @@ export const qtiSimpleChoiceNodeSpec: NodeSpec = {
         if (!(node instanceof HTMLElement)) return {};
         return {
           identifier: node.getAttribute('identifier') || 'A',
-          fixed: node.getAttribute('fixed') === 'true'
+          fixed: node.getAttribute('fixed') === 'true',
+          fixedExplicit: node.hasAttribute('fixed'),
         };
       }
     },
@@ -53,15 +58,16 @@ export const qtiSimpleChoiceNodeSpec: NodeSpec = {
         if (!(node instanceof HTMLElement)) return {};
         return {
           identifier: node.getAttribute('identifier') || 'A',
-          fixed: node.getAttribute('fixed') === 'true'
+          fixed: node.getAttribute('fixed') === 'true',
+          fixedExplicit: node.hasAttribute('fixed'),
         };
       }
     }
   ],
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = { identifier: node.attrs.identifier };
-    // Only emit `fixed` when set, so unshuffled-by-default choices stay clean.
-    if (node.attrs.fixed) attrs.fixed = 'true';
+    // Only emit `fixed` when set (or authored), so unshuffled-by-default choices stay clean.
+    writeBooleanFlag(attrs, 'fixed', node.attrs.fixed, node.attrs.fixedExplicit);
     return ['qti-simple-choice', attrs, 0];
   }
 };

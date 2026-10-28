@@ -1,3 +1,5 @@
+import { writeBooleanFlag } from '../../boolean-flag.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 /*
@@ -12,7 +14,9 @@ export const qtiSimpleAssociableChoiceNodeSpec: NodeSpec = {
     identifier: { default: 'A' },
     matchMax: { default: 1 },
     matchMin: { default: 0 },
-    fixed: { default: false }
+    fixed: { default: false },
+    // Whether the source wrote `fixed` out, so an authored `fixed="false"` survives; see writeBooleanFlag.
+    fixedExplicit: { default: false },
   },
   parseDOM: [
     {
@@ -25,7 +29,8 @@ export const qtiSimpleAssociableChoiceNodeSpec: NodeSpec = {
           identifier: node.getAttribute('identifier') || 'A',
           matchMax: matchMax ? parseInt(matchMax, 10) : 1,
           matchMin: matchMin ? parseInt(matchMin, 10) : 0,
-          fixed: node.getAttribute('fixed') === 'true'
+          fixed: node.getAttribute('fixed') === 'true',
+          fixedExplicit: node.hasAttribute('fixed'),
         };
       }
     }
@@ -38,9 +43,7 @@ export const qtiSimpleAssociableChoiceNodeSpec: NodeSpec = {
     if (node.attrs.matchMin > 0) {
       attrs['match-min'] = String(node.attrs.matchMin);
     }
-    if (node.attrs.fixed) {
-      attrs['fixed'] = 'true';
-    }
+    writeBooleanFlag(attrs, 'fixed', node.attrs.fixed, node.attrs.fixedExplicit);
     return ['qti-simple-associable-choice', attrs, 0];
   }
 };

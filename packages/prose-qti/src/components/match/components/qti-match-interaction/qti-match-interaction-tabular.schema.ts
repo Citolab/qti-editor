@@ -1,4 +1,4 @@
-import { parseResponseAttribute, serializeResponseAttribute } from '../../../shared';
+import { parseResponseAttribute, serializeResponseAttribute, writeBooleanFlag } from '../../../shared';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
@@ -27,6 +27,8 @@ export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
   content: 'qtiPrompt? qtiSimpleMatchSet{2}',
   attrs: {
     shuffle: { default: false },
+    // Whether the source wrote `shuffle` out, so an authored `shuffle="false"` survives; see writeBooleanFlag.
+    shuffleExplicit: { default: false },
     class: { default: null },
     correctResponse: { default: null },
     responseIdentifier: { default: null },
@@ -42,6 +44,7 @@ export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
         const scoreAttr = node.getAttribute('score');
         return {
           shuffle: node.getAttribute('shuffle') === 'true',
+          shuffleExplicit: node.hasAttribute('shuffle'),
           class: node.getAttribute('class'),
           correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
           responseIdentifier: node.getAttribute('response-identifier'),
@@ -53,9 +56,7 @@ export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
   ],
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {};
-    if (node.attrs.shuffle) {
-      attrs.shuffle = 'true';
-    }
+    writeBooleanFlag(attrs, 'shuffle', node.attrs.shuffle, node.attrs.shuffleExplicit);
     if (node.attrs.class) attrs.class = node.attrs.class;
     const cr = serializeResponseAttribute(node.attrs.correctResponse);
     if (cr) attrs['correct-response'] = cr;
