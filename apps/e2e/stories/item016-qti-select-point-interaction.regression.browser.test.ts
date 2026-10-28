@@ -45,7 +45,8 @@ async function mountItem016() {
 
   const interaction = host.querySelector<HTMLElement>('qti-select-point-interaction')!;
   const image = interaction.querySelector<HTMLImageElement>(':scope > img')!;
-  await expect.poll(() => image.complete && image.naturalWidth > 0).toBe(true);
+  // Under a full parallel run the map can take longer than the default second to load.
+  await expect.poll(() => image.complete && image.naturalWidth > 0, { timeout: 10_000 }).toBe(true);
 
   /** A point on the map, in its own 600x513 pixel space, relative to the interaction element. */
   const at = (x: number, y: number) => {
