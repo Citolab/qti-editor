@@ -1,4 +1,13 @@
+import { qtiAttributes } from '../../../shared/qti-attributes.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+
+const keptAttributes = qtiAttributes({
+  minChoices: { name: 'min-choices', type: 'integer' },
+  maxChoices: { name: 'max-choices', type: 'integer' },
+  dataMinSelectionsMessage: 'data-min-selections-message',
+  dataMaxSelectionsMessage: 'data-max-selections-message',
+});
 
 export const qtiOrderInteractionNodeSpec: NodeSpec = {
   group: 'block',
@@ -10,6 +19,7 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
     correctResponse: { default: null },
     responseIdentifier: { default: null },
     score: { default: 1 },
+    ...keptAttributes.attrs,
   },
   parseDOM: [
     {
@@ -24,6 +34,7 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
           correctResponse: node.getAttribute('correct-response') || null,
           responseIdentifier: node.getAttribute('response-identifier') || null,
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
+          ...keptAttributes.parse(node),
         };
       },
     },
@@ -58,7 +69,7 @@ export const qtiOrderInteractionNodeSpec: NodeSpec = {
     // convention) — pass through as-is.
     if (node.attrs.correctResponse) attrs['correct-response'] = node.attrs.correctResponse;
     attrs.score = String(node.attrs.score ?? 1);
-    return ['qti-order-interaction', attrs, 0];
+    return ['qti-order-interaction', { ...attrs, ...keptAttributes.domAttrs(node.attrs) }, 0];
   },
   defining: true,
   isolating: true,
