@@ -44,7 +44,13 @@ Scoring other than `match_correct` is not modelled. A hotspot scored with a `qti
 
 ## In the editor
 
-Click the picture to bring up the toolbar. Draw rectangles and circles on it, drag an area to move it, drag a selected area's handles to resize it, and use **Mark as correct** and **Delete area** on the selected one. `poly`, `ellipse` and `default` areas from an imported item are drawn and can be moved, but not reshaped.
+Click the picture to bring up the toolbar. Draw rectangles, circles and polygons on it, drag an area to move it, drag a selected area's handles to resize it, and use **Mark as correct** and **Delete area** on the selected one.
+
+- **Polygon**: click to place points; click the first point, double-click or press Enter to finish, Escape to cancel. Drag a selected polygon's points to reshape it; double-click an edge to add a point, a point to remove it. A polygon keeps at least three points. One that crosses itself is kept as drawn; the part where it overlaps itself does not count as inside.
+- **Ellipse**: an imported `ellipse` area is resized by its two radius handles. Ellipses are not drawn new.
+- A `default` area (the whole picture) is selected, marked and deleted only.
+
+Some items close their polygons by repeating the first point at the end (`coords="330,118,357,108,364,138,330,118"`). The editor edits such a polygon without the repeat, so its handles do not overlap, and writes it back closed when it changes it; an untouched polygon is exported exactly as imported.
 
 Selecting an area selects its `qti-hotspot-choice` in ProseMirror, so the attributes panel shows it (`hotspot-label`, `aria-label`, `fixed`) and Delete or Backspace removes it, dropping it from the correct response too. A press on the picture away from every area selects the whole interaction, as the pill's select action does.
 

@@ -7,8 +7,14 @@ import {
   isValidArea,
   draftToArea,
   formatCoords,
+  insertPolyPoint,
   moveAreaCoords,
+  nearestPolyEdge,
+  openPolygon,
+  closePolygon,
   parseCoords,
+  polygonFromDraft,
+  removePolyPoint,
   resizeAreaCoords,
 } from './area-geometry.js';
 
@@ -70,10 +76,19 @@ describe('moveAreaCoords', () => {
 });
 
 describe('handles and resizing', () => {
-  test('rects have four corner handles, circles a radius handle, the rest none', () => {
+  test('rects have corner handles, circles a radius, ellipses two radii, polygons one per point, default none', () => {
     expect(areaHandles('rect', [10, 10, 50, 30]).map(h => h.id)).toEqual(['nw', 'ne', 'se', 'sw']);
     expect(areaHandles('circle', [50, 50, 10])).toEqual([{ id: 'r', x: 60, y: 50 }]);
-    expect(areaHandles('poly', [0, 0, 10, 0, 0, 10])).toEqual([]);
+    expect(areaHandles('ellipse', [50, 50, 20, 10])).toEqual([
+      { id: 'rx', x: 70, y: 50 },
+      { id: 'ry', x: 50, y: 60 },
+    ]);
+    expect(areaHandles('poly', [0, 0, 10, 0, 0, 10])).toEqual([
+      { id: 'p0', x: 0, y: 0 },
+      { id: 'p1', x: 10, y: 0 },
+      { id: 'p2', x: 0, y: 10 },
+    ]);
+    expect(areaHandles('default', [])).toEqual([]);
   });
 
   test('dragging a rect corner past the opposite one keeps the rect normalised', () => {
@@ -82,6 +97,59 @@ describe('handles and resizing', () => {
 
   test('dragging the radius handle sets the radius to the distance from the centre', () => {
     expect(resizeAreaCoords('circle', [50, 50, 10], 'r', { x: 53, y: 54 })).toEqual([50, 50, 5]);
+  });
+
+  test('an ellipse radius handle changes only its own radius', () => {
+    expect(resizeAreaCoords('ellipse', [50, 50, 20, 10], 'rx', { x: 20, y: 70 })).toEqual([50, 50, 30, 10]);
+    expect(resizeAreaCoords('ellipse', [50, 50, 20, 10], 'ry', { x: 0, y: 46 })).toEqual([50, 50, 20, 4]);
+    expect(resizeAreaCoords('ellipse', [50, 50, 20, 10], 'ry', { x: 0, y: 50 })).toEqual([50, 50, 20, 1]);
+  });
+
+  test('a polygon point goes where it is dragged; an unknown point changes nothing', () => {
+    expect(resizeAreaCoords('poly', [0, 0, 100, 0, 50, 80], 'p2', { x: 60.4, y: 90 })).toEqual([0, 0, 100, 0, 60, 90]);
+    expect(resizeAreaCoords('poly', [0, 0, 100, 0, 50, 80], 'p3', { x: 1, y: 1 })).toEqual([0, 0, 100, 0, 50, 80]);
+  });
+});
+
+// Ported from qti-construction's prose-qti-graphic geometry tests.
+describe('polygon points', () => {
+  const triangle = [0, 0, 100, 0, 50, 80];
+
+  test('a point is inserted on the nearest edge, and removed again', () => {
+    const added = insertPolyPoint(triangle, { x: 50, y: 2 });
+    expect(added).toEqual([0, 0, 50, 2, 100, 0, 50, 80]);
+    expect(removePolyPoint(added, 1)).toEqual(triangle);
+  });
+
+  test('the closing edge, from the last point back to the first, counts too', () => {
+    expect(nearestPolyEdge(triangle, { x: 20, y: 40 })).toMatchObject({ index: 2 });
+    expect(insertPolyPoint(triangle, { x: 24, y: 39 })).toEqual([0, 0, 100, 0, 50, 80, 24, 39]);
+  });
+
+  test('a triangle keeps its three points', () => {
+    expect(removePolyPoint(triangle, 0)).toEqual(triangle);
+  });
+
+  test('a closed polygon (first point repeated at the end) is opened, and closed again', () => {
+    expect(openPolygon([330, 118, 357, 108, 364, 138, 330, 118])).toEqual({ values: [330, 118, 357, 108, 364, 138], closed: true });
+    expect(openPolygon(triangle)).toEqual({ values: triangle, closed: false });
+    // Two points and their repeat are no polygon to open: left as they are.
+    expect(openPolygon([0, 0, 10, 0, 0, 0])).toEqual({ values: [0, 0, 10, 0, 0, 0], closed: false });
+    expect(closePolygon(triangle)).toEqual([...triangle, 0, 0]);
+  });
+
+  test('a clicked draft becomes a polygon once it has three distinct points', () => {
+    expect(polygonFromDraft([{ x: 0, y: 0 }, { x: 10.2, y: 0 }])).toBeNull();
+    // The double-click that finishes a polygon lands its last point twice, and may land on the first.
+    expect(
+      polygonFromDraft([
+        { x: 0, y: 0 },
+        { x: 10.2, y: 0 },
+        { x: 10, y: 10 },
+        { x: 10, y: 10 },
+        { x: 0, y: 0 },
+      ]),
+    ).toEqual([0, 0, 10, 0, 10, 10]);
   });
 });
 

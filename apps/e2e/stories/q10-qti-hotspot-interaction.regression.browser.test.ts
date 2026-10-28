@@ -185,11 +185,15 @@ async function mountHotspot(
       y: box.top - origin.top + (y / size.height) * box.height,
     };
   };
-  const target = page.elementLocator(interaction);
+  // Built afresh on every use: the locator is derived from the element's text, which the toolbar's
+  // hints change as the author switches tools.
+  const target = () => page.elementLocator(interaction);
   const button = async (text: string) => page.elementLocator(await findByShadowText(interaction, text));
-  const press = (x: number, y: number) => userEvent.click(target, { position: at(x, y) });
+  const press = (x: number, y: number, options: { button?: 'left' | 'right' } = {}) =>
+    userEvent.click(target(), { position: at(x, y), ...options });
+  const doublePress = (x: number, y: number) => userEvent.dblClick(target(), { position: at(x, y) });
   const drag = (from: [number, number], to: [number, number]) =>
-    userEvent.dragAndDrop(target, target, { sourcePosition: at(...from), targetPosition: at(...to) });
+    userEvent.dragAndDrop(target(), target(), { sourcePosition: at(...from), targetPosition: at(...to) });
   const exported = () => editor.exportAssessmentItemDoc(view.state.doc);
   const responseIdentifier = interaction.getAttribute('response-identifier');
   const exportedInteraction = () =>
@@ -215,7 +219,21 @@ async function mountHotspot(
   await press(size.width - 10, 10);
   await button('Rectangle');
 
-  return { interaction, panelEl, at, press, drag, button, choices, declaration, correct, exported, selectedChoice, view };
+  return {
+    interaction,
+    panelEl,
+    at,
+    press,
+    doublePress,
+    drag,
+    button,
+    choices,
+    declaration,
+    correct,
+    exported,
+    selectedChoice,
+    view,
+  };
 }
 
 /** Each coordinate within `tolerance` image pixels: screen-to-image mapping rounds. */
@@ -396,4 +414,206 @@ test('in an item with several hotspot interactions, editing one leaves the other
   expect(sv1.correct()).toEqual([]);
   expect(first()).toEqual(['A', 'B', 'D']);
   expect(sv1.exported().querySelectorAll('qti-hotspot-interaction')[0].querySelectorAll('qti-hotspot-choice')).toHaveLength(4);
+});
+
+/*
+ * Polygons and ellipses. Positions are in the picture's own 206x280 space; the top right of the
+ * map, round (165, 45), is empty sea.
+ */
+
+const TRIANGLE = [
+  [140, 20],
+  [190, 20],
+  [165, 70],
+] as const;
+
+type Hotspot = Awaited<ReturnType<typeof mountHotspot>>;
+
+async function pressPoints(q10: Hotspot, points: ReadonlyArray<readonly [number, number]>) {
+  for (const [x, y] of points) await q10.press(x, y);
+}
+
+test('drawing a polygon point by point adds a poly choice; clicking its first point closes it', async () => {
+  const q10 = await mountHotspot({ mountEditor, exportAssessmentItemDoc });
+
+  await (await q10.button('Polygon')).click();
+  await pressPoints(q10, TRIANGLE);
+  // Still drawing: nothing is added until the polygon is closed.
+  expect(q10.choices()).toHaveLength(4);
+
+  await q10.press(140, 20);
+
+  const drawn = q10.choices()[4];
+  expect(q10.choices()).toHaveLength(5);
+  expect(drawn.shape).toBe('poly');
+  expectCoords(drawn.coords, TRIANGLE.flat());
+  expect(q10.selectedChoice()).toBe(drawn.identifier);
+  // Drawing never touches the answer key.
+  expect(q10.correct()).toEqual(['C']);
+});
+
+test('Escape cancels a polygon; Enter and a double-click finish one', async () => {
+  const q10 = await mountHotspot({ mountEditor, exportAssessmentItemDoc });
+
+  await (await q10.button('Polygon')).click();
+  await pressPoints(q10, TRIANGLE.slice(0, 2));
+  await userEvent.keyboard('{Escape}');
+  expect(q10.choices()).toHaveLength(4);
+
+  // Enter, after three points.
+  await pressPoints(q10, TRIANGLE);
+  await userEvent.keyboard('{Enter}');
+  expect(q10.choices()).toHaveLength(5);
+  expectCoords(q10.choices()[4].coords, TRIANGLE.flat());
+
+  // A double-click on the last point: it is placed once, and the polygon is finished.
+  await pressPoints(q10, [
+    [140, 100],
+    [190, 100],
+  ]);
+  await q10.doublePress(165, 150);
+  expect(q10.choices()).toHaveLength(6);
+  expectCoords(q10.choices()[5].coords, [140, 100, 190, 100, 165, 150]);
+});
+
+test('a right-click adds no point and selects nothing, and a click near the first of two points adds no near-duplicate', async () => {
+  const q10 = await mountHotspot({ mountEditor, exportAssessmentItemDoc });
+
+  await (await q10.button('Polygon')).click();
+  await q10.press(140, 20);
+  await q10.press(165, 45, { button: 'right' });
+  await q10.press(190, 20);
+  // 3 px from the first point: too close to be a new one, and two points make no polygon to close.
+  await q10.press(143, 22);
+  await q10.press(165, 70);
+  await userEvent.keyboard('{Enter}');
+
+  expect(q10.choices()).toHaveLength(5);
+  expectCoords(q10.choices()[4].coords, TRIANGLE.flat());
+
+  // Nor does a right-click select an area.
+  await (await q10.button('Select')).click();
+  await q10.press(10, 10);
+  await q10.press(77, 115, { button: 'right' });
+  expect(q10.selectedChoice()).toBeNull();
+});
+
+test('keys pressed while drawing a polygon stay out of the document, and document listeners still see them', async () => {
+  const q10 = await mountHotspot({ mountEditor, exportAssessmentItemDoc });
+  const before = serialize(q10.exported());
+  const seen: string[] = [];
+  const listener = (event: KeyboardEvent) => {
+    if (!['Control', 'Meta', 'Shift', 'Alt'].includes(event.key)) seen.push(event.key);
+  };
+  document.addEventListener('keydown', listener);
+
+  try {
+    await (await q10.button('Polygon')).click();
+    await pressPoints(q10, TRIANGLE.slice(0, 2));
+    // The interaction is selected as a node, so a key ProseMirror or the browser acted on would
+    // replace it, or add a paragraph after it.
+    await userEvent.keyboard(`x{Backspace}{${MOD}>}s{/${MOD}}{Escape}`);
+    expect(serialize(q10.exported())).toBe(before);
+    expect(seen).toEqual(['x', 'Backspace', 's', 'Escape']);
+
+    // Enter finishes a polygon and reaches the document too; it adds no paragraph.
+    await pressPoints(q10, TRIANGLE);
+    await userEvent.keyboard('{Enter}');
+    expect(seen.at(-1)).toBe('Enter');
+    expect(q10.choices()).toHaveLength(5);
+    expect(q10.view.state.doc.childCount).toBe(2);
+  } finally {
+    document.removeEventListener('keydown', listener);
+  }
+});
+
+test('a polygon is reshaped by dragging a point, and double-clicks add and remove points', async () => {
+  const q10 = await mountHotspot({ mountEditor, exportAssessmentItemDoc });
+
+  await (await q10.button('Polygon')).click();
+  await pressPoints(q10, TRIANGLE);
+  await userEvent.keyboard('{Enter}');
+  // The new polygon stays selected; back to the select tool to edit it.
+  await (await q10.button('Select')).click();
+  const polygon = () => q10.choices()[4];
+
+  await q10.drag([165, 70], [165, 90]);
+  expectCoords(polygon().coords, [140, 20, 190, 20, 165, 90]);
+
+  // On the top edge, between its first two points: a new point there.
+  await q10.doublePress(165, 20);
+  expectCoords(polygon().coords, [140, 20, 165, 20, 190, 20, 165, 90]);
+
+  // On that point: it goes again.
+  await q10.doublePress(165, 20);
+  expectCoords(polygon().coords, [140, 20, 190, 20, 165, 90]);
+
+  // A triangle keeps its three points.
+  await q10.doublePress(140, 20);
+  expectCoords(polygon().coords, [140, 20, 190, 20, 165, 90]);
+  expect(q10.choices()).toHaveLength(5);
+});
+
+test('a hand-drawn polygon marked correct scores in the runtime', async () => {
+  const q10 = await mountHotspot({ mountEditor, exportAssessmentItemDoc });
+
+  await (await q10.button('Polygon')).click();
+  await pressPoints(q10, TRIANGLE);
+  await userEvent.keyboard('{Enter}');
+  const drawn = q10.choices()[4].identifier!;
+
+  await (await q10.button('Mark as correct')).click();
+  await (await q10.button('Select')).click();
+  await q10.press(150, 235);
+  await (await q10.button('Unmark as correct')).click();
+  expect(q10.correct()).toEqual([drawn]);
+
+  const xml = serialize(q10.exported());
+  expect(await scoreClicking(xml, [drawn])).toEqual({ response: drawn, score: 1 });
+  expect((await scoreClicking(xml, ['C'])).score).toBe(0);
+});
+
+test('a closed polygon from an imported item is edited without its repeated point, and stays closed', async () => {
+  // Q10 shapes, 680x680: i2 is a triangle whose coords repeat its first point at the end.
+  const shapes = await mountHotspot(q10Shapes, { size: { width: 680, height: 680 } });
+  const i2 = () => shapes.choices().find(choice => choice.identifier === 'i2')!.coords;
+  expect(i2()).toBe('330,118,357,108,364,138,330,118');
+
+  await shapes.press(350, 122);
+  expect(shapes.selectedChoice()).toBe('i2');
+
+  // Three points, not four: the triangle keeps them all.
+  await shapes.doublePress(330, 118);
+  expect(i2()).toBe('330,118,357,108,364,138,330,118');
+
+  // Dragging the first point moves the repeat with it.
+  await shapes.drag([330, 118], [320, 118]);
+  expectCoords(i2(), [320, 118, 357, 108, 364, 138, 320, 118]);
+  const values = i2()!.split(',');
+  expect(values.slice(-2)).toEqual(values.slice(0, 2));
+});
+
+test("an imported ellipse is resized by its two radius handles", async () => {
+  const ellipseXml = singleXml.replace(
+    '<qti-hotspot-choice coords="150,235,10" identifier="C" shape="circle"/>',
+    '<qti-hotspot-choice coords="150,235,20,10" identifier="C" shape="ellipse"/>',
+  );
+  const editor = createRegressionEditor({
+    descriptor: hotspotInteractionDescriptor,
+    sourceXML: ellipseXml,
+    transforms: () => [roundtripInteractions, roundtripItemBody],
+    assetBasePath: '/qti/conformance/Q10-hotspot',
+  });
+  const q10 = await mountHotspot(editor);
+  const c = () => q10.choices().find(choice => choice.identifier === 'C')!;
+
+  await q10.press(150, 235);
+  expect(q10.selectedChoice()).toBe('C');
+
+  // rx sits on the right of the centre, ry below it.
+  await q10.drag([170, 235], [180, 235]);
+  expectCoords(c().coords, [150, 235, 30, 10]);
+  await q10.drag([150, 245], [150, 255]);
+  expectCoords(c().coords, [150, 235, 30, 20]);
+  expect(c().shape).toBe('ellipse');
 });

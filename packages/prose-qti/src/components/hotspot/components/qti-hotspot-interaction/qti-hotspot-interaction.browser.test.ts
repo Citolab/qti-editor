@@ -3,8 +3,8 @@
  * between, a QTI 3.0 item out — `roundtripQtiItem` → schema → `qtiItemFromProsemirror`.
  *
  * The first case is qti-components' conformance item Q10 multiple; it must come out with nothing
- * lost. The rest pin what the editor has no UI for but must still carry: the shapes it cannot
- * reshape, the choice attributes it never edits, and an `<object>` picture with fallback content.
+ * lost. The rest pin what the editor must carry whether or not it edits it: the shapes beyond rect
+ * and circle, the choice attributes it never edits, and an `<object>` picture with fallback content.
  */
 import { createEditor } from 'prosekit/core';
 import { EditorState, NodeSelection } from 'prosemirror-state';

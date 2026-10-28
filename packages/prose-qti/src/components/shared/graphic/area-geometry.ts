@@ -13,11 +13,21 @@
  * Pure functions with no DOM or Lit dependency, for the editors of the image-based interactions, so
  * they all draw, hit-test and move areas identically. `area-shape.ts` renders an area as SVG. Every function that produces coordinates rounds
  * them to whole pixels, which is what an author-facing `coords` attribute holds.
+ *
+ * The polygon and ellipse helpers are ported from qti-construction's `prose-qti-graphic`
+ * (`geometry.ts`, `cardEditing.ts`), reshaped to this module's `(shape, values)` signatures.
+ *
+ * A polygon is not checked for self-intersection: dragging a point across an edge gives a bow tie,
+ * which is kept as it is. Hit-testing is even-odd, so the part where the bow tie overlaps itself
+ * does not count as inside.
  */
 
 export type AreaShape = 'rect' | 'circle' | 'ellipse' | 'poly' | 'default';
 
-/** The shapes an author can draw with the mouse. The others are kept and moved, never created. */
+/**
+ * The shapes an author can draw by dragging. A polygon is drawn point by point instead (see
+ * {@link polygonFromDraft}); ellipse and default are kept and edited, never created.
+ */
 export type DrawableAreaShape = 'rect' | 'circle';
 
 export interface AreaPoint {
@@ -30,7 +40,10 @@ export interface AreaSize {
   height: number;
 }
 
-/** A drag handle on an area: `nw`/`ne`/`se`/`sw` for a rect's corners, `r` for a circle's radius. */
+/**
+ * A drag handle on an area: `nw`/`ne`/`se`/`sw` for a rect's corners, `r` for a circle's radius,
+ * `rx`/`ry` for an ellipse's radii and `p0`, `p1`, … for a polygon's points.
+ */
 export interface AreaHandle extends AreaPoint {
   id: string;
 }
@@ -172,32 +185,48 @@ export function moveAreaCoords(
   }
 }
 
-/** The resize handles of an area. Only the drawable shapes have them; poly and ellipse move whole. */
+/** The resize handles of an area, see {@link AreaHandle}. `default` has none. */
 export function areaHandles(shape: AreaShape, values: readonly number[]): AreaHandle[] {
   if (!isValidArea(shape, values)) return [];
-  if (shape === 'rect') {
-    const { x, y, width, height } = areaBounds(shape, values);
-    return [
-      { id: 'nw', x, y },
-      { id: 'ne', x: x + width, y },
-      { id: 'se', x: x + width, y: y + height },
-      { id: 'sw', x, y: y + height },
-    ];
+  switch (shape) {
+    case 'rect': {
+      const { x, y, width, height } = areaBounds(shape, values);
+      return [
+        { id: 'nw', x, y },
+        { id: 'ne', x: x + width, y },
+        { id: 'se', x: x + width, y: y + height },
+        { id: 'sw', x, y: y + height },
+      ];
+    }
+    case 'circle':
+      return [{ id: 'r', x: values[0] + values[2], y: values[1] }];
+    case 'ellipse':
+      return [
+        { id: 'rx', x: values[0] + values[2], y: values[1] },
+        { id: 'ry', x: values[0], y: values[1] + values[3] },
+      ];
+    case 'poly':
+      return polyPoints(values).map((point, index) => ({ id: `p${index}`, ...point }));
+    case 'default':
+      return [];
   }
-  if (shape === 'circle') return [{ id: 'r', x: values[0] + values[2], y: values[1] }];
-  return [];
 }
 
 const MIN_AREA_SIZE = 1;
 
-/** Drag one of {@link areaHandles} to `point`. A rect stays normalised (`x1 < x2`, `y1 < y2`). */
+/**
+ * Drag one of {@link areaHandles} to `point`. A rect stays normalised (`x1 < x2`, `y1 < y2`); a
+ * radius never drops below one pixel; a polygon point simply goes where it is dragged.
+ */
 export function resizeAreaCoords(
   shape: AreaShape,
   values: readonly number[],
   handle: string,
   point: AreaPoint,
 ): number[] {
-  if (shape === 'rect' && isValidArea(shape, values)) {
+  if (!isValidArea(shape, values)) return [...values];
+
+  if (shape === 'rect') {
     const bounds = areaBounds(shape, values);
     let [x1, y1, x2, y2] = [bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height];
     if (handle.includes('w')) x1 = point.x;
@@ -208,9 +237,23 @@ export function resizeAreaCoords(
     const [top, bottom] = [Math.min(y1, y2), Math.max(y1, y2)];
     return round([left, top, Math.max(right, left + MIN_AREA_SIZE), Math.max(bottom, top + MIN_AREA_SIZE)]);
   }
-  if (shape === 'circle' && handle === 'r' && isValidArea(shape, values)) {
+  if (shape === 'circle' && handle === 'r') {
     const [cx, cy] = values;
     return round([cx, cy, Math.max(MIN_AREA_SIZE, Math.hypot(point.x - cx, point.y - cy))]);
+  }
+  if (shape === 'ellipse' && handle === 'rx') {
+    return round([values[0], values[1], Math.max(MIN_AREA_SIZE, Math.abs(point.x - values[0])), values[3]]);
+  }
+  if (shape === 'ellipse' && handle === 'ry') {
+    return round([values[0], values[1], values[2], Math.max(MIN_AREA_SIZE, Math.abs(point.y - values[1]))]);
+  }
+  if (shape === 'poly' && /^p\d+$/.test(handle)) {
+    const index = Number(handle.slice(1));
+    if (2 * index + 1 >= values.length) return [...values];
+    const next = [...values];
+    next[2 * index] = point.x;
+    next[2 * index + 1] = point.y;
+    return round(next);
   }
   return [...values];
 }
@@ -252,6 +295,91 @@ export function clientToImagePoint(
   const x = ((clientX - box.left) / box.width) * size.width;
   const y = ((clientY - box.top) / box.height) * size.height;
   return { x: clamp(x, 0, size.width), y: clamp(y, 0, size.height) };
+}
+
+/** A polygon's points, from its flat `x1,y1,x2,y2,…` values. */
+export function polyPoints(values: readonly number[]): AreaPoint[] {
+  const points: AreaPoint[] = [];
+  for (let index = 0; index + 1 < values.length; index += 2) points.push({ x: values[index], y: values[index + 1] });
+  return points;
+}
+
+/**
+ * The polygon edge closest to `point`: `index` is the edge from point `index` to the next one (the
+ * last edge closes the ring). `null` for fewer than two points.
+ */
+export function nearestPolyEdge(values: readonly number[], point: AreaPoint): { index: number; distance: number } | null {
+  const points = polyPoints(values);
+  if (points.length < 2) return null;
+  let best = { index: 0, distance: Infinity };
+  points.forEach((start, index) => {
+    const distance = distanceToSegment(point, start, points[(index + 1) % points.length]);
+    if (distance < best.distance) best = { index, distance };
+  });
+  return best;
+}
+
+/** Add a polygon point at `point`, on the nearest edge. */
+export function insertPolyPoint(values: readonly number[], point: AreaPoint): number[] {
+  const edge = nearestPolyEdge(values, point);
+  if (!edge) return [...values];
+  const points = polyPoints(values);
+  points.splice(edge.index + 1, 0, point);
+  return round(points.flatMap(({ x, y }) => [x, y]));
+}
+
+/** Remove polygon point `index`. A polygon keeps at least three points, so a triangle is left alone. */
+export function removePolyPoint(values: readonly number[], index: number): number[] {
+  const points = polyPoints(values);
+  if (points.length <= 3 || index < 0 || index >= points.length) return [...values];
+  return points.filter((_, candidate) => candidate !== index).flatMap(({ x, y }) => [x, y]);
+}
+
+/**
+ * The polygon an author clicked point by point, as `coords` values, or `null` while it has fewer
+ * than three distinct points. Repeated points (a double-click lands twice) count once.
+ */
+export function polygonFromDraft(points: readonly AreaPoint[]): number[] | null {
+  const distinct: AreaPoint[] = [];
+  for (const point of points) {
+    const rounded = { x: Math.round(point.x), y: Math.round(point.y) };
+    const previous = distinct[distinct.length - 1];
+    if (!previous || previous.x !== rounded.x || previous.y !== rounded.y) distinct.push(rounded);
+  }
+  while (distinct.length > 1 && distinct[0].x === distinct[distinct.length - 1].x && distinct[0].y === distinct[distinct.length - 1].y) {
+    distinct.pop();
+  }
+  return distinct.length >= 3 ? distinct.flatMap(({ x, y }) => [x, y]) : null;
+}
+
+/**
+ * A polygon without the closing point some items repeat (`x1,y1,…,x1,y1`), and whether it had one.
+ * QTI does not need the repeat, and an editor that kept it would draw two handles on one spot and
+ * count a duplicate towards a polygon's three points. Write the polygon back with
+ * {@link closePolygon} when `closed`, to keep the item's own convention.
+ */
+export function openPolygon(values: readonly number[]): { values: number[]; closed: boolean } {
+  const count = Math.floor(values.length / 2);
+  const closed = count >= 4 && values[0] === values[2 * count - 2] && values[1] === values[2 * count - 1];
+  return { values: closed ? values.slice(0, 2 * count - 2) : [...values], closed };
+}
+
+/** A polygon with its first point repeated at the end; see {@link openPolygon}. */
+export function closePolygon(values: readonly number[]): number[] {
+  return values.length >= 2 ? [...values, values[0], values[1]] : [...values];
+}
+
+/** Whether `a` and `b` are within `tolerance` of each other on both axes. */
+export function isNearPoint(a: AreaPoint, b: AreaPoint, tolerance: number): boolean {
+  return Math.abs(a.x - b.x) <= tolerance && Math.abs(a.y - b.y) <= tolerance;
+}
+
+function distanceToSegment(point: AreaPoint, start: AreaPoint, end: AreaPoint): number {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const length = dx * dx + dy * dy;
+  const t = length === 0 ? 0 : clamp(((point.x - start.x) * dx + (point.y - start.y) * dy) / length, 0, 1);
+  return Math.hypot(point.x - (start.x + t * dx), point.y - (start.y + t * dy));
 }
 
 function clamp(value: number, min: number, max: number): number {
