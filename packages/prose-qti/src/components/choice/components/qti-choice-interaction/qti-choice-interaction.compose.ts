@@ -25,7 +25,6 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   const responseIdentifier = toNonEmptyString(sourceElement.getAttribute('response-identifier'));
   const correctResponse = parseResponseAttribute(sourceElement.getAttribute('correct-response'));
   const maxChoices = toFiniteNumber(sourceElement.getAttribute('max-choices'), 1);
-  const minChoices = toFiniteNumber(sourceElement.getAttribute('min-choices'), 0);
   const score = toFiniteNumber(sourceElement.getAttribute('score'), 1);
 
   stripAttributesFromElement(normalizedElement, metadata);
@@ -33,11 +32,8 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   const strippedAttributes = getStrippedAttributeSources(metadata);
 
   normalizedElement.setAttribute('max-choices', String(maxChoices));
-  if (minChoices > 0) {
-    normalizedElement.setAttribute('min-choices', String(minChoices));
-  } else {
-    normalizedElement.removeAttribute('min-choices');
-  }
+  // `min-choices` stays as the node wrote it: absent on a new interaction, as authored on an
+  // imported one — `min-choices="0"` included, which this used to strip.
 
   // QTI spec: max-choices=0 means unlimited, max-choices=1 means single selection
   const isMultiple = maxChoices !== 1;
