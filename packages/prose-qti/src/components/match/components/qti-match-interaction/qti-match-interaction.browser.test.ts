@@ -1,11 +1,15 @@
 /**
  * The answer key of a match interaction whose two sets reuse an identifier.
  *
- * QTI only asks identifiers to be unique within their `qti-simple-match-set`, and imported tables
- * do reuse them across the sets (rows `1 2 3`, columns `1 2`). The interaction prunes links that
- * name a choice no longer in the document and writes the pruned key back, so if it ever decides
- * "which side is this identifier on" with one answer per identifier, a shared identifier looks
- * missing from one of the sets and every link naming it is deleted from the item.
+ * Not conformant — QTI wants a choice identifier unique within the item — but nothing enforces it
+ * (the XSD types it as an NCName, not an `xs:ID`), and imported tables do reuse identifiers across
+ * the sets (rows `1 2 3`, columns `1 2`). The interaction prunes links that name a choice no longer
+ * in the document and writes the pruned key back, so if it decides "which side is this identifier
+ * on" with one answer per identifier, a shared identifier looks missing from one of the sets and
+ * every link naming it is deleted from the item.
+ *
+ * Only the answer key is pinned. In drag-drop mode one of the two choices is still painted on the
+ * wrong side (docs/testing-findings.md, finding 29).
  *
  * Mounted in a live view with the attrs-sync plugin, because that write-back is the damage: the
  * links have to survive in the document, not just in what the interaction paints.
@@ -96,7 +100,7 @@ describe('match correction with an identifier shared by a source and a target', 
   test.each([
     ['tabular', 'qti-match-tabular'],
     ['drag-drop', null],
-  ])('keeps every link in %s mode', async (_mode, className) => {
+  ])('does not prune the answer key in %s mode', async (_mode, className) => {
     const view = mount(matchHtml(className, KEY));
     expect(answerKey(view.state.doc)).toBe(KEY);
 

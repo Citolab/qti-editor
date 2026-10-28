@@ -193,9 +193,10 @@ export class QtiMatchInteractionEdit extends Interaction implements TabularHost,
     const roles = new Map<string, CorrectionRole>();
     const labels = new Map<string, string>();
     const limits = new Map<string, number>();
-    // Identifiers per set, kept apart from `roles`: QTI only asks for them to be unique within a
-    // set, so a source and a target may share one (imported tables do). One role per identifier
-    // would make that identifier look missing from one of the sets, and prune every link naming it.
+    // Identifiers per set, kept apart from `roles`. QTI wants a choice identifier unique within the
+    // item, but nothing enforces it and imported tables do reuse one across the sets (rows `1 2 3`,
+    // columns `1 2`). One role per identifier would make it look missing from one of the sets, and
+    // prune every link naming it from the answer key.
     const ids = { drag: new Set<string>(), drop: new Set<string>() };
 
     for (const [choices, role] of [
