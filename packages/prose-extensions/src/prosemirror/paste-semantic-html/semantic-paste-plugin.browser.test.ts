@@ -17,7 +17,7 @@ import { describe, expect, test } from 'vitest'
 
 import { defineBasicExtension } from '../../prosekit/basic.js'
 import { defineSemanticPasteExtension } from './extension.js'
-import { createSemanticPastePlugin } from './semantic-paste-plugin.js'
+import { createSemanticPastePlugin, makeHtmlSemantic } from './semantic-paste-plugin.js'
 
 import type { Node as PmNode } from 'prosemirror-model'
 import type { EditorView } from 'prosemirror-view'
@@ -188,5 +188,61 @@ describe('counting the clipboard images', () => {
     } finally {
       destroy()
     }
+  })
+})
+
+const semantic = (html: string): HTMLElement =>
+  new DOMParser().parseFromString(makeHtmlSemantic(html), 'text/html').body
+
+describe('typed list markers inside inline elements', () => {
+  // Word writes a typed "– …" or "1. …" line as <p><span>– …</span></p>. That used to recurse without end (the new
+  // list item was detected as a list paragraph again, its text still starting with the marker), and the paste
+  // silently inserted nothing.
+  test.each([
+    ['<p><span>– eerst uit te leggen</span></p>', 'ul', 'eerst uit te leggen'],
+    ['<p class="Meerkeuze-item"><span lang="NL">A. Alle inwoners</span></p>', 'ol', 'Alle inwoners'],
+    ['<p><span>1. Wat is rood?</span></p>', 'ol', 'Wat is rood?'],
+  ])('%s becomes a list without the marker', (html, list, text) => {
+    const out = semantic(html)
+    expect(out.firstElementChild?.tagName.toLowerCase()).toBe(list)
+    expect(out.querySelectorAll('li')).toHaveLength(1)
+    expect(out.querySelector('li')?.textContent).toBe(text)
+  })
+
+  test('a list item is never turned into a list of its own', () => {
+    const out = semantic('<ul><li><span>– al een lijst</span></li></ul>')
+    expect(out.querySelectorAll('ul')).toHaveLength(1)
+  })
+
+  test('a marker split over inline elements is stripped too', () => {
+    const out = semantic('<p><span>1.</span> Wat is rood?</p>')
+    expect(out.querySelector('ol > li')?.textContent).toBe('Wat is rood?')
+  })
+})
+
+describe('what can become a list', () => {
+  // Only a paragraph, or a div used as a line, is a list paragraph. Anything else that starts with a
+  // marker keeps its own structure.
+  test.each([
+    ['a heading', '<h2>1. Inleiding</h2>', 'h2'],
+    ['a numbered Word heading', '<h1 style="mso-list:l0 level1 lfo1"><span style="mso-list:Ignore">1.</span> Inleiding</h1>', 'h1'],
+    ['a table cell', '<table><tbody><tr><td>1. Amsterdam</td></tr></tbody></table>', 'td'],
+    ['a quote', '<blockquote>– zei hij</blockquote>', 'blockquote'],
+  ])('%s stays what it is', (_what, html, tag) => {
+    const out = semantic(html)
+    expect(out.querySelector(tag)).not.toBeNull()
+    expect(out.querySelector('ol, ul')).toBeNull()
+  })
+
+  test('a wrapper div does not swallow its paragraphs', () => {
+    const out = semantic('<div class="WordSection1"><p>1. Vraag</p><p>Gewone tekst</p></div>')
+    expect(out.querySelectorAll('li')).toHaveLength(1)
+    expect(out.querySelector('li')?.textContent).toBe('Vraag')
+    expect(out.querySelector('ol + p')?.textContent).toBe('Gewone tekst')
+  })
+
+  test('a div used as a line is still a list paragraph', () => {
+    const out = semantic('<div>1. Vraag</div>')
+    expect(out.querySelector('ol > li')?.textContent).toBe('Vraag')
   })
 })

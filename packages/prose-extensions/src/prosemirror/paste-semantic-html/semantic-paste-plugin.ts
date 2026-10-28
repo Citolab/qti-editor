@@ -84,7 +84,27 @@ function detectTextListType(el: HTMLElement): 'ol' | 'ul' | null {
   return null;
 }
 
+/** Block-level tags: a `div` holding one of these is a wrapper (Word's `WordSection1`), not a line. */
+const BLOCK_TAGS = new Set([
+  'ADDRESS', 'ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'DIV', 'DL', 'FIGURE', 'FOOTER', 'FORM', 'H1', 'H2',
+  'H3', 'H4', 'H5', 'H6', 'HEADER', 'HR', 'LI', 'MAIN', 'NAV', 'OL', 'P', 'PRE', 'SECTION', 'TABLE',
+  'UL',
+]);
+
+/**
+ * Only a paragraph, or a `div` used as a line, can be a list paragraph. Not a list item this pass
+ * made (re-detecting it recursed without end when the marker sat in a span), not a heading, cell or
+ * quote, and not a wrapper `div`, which would swallow all its paragraphs into one list item.
+ */
+function isListParagraphCandidate(el: HTMLElement): boolean {
+  if (el.tagName === 'P') return true;
+  if (el.tagName !== 'DIV') return false;
+  return !Array.from(el.children).some((child) => BLOCK_TAGS.has(child.tagName));
+}
+
 function getListInfo(el: HTMLElement): ListInfo | null {
+  if (!isListParagraphCandidate(el)) return null;
+
   if (isWordListParagraph(el)) {
     const marker = getWordListMarkerText(el);
     const detected = detectListTypeFromMarker(marker) ?? detectTextListType(el) ?? 'ul';
@@ -209,21 +229,34 @@ function stripLeadingTextMarker(html: string): string {
   );
 }
 
+/**
+ * Strips the typed marker ("1. ", "A) ", "– ") from the element's text, also when it sits in an
+ * inline element or is split over several (Word: `<span>1.</span> foo`).
+ */
+function stripLeadingTextMarkerFromTree(el: HTMLElement) {
+  const text = el.textContent ?? '';
+  let remaining = text.length - stripLeadingTextMarker(text).length;
+  const walker = el.ownerDocument.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node && remaining > 0; node = walker.nextNode()) {
+    const value = node.nodeValue ?? '';
+    const cut = Math.min(remaining, value.length);
+    node.nodeValue = value.slice(cut);
+    remaining -= cut;
+  }
+}
+
 function makeListItemContent(el: HTMLElement, source: 'word' | 'text'): string {
   const clone = el.cloneNode(true) as HTMLElement;
 
   clone.querySelectorAll('o\\:p').forEach((node) => node.remove());
   removeWordListMarkerFromElement(clone);
   removeNbspFromTree(clone);
+  if (source === 'text') stripLeadingTextMarkerFromTree(clone);
 
   let html = clone.innerHTML
     .replace(/<a name="[^"]*"><\/a>/gi, '')
     .replace(/<a name="[^"]*">/gi, '')
     .trim();
-
-  if (source === 'text') {
-    html = stripLeadingTextMarker(html);
-  }
 
   html = html.replace(/(<o:p>\s*<\/o:p>)/gi, '').trim();
 
