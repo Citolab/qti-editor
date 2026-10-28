@@ -1,7 +1,7 @@
 /**
  * `match-max` is a required attribute of qti-gap-text in the QTI 3.0 XSD, so the node writes it
- * whatever its value — at the default of 1 too. Dropping it there made every exported gap-match
- * item schema-invalid, and made a round trip lose the attribute on any item that had it.
+ * whatever its value. It used to be written only above 1: at 1 every exported gap-match item was
+ * schema-invalid, and `0` (unlimited) was dropped and came back as 1 (single-use).
  */
 import { createEditor } from 'prosekit/core';
 import { DOMParser as PmDOMParser, DOMSerializer } from 'prosemirror-model';
@@ -19,16 +19,16 @@ const serialize = (matchMax: number) => {
 };
 
 describe('qti-gap-text match-max', () => {
-  test.each([1, 2])('is written at %i', matchMax => {
+  test.each([0, 1, 2])('is written at %i', matchMax => {
     expect(serialize(matchMax).getAttribute('match-max')).toBe(String(matchMax));
   });
 
-  test('survives parse → serialize, also at the default', () => {
+  test.each([0, 1])('survives parse → serialize at %i', matchMax => {
     const host = document.createElement('div');
-    host.innerHTML = '<qti-gap-text identifier="W1" match-max="1">Waal</qti-gap-text>';
+    host.innerHTML = `<qti-gap-text identifier="W1" match-max="${matchMax}">Waal</qti-gap-text>`;
     const parsed = PmDOMParser.fromSchema(schema).parseSlice(host).content.firstChild;
     expect(parsed?.type).toBe(schema.nodes.qtiGapText);
-    expect(parsed?.attrs.matchMax).toBe(1);
-    expect(serialize(parsed!.attrs.matchMax as number).getAttribute('match-max')).toBe('1');
+    expect(parsed?.attrs.matchMax).toBe(matchMax);
+    expect(serialize(parsed!.attrs.matchMax as number).getAttribute('match-max')).toBe(String(matchMax));
   });
 });
