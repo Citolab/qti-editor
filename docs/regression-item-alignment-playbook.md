@@ -194,8 +194,10 @@ the `width` its source fixture already declared (250, 100%, 250, 250, 130, 300).
 editor roundtrip silently dropped image widths on export. The snapshots were updated deliberately;
 the new output is the faithful one.
 
-Still dropped on roundtrip (not addressed here): `class` on images, e.g. ITEM008's
-`class="qti-valign-middle"` and ITEM015's `class="qti-margin-3"`.
+`class` on images (ITEM008's `class="qti-valign-middle"`, ITEM015's `class="qti-margin-3"`) was
+still dropped after this. It is kept since `qtiBasicNodes` took the html-schema global attributes
+(`class`, `id`, `lang`, `xml:lang`); the ITEM008 and ITEM015 snapshots gained exactly those two
+classes then.
 
 ### Known drift
 

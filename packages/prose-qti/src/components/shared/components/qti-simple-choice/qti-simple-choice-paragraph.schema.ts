@@ -1,3 +1,5 @@
+import { withGlobalAttrs } from '@citolab/prose-extensions/html-schema';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 /*
@@ -9,10 +11,11 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
  * inside this paragraph rather than inside the choice, so `/` never matched on paste. See the long
  * note on the same change in qti-simple-choice.schema.ts.
  */
-export const qtiSimpleChoiceParagraphNodeSpec: NodeSpec = {
+// `class`, `id`, `lang` and `xml:lang`, in both schemas: see `global-attrs.ts` in prose-extensions.
+export const qtiSimpleChoiceParagraphNodeSpec: NodeSpec = withGlobalAttrs({
   content: '(text | image)*',
   parseDOM: [{ tag: 'p', context: 'qtiSimpleChoice//', priority: 60 }],
   toDOM(): DOMOutputSpec {
     return ['p', 0];
   },
-};
+});

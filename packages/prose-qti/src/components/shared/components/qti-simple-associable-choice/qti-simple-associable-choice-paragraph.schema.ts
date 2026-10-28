@@ -1,6 +1,9 @@
+import { withGlobalAttrs } from '@citolab/prose-extensions/html-schema';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
-export const qtiSimpleAssociableChoiceParagraphNodeSpec: NodeSpec = {
+// `class`, `id`, `lang` and `xml:lang`, in both schemas: see `global-attrs.ts` in prose-extensions.
+export const qtiSimpleAssociableChoiceParagraphNodeSpec: NodeSpec = withGlobalAttrs({
   content: 'inline*',
   /*
    * Scoped to its own parent, like `qtiSimpleChoiceParagraph` and `qtiPromptParagraph`.
@@ -18,4 +21,4 @@ export const qtiSimpleAssociableChoiceParagraphNodeSpec: NodeSpec = {
   toDOM(): DOMOutputSpec {
     return ['p', 0];
   }
-};
+});

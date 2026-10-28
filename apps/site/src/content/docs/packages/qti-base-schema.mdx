@@ -17,8 +17,8 @@ Use this package when you build your ProseMirror `Schema` by hand (see the [Type
 
 ## What it provides
 
-- `qtiBasicNodes` — `prosemirror-schema-basic`'s node specs with the `image` node's `parseDOM`/`toDOM` replaced to round-trip `width`/`height`, plus a `qtiLayoutDiv` node for the QTI layout wrappers.
-- `qtiBasicMarks` — `prosemirror-schema-basic`'s marks, unchanged, plus one mark per QTI 3 phrasing element it lacks (`b`, `i`, `small`, `big`, `tt`, `abbr`, `acronym`, `cite`, `dfn`, `kbd`, `samp`, `var`, `q`, `sub`, `sup`, `bdo`, `bdi`) from `@citolab/prose-extensions/html-schema`, so those elements survive an import instead of being unwrapped.
+- `qtiBasicNodes` — `prosemirror-schema-basic`'s node specs with the `image` node's `parseDOM`/`toDOM` replaced to round-trip `width`/`height`, plus a `qtiLayoutDiv` node for the QTI layout wrappers. Every node also keeps `class`, `id`, `lang` and `xml:lang` (see [HTML Schema](/docs/prosemirror-plugins/html-schema/#global-attributes)).
+- `qtiBasicMarks` — `prosemirror-schema-basic`'s marks, with the same four attributes, a `span` mark for a `<span>` that carries any of them, plus one mark per QTI 3 phrasing element it lacks (`b`, `i`, `small`, `big`, `tt`, `abbr`, `acronym`, `cite`, `dfn`, `kbd`, `samp`, `var`, `q`, `sub`, `sup`, `bdo`, `bdi`) from `@citolab/prose-extensions/html-schema`, so those elements survive an import instead of being unwrapped.
 - `qtiLayoutDivLockPlugin` — an optional ProseMirror plugin that keeps `qtiLayoutDiv` wrappers from being added or removed by editing. Not included automatically; add it to your plugin list.
 - `qtiPasteRescuePlugin` — an optional ProseMirror plugin that fixes up a multi-block paste landing in a slot that only holds one block. Not included automatically; add it to your plugin list.
 

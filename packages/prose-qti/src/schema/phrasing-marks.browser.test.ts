@@ -177,6 +177,8 @@ test('both schemas rank these marks the same, and after em / strong', () => {
     // the two schemas, and did before these marks existed — see docs/testing-findings.md.)
     for (const outer of ['em', 'strong']) {
       expect(names.indexOf(outer), `${label}: ${outer}`).toBeLessThan(names.indexOf('code'));
+      // …and the span outside those too, so a language or class span is written outermost.
+      expect(names.indexOf('span'), `${label}: span before ${outer}`).toBeLessThan(names.indexOf(outer));
     }
   }
 });

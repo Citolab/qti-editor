@@ -1,3 +1,5 @@
+import { withGlobalAttrs } from '@citolab/prose-extensions/html-schema';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 /*
@@ -15,10 +17,11 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
  * paste rescue in `schema/paste-rescue.ts` is what stops such a paragraph reaching the fitter at
  * all; this rule is widened for consistency with the others, and is inert without it.
  */
-export const qtiPromptParagraphNodeSpec: NodeSpec = {
+// `class`, `id`, `lang` and `xml:lang`, in both schemas: see `global-attrs.ts` in prose-extensions.
+export const qtiPromptParagraphNodeSpec: NodeSpec = withGlobalAttrs({
   content: '(text | image)*',
   parseDOM: [{ tag: 'p', context: 'qtiPrompt//', priority: 60 }],
   toDOM(): DOMOutputSpec {
     return ['p', 0];
   },
-};
+});

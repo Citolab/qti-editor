@@ -17,7 +17,7 @@ import { describe, expect, test } from 'vitest'
 
 import { defineBasicExtension } from '../../prosekit/basic.js'
 import { defineSemanticPasteExtension } from './extension.js'
-import { createSemanticPastePlugin } from './semantic-paste-plugin.js'
+import { createSemanticPastePlugin, type SemanticPasteOptions } from './semantic-paste-plugin.js'
 
 import type { Node as PmNode } from 'prosemirror-model'
 import type { EditorView } from 'prosemirror-view'
@@ -34,9 +34,9 @@ function pngFile(name = 'image.png'): File {
   return new File([bytes], name, { type: 'image/png' })
 }
 
-function makeEditor() {
+function makeEditor(options?: SemanticPasteOptions) {
   const editor = createEditor({
-    extension: union(defineBasicExtension(), defineSemanticPasteExtension()),
+    extension: union(defineBasicExtension(), defineSemanticPasteExtension(options)),
   })
   const element = document.createElement('div')
   document.body.appendChild(element)
@@ -216,6 +216,70 @@ describe('pasting bold and italic', () => {
     try {
       await paste(view, { html: '<p data-pm-slice="1 1 []">A <b>bold</b> word</p>', text: 'A bold word' })
       expect(textMarks(view.state.doc)).toEqual(['A :', 'bold:b', ' word:'])
+    } finally {
+      destroy()
+    }
+  })
+})
+
+describe('classes and ids on pasted content', () => {
+  /** `[class, id]` of every paragraph in the document. */
+  function paragraphAttrs(doc: PmNode): Array<[unknown, unknown]> {
+    const found: Array<[unknown, unknown]> = []
+    doc.descendants((node) => {
+      if (node.type.name === 'paragraph') found.push([node.attrs.class, node.attrs.id])
+    })
+    return found
+  }
+
+  const WORD = '<p class="MsoNormal">Plain</p><p class="MsoNormal qti-align-center" id="_Hlk1">Centred</p>'
+
+  test('by default no foreign class is imported, and no id', async () => {
+    const { view, destroy } = makeEditor()
+    try {
+      await paste(view, { html: WORD })
+
+      expect(paragraphAttrs(view.state.doc)).toEqual([[null, null], [null, null]])
+    } finally {
+      destroy()
+    }
+  })
+
+  test('keepClass decides which class tokens survive (prose-qti keeps qti-*)', async () => {
+    const { view, destroy } = makeEditor({ keepClass: (token) => token.startsWith('qti-') })
+    try {
+      await paste(view, { html: WORD })
+
+      expect(paragraphAttrs(view.state.doc)).toEqual([[null, null], ['qti-align-center', null]])
+    } finally {
+      destroy()
+    }
+  })
+
+  test("a web page's classes and ids are not imported", async () => {
+    const { view, destroy } = makeEditor()
+    try {
+      await paste(view, { html: '<p class="article-body" id="intro"><strong class="hl">Hello</strong></p>' })
+
+      expect(paragraphAttrs(view.state.doc)).toEqual([[null, null]])
+      let strong: unknown
+      view.state.doc.descendants((node) => {
+        const mark = node.marks.find((m) => m.type.name === 'strong')
+        if (mark) strong = mark.attrs.class
+      })
+      expect(strong).toBeNull()
+    } finally {
+      destroy()
+    }
+  })
+
+  test('content copied out of a ProseMirror editor keeps its classes, whatever keepClass says', async () => {
+    const { view, destroy } = makeEditor()
+    try {
+      // What `serializeForClipboard` writes: the slice marker on the first element.
+      await paste(view, { html: '<p data-pm-slice="0 0 []" class="kader">Boxed</p>' })
+
+      expect(paragraphAttrs(view.state.doc)).toEqual([['kader', null]])
     } finally {
       destroy()
     }

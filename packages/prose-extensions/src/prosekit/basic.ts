@@ -2,11 +2,13 @@ import {
   defineBaseCommands,
   defineBaseKeymap,
   defineHistory,
+  defineMarkSpec,
   defineNodeAttr,
   defineNodeSpec,
   union,
   type BaseCommandsExtension,
   type BaseKeymapExtension,
+  type Extension,
   type HistoryExtension,
   type Union,
 } from 'prosekit/core'
@@ -22,11 +24,26 @@ import {
 import { defineTable, type TableExtension } from 'prosekit/extensions/table'
 import { defineText, type TextExtension } from 'prosekit/extensions/text'
 
-import { tableCaptionSpec } from '../prosemirror/html-schema/index.js'
+import {
+  spanMarkSpec,
+  tableCaptionSpec,
+  type GlobalAttrs,
+} from '../prosemirror/html-schema/index.js'
+import {
+  defineMarkGlobalAttrs,
+  defineNodeGlobalAttrs,
+  defineUniqueIds,
+  type MarkGlobalAttrsExtension,
+  type NodeGlobalAttrsExtension,
+} from './global-attrs.js'
 import { defineGapCursorParagraph } from './gap-cursor-paragraph.js'
 import { defineList, type ListExtension, type ListOptions } from './list.js'
 import { definePhrasingMarks, type PhrasingMarksExtension } from './phrasing-marks.js'
 import { defineEm, defineStrong, type EmExtension, type StrongExtension } from './strong-em.js'
+
+import type {
+  GLOBAL_ATTR_MARKS,
+  GLOBAL_ATTR_NODES} from '../prosemirror/html-schema/index.js';
 
 /**
  * The base every ProseKit-based QTI editor in this repo builds on.
@@ -154,8 +171,13 @@ function defineQtiImage(): ImageExtension {
           },
         },
       ],
-      // prosemirror-model skips null values, so absent attributes stay absent on the way out.
-      toDOM: node => ['img', node.attrs],
+      // prosemirror-model skips null values, so absent attributes stay absent on the way out. Only
+      // the image's own attributes: the global ones (`xmlLang` is not a DOM name) are written by
+      // `defineNodeGlobalAttrs`.
+      toDOM: node => {
+        const { src, alt, title, width, height } = node.attrs
+        return ['img', { src, alt, title, width, height }]
+      },
     }),
     defineImageCommands(),
   ) as unknown as ImageExtension
@@ -182,6 +204,42 @@ function defineQtiParagraph(): ParagraphExtension {
   ) as unknown as ParagraphExtension
 }
 
+/** ProseKit's names for the prosemirror-tables nodes in `GLOBAL_ATTR_NODES`. */
+const PROSEKIT_NODE_NAMES = {
+  table_row: 'tableRow',
+  table_cell: 'tableCell',
+  table_header: 'tableHeaderCell',
+} as const
+
+type ProseKitNodeName<Name extends string> = Name extends keyof typeof PROSEKIT_NODE_NAMES
+  ? (typeof PROSEKIT_NODE_NAMES)[Name]
+  : Name
+
+/**
+ * The nodes of `GLOBAL_ATTR_NODES` that this extension has. The rest (`blockquote`,
+ * `horizontal_rule`, `code_block`, `hard_break`) have no node here; a host that adds one adds
+ * `defineNodeGlobalAttrs` for it.
+ */
+const GLOBAL_ATTR_NODE_TYPES = [
+  'paragraph',
+  'heading',
+  'bullet_list',
+  'ordered_list',
+  'list_item',
+  'image',
+  'table',
+  'tableRow',
+  'tableCell',
+  'tableHeaderCell',
+] as const satisfies ReadonlyArray<ProseKitNodeName<(typeof GLOBAL_ATTR_NODES)[number]>>
+
+/** The marks of `GLOBAL_ATTR_MARKS` that this extension has: all but `link`. */
+const GLOBAL_ATTR_MARK_TYPES = ['em', 'strong', 'code'] as const satisfies ReadonlyArray<
+  (typeof GLOBAL_ATTR_MARKS)[number]
+>
+
+export type SpanExtension = Extension<{ Marks: { span: GlobalAttrs } }>
+
 export type BasicExtension = Union<
   [
     // Nodes
@@ -196,6 +254,10 @@ export type BasicExtension = Union<
     PhrasingMarksExtension,
     EmExtension,
     StrongExtension,
+    SpanExtension,
+    // Global attributes
+    NodeGlobalAttrsExtension<(typeof GLOBAL_ATTR_NODE_TYPES)[number]>,
+    MarkGlobalAttrsExtension<(typeof GLOBAL_ATTR_MARK_TYPES)[number]>,
     // Behaviour
     BaseKeymapExtension,
     BaseCommandsExtension,
@@ -237,6 +299,14 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     definePhrasingMarks(),
     defineEm(),
     defineStrong(),
+    // After em/strong, so it ranks before them: a span is written outside them. See `span.ts`.
+    defineMarkSpec<'span', GlobalAttrs>({ name: 'span', ...spanMarkSpec }),
+    // `class`, `id`, `lang` and `xml:lang` on the nodes and marks above whose spec is not ours to
+    // set; the phrasing marks and the span carry them in their specs. See `global-attrs.ts`.
+    ...GLOBAL_ATTR_NODE_TYPES.map(type => defineNodeGlobalAttrs(type)),
+    ...GLOBAL_ATTR_MARK_TYPES.map(type => defineMarkGlobalAttrs(type)),
+    // …and a split or a paste must not leave two nodes with the same id.
+    defineUniqueIds(),
     // Behaviour
     defineBaseKeymap(),
     defineBaseCommands(),

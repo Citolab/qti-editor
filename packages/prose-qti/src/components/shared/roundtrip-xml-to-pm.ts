@@ -17,6 +17,8 @@
  */
 import { DOMParser as PMDOMParser, type Node as ProseMirrorNode, type Schema } from 'prosemirror-model';
 
+const XML_NS = 'http://www.w3.org/XML/1998/namespace';
+
 export function roundtripXmlToPm(xmlDoc: XMLDocument, schema: Schema): ProseMirrorNode {
   const itemBody = xmlDoc.documentElement;
   if (!itemBody || itemBody.localName !== 'qti-item-body') {
@@ -55,7 +57,11 @@ export function roundtripXmlToPm(xmlDoc: XMLDocument, schema: Schema): ProseMirr
 /**
  * Recursively clone an XML node into an HTML element owned by `htmlDoc`. Tag
  * names are lowercased into the HTML namespace (so PM's tag matching works) and
- * namespace declarations are dropped. Unlike a `XMLSerializer` + `innerHTML`
+ * namespace declarations are dropped. Attributes keep their local name, except
+ * those in the XML namespace: `xml:lang` stays `xml:lang` rather than becoming
+ * `lang`, so an item's `xml:lang` and `lang` are not confused (QTI allows both,
+ * and the schema keeps each as its own attribute). That is also what linkedom,
+ * the Node conversion's DOM, gives. Unlike a `XMLSerializer` + `innerHTML`
  * round-trip, this keeps empty custom elements empty instead of reopening them
  * and nesting their following siblings inside (which silently drops content for
  * atom nodes such as `qti-gap`).
@@ -66,7 +72,7 @@ function importXmlAsHtml(xmlNode: Node, htmlDoc: Document): Node {
     const htmlEl = htmlDoc.createElement(xmlEl.localName);
     for (const attr of Array.from(xmlEl.attributes)) {
       if (attr.name === 'xmlns' || attr.name.startsWith('xmlns:')) continue;
-      htmlEl.setAttribute(attr.localName, attr.value);
+      htmlEl.setAttribute(attr.namespaceURI === XML_NS ? attr.name : attr.localName, attr.value);
     }
     for (const child of Array.from(xmlEl.childNodes)) {
       htmlEl.appendChild(importXmlAsHtml(child, htmlDoc));

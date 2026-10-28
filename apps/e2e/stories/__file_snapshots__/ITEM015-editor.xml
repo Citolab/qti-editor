@@ -19,7 +19,7 @@
     <div class="qti-layout-row">
       <div class="qti-layout-col4">
         <p>
-          <img src="/qti/kennisnet/resources/chemistry.png" alt="Vragen" width="300"/>
+          <img src="/qti/kennisnet/resources/chemistry.png" alt="Vragen" width="300" class="qti-margin-3"/>
         </p>
       </div>
       <div class="qti-layout-col8">

@@ -18,6 +18,49 @@ Plain ProseMirror only: importing it does not need `prosekit`.
 pnpm add @citolab/prose-extensions
 ```
 
+## Global attributes
+
+`class`, `id`, `lang` and `xml:lang` are the attributes QTI 3 gives every content element. Without
+an attribute to hold them, ProseMirror's parser drops them on load. `withGlobalAttrs(spec)` returns a
+copy of a node or mark spec that keeps them; `withGlobalAttrsOn(specs)` does that for every entry of
+a `nodes` or `marks` object that `GLOBAL_ATTR_NODES` / `GLOBAL_ATTR_MARKS` names:
+
+```ts
+import { marks as basicMarks, nodes as basicNodes } from 'prosemirror-schema-basic';
+import { spanMarkSpec, withGlobalAttrsOn } from '@citolab/prose-extensions/html-schema';
+
+const nodes = withGlobalAttrsOn({ ...basicNodes });
+const marks = withGlobalAttrsOn({ link: basicMarks.link, span: spanMarkSpec, ...basicMarks });
+```
+
+- Every parse rule keeps its own match and attributes (a heading keeps its `level`), and the spec's
+  `toDOM` still decides the element.
+- `null` means "no attribute": an element without them serialises as before.
+- `lang` and `xml:lang` are two attributes (`lang`, `xmlLang`). Each is written back as the attribute
+  it was read from; `xml:lang` in the XML namespace, which the browser also reads as the element's
+  language in the editor.
+- In ProseKit, `defineBasicExtension()` applies the same list. For a node or mark of your own, add
+  `defineNodeGlobalAttrs(type)` / `defineMarkGlobalAttrs(type)` from
+  `@citolab/prose-extensions/prosekit`. There, `class`, `lang` and `xml:lang` are `splittable`
+  (Enter at the end of a block carries them on); `id` is not.
+
+## Spans
+
+`spanMarkSpec` keeps a `<span>` that has a `class`, `id`, `lang` or `xml:lang` — one mark for all
+four, so `<span class="qti-underline" xml:lang="fr">` keeps both. It matches those attributes
+(`span[class]`, `span[id]`, …), so a bare `<span>` is still unwrapped and
+[Schema Gaps](/docs/prosemirror-plugins/schema-gaps/) still reports it. Nested spans stay separate,
+and the span is ranked before the other content marks, so it is written outside them.
+
+## Unique ids
+
+An id must be unique, but editing copies it: Enter in the middle of a paragraph gives both halves
+its attributes, and a pasted copy of a block brings its id along. `createUniqueIdsPlugin()` clears the
+id on the copy and keeps it on the original. At the start of a block, where Enter leaves an empty line
+in front, the id stays with the text. It only looks at the nodes an edit created, so a loaded item
+that already has duplicate ids is left as it is. `defineBasicExtension()` includes it as
+`defineUniqueIds()`.
+
 ## Phrasing marks
 
 `phrasingMarkSpecs` holds one mark per phrasing element of QTI 3 that `prosemirror-schema-basic`

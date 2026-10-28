@@ -1,3 +1,5 @@
+import { withGlobalAttrs } from './global-attrs.js';
+
 import type { Attrs, DOMOutputSpec, Mark, MarkSpec } from 'prosemirror-model';
 
 /**
@@ -37,7 +39,8 @@ import type { Attrs, DOMOutputSpec, Mark, MarkSpec } from 'prosemirror-model';
  *
  * ## Attributes
  *
- * Only the ones the XSD gives the element itself: `cite` on `q`, `dir` on `bdo` and `bdi` (without it
+ * The global ones every mark here has (`class`, `id`, `lang`, `xml:lang`; see `global-attrs.ts`),
+ * plus the ones the XSD gives the element itself: `cite` on `q`, `dir` on `bdo` and `bdi` (without it
  * `bdo` means nothing), `title` on `bdo`.
  */
 
@@ -79,7 +82,7 @@ function phrasingMark(tag: PhrasingMarkTag): MarkSpec {
   const readOwn = (element: HTMLElement): Attrs =>
     Object.fromEntries(own.map(name => [name, element.getAttribute(name) || null]));
 
-  return {
+  return withGlobalAttrs({
     ...(own.length ? { attrs: Object.fromEntries(own.map(name => [name, { default: null, validate: 'string|null' }])) } : {}),
     parseDOM: [
       {
@@ -97,7 +100,7 @@ function phrasingMark(tag: PhrasingMarkTag): MarkSpec {
       }
       return [tag, dom, 0];
     },
-  };
+  });
 }
 
 /**

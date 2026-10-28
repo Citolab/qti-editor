@@ -1,6 +1,9 @@
+import { withGlobalAttrs } from '@citolab/prose-extensions/html-schema';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
-export const qtiPromptNodeSpec: NodeSpec = {
+// `class`, `id`, `lang` and `xml:lang`, in both schemas: see `global-attrs.ts` in prose-extensions.
+export const qtiPromptNodeSpec: NodeSpec = withGlobalAttrs({
   content: 'qtiPromptParagraph',
   placeholder: 'Enter the question or instruction…',
   parseDOM: [
@@ -16,4 +19,4 @@ export const qtiPromptNodeSpec: NodeSpec = {
   toDOM(): DOMOutputSpec {
     return ['qti-prompt', 0];
   }
-};
+});
