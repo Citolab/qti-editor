@@ -1,3 +1,4 @@
+import { semanticMarkSpecs } from '@citolab/prose-extensions/semantic-marks';
 import { nodes as basicNodes, marks as basicMarks } from 'prosemirror-schema-basic';
 
 import { qtiLayoutDivNodeSpec } from './qti-layout-div.js';
@@ -103,8 +104,17 @@ export const qtiBasicNodes = {
 };
 
 /**
- * Unmodified. Re-exported so a host takes its nodes and marks from one place, and so the name does
- * not have to change if a QTI-specific mark is ever needed. `code` — one of the four elements QTI
- * permits that people expect to find in the node set — lives here, as a mark, not a node.
+ * prosemirror-schema-basic's marks, unchanged, plus the inline phrasing elements an item body carries:
+ * `u`, `s`, `mark`, `q`, `sub`, `sup` and `qtiUnderline` (`<span class="qti-underline">`). Without
+ * them those elements were unwrapped on import — the text kept, the markup gone — so saving an item
+ * stripped its underlines, struck-through options, subscripts and quotations.
+ *
+ * The specs are `@citolab/prose-extensions/semantic-marks`, the same ones `defineBasicExtension()`
+ * registers, and in the same order after `em` / `strong` / `code`, so the plain-ProseMirror schema
+ * and the ProseKit one nest marks identically. `code` — one of the four elements QTI permits that
+ * people expect to find in the node set — lives here, as a mark, not a node.
  */
-export const qtiBasicMarks = basicMarks;
+export const qtiBasicMarks = {
+  ...basicMarks,
+  ...semanticMarkSpecs
+};

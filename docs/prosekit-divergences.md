@@ -41,6 +41,21 @@ vocabulary.
 
 **Replaced by** `defineEm` / `defineStrong` (`prosekit/strong-em.ts`), named for the tags they emit.
 
+### `underline` / `strike` / `highlight` / `subscript` / `superscript`
+
+ProseKit's marks for `<u>`, `<s>`, `<mark>`, `<sub>` and `<sup>` are named for what they look like, and
+their parse rules are generous: `strike` also reads `<strike>` and `<del>`, `underline` reads
+`<underline>`, and all of them read `text-decoration` / `vertical-align` styles — then serialise every
+one of those as the single canonical tag. `subscript` and `superscript` also exclude each other.
+For an item that is a rewrite: an exported `<del>` comes back as `<s>`, a styled span as `<u>`, and
+`<sub><sup>x</sup></sub>` loses one of the two.
+
+**Replaced by** `defineSemanticMarks` (`prosekit/semantic-marks.ts`, specs in
+`prosemirror/semantic-marks`): marks named `u`, `s`, `mark`, `q`, `sub`, `sup` for the tags they emit,
+each parsing only its own tag, no exclusions, plus `code` (prosemirror-schema-basic's) and
+`qtiUnderline` for `<span class="qti-underline">`. Registered in reverse so the ProseKit schema ranks
+them the way `qtiBasicMarks` does — ProseKit ranks a later registration higher.
+
 ### `image` — block, no `alt`, size measured from layout
 
 Three divergences from `prosemirror-schema-basic`, each of which was a bug:

@@ -103,6 +103,13 @@ describe('the HTML boundary', () => {
     expect(pmToHtml(doc)).toBe('<p>Water boils at 100 degrees.</p>');
   });
 
+  test('inline phrasing marks survive, including the qti-underline span', () => {
+    const html =
+      '<p>H<sub>2</sub>O, 10<sup>3</sup>, <u>u</u>, <s>s</s>, <mark>m</mark>, <q>q</q>, <code>c</code>, ' +
+      '<span class="qti-underline">x</span></p>';
+    expect(pmToHtml(htmlToPm(html, { identifier: 'X', title: 'X' }))).toBe(html);
+  });
+
   test('htmlToPm coerces rather than throwing — which is why validateHtml exists', () => {
     // A table is not legal inside a prompt. The parser does not complain; it quietly rewrites.
     expect(() =>

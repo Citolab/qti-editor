@@ -25,6 +25,7 @@ import { defineText, type TextExtension } from 'prosekit/extensions/text'
 import { tableCaptionSpec } from '../prosemirror/html-schema/index.js'
 import { defineGapCursorParagraph } from './gap-cursor-paragraph.js'
 import { defineList, type ListExtension, type ListOptions } from './list.js'
+import { defineSemanticMarks, type SemanticMarksExtension } from './semantic-marks.js'
 import { defineEm, defineStrong, type EmExtension, type StrongExtension } from './strong-em.js'
 
 /**
@@ -192,6 +193,7 @@ export type BasicExtension = Union<
     ImageExtension,
     TableExtension,
     // Marks
+    SemanticMarksExtension,
     EmExtension,
     StrongExtension,
     // Behaviour
@@ -231,6 +233,8 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     defineNodeSpec({ name: 'tableCell', content: '(paragraph | block)+' }),
     defineNodeSpec({ name: 'tableHeaderCell', content: '(paragraph | block)+' }),
     // Marks
+    // Before em/strong: ProseKit ranks a later registration higher. See semantic-marks.ts.
+    defineSemanticMarks(),
     defineEm(),
     defineStrong(),
     // Behaviour

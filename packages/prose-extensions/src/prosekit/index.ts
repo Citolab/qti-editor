@@ -8,6 +8,7 @@ export {
   type StrongExtension,
   type StrongSpecExtension,
 } from './strong-em.js'
+export { defineSemanticMarks, type SemanticMarksExtension } from './semantic-marks.js'
 export { defineList, type ListExtension, type ListOptions } from './list.js'
 export {
   defineBasicExtension,

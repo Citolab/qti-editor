@@ -64,6 +64,10 @@
       "types": "./dist/prosemirror/html-schema/index.d.ts",
       "default": "./dist/prosemirror/html-schema/index.js"
     },
+    "./semantic-marks": {
+      "types": "./dist/prosemirror/semantic-marks/index.d.ts",
+      "default": "./dist/prosemirror/semantic-marks/index.js"
+    },
     "./prosekit/basic": {
       "types": "./dist/prosekit/basic.d.ts",
       "default": "./dist/prosekit/basic.js"

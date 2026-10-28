@@ -355,3 +355,16 @@ Same trap as finding 16's third bullet, recurring in a different node. ProseKit'
 
 - **Fix**: a `TableView` subclass that renders the caption, or an attributes-panel field for it in the host. Neither is in this repo.
 - **Where to look**: `packages/prose-extensions/src/prosemirror/html-schema/table-caption.ts`; `packages/prose-qti/src/schema/table-caption.browser.test.ts`.
+
+## 30. `formatXml` breaks lines inside inline content, so nested marks gain a marked space — **open**
+
+`formatXml` (`packages/prose-qti/src/core/composer/index.ts`), which `pmToQti3` / `exportItemXml` run by default, inserts a newline between *any* two adjacent tags: `<p><strong><u>a</u></strong> b</p>` is written as `<strong>⏎<u>a</u>⏎</strong>`. On re-import that line break is inline whitespace inside `<strong>`, so the space after `a` comes back **inside** the strong mark — a second round trip is not equal to the first. Found while pinning the semantic marks' round trip (`packages/prose-qti/src/schema/semantic-marks.browser.test.ts`), but it already happens to `<strong><em>…</em></strong>`.
+
+- **Test handling**: the semantic-marks stability test exports with `{ format: false }` and says why; the per-mark tests ignore whitespace-only text.
+- **Fix**: `formatXml` should not indent inside mixed content (any element with a non-whitespace text child), or the export should skip formatting the item body.
+
+## 31. The two schemas nest `em` and `strong` in opposite orders — **open**
+
+A plain `Schema` ranks marks in the order its `marks` object lists them; ProseKit ranks a later registration higher. `qtiBasicMarks` lists `em, strong` and `defineBasicExtension` registers `defineEm(), defineStrong()`, so the roundtrip schema writes `<em><strong>x</strong></em>` and the ProseKit schema writes `<strong><em>x</em></strong>` for the same document. The semantic marks (`code, u, s, mark, q, sub, sup, qtiUnderline`) are registered so both schemas agree on them (see `packages/prose-extensions/src/prosekit/semantic-marks.ts`); `em` / `strong` were left alone because changing either order changes existing exports.
+
+- **Where to look**: `packages/prose-qti/src/schema/semantic-marks.browser.test.ts` ("both schemas rank these marks the same").

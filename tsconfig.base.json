@@ -60,6 +60,9 @@
       "@citolab/prose-extensions/html-schema": [
         "packages/prose-extensions/src/prosemirror/html-schema/index.ts"
       ],
+      "@citolab/prose-extensions/semantic-marks": [
+        "packages/prose-extensions/src/prosemirror/semantic-marks/index.ts"
+      ],
       "@citolab/prose-extensions/prosekit/basic": [
         "packages/prose-extensions/src/prosekit/basic.ts"
       ],
