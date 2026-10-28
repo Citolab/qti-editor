@@ -190,3 +190,34 @@ describe('counting the clipboard images', () => {
     }
   })
 })
+
+/** The mark names on each text node of the document, in order. */
+function textMarks(doc: PmNode): string[] {
+  const found: string[] = []
+  doc.descendants((node) => {
+    if (node.isText) found.push(`${node.text}:${node.marks.map((mark) => mark.type.name).join('+')}`)
+  })
+  return found
+}
+
+describe('pasting bold and italic', () => {
+  test('foreign <b> and <i> arrive as strong and em, the marks the editor itself makes', async () => {
+    const { view, destroy } = makeEditor()
+    try {
+      await paste(view, { html: '<p>A <b>bold</b> and <i>italic</i> word</p>', text: 'A bold and italic word' })
+      expect(textMarks(view.state.doc)).toEqual(['A :', 'bold:strong', ' and :', 'italic:em', ' word:'])
+    } finally {
+      destroy()
+    }
+  })
+
+  test('a b mark copied inside a ProseMirror editor stays a b mark', async () => {
+    const { view, destroy } = makeEditor()
+    try {
+      await paste(view, { html: '<p data-pm-slice="1 1 []">A <b>bold</b> word</p>', text: 'A bold word' })
+      expect(textMarks(view.state.doc)).toEqual(['A :', 'bold:b', ' word:'])
+    } finally {
+      destroy()
+    }
+  })
+})

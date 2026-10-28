@@ -36,6 +36,14 @@ Add the returned extension to your editor's extension composition.
 
 Use this when pasted content needs cleanup before it enters the editor document, especially for list-heavy copy/paste flows.
 
+## Bold and italic
+
+A `<b>` or `<i>` pasted from another application (Word, Google Docs, a web page) becomes `<strong>` /
+`<em>`, the marks the editor's own bold and italic make. The schema keeps `<b>` and `<i>` as marks of
+their own when an item is imported, so without this step a pasted bold would not respond to the bold
+button. HTML that a ProseMirror editor put on the clipboard (it carries a `data-pm-slice` marker) is
+left as it is.
+
 ## Image paste handling
 
 Word, Excel, PowerPoint and Outlook all put a bitmap of the whole selection on the clipboard as a

@@ -5,4 +5,5 @@
  *
  * Plain ProseMirror only; nothing here imports `prosekit`.
  */
+export * from './phrasing-marks.js';
 export * from './table-caption.js';

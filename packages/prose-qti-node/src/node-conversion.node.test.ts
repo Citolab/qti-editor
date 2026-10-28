@@ -103,6 +103,13 @@ describe('the HTML boundary', () => {
     expect(pmToHtml(doc)).toBe('<p>Water boils at 100 degrees.</p>');
   });
 
+  test('the QTI phrasing marks survive, with their own attributes', () => {
+    const html =
+      '<p>H<sub>2</sub>O, 10<sup>3</sup>, <b>b</b>, <i>i</i>, <q cite="https://example.org">q</q>, ' +
+      '<code>c</code>, <abbr>WHO</abbr>, <kbd>k</kbd>, <var>x</var>, <bdo dir="rtl">abc</bdo></p>';
+    expect(pmToHtml(htmlToPm(html, { identifier: 'X', title: 'X' }))).toBe(html);
+  });
+
   test('htmlToPm coerces rather than throwing — which is why validateHtml exists', () => {
     // A table is not legal inside a prompt. The parser does not complain; it quietly rewrites.
     expect(() =>

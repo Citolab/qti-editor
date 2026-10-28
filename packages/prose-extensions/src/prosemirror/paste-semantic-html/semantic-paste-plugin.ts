@@ -418,6 +418,24 @@ function stripQtiWebComponentInternals(root: ParentNode) {
   });
 }
 
+/**
+ * `<b>` and `<i>` from OUTSIDE the editor become `<strong>` and `<em>`.
+ *
+ * The schema keeps `<b>` and `<i>` as marks of their own (`html-schema`'s phrasing marks), which is
+ * right for an imported item and wrong for a clipboard: Word, Google Docs and most web pages write
+ * bold and italic as `<b>` / `<i>`, and the author expects the editor's bold and italic. HTML that
+ * ProseMirror itself put on the clipboard (its `data-pm-slice` marker) is left alone, so a `b` mark
+ * copied inside the editor stays one.
+ */
+function foreignBoldItalicToStrongEm(root: HTMLElement) {
+  if (root.querySelector('[data-pm-slice]')) return;
+  root.querySelectorAll('b, i').forEach((el) => {
+    const replacement = el.ownerDocument.createElement(el.localName === 'b' ? 'strong' : 'em');
+    replacement.append(...Array.from(el.childNodes));
+    el.replaceWith(replacement);
+  });
+}
+
 export function makeHtmlSemantic(html: string): string {
   const parser = new window.DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
@@ -434,6 +452,9 @@ export function makeHtmlSemantic(html: string): string {
   // Clean leftover Word artifacts after list reconstruction
   doc.querySelectorAll('[style*="mso-list:Ignore"], [style*="mso-list:ignore"]').forEach((el) => el.remove());
   doc.querySelectorAll('o\\:p').forEach((el) => el.remove());
+
+  // After `walk`, which has already unwrapped Google Docs' `<b style="font-weight:normal">`.
+  foreignBoldItalicToStrongEm(doc.body);
 
   return doc.body.innerHTML
     .replace(/\u00A0/g, ' ')
