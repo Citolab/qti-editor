@@ -25,7 +25,8 @@ function buildImageDomAttrs(attrs: Record<string, unknown>): Record<string, stri
   if (typeof src === 'string' && src.length > 0) domAttrs.src = src;
 
   const alt = attrs.alt;
-  if (typeof alt === 'string' && alt.length > 0) domAttrs.alt = alt;
+  // An empty `alt` is kept: it marks the image as decorative, and QTI requires `alt` on `img`.
+  if (typeof alt === 'string') domAttrs.alt = alt;
 
   const title = attrs.title;
   if (typeof title === 'string' && title.length > 0) domAttrs.title = title;
