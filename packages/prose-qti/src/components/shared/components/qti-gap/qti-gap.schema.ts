@@ -1,4 +1,11 @@
+import { qtiAttributes } from '../../qti-attributes.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+
+const keptAttributes = qtiAttributes({
+  matchGroup: 'match-group',
+  required: 'required',
+});
 
 export const qtiGapNodeSpec: NodeSpec = {
   inline: true,
@@ -8,6 +15,7 @@ export const qtiGapNodeSpec: NodeSpec = {
   attrs: {
     identifier: { default: null },
     matchMax: { default: 1 },
+    ...keptAttributes.attrs,
   },
   parseDOM: [
     {
@@ -18,6 +26,7 @@ export const qtiGapNodeSpec: NodeSpec = {
         return {
           identifier: node.getAttribute('identifier'),
           matchMax: matchMax ? parseInt(matchMax, 10) : 1,
+          ...keptAttributes.parse(node),
         };
       },
     },
@@ -25,6 +34,7 @@ export const qtiGapNodeSpec: NodeSpec = {
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {};
     if (node.attrs.identifier) attrs.identifier = node.attrs.identifier;
+    Object.assign(attrs, keptAttributes.domAttrs(node.attrs));
     if (node.attrs.matchMax > 1) attrs['match-max'] = String(node.attrs.matchMax);
     return ['qti-gap', attrs];
   },

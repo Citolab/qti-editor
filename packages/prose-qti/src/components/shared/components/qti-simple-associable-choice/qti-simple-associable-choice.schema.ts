@@ -1,4 +1,8 @@
+import { qtiAttributes } from '../../qti-attributes.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+
+const keptAttributes = qtiAttributes({ matchGroup: 'match-group' });
 
 /*
  * No `group: 'block'`: outside a match set this is not addressable by a response declaration, and
@@ -12,7 +16,8 @@ export const qtiSimpleAssociableChoiceNodeSpec: NodeSpec = {
     identifier: { default: 'A' },
     matchMax: { default: 1 },
     matchMin: { default: 0 },
-    fixed: { default: false }
+    fixed: { default: false },
+    ...keptAttributes.attrs,
   },
   parseDOM: [
     {
@@ -25,7 +30,8 @@ export const qtiSimpleAssociableChoiceNodeSpec: NodeSpec = {
           identifier: node.getAttribute('identifier') || 'A',
           matchMax: matchMax ? parseInt(matchMax, 10) : 1,
           matchMin: matchMin ? parseInt(matchMin, 10) : 0,
-          fixed: node.getAttribute('fixed') === 'true'
+          fixed: node.getAttribute('fixed') === 'true',
+          ...keptAttributes.parse(node),
         };
       }
     }
@@ -33,7 +39,8 @@ export const qtiSimpleAssociableChoiceNodeSpec: NodeSpec = {
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {
       identifier: node.attrs.identifier,
-      'match-max': String(node.attrs.matchMax)
+      'match-max': String(node.attrs.matchMax),
+      ...keptAttributes.domAttrs(node.attrs),
     };
     if (node.attrs.matchMin > 0) {
       attrs['match-min'] = String(node.attrs.matchMin);

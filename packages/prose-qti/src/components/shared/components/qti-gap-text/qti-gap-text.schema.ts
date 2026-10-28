@@ -1,4 +1,8 @@
+import { parseQtiInteger, qtiAttributes } from '../../qti-attributes.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+
+const keptAttributes = qtiAttributes({ matchGroup: 'match-group' });
 
 /*
  * No `group: 'block'`: a gap-match chip is only ever legal inside a `qti-gap-match-interaction`,
@@ -12,6 +16,9 @@ export const qtiGapTextNodeSpec: NodeSpec = {
   attrs: {
     identifier: { default: null },
     matchMax: { default: 1 },
+    // As on `qti-simple-associable-choice`: 0, the XSD default, is not written.
+    matchMin: { default: 0 },
+    ...keptAttributes.attrs,
   },
   parseDOM: [
     {
@@ -22,6 +29,8 @@ export const qtiGapTextNodeSpec: NodeSpec = {
         return {
           identifier: node.getAttribute('identifier'),
           matchMax: matchMax ? parseInt(matchMax, 10) : 1,
+          matchMin: parseQtiInteger(node.getAttribute('match-min')) ?? 0,
+          ...keptAttributes.parse(node),
         };
       },
     },
@@ -29,6 +38,8 @@ export const qtiGapTextNodeSpec: NodeSpec = {
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {};
     if (node.attrs.identifier) attrs.identifier = node.attrs.identifier;
+    Object.assign(attrs, keptAttributes.domAttrs(node.attrs));
+    if (node.attrs.matchMin > 0) attrs['match-min'] = String(node.attrs.matchMin);
     if (node.attrs.matchMax > 1) attrs['match-max'] = String(node.attrs.matchMax);
     return ['qti-gap-text', attrs, 0];
   },

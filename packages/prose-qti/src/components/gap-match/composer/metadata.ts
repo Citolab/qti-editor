@@ -23,6 +23,8 @@ const MATCH_CORRECT_INTERNAL_TEMPLATE = `
 
 export const GAP_MATCH_INTERACTION_TAG = 'qti-gap-match-interaction' as const;
 export const GAP_MATCH_INTERACTION_NODE_TYPE = 'qtiGapMatchInteraction' as const;
+export const GAP_TEXT_NODE_TYPE = 'qtiGapText' as const;
+export const GAP_NODE_TYPE = 'qtiGap' as const;
 
 export const gapMatchInteractionComposerMetadata = {
   tagName: GAP_MATCH_INTERACTION_TAG,
@@ -40,5 +42,16 @@ export const gapMatchNodeAttributePanelMetadataByNodeTypeName = {
   [GAP_MATCH_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: GAP_MATCH_INTERACTION_NODE_TYPE,
     editableAttributes: ['class', 'shuffle'],
+  },
+  // `identifier` is what the correct response pairs refer to, so it is shown disabled, as on the
+  // other choices. `match-group`, `match-min` and gap `required` can make the correct response
+  // unreachable, so the author sees and can change them.
+  [GAP_TEXT_NODE_TYPE.toLowerCase()]: {
+    nodeTypeName: GAP_TEXT_NODE_TYPE,
+    editableAttributes: ['matchMax', 'matchMin', 'matchGroup'],
+  },
+  [GAP_NODE_TYPE.toLowerCase()]: {
+    nodeTypeName: GAP_NODE_TYPE,
+    editableAttributes: ['matchMax', 'matchGroup', 'required'],
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;
