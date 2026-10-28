@@ -94,6 +94,34 @@ format — which `pmToHtml` writes without the composer — but not the QTI 3.0 
 interaction keeps its prompt as authored. Same category as `case-sensitive`: a documented one-way
 limitation rather than a bug.
 
+## QTI attributes kept as authored
+
+The other direction: standard QTI attributes the editor does not author, on an element it does model
+— `expected-length` on a text entry, `min-choices` on a choice interaction. An attribute the node
+spec has no slot for is gone after the first save, so the node models it even when nothing edits it.
+
+- **Semantic attributes are kept verbatim.** The node holds the value as written, defaults to `null`
+  ("not written") so a node created in the editor serialises as before, and writes it back
+  unchanged. `qtiAttributes` in `@citolab/prose-qti/components/shared` builds the `attrs`, `parse`
+  and `domAttrs` for a spec; its integers read text that is not an integer as `null`, so nothing is
+  ever written as `"NaN"`.
+- **Spelling-only defaults are not chased.** An attribute whose value is the XSD default —
+  `shuffle="false"`, `fixed="false"`, `min-choices="0"`, `show-hide="show"` — means the same as no
+  attribute. The editor adds no flag to remember that the source spelled it out; a composer that
+  already normalises a default keeps doing so.
+- **A kept constraint must not contradict what the author edits.** An attribute that limits what a
+  candidate may answer is either editable in the attributes panel, or the composer reconciles it
+  with what the author did edit — the correct response, the number of choices — and reports the
+  change as a `ComposerWarning` with code `CONSTRAINT_RECONCILED` (`reconcileKeptConstraint`, also
+  in `components/shared`). Kept but hidden and unreconciled, it can make the authored correct
+  response unreachable.
+- **An attribute that points at something the editor does not keep is not kept either**:
+  `template-identifier` (template declarations are not composed), `string-identifier` (a second
+  response variable). Kept alone, it would reference a variable the saved item no longer declares.
+
+Generic pass-through of `data-*`, `aria-*` and the global attributes is a separate, open question;
+see `plans/qti-attributes-kept-as-authored.md`.
+
 ## Adding an authoring attribute
 
 1. Add it to `strippedAttributes` in the interaction's `composer/metadata.ts`, so export strips it.

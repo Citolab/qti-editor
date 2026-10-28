@@ -13,7 +13,8 @@ export type ComposerWarningCode =
   | 'INVALID_MAPPING_JSON'
   | 'INVALID_MAPPING_ENTRY'
   | 'MAPPING_ENTRY_STALE'
-  | 'RESPONSE_PROCESSING_KIND_MISMATCH';
+  | 'RESPONSE_PROCESSING_KIND_MISMATCH'
+  | 'CONSTRAINT_RECONCILED';
 
 export interface ComposerWarning {
   code: ComposerWarningCode;
