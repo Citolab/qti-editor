@@ -50,7 +50,7 @@
     <p>
       <img src="/qti/kennisnet/resources/physics-chemistry.png" alt="Natuur- en scheikunde"/>
     </p>
-    <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
+    <qti-rubric-block use="scoring" view="scorer">
       <qti-content-body>
         <ul>
           <li>

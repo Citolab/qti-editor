@@ -24,7 +24,7 @@
       </qti-prompt>
       <img src="/qti/kennisnet/resources/europe.svg" alt="Kaart van Europa" width="600" height="513"/>
     </qti-select-point-interaction>
-    <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
+    <qti-rubric-block use="scoring" view="scorer">
       <qti-content-body>
         <p>Correct land: Monaco. Monaco heeft met ruime afstand de hoogste bevolkingsdichtheid (~26.000 personen/km²).</p>
       </qti-content-body>
