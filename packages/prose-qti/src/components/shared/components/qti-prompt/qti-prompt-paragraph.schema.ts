@@ -16,7 +16,7 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
  * all; this rule is widened for consistency with the others, and is inert without it.
  */
 export const qtiPromptParagraphNodeSpec: NodeSpec = {
-  content: '(text | image)*',
+  content: '(text | image | mathml)*',
   parseDOM: [{ tag: 'p', context: 'qtiPrompt//', priority: 60 }],
   toDOM(): DOMOutputSpec {
     return ['p', 0];

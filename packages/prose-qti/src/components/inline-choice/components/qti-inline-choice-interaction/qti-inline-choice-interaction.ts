@@ -35,8 +35,14 @@ export class QtiInlineChoiceInteraction extends MenuAutoSizeMixin(InteractionPan
 
   private readonly internals = this.attachInternals();
 
+  /**
+   * What the trigger shows for the correct choice: its text, or, for a choice holding a formula,
+   * copies of its nodes, the way the runtime's trigger copies the selected choice's
+   * (`qti-inline-choice-interaction.ts` in qti-components). A formula's text alone reads as its
+   * digits run together: ½ as "12".
+   */
   @state()
-  private _correctChoiceText: string | null = null;
+  private _correctChoiceContent: string | Node[] | null = null;
 
   /**
    * Custom text rendered while the selection is in its unselected state
@@ -127,8 +133,8 @@ export class QtiInlineChoiceInteraction extends MenuAutoSizeMixin(InteractionPan
         aria-expanded="${this._panelOpen ? 'true' : 'false'}"
         @click=${this.togglePanel}
       >
-        <span part="value" class=${this._correctChoiceText ? 'is-correct' : ''}
-          >${this._correctChoiceText ?? this.dataPrompt ?? this.i18n.t('inlineChoice.placeholder')}</span
+        <span part="value" class=${this._correctChoiceContent ? 'is-correct' : ''}
+          >${this._correctChoiceContent ?? this.dataPrompt ?? this.i18n.t('inlineChoice.placeholder')}</span
         >
         <span part="dropdown-icon" aria-hidden="true">▾</span>
       </button>
@@ -227,17 +233,19 @@ export class QtiInlineChoiceInteraction extends MenuAutoSizeMixin(InteractionPan
           ? this.correctResponse
           : []
     );
-    let correctText: string | null = null;
+    let correctContent: string | Node[] | null = null;
     this.querySelectorAll<HTMLElement & { setSelected?: (v: boolean) => void; identifier?: string }>(
       'qti-inline-choice'
     ).forEach(choice => {
       const isSelected = identifiers.has(choice.identifier ?? '');
       choice.setSelected?.(isSelected);
-      if (isSelected && correctText === null) {
-        correctText = (choice.textContent ?? '').trim() || null;
+      if (isSelected && correctContent === null) {
+        correctContent = choice.querySelector('math')
+          ? Array.from(choice.childNodes, node => node.cloneNode(true))
+          : (choice.textContent ?? '').trim() || null;
       }
     });
-    this._correctChoiceText = correctText;
+    this._correctChoiceContent = correctContent;
   }
 
   #onChoicesSlotChange = () => {

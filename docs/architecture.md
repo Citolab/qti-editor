@@ -66,7 +66,7 @@ Interaction components: `choice`, `extended-text`, `gap-match`, `hottext`, `inli
 
 `src/core/` owns:
 - Descriptor registry: `listInteractionDescriptors()` — canonical list of all registered interactions
-- Derived lookup helpers: `listInteractionSchemaNodeSpecs`, `listSelectedInteractionPluginFactories`, etc.
+- Derived lookup helpers: `listInteractionSchemaNodeSpecs`, `listSelectedInteractionPluginFactories`, etc. Besides the descriptors' own specs and plugins these deliver the shared inline node the interactions' content names, `mathml` (spec and editor node view, from `@citolab/prose-extensions/mathml`), for every selection.
 - XML composition engine, response declarations, identifier normalization
 - Composer orchestration that drives per-interaction compose handlers via descriptors
 
@@ -126,6 +126,13 @@ Owns:
 - `src/prosemirror/node-attrs-sync` — node attribute synchronization
 - `src/prosemirror/paste-semantic-html` — paste HTML handling
 - `src/prosemirror/schema-gaps` — finds and preserves markup a schema cannot represent
+- `src/prosemirror/mathml` (`mathmlNodeSpec`, `@citolab/prose-extensions/mathml`) — `<math>` as an
+  inline atom holding the formula's MathML source, rebuilt in the MathML namespace whichever
+  namespace the element arrives in, plus `createMathmlNodeViewPlugin()`, the editor-only node view
+  (a MathML element has no `contentEditable`/`draggable`). Not in `defineBasicExtension()`:
+  prose-qti delivers it through `listInteractionSchemaNodeSpecs()` (and the node view through
+  `listInteractionPluginFactories()`), because the interactions' content expressions name it, and
+  in `qtiBasicNodes` for `createQtiSchema()`.
 - `src/prosemirror/clear-formatting` (`clearFormattingInRange`) — strips every mark and flattens
   wrapper/list/textblock structure back to plain paragraphs within a given range, mutating a
   `Transaction` in place. Knows nothing about QTI or interaction nodes; a caller that must leave

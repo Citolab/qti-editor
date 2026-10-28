@@ -158,3 +158,39 @@ describe('validateHtml', () => {
     expect(result.normalizedHtml).toBe('<p>fine</p>');
   });
 });
+
+describe('a MathML formula', () => {
+  // The browser test (`schema/mathml.browser.test.ts`) covers the same round trip. This is the
+  // linkedom half: its serializer does no namespace fix-up, so the xmlns declaration on <math> is
+  // only there if the node writes it.
+  const MATHML = 'http://www.w3.org/1998/Math/MathML';
+  const item = `<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" identifier="MATH" title="Maths">
+  <qti-response-declaration identifier="RESPONSE" base-type="identifier" cardinality="single">
+    <qti-correct-response><qti-value>A</qti-value></qti-correct-response>
+  </qti-response-declaration>
+  <qti-item-body>
+    <p>Half: <math xmlns="${MATHML}"><mfrac><mn>1</mn><mn>2</mn></mfrac></math></p>
+    <qti-choice-interaction response-identifier="RESPONSE" max-choices="1">
+      <qti-simple-choice identifier="A"><math xmlns="${MATHML}"><msup><mi>x</mi><mn>2</mn></msup></math></qti-simple-choice>
+    </qti-choice-interaction>
+  </qti-item-body>
+</qti-assessment-item>`;
+
+  test('is kept whole on import and written back with its namespace', () => {
+    const doc = qti3ToPm(item);
+    const sources: string[] = [];
+    doc.descendants(node => {
+      if (node.type.name === 'mathml') sources.push(node.attrs.source as string);
+    });
+    expect(sources).toEqual([
+      `<math xmlns="${MATHML}"><mfrac><mn>1</mn><mn>2</mn></mfrac></math>`,
+      `<math xmlns="${MATHML}"><msup><mi>x</mi><mn>2</mn></msup></math>`,
+    ]);
+
+    const xml = pmToQti3(doc);
+    expect(xml.match(new RegExp(`<math xmlns="${MATHML}">`, 'g'))).toHaveLength(2);
+    const exported = new DOMParser().parseFromString(xml, 'text/xml');
+    const choice = exported.getElementsByTagName('qti-simple-choice')[0];
+    expect(choice?.getElementsByTagName('msup')).toHaveLength(1);
+  });
+});

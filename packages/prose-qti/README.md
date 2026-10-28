@@ -94,12 +94,13 @@ a custom keymap or command list instead of `defineQtiInteractionsExtension()`.
 Collects the ProseMirror `NodeSpec` entries needed for the given interactions
 (or all of them, if `include` is omitted), deduplicated by node name and
 prefixed with any shared base-schema node groups (e.g. `qtiMedia`) the
-selection depends on.
+selection depends on, and with the `mathml` node the interactions' content
+expressions name (always included).
 
 ### listInteractionPluginFactories(): ReadonlyArray\<() => Plugin>
 
 The ProseMirror plugin factories contributed by **every** registered
-descriptor, in registration order.
+descriptor, in registration order, after the editor-only `mathml` node view.
 
 ### listSelectedInteractionPluginFactories(options?: { include?: string[] }): ReadonlyArray\<() => Plugin>
 

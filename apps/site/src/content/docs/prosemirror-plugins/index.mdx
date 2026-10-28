@@ -71,6 +71,8 @@ import { defineStrong, defineEm, defineList, defineBasicExtension } from '@citol
 
   Apps layer their own additions on top with `union()` — hard break, virtual selection, mod-click prevention, AI extensions, etc. — rather than forking this base. The editor application's own `basic-extension.ts` is the reference for that pattern.
 
+`defineBasicExtension()` has no node for `<math>`. The `mathml` node, an inline atom holding a formula's MathML source, is `mathmlNodeSpec` from `@citolab/prose-extensions/mathml`, with `createMathmlNodeViewPlugin()` for the editor. A QTI editor gets both from `@citolab/prose-qti`'s interaction registry, because the interactions' own content names `mathml`; see [QTI Base Schema](/docs/packages/qti-base-schema/).
+
 If you assemble a plain ProseMirror schema by hand instead of through ProseKit, use `qtiBasicNodes`/`qtiBasicMarks` from [QTI Base Schema](/docs/packages/qti-base-schema/) instead — same underlying image-dimension fix, no ProseKit dependency.
 
 ## When to use this

@@ -26,7 +26,22 @@ const schema = new Schema({
       parseDOM: [{ tag: 'img[src]' }],
       toDOM: () => ['img'],
     },
+    // Text only, like a `text*` interaction choice or a code block: it cannot hold the formula.
+    plain: {
+      group: 'block',
+      content: 'text*',
+      parseDOM: [{ tag: 'x-plain' }],
+      toDOM: () => ['x-plain', 0],
+    },
     text: { group: 'inline' },
+    // A leaf the parser reads whole, children and all — like a MathML formula held as its source.
+    formula: {
+      group: 'inline',
+      inline: true,
+      atom: true,
+      parseDOM: [{ tag: 'x-formula' }],
+      toDOM: () => ['x-formula'],
+    },
   },
   marks: {
     em: { parseDOM: [{ tag: 'em' }], toDOM: () => ['em', 0] },
@@ -64,6 +79,41 @@ describe('findUnrepresentableElements', () => {
 
   test('stays silent on everything the schema can parse', () => {
     const outcome = findUnrepresentableElements(schema, parse('<p><em>a</em></p><img src="a.png">'));
+    expect(outcome.changes).toEqual([]);
+  });
+
+  test('does not look inside a leaf, because the parser does not either', () => {
+    const outcome = findUnrepresentableElements(schema, parse('<p><x-formula><x-fraction>½</x-fraction></x-formula></p>'));
+    expect(outcome.changes).toEqual([]);
+  });
+
+  test('still reports the same element outside a leaf', () => {
+    const outcome = findUnrepresentableElements(schema, parse('<p><x-fraction>½</x-fraction></p>'));
+    expect(outcome.changes.map(change => change.nodeType)).toEqual(['x-fraction']);
+  });
+
+  test('reports an inline leaf whose parent cannot hold it, because the parser moves it out', () => {
+    const outcome = findUnrepresentableElements(
+      schema,
+      parse('<x-plain>before <em><x-formula><x-fraction>½</x-fraction></x-formula></em></x-plain>'),
+    );
+    // The formula, once: not its inside, and the <em> (a mark) is passed through to <x-plain>.
+    expect(outcome.changes).toHaveLength(1);
+    expect(outcome.changes[0]).toMatchObject({
+      nodeType: 'x-formula',
+      message: 'Moved <x-formula> out of <x-plain>, which cannot hold it.',
+      data: { movedOutOf: 'x-plain', excerpt: '½' },
+    });
+    expect(outcome.preservedFragments[0].payload).toBe('<x-formula><x-fraction>½</x-fraction></x-formula>');
+  });
+
+  test('stays silent on an inline leaf its parent holds, through a mark, or by wrapping it', () => {
+    // In a paragraph, inside a mark the parser passes through, and loose at the top, where the
+    // parser wraps it in a paragraph.
+    const outcome = findUnrepresentableElements(
+      schema,
+      parse('<p><em><x-formula>a</x-formula></em></p><x-formula>b</x-formula>'),
+    );
     expect(outcome.changes).toEqual([]);
   });
 

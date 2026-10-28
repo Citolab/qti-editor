@@ -44,6 +44,7 @@ import {
   TRANSPARENT_WRAPPER_TAGS,
   findUnrepresentableElements,
 } from '@citolab/prose-extensions/schema-gaps';
+import { createMathmlNodeViewPlugin } from '@citolab/prose-extensions/mathml';
 import { listInteractionDecoratorPluginFactories } from '@citolab/prose-qti/core/interactions/composer';
 
 import { qtiTransformTest } from '@qti-components/transformers';
@@ -125,6 +126,9 @@ const backspaceCommand = chainCommands(...descriptors.flatMap(descriptor => desc
 export const qtiPlugins: Plugin[] = [
   keymap({ Enter: enterCommand, Backspace: backspaceCommand }),
   ...descriptors.flatMap(descriptor => descriptor.pluginFactories?.map(factory => factory()) ?? []),
+  // The schema's `mathml` formulas, uneditable and draggable. `listInteractionPluginFactories()`
+  // includes it; this app takes each descriptor's factories instead, so it adds it itself.
+  createMathmlNodeViewPlugin(),
   ...listInteractionDecoratorPluginFactories().map(factory => factory())
 ];
 

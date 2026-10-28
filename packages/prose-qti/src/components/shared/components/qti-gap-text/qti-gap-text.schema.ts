@@ -7,7 +7,9 @@ import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
  * auto-inserted there. See "The block group" in schema/create-qti-schema.ts.
  */
 export const qtiGapTextNodeSpec: NodeSpec = {
-  content: 'text*',
+  // A formula can be what is dragged: 1EdTech's gap-match-example-2.xml has four. With `text*` the
+  // parser lifted each `<math>` out, closing the interaction around it and leaving the chips empty.
+  content: '(text | mathml)*',
   placeholder: 'Enter gap text…',
   attrs: {
     identifier: { default: null },

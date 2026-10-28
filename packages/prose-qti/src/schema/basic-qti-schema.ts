@@ -1,3 +1,4 @@
+import { mathmlNodeSpec } from '@citolab/prose-extensions/mathml';
 import { nodes as basicNodes, marks as basicMarks } from 'prosemirror-schema-basic';
 
 import { qtiLayoutDivNodeSpec } from './qti-layout-div.js';
@@ -67,7 +68,7 @@ const qtiImageNodeSpec: NodeSpec = {
 };
 
 /**
- * prosemirror-schema-basic, extended. One override and one addition — nothing is removed.
+ * prosemirror-schema-basic, extended. One override and two additions — nothing is removed.
  *
  * ## Nothing is removed, deliberately
  *
@@ -99,7 +100,14 @@ export const qtiBasicNodes = {
    * on import, and every consumer that forgot to add it was silently losing them. See
    * qti-layout-div.ts.
    */
-  qtiLayoutDiv: qtiLayoutDivNodeSpec
+  qtiLayoutDiv: qtiLayoutDivNodeSpec,
+  /*
+   * `<math>`, as an inline atom holding the formula's MathML source. Without it every formula in a
+   * maths item was dropped on import — ProseMirror skips the elements it has no rule for, so only
+   * the bare digits and operators were left, run together as text. The interaction registry
+   * (`listInteractionSchemaNodeSpecs`) delivers the same spec object, so the ProseKit path has it too.
+   */
+  mathml: mathmlNodeSpec
 };
 
 /**
