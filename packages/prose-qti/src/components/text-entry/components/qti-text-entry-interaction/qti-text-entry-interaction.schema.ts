@@ -16,6 +16,14 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
     class: { default: null },
     placeholderText: { default: null },
     score: { default: 1 },
+    // QTI attributes the editor offers no control for. Modelled so a round trip keeps them: an
+    // attribute the node has no slot for is gone on the first export. `data-patternmask-message`
+    // is QTI 3 shared vocabulary — the message shown when the response fails `pattern-mask`.
+    expectedLength: { default: null },
+    patternMask: { default: null },
+    dataPatternmaskMessage: { default: null },
+    format: { default: null },
+    base: { default: null },
   },
   parseDOM: [
     {
@@ -24,6 +32,8 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
         if (!(node instanceof HTMLElement)) return {};
 
         const scoreAttr = node.getAttribute('score');
+        const expectedLength = node.getAttribute('expected-length');
+        const base = node.getAttribute('base');
         return {
           responseIdentifier: node.getAttribute('response-identifier'),
           correctResponse: parseResponseAttribute(node.getAttribute('correct-response')),
@@ -33,6 +43,11 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
           ),
           placeholderText: node.getAttribute('placeholder-text') || null,
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
+          expectedLength: expectedLength ? parseInt(expectedLength, 10) : null,
+          patternMask: node.getAttribute('pattern-mask'),
+          dataPatternmaskMessage: node.getAttribute('data-patternmask-message'),
+          format: node.getAttribute('format'),
+          base: base ? parseInt(base, 10) : null,
         };
       },
     },
@@ -62,6 +77,22 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
       attrs['placeholder-text'] = node.attrs.placeholderText;
     }
     attrs.score = String(node.attrs.score ?? 1);
+
+    if (node.attrs.expectedLength != null) {
+      attrs['expected-length'] = String(node.attrs.expectedLength);
+    }
+    if (node.attrs.patternMask) {
+      attrs['pattern-mask'] = node.attrs.patternMask;
+    }
+    if (node.attrs.dataPatternmaskMessage) {
+      attrs['data-patternmask-message'] = node.attrs.dataPatternmaskMessage;
+    }
+    if (node.attrs.format) {
+      attrs.format = node.attrs.format;
+    }
+    if (node.attrs.base != null) {
+      attrs.base = String(node.attrs.base);
+    }
 
     return ['qti-text-entry-interaction', attrs];
   },
