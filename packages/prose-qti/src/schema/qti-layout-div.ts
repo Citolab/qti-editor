@@ -67,17 +67,8 @@ export function isQtiLayoutClass(className: string | null): boolean {
 
 export const qtiLayoutDivNodeSpec: NodeSpec = {
   group: 'block',
-  /*
-   * `paragraph` first, without narrowing what a column accepts: `paragraph` is in `block` anyway.
-   *
-   * When ProseMirror has to fill a column — the author deleted its only block, or a command built
-   * one with `createAndFill` — it takes the first admitted type without required attributes. For
-   * plain `block+` that is whichever `block` node sorts first in the schema, which is down to
-   * registration order. A ProseKit host registers this node after `defineQtiExtension()`, and
-   * ProseKit sorts a later registration first, so there it is this node itself: filling a column
-   * creates a column to fill, until the stack overflows. Same fix as `tableCell` and `doc` in
-   * `@citolab/prose-extensions/prosekit`'s basic extension.
-   */
+  // `paragraph` named first so an emptied column fills with one; it is in `block` anyway, so a
+  // column accepts the same content. See qti-layout-div.browser.test.ts for why `block+` did not.
   content: '(paragraph | block)+',
   attrs: {
     class: { default: null }
@@ -107,8 +98,8 @@ export const qtiLayoutDivNodeSpec: NodeSpec = {
    * The content expression admits a paragraph anywhere inside, so a gap cursor is always legitimate
    * here — but prosemirror-gapcursor decides by reading `contentMatchAt(index).defaultType` and
    * asking whether THAT is a textblock. `defaultType` is the first admitted type with no required
-   * attributes, which for a plain `block+` depended on schema order (`qtiItemDivider` in the
-   * prosekit app), and a divider is not a textblock. So the guess said no at every position and two
+   * attributes. Under the old `block+` that depended on schema order (`qtiItemDivider` in the
+   * prosekit app), and a divider is not a textblock, so the guess said no at every position and two
    * interactions sitting side by side in an imported `qti-layout-row` had no writable space between
    * them at all. Naming `paragraph` first makes the guess right too; this keeps it explicit.
    *
