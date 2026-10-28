@@ -47,6 +47,8 @@ Scoring other than `match_correct` is not modelled. A hotspot scored with a `qti
 Click the picture to bring up the toolbar. Draw rectangles, circles and polygons on it, drag an area to move it, drag a selected area's handles to resize it, and use **Mark as correct** and **Delete area** on the selected one.
 
 - **Polygon**: click to place points; click the first point, double-click or press Enter to finish, Escape to cancel. Drag a selected polygon's points to reshape it; double-click an edge to add a point, a point to remove it. A polygon keeps at least three points. One that crosses itself is kept as drawn; the part where it overlaps itself does not count as inside.
+- **Magic wand**: click inside a coloured region of the picture to outline it as a polygon; the region under the pointer is previewed first. Shift+click a neighbouring region to add it to the area the wand made last — two lakes split by a dike become one area. It works best on flat colours (maps, diagrams). The outline has at most 60 points, so a region with more corners than that (a comb, a coastline) comes out simplified; add points by hand or outline the parts separately. Its code is loaded the first time it is picked, and the picture's pixels are let go when another tool is picked.
+  - The wand reads the picture with CORS (`crossOrigin="anonymous"`, no cookies). A picture from another site that does not allow that, or one only served to a logged-in session, cannot be read: the wand says so, and tries again the next time it is picked.
 - **Ellipse**: an imported `ellipse` area is resized by its two radius handles. Ellipses are not drawn new.
 - A `default` area (the whole picture) is selected, marked and deleted only.
 
