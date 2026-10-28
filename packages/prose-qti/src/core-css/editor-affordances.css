@@ -1,0 +1,31 @@
+/*
+ * Editor-only affordances for item-body content that has no visible box of its own.
+ *
+ * Scoped to `.ProseMirror`, so a page that renders the same item outside the editor never matches.
+ */
+
+/*
+ * The shared-stimulus placeholder (`qtiSharedStimulus`): an empty
+ * `<div data-stimulus-idref="…">` the qti-components runtime loads the item's stimulus into. Empty,
+ * it is 0px tall, so an author could select and delete it without ever seeing it. A dashed box
+ * labelled with the stimulus it stands for. `:empty`, so the box goes away for any element that has
+ * content — the runtime fills the slot, and the node only ever matches an empty div.
+ *
+ * `--qti-edit-shared-stimulus-label` translates the label; the identifier follows it.
+ */
+.ProseMirror div[data-stimulus-idref]:empty {
+  display: block;
+  box-sizing: border-box;
+  margin-block: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: #4b5563;
+  font-size: 0.875em;
+  line-height: 1.4;
+  background: #f9fafb;
+  border: 1px dashed #9ca3af;
+  border-radius: 0.25rem;
+}
+
+.ProseMirror div[data-stimulus-idref]:empty::before {
+  content: var(--qti-edit-shared-stimulus-label, 'Shared stimulus') ': ' attr(data-stimulus-idref);
+}

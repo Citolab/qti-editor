@@ -16,6 +16,7 @@ import {
   listInteractionSchemaNodeSpecs,
 } from '@citolab/prose-qti/core/interactions/composer';
 import { clearFormatting } from '@citolab/prose-qti/commands';
+import { qtiLayoutDivNodeSpec, qtiSharedStimulusNodeSpec } from '@citolab/prose-qti/schema';
 import {
   constrainedHome,
   constrainedShiftHome,
@@ -117,10 +118,39 @@ export function defineClearFormattingExtension() {
   );
 }
 
+/**
+ * The QTI item-body nodes that are not interactions, as ProseKit nodes: the layout wrappers
+ * (`qtiLayoutDiv`, `<div class="qti-layout-row">` / `-colN`) and the shared-stimulus placeholder
+ * (`qtiSharedStimulus`). The ProseKit counterpart of what `qtiBasicNodes` adds to
+ * prosemirror-schema-basic for `createQtiSchema()`.
+ *
+ * In `defineQtiExtension()`. A host composing its own ProseKit base (`defineBasicExtension()` plus
+ * `defineQtiInteractionsExtension()`, or plus `listInteractionSchemaNodeSpecs()`) unions this in
+ * beside them; without it both elements are dropped on import. The layout lock
+ * (`qtiLayoutDivLockPlugin` in `@citolab/prose-qti/schema`) stays opt-in, as on the plain
+ * ProseMirror path.
+ */
+export function defineQtiBaseNodesExtension() {
+  return union(
+    defineNodeSpec({
+      name: 'qtiLayoutDiv',
+      ...qtiLayoutDivNodeSpec,
+      // `paragraph` named first, so a column ProseMirror has to fill (`createAndFill`, or the author
+      // deleted its only block) fills with a paragraph. ProseKit sorts a later registration first,
+      // and for a bare `block+` the first admitted type is then this node itself: filling a column
+      // creates a column to fill, until the stack overflows. The accepted set is unchanged
+      // (`paragraph` is in `block`); same fix as `doc` and `tableCell` in the basic extension.
+      content: '(paragraph | block)+',
+    }),
+    defineNodeSpec({ name: 'qtiSharedStimulus', ...qtiSharedStimulusNodeSpec }),
+  );
+}
+
 export function defineQtiExtension() {
-  return union(defineBasicExtension(), defineQtiInteractionsExtension());
+  return union(defineBasicExtension(), defineQtiInteractionsExtension(), defineQtiBaseNodesExtension());
 }
 
 export type QtiExtension = ReturnType<typeof defineQtiExtension>;
+export type QtiBaseNodesExtension = ReturnType<typeof defineQtiBaseNodesExtension>;
 export type QtiInteractionsExtension = ReturnType<typeof defineQtiInteractionsExtension>;
 export type QtiDecorationsExtension = ReturnType<typeof defineQtiDecorationsExtension>;
