@@ -4,6 +4,7 @@ import { page, userEvent } from 'vitest/browser';
 import { NodeSelection } from 'prosemirror-state';
 import { hotspotInteractionDescriptor } from '@citolab/prose-qti/components/hotspot';
 import { roundtripInteractions, roundtripItemBody } from '@citolab/prose-qti/qti3-item-import';
+import { formatCoords, growAreaCoords } from '@citolab/prose-qti/components/shared/graphic/area-geometry.js';
 
 import {
   exportAssessmentItemDoc,
@@ -616,4 +617,117 @@ test("an imported ellipse is resized by its two radius handles", async () => {
   await q10.drag([150, 245], [150, 255]);
   expectCoords(c().coords, [150, 235, 30, 20]);
   expect(c().shape).toBe('ellipse');
+});
+
+/*
+ * The keyboard, which acts on ProseMirror's selection (hotspot-area-keys.ts): Alt + arrow keys move
+ * the selected area, + / − resize it, Escape selects the interaction.
+ */
+
+test('Alt + arrow keys move the selected area, + / − resize it, Escape selects the interaction', async () => {
+  const q10 = await mountHotspot({ mountEditor, exportAssessmentItemDoc });
+  const text = () => q10.view.state.doc.firstChild!.textContent;
+  const textBefore = text();
+  const c = () => q10.choices().find(choice => choice.identifier === 'C')?.coords;
+
+  await q10.press(150, 235);
+  expect(q10.selectedChoice()).toBe('C');
+
+  await userEvent.keyboard('{Alt>}{ArrowRight}{/Alt}');
+  expect(c()).toBe('151,235,10');
+  await userEvent.keyboard('{Alt>}{Shift>}{ArrowDown}{/Shift}{/Alt}');
+  expect(c()).toBe('151,245,10');
+  await userEvent.keyboard('=');
+  expect(c()).toBe('151,245,11');
+  await userEvent.keyboard('{Shift>}+{/Shift}');
+  expect(c()).toBe('151,245,21');
+  await userEvent.keyboard('-');
+  expect(c()).toBe('151,245,20');
+
+  // Still C, still the answer, and no key reached the text.
+  expect(q10.selectedChoice()).toBe('C');
+  expect(q10.correct()).toEqual(['C']);
+  expect(text()).toBe(textBefore);
+
+  await userEvent.keyboard('{Escape}');
+  expect(q10.selectedChoice()).toBeNull();
+  const { selection } = q10.view.state;
+  expect(selection instanceof NodeSelection && selection.node.type.name).toBe('qtiHotspotInteraction');
+  expect(q10.choices()).toHaveLength(4);
+});
+
+test('+ and − grow and shrink a drawn rect and polygon on every side', async () => {
+  const q10 = await mountHotspot({ mountEditor, exportAssessmentItemDoc });
+  const size = { width: 206, height: 280 };
+  const values = (coords: string | null) => (coords ?? '').split(',').map(Number);
+
+  await (await q10.button('Rectangle')).click();
+  await q10.drag([20, 20], [60, 50]);
+  const rect = values(q10.choices()[4].coords);
+  await userEvent.keyboard('=');
+  expect(q10.choices()[4].coords).toBe(formatCoords(growAreaCoords('rect', rect, 1, size)));
+  await userEvent.keyboard('{Shift>}+{/Shift}');
+  expect(q10.choices()[4].coords).toBe(formatCoords(growAreaCoords('rect', rect, 11, size)));
+
+  await (await q10.button('Polygon')).click();
+  await pressPoints(q10, TRIANGLE);
+  await userEvent.keyboard('{Enter}');
+  const polygon = values(q10.choices()[5].coords);
+  expect(q10.selectedChoice()).toBe(q10.choices()[5].identifier);
+  await userEvent.keyboard('{Shift>}+{/Shift}');
+  const grown = growAreaCoords('poly', polygon, 10, size);
+  expect(q10.choices()[5].coords).toBe(formatCoords(grown));
+  expect(grown).not.toEqual(polygon);
+  await userEvent.keyboard('-');
+  expect(q10.choices()[5].coords).toBe(formatCoords(growAreaCoords('poly', grown, -1, size)));
+});
+
+test('the keyboard reaches the areas from the text, and a status line says which area is selected', async () => {
+  const q10 = await mountHotspot({ mountEditor, exportAssessmentItemDoc });
+
+  // The caret in the paragraph above the map; arrow down out of it, onto the first area.
+  await userEvent.click(page.getByText('choose London'));
+  for (let presses = 0; presses < 6 && !q10.selectedChoice(); presses += 1) await userEvent.keyboard('{ArrowDown}');
+  expect(q10.selectedChoice()).toBe('A');
+  await findByShadowText(q10.interaction, 'Area 1 of 4 selected, circle: left 67, top 105, 20 by 20 px.');
+
+  await userEvent.keyboard('{ArrowRight}');
+  expect(q10.selectedChoice()).toBe('B');
+  await findByShadowText(q10.interaction, 'Area 2 of 4 selected, circle: left 108, top 174, 20 by 20 px.');
+
+  await userEvent.keyboard('{Alt>}{ArrowRight}{/Alt}');
+  await findByShadowText(q10.interaction, 'Area 2 of 4 selected, circle: left 109, top 174, 20 by 20 px.');
+});
+
+test('keys on a selected area still reach document listeners, and are only taken while an area is selected', async () => {
+  const q10 = await mountHotspot({ mountEditor, exportAssessmentItemDoc });
+  const seen: Array<{ key: string; taken: boolean }> = [];
+  const listener = (event: KeyboardEvent) => {
+    if (!['Control', 'Meta', 'Shift', 'Alt'].includes(event.key)) seen.push({ key: event.key, taken: event.defaultPrevented });
+  };
+  document.addEventListener('keydown', listener);
+
+  try {
+    await q10.press(150, 235);
+    await userEvent.keyboard(`{Alt>}{ArrowUp}{/Alt}={${MOD}>}s{/${MOD}}{${MOD}>}={/${MOD}}{Escape}`);
+    // The interaction is selected now, not an area: Alt + ↑ is ProseMirror's again (it moves the
+    // selection up, as a plain ↑ does) and Escape the host editor's.
+    await userEvent.keyboard('{Alt>}{ArrowUp}{/Alt}{Escape}');
+  } finally {
+    document.removeEventListener('keydown', listener);
+  }
+
+  expect(seen.map(({ key }) => key)).toEqual(['ArrowUp', '=', 's', '=', 'Escape', 'ArrowUp', 'Escape']);
+  expect(seen.slice(0, 5).map(({ taken }) => taken)).toEqual([
+    true,
+    true,
+    // An app shortcut, and the browser's zoom: not the area's.
+    false,
+    false,
+    // Escape selects the interaction.
+    true,
+  ]);
+  expect(q10.selectedChoice()).toBeNull();
+  // Moved up once and grown once, while it was selected; not since.
+  expect(q10.choices().find(choice => choice.identifier === 'C')?.coords).toBe('150,234,11');
 });

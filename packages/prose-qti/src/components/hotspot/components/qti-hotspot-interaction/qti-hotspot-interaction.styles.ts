@@ -131,6 +131,16 @@ const styles: CSSResultGroup = [
       cursor: pointer;
     }
 
+    /* Read by screen readers, not shown. */
+    .status {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
     .meta {
       margin-top: 8px;
       font-size: 12px;
