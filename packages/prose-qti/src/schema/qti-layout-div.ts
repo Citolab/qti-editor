@@ -118,6 +118,21 @@ function layoutCount(doc: ProseMirrorNode): number {
 }
 
 /**
+ * Transaction meta that lets one transaction past {@link qtiLayoutDivLockPlugin}, for a host command
+ * that adds or removes layout wrappers on purpose:
+ *
+ *     view.dispatch(tr.setMeta(QTI_LAYOUT_DIV_UNLOCK_META, true));
+ */
+export const QTI_LAYOUT_DIV_UNLOCK_META = 'qtiLayoutDivUnlock';
+
+/**
+ * The meta prosemirror-history puts on its undo/redo transactions: its plugin key, `history$`. Read
+ * by name so this package does not depend on prosemirror-history for one lookup; the test drives
+ * the real history plugin, so a rename there fails here.
+ */
+const HISTORY_META = 'history$';
+
+/**
  * Keep the layout wrappers exactly as the imported item had them.
  *
  * Rejects any transaction that changes how many `qtiLayoutDiv` nodes the document contains.
@@ -134,6 +149,14 @@ function layoutCount(doc: ProseMirrorNode): number {
  * `filterTransaction` is reject-only by design. It cannot repair or insert; a plugin that needs to
  * add a node wants `appendTransaction`. Protecting is exactly what is wanted here.
  *
+ * ## Two ways through
+ *
+ * The lock is against accidents, not against the host. A host command that changes the layout on
+ * purpose (a one-column / two-column switch, say) marks its transaction with
+ * {@link QTI_LAYOUT_DIV_UNLOCK_META} and passes. Undo and redo pass too: they replay the inverse of
+ * steps this filter already let through, so a count they change is one a marked transaction
+ * changed — and rejecting them would leave that change impossible to undo.
+ *
  * Add it to the plugin list to opt in:
  *
  *     import { qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
@@ -141,7 +164,7 @@ function layoutCount(doc: ProseMirrorNode): number {
  */
 export const qtiLayoutDivLockPlugin = new Plugin({
   filterTransaction(tr, state) {
-    if (!tr.docChanged) return true;
+    if (!tr.docChanged || tr.getMeta(QTI_LAYOUT_DIV_UNLOCK_META) || tr.getMeta(HISTORY_META)) return true;
     return layoutCount(state.doc) === layoutCount(tr.doc);
   }
 });

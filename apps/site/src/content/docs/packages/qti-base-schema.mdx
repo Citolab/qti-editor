@@ -40,6 +40,14 @@ const plugins = [...otherPlugins, qtiLayoutDivLockPlugin];
 
 It rejects any transaction that would change how many `qtiLayoutDiv` nodes the document contains, and leaves everything else — including re-classing a wrapper — untouched. It is a separate export rather than automatic, so a host that genuinely wants editable grids simply omits it from its plugin list.
 
+Two kinds of transaction pass anyway. A host command that changes the layout on purpose marks its transaction with `QTI_LAYOUT_DIV_UNLOCK_META`, and undo/redo (prosemirror-history) are let through so that change can be undone:
+
+```ts
+import { QTI_LAYOUT_DIV_UNLOCK_META } from '@citolab/prose-qti/schema';
+
+view.dispatch(tr.setMeta(QTI_LAYOUT_DIV_UNLOCK_META, true));
+```
+
 ## Paste rescue (`qtiPasteRescuePlugin`)
 
 Some interaction slots hold exactly one block — a choice's text, a prompt, an associable choice's
