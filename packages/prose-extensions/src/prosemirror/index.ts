@@ -10,6 +10,7 @@
  * - @qti-editor/prosemirror-plugins/paste-semantic-html - Semantic paste normalization
  * - @qti-editor/prosemirror-plugins/schema-gaps - What a schema cannot represent in imported markup
  * - @qti-editor/prosemirror-plugins/clear-formatting - Generic mark/block-type reset within a range
+ * - @qti-editor/prosemirror-plugins/table-caption - A table's `<caption>`, kept as a table attribute
  */
 
 // Re-export everything from submodules for convenience
@@ -18,3 +19,4 @@ export * from './node-attrs-sync/index.js';
 export * from './paste-semantic-html/index.js';
 export * from './schema-gaps/index.js';
 export * from './clear-formatting/index.js';
+export * from './table-caption/index.js';

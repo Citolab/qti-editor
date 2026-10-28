@@ -3,6 +3,7 @@
 import { Schema } from 'prosemirror-model';
 import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
 import { tableNodes } from 'prosemirror-tables';
+import { tableCaptionSpec } from '@citolab/prose-extensions/table-caption';
 
 import { listInteractionSchemaNodeSpecs } from '../core/interactions/composer.js';
 import { qtiBasicMarks, qtiBasicNodes } from './basic-qti-schema.js';
@@ -105,6 +106,8 @@ export function createQtiSchema(options: CreateQtiSchemaOptions = {}): Schema {
     listInteractionSchemaNodeSpecs(include ? { include } : undefined).map(({ name, spec }) => [name, spec])
   );
 
+  const tables = tableNodes({ tableGroup: 'block richtext', cellContent: 'richtext+', cellAttributes: {} });
+
   const nodes: Record<string, NodeSpec> = {
     ...qtiBasicNodes,
     // tableNodes' cellContent is `richtext+`, so paragraph has to join that group.
@@ -112,7 +115,9 @@ export function createQtiSchema(options: CreateQtiSchemaOptions = {}): Schema {
     ordered_list: { ...orderedList, content: 'list_item+', group: 'block richtext' },
     bullet_list: { ...bulletList, content: 'list_item+', group: 'block richtext' },
     list_item: { ...listItem, content: 'paragraph (paragraph | bullet_list | ordered_list)*' },
-    ...tableNodes({ tableGroup: 'block richtext', cellContent: 'richtext+', cellAttributes: {} }),
+    ...tables,
+    // `<caption>`, kept as a table attribute — see `table-caption.ts` for why it cannot be a node.
+    table: { ...tables.table, ...tableCaptionSpec },
     ...interactionNodes,
     ...extraNodes
   };

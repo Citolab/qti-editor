@@ -22,6 +22,7 @@ import {
 import { defineTable, type TableExtension } from 'prosekit/extensions/table'
 import { defineText, type TextExtension } from 'prosekit/extensions/text'
 
+import { tableCaptionSpec } from '../prosemirror/table-caption/index.js'
 import { defineGapCursorParagraph } from './gap-cursor-paragraph.js'
 import { defineList, type ListExtension, type ListOptions } from './list.js'
 import { defineEm, defineStrong, type EmExtension, type StrongExtension } from './strong-em.js'
@@ -220,6 +221,8 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     defineTable(),
     // Table's own spec has no priority override, so a plain patch reaches it.
     defineNodeSpec({ name: 'table', group: 'block richtext' }),
+    // `<caption>`, kept as a table attribute — see `table-caption.ts` for why it cannot be a node.
+    defineNodeSpec({ name: 'table', ...tableCaptionSpec }),
     // ProseKit's cell content is 'block+'. `createAndFill()` picks whichever `block`-group node
     // sorts first to fill a new empty cell, and since interaction nodes are also `group: 'block'`,
     // that was not paragraph — every inserted table came out pre-filled with a question. Naming

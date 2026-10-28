@@ -135,6 +135,10 @@ Owns:
   otherwise a selection no more generous than "click into this blockquote and select its line" would
   silently fail to dissolve it, since that selection shape never reaches past the wrapper's own
   delimiters.
+- `src/prosemirror/table-caption` (`tableCaptionSpec`) — a table's `<caption>`, as a `caption`
+  attribute on the table node rather than a child (prosemirror-tables reads every child of a table
+  as a row). Spread over the table spec by both `defineBasicExtension()` and prose-qti's
+  `createQtiSchema()`. Plain text only.
 - `src/prosemirror/prosekit-extensions.ts` — ProseKit extension wrappers (`blockSelectExtension`, `nodeAttrsSyncExtension`, `defineSemanticPasteExtension`) for the plugins above, published as the `./prosekit-extensions` subpath; importing from here requires the `prosekit` peer dependency
 - `src/prosekit/` — ProseKit-specific wrappers for marks/lists (`defineEm`, `defineStrong`, `defineList`), plus `defineBasicExtension()` — the shared QTI-shaped ProseKit base (doc/text/paragraph/heading/list/image/table nodes, `em`/`strong` marks, base keymap/commands/history/gap cursor) that every app's own `basic-extension.ts` composes on top of with its own additions (hard break, virtual selection, AI, etc.) rather than redefining the base itself. Four of these (`doc`, `list`, the `em`/`strong` marks, `image`) are rebuilt rather than patched because ProseKit's own spec does not serialise to what QTI needs — see [prosekit-divergences.md](prosekit-divergences.md). `gap-cursor-paragraph.ts` (`defineGapCursorParagraph()`) is a fifth ProseKit correction, paired with `allowGapCursor: true` on a schema's `doc`/wrapper node specs rather than replacing a spec outright — see the same doc.
 

@@ -60,6 +60,10 @@
       "types": "./dist/prosemirror/clear-formatting/index.d.ts",
       "default": "./dist/prosemirror/clear-formatting/index.js"
     },
+    "./table-caption": {
+      "types": "./dist/prosemirror/table-caption/index.d.ts",
+      "default": "./dist/prosemirror/table-caption/index.js"
+    },
     "./prosekit/basic": {
       "types": "./dist/prosekit/basic.d.ts",
       "default": "./dist/prosekit/basic.js"

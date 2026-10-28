@@ -57,6 +57,9 @@
       "@citolab/prose-extensions/clear-formatting": [
         "packages/prose-extensions/src/prosemirror/clear-formatting/index.ts"
       ],
+      "@citolab/prose-extensions/table-caption": [
+        "packages/prose-extensions/src/prosemirror/table-caption/index.ts"
+      ],
       "@citolab/prose-extensions/prosekit/basic": [
         "packages/prose-extensions/src/prosekit/basic.ts"
       ],

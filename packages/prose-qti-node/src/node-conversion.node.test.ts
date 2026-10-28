@@ -158,3 +158,27 @@ describe('validateHtml', () => {
     expect(result.normalizedHtml).toBe('<p>fine</p>');
   });
 });
+
+describe('a table caption', () => {
+  // The browser test (`schema/table-caption.browser.test.ts`) covers the same round trip; this is
+  // the linkedom half — `children`, `localName` and serialisation all differ enough to be worth it.
+  const item = `<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" identifier="CAP" title="Caption">
+  <qti-item-body>
+    <table><caption>Boiling points</caption><tbody><tr><td><p>Water</p></td><td><p>100</p></td></tr></tbody></table>
+  </qti-item-body>
+</qti-assessment-item>`;
+
+  test('is kept on the table, not parsed as a row, and written back', () => {
+    const doc = qti3ToPm(item);
+    const table = doc.firstChild;
+    expect(table?.type.name).toBe('table');
+    expect(table?.attrs.caption).toBe('Boiling points');
+    expect(table?.childCount).toBe(1);
+
+    const exported = new DOMParser().parseFromString(pmToQti3(doc), 'text/xml');
+    const tableEl = exported.getElementsByTagName('table')[0];
+    expect(tableEl?.firstElementChild?.localName).toBe('caption');
+    expect(tableEl?.firstElementChild?.textContent).toBe('Boiling points');
+    expect(tableEl?.getElementsByTagName('tr')).toHaveLength(1);
+  });
+});
