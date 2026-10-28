@@ -23,6 +23,12 @@
  * longer exists would make the item unanswerable. Typing and paste do nothing while a choice is
  * selected (ProseMirror would replace the area with whatever fits, which is nothing).
  *
+ * Keys and clipboard events from inside the component's shadow root — its drawing surface while a
+ * polygon is drawn, its toolbar buttons — are the component's: ProseMirror leaves them alone, since
+ * it would apply them to its own selection, which is not what the author is working on there (Enter
+ * would add a paragraph after the interaction, a letter would replace it). They are not stopped, so
+ * document-level listeners still see them. Undo and redo act on the document as a whole and go on.
+ *
  * In `pluginFactories`, not `decoratorPluginFactories`: the drawing tools are part of the
  * interaction's editor component, which every host renders, so the plugin that carries out their
  * requests has to be there too.
@@ -163,6 +169,19 @@ function findInteractionPos(view: EditorView, host: Element): number | null {
   }
 }
 
+/** Whether `event` comes from inside a hotspot interaction's own shadow root, not from its prompt. */
+function fromHotspotComponent(event: Event): boolean {
+  const origin = event.composedPath()[0];
+  const root = origin instanceof Node ? origin.getRootNode() : null;
+  return root instanceof ShadowRoot && root.host.localName === 'qti-hotspot-interaction';
+}
+
+/** Ctrl/Cmd+Z, Ctrl/Cmd+Y and Ctrl/Cmd+Shift+Z. */
+function isUndoRedo(event: KeyboardEvent): boolean {
+  const key = event.key.toLowerCase();
+  return (event.ctrlKey || event.metaKey) && !event.altKey && (key === 'z' || key === 'y');
+}
+
 /** Whether the selection is a hotspot choice, which holds no text. */
 function choiceSelected(state: EditorState): boolean {
   const { selection } = state;
@@ -179,6 +198,13 @@ export function createHotspotChoiceEditingPlugin(): Plugin {
     props: {
       handleTextInput: view => choiceSelected(view.state),
       handlePaste: view => choiceSelected(view.state),
+      handleDOMEvents: {
+        keydown: (_view, event) => fromHotspotComponent(event) && !isUndoRedo(event),
+        keypress: (_view, event) => fromHotspotComponent(event),
+        cut: (_view, event) => fromHotspotComponent(event),
+        copy: (_view, event) => fromHotspotComponent(event),
+        paste: (_view, event) => fromHotspotComponent(event),
+      },
     },
     view(view) {
       const onEdit = (event: Event) => {

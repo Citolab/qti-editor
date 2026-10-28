@@ -9,11 +9,18 @@ import {
   areaContainsPoint,
   areaHandles,
   clientToImagePoint,
+  closePolygon,
   draftToArea,
   formatCoords,
+  insertPolyPoint,
   isAreaShape,
+  isNearPoint,
   moveAreaCoords,
+  nearestPolyEdge,
+  openPolygon,
   parseCoords,
+  polygonFromDraft,
+  removePolyPoint,
   resizeAreaCoords,
   type AreaPoint,
   type AreaShape,
@@ -32,7 +39,8 @@ import styles from './qti-hotspot-interaction.styles.js';
 
 import type { TemplateResult } from 'lit';
 
-type DrawMode = 'select' | DrawableAreaShape;
+/** `poly` is drawn point by point. */
+type DrawMode = 'select' | DrawableAreaShape | 'poly';
 
 /** A `qti-hotspot-choice` as the editor draws it, read from the light-DOM element. */
 interface HotspotArea {
@@ -40,6 +48,8 @@ interface HotspotArea {
   shape: AreaShape;
   values: number[];
   element: Element;
+  /** A polygon whose `coords` repeat the first point at the end; `values` leave the repeat out. */
+  closed: boolean;
 }
 
 type Gesture =
@@ -61,9 +71,16 @@ const GRAPHIC_CHILDREN = new Set(['qti-hotspot-choice', 'img', 'object']);
  * selects one or more of them.
  *
  * The regions are the `qti-hotspot-choice` children. The editor hides them and draws them on an SVG
- * layer instead, where the author draws new rects and circles, moves and resizes them, marks them as
- * correct and deletes them. Poly and ellipse regions from an imported item are drawn and can be
- * moved, but not reshaped.
+ * layer instead, where the author draws new rects, circles and polygons, moves and reshapes them,
+ * marks them as correct and deletes them. A polygon is drawn point by point (Enter or a click on its
+ * first point finishes it, Escape cancels it); a selected one is reshaped by dragging its points,
+ * and a double-click on an edge adds a point, on a point removes it. Ellipses from an imported item
+ * are moved and resized by their radii; `default` (the whole picture) is selected, marked and
+ * deleted only.
+ *
+ * A polygon whose `coords` repeat the first point at the end (some items close their polygons) is
+ * edited without the repeat, and written back with it, so the item keeps its own convention. One
+ * that crosses itself is drawn and kept as it is.
  *
  * Selecting an area selects its choice in ProseMirror (a `NodeSelection`, made by
  * `hotspot-choice-editing.ts`), and a press on the picture elsewhere selects the interaction. Which
@@ -104,6 +121,9 @@ export class QtiHotspotInteractionEdit extends Interaction {
   @state() private _imageSrc: string | null = null;
   @state() private _imageSize: AreaSize | null = null;
   @state() private _notice: string | null = null;
+  /** The points of the polygon being drawn, and where the pointer is, for its next edge. */
+  @state() private _polyDraft: AreaPoint[] | null = null;
+  @state() private _polyHover: AreaPoint | null = null;
 
   readonly #i18n = new QtiI18nController(this);
   #image: HTMLImageElement | HTMLObjectElement | null = null;
@@ -111,6 +131,7 @@ export class QtiHotspotInteractionEdit extends Interaction {
   #childObserver: MutationObserver | null = null;
   #attributeObserver: MutationObserver | null = null;
   #fileInput = createRef<HTMLInputElement>();
+  #surface = createRef<HTMLElement>();
 
   /**
    * The toolbar shows while the author works in this interaction: the caret is in it (its prompt),
@@ -175,10 +196,11 @@ export class QtiHotspotInteractionEdit extends Interaction {
   #syncAreas() {
     this._areas = Array.from(this.querySelectorAll(':scope > qti-hotspot-choice')).flatMap(element => {
       const shape = element.getAttribute('shape');
-      const values = parseCoords(element.getAttribute('coords'));
+      const coords = parseCoords(element.getAttribute('coords'));
       const identifier = element.getAttribute('identifier');
-      if (!identifier || !isAreaShape(shape) || !values) return [];
-      return [{ identifier, shape, values, element }];
+      if (!identifier || !isAreaShape(shape) || !coords) return [];
+      const { values, closed } = shape === 'poly' ? openPolygon(coords) : { values: coords, closed: false };
+      return [{ identifier, shape, values, element, closed }];
     });
     this._selected = this._areas.find(area => area.element.classList.contains(SELECTED_NODE_CLASS))?.identifier ?? null;
   }
@@ -258,13 +280,22 @@ export class QtiHotspotInteractionEdit extends Interaction {
     return hits.find(area => area.shape !== 'default') ?? hits[0] ?? null;
   }
 
+  /**
+   * The selected polygon, when `point` is on one of its edges — also just outside it, so a press on
+   * the outline keeps it selected and a double-click there can add a point.
+   */
+  #selectedPolyEdgeAt(point: AreaPoint): HotspotArea | null {
+    const area = this._areas.find(candidate => candidate.identifier === this._selected);
+    if (area?.shape !== 'poly') return null;
+    const distance = nearestPolyEdge(area.values, point)?.distance ?? Infinity;
+    return distance <= HANDLE_SCREEN_PX * this.#imageScale() ? area : null;
+  }
+
   #handleAt(point: AreaPoint): { area: HotspotArea; handle: string } | null {
     const area = this._areas.find(candidate => candidate.identifier === this._selected);
     if (!area) return null;
     const tolerance = HANDLE_SCREEN_PX * this.#imageScale();
-    const handle = areaHandles(area.shape, area.values).find(
-      candidate => Math.abs(candidate.x - point.x) <= tolerance && Math.abs(candidate.y - point.y) <= tolerance,
-    );
+    const handle = areaHandles(area.shape, area.values).find(candidate => isNearPoint(candidate, point, tolerance));
     return handle ? { area, handle: handle.id } : null;
   }
 
@@ -278,6 +309,13 @@ export class QtiHotspotInteractionEdit extends Interaction {
     // or the interaction when that is none — so the keys and the attributes panel act on it.
     event.preventDefault();
     event.stopPropagation();
+    // Only the primary button draws and selects; a right-click is left to the context menu.
+    if (event.button !== 0) return;
+
+    if (this._drawMode === 'poly') {
+      this.#addPolyPoint(point);
+      return;
+    }
 
     let gesture: Gesture | null = null;
     if (this._drawMode !== 'select') {
@@ -285,7 +323,7 @@ export class QtiHotspotInteractionEdit extends Interaction {
       gesture = { kind: 'draw', shape: this._drawMode, start: point, current: point };
     } else {
       const handle = this.#handleAt(point);
-      const area = handle?.area ?? this.#areaAt(point);
+      const area = handle?.area ?? this.#selectedPolyEdgeAt(point) ?? this.#areaAt(point);
       this.#select(area?.identifier ?? null);
       this._notice = null;
       if (handle) {
@@ -302,6 +340,11 @@ export class QtiHotspotInteractionEdit extends Interaction {
   }
 
   #onPointerMove(event: PointerEvent) {
+    if (this._drawMode === 'poly' && this._polyDraft) {
+      this._polyHover = this.#toImagePoint(event);
+      return;
+    }
+
     const gesture = this._gesture;
     if (!gesture || event.pointerId !== this.#pointerId) return;
     event.preventDefault();
@@ -334,14 +377,120 @@ export class QtiHotspotInteractionEdit extends Interaction {
     const preview = this._preview;
     this._preview = null;
     const area = this._areas.find(candidate => candidate.identifier === gesture.identifier);
-    if (!preview || !area || formatCoords(preview.values) === formatCoords(area.values)) return;
-    this.#emitAttrs(area.element, 'qtiHotspotChoice', 'qti-hotspot-choice', { coords: formatCoords(preview.values) });
+    if (preview && area) this.#setCoords(area, preview.values);
   }
 
   #onPointerCancel(event: PointerEvent) {
     if (event.pointerId !== this.#pointerId) return;
     this.#endGesture(event);
     this._preview = null;
+  }
+
+  #onPointerLeave() {
+    this._polyHover = null;
+  }
+
+  /**
+   * A double-click on the selected polygon: on one of its points, removes that point; on an edge,
+   * adds a point there. While drawing a polygon it finishes the polygon instead.
+   */
+  #onDoubleClick(event: MouseEvent) {
+    if (event.button !== 0) return;
+    if (this._drawMode === 'poly') {
+      event.preventDefault();
+      this.#finishPolygon();
+      return;
+    }
+    if (this._drawMode !== 'select' || !this.#image || !this._imageSize) return;
+    const point = clientToImagePoint(this.#image.getBoundingClientRect(), event.clientX, event.clientY, this._imageSize);
+    const area = this._areas.find(candidate => candidate.identifier === this._selected);
+    if (!point || area?.shape !== 'poly') return;
+    event.preventDefault();
+
+    const handle = this.#handleAt(point);
+    if (handle) {
+      this.#setCoords(area, removePolyPoint(area.values, Number(handle.handle.slice(1))));
+    } else if (this.#selectedPolyEdgeAt(point)) {
+      this.#setCoords(area, insertPolyPoint(area.values, point));
+    }
+  }
+
+  /**
+   * While a polygon is being drawn, the picture has the keyboard: Enter finishes the polygon, Escape
+   * cancels it (and with no polygon started, puts the tool away). Only those keys are taken; every
+   * other key goes on as usual, and ProseMirror leaves keys from the picture alone
+   * (`hotspot-choice-editing.ts`), so document-level shortcuts still see them.
+   */
+  #onKeyDown(event: KeyboardEvent) {
+    if (this._drawMode !== 'poly') return;
+    if (event.key === 'Enter') {
+      this.#finishPolygon();
+    } else if (event.key === 'Escape') {
+      if (this._polyDraft) this.#cancelPolygon();
+      else this.#setDrawMode('select');
+    } else {
+      return;
+    }
+    event.preventDefault();
+  }
+
+  /**
+   * The picture holds no text. While it has focus the DOM selection is still ProseMirror's, so the
+   * browser would type, delete or break the line there — in the interaction, which a press selects.
+   */
+  #onBeforeInput(event: InputEvent) {
+    event.preventDefault();
+  }
+
+  /** Write `values` to the area's `coords`; a polygon that was closed is closed again. */
+  #setCoords(area: HotspotArea, values: number[]) {
+    if (formatCoords(values) === formatCoords(area.values)) return;
+    const coords = area.shape === 'poly' && area.closed ? closePolygon(values) : values;
+    this.#emitAttrs(area.element, 'qtiHotspotChoice', 'qti-hotspot-choice', { coords: formatCoords(coords) });
+  }
+
+  #setDrawMode(mode: DrawMode) {
+    this._drawMode = mode;
+    this._polyDraft = null;
+    this._polyHover = null;
+    this._notice = null;
+  }
+
+  /**
+   * A click while drawing a polygon: a new point, or — on the first point, once there are three —
+   * the end of it. The first press also selects the interaction, as drawing a rect does, and gives
+   * the picture the keyboard for Enter and Escape.
+   */
+  #addPolyPoint(point: AreaPoint) {
+    const draft = this._polyDraft ?? [];
+    if (draft.length === 0) this.#select(null);
+    // After the select, which focuses the editor.
+    this.#surface.value?.focus({ preventScroll: true });
+
+    const tolerance = HANDLE_SCREEN_PX * this.#imageScale();
+    if (draft.length > 0 && isNearPoint(point, draft[0], tolerance)) {
+      // On the first point: closes a polygon of three or more, and adds no near-duplicate to a shorter one.
+      if (draft.length >= 3) this.#finishPolygon();
+      return;
+    }
+    // The second press of a double-click lands where the first did; it finishes, it adds nothing.
+    const last = draft[draft.length - 1];
+    if (last && isNearPoint(point, last, tolerance)) return;
+    this._polyDraft = [...draft, point];
+    this._polyHover = point;
+  }
+
+  #finishPolygon() {
+    const coords = this._polyDraft ? polygonFromDraft(this._polyDraft) : null;
+    if (!coords) return;
+    this.#cancelPolygon();
+    // The plugin names the new choice and selects it.
+    this.#requestEdit({ op: 'add', shape: 'poly', coords: formatCoords(coords) });
+  }
+
+  #cancelPolygon() {
+    this._polyDraft = null;
+    this._polyHover = null;
   }
 
   #endGesture(event: PointerEvent) {
@@ -469,6 +618,19 @@ export class QtiHotspotInteractionEdit extends Interaction {
         handle => svg`<rect class="handle" x=${handle.x - handleSize / 2} y=${handle.y - handleSize / 2} width=${handleSize} height=${handleSize}></rect>`,
       )}
       ${draft ? this.#renderShape(draft.shape, draft.coords, 'area area--draft', size) : nothing}
+      ${this.#renderPolyDraft(handleSize)}
+    `;
+  }
+
+  /** The polygon being drawn: its edges so far, the next one to the pointer, and its first point to close on. */
+  #renderPolyDraft(handleSize: number) {
+    const draft = this._polyDraft;
+    if (!draft?.length) return nothing;
+    const points = this._polyHover ? [...draft, this._polyHover] : draft;
+    const [first] = draft;
+    return svg`
+      <polyline class="area area--draft" points=${points.map(({ x, y }) => `${x},${y}`).join(' ')}></polyline>
+      <rect class="handle handle--start" x=${first.x - handleSize / 2} y=${first.y - handleSize / 2} width=${handleSize} height=${handleSize}></rect>
     `;
   }
 
@@ -482,7 +644,13 @@ export class QtiHotspotInteractionEdit extends Interaction {
     const selected = this._areas.find(area => area.identifier === this._selected);
     const isCorrect = selected ? this.#correct.includes(selected.identifier) : false;
     const mode = (value: DrawMode, label: string) => html`
-      <button type="button" aria-pressed=${this._drawMode === value} @click=${() => (this._drawMode = value)}>${label}</button>
+      <button
+        type="button"
+        aria-pressed=${this._drawMode === value}
+        @click=${() => this.#setDrawMode(value)}
+      >
+        ${label}
+      </button>
     `;
 
     return html`
@@ -490,7 +658,7 @@ export class QtiHotspotInteractionEdit extends Interaction {
         ${this._imageSrc
           ? html`
               ${mode('select', t('hotspot.mode.select'))} ${mode('circle', t('hotspot.mode.circle'))}
-              ${mode('rect', t('hotspot.mode.rect'))}
+              ${mode('rect', t('hotspot.mode.rect'))} ${mode('poly', t('graphic.mode.poly'))}
               ${selected
                 ? html`
                     <span class="separator"></span>
@@ -522,6 +690,19 @@ export class QtiHotspotInteractionEdit extends Interaction {
     `;
   }
 
+  /**
+   * How to use the current tool, under the picture: it changes as the author selects and switches
+   * tools, and above the picture it would move the picture as they press on it.
+   */
+  #hint(): string {
+    const selected = this._areas.find(area => area.identifier === this._selected);
+    const t = (key: string) => this.#i18n.t(key);
+    if (this._drawMode === 'poly') return t('graphic.hint.poly');
+    if (this._drawMode !== 'select') return t('graphic.hint.draw');
+    if (!selected) return t('graphic.hint.select');
+    return selected.shape === 'poly' ? `${t('graphic.hint.area')} ${t('graphic.hint.polyPoints')}` : t('graphic.hint.area');
+  }
+
   override render() {
     const size = this._imageSize;
     return html`
@@ -529,18 +710,25 @@ export class QtiHotspotInteractionEdit extends Interaction {
       ${this._cursorInside ? this.#renderToolbar() : nothing}
       <input ${ref(this.#fileInput)} type="file" accept="image/*" @change=${this.#onFileChange} />
       <div
+        ${ref(this.#surface)}
         class="surface"
         data-mode=${this._drawMode}
+        tabindex="-1"
         @pointerdown=${this.#onPointerDown}
         @pointermove=${this.#onPointerMove}
         @pointerup=${this.#onPointerUp}
         @pointercancel=${this.#onPointerCancel}
+        @pointerleave=${this.#onPointerLeave}
+        @dblclick=${this.#onDoubleClick}
+        @keydown=${this.#onKeyDown}
+        @beforeinput=${this.#onBeforeInput}
       >
         <slot @slotchange=${() => this.#syncImage()}></slot>
         ${this._imageSrc && size
           ? html`<svg viewBox="0 0 ${size.width} ${size.height}" preserveAspectRatio="none">${this.#renderAreas(size)}</svg>`
           : nothing}
       </div>
+      ${this._cursorInside && this._imageSrc ? html`<div class="meta">${this.#hint()}</div>` : nothing}
     `;
   }
 }

@@ -77,8 +77,14 @@ const styles: CSSResultGroup = [
     }
 
     .surface[data-mode='circle'],
-    .surface[data-mode='rect'] {
+    .surface[data-mode='rect'],
+    .surface[data-mode='poly'] {
       cursor: crosshair;
+    }
+
+    /* Focused by a press while a polygon is drawn, for Enter and Escape; not a tab stop. */
+    .surface:focus {
+      outline: none;
     }
 
     svg {
@@ -110,6 +116,7 @@ const styles: CSSResultGroup = [
     .area--draft {
       fill: none;
       stroke-dasharray: 4 4;
+      pointer-events: none;
     }
 
     .handle {
@@ -118,6 +125,10 @@ const styles: CSSResultGroup = [
       stroke-width: 2;
       vector-effect: non-scaling-stroke;
       cursor: nwse-resize;
+    }
+
+    .handle--start {
+      cursor: pointer;
     }
 
     .meta {
