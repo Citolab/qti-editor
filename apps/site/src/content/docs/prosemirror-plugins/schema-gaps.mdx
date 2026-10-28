@@ -31,6 +31,10 @@ outcome.changes; // one entry per element the schema could not match
 outcome.preservedFragments; // the removed markup, verbatim, for each one
 ```
 
+An element inside one that an `ignore` parse rule skips is reported too, with
+`data.insideSkipped` naming that element: the rule drops everything in it, whatever rules the inner
+elements have. A table's `<caption>` is such a case — its text is kept, its markup is not.
+
 Pass `ignoreTags` for wrappers whose children *are* the content, so unwrapping them is not worth
 reporting — `TRANSPARENT_WRAPPER_TAGS` covers the common HTML ones (`thead`, `tbody`, `tfoot`,
 `colgroup`) plus one QTI tag (`qti-content-body`):

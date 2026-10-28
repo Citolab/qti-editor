@@ -127,6 +127,7 @@ export default defineConfig({
             { label: 'Semantic Paste', slug: 'docs/prosemirror-plugins/paste-semantic-html' },
             { label: 'Schema Gaps', slug: 'docs/prosemirror-plugins/schema-gaps' },
             { label: 'Clear Formatting', slug: 'docs/prosemirror-plugins/clear-formatting' },
+            { label: 'HTML Schema', slug: 'docs/prosemirror-plugins/html-schema' },
           ],
         },
         {

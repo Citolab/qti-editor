@@ -52,13 +52,20 @@ export interface FindUnrepresentableOptions extends SchemaGapMessageOptions {
  *
  * Style-based mark rules are not considered: they match inline CSS, not elements, and an element
  * carrying only a `style` rule's property still needs a tag rule to be reached at all.
+ *
+ * ## Inside an `ignore` rule
+ *
+ * A rule with `ignore: true` skips its element *and* everything in it, so the elements inside it are
+ * not parsed either, whatever rules they have. Each one is reported. Some other rule may still read
+ * the text (a table's `<caption>` is kept as a table attribute, as plain text), but the markup inside
+ * is gone.
  */
 export function findUnrepresentableElements(
   schema: Schema,
   root: Element,
   options: FindUnrepresentableOptions = {},
 ): SchemaGapOutcome {
-  const selectors = tagSelectorsOf(schema);
+  const { selectors, ignoreSelectors } = tagSelectorsOf(schema);
   const ignored = new Set((options.ignoreTags ?? []).map(tag => tag.toLowerCase()));
   const excerptLimit = options.excerptLimit ?? 60;
 
@@ -68,15 +75,18 @@ export function findUnrepresentableElements(
   for (const element of Array.from(root.querySelectorAll('*'))) {
     const tagName = element.localName.toLowerCase();
     if (ignored.has(tagName)) continue;
-    if (selectors.some(selector => safeMatches(element, selector))) continue;
+    const skippedBy = skippingAncestor(element, root, ignoreSelectors);
+    if (!skippedBy && selectors.some(selector => safeMatches(element, selector))) continue;
 
     const path = domPath(element, root);
     const excerpt = excerptOfElement(element, excerptLimit);
-    const keptChildren = element.children.length;
+    const keptChildren = skippedBy ? 0 : element.children.length;
 
     preserved.push({
       path,
-      reason: `No node or mark in the schema can represent <${tagName}>.`,
+      reason: skippedBy
+        ? `The schema skips the content of <${skippedBy}>, so <${tagName}> inside it is not kept.`
+        : `No node or mark in the schema can represent <${tagName}>.`,
       payload: element.outerHTML,
       nodeType: tagName,
     });
@@ -84,13 +94,16 @@ export function findUnrepresentableElements(
       kind: 'unrepresentable-element',
       code: 'UNKNOWN_NODE_PRESERVED',
       severity: 'warning',
-      message: keptChildren
-        ? `Removed <${tagName}>, which the schema cannot represent, and kept its ${keptChildren} child element(s).`
-        : `Removed <${tagName}>, which the schema cannot represent.`,
+      message: skippedBy
+        ? `Removed <${tagName}> inside <${skippedBy}>, whose content the schema does not keep as markup.`
+        : keptChildren
+          ? `Removed <${tagName}>, which the schema cannot represent, and kept its ${keptChildren} child element(s).`
+          : `Removed <${tagName}>, which the schema cannot represent.`,
       path,
       nodeType: tagName,
       data: {
         unwrappedChildren: keptChildren,
+        ...(skippedBy ? { insideSkipped: skippedBy } : {}),
         ...(excerpt ? { excerpt } : {}),
       },
     };
@@ -103,20 +116,35 @@ export function findUnrepresentableElements(
   return { changes, preservedFragments: preserved };
 }
 
-/** Every tag selector any node or mark in the schema can be parsed from. */
-function tagSelectorsOf(schema: Schema): string[] {
+/**
+ * Every tag selector any node or mark in the schema can be parsed from, and separately the ones of
+ * `ignore` rules, whose element's content is skipped.
+ */
+function tagSelectorsOf(schema: Schema): { selectors: string[]; ignoreSelectors: string[] } {
   const selectors = new Set<string>();
+  const ignoreSelectors = new Set<string>();
 
   const collect = (spec: NodeSpec | MarkSpec) => {
     for (const rule of spec.parseDOM ?? []) {
-      if (typeof rule.tag === 'string' && rule.tag.length > 0) selectors.add(rule.tag);
+      if (typeof rule.tag !== 'string' || rule.tag.length === 0) continue;
+      selectors.add(rule.tag);
+      if ('ignore' in rule && rule.ignore) ignoreSelectors.add(rule.tag);
     }
   };
 
   for (const type of Object.values(schema.nodes)) collect(type.spec);
   for (const type of Object.values(schema.marks)) collect(type.spec);
 
-  return [...selectors];
+  return { selectors: [...selectors], ignoreSelectors: [...ignoreSelectors] };
+}
+
+/** The tag name of the nearest ancestor below `root` that an `ignore` rule skips, if any. */
+function skippingAncestor(element: Element, root: Element, ignoreSelectors: string[]): string | null {
+  if (ignoreSelectors.length === 0) return null;
+  for (let current = element.parentElement; current && current !== root; current = current.parentElement) {
+    if (ignoreSelectors.some(selector => safeMatches(current, selector))) return current.localName.toLowerCase();
+  }
+  return null;
 }
 
 /**
