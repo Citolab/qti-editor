@@ -26,11 +26,11 @@ Nothing is removed from `prosemirror-schema-basic` — one node is overridden an
 
 ## Layout wrappers (`qtiLayoutDiv`)
 
-`qtiBasicNodes.qtiLayoutDiv` models the `<div class="qti-layout-row">` / `<div class="qti-layout-colN">` presentation wrappers that QTI items use for grid layout. They are author-written in the source XML — no editor offers a command to create one — so a schema that omits this node silently drops every wrapper on import.
+`qtiBasicNodes.qtiLayoutDiv` models the `<div class="qti-layout-row">` / `<div class="qti-layout-colN">` presentation wrappers that QTI items use for grid layout. They are author-written in the source XML, so a schema that omits this node silently drops every wrapper on import.
 
 Import and export preserve the wrapper's `class` attribute exactly; editing the content inside a column, or changing a wrapper's own `class`, both work normally.
 
-Because nothing can author a new wrapper, an editor that lets a selection spanning one delete it leaves an author with structure they have no command to rebuild. `qtiLayoutDivLockPlugin` closes that gap:
+An editor that lets a selection spanning a wrapper delete it leaves an author with structure they have no command to rebuild. `qtiLayoutDivLockPlugin` closes that gap:
 
 ```ts
 import { qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
@@ -38,15 +38,17 @@ import { qtiLayoutDivLockPlugin } from '@citolab/prose-qti/schema';
 const plugins = [...otherPlugins, qtiLayoutDivLockPlugin];
 ```
 
-It rejects any transaction that would change how many `qtiLayoutDiv` nodes the document contains, and leaves everything else — including re-classing a wrapper — untouched. It is a separate export rather than automatic, so a host that genuinely wants editable grids simply omits it from its plugin list.
+It rejects any transaction that would change how many `qtiLayoutDiv` nodes the document contains, and leaves everything else — including re-classing a wrapper — untouched. It is a separate export rather than automatic.
 
-Two kinds of transaction pass anyway. A host command that changes the layout on purpose marks its transaction with `QTI_LAYOUT_DIV_UNLOCK_META`, and undo/redo (prosemirror-history) are let through so that change can be undone:
+Two kinds of transaction pass anyway. A host command that changes the layout on purpose — a one-column / two-column switch, say — marks its transaction with `QTI_LAYOUT_DIV_UNLOCK_META`, and undo/redo (prosemirror-history) are let through so that change can be undone:
 
 ```ts
 import { QTI_LAYOUT_DIV_UNLOCK_META } from '@citolab/prose-qti/schema';
 
 view.dispatch(tr.setMeta(QTI_LAYOUT_DIV_UNLOCK_META, true));
 ```
+
+Undo from another history — y-prosemirror's undo manager, for example — is not recognised, and is rejected when it changes the number of wrappers.
 
 ## Paste rescue (`qtiPasteRescuePlugin`)
 

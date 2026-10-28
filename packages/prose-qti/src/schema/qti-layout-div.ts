@@ -30,14 +30,16 @@ import type { DOMOutputSpec, Node as ProseMirrorNode, NodeSpec } from 'prosemirr
  *   - The boundary is not where it was drawn. `isolating` and `selectable: false` below are already
  *     editing behaviour, decided here. The lock is the third clause of that same sentence — without
  *     it those two are advisory, since a selection spanning the wrapper still deletes it.
- *   - Nothing can author one. The wrappers arrive from imported QTI and no editor offers a command
- *     to insert or remove them, so "how many are there" is a property of the imported item, not a
- *     thing an author decides. A host that shipped the node without the lock would let an author
- *     destroy structure they cannot recreate.
+ *   - The way through ships with it, for the same reason. The wrappers arrive from imported QTI,
+ *     but hosts do change them on purpose: two hosts offer a one-column / two-column switch today,
+ *     and one of them leaves the lock out to make room for it while the other carries a forked
+ *     copy with an escape hatch. That is the drift of the first point again, so the lock lets a
+ *     marked transaction through ({@link QTI_LAYOUT_DIV_UNLOCK_META}, and undo/redo of it) rather
+ *     than asking a host with a switch to drop or fork it. What it still stops is the accident: a
+ *     selection that spans a wrapper deleting structure the author has no command to rebuild.
  *
- * It is a separate export rather than something automatic, so a host that genuinely wants editable
- * grids simply does not add it. Opting out is one omitted array entry; opting in, before, was
- * reimplementing this file.
+ * It is a separate export rather than something automatic: a host opts in with one array entry,
+ * and marks its own layout commands with the meta.
  *
  * ## What omitting it costs
  *
@@ -128,7 +130,8 @@ export const QTI_LAYOUT_DIV_UNLOCK_META = 'qtiLayoutDivUnlock';
 /**
  * The meta prosemirror-history puts on its undo/redo transactions: its plugin key, `history$`. Read
  * by name so this package does not depend on prosemirror-history for one lookup; the test drives
- * the real history plugin, so a rename there fails here.
+ * the real history plugin, so a rename there fails here. The alternative is `isHistoryTransaction`
+ * (prosemirror-history ≥ 1.5), at the cost of a peer dependency.
  */
 const HISTORY_META = 'history$';
 
@@ -156,6 +159,9 @@ const HISTORY_META = 'history$';
  * {@link QTI_LAYOUT_DIV_UNLOCK_META} and passes. Undo and redo pass too: they replay the inverse of
  * steps this filter already let through, so a count they change is one a marked transaction
  * changed — and rejecting them would leave that change impossible to undo.
+ *
+ * Only prosemirror-history's undo is recognised. An undo from elsewhere — y-prosemirror's undo
+ * manager, say — carries no `history$` meta and is still rejected when it changes the count.
  *
  * Add it to the plugin list to opt in:
  *
