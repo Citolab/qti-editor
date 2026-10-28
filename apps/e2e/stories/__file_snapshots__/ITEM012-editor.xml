@@ -17,9 +17,11 @@
   </qti-outcome-declaration>
   <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
     <p>Selecteer alle werkwoorden in de volgende zin (de woorden zijn niet herkenbaar gemarkeerd):</p>
-    <qti-hottext-interaction max-choices="0" response-identifier="RESPONSE" class="qti-unselected-hidden">
-      <p>“De <qti-hottext identifier="ht_technicus">technicus</qti-hottext> <qti-hottext identifier="ht_onderzocht">onderzocht</qti-hottext> het <qti-hottext identifier="ht_apparaat">apparaat</qti-hottext> en <qti-hottext identifier="ht_verving">verving</qti-hottext> uiteindelijk de <qti-hottext identifier="ht_defecte">defecte</qti-hottext> <qti-hottext identifier="ht_sensor">sensor</qti-hottext> .”</p>
-    </qti-hottext-interaction>
+    <div class="qti-bordered qti-padding-3 qti-margin-x-2 qti-margin-y-4">
+      <qti-hottext-interaction max-choices="0" response-identifier="RESPONSE" class="qti-unselected-hidden">
+        <div>“De <qti-hottext identifier="ht_technicus">technicus</qti-hottext> <qti-hottext identifier="ht_onderzocht">onderzocht</qti-hottext> het <qti-hottext identifier="ht_apparaat">apparaat</qti-hottext> en <qti-hottext identifier="ht_verving">verving</qti-hottext> uiteindelijk de <qti-hottext identifier="ht_defecte">defecte</qti-hottext> <qti-hottext identifier="ht_sensor">sensor</qti-hottext> .”</div>
+      </qti-hottext-interaction>
+    </div>
   </qti-item-body>
   <qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct"/>
 </qti-assessment-item>

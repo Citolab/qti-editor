@@ -52,6 +52,38 @@ four, so `<span class="qti-underline" xml:lang="fr">` keeps both. It matches tho
 [Schema Gaps](/docs/prosemirror-plugins/schema-gaps/) still reports it. Nested spans stay separate,
 and the span is ranked before the other content marks, so it is written outside them.
 
+## Divs
+
+A `<div>` is kept in one of two ways, depending on what it holds:
+
+- **A div of blocks** with a `class`, `id`, `lang` or `xml:lang` is a `div` node (`divNodeSpec`), so
+  `<div class="qti-bordered qti-padding-3">` around a question keeps its frame. A bare div of blocks
+  carries nothing and is unwrapped, as before.
+- **A div of inline content** is a paragraph written as a div. `withDivParagraph(spec, options)`
+  gives a paragraph spec a `tag` attribute (`'p'` | `'div'`) and a `div` rule, so `<div>option A</div>`
+  comes back as a div instead of a `<p>`.
+
+```ts
+import { nodes as basicNodes } from 'prosemirror-schema-basic';
+import { divNodeSpec, withDivParagraph } from '@citolab/prose-extensions/html-schema';
+
+const nodes = {
+  ...basicNodes,
+  paragraph: withDivParagraph(basicNodes.paragraph, { inlineElements: ['my-inline-widget'] }),
+  div: divNodeSpec,
+};
+```
+
+HTML block elements and every custom element make a div a container of blocks, except the custom
+elements passed as `inlineElements`. prose-qti passes `QTI_INLINE_ELEMENTS` (text entry, inline
+choice, gap, hottext, …), and so does `defineQtiExtension()`; a host that composes
+`defineBasicExtension()` with the QTI interactions itself passes `{ inlineElements: QTI_INLINE_ELEMENTS }`.
+
+- A div-paragraph renders as a `<div>`, so it has no paragraph margins in the editor.
+- The div node is in the `richtext` group too, so a classed div inside a rubric block is kept.
+- Its `class` attribute is required (`null` is allowed), so ProseMirror never uses it to fill empty
+  content.
+
 ## Unique ids
 
 An id must be unique, but editing copies it: Enter in the middle of a paragraph gives both halves

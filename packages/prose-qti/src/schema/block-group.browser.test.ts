@@ -52,6 +52,9 @@ const BLOCK_GROUP_MEMBERS = [
   'ordered_list',
   'bullet_list',
   'table',
+  // A `<div>` of blocks that carries a class, id or language (html-schema's `divNodeSpec`). Its
+  // `class` attribute is required, so it is never the filler `defaultType` picks.
+  'div',
   'qtiLayoutDiv',
   'qtiRubricBlock',
   // Interactions — the whole point of the group.

@@ -22,7 +22,7 @@ Use this package when you build your ProseMirror `Schema` by hand (see the [Type
 - `qtiLayoutDivLockPlugin` — an optional ProseMirror plugin that keeps `qtiLayoutDiv` wrappers from being added or removed by editing. Not included automatically; add it to your plugin list.
 - `qtiPasteRescuePlugin` — an optional ProseMirror plugin that fixes up a multi-block paste landing in a slot that only holds one block. Not included automatically; add it to your plugin list.
 
-Nothing is removed from `prosemirror-schema-basic` — one node is overridden and one is added.
+Nothing is removed from `prosemirror-schema-basic` — two nodes are overridden (`image`, and `paragraph`, which also reads a `<div>` of text and writes it back as a div) and two are added (`div` for a `<div>` of blocks that carries a class, id or language, and `qtiLayoutDiv`).
 
 ## Layout wrappers (`qtiLayoutDiv`)
 

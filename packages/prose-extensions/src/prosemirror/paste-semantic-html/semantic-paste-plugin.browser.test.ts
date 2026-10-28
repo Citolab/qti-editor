@@ -285,3 +285,52 @@ describe('classes and ids on pasted content', () => {
     }
   })
 })
+
+describe('pasted divs', () => {
+  /** `type:tag` of every block in the document, and a marker for marked text. */
+  function blockTypes(doc: PmNode): string[] {
+    const types: string[] = []
+    doc.descendants((node) => {
+      if (node.isBlock) types.push(`${node.type.name}:${node.attrs.tag ?? ''}`)
+      if (node.isText && node.marks.length > 0) types.push('marked text')
+    })
+    return types
+  }
+
+  test("a web page's text divs become paragraphs, and its spans and divs carry nothing over", async () => {
+    const { view, destroy } = makeEditor()
+    try {
+      await paste(view, {
+        html: '<div class="card"><div>First</div><div>Second <span class="badge">new</span></div></div>',
+      })
+
+      expect(blockTypes(view.state.doc)).toEqual(['paragraph:p', 'paragraph:p'])
+    } finally {
+      destroy()
+    }
+  })
+
+  test('a text div that keeps a class stays a div', async () => {
+    const { view, destroy } = makeEditor({ keepClass: (token) => token.startsWith('qti-') })
+    try {
+      // Between two paragraphs, so the paste does not merge it into the paragraph it lands in.
+      await paste(view, { html: '<p>a</p><div class="qti-align-center x">Centred</div><p>b</p>' })
+
+      const centred = view.state.doc.child(1)
+      expect([centred.textContent, centred.attrs.tag, centred.attrs.class]).toEqual(['Centred', 'div', 'qti-align-center'])
+    } finally {
+      destroy()
+    }
+  })
+
+  test('a div paragraph copied out of a ProseMirror editor stays a div', async () => {
+    const { view, destroy } = makeEditor()
+    try {
+      await paste(view, { html: '<div data-pm-slice="0 0 []">As a div</div>' })
+
+      expect(view.state.doc.firstChild?.attrs.tag).toBe('div')
+    } finally {
+      destroy()
+    }
+  })
+})

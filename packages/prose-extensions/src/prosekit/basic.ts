@@ -25,8 +25,11 @@ import { defineTable, type TableExtension } from 'prosekit/extensions/table'
 import { defineText, type TextExtension } from 'prosekit/extensions/text'
 
 import {
+  divNodeSpec,
   spanMarkSpec,
   tableCaptionSpec,
+  withDivParagraph,
+  type DivContentOptions,
   type GlobalAttrs,
 } from '../prosemirror/html-schema/index.js'
 import {
@@ -186,18 +189,28 @@ function defineQtiImage(): ImageExtension {
 /**
  * ProseKit's paragraph node, rebuilt so its spec is ours to set.
  *
- * Identical to `defineParagraph()` apart from the `richtext` group membership
- * and the absence of the priority-4 wrapper — see the note above on why that
- * wrapper makes the group unpatchable from outside.
+ * Identical to `defineParagraph()` apart from the `richtext` group membership,
+ * the absence of the priority-4 wrapper — see the note above on why that
+ * wrapper makes the group unpatchable from outside — and the `tag` attr.
+ *
+ * `tag` is `'div'` for a `<div>` that holds only inline content: it is a
+ * paragraph, and it is written back as the div it was, so
+ * `<div class="kader">text</div>` round-trips unchanged instead of becoming a
+ * `<p>`. See `withDivParagraph` in `html-schema/div.ts`.
  */
-function defineQtiParagraph(): ParagraphExtension {
+function defineQtiParagraph(divContent: DivContentOptions): ParagraphExtension {
   return union(
     defineNodeSpec({
       name: 'paragraph',
-      content: 'inline*',
-      group: 'block richtext',
-      parseDOM: [{ tag: 'p' }],
-      toDOM: () => ['p', 0],
+      ...withDivParagraph(
+        {
+          content: 'inline*',
+          group: 'block richtext',
+          parseDOM: [{ tag: 'p' }],
+          toDOM: () => ['p', 0],
+        },
+        divContent,
+      ),
     }),
     defineParagraphCommands(),
     defineParagraphKeymap(),
@@ -240,6 +253,8 @@ const GLOBAL_ATTR_MARK_TYPES = ['em', 'strong', 'code'] as const satisfies Reado
 
 export type SpanExtension = Extension<{ Marks: { span: GlobalAttrs } }>
 
+export type DivExtension = Extension<{ Nodes: { div: GlobalAttrs } }>
+
 export type BasicExtension = Union<
   [
     // Nodes
@@ -250,6 +265,7 @@ export type BasicExtension = Union<
     ListExtension,
     ImageExtension,
     TableExtension,
+    DivExtension,
     // Marks
     PhrasingMarksExtension,
     EmExtension,
@@ -269,6 +285,12 @@ export type BasicExtension = Union<
 export interface BasicExtensionOptions {
   /** Passed through to {@link defineList}. Off by default, matching `defineList`. */
   list?: ListOptions
+  /**
+   * Custom elements (tag names) that sit inside a line of text, so a `<div>` holding one is still a
+   * paragraph written as a div. Every other custom element makes a div a container of blocks. A QTI
+   * editor passes prose-qti's `QTI_INLINE_ELEMENTS`; `defineQtiExtension()` does that already.
+   */
+  inlineElements?: readonly string[]
 }
 
 export function defineBasicExtension(options?: BasicExtensionOptions): BasicExtension {
@@ -278,7 +300,7 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     defineNodeAttr({ type: 'doc', attr: 'title', default: '' }),
     defineNodeAttr({ type: 'doc', attr: 'identifier', default: '' }),
     defineText(),
-    defineQtiParagraph(),
+    defineQtiParagraph({ inlineElements: options?.inlineElements }),
     defineHeading(),
     defineList(options?.list),
     defineQtiImage(),
@@ -294,6 +316,9 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     // interactions stay legal content, same reasoning as `defineQtiDoc` above.
     defineNodeSpec({ name: 'tableCell', content: '(paragraph | block)+' }),
     defineNodeSpec({ name: 'tableHeaderCell', content: '(paragraph | block)+' }),
+    // A div of blocks with a class, id or language that no other rule owns; see `div.ts`. Lowest
+    // parse priority, so `qtiLayoutDiv` and every other div rule still wins.
+    defineNodeSpec<'div', GlobalAttrs>({ name: 'div', ...divNodeSpec }),
     // Marks
     // Before em/strong: ProseKit ranks a later registration higher. See phrasing-marks.ts.
     definePhrasingMarks(),

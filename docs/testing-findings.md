@@ -382,3 +382,10 @@ The Node conversion (`@citolab/prose-qti-node`) runs on linkedom. There `getAttr
 
 - **Resolution**: `readGlobalAttr` (`packages/prose-extensions/src/prosemirror/html-schema/global-attrs.ts`) reads the literal `xml:lang` attribute, then looks for an attribute whose `namespaceURI` is the XML namespace, and never calls `getAttributeNS`.
 - **Where to look**: `packages/prose-qti-node/src/node-conversion.node.test.ts` ("global attributes on content").
+
+## 34. `qtiInlineChoice` is in the `inline` group, so it is legal loose in a paragraph — **open**
+
+`qti-inline-choice` (an option of an inline choice interaction) is declared `group: 'inline'`, so any paragraph admits it, though it is only valid inside its `qti-inline-choice-interaction`. It is the inline counterpart of the `block`-group problem described in "The block group" in `create-qti-schema.ts`: a node in a group is a candidate for being put there by the editor on its own initiative (`findWrapping`, a paste). Found while checking `QTI_INLINE_ELEMENTS` against the interactions' inline nodes; the test excludes it by name.
+
+- **Fix**: drop the group and name the node in its interaction's content expression, as the block-level internals were.
+- **Where to look**: `packages/prose-qti/src/components/inline-choice/components/qti-inline-choice-interaction/qti-inline-choice.schema.ts`; `packages/prose-qti/src/schema/div.browser.test.ts`.

@@ -16,6 +16,7 @@ import {
   listInteractionSchemaNodeSpecs,
 } from '@citolab/prose-qti/core/interactions/composer';
 import { clearFormatting } from '@citolab/prose-qti/commands';
+import { QTI_INLINE_ELEMENTS } from '@citolab/prose-qti/schema';
 import {
   constrainedHome,
   constrainedShiftHome,
@@ -117,8 +118,14 @@ export function defineClearFormattingExtension() {
   );
 }
 
+/**
+ * The ProseKit base plus every interaction. The base is told which QTI elements are inline
+ * (`QTI_INLINE_ELEMENTS`), so a `<div>` of text with a text entry or a gap in it is still a paragraph
+ * written as a div. A host that composes `defineBasicExtension()` and the interactions itself passes
+ * the same `inlineElements`.
+ */
 export function defineQtiExtension() {
-  return union(defineBasicExtension(), defineQtiInteractionsExtension());
+  return union(defineBasicExtension({ inlineElements: QTI_INLINE_ELEMENTS }), defineQtiInteractionsExtension());
 }
 
 export type QtiExtension = ReturnType<typeof defineQtiExtension>;

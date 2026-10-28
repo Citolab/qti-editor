@@ -5,6 +5,7 @@
  *
  * Plain ProseMirror only; nothing here imports `prosekit`.
  */
+export * from './div.js';
 export * from './global-attrs.js';
 export * from './phrasing-marks.js';
 export * from './span.js';

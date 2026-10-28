@@ -62,6 +62,11 @@ const plugins = [createSemanticPastePlugin(qtiSemanticPasteOptions)];
 
 `defineSemanticPasteExtension(options)` takes the same options.
 
+A bare `<div>` of text from outside becomes a `<p>`: web pages are built of them, and the editor
+would otherwise keep each one as a paragraph written as a div. Without this plugin, a pasted web page
+does arrive as div-paragraphs. `inlineElements` names the custom elements that count as text here;
+`qtiSemanticPasteOptions` passes QTI's.
+
 HTML copied out of a ProseMirror editor (marked with `data-pm-slice`) is left as it is. That covers
 this editor and any other ProseMirror-based one, so a paste from another ProseMirror editor keeps
 its classes, even ones that mean nothing in an item. An id such a paste duplicates is cleared by the

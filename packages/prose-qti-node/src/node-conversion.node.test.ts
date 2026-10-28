@@ -117,6 +117,15 @@ describe('global attributes on content', () => {
   });
 });
 
+describe('divs', () => {
+  test('a classed div of blocks and a div of text are kept as divs', () => {
+    const xml = `<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" identifier="DIV" title="Div">
+      <qti-item-body><div class="kader"><p>a</p></div><div>text</div></qti-item-body>
+    </qti-assessment-item>`;
+    expect(canonical(pmToQti3(qti3ToPm(xml)))).toContain('<div class="kader"><p>a</p></div><div>text</div>');
+  });
+});
+
 describe('the HTML boundary', () => {
   test('pmToHtml and htmlToPm are inverses for simple prose', () => {
     const doc = htmlToPm('<p>Water boils at 100 degrees.</p>', { identifier: 'X', title: 'X' });

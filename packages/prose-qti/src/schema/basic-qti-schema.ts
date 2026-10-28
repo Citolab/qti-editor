@@ -1,6 +1,13 @@
-import { phrasingMarkSpecs, spanMarkSpec, withGlobalAttrsOn } from '@citolab/prose-extensions/html-schema';
+import {
+  divNodeSpec,
+  phrasingMarkSpecs,
+  spanMarkSpec,
+  withDivParagraph,
+  withGlobalAttrsOn
+} from '@citolab/prose-extensions/html-schema';
 import { nodes as basicNodes, marks as basicMarks } from 'prosemirror-schema-basic';
 
+import { QTI_INLINE_ELEMENTS } from './qti-inline-elements.js';
 import { qtiLayoutDivNodeSpec } from './qti-layout-div.js';
 
 import type { NodeSpec } from 'prosemirror-model';
@@ -68,7 +75,8 @@ const qtiImageNodeSpec: NodeSpec = {
 };
 
 /**
- * prosemirror-schema-basic, extended. One override and one addition — nothing is removed.
+ * prosemirror-schema-basic, extended. Two overrides (`image`, `paragraph`) and two additions
+ * (`div`, `qtiLayoutDiv`) — nothing is removed.
  *
  * Every node `GLOBAL_ATTR_NODES` names keeps `class`, `id`, `lang` and `xml:lang`
  * (`@citolab/prose-extensions/html-schema`'s `withGlobalAttrsOn`), the same list and the same
@@ -95,10 +103,17 @@ const qtiImageNodeSpec: NodeSpec = {
 export const qtiBasicNodes = withGlobalAttrsOn({
   ...basicNodes,
   /*
-   * The only override. prosemirror-schema-basic's image models src/alt/title and drops width and
+   * prosemirror-schema-basic's image models src/alt/title and drops width and
    * height outright, so an authored `<img width="120">` came back without its dimensions.
    */
   image: qtiImageNodeSpec,
+  /*
+   * A `<div>` of inline content is a paragraph written as a div, and is written back as one; see
+   * `withDivParagraph`. QTI's inline elements count as inline content.
+   */
+  paragraph: withDivParagraph(basicNodes.paragraph, { inlineElements: QTI_INLINE_ELEMENTS }),
+  /* A `<div>` of blocks with a class, id or language: kept rather than unwrapped. See `div.ts`. */
+  div: divNodeSpec,
   /*
    * In the basic set rather than opt-in, because omitting it is not a smaller schema — it is a
    * lossy one. Without this node the author's `<div class="qti-layout-row">` wrappers are dropped
