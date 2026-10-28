@@ -3,7 +3,7 @@
 import { Schema } from 'prosemirror-model';
 import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
 import { tableNodes } from 'prosemirror-tables';
-import { tableCaptionSpec } from '@citolab/prose-extensions/html-schema';
+import { tableCaptionSpec, withGlobalAttrsOn } from '@citolab/prose-extensions/html-schema';
 
 import { listInteractionSchemaNodeSpecs } from '../core/interactions/composer.js';
 import { qtiBasicMarks, qtiBasicNodes } from './basic-qti-schema.js';
@@ -108,7 +108,8 @@ export function createQtiSchema(options: CreateQtiSchemaOptions = {}): Schema {
 
   const tables = tableNodes({ tableGroup: 'block richtext', cellContent: 'richtext+', cellAttributes: {} });
 
-  const nodes: Record<string, NodeSpec> = {
+  // `class`, `id`, `lang` and `xml:lang` on the lists and tables too (`qtiBasicNodes` has them).
+  const nodes: Record<string, NodeSpec> = withGlobalAttrsOn({
     ...qtiBasicNodes,
     // tableNodes' cellContent is `richtext+`, so paragraph has to join that group.
     paragraph: { ...qtiBasicNodes.paragraph, group: 'block richtext' },
@@ -120,7 +121,7 @@ export function createQtiSchema(options: CreateQtiSchemaOptions = {}): Schema {
     table: { ...tables.table, ...tableCaptionSpec },
     ...interactionNodes,
     ...extraNodes
-  };
+  });
 
   return new Schema({
     nodes: {

@@ -8,4 +8,5 @@ export {
   makeHtmlSemantic,
   hydrateSemanticPasteImages,
   createSemanticPastePlugin,
+  type SemanticPasteOptions,
 } from './semantic-paste-plugin.js';

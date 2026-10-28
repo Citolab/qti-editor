@@ -11,15 +11,15 @@ export {
 export { definePhrasingMarks, type PhrasingMarksExtension } from './phrasing-marks.js'
 export { defineList, type ListExtension, type ListOptions } from './list.js'
 export {
-  defineMarkClassAndId,
-  defineNodeClassAndId,
+  defineMarkGlobalAttrs,
+  defineNodeGlobalAttrs,
   defineUniqueIds,
-  type ClassAndIdAttrs,
-  type MarkClassAndIdExtension,
-  type NodeClassAndIdExtension,
-} from './class-and-id.js'
+  type MarkGlobalAttrsExtension,
+  type NodeGlobalAttrsExtension,
+} from './global-attrs.js'
 export {
   defineBasicExtension,
   type BasicExtension,
   type BasicExtensionOptions,
+  type SpanExtension,
 } from './basic.js'

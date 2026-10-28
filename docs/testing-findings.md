@@ -375,3 +375,10 @@ A plain `Schema` ranks marks in the order its `marks` object lists them; ProseKi
 
 - **Why not fixed with the phrasing marks**: hosts add ProseKit's own `defineLink()` / `defineHardBreak()` (named `link` / `hardBreak`, with commands and keymaps), and a second `br` node in the base would make two nodes claim the tag, the way `sub` / `sup` now can (see [prosekit-divergences.md](prosekit-divergences.md)). Adding them to the base needs a decision about those hosts first.
 - **Where to look**: `packages/prose-extensions/src/prosekit/basic.ts`; `packages/prose-qti/src/schema/basic-qti-schema.ts`.
+
+## 33. linkedom's `getAttributeNS(XML_NS, 'lang')` returns a plain `lang` — **upstream** (linkedom)
+
+The Node conversion (`@citolab/prose-qti-node`) runs on linkedom. There `getAttributeNS` ignores the namespace: on `<p lang="de">` it returns `de` for the XML namespace's `lang` too, so a reader that used it to find `xml:lang` gave every `lang` an `xml:lang` twin on export (`<p lang="de" xml:lang="de">`). Found by the Node test for content languages; the browser is unaffected.
+
+- **Resolution**: `readGlobalAttr` (`packages/prose-extensions/src/prosemirror/html-schema/global-attrs.ts`) reads the literal `xml:lang` attribute, then looks for an attribute whose `namespaceURI` is the XML namespace, and never calls `getAttributeNS`.
+- **Where to look**: `packages/prose-qti-node/src/node-conversion.node.test.ts` ("global attributes on content").

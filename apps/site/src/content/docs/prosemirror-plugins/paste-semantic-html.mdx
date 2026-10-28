@@ -48,9 +48,24 @@ left as it is.
 
 The editor's nodes keep the `class` and `id` they are given, which is right for an imported item and
 wrong for a clipboard: Word marks every paragraph `MsoNormal`, and a web page brings its own
-stylesheet's vocabulary and ids that collide with yours. So for HTML from outside the editor only the
-`qti-*` class tokens survive — the shared QTI CSS vocabulary, such as `qti-align-center` — and every
-id is dropped. HTML copied out of a ProseMirror editor (marked with `data-pm-slice`) is left as it is.
+stylesheet's vocabulary and ids that collide with yours. So HTML from outside the editor loses every
+id, and every class token that `keepClass` does not accept. By default that is all of them. A QTI
+editor passes `qtiSemanticPasteOptions` from `@citolab/prose-qti/schema`, which keeps the `qti-*`
+tokens — the shared QTI CSS vocabulary, such as `qti-align-center`:
+
+```ts
+import { createSemanticPastePlugin } from '@citolab/prose-extensions/paste-semantic-html';
+import { qtiSemanticPasteOptions } from '@citolab/prose-qti/schema';
+
+const plugins = [createSemanticPastePlugin(qtiSemanticPasteOptions)];
+```
+
+`defineSemanticPasteExtension(options)` takes the same options.
+
+HTML copied out of a ProseMirror editor (marked with `data-pm-slice`) is left as it is. That covers
+this editor and any other ProseMirror-based one, so a paste from another ProseMirror editor keeps
+its classes, even ones that mean nothing in an item. An id such a paste duplicates is cleared by the
+unique-ids plugin (see [HTML Schema](/docs/prosemirror-plugins/html-schema/)).
 
 ## Image paste handling
 

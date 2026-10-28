@@ -17,7 +17,7 @@ import { describe, expect, test } from 'vitest'
 
 import { defineBasicExtension } from '../../prosekit/basic.js'
 import { defineSemanticPasteExtension } from './extension.js'
-import { createSemanticPastePlugin } from './semantic-paste-plugin.js'
+import { createSemanticPastePlugin, type SemanticPasteOptions } from './semantic-paste-plugin.js'
 
 import type { Node as PmNode } from 'prosemirror-model'
 import type { EditorView } from 'prosemirror-view'
@@ -34,9 +34,9 @@ function pngFile(name = 'image.png'): File {
   return new File([bytes], name, { type: 'image/png' })
 }
 
-function makeEditor() {
+function makeEditor(options?: SemanticPasteOptions) {
   const editor = createEditor({
-    extension: union(defineBasicExtension(), defineSemanticPasteExtension()),
+    extension: union(defineBasicExtension(), defineSemanticPasteExtension(options)),
   })
   const element = document.createElement('div')
   document.body.appendChild(element)
@@ -232,12 +232,23 @@ describe('classes and ids on pasted content', () => {
     return found
   }
 
-  test("Word's own classes are not imported; a qti-* class is", async () => {
+  const WORD = '<p class="MsoNormal">Plain</p><p class="MsoNormal qti-align-center" id="_Hlk1">Centred</p>'
+
+  test('by default no foreign class is imported, and no id', async () => {
     const { view, destroy } = makeEditor()
     try {
-      await paste(view, {
-        html: '<p class="MsoNormal">Plain</p><p class="MsoNormal qti-align-center" id="_Hlk1">Centred</p>',
-      })
+      await paste(view, { html: WORD })
+
+      expect(paragraphAttrs(view.state.doc)).toEqual([[null, null], [null, null]])
+    } finally {
+      destroy()
+    }
+  })
+
+  test('keepClass decides which class tokens survive (prose-qti keeps qti-*)', async () => {
+    const { view, destroy } = makeEditor({ keepClass: (token) => token.startsWith('qti-') })
+    try {
+      await paste(view, { html: WORD })
 
       expect(paragraphAttrs(view.state.doc)).toEqual([[null, null], ['qti-align-center', null]])
     } finally {
@@ -262,7 +273,7 @@ describe('classes and ids on pasted content', () => {
     }
   })
 
-  test("content copied out of a ProseMirror editor keeps its classes", async () => {
+  test('content copied out of a ProseMirror editor keeps its classes, whatever keepClass says', async () => {
     const { view, destroy } = makeEditor()
     try {
       // What `serializeForClipboard` writes: the slice marker on the first element.

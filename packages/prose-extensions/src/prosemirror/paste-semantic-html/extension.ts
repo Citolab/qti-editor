@@ -5,8 +5,8 @@
 
 import { definePlugin } from 'prosekit/core';
 
-import { createSemanticPastePlugin } from './semantic-paste-plugin.js';
+import { createSemanticPastePlugin, type SemanticPasteOptions } from './semantic-paste-plugin.js';
 
-export function defineSemanticPasteExtension() {
-  return definePlugin(() => createSemanticPastePlugin());
+export function defineSemanticPasteExtension(options?: SemanticPasteOptions) {
+  return definePlugin(() => createSemanticPastePlugin(options));
 }

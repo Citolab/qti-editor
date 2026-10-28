@@ -97,6 +97,26 @@ describe('qti3ToPm -> pmToQti3 reproduces the committed snapshots', () => {
   }
 });
 
+describe('global attributes on content', () => {
+  test('xml:lang and lang are each written back as the attribute they were', () => {
+    const xml = `<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" identifier="LANG" title="Lang">
+      <qti-item-body><p xml:lang="en">Hi <span xml:lang="fr">toi</span></p><p lang="de">du</p></qti-item-body>
+    </qti-assessment-item>`;
+    const out = canonical(pmToQti3(qti3ToPm(xml)));
+    expect(out).toContain('<p xml:lang="en">Hi<span xml:lang="fr">toi</span></p>');
+    expect(out).toContain('<p lang="de">du</p>');
+  });
+
+  test('class and id on a paragraph, an image and a span', () => {
+    const xml = `<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" identifier="CLS" title="Class">
+      <qti-item-body><p class="qti-align-center" id="p1">a<span class="qti-underline">b</span><img src="a.png" alt="a" class="qti-valign-middle"/></p></qti-item-body>
+    </qti-assessment-item>`;
+    expect(canonical(pmToQti3(qti3ToPm(xml)))).toContain(
+      '<p class="qti-align-center" id="p1">a<span class="qti-underline">b</span><img alt="a" class="qti-valign-middle" src="a.png"></img></p>',
+    );
+  });
+});
+
 describe('the HTML boundary', () => {
   test('pmToHtml and htmlToPm are inverses for simple prose', () => {
     const doc = htmlToPm('<p>Water boils at 100 degrees.</p>', { identifier: 'X', title: 'X' });

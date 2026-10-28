@@ -418,53 +418,56 @@ function stripQtiWebComponentInternals(root: ParentNode) {
   });
 }
 
-/**
- * `<b>` and `<i>` from OUTSIDE the editor become `<strong>` and `<em>`.
- *
- * The schema keeps `<b>` and `<i>` as marks of their own (`html-schema`'s phrasing marks), which is
- * right for an imported item and wrong for a clipboard: Word, Google Docs and most web pages write
- * bold and italic as `<b>` / `<i>`, and the author expects the editor's bold and italic. HTML that
- * ProseMirror itself put on the clipboard (its `data-pm-slice` marker) is left alone, so a `b` mark
- * copied inside the editor stays one.
- */
-function foreignBoldItalicToStrongEm(root: HTMLElement) {
-  if (root.querySelector('[data-pm-slice]')) return;
-  root.querySelectorAll('b, i').forEach((el) => {
-    const replacement = el.ownerDocument.createElement(el.localName === 'b' ? 'strong' : 'em');
-    replacement.append(...Array.from(el.childNodes));
-    el.replaceWith(replacement);
-  });
+export interface SemanticPasteOptions {
+  /**
+   * Which class tokens of HTML pasted from outside the editor to keep. Default: none.
+   *
+   * prose-qti passes `qtiSemanticPasteOptions`, which keeps the shared QTI CSS vocabulary
+   * (`qti-*`): those classes mean the same thing wherever they were copied from.
+   */
+  keepClass?: (token: string) => boolean;
 }
 
+const keepNoClass = () => false;
+
 /**
- * Drop the classes and ids a paste from OUTSIDE the editor brings along.
+ * What a paste from OUTSIDE the editor brings along that an item has no use for.
  *
- * The editor's nodes keep `class` and `id` (prose-extensions' `class-and-id.ts`), which is right for
- * an imported item and wrong for a clipboard: Word marks every paragraph `MsoNormal` and every
- * table cell `xl65`, a web page brings its own stylesheet's vocabulary, and none of it means
- * anything in a QTI item. Ids are worse — copied from another document they collide, or point at
- * nothing.
+ * The schema keeps `class` and `id` on its nodes and `<b>` / `<i>` as marks of their own
+ * (`html-schema`), which is right for an imported item and wrong for a clipboard:
  *
- * So for foreign HTML only the `qti-*` class tokens survive — the shared QTI CSS vocabulary
- * (`qti-align-center`, `qti-underline` …), which means the same thing wherever it was copied from —
- * and every id is dropped. HTML ProseMirror itself put on the clipboard (a copy out of this or
- * another ProseMirror editor, recognisable by its `data-pm-slice` marker) is left alone: those
- * classes are the author's own, and `defineUniqueIds` clears an id the paste duplicates.
+ * - **Classes.** Word marks every paragraph `MsoNormal` and every table cell `xl65`, and a web page
+ *   brings its own stylesheet's vocabulary. Only the tokens `keepClass` accepts survive.
+ * - **Ids.** Copied from another document they collide, or point at nothing. All are dropped.
+ * - **`<b>` / `<i>`.** Word, Google Docs and most web pages write bold and italic that way, and the
+ *   author expects the editor's own bold and italic: they become `<strong>` / `<em>`.
  *
- * Runs last: the Word clean-up above reads `Mso*` classes and `div#label`.
+ * HTML that a ProseMirror editor put on the clipboard (its `data-pm-slice` marker) is left alone.
+ * That is a copy out of this editor, or out of any other ProseMirror-based editor — whose classes
+ * are kept too, even when they mean nothing here. `createUniqueIdsPlugin` clears an id the paste
+ * duplicates.
+ *
+ * Runs last: the Word clean-up above reads `Mso*` classes and `div#label`, and `walk` has already
+ * unwrapped Google Docs' `<b style="font-weight:normal">`.
  */
-function stripForeignClassesAndIds(root: HTMLElement) {
+function normalizeForeignMarkup(root: HTMLElement, keepClass: (token: string) => boolean) {
   if (root.querySelector('[data-pm-slice]')) return;
 
   root.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
   root.querySelectorAll('[class]').forEach((el) => {
-    const kept = (el.getAttribute('class') ?? '').split(/\s+/).filter((token) => token.startsWith('qti-'));
+    const kept = (el.getAttribute('class') ?? '').split(/\s+/).filter((token) => token && keepClass(token));
     if (kept.length > 0) el.setAttribute('class', kept.join(' '));
     else el.removeAttribute('class');
   });
+  root.querySelectorAll('b, i').forEach((el) => {
+    const replacement = el.ownerDocument.createElement(el.localName === 'b' ? 'strong' : 'em');
+    replacement.append(...Array.from(el.childNodes));
+    for (const attr of Array.from(el.attributes)) replacement.setAttribute(attr.name, attr.value);
+    el.replaceWith(replacement);
+  });
 }
 
-export function makeHtmlSemantic(html: string): string {
+export function makeHtmlSemantic(html: string, options: SemanticPasteOptions = {}): string {
   const parser = new window.DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
 
@@ -481,10 +484,7 @@ export function makeHtmlSemantic(html: string): string {
   doc.querySelectorAll('[style*="mso-list:Ignore"], [style*="mso-list:ignore"]').forEach((el) => el.remove());
   doc.querySelectorAll('o\\:p').forEach((el) => el.remove());
 
-  // After `walk`, which has already unwrapped Google Docs' `<b style="font-weight:normal">`.
-  foreignBoldItalicToStrongEm(doc.body);
-
-  stripForeignClassesAndIds(doc.body);
+  normalizeForeignMarkup(doc.body, options.keepClass ?? keepNoClass);
 
   return doc.body.innerHTML
     .replace(/\u00A0/g, ' ')
@@ -625,9 +625,14 @@ function parseSliceForPaste(view: EditorView, html: string): Slice {
   return parser.parseSlice(doc.body, { context: view.state.selection.$from });
 }
 
-async function pasteHydratedImageHtml(view: EditorView, html: string, files: File[]) {
+async function pasteHydratedImageHtml(
+  view: EditorView,
+  html: string,
+  files: File[],
+  options: SemanticPasteOptions,
+) {
   const images = await Promise.all(files.map(readImageFile));
-  const hydratedHtml = hydrateSemanticPasteImages(makeHtmlSemantic(html), images);
+  const hydratedHtml = hydrateSemanticPasteImages(makeHtmlSemantic(html, options), images);
 
   view.dispatch(view.state.tr.replaceSelection(parseSliceForPaste(view, hydratedHtml)).scrollIntoView());
 }
@@ -643,12 +648,12 @@ async function pasteClipboardImages(view: EditorView, files: File[]) {
   }
 }
 
-export function createSemanticPastePlugin(): Plugin {
+export function createSemanticPastePlugin(options: SemanticPasteOptions = {}): Plugin {
   return new Plugin({
     key: semanticPastePluginKey,
     props: {
       transformPastedHTML(html) {
-        return makeHtmlSemantic(html);
+        return makeHtmlSemantic(html, options);
       },
       handlePaste(view, event: ClipboardEvent, slice: Slice) {
         const files = getClipboardImageFiles(event.clipboardData);
@@ -663,7 +668,7 @@ export function createSemanticPastePlugin(): Plugin {
         if (plan === 'ignore') return false;
 
         if (plan === 'hydrate') {
-          void pasteHydratedImageHtml(view, html, files).catch((error) => {
+          void pasteHydratedImageHtml(view, html, files, options).catch((error) => {
             console.error('Failed to paste clipboard image HTML:', error);
           });
           return true;

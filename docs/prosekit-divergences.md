@@ -182,9 +182,11 @@ the table has an attribute of its own the wrapper took `['tbody', 0]` for its at
 serialised as `<table 0="tbody" 1="0">` with its rows gone — measured, even with the new attribute
 at its default.
 
-**What works:** give the spec an explicit, empty attrs object — `['table', {}, ['tbody', 0]]` — which
-`defineBasicExtension` does for the table now that it carries `class` / `id`. Any node spec whose
-`toDOM` nests a child element straight after the tag needs the same before an attr is added to it.
+**What works:** give the spec an explicit, empty attrs object — `['table', {}, ['tbody', 0]]`. The
+table in `defineBasicExtension` gets its `toDOM` from `tableCaptionSpec` (`html-schema`), which writes
+it that way, so the global attributes (`class`, `id`, `lang`, `xml:lang`) can be added to it. Any
+node spec whose `toDOM` nests a child element straight after the tag needs the same before an attr
+is added to it. `withGlobalAttrs`, the plain-ProseMirror equivalent, inserts an attrs object itself.
 
 ### `white-space` inheritance crosses the shadow boundary
 

@@ -49,6 +49,7 @@ import {
   deleteColumn,
   deleteTable
 } from 'prosemirror-tables';
+import { createUniqueIdsPlugin } from '@citolab/prose-extensions/html-schema';
 import { blockSelectPlugin, nodeAttrsSyncPlugin } from '@citolab/prose-extensions/prosemirror';
 // The action pill's host-facing contract, shared by every interaction decorator.
 import { QTI_OPEN_NODE_SETTINGS_EVENT } from '@citolab/prose-qti/components/shared';
@@ -185,7 +186,9 @@ const editorPlugins: Plugin[] = [
   blockSelectPlugin,
   // Applies inline interaction attr edits (e.g. hottext radio clicks) that are
   // dispatched as `qti-prosemirror-node-attrs-change` events to the document.
-  nodeAttrsSyncPlugin
+  nodeAttrsSyncPlugin,
+  // The schema keeps `id`s; a split or a paste that copies one clears it on the copy.
+  createUniqueIdsPlugin()
 ];
 
 /** Mount an editor for `doc` into `container`, wiring the attributes panel into `panelEl`. */

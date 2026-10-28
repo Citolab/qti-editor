@@ -41,3 +41,25 @@ qti-rubric-block {
   outline: 2px solid #2563eb;
   outline-offset: 1px;
 }
+
+/*
+ * Content the item hides at runtime stays visible in the editor, so it can be edited.
+ *
+ * The editor keeps an author's classes, and the QTI theme's `.qti-hidden` is `display: none` and
+ * `.qti-visually-hidden` clips to a pixel. In a document being edited that is text nobody can see
+ * or select. Shown here with its normal display and a dashed outline, so it reads as "not shown to
+ * the candidate". The exported item keeps the class; only the editor's rendering changes.
+ */
+.ProseMirror .qti-hidden,
+.ProseMirror .qti-visually-hidden {
+  display: revert !important;
+  position: revert !important;
+  overflow: revert;
+  clip: revert;
+  width: revert;
+  height: revert;
+  margin: revert;
+  outline: 1px dashed #9ca3af;
+  outline-offset: 1px;
+  opacity: 0.7;
+}

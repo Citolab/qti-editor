@@ -1,8 +1,9 @@
-import { classAndIdAttrSpecs, classAndIdDomAttrs, parseClassAndId } from '../../class-and-id.js';
+import { withGlobalAttrs } from '@citolab/prose-extensions/html-schema';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
-export const qtiSimpleAssociableChoiceParagraphNodeSpec: NodeSpec = {
+// `class`, `id`, `lang` and `xml:lang`, in both schemas: see `global-attrs.ts` in prose-extensions.
+export const qtiSimpleAssociableChoiceParagraphNodeSpec: NodeSpec = withGlobalAttrs({
   content: 'inline*',
   /*
    * Scoped to its own parent, like `qtiSimpleChoiceParagraph` and `qtiPromptParagraph`.
@@ -16,9 +17,8 @@ export const qtiSimpleAssociableChoiceParagraphNodeSpec: NodeSpec = {
    * `qtiLayoutDiv` first, whose context makes the more specific rules win. Items whose body is not
    * wrapped in one hit it immediately.
    */
-  attrs: classAndIdAttrSpecs,
-  parseDOM: [{ tag: 'p', context: 'qtiSimpleAssociableChoice//', priority: 60, getAttrs: parseClassAndId }],
-  toDOM(node): DOMOutputSpec {
-    return ['p', classAndIdDomAttrs(node.attrs), 0];
+  parseDOM: [{ tag: 'p', context: 'qtiSimpleAssociableChoice//', priority: 60 }],
+  toDOM(): DOMOutputSpec {
+    return ['p', 0];
   }
-};
+});

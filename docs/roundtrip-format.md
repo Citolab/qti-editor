@@ -94,6 +94,23 @@ format — which `pmToHtml` writes without the composer — but not the QTI 3.0 
 interaction keeps its prompt as authored. Same category as `case-sensitive`: a documented one-way
 limitation rather than a bug.
 
+## Content attributes
+
+Item content — paragraphs, headings, lists, tables, images, marks, spans, and the prompt and choice
+paragraphs inside interactions — keeps `class`, `id`, `lang` and `xml:lang`, the global attributes
+QTI 3 gives every content element. They are plain QTI, not authoring attributes: export writes them
+as they are, and nothing strips or reconstructs them.
+
+- **`lang` and `xml:lang` are not merged.** QTI 3 allows both, on the same element too. Each is
+  exported as the attribute it was imported as: `<p lang="fr">` stays `lang`, `<p xml:lang="fr">`
+  stays `xml:lang`, and an element with both keeps both. The editor does not add `xml:lang` where an
+  item used `lang`.
+- **The item's own language** is not one of these: `xml:lang` on `qti-assessment-item` comes from
+  the export context (`lang`), as before.
+- **Duplicate ids are not repaired.** An imported item with two equal ids exports them that way. The
+  editor only clears an id that an edit copies (Enter in the middle of a block, a pasted copy).
+- **A `<span>` without any of the four** carries nothing and is unwrapped on import.
+
 ## Adding an authoring attribute
 
 1. Add it to `strippedAttributes` in the interaction's `composer/metadata.ts`, so export strips it.

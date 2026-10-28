@@ -47,7 +47,7 @@
       </div>
       <div class="qti-layout-col4 qti-margin-t-5">
         <p>
-          <img src="/qti/kennisnet/resources/books.png" alt="Boeken" width="250"/>
+          <img src="/qti/kennisnet/resources/books.png" alt="Boeken" width="250" class="qti-valign-middle"/>
         </p>
       </div>
     </div>

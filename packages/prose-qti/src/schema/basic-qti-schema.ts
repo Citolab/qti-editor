@@ -1,4 +1,4 @@
-import { phrasingMarkSpecs } from '@citolab/prose-extensions/html-schema';
+import { phrasingMarkSpecs, spanMarkSpec, withGlobalAttrsOn } from '@citolab/prose-extensions/html-schema';
 import { nodes as basicNodes, marks as basicMarks } from 'prosemirror-schema-basic';
 
 import { qtiLayoutDivNodeSpec } from './qti-layout-div.js';
@@ -70,6 +70,11 @@ const qtiImageNodeSpec: NodeSpec = {
 /**
  * prosemirror-schema-basic, extended. One override and one addition — nothing is removed.
  *
+ * Every node `GLOBAL_ATTR_NODES` names keeps `class`, `id`, `lang` and `xml:lang`
+ * (`@citolab/prose-extensions/html-schema`'s `withGlobalAttrsOn`), the same list and the same
+ * attributes `defineBasicExtension()` gives its nodes. `createQtiSchema()` applies it to the lists
+ * and tables it adds.
+ *
  * ## Nothing is removed, deliberately
  *
  * There used to be a `createQtiBasicNodes({ omitBlockquote })` beside this, defaulting to dropping
@@ -87,7 +92,7 @@ const qtiImageNodeSpec: NodeSpec = {
  * A host that genuinely wants a narrower document builds its own `nodes` object; it does not need
  * this module's permission.
  */
-export const qtiBasicNodes = {
+export const qtiBasicNodes = withGlobalAttrsOn({
   ...basicNodes,
   /*
    * The only override. prosemirror-schema-basic's image models src/alt/title and drops width and
@@ -101,7 +106,7 @@ export const qtiBasicNodes = {
    * qti-layout-div.ts.
    */
   qtiLayoutDiv: qtiLayoutDivNodeSpec
-};
+});
 
 /**
  * prosemirror-schema-basic's marks, unchanged, plus the phrasing elements of QTI 3 they lack: `b`,
@@ -111,11 +116,19 @@ export const qtiBasicNodes = {
  *
  * The specs are `@citolab/prose-extensions/html-schema`'s `phrasingMarkSpecs`, the same ones
  * `defineBasicExtension()` registers, and in the same order after `em` / `strong` / `code`, so the
- * plain-ProseMirror schema and the ProseKit one nest marks identically. `code` — one of the four
+ * plain-ProseMirror schema and the ProseKit one nest marks identically.
+ *
+ * `span` is the html-schema span mark (`<span>` with a `class`, `id`, `lang` or `xml:lang`), ranked
+ * before every other content mark so a span is written outside them. Every mark keeps those four
+ * attributes. `code` — one of the four
  * elements QTI permits that people expect to find in the node set — lives here, as a mark, not a
  * node.
  */
-export const qtiBasicMarks = {
-  ...basicMarks,
+export const qtiBasicMarks = withGlobalAttrsOn({
+  link: basicMarks.link,
+  span: spanMarkSpec,
+  em: basicMarks.em,
+  strong: basicMarks.strong,
+  code: basicMarks.code,
   ...phrasingMarkSpecs
-};
+});

@@ -67,6 +67,13 @@ The compose handler reads these from the source element to populate the response
 
 > `case-sensitive` and `area-mappings` have no lossless standard-QTI source, so a third-party item that never carried them imports without them.
 
+## Content attributes are plain QTI
+
+`class`, `id`, `lang` and `xml:lang` on item content (paragraphs, lists, tables, images, marks,
+spans, prompt and choice paragraphs) are not authoring attributes: they are exported as they are.
+`lang` and `xml:lang` are kept apart, so each comes back as the attribute the item used, and an
+element can carry both. The item's own `xml:lang` comes from the export context.
+
 ## How recovery works on import
 
 Every QTI 3.0 item is treated as third-party. `roundtripQtiItem` (`@citolab/prose-qti/qti3-item-import`) runs a chain of idempotent transforms that hoist `correct-response` / `score` from native `qti-response-declaration` / `qti-response-processing` onto each interaction as canonical attributes. Per-type transforms run first (they carry type-specific behaviour such as the extended-text rubric source); a generic fallback then covers any remaining interaction with a `response-identifier`. A final `roundtripItemBody` transform copies `identifier` / `title` from the `qti-assessment-item` onto the `qti-item-body`.
