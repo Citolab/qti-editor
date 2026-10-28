@@ -56,9 +56,11 @@ The main QTI package. Contains all QTI-specific logic and the integration layer 
 - Per-interaction attribute panel metadata
 - A `descriptor.ts` exporting a single object that `satisfies InteractionDescriptor`
 
-Interaction components: `choice`, `extended-text`, `gap-match`, `hottext`, `inline-choice`, `match`, `order`, `rubric-block`, `select-point`, `text-entry`, plus `shared/` for cross-interaction schemas and helpers.
+Interaction components: `choice`, `extended-text`, `gap-match`, `hotspot`, `hottext`, `inline-choice`, `match`, `order`, `rubric-block`, `select-point`, `text-entry`, plus `shared/` for cross-interaction schemas and helpers.
 
 `src/components/shared/graphic/` holds what the image-based interactions' editors share: `area-geometry.ts` (parse, hit-test, move, resize and draw QTI `shape` + `coords` areas in the image's own pixel space; pure functions), `area-shape.ts` (an area as an SVG element, styled by the editor's own stylesheet) and `image-source.ts` (loading an uploaded or pasted picture). Select-point uses them; resize handles, `ellipse`, `poly` and `default` are there for the hotspot editor.
+
+`hotspot`'s choices are atom nodes (`qtiHotspotChoice`) the interaction's Lit component hides and redraws on an SVG layer. The selection lives in ProseMirror: a press on an area dispatches `qti-hotspot-choices-edit` with `op: 'select'`, and `hotspot/extensions/hotspot-choice-editing.ts` puts a `NodeSelection` on that choice (a press elsewhere on the picture selects the interaction). The component reads the selected area back from the choice's `ProseMirror-selectednode` class, so the attributes panel, the decorator and the keys all act on the same thing, and Delete / Backspace remove the area. Moving, resizing and marking correct are attribute changes and go through the shared `qti-prosemirror-node-attrs-change` event; adding and removing a choice are structural, so the plugin performs them (and makes the new choice's identifier). Its `appendTransaction` drops a removed choice from the interaction's correct response, whatever removed it. It is installed through `pluginFactories`, since the drawing tools are part of the component every host renders.
 
 `src/components/shared/context/correction-context.ts` publishes a per-interaction `@lit/context` (`correctionContext`) carrying the answer key (`CorrectionLink[]`) plus derived role/label/limit/pending lookups. The drag-drop interactions (gap-match, match, order) provide it on their host element and their children subscribe to paint their own `:state(selected)`/`:state(linked)`/`:state(pending)` and labels, instead of the interaction sweeping and repainting its children on every change. `src/components/shared/extensions/chip-menu.ts` and `selection-menu.ts` are the ProseKit plugins built on top of it: clicking a placed chip opens a small popover (labelled via i18n, not an icon) that re-dispatches `dummy-drag-remove`, and a plugin instance is safe to contribute once per interaction descriptor because activation events are deduped.
 
@@ -348,7 +350,7 @@ Every interaction has a decorator, and almost all of that shape is shared. Two m
 is the generic decorator — the "clicked into" wash and the node-action pill, nothing type-specific —
 and a descriptor installs it directly via `decoratorPluginFactories` when that is all it needs. That
 covers most interactions: order, match (both its flat and tabular node types), gap-match, hottext,
-extended-text, inline-choice, select-point and text-entry all register it as-is. The module also
+extended-text, inline-choice, select-point, hotspot and text-entry all register it as-is. The module also
 exports the activation state machine behind it — `applyDecoratorActivation`,
 `handleDecoratorEscape`, `selectionInsideNode`, `QTI_ACTIVE_INTERACTION_CLASS` — so a decorator that
 needs more than wash-and-pill builds on the same primitives instead of re-deriving them.

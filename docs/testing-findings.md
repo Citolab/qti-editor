@@ -348,3 +348,12 @@ Same trap as finding 16's third bullet, recurring in a different node. ProseKit'
 
 - **Resolution**: containment is now checked against the innermost position a text selection can actually reach — `firstReachablePos`/`lastReachablePos` step inward from `pos`/`pos + nodeSize` through every non-leaf, non-text child. A regression case pins a heading preceded by a sibling (so its own start position is `> 0`) selected only by its own text, which the old whole-document-selection tests could not have caught.
 - **Where to look**: `packages/prose-extensions/src/prosemirror/clear-formatting/clear-formatting.ts` (`firstReachablePos`, `lastReachablePos`); `clear-formatting.browser.test.ts` for the regression cases.
+
+## 29. The published runtime leaves hotspots unpositioned and unregistered — **upstream** (`@citolab/qti-components` 9.1)
+
+`qti-hotspot-choice` announces itself with a `register-qti-hotspot-choice` event from its `connectedCallback`, and `qti-hotspot-interaction` both positions the hotspot (`positionShapes`) and records it as a choice when it hears that event. The bundle defines `qti-hotspot-choice` before `qti-hotspot-interaction`, so in an item whose markup is already in the document when the runtime loads — every item the iframe harness mounts — the choices upgrade and announce before the interaction listens. Measured in the harness: every `qti-hotspot-choice` stays `0x0` with no inline style, so Playwright cannot click it, and a click would not reach the response anyway.
+
+- **Impact on users**: this is the runtime's behaviour, not the harness's. On the 9.1 runtime the catalog pins, a hotspot item the editor exports shows no clickable hotspots to a candidate whenever the player puts the item's markup in the document before the runtime registers its elements, as the harness does. Treat hotspot items as not playable on 9.1. The exported QTI itself is valid and plays on a runtime with the fix.
+- **Upstream status**: fixed in qti-components (`qti-hotspot-interaction.ts`'s `connectedCallback` now positions the choices that connected before it); first published in `10.0.0-next.12`. The editor's catalog pins 9.1.
+- **Test handling**: `apps/e2e/stories/q10-qti-hotspot-interaction.regression.browser.test.ts`'s `mountHotspotRuntime` reconnects each choice after mount, which replays the announcement, and gives it a `data-testid` (a hotspot has no text and no accessible name to query by). The clicks themselves are real.
+- **Fix**: move the catalog to qti-components 10; drop the reconnect in the same change.

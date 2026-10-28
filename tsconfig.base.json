@@ -150,6 +150,12 @@
       "@citolab/prose-qti/components/gap-match/*": [
         "packages/prose-qti/src/components/gap-match/*"
       ],
+      "@citolab/prose-qti/components/hotspot": [
+        "packages/prose-qti/src/components/hotspot/index.ts"
+      ],
+      "@citolab/prose-qti/components/hotspot/*": [
+        "packages/prose-qti/src/components/hotspot/*"
+      ],
       "@citolab/prose-qti/components/hottext": [
         "packages/prose-qti/src/components/hottext/index.ts"
       ],

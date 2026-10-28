@@ -10,6 +10,7 @@ export const qtiPromptNodeSpec: NodeSpec = {
     { tag: 'qti-prompt', context: 'qtiMatchInteraction//' },
     { tag: 'qti-prompt', context: 'qtiMatchInteractionTabular//' },
     { tag: 'qti-prompt', context: 'qtiGapMatchInteraction//' },
+    { tag: 'qti-prompt', context: 'qtiHotspotInteraction//' },
     { tag: 'qti-prompt', context: 'qtiExtendedTextInteraction//' },
     { tag: 'qti-prompt', context: 'qtiSelectPointInteraction//' },
   ],

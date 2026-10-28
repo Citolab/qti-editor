@@ -1,4 +1,4 @@
-import { buildCorrectResponseIndex, extractItemScore } from '../_shared';
+import { buildCorrectResponseIndex, buildScoreIndex, extractItemScore } from '../_shared';
 
 /**
  * Generic fallback hoist for every interaction the per-type transforms did not
@@ -9,8 +9,11 @@ import { buildCorrectResponseIndex, extractItemScore } from '../_shared';
  * `response-identifier`, this hoists:
  * - `correct-response`: the comma-joined qti-correct-response values of the
  *   matching qti-response-declaration (skipped when no values are declared).
- * - `score`: the item-level score read from qti-response-processing
- *   (defaulting to 1), applied only when correct-response was recoverable.
+ * - `score`: the score `buildScoreIndex` attributes to that response
+ *   identifier, else the item-level score read from qti-response-processing
+ *   (defaulting to 1); applied only when correct-response was recoverable.
+ *   Per identifier first, so in an item with several interactions each one
+ *   keeps its own weight instead of all taking the first one found.
  *
  * Idempotent: existing correct-response / score attributes are preserved.
  *
@@ -22,6 +25,7 @@ import { buildCorrectResponseIndex, extractItemScore } from '../_shared';
 export const roundtripInteractions = (xmlDoc: XMLDocument): void => {
   const correctResponses = buildCorrectResponseIndex(xmlDoc);
   if (correctResponses.size === 0) return;
+  const scores = buildScoreIndex(xmlDoc);
 
   const interactions = Array.from(xmlDoc.querySelectorAll('[response-identifier]')).filter(
     (el) =>
@@ -46,7 +50,7 @@ export const roundtripInteractions = (xmlDoc: XMLDocument): void => {
       interaction.setAttribute('correct-response', correctResponse);
     }
     if (!interaction.getAttribute('score')) {
-      interaction.setAttribute('score', String(extractItemScore(xmlDoc)));
+      interaction.setAttribute('score', String(scores.get(responseIdentifier) ?? extractItemScore(xmlDoc)));
     }
   }
 };

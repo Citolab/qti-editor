@@ -1,6 +1,7 @@
 import './choice/register.js';
 import './extended-text/register.js';
 import './gap-match/register.js';
+import './hotspot/register.js';
 import './hottext/register.js';
 import './inline-choice/register.js';
 import './match/register.js';

@@ -1,6 +1,7 @@
 import { choiceInteractionDescriptor } from '@citolab/prose-qti/components/choice';
 import { extendedTextInteractionDescriptor } from '@citolab/prose-qti/components/extended-text';
 import { gapMatchInteractionDescriptor } from '@citolab/prose-qti/components/gap-match';
+import { hotspotInteractionDescriptor } from '@citolab/prose-qti/components/hotspot';
 import { hottextInteractionDescriptor } from '@citolab/prose-qti/components/hottext';
 import { inlineChoiceInteractionDescriptor } from '@citolab/prose-qti/components/inline-choice';
 import { matchInteractionDescriptor, matchInteractionTabularDescriptor } from '@citolab/prose-qti/components/match';
@@ -21,6 +22,7 @@ const registeredDescriptors: InteractionDescriptor[] = [
   choiceInteractionDescriptor,
   extendedTextInteractionDescriptor,
   gapMatchInteractionDescriptor,
+  hotspotInteractionDescriptor,
   hottextInteractionDescriptor,
   inlineChoiceInteractionDescriptor,
   matchInteractionDescriptor,

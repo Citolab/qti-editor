@@ -1,0 +1,29 @@
+<qti-assessment-item xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqtiasi_v3p0 https://purl.imsglobal.org/spec/qti/v3p0/schema/xsd/imsqti_asiv3p0p1_v1p0.xsd" identifier="hotspot-example-3" title="Q10 Hotspot Interaction - Hotspot shapes" adaptive="false" time-dependent="false" xml:lang="en">
+  <qti-response-declaration identifier="RESPONSE" cardinality="single" base-type="identifier">
+    <qti-correct-response>
+      <qti-value>i4</qti-value>
+    </qti-correct-response>
+  </qti-response-declaration>
+  <qti-outcome-declaration identifier="SCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>0</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-outcome-declaration identifier="MAXSCORE" cardinality="single" base-type="float">
+    <qti-default-value>
+      <qti-value>1</qti-value>
+    </qti-default-value>
+  </qti-outcome-declaration>
+  <qti-item-body xmlns="http://www.imsglobal.org/xsd/imsqtiasi_v3p0">
+    <p>In the following image, which part of the plant is the rhizome?</p>
+    <p>Select a highlighted part of the image to indicate your answer.</p>
+    <qti-hotspot-interaction max-choices="1" min-choices="1" response-identifier="RESPONSE">
+      <img src="/qti/conformance/Q10-hotspot/images/plants.svg" alt="A diagram of a flowering water lily showing parts above the water, parts below the water, and parts under the ground." width="680" height="680"/>
+      <qti-hotspot-choice identifier="i1" shape="poly" coords="243,129,221,130,204,133,186,140,172,146,159,155,149,165,146,175,147,183,151,189,159,194,173,198,187,199,203,199,222,196,241,189,261,179,274,169,284,155,281,142,272,136,260,131,243,129"/>
+      <qti-hotspot-choice identifier="i2" shape="poly" coords="330,118,357,108,364,138,330,118"/>
+      <qti-hotspot-choice identifier="i3" shape="circle" coords="379,80,14"/>
+      <qti-hotspot-choice identifier="i4" shape="poly" coords="337,493,194,591,360,531,337,493"/>
+    </qti-hotspot-interaction>
+  </qti-item-body>
+  <qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/match_correct"/>
+</qti-assessment-item>

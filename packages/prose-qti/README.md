@@ -80,7 +80,7 @@ import {
 ```
 
 The registry currently includes: `choice`, `extended-text`,
-`gap-match`, `hottext`, `inline-choice`, `match` (both `matchInteractionDescriptor`
+`gap-match`, `hotspot`, `hottext`, `inline-choice`, `match` (both `matchInteractionDescriptor`
 and the tabular variant `matchInteractionTabularDescriptor`), `order`,
 `select-point`, `text-entry`, and `rubric-block`.
 
@@ -383,8 +383,8 @@ interaction — `integration/interactions/prosekit`'s
 need to import it directly.
 
 Each `components/<name>` subpath (`choice`, `extended-text`,
-`gap-match`, `hottext`, `inline-choice`, `match`, `order`, `rubric-block`,
-`select-point`, `shared`, `text-entry`) exports that interaction's
+`gap-match`, `hotspot`, `hottext`, `inline-choice`, `match`, `order`,
+`rubric-block`, `select-point`, `shared`, `text-entry`) exports that interaction's
 `InteractionDescriptor` plus its Lit components, schema, commands and
 composer handler — see [Descriptor pattern](#descriptor-pattern).
 
