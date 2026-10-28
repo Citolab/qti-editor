@@ -59,8 +59,12 @@ export function roundtripXmlToPm(xmlDoc: XMLDocument, schema: Schema): ProseMirr
  * round-trip, this keeps empty custom elements empty instead of reopening them
  * and nesting their following siblings inside (which silently drops content for
  * atom nodes such as `qti-gap`).
+ *
+ * Only text and CDATA become text. Comments and processing instructions have no
+ * place in a ProseMirror document, so they return `null` and are skipped —
+ * rebuilt as text they showed up as visible content and were written back.
  */
-function importXmlAsHtml(xmlNode: Node, htmlDoc: Document): Node {
+function importXmlAsHtml(xmlNode: Node, htmlDoc: Document): Node | null {
   if (xmlNode.nodeType === Node.ELEMENT_NODE) {
     const xmlEl = xmlNode as Element;
     const htmlEl = htmlDoc.createElement(xmlEl.localName);
@@ -69,10 +73,14 @@ function importXmlAsHtml(xmlNode: Node, htmlDoc: Document): Node {
       htmlEl.setAttribute(attr.localName, attr.value);
     }
     for (const child of Array.from(xmlEl.childNodes)) {
-      htmlEl.appendChild(importXmlAsHtml(child, htmlDoc));
+      const imported = importXmlAsHtml(child, htmlDoc);
+      if (imported) htmlEl.appendChild(imported);
     }
     return htmlEl;
   }
-  return htmlDoc.createTextNode(xmlNode.textContent ?? '');
+  if (xmlNode.nodeType === Node.TEXT_NODE || xmlNode.nodeType === Node.CDATA_SECTION_NODE) {
+    return htmlDoc.createTextNode(xmlNode.textContent ?? '');
+  }
+  return null;
 }
 
