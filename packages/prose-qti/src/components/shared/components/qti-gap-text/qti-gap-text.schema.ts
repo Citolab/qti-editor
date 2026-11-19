@@ -29,7 +29,8 @@ export const qtiGapTextNodeSpec: NodeSpec = {
   toDOM(node): DOMOutputSpec {
     const attrs: Record<string, string> = {};
     if (node.attrs.identifier) attrs.identifier = node.attrs.identifier;
-    if (node.attrs.matchMax > 1) attrs['match-max'] = String(node.attrs.matchMax);
+    // `match-max` is required on qti-gap-text (QTI 3.0 XSD), so it is written even at its default of 1.
+    attrs['match-max'] = String(node.attrs.matchMax);
     return ['qti-gap-text', attrs, 0];
   },
 };
