@@ -9,6 +9,7 @@ export {
   type StrongSpecExtension,
 } from './strong-em.js'
 export { defineList, type ListExtension, type ListOptions } from './list.js'
+export { defineTableDeletion, deleteSelectedTable } from './table-deletion.js'
 export {
   defineBasicExtension,
   type BasicExtension,
