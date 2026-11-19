@@ -62,11 +62,13 @@ author never wrote, which then exported back out as real markup. The roundtrip a
 interaction's content expression now leads with `qtiPrompt?` and `ensureInteractionPrompts` is gone.
 
 - **On export**, `stripEmptyPrompts` remains, with a smaller and no longer symmetrical job: it
-  removes any `<qti-prompt>` whose text content is empty or whitespace-only before the item-body is
-  wrapped in `<qti-assessment-item>`. Since `qti-prompt` is `0..1` in QTI 3.0, dropping an empty one
-  is lossless. It now cleans up after an author who left a prompt blank, rather than after us. It is
-  part of `defaultRoundtripExportTransforms` and runs automatically; pass `{ transforms: [] }` to
-  disable it, or your own list to customize.
+  removes any `<qti-prompt>` whose text content is empty or whitespace-only and that holds no
+  `img`, `audio`, or `video` before the item-body is wrapped in `<qti-assessment-item>`. A
+  picture-only or audio-only prompt is authored content, not a leftover empty slot, so it is kept.
+  Since `qti-prompt` is `0..1` in QTI 3.0, dropping a truly empty one is lossless. It now cleans up
+  after an author who left a prompt blank, rather than after us. It is part of
+  `defaultRoundtripExportTransforms` and runs automatically; pass `{ transforms: [] }` to disable
+  it, or your own list to customize.
 
 ## Scoring gaps
 
