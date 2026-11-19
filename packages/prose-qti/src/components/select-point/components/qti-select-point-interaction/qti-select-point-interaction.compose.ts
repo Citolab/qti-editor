@@ -111,7 +111,8 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
   // `:scope >` so a picture inside the prompt is not mistaken for the select-point graphic.
   const imageElement = sourceElement.querySelector(':scope > img');
   const imageSrc = toNonEmptyString(imageElement?.getAttribute('src') ?? null);
-  const imageAlt = toNonEmptyString(imageElement?.getAttribute('alt') ?? null);
+  // Not `toNonEmptyString`: `alt=""` marks the image as decorative, and QTI requires `alt` on `img`.
+  const imageAlt = imageElement?.getAttribute('alt')?.trim() ?? null;
   const imageWidth = toNonEmptyString(imageElement?.getAttribute('width') ?? null);
   const imageHeight = toNonEmptyString(imageElement?.getAttribute('height') ?? null);
 
@@ -141,7 +142,7 @@ export function composeSelectPointInteractionElement(sourceElement: Element, xml
   if (imageSrc) {
     const image = xmlDoc.createElementNS(normalizedElement.namespaceURI || null, 'img');
     image.setAttribute('src', imageSrc);
-    if (imageAlt) image.setAttribute('alt', imageAlt);
+    if (imageAlt !== null) image.setAttribute('alt', imageAlt);
     if (imageWidth) image.setAttribute('width', imageWidth);
     if (imageHeight) image.setAttribute('height', imageHeight);
     normalizedElement.appendChild(image);
