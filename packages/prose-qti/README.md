@@ -331,7 +331,9 @@ to `doc.attrs.identifier` / `doc.attrs.title`. `exportItemXml`'s
 `options.format` (default `true`) controls pretty-printing.
 
 Also exported from `item-roundtrip`: `stripEmptyPrompts` /
-`defaultRoundtripExportTransforms`, which drop prompts that ended up empty.
+`defaultRoundtripExportTransforms`, which drop prompts that ended up empty —
+except a prompt holding only `img`, `audio` or `video`, which is authored
+content and is kept even with no text.
 
 There used to be an `ensureInteractionPrompts` counterpart that synthesised
 missing `<qti-prompt>` elements on import, because the schema required one on
