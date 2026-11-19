@@ -66,3 +66,12 @@ insertMatchInteractionTabular(view.state, view.dispatch, view);
 - Pressing `Enter` inside a choice inserts a new sibling choice into the same set the cursor is in — it no longer adds a matching entry to the other set.
 - In drag-and-drop mode, click a placed chip to open a small popover offering to remove it.
 - In tabular mode, the attributes panel exposes an optional heading for the first column, above the row choices.
+
+## Choice identifiers shared across the two sets
+
+QTI wants a choice identifier unique within the item, but nothing enforces that, and imported
+tables commonly reuse identifiers across the two sets (rows `1 2 3`, columns `1 2`). The answer key
+survives this on import and export in both presentations. In drag-and-drop mode, though, a choice
+whose identifier is also used by a choice in the other set can still be painted as a drop zone
+instead of a draggable source (tracked in `docs/testing-findings.md`, finding 31). Tabular mode is
+not affected. If you hit this, give the two sets distinct identifiers.

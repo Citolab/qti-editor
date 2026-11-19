@@ -98,3 +98,4 @@ would teach readers to dismiss the one time it matters.
 - The caller still supplies the ProseMirror schema, because the editor schema is application-specific.
 - Import uses the standard QTI 3.0 roundtrip transforms before parsing into ProseMirror.
 - Export produces the same canonical item-body and full assessment-item XML used by the editor's save flow.
+- XML comments and processing instructions inside `qti-item-body` are skipped on import rather than imported as text — they have no ProseMirror representation and never round-trip back out.
