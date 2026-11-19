@@ -30,6 +30,11 @@ Each interaction declares which attributes are its own in `composer/metadata.ts`
 Extended-text has no `correct-response` because there is no correct answer to record; it carries
 `score` alone.
 
+A text entry without a `correct-response` exports the same way. Its `map_response` template scores
+through a `qti-mapping` built from the accepted answers, and with none there is nothing to map
+through — so it contributes no response processing, and only `SCORE` and `MAXSCORE` (from `score`)
+are declared, for a human to award.
+
 ### `correct-response`
 
 One attribute, comma-separated, whatever the interaction's shape. A choice interaction writes

@@ -73,3 +73,32 @@ describe('mixed item', () => {
     expect(xml.replace(/\s+/g, '')).toContain('>5</qti-value>');
   });
 });
+
+const textEntry = (attrs = '') => `<p><qti-text-entry-interaction response-identifier="RESPONSE" ${attrs}/></p>`;
+
+describe('text entry', () => {
+  test('with an accepted answer rides map_response, with the mapping it reads', () => {
+    const xml = xmlFor(textEntry('correct-response="refractie"'));
+    expect(xml).toContain('<qti-response-processing template="https://purl.imsglobal.org/spec/qti/v3p0/rptemplates/map_response"/>');
+    expect(xml).toContain('<qti-map-entry map-key="refractie" mapped-value="1"');
+  });
+
+  test('without one emits no response processing — there is nothing to map through', () => {
+    const xml = xmlFor(textEntry());
+    expect(xml).not.toContain('qti-response-processing');
+    expect(xml).not.toContain('qti-mapping');
+  });
+
+  test('without one still declares MAXSCORE from score, as extended text does', () => {
+    const xml = xmlFor(textEntry('score="2"')).replace(/\s+/g, '');
+    expect(xml).toContain('identifier="MAXSCORE"');
+    expect(xml).toContain('>2</qti-value>');
+  });
+
+  test('without one, next to a scored choice, adds nothing to the choice’s processing', () => {
+    const xml = xmlFor(`${choice(2)}${textEntry().replace('RESPONSE', 'TEXT')}`);
+    expect(xml).toContain('qti-response-condition');
+    expect(xml).toContain('<qti-base-value base-type="float">2</qti-base-value>');
+    expect(xml).not.toContain('qti-map-response');
+  });
+});
