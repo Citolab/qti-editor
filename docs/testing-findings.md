@@ -373,3 +373,10 @@ QTI wants a choice identifier unique within the item, but the XSD cannot enforce
 - **Fix**: resolve the role per element (which set the choice sits in) rather than per identifier. That changes the shared `CorrectionState.roleOf` contract that gap-match and order also implement, so it was left out of the answer-key fix.
 - **Test handling**: `qti-match-interaction.browser.test.ts` pins only the answer key in drag-drop mode, not the painting.
 - **Where to look**: `packages/prose-qti/src/components/match/components/qti-match-interaction/qti-match-interaction.ts` (`publishCorrection`); `packages/prose-qti/src/components/shared/components/qti-simple-associable-choice/qti-simple-associable-choice.ts` (`syncFromCorrection`).
+
+## 32. XML comments and processing instructions in `qti-item-body` became visible paragraphs on import — **fixed**
+
+`roundtripXmlToPm`'s `importXmlAsHtml` (`packages/prose-qti/src/components/shared/roundtrip-xml-to-pm.ts`) rebuilds the item body's XML tree as HTML node by node before handing it to ProseMirror's `DOMParser`. Every non-element node was rebuilt as a text node, with no check on `nodeType`, so a comment such as `<!-- author note -->` between or inside paragraphs came back as its own paragraph of literal text, and a processing instruction like `<?editor hint?>` did the same inline. Because the editor then treats that text as ordinary content, exporting the item wrote the comment's text back as `qti-item-body` content — a one-way turn of authoring metadata into scored/displayed text.
+
+- **Resolution**: `importXmlAsHtml` now returns `Node | null` and only text and CDATA sections become text nodes; comments and processing instructions return `null` and are skipped by their parent's append loop.
+- **Where to look**: `packages/prose-qti/src/components/shared/roundtrip-xml-to-pm.ts` (`importXmlAsHtml`); `roundtrip-xml-to-pm.browser.test.ts` for the comment-between-blocks, comment-inside-a-paragraph, processing-instruction, and CDATA-still-text cases, plus the export-side assertion that the comment text never reappears.
