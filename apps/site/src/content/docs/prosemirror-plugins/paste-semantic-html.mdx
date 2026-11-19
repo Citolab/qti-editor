@@ -36,6 +36,12 @@ Add the returned extension to your editor's extension composition.
 
 Use this when pasted content needs cleanup before it enters the editor document, especially for list-heavy copy/paste flows.
 
+## List detection
+
+A line that starts with a typed marker — `1. `, `A) `, `– ` — is turned into a real `<ol>`/`<ul>` list item with the marker removed, even when the marker sits inside an inline element (`<p><span>1. Wat is rood?</span></p>`) or is split across more than one (`<span>1.</span> foo`), which is how Word commonly writes a typed list line.
+
+Only a paragraph, or a `<div>` with no block-level children (a line, not a wrapper), is treated as a candidate list line. A heading, table cell, blockquote, or an existing list item that merely starts with marker-like text keeps its own structure instead of being turned into a list. A wrapper `<div>` holding several paragraphs (e.g. Word's `WordSection1`) is left alone so its paragraphs stay siblings rather than being folded into one list item.
+
 ## Image paste handling
 
 Word, Excel, PowerPoint and Outlook all put a bitmap of the whole selection on the clipboard as a

@@ -348,3 +348,18 @@ Same trap as finding 16's third bullet, recurring in a different node. ProseKit'
 
 - **Resolution**: containment is now checked against the innermost position a text selection can actually reach — `firstReachablePos`/`lastReachablePos` step inward from `pos`/`pos + nodeSize` through every non-leaf, non-text child. A regression case pins a heading preceded by a sibling (so its own start position is `> 0`) selected only by its own text, which the old whole-document-selection tests could not have caught.
 - **Where to look**: `packages/prose-extensions/src/prosemirror/clear-formatting/clear-formatting.ts` (`firstReachablePos`, `lastReachablePos`); `clear-formatting.browser.test.ts` for the regression cases.
+
+## 29. Semantic paste recursed forever on a typed list marker sitting in a span — **fixed**
+
+A Word line such as `<p><span>– eerst uit te leggen</span></p>` or `<p><span>1. Wat is rood?</span></p>` made `makeHtmlSemantic` (`packages/prose-extensions/src/prosemirror/paste-semantic-html/semantic-paste-plugin.ts`) recurse without end: the marker text lived inside the `<span>`, so `getListInfo`'s re-detection pass on the newly-built `<li>` still read the paragraph's own `textContent` as starting with the marker and wrapped it in a list again, forever. In practice this meant any Word document with a dash or a typed "1. " line threw on paste and inserted nothing.
+
+- **Resolution**: `stripLeadingTextMarkerFromTree` now strips the marker by walking the element's text nodes (via `TreeWalker`), so it comes out whether the marker sits in the paragraph's own text, inside a `<span>`, or split across two inline nodes (`<span>1.</span> foo`) — not just when it's a leading substring of `innerHTML`.
+- **Also fixed, same change**: list detection (`isListParagraphCandidate`) now only matches a `<p>`, or a `<div>` with no block-level children (a Word line, not a wrapper). Previously anything whose text started with a marker could become a list — a table cell (`<td>1. Amsterdam</td>`), a heading (`<h2>1. Inleiding</h2>`, including Word's numbered headings via `mso-list`), and a `<blockquote>` were each being replaced by an `<ol>`/`<ul>`, and a wrapper `<div>` (Word's `WordSection1`) folded all its paragraphs into a single list item instead of leaving them as siblings.
+- **Where to look**: `packages/prose-extensions/src/prosemirror/paste-semantic-html/semantic-paste-plugin.ts` (`isListParagraphCandidate`, `stripLeadingTextMarkerFromTree`), pinned by `semantic-paste-plugin.browser.test.ts`.
+
+## 30. `qti-gap-text` dropped `match-max` at its default, making every exported gap-match item schema-invalid — **fixed**
+
+`qtiGapText`'s `toDOM` (`packages/prose-qti/src/components/shared/components/qti-gap-text/qti-gap-text.schema.ts`) only wrote `match-max` above 1. `match-max` is a required attribute on `qti-gap-text` in the QTI 3.0 XSD, so every item exported with a gap text at the default of 1 was schema-invalid. Writing it conditionally also broke the unlimited case: `match-max="0"` (the chip may fill any number of gaps) was dropped on export and came back as `1` (single-use) on the next import, so a chip meant for several gaps could then be placed only once — a silent authoring-state loss on roundtrip, not just a validity gap.
+
+- **Resolution**: `match-max` is now written unconditionally, matching `qti-simple-associable-choice`, which already always writes it.
+- **Where to look**: `packages/prose-qti/src/components/shared/components/qti-gap-text/qti-gap-text.schema.ts`; `qti-gap-text.schema.browser.test.ts` for the write-at-every-value and parse→serialize round-trip cases.
