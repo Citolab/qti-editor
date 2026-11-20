@@ -29,7 +29,7 @@
         <p>π (≈ 3,14159)</p>
       </qti-simple-choice>
     </qti-order-interaction>
-    <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
+    <qti-rubric-block use="scoring" view="scorer">
       <qti-content-body>
         <ul>
           <li>

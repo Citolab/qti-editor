@@ -31,7 +31,7 @@
         </p>
       </div>
     </div>
-    <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
+    <qti-rubric-block use="scoring" view="scorer">
       <qti-content-body>
         <ul>
           <li>

@@ -16,7 +16,7 @@
     </p>
     <p>Leg in 3–5 zinnen uit waarom veel landen overstappen op een mix van zonne- en windenergie in plaats van op één enkele bron te vertrouwen.</p>
     <qti-extended-text-interaction response-identifier="RESPONSE" expected-lines="5"/>
-    <qti-rubric-block use="scoring" view="scorer" class="qti-rubric-block">
+    <qti-rubric-block use="scoring" view="scorer">
       <qti-content-body>
         <p>Beoordelingscriteria (controle):</p>
         <ul>
