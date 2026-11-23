@@ -156,7 +156,7 @@ export class QtiSelectPointInteractionEdit extends Interaction {
     image.addEventListener('load', this.#onImageLoad);
 
     this.imageSrc = image.getAttribute('src') || null;
-    this.imageAlt = image.getAttribute('alt') || null;
+    this.imageAlt = image.getAttribute('alt');
     this.imageWidth = this.#parseDimension(image.getAttribute('width'));
     this.imageHeight = this.#parseDimension(image.getAttribute('height'));
     this.imageReady = image.complete && !!this.imageSrc;
