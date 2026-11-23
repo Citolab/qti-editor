@@ -1,26 +1,37 @@
-import { html, nothing, svg } from 'lit';
+import { html, nothing } from 'lit';
 import { createRef, ref } from 'lit/directives/ref.js';
 import { property, state } from 'lit/decorators.js';
 
 import { Interaction } from '@citolab/prose-qti/components/shared/components/interaction.js';
+import {
+  areaContainsPoint,
+  clientToImagePoint,
+  draftToArea,
+  formatCoords,
+  isValidArea,
+  moveAreaCoords,
+  parseCoords,
+  type DrawableAreaShape,
+} from '@citolab/prose-qti/components/shared/graphic/area-geometry.js';
+import { renderAreaShape } from '@citolab/prose-qti/components/shared/graphic/area-shape.js';
+import { isHttpUrl, loadImageSize, readFileAsDataUrl } from '@citolab/prose-qti/components/shared/graphic/image-source.js';
 
 import styles from './qti-select-point-interaction.styles.js';
 
 import type { TemplateResult } from 'lit';
 
-type DrawMode = 'select' | 'circle' | 'rect';
-type AreaShape = 'circle' | 'rect';
+type DrawMode = 'select' | DrawableAreaShape;
 
 type AreaMappingEntry = {
   id: string;
-  shape: AreaShape;
+  shape: DrawableAreaShape;
   coords: string;
   mappedValue: number;
   defaultValue: number;
 };
 
 type DraftShape = {
-  shape: AreaShape;
+  shape: DrawableAreaShape;
   startX: number;
   startY: number;
   currentX: number;
@@ -32,7 +43,7 @@ type ShapeDragState = {
   startX: number;
   startY: number;
   originCoords: number[];
-  shape: AreaShape;
+  shape: DrawableAreaShape;
 };
 
 type WrapperAttrsChangeDetail = {
@@ -210,7 +221,7 @@ export class QtiSelectPointInteractionEdit extends Interaction {
     const file = input.files?.[0];
     if (!file) return;
 
-    const dataUrl = await this.#toDataUrl(file);
+    const dataUrl = await readFileAsDataUrl(file);
     await this.#applyImageSource(dataUrl, file.name);
 
     input.value = '';
@@ -220,15 +231,6 @@ export class QtiSelectPointInteractionEdit extends Interaction {
     event.preventDefault();
     event.stopPropagation();
     this.#fileInputRef.value?.click();
-  }
-
-  #isValidHttpUrl(value: string): boolean {
-    try {
-      const url = new URL(value);
-      return url.protocol === 'http:' || url.protocol === 'https:';
-    } catch {
-      return false;
-    }
   }
 
   async #pasteImageFromClipboard(event: Event) {
@@ -245,7 +247,7 @@ export class QtiSelectPointInteractionEdit extends Interaction {
       return;
     }
 
-    if (!this.#isValidHttpUrl(value)) {
+    if (!isHttpUrl(value)) {
       this.sourceError = 'Clipboard text is not a valid URL.';
       return;
     }
@@ -255,7 +257,7 @@ export class QtiSelectPointInteractionEdit extends Interaction {
 
   async #applyImageSource(source: string, fallbackAlt: string | null) {
     try {
-      const dimensions = await this.#loadImageDimensions(source);
+      const dimensions = await loadImageSize(source);
 
       this.imageSrc = source;
       this.imageAlt = this.imageAlt || fallbackAlt || 'image';
@@ -283,24 +285,6 @@ export class QtiSelectPointInteractionEdit extends Interaction {
     this.#emitImageAttrsChange();
   }
 
-  #toDataUrl(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result || ''));
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(file);
-    });
-  }
-
-  #loadImageDimensions(src: string): Promise<{ width: number; height: number }> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
-      img.onerror = reject;
-      img.src = src;
-    });
-  }
-
   #onImageLoad = (event: Event) => {
     const img = event.currentTarget as HTMLImageElement;
     this.#imageElement = img;
@@ -317,18 +301,10 @@ export class QtiSelectPointInteractionEdit extends Interaction {
     if (!img) return null;
 
     const rect = img.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) return null;
-
-    const originalWidth = this.imageWidth || img.naturalWidth || rect.width;
-    const originalHeight = this.imageHeight || img.naturalHeight || rect.height;
-
-    const x = ((clientX - rect.left) / rect.width) * originalWidth;
-    const y = ((clientY - rect.top) / rect.height) * originalHeight;
-
-    return {
-      x: Math.max(0, Math.min(originalWidth, x)),
-      y: Math.max(0, Math.min(originalHeight, y)),
-    };
+    return clientToImagePoint(rect, clientX, clientY, {
+      width: this.imageWidth || img.naturalWidth || rect.width,
+      height: this.imageHeight || img.naturalHeight || rect.height,
+    });
   }
 
   #onPointerDown(event: PointerEvent) {
@@ -342,7 +318,7 @@ export class QtiSelectPointInteractionEdit extends Interaction {
       if (shapeIndex < 0) return;
 
       const entry = this.areaEntries[shapeIndex];
-      const originCoords = this.#parseCoords(entry.coords);
+      const originCoords = parseCoords(entry.coords);
       if (!originCoords) return;
 
       event.preventDefault();
@@ -460,124 +436,44 @@ export class QtiSelectPointInteractionEdit extends Interaction {
     this.draft = null;
   }
 
-  #parseCoords(coords: string): number[] | null {
-    const values = coords.split(',').map(v => Number(v));
-    if (values.some(v => Number.isNaN(v))) return null;
-    return values;
-  }
-
   #findHitShapeIndex(x: number, y: number): number {
     for (let i = this.areaEntries.length - 1; i >= 0; i -= 1) {
       const entry = this.areaEntries[i];
-      const values = this.#parseCoords(entry.coords);
-      if (!values) continue;
-
-      if (entry.shape === 'circle' && values.length >= 3) {
-        const [cx, cy, r] = values;
-        const dx = x - cx;
-        const dy = y - cy;
-        if (dx * dx + dy * dy <= r * r) return i;
-      }
-
-      if (entry.shape === 'rect' && values.length >= 4) {
-        const [x1, y1, x2, y2] = values;
-        const minX = Math.min(x1, x2);
-        const maxX = Math.max(x1, x2);
-        const minY = Math.min(y1, y2);
-        const maxY = Math.max(y1, y2);
-        if (x >= minX && x <= maxX && y >= minY && y <= maxY) return i;
-      }
+      const values = parseCoords(entry.coords);
+      if (values && areaContainsPoint(entry.shape, values, { x, y })) return i;
     }
     return -1;
   }
 
   #moveShape(state: ShapeDragState, x: number, y: number): AreaMappingEntry | null {
-    const deltaX = x - state.startX;
-    const deltaY = y - state.startY;
     const source = this.areaEntries[state.index];
-    if (!source) return null;
-
-    if (state.shape === 'circle' && state.originCoords.length >= 3) {
-      const [cx, cy, r] = state.originCoords;
-      return {
-        ...source,
-        coords: `${Math.round(cx + deltaX)},${Math.round(cy + deltaY)},${Math.round(r)}`,
-      };
-    }
-
-    if (state.shape === 'rect' && state.originCoords.length >= 4) {
-      const [x1, y1, x2, y2] = state.originCoords;
-      return {
-        ...source,
-        coords: `${Math.round(x1 + deltaX)},${Math.round(y1 + deltaY)},${Math.round(x2 + deltaX)},${Math.round(y2 + deltaY)}`,
-      };
-    }
-
-    return null;
+    if (!source || !isValidArea(state.shape, state.originCoords)) return null;
+    return {
+      ...source,
+      coords: formatCoords(moveAreaCoords(state.shape, state.originCoords, x - state.startX, y - state.startY)),
+    };
   }
 
   #draftToEntry(draft: DraftShape): AreaMappingEntry | null {
-    const epsilon = 1;
-    if (draft.shape === 'circle') {
-      const dx = draft.currentX - draft.startX;
-      const dy = draft.currentY - draft.startY;
-      const radius = Math.round(Math.sqrt(dx * dx + dy * dy));
-      if (radius < epsilon) return null;
-
-      return {
-        id: `A${Date.now()}`,
-        shape: 'circle',
-        coords: `${Math.round(draft.startX)},${Math.round(draft.startY)},${radius}`,
-        mappedValue: 1,
-        defaultValue: 0,
-      };
-    }
-
-    const x1 = Math.round(Math.min(draft.startX, draft.currentX));
-    const y1 = Math.round(Math.min(draft.startY, draft.currentY));
-    const x2 = Math.round(Math.max(draft.startX, draft.currentX));
-    const y2 = Math.round(Math.max(draft.startY, draft.currentY));
-
-    if (Math.abs(x2 - x1) < epsilon || Math.abs(y2 - y1) < epsilon) return null;
+    const area = draftToArea(
+      draft.shape,
+      { x: draft.startX, y: draft.startY },
+      { x: draft.currentX, y: draft.currentY },
+    );
+    if (!area) return null;
 
     return {
       id: `A${Date.now()}`,
-      shape: 'rect',
-      coords: `${x1},${y1},${x2},${y2}`,
+      shape: area.shape,
+      coords: formatCoords(area.coords),
       mappedValue: 1,
       defaultValue: 0,
     };
   }
 
   #renderAreaShape(entry: AreaMappingEntry): TemplateResult | typeof nothing {
-    const values = entry.coords.split(',').map(Number);
-
-    if (entry.shape === 'circle' && values.length >= 3) {
-      const [cx, cy, r] = values;
-      return svg`<circle
-        cx="${cx}"
-        cy="${cy}"
-        r="${r}"
-        fill="rgba(37,99,235,0.2)"
-        stroke="#1d4ed8"
-        stroke-width="2"
-      />`;
-    }
-
-    if (entry.shape === 'rect' && values.length >= 4) {
-      const [x1, y1, x2, y2] = values;
-      return svg`<rect
-        x="${Math.min(x1, x2)}"
-        y="${Math.min(y1, y2)}"
-        width="${Math.abs(x2 - x1)}"
-        height="${Math.abs(y2 - y1)}"
-        fill="rgba(37,99,235,0.2)"
-        stroke="#1d4ed8"
-        stroke-width="2"
-      />`;
-    }
-
-    return nothing;
+    const values = parseCoords(entry.coords);
+    return values ? renderAreaShape(entry.shape, values, 'area') : nothing;
   }
 
   #renderDraft(): TemplateResult | typeof nothing {

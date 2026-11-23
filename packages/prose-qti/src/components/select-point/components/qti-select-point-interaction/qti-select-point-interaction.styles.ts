@@ -67,6 +67,12 @@ const styles: CSSResultGroup = [
       height: 100%;
     }
 
+    .area {
+      fill: rgba(37, 99, 235, 0.2);
+      stroke: #1d4ed8;
+      stroke-width: 2;
+    }
+
     .meta {
       margin-top: 8px;
       font-size: 12px;
