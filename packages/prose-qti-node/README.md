@@ -19,12 +19,14 @@ install them alongside if you do not already have them.
 ## Usage
 
 ```js
-import { qti3ToPm, pmToQti3, createQtiSchema } from '@citolab/prose-qti-node';
+import { qti3ToPm, pmToQti3 } from '@citolab/prose-qti-node';
 
-const schema = createQtiSchema();
-const doc = qti3ToPm(schema, qtiXml);
+const doc = qti3ToPm(qtiXml);
 const xml = pmToQti3(doc);
 ```
+
+Both default to a schema built with `createQtiSchema()`; pass your own via `{ schema }` in the
+second argument if you need one with a restricted interaction set.
 
 The DOM is installed as an **import side effect** — importing the package is enough, and there
 is no setup call to forget. `installNodeDom` is exported for the rare case where a host needs to
