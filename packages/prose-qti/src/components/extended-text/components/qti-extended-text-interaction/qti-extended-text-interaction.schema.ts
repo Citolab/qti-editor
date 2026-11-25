@@ -1,4 +1,12 @@
+import { qtiAttributes } from '../../../shared/qti-attributes.js';
+
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+
+const keptAttributes = qtiAttributes({
+  dataPatternmaskMessage: 'data-patternmask-message',
+  format: 'format',
+  base: { name: 'base', type: 'integer' },
+});
 
 export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
   group: 'block',
@@ -11,6 +19,7 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
     patternMask: { default: null },
     class: { default: null },
     score: { default: 1 },
+    ...keptAttributes.attrs,
   },
   parseDOM: [
     {
@@ -28,6 +37,7 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
           patternMask: node.getAttribute('pattern-mask'),
           class: node.getAttribute('class') || null,
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
+          ...keptAttributes.parse(node),
         };
       }
     }
@@ -49,6 +59,7 @@ export const qtiExtendedTextInteractionNodeSpec: NodeSpec = {
     if (node.attrs.patternMask) {
       attrs['pattern-mask'] = node.attrs.patternMask;
     }
+    Object.assign(attrs, keptAttributes.domAttrs(node.attrs));
     if (node.attrs.class) attrs.class = node.attrs.class;
     attrs.score = String(node.attrs.score ?? 1);
     return ['qti-extended-text-interaction', attrs, 0];

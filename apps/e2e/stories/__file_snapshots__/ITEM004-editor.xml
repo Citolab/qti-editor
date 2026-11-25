@@ -22,7 +22,7 @@
       <div class="qti-layout-col6">
         <p>Wat is het decimale getal dat overeenkomt met het Romeinse cijfer <strong>XLIV</strong>?</p>
         <p>
-          <qti-text-entry-interaction response-identifier="RESPONSE"/>
+          <qti-text-entry-interaction response-identifier="RESPONSE" expected-length="3"/>
         </p>
       </div>
       <div class="qti-layout-col6">

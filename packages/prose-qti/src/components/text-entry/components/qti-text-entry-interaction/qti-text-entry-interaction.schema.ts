@@ -1,4 +1,4 @@
-import { parseResponseAttribute, serializeResponseAttribute } from '@citolab/prose-qti/components/shared';
+import { parseResponseAttribute, qtiAttributes, serializeResponseAttribute } from '@citolab/prose-qti/components/shared';
 
 import {
   parseTextEntryCaseSensitiveAttribute,
@@ -8,6 +8,14 @@ import {
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
+const keptAttributes = qtiAttributes({
+  expectedLength: { name: 'expected-length', type: 'integer' },
+  patternMask: 'pattern-mask',
+  dataPatternmaskMessage: 'data-patternmask-message',
+  format: 'format',
+  base: { name: 'base', type: 'integer' },
+});
+
 export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
   attrs: {
     responseIdentifier: { default: null },
@@ -16,6 +24,7 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
     class: { default: null },
     placeholderText: { default: null },
     score: { default: 1 },
+    ...keptAttributes.attrs,
   },
   parseDOM: [
     {
@@ -33,6 +42,7 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
           ),
           placeholderText: node.getAttribute('placeholder-text') || null,
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
+          ...keptAttributes.parse(node),
         };
       },
     },
@@ -63,7 +73,7 @@ export const qtiTextEntryInteractionNodeSpec: NodeSpec = {
     }
     attrs.score = String(node.attrs.score ?? 1);
 
-    return ['qti-text-entry-interaction', attrs];
+    return ['qti-text-entry-interaction', { ...attrs, ...keptAttributes.domAttrs(node.attrs) }];
   },
   inline: true,
   group: 'inline',

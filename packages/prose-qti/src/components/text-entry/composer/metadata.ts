@@ -31,7 +31,14 @@ export const textEntryInteractionComposerMetadata = {
 export const textEntryNodeAttributePanelMetadataByNodeTypeName = {
   [TEXT_ENTRY_INTERACTION_NODE_TYPE.toLowerCase()]: {
     nodeTypeName: TEXT_ENTRY_INTERACTION_NODE_TYPE,
-    editableAttributes: ['class', 'caseSensitive', 'placeholderText'],
+    editableAttributes: [
+      'class',
+      'caseSensitive',
+      'placeholderText',
+      'expectedLength',
+      'patternMask',
+      'dataPatternmaskMessage',
+    ],
     friendlyEditors: [textEntryAttributesFriendlyEditor],
   },
 } satisfies Record<string, NodeAttributePanelMetadata>;
