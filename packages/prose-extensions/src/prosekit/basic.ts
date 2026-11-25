@@ -25,6 +25,8 @@ import { defineText, type TextExtension } from 'prosekit/extensions/text'
 import { defineGapCursorParagraph } from './gap-cursor-paragraph.js'
 import { defineList, type ListExtension, type ListOptions } from './list.js'
 import { defineEm, defineStrong, type EmExtension, type StrongExtension } from './strong-em.js'
+import { defineTableBorders } from './table-borders.js'
+import { defineTableClasses } from './table-classes.js'
 import { defineTableDeletion } from './table-deletion.js'
 
 /**
@@ -228,6 +230,10 @@ export function defineBasicExtension(options?: BasicExtensionOptions): BasicExte
     // interactions stay legal content, same reasoning as `defineQtiDoc` above.
     defineNodeSpec({ name: 'tableCell', content: '(paragraph | block)+' }),
     defineNodeSpec({ name: 'tableHeaderCell', content: '(paragraph | block)+' }),
+    // A class on a table, row or cell survives load → save (`qti-bordered` is how an author asks for
+    // lines); a bordered table's new rows and columns get its lines too.
+    defineTableClasses(),
+    defineTableBorders(),
     // Marks
     defineEm(),
     defineStrong(),
