@@ -1,6 +1,13 @@
-import { parseResponseAttribute, serializeResponseAttribute } from '../../../shared';
+import { parseResponseAttribute, qtiAttributes, serializeResponseAttribute } from '../../../shared';
 
 import type { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
+
+const keptAttributes = qtiAttributes({
+  maxAssociations: { name: 'max-associations', type: 'integer' },
+  minAssociations: { name: 'min-associations', type: 'integer' },
+  dataMinSelectionsMessage: 'data-min-selections-message',
+  dataMaxSelectionsMessage: 'data-max-selections-message',
+});
 
 const TABULAR_CLASS = 'qti-match-tabular';
 
@@ -32,6 +39,7 @@ export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
     responseIdentifier: { default: null },
     score: { default: 1 },
     dataFirstColumnHeader: { default: null },
+    ...keptAttributes.attrs,
   },
   parseDOM: [
     {
@@ -47,6 +55,7 @@ export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
           responseIdentifier: node.getAttribute('response-identifier'),
           score: scoreAttr && Number.isFinite(Number(scoreAttr)) ? Number(scoreAttr) : 1,
           dataFirstColumnHeader: node.getAttribute('data-first-column-header'),
+          ...keptAttributes.parse(node),
         };
       },
     },
@@ -62,7 +71,7 @@ export const qtiMatchInteractionTabularNodeSpec: NodeSpec = {
     if (node.attrs.responseIdentifier) attrs['response-identifier'] = node.attrs.responseIdentifier;
     if (node.attrs.dataFirstColumnHeader) attrs['data-first-column-header'] = node.attrs.dataFirstColumnHeader;
     attrs.score = String(node.attrs.score ?? 1);
-    return ['qti-match-interaction', attrs, 0];
+    return ['qti-match-interaction', { ...attrs, ...keptAttributes.domAttrs(node.attrs) }, 0];
   },
   defining: true,
   isolating: true,
