@@ -22,7 +22,7 @@
         </p>
       </div>
       <div class="qti-layout-col9">
-        <qti-choice-interaction max-choices="1" response-identifier="RESPONSE" shuffle="true">
+        <qti-choice-interaction max-choices="1" response-identifier="RESPONSE" shuffle="true" min-choices="1">
           <qti-prompt>
             <p>Welke van de onderstaande elementen heeft de hoogste atoommassa?</p>
           </qti-prompt>

@@ -1,3 +1,4 @@
+import { reconcileKeptConstraint } from '../../../shared/composer/kept-constraints.js';
 import { getStrippedAttributeSources, stripAttributesFromElement } from '../../../shared/composer/stripped-attributes.js';
 import { parseResponseAttribute } from '../../../shared/response/codec.js';
 import { removeEmptyPrompts } from '../../../shared/components/qti-prompt/qti-prompt.compose.js';
@@ -35,6 +36,16 @@ export function composeChoiceInteractionElement(sourceElement: Element, xmlDoc: 
   normalizedElement.setAttribute('max-choices', String(maxChoices));
   if (minChoices > 0) {
     normalizedElement.setAttribute('min-choices', String(minChoices));
+    // `max-choices` follows the correct response (one answer → 1), so an imported `min-choices`
+    // can end up above it, or above the number of choices left.
+    const choiceCount = normalizedElement.querySelectorAll(':scope > qti-simple-choice').length;
+    reconcileKeptConstraint(
+      normalizedElement,
+      'min-choices',
+      { max: maxChoices > 0 ? Math.min(maxChoices, choiceCount) : choiceCount },
+      { tagName: metadata.tagName, responseIdentifier, reason: 'asks for more choices than can be selected' },
+      warnings,
+    );
   } else {
     normalizedElement.removeAttribute('min-choices');
   }

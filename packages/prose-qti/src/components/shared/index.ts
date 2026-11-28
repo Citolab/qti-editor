@@ -36,6 +36,8 @@ export * from './commands/insert.js';
 export * from './composer/types.js';
 export * from './composer/metadata.js';
 export * from './composer/stripped-attributes.js';
+export * from './composer/kept-constraints.js';
+export * from './qti-attributes.js';
 export * from './response/codec.js';
 export * from './i18n/index.js';
 
